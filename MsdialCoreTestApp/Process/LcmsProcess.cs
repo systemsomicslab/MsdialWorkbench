@@ -57,12 +57,14 @@ namespace CompMs.App.MsdialConsole.Process
             var mapper = new DataBaseMapper();
             mapper.Add(annotator);
             mapper.Add(textannotator);
-            var annotationProcess = new StandardAnnotationProcess<AnnotationQuery>(
-                new AnnotationQueryFactory(annotator, storage.Parameter.PeakPickBaseParam, storage.Parameter.MspSearchParam),
+            var annotationProcess = new StandardAnnotationProcess(
+                new[]
+                {
+                    new AnnotationQueryFactory(annotator, storage.Parameter.PeakPickBaseParam, storage.Parameter.MspSearchParam),
+                    new AnnotationQueryFactory(annotator, storage.Parameter.PeakPickBaseParam, storage.Parameter.TextDbSearchParam),
+                },
                 evaluator,
-                mapper,
-                storage.Parameter.MspSearchParam,
-                storage.Parameter.TextDbSearchParam);
+                mapper);
             var process = new FileProcess(new StandardDataProviderFactory(5, false), storage, annotationProcess, evaluator);
             var sem = new SemaphoreSlim(Environment.ProcessorCount / 2);
             foreach ((var file, var idx) in files.WithIndex()) {

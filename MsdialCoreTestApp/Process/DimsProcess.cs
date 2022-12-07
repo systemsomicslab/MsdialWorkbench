@@ -44,11 +44,11 @@ namespace CompMs.App.MsdialConsole.Process
             mapper.Add(textAnnotator);
             var evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             
-            var annotationProcess = new StandardAnnotationProcess<IAnnotationQuery<MsScanMatchResult>>(
-                new List<(IAnnotationQueryFactory<MsScanMatchResult>, MsRefSearchParameterBase)>
+            var annotationProcess = new StandardAnnotationProcess(
+                new[]
                 {
-                    (new AnnotationQueryWithoutIsotopeFactory(mspAnnotator, storage.MsdialDimsParameter.MspSearchParam), storage.MsdialDimsParameter.MspSearchParam),
-                    (new AnnotationQueryWithoutIsotopeFactory(textAnnotator, storage.MsdialDimsParameter.TextDbSearchParam), storage.MsdialDimsParameter.TextDbSearchParam)
+                    new AnnotationQueryWithoutIsotopeFactory(mspAnnotator, storage.MsdialDimsParameter.MspSearchParam),
+                    new AnnotationQueryWithoutIsotopeFactory(textAnnotator, storage.MsdialDimsParameter.TextDbSearchParam)
                 },
                 evaluator,
                 mapper);

@@ -37,7 +37,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new MSDecResult { },
             };
             var annotator = new MockAnnotator("Annotator");
-            var process = new StandardAnnotationProcess<MockQuery>(new MockFactory(annotator.Id), new MsRefSearchParameterBase(), annotator, annotator);
+            var process = new StandardAnnotationProcess(new MockFactory(annotator.Id), annotator, annotator);
             process.RunAnnotation(chromPeaks, msdecResults, new MockProvider(), 1);
 
             Assert.AreEqual(annotator.Dummy, chromPeaks[0].MatchResults.Representative);
@@ -64,7 +64,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new MSDecResult { },
             };
             var annotator = new MockAnnotator("Annotator");
-            var process = new StandardAnnotationProcess<MockQuery>(new MockFactory(annotator.Id), new MsRefSearchParameterBase(), annotator, annotator);
+            var process = new StandardAnnotationProcess(new MockFactory(annotator.Id), annotator, annotator);
             process.RunAnnotation(chromPeaks, msdecResults, new MockProvider(), 4);
 
             Assert.AreEqual(annotator.Dummy, chromPeaks[0].MatchResults.Representative);
@@ -91,7 +91,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new MSDecResult { },
             };
             var annotator = new MockAnnotator("Annotator");
-            var process = new StandardAnnotationProcess<MockQuery>(new MockFactory(annotator.Id), new MsRefSearchParameterBase(), annotator, annotator);
+            var process = new StandardAnnotationProcess(new MockFactory(annotator.Id), annotator, annotator);
             await process.RunAnnotationAsync(chromPeaks, msdecResults, new MockProvider(), 1);
 
             Assert.AreEqual(annotator.Dummy, chromPeaks[0].MatchResults.Representative);
@@ -118,7 +118,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new MSDecResult { },
             };
             var annotator = new MockAnnotator("Annotator");
-            var process = new StandardAnnotationProcess<MockQuery>(new MockFactory(annotator.Id), new MsRefSearchParameterBase(), annotator, annotator);
+            var process = new StandardAnnotationProcess(new MockFactory(annotator.Id), annotator, annotator);
             await process.RunAnnotationAsync(chromPeaks, msdecResults, new MockProvider(), 4);
 
             Assert.AreEqual(annotator.Dummy, chromPeaks[0].MatchResults.Representative);

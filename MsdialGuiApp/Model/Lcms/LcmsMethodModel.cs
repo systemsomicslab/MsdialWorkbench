@@ -213,46 +213,40 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, PeakPickBaseParameter parameter) {
-            var containerPairs = new List<(IAnnotationQueryFactory<MsScanMatchResult>, MsRefSearchParameterBase)>();
+            var queryFactories = new List<IAnnotationQueryFactory<MsScanMatchResult>>();
             foreach (var annotators in storage.MetabolomicsDataBases) {
-                containerPairs.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryFactory(annotator.SerializableAnnotator, parameter, annotator.SearchParameter) as IAnnotationQueryFactory<MsScanMatchResult>, annotator.ConvertToAnnotatorContainer().Parameter)));
+                queryFactories.AddRange(annotators.Pairs.Select(annotator => new AnnotationQueryFactory(annotator.SerializableAnnotator, parameter, annotator.SearchParameter)));
             }
-            return new StandardAnnotationProcess<IAnnotationQuery<MsScanMatchResult>>(containerPairs, _matchResultEvaluator, storage.CreateDataBaseMapper());
+            return new StandardAnnotationProcess(queryFactories, _matchResultEvaluator, storage.CreateDataBaseMapper());
         }
 
         private IAnnotationProcess BuildProteoMetabolomicsAnnotationProcess(DataBaseStorage storage, ParameterBase parameter) {
-            var containers = new List<IAnnotatorContainer<IPepAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
+            var metabolomicsQueryFactries = new List<IAnnotationQueryFactory<MsScanMatchResult>>();
             foreach (var annotators in storage.MetabolomicsDataBases) {
-                containers.AddRange(annotators.Pairs.Select(annotator => annotator.ConvertToAnnotatorContainer()));
+                metabolomicsQueryFactries.AddRange(annotators.Pairs.Select(pair => new AnnotationQueryFactory(pair.SerializableAnnotator, parameter.PeakPickBaseParam, pair.SearchParameter)));
             }
-            var pepContainers = new List<IAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult>>();
+            var peptideQueryFactories = new List<IAnnotationQueryFactory<MsScanMatchResult>>();
             foreach (var annotators in storage.ProteomicsDataBases) {
-                pepContainers.AddRange(annotators.Pairs.Select(annotator => annotator.ConvertToAnnotatorContainer()));
+                peptideQueryFactories.AddRange(annotators.Pairs.Select(pair => new PepAnnotationQueryFactory(pair.SerializableAnnotator, parameter.PeakPickBaseParam, pair.SearchParameter, parameter.ProteomicsParam)));
             }
             return new AnnotationProcessOfProteoMetabolomics(
-                containers.Select(container => (
-                    (IAnnotationQueryFactory<MsScanMatchResult>)new PepAnnotationQueryFactory(container.Annotator, parameter.PeakPickBaseParam, container.Parameter, parameter.ProteomicsParam),
-                    container.Parameter
-                )).ToList(),
-                pepContainers.Select(container => (
-                    (IAnnotationQueryFactory<MsScanMatchResult>)new PepAnnotationQueryFactory(container.Annotator, parameter.PeakPickBaseParam, container.Parameter, parameter.ProteomicsParam),
-                    container.Parameter
-                )).ToList(),
+                metabolomicsQueryFactries,
+                peptideQueryFactories,
                 _matchResultEvaluator,
                 _storage.DataBaseMapper,
                 _storage.DataBaseMapper);
         }
 
         private IAnnotationProcess BuildEadLipidomicsAnnotationProcess(DataBaseStorage storage, DataBaseMapper mapper, ParameterBase parameter) {
-            var containerPairs = new List<(IAnnotationQueryFactory<MsScanMatchResult>, MsRefSearchParameterBase)>();
+            var metabolomicsQueryFactories = new List<IAnnotationQueryFactory<MsScanMatchResult>>();
             foreach (var annotators in storage.MetabolomicsDataBases) {
-                containerPairs.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryFactory(annotator.SerializableAnnotator, parameter.PeakPickBaseParam, annotator.SearchParameter) as IAnnotationQueryFactory<MsScanMatchResult>, annotator.SearchParameter)));
+                metabolomicsQueryFactories.AddRange(annotators.Pairs.Select(annotator => new AnnotationQueryFactory(annotator.SerializableAnnotator, parameter.PeakPickBaseParam, annotator.SearchParameter)));
             }
-            var eadAnnotationQueryFactoryTriple = new List<(IAnnotationQueryFactory<MsScanMatchResult>, MsRefSearchParameterBase)>();
+            var eadQueryFactories = new List<IAnnotationQueryFactory<MsScanMatchResult>>();
             foreach (var annotators in storage.EadLipidomicsDatabases) {
-                eadAnnotationQueryFactoryTriple.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryWithReferenceFactory(mapper, annotator.SerializableAnnotator, parameter.PeakPickBaseParam, annotator.SearchParameter) as IAnnotationQueryFactory<MsScanMatchResult>, annotator.SearchParameter)));
+                eadQueryFactories.AddRange(annotators.Pairs.Select(annotator => new AnnotationQueryWithReferenceFactory(mapper, annotator.SerializableAnnotator, parameter.PeakPickBaseParam, annotator.SearchParameter)));
             }
-            return new EadLipidomicsAnnotationProcess(containerPairs, eadAnnotationQueryFactoryTriple, mapper, _matchResultEvaluator);
+            return new EadLipidomicsAnnotationProcess(metabolomicsQueryFactories, eadQueryFactories, mapper, _matchResultEvaluator);
         }
 
         public bool ProcessPickAndAnnotaion(IMsdialDataStorage<MsdialLcmsParameter> storage) {

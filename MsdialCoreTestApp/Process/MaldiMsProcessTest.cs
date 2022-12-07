@@ -233,11 +233,8 @@ namespace CompMs.App.MsdialConsole.Process
             foreach (var annotators in storage.MetabolomicsDataBases) {
                 containers.AddRange(annotators.Pairs.Select(annotator => annotator.ConvertToAnnotatorContainer()));
             }
-            return new StandardAnnotationProcess<IAnnotationQuery<MsScanMatchResult>>(
-                containers.Select(container => (
-                    new AnnotationQueryWithoutIsotopeFactory(container.Annotator, container.Parameter) as IAnnotationQueryFactory<MsScanMatchResult>,
-                    container.Parameter
-                )).ToList(),
+            return new StandardAnnotationProcess(
+                containers.Select(container => new AnnotationQueryWithoutIsotopeFactory(container.Annotator, container.Parameter)).ToList(),
                 FacadeMatchResultEvaluator.FromDataBases(storage),
                 storage.CreateDataBaseMapper());
         }

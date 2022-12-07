@@ -2,7 +2,6 @@
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
-using CompMs.Common.Parameter;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
@@ -46,20 +45,20 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             }
         }
 
-        private readonly List<(IAnnotationQueryFactory<MsScanMatchResult> Factory, MsRefSearchParameterBase Parameter)> _moleculeContainerPairs;
-        private readonly List<(IAnnotationQueryFactory<MsScanMatchResult> Factory, MsRefSearchParameterBase Parameter)> _peptideContainerPairs;
+        private readonly IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> _moleculeQueryFactories;
+        private readonly IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> _peptideQueryFactories;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _moleculeRefer;
         private readonly IMatchResultRefer<PeptideMsReference, MsScanMatchResult> _peptideRefer;
 
         public AnnotationProcessOfProteoMetabolomics(
-            List<(IAnnotationQueryFactory<MsScanMatchResult>, MsRefSearchParameterBase)> moleculeContainerPairs,
-            List<(IAnnotationQueryFactory<MsScanMatchResult>, MsRefSearchParameterBase)> peptideContainerPairs,
+            IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> moleculeQueryFactories,
+            IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> peptideQueryFactories,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> moleculeRefer, IMatchResultRefer<PeptideMsReference, MsScanMatchResult> peptideRefer) {
 
-            _moleculeContainerPairs = moleculeContainerPairs ?? throw new ArgumentNullException(nameof(moleculeContainerPairs));
-            _peptideContainerPairs = peptideContainerPairs ?? throw new ArgumentNullException(nameof(peptideContainerPairs));
+            _moleculeQueryFactories = moleculeQueryFactories ?? throw new ArgumentNullException(nameof(moleculeQueryFactories));
+            _peptideQueryFactories = peptideQueryFactories ?? throw new ArgumentNullException(nameof(peptideQueryFactories));
             _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _moleculeRefer = moleculeRefer ?? throw new ArgumentNullException(nameof(moleculeRefer));
             _peptideRefer = peptideRefer ?? throw new ArgumentNullException(nameof(peptideRefer));
@@ -195,22 +194,22 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
              MSDecResult msdecResult,
              IReadOnlyList<RawSpectrum> msSpectrums) {
 
-            foreach (var (Factory, Parameter) in _peptideContainerPairs) {
-                var pepQuery = Factory.Create(
+            foreach (var factory in _peptideQueryFactories) {
+                var pepQuery = factory.Create(
                     chromPeakFeature,
                     msdecResult,
                     msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
                     chromPeakFeature.PeakCharacter,
-                    Parameter);
+                    factory.PrepareParameter());
                 SetPepAnnotationResult(chromPeakFeature, pepQuery);
             }
-            foreach (var (Factory, Parameter) in _moleculeContainerPairs) {
-                var query = Factory.Create(
+            foreach (var factory in _moleculeQueryFactories) {
+                var query = factory.Create(
                     chromPeakFeature,
                     msdecResult,
                     msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
                     chromPeakFeature.PeakCharacter,
-                    Parameter);
+                    factory.PrepareParameter());
                 SetAnnotationResult(chromPeakFeature, query, _evaluator);
             }
             
@@ -223,25 +222,25 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             IReadOnlyList<RawSpectrum> msSpectrums,
             CancellationToken token = default) {
 
-            foreach (var (Factory, Parameter) in _peptideContainerPairs) {
-                var pepQuery = Factory.Create(
+            foreach (var factory in _peptideQueryFactories) {
+                var pepQuery = factory.Create(
                     chromPeakFeature,
                     msdecResult,
                     msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
                     chromPeakFeature.PeakCharacter,
-                    Parameter);
+                    factory.PrepareParameter());
                 token.ThrowIfCancellationRequested();
                 await Task.Run(() => SetPepAnnotationResult(chromPeakFeature, pepQuery), token);
             }
             token.ThrowIfCancellationRequested();
 
-            foreach (var (Factory, Parameter) in _moleculeContainerPairs) {
-                var query = Factory.Create(
+            foreach (var factory in _moleculeQueryFactories) {
+                var query = factory.Create(
                     chromPeakFeature,
                     msdecResult,
                     msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
                     chromPeakFeature.PeakCharacter,
-                    Parameter);
+                    factory.PrepareParameter());
                 token.ThrowIfCancellationRequested();
                 await Task.Run(() => SetAnnotationResult(chromPeakFeature, query, _evaluator), token);
             }

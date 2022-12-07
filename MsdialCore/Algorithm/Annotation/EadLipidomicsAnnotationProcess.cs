@@ -2,7 +2,6 @@
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
-using CompMs.Common.Parameter;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Utility;
@@ -42,18 +41,18 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             };
         }
 
-        private readonly List<(IAnnotationQueryFactory<MsScanMatchResult> Factory, MsRefSearchParameterBase Parameter)> _moleculeContainerPairs;
-        private readonly List<(IAnnotationQueryFactory<MsScanMatchResult> Factory, MsRefSearchParameterBase Parameter)> _eadAnnotationQueryFactories;
+        private readonly IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> _moleculeQueryFactries;
+        private readonly IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> _eadQueryFactories;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
 
         public EadLipidomicsAnnotationProcess(
-            List<(IAnnotationQueryFactory<MsScanMatchResult>, MsRefSearchParameterBase)> moleculeContainerPairs,
-            List<(IAnnotationQueryFactory<MsScanMatchResult>, MsRefSearchParameterBase)> eadAnnotationQueryFactories,
+            IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> moleculeQueryFactories,
+            IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> eadQueryFactories,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             IMatchResultEvaluator<MsScanMatchResult> evaluator) { 
-            _moleculeContainerPairs = moleculeContainerPairs ?? throw new ArgumentNullException(nameof(moleculeContainerPairs));
-            _eadAnnotationQueryFactories = eadAnnotationQueryFactories ?? throw new ArgumentNullException(nameof(eadAnnotationQueryFactories));
+            _moleculeQueryFactries = moleculeQueryFactories ?? throw new ArgumentNullException(nameof(moleculeQueryFactories));
+            _eadQueryFactories = eadQueryFactories ?? throw new ArgumentNullException(nameof(eadQueryFactories));
             _refer = refer ?? throw new ArgumentNullException(nameof(refer));
             _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
         }
@@ -99,14 +98,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
              MSDecResult msdecResult,
              IDataProvider provider) {
 
-            foreach (var (Factory, Parameter) in _moleculeContainerPairs) {
+            foreach (var factory in _moleculeQueryFactries) {
                 var rawSpectrum = provider.LoadMsSpectrumFromIndex(chromPeakFeature.MS1RawSpectrumIdTop);
-                var query = Factory.Create(
+                var query = factory.Create(
                     chromPeakFeature,
                     msdecResult,
                     rawSpectrum.Spectrum,
                     chromPeakFeature.PeakCharacter,
-                    Parameter);
+                    factory.PrepareParameter());
                 SetAnnotationResult(chromPeakFeature, query, rawSpectrum.Spectrum);
             }
             SetRepresentativeProperty(chromPeakFeature);
@@ -118,15 +117,15 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
              IDataProvider provider,
              CancellationToken token = default) {
 
-            foreach (var (Factory, Parameter) in _moleculeContainerPairs) {
+            foreach (var factory in _moleculeQueryFactries) {
                 token.ThrowIfCancellationRequested();
                 var rawSpectrum = provider.LoadMsSpectrumFromIndex(chromPeakFeature.MS1RawSpectrumIdTop);
-                var query = Factory.Create(
+                var query = factory.Create(
                     chromPeakFeature,
                     msdecResult,
                     rawSpectrum.Spectrum,
                     chromPeakFeature.PeakCharacter,
-                    Parameter);
+                    factory.PrepareParameter());
                 SetAnnotationResult(chromPeakFeature, query, rawSpectrum.Spectrum);
             }
             token.ThrowIfCancellationRequested();
@@ -144,8 +143,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                     best.IsReferenceMatched = true;
                     chromPeakFeature.MatchResults.AddResult(best);
 
-                    foreach (var eadAnnotationQueryFactory in _eadAnnotationQueryFactories) {
-                        var query2 = eadAnnotationQueryFactory.Factory.Create(query.Property, query.Scan, spectrums, query.IonFeature, eadAnnotationQueryFactory.Parameter);
+                    foreach (var factory in _eadQueryFactories) {
+                        var query2 = factory.Create(query.Property, query.Scan, spectrums, query.IonFeature, factory.PrepareParameter());
                         var candidates2 = query2.FindCandidates();
                         var results2 = _evaluator.FilterByThreshold(candidates2);
                         if (results2.Count > 0) {
