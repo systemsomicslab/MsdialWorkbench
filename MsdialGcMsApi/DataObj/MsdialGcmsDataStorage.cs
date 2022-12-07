@@ -29,6 +29,11 @@ namespace CompMs.MsdialGcMsApi.DataObj
             return MessagePackDefaultHandler.LoadFromStream<MsdialGcmsParameter>(stream);
         }
 
+        public AnnotationQueryFactoryStorage CreateAnnotationQueryFactoryStorage() {
+            var visitor = new StandardCreateAnnotationQueryFactoryVisitor(MsdialGcmsParameter.PeakPickBaseParam, MsdialGcmsParameter.RefSpecMatchBaseParam);
+            return DataBases.CreateQueryFactories(visitor, new StandardLoadAnnotatorVisitor(MsdialGcmsParameter));
+        }
+
         public static IMsdialSerializer Serializer { get; } = new MsdialGcmsSerializer();
 
         class MsdialGcmsSerializer : MsdialSerializer, IMsdialSerializer

@@ -30,6 +30,11 @@ namespace CompMs.MsdialLcMsApi.DataObj
             return MessagePackDefaultHandler.LoadFromStream<MsdialLcmsParameter>(stream);
         }
 
+        public AnnotationQueryFactoryStorage CreateAnnotationQueryFactoryStorage() {
+            var visitor = new LcmsCreateAnnotationQueryFactoryVisitor(MsdialLcmsParameter.PeakPickBaseParam, MsdialLcmsParameter.RefSpecMatchBaseParam, MsdialLcmsParameter.ProteomicsParam, DataBaseMapper);
+            return DataBases.CreateQueryFactories(visitor, new LcmsLoadAnnotatorVisitor(MsdialLcmsParameter));
+        }
+
         public static IMsdialSerializer Serializer { get; } = new MsdialLcmsSerializer();
 
         class MsdialLcmsSerializer : MsdialSerializer, IMsdialSerializer

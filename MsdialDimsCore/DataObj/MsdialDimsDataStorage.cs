@@ -15,6 +15,15 @@ namespace CompMs.MsdialDimsCore.DataObj
         [Key(6)]
         public MsdialDimsParameter MsdialDimsParameter { get; set; }
 
+        public AnnotationQueryFactoryStorage CreateAnnotationQueryFactoryStorage() {
+            var visitor = new DimsCreateAnnotationQueryFactoryVisitor(MsdialDimsParameter.PeakPickBaseParam, MsdialDimsParameter.RefSpecMatchBaseParam, MsdialDimsParameter.ProteomicsParam, DataBaseMapper);
+            return DataBases.CreateQueryFactories(visitor, new DimsLoadAnnotatorVisitor(MsdialDimsParameter));
+        }
+
+        [IgnoreMember]
+        public ICreateAnnotationQueryFactoryVisitor CreateAnnotationQueryFactoryVisitor
+            => new DimsCreateAnnotationQueryFactoryVisitor(MsdialDimsParameter.PeakPickBaseParam, MsdialDimsParameter.RefSpecMatchBaseParam, MsdialDimsParameter.ProteomicsParam, DataBaseMapper);
+
         MsdialDimsParameter IMsdialDataStorage<MsdialDimsParameter>.Parameter => MsdialDimsParameter;
 
         protected override void SaveMsdialDataStorageCore(Stream stream) {

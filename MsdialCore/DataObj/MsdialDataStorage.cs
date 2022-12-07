@@ -22,13 +22,13 @@ namespace CompMs.MsdialCore.DataObj
         T Parameter { get; }
         DataBaseMapper DataBaseMapper { get; set; }
         DataBaseStorage DataBases { get; set; }
-        AnnotationQueryFactoryStorage AnnotationQueryFactoryStorage { get; }
 
         Task SaveAsync(IStreamManager streamManager, string projectTitle, string prefix);
         Task SaveParameterAsync(Stream stream);
         T LoadParameter(Stream stream);
 
         void FixDatasetFolder(string projectFolder);
+        AnnotationQueryFactoryStorage CreateAnnotationQueryFactoryStorage();
     }
 
     [MessagePackObject]
@@ -50,8 +50,6 @@ namespace CompMs.MsdialCore.DataObj
         public DataBaseMapper DataBaseMapper { get; set; }
         [Key(8)]
         public DataBaseStorage DataBases { get; set; }
-        [IgnoreMember]
-        public AnnotationQueryFactoryStorage AnnotationQueryFactoryStorage { get; }
 
         public async Task SaveAsync(IStreamManager streamManager, string projectTitle, string prefix = "") {
             using (var stream = await streamManager.Create(MsdialSerializer.Combine(prefix, MsdialSerializer.GetNewMspFileName(projectTitle))).ConfigureAwait(false)) {
@@ -204,6 +202,11 @@ namespace CompMs.MsdialCore.DataObj
 
         public ParameterBase LoadParameter(Stream stream) {
             return MessagePackDefaultHandler.LoadFromStream<ParameterBase>(stream);
+        }
+
+        public AnnotationQueryFactoryStorage CreateAnnotationQueryFactoryStorage() {
+            var visitor = new StandardCreateAnnotationQueryFactoryVisitor(ParameterBase.PeakPickBaseParam, ParameterBase.RefSpecMatchBaseParam);
+            return DataBases.CreateQueryFactories(visitor, new StandardLoadAnnotatorVisitor(ParameterBase));
         }
     }
 }

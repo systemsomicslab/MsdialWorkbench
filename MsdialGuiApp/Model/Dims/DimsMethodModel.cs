@@ -128,37 +128,24 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public AlignmentResultExportModel AlignmentResultExportModel { get; }
 
-        private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage) {
-            var containers = new List<IAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>>();
-            foreach (var annotators in storage.MetabolomicsDataBases) {
-                containers.AddRange(annotators.Pairs.Select(annotator => annotator.ConvertToAnnotatorContainer()));
-            }
-            return new StandardAnnotationProcess(
-                containers.Select(container => new AnnotationQueryWithoutIsotopeFactory(container.Annotator, container.Parameter)).ToList(),
-                FacadeMatchResultEvaluator.FromDataBases(storage),
-                storage.CreateDataBaseMapper());
+        private IAnnotationProcess BuildAnnotationProcess() {
+            var queryFatoires = Storage.CreateAnnotationQueryFactoryStorage();
+            return new StandardAnnotationProcess(queryFatoires.MoleculeQueryFactories, _matchResultEvaluator, Storage.DataBaseMapper);
         }
 
-        private IAnnotationProcess BuildEadLipidomicsAnnotationProcess(DataBaseStorage storage, DataBaseMapper mapper, ParameterBase parameter) {
-            var metaboliteQueryFactories = new List<IAnnotationQueryFactory<MsScanMatchResult>>();
-            foreach (var annotators in storage.MetabolomicsDataBases) {
-                metaboliteQueryFactories.AddRange(annotators.Pairs.Select(annotator => new AnnotationQueryWithoutIsotopeFactory(annotator.SerializableAnnotator, annotator.SearchParameter)));
-            }
-            var eadQueryFatories = new List<IAnnotationQueryFactory<MsScanMatchResult>>();
-            foreach (var annotators in storage.EadLipidomicsDatabases) {
-                eadQueryFatories.AddRange(annotators.Pairs.Select(annotator => new AnnotationQueryWithReferenceFactory(mapper, annotator.SerializableAnnotator, parameter.PeakPickBaseParam, annotator.SearchParameter)));
-            }
-            return new EadLipidomicsAnnotationProcess(metaboliteQueryFactories, eadQueryFatories, mapper, _matchResultEvaluator);
+        private IAnnotationProcess BuildEadLipidomicsAnnotationProcess() {
+            var queryFactories = Storage.CreateAnnotationQueryFactoryStorage();
+            return new EadLipidomicsAnnotationProcess(queryFactories.MoleculeQueryFactories, queryFactories.SecondQueryFactories, Storage.DataBaseMapper, _matchResultEvaluator);
         }
 
         public override async Task RunAsync(ProcessOption option, CancellationToken token) {
             // Storage.DataBaseMapper = BuildDataBaseMapper(Storage.DataBases);
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
             if (Storage.Parameter.TargetOmics == TargetOmics.Lipidomics && (Storage.Parameter.CollistionType == CollisionType.EIEIO || Storage.Parameter.CollistionType == CollisionType.OAD)) {
-                _annotationProcess = BuildEadLipidomicsAnnotationProcess(Storage.DataBases, Storage.DataBaseMapper, Storage.Parameter);
+                _annotationProcess = BuildEadLipidomicsAnnotationProcess();
             }
             else {
-                _annotationProcess = BuildAnnotationProcess(Storage.DataBases);
+                _annotationProcess = BuildAnnotationProcess();
             }
 
             var processOption = option;

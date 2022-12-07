@@ -46,7 +46,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         private readonly IMessageBroker _broker;
         private readonly IMsdialDataStorage<MsdialLcmsParameter> _storage;
         private readonly FacadeMatchResultEvaluator _matchResultEvaluator;
-        private IAnnotationProcess _annotationProcess;
 
         public LcmsMethodModel(
             AnalysisFileBeanModelCollection analysisFileBeanModelCollection,
@@ -169,27 +168,27 @@ namespace CompMs.App.Msdial.Model.Lcms
             .AddTo(Disposables);
         }
 
-        public override async Task RunAsync(ProcessOption option, CancellationToken token) {
+        public override async Task RunAsync(ProcessOption processOption, CancellationToken token) {
             // Set analysis param
             var parameter = _storage.Parameter;
+            IAnnotationProcess annotationProcess;
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
-                _annotationProcess = BuildProteoMetabolomicsAnnotationProcess(_storage.DataBases, parameter);
+                annotationProcess = BuildProteoMetabolomicsAnnotationProcess();
             }
             else if(parameter.TargetOmics == TargetOmics.Lipidomics && (parameter.CollistionType == CollisionType.EIEIO || parameter.CollistionType == CollisionType.OAD)) {
-                _annotationProcess = BuildEadLipidomicsAnnotationProcess(_storage.DataBases, _storage.DataBaseMapper, parameter);
+                annotationProcess = BuildEadLipidomicsAnnotationProcess();
             }
             else {
-                _annotationProcess = BuildAnnotationProcess(_storage.DataBases, parameter.PeakPickBaseParam);
+                annotationProcess = BuildAnnotationProcess();
             }
 
-            var processOption = option;
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification | ProcessOption.PeakSpotting)) {
-                if (!ProcessPickAndAnnotaion(_storage))
+                if (!ProcessPickAndAnnotaion(_storage, annotationProcess))
                     return;
             }
             else if (processOption.HasFlag(ProcessOption.Identification)) {
-                if (!ProcessAnnotaion(_storage))
+                if (!ProcessAnnotaion(_storage, annotationProcess))
                     return;
             }
 
@@ -212,48 +211,25 @@ namespace CompMs.App.Msdial.Model.Lcms
 #endif
         }
 
-        private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, PeakPickBaseParameter parameter) {
-            var queryFactories = new List<IAnnotationQueryFactory<MsScanMatchResult>>();
-            foreach (var annotators in storage.MetabolomicsDataBases) {
-                queryFactories.AddRange(annotators.Pairs.Select(annotator => new AnnotationQueryFactory(annotator.SerializableAnnotator, parameter, annotator.SearchParameter)));
-            }
-            return new StandardAnnotationProcess(queryFactories, _matchResultEvaluator, storage.CreateDataBaseMapper());
+        private IAnnotationProcess BuildAnnotationProcess() {
+            return new StandardAnnotationProcess(_storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories, _matchResultEvaluator, _storage.DataBaseMapper);
         }
 
-        private IAnnotationProcess BuildProteoMetabolomicsAnnotationProcess(DataBaseStorage storage, ParameterBase parameter) {
-            var metabolomicsQueryFactries = new List<IAnnotationQueryFactory<MsScanMatchResult>>();
-            foreach (var annotators in storage.MetabolomicsDataBases) {
-                metabolomicsQueryFactries.AddRange(annotators.Pairs.Select(pair => new AnnotationQueryFactory(pair.SerializableAnnotator, parameter.PeakPickBaseParam, pair.SearchParameter)));
-            }
-            var peptideQueryFactories = new List<IAnnotationQueryFactory<MsScanMatchResult>>();
-            foreach (var annotators in storage.ProteomicsDataBases) {
-                peptideQueryFactories.AddRange(annotators.Pairs.Select(pair => new PepAnnotationQueryFactory(pair.SerializableAnnotator, parameter.PeakPickBaseParam, pair.SearchParameter, parameter.ProteomicsParam)));
-            }
-            return new AnnotationProcessOfProteoMetabolomics(
-                metabolomicsQueryFactries,
-                peptideQueryFactories,
-                _matchResultEvaluator,
-                _storage.DataBaseMapper,
-                _storage.DataBaseMapper);
+        private IAnnotationProcess BuildProteoMetabolomicsAnnotationProcess() {
+            var queryFactories = _storage.CreateAnnotationQueryFactoryStorage();
+            return new AnnotationProcessOfProteoMetabolomics(queryFactories.MoleculeQueryFactories, queryFactories.PeptideQueryFactories, _matchResultEvaluator, _storage.DataBaseMapper, _storage.DataBaseMapper);
         }
 
-        private IAnnotationProcess BuildEadLipidomicsAnnotationProcess(DataBaseStorage storage, DataBaseMapper mapper, ParameterBase parameter) {
-            var metabolomicsQueryFactories = new List<IAnnotationQueryFactory<MsScanMatchResult>>();
-            foreach (var annotators in storage.MetabolomicsDataBases) {
-                metabolomicsQueryFactories.AddRange(annotators.Pairs.Select(annotator => new AnnotationQueryFactory(annotator.SerializableAnnotator, parameter.PeakPickBaseParam, annotator.SearchParameter)));
-            }
-            var eadQueryFactories = new List<IAnnotationQueryFactory<MsScanMatchResult>>();
-            foreach (var annotators in storage.EadLipidomicsDatabases) {
-                eadQueryFactories.AddRange(annotators.Pairs.Select(annotator => new AnnotationQueryWithReferenceFactory(mapper, annotator.SerializableAnnotator, parameter.PeakPickBaseParam, annotator.SearchParameter)));
-            }
-            return new EadLipidomicsAnnotationProcess(metabolomicsQueryFactories, eadQueryFactories, mapper, _matchResultEvaluator);
+        private IAnnotationProcess BuildEadLipidomicsAnnotationProcess() {
+            var queryFactories = _storage.CreateAnnotationQueryFactoryStorage();
+            return new EadLipidomicsAnnotationProcess(queryFactories.MoleculeQueryFactories, queryFactories.SecondQueryFactories, _storage.DataBaseMapper, _matchResultEvaluator);
         }
 
-        public bool ProcessPickAndAnnotaion(IMsdialDataStorage<MsdialLcmsParameter> storage) {
+        private bool ProcessPickAndAnnotaion(IMsdialDataStorage<MsdialLcmsParameter> storage, IAnnotationProcess annotationProcess) {
             var request = new ProgressBarMultiContainerRequest(
                 vm_ =>
                 {
-                    var processor = new MsdialLcMsApi.Process.FileProcess(_providerFactory, storage, _annotationProcess, _matchResultEvaluator);
+                    var processor = new MsdialLcMsApi.Process.FileProcess(_providerFactory, storage, annotationProcess, _matchResultEvaluator);
                     return processor.RunAllAsync(
                         storage.AnalysisFiles,
                         vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
@@ -265,11 +241,11 @@ namespace CompMs.App.Msdial.Model.Lcms
             return request.Result ?? false;
         }
 
-        public bool ProcessAnnotaion(IMsdialDataStorage<MsdialLcmsParameter> storage) {
+        private bool ProcessAnnotaion(IMsdialDataStorage<MsdialLcmsParameter> storage, IAnnotationProcess annotationProcess) {
             var request = new ProgressBarMultiContainerRequest(
                 vm_ =>
                 {
-                    var processor = new MsdialLcMsApi.Process.FileProcess(_providerFactory, storage, _annotationProcess, _matchResultEvaluator);
+                    var processor = new MsdialLcMsApi.Process.FileProcess(_providerFactory, storage, annotationProcess, _matchResultEvaluator);
                     return processor.AnnotateAllAsync(
                         storage.AnalysisFiles,
                         vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),

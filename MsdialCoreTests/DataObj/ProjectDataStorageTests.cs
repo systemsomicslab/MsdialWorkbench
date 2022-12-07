@@ -163,6 +163,10 @@ namespace CompMs.MsdialCore.DataObj.Tests
         public ParameterBase LoadParameter(Stream stream) {
             throw new NotImplementedException();
         }
+
+        public AnnotationQueryFactoryStorage CreateAnnotationQueryFactoryStorage() {
+            throw new NotImplementedException();
+        }
     }
 
     class MockSerializer : IMsdialSerializer
