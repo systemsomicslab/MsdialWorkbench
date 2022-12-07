@@ -3,6 +3,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcImMsApi.Parameter;
+using CompMs.MsdialLcImMsApi.Parser;
 using MessagePack;
 using System.IO;
 using System.Threading.Tasks;
@@ -37,6 +38,12 @@ namespace CompMs.MsdialLcImMsApi.DataObj
             protected override async Task<IMsdialDataStorage<ParameterBase>> LoadMsdialDataStorageCoreAsync(IStreamManager streamManager, string path) {
                 using (var stream = await streamManager.Get(path).ConfigureAwait(false)) {
                     return MessagePackDefaultHandler.LoadFromStream<MsdialLcImMsDataStorage>(stream);
+                }
+            }
+
+            protected override async Task LoadDataBasesAsync(IStreamManager streamManager, string path, IMsdialDataStorage<ParameterBase> storage, string projectFolderPath) {
+                using (var stream = await streamManager.Get(path).ConfigureAwait(false)) {
+                    storage.DataBases = DataBaseStorage.Load(stream, new LcimmsLoadAnnotatorVisitor(storage.Parameter), projectFolderPath);
                 }
             }
         }
