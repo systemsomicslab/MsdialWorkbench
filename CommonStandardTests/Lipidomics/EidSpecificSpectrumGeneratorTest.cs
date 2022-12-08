@@ -13,20 +13,20 @@ namespace CompMs.Common.Lipidomics.Tests
     [TestClass()]
     public class EidSpecificSpectrumGeneratorTest
     {
-        [TestMethod()]
-        public void EidSpecificSpectrumTest()
-        {
-            var acyl1 = new AcylChain(18, DoubleBond.CreateFromPosition(9), new Oxidized(0));
-            var lipid = new Lipid(LbmClass.LPC, 521.348140016, new PositionLevelChains(acyl1));
+        //[TestMethod()]
+        //public void EidSpecificSpectrumTest()
+        //{
+        //    var acyl1 = new AcylChain(18, DoubleBond.CreateFromPosition(9), new Oxidized(0));
+        //    var lipid = new Lipid(LbmClass.LPC, 521.348140016, new PositionLevelChains(acyl1));
 
-            var spectrum = EidSpecificSpectrumGenerator.EidSpecificSpectrum(lipid, acyl1, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 9);
-            foreach (var spec in spectrum)
-            {
-                Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}");
-            }
-            Console.WriteLine("END");
+        //    var spectrum = EidSpecificSpectrumGenerator.EidSpecificSpectrum(lipid, acyl1, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 9);
+        //    foreach (var spec in spectrum)
+        //    {
+        //        Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}");
+        //    }
+        //    Console.WriteLine("END");
 
-        }
+        //}
     }
 }
 

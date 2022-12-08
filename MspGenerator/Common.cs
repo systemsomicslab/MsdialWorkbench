@@ -247,6 +247,10 @@ namespace CompMs.MspGenerator
                 case "NAOrn_FAHFA":
                     OtherLipidMspGenerator.fahfasGenerator(chain1, chain2, lipidClass, output);
                     break;
+                case "FAHFA-DMED":
+                    OtherLipidMspGenerator.fahfaDmedGenerator(chain1, chain2, lipidClass, output);
+                    break;
+
 
                 ////conbination
                 //case "NAGlySer":

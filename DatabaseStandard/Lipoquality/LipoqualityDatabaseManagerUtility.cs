@@ -162,6 +162,7 @@ namespace Riken.Metabolomics.Lipoquality
                     setSingleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
                     break;
                 case "FAHFA":
+                case "DMEDFAHFA":
                     setDoubleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
                     break;
 
@@ -558,6 +559,7 @@ namespace Riken.Metabolomics.Lipoquality
                 case "ACar": return "ACar";
                 case "FA": return "FA";
                 case "FAHFA": return "FAHFA";
+                case "DMEDFAHFA": return "DMEDFAHFA";
 
                 case "Cer_ADS": return "Cer-ADS";
                 case "Cer_AS": return "Cer-AS";
@@ -638,6 +640,7 @@ namespace Riken.Metabolomics.Lipoquality
                 case "ACar": return "Acyl carnitine";
                 case "FA": return "Free fatty acid";
                 case "FAHFA": return "Fatty acid ester of hydroxyl fatty acid";
+                case "DMEDFAHFA": return "Fatty acid ester of hydroxyl fatty acid";
 
                 case "Cer_ADS": return "Ceramide";
                 case "Cer_AS": return "Ceramide";

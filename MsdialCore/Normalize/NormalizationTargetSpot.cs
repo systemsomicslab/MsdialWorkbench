@@ -92,6 +92,20 @@ namespace CompMs.MsdialCore.Normalize
             }
 
             qcList = qcList.OrderBy(n => n[0]).ToList();
+            if (qcList.Count == 0) {
+                foreach (var tFile in files) {
+                    if (!tFile.AnalysisFileIncluded) continue;
+                    if (type.ToLower() == "height") {
+                        variableProps[tFile.AnalysisFileId].NormalizedPeakHeight = variableProps[tFile.AnalysisFileId].NormalizedPeakHeight;
+                    }
+                    else if (type.ToLower() == "areazero") {
+                        variableProps[tFile.AnalysisFileId].NormalizedPeakAreaAboveZero = variableProps[tFile.AnalysisFileId].NormalizedPeakAreaAboveZero;
+                    }
+                    else {
+                        variableProps[tFile.AnalysisFileId].NormalizedPeakAreaAboveBaseline = variableProps[tFile.AnalysisFileId].NormalizedPeakAreaAboveBaseline;
+                    }
+                }
+            }
 
             double[] xQcArray = new double[qcList.Count];
             double[] yQcArray = new double[qcList.Count];

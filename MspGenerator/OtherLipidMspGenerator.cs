@@ -157,7 +157,7 @@ namespace CompMs.MspGenerator
                             var fra01comment = "[M-H]-";
                             fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
 
-                            name = "FA" + " " + fa1Chain + ":" + fa1Double + ";" + fa1Ox + "O";
+                            name = "FA" + " " + fa1Chain + ":" + fa1Double + ";O" + fa1Ox;
                         }
 
                         //
@@ -377,6 +377,97 @@ namespace CompMs.MspGenerator
             }
         }
 
+        public static void fahfaDmedGenerator(List<string> Chain1, List<string> chain2, string lipidClass, string output)
+        {
+            var wholeChainList = new List<string>();
+
+            for (int i = 0; i < Chain1.Count; i++)
+            {
+                for (int j = 0; j < chain2.Count; j++)
+                {
+                    var chainList = new List<string> { Chain1[i], chain2[j] };
+                    wholeChainList.Add(string.Join("\t", chainList));
+                }
+            }
+
+            wholeChainList = wholeChainList.Distinct().ToList();
+            var smileslist = new List<string>();
+            var smilesHeaderDict = SmilesLipidHeader.HeaderDictionary;
+            var headerSmiles = smilesHeaderDict[lipidClass];
+
+            var adducts = adductDic.lipidClassAdductDic[lipidClass];
+            var baseChainDic = AcylChainDic.fahfaDmedBaseChainDictionary;
+            var extraChainDic = AcylChainDic.FattyAcylChainDictionary;
+            foreach (var adductIon in adducts)
+            {
+                var adduct = adductDic.adductIonDic[adductIon];
+                var shortNameList = new List<string>();
+                var shortNameList2 = new List<string>();
+
+                var ionmode = adduct.IonMode;
+                var fileSurfix = adduct.AdductSurfix + "_" + ionmode.Substring(0, 3);
+                var filename = lipidClass + "_" + fileSurfix + ".msp";
+                var chainNameList = new List<string>();
+                using (var sw = new StreamWriter(output + "\\" + filename, false, Encoding.ASCII))
+                {
+                    for (int i = 0; i < wholeChainList.Count; i++)
+                    {
+                        var chainArray = wholeChainList[i].Split('\t');
+
+                        var baseChain = baseChainDic[chainArray[0]];
+                        var baseChainCarbon = int.Parse(baseChain[0]);
+                        var baseChainDouble = int.Parse(baseChain[1]);
+                        var baseChainOxposition = int.Parse(baseChain[2]);
+                        var baseChainString = baseChain[0] + ":" + baseChain[1] + ";O";
+
+
+                        var extraChain = extraChainDic[chainArray[1]];
+                        var extraChainCarbon = int.Parse(extraChain[0]);
+                        var extraChainDouble = int.Parse(extraChain[1]);
+
+                        var totalChain = baseChainCarbon + extraChainCarbon;
+                        var totalBond = baseChainDouble + extraChainDouble;
+
+                        var baseChainSmiles = baseChain[4];
+
+                        var extraChainSmiles = extraChain[3];
+
+                        var name = "";
+                        var shortName = "DMEDFAHFA " + " " + totalChain + ":" + totalBond + ";O";
+
+                        var exportLipidClassName = "DMEDFAHFA ";
+                        var rawSmiles = extraChainSmiles + "%10." + baseChainSmiles;
+                        var meta = Common.getMetaProperty(rawSmiles);
+
+                        // fragment
+                        var fragmentList = new List<string>();
+                        OtherLipidFragmentation.fahfaDmedFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, baseChainCarbon, baseChainDouble, extraChainCarbon, extraChainDouble, baseChainOxposition);
+                        name = "DMEDFAHFA " + " " + chainArray[1] + "/" + baseChainString;
+                        if (chainNameList.Contains(name))
+                        {
+                            continue;
+                        }
+
+                        //
+                        var precursorMZ = Math.Round(meta.ExactMass + adduct.AdductIonMass, 4);
+                        ExportMSP.exportMspFile(sw, precursorMZ, meta.Formula, name, meta.Smiles, meta.inChIKey, adduct.AdductIonName, ionmode, exportLipidClassName, fragmentList);
+
+                        smileslist.Add(meta.inChIKey + "\t" + meta.Smiles);
+                        chainNameList.Add(name);
+
+                    }
+                }
+                var smilesOutputFile = output + "\\" + lipidClass + "_InChIKey-smiles.txt";
+                smileslist = smileslist.Distinct().ToList();
+                using (var sw = new StreamWriter(smilesOutputFile, false, Encoding.ASCII))
+                {
+                    sw.WriteLine("InChIKey\tSMILES");
+                    foreach (var smiles in smileslist)
+                        sw.WriteLine(smiles);
+                }
+            }
+        }
+
         public static void singleAcylChainLipidGenerator(List<string> Chain1, string lipidClass, string output)
         {
             var wholeChainList = new List<string>();
@@ -423,7 +514,7 @@ namespace CompMs.MspGenerator
 
                         var exportLipidClassName = lipidClass;
                         var rawSmiles = headerSmiles + chain1Smiles + "%10";
-                        if (lipidClass.Contains("NA")&&lipidClass.Contains("_FA"))
+                        if (lipidClass.Contains("NA") && lipidClass.Contains("_FA"))
                         {
 
                             if (AcylChainDic.FattyAcylChainDictionary.ContainsKey(chain1String))
@@ -490,7 +581,7 @@ namespace CompMs.MspGenerator
                             case "NATau_FA":
                                 OtherLipidFragmentation.FATauFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
                                 exportLipidClassName = "NATau";
-                                name = exportLipidClassName + " " + chain1String ;
+                                name = exportLipidClassName + " " + chain1String;
                                 break;
                             case "NATau_OxFA":
                                 OtherLipidFragmentation.oxFATauFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
@@ -635,7 +726,7 @@ namespace CompMs.MspGenerator
                                 name = cholicAcid[lipidClass] + "/" + chain1String;
                                 if (chain1Ox > 0)
                                 {
-                                    name = name + ";" + chain1Ox + "O";
+                                    name = name + ";O" + chain1Ox;
                                 }
                                 break;
 
@@ -1115,11 +1206,11 @@ namespace CompMs.MspGenerator
                 {
                     foreach (var item in classDic)
                     {
-                        var name = "ST "+ item.Value+";O";
+                        var name = "ST " + item.Value + ";O";
 
                         var smilesHeaderDict = SmilesLipidHeader.HeaderDictionary;
                         var headerSmiles = smilesHeaderDict[item.Key];
-                        var rawSmiles = headerSmiles.Replace("%10","");
+                        var rawSmiles = headerSmiles.Replace("%10", "");
 
                         var fragmentList = new List<string>();
                         var exportLipidClassName = lipidClass;

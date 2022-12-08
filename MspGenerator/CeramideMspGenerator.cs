@@ -247,75 +247,75 @@ namespace CompMs.MspGenerator
                             //normal
                             case "Cer_AS":
                                 CermideFragmentation.CerAsFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
-                                name = "Cer " + chainArray[0] + ";2O/" + chainArray[1] + ";(2OH)";
-                                shortName = "Cer " + totalChain +":"+ totalBond + ";3O";
+                                name = "Cer " + chainArray[0] + ";O2/" + chainArray[1] + "(2OH)";
+                                shortName = "Cer " + totalChain +":"+ totalBond + ";O3";
                                 break;
                             case "Cer_ADS":
                                 CermideFragmentation.CerAdsFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
-                                name = "Cer " + chainArray[0] + ";2O/" + chainArray[1] + ";(2OH)";
-                                shortName = "Cer " + totalChain + ":" + totalBond + ";3O";
+                                name = "Cer " + chainArray[0] + ";O2/" + chainArray[1] + "(2OH)";
+                                shortName = "Cer " + totalChain + ":" + totalBond + ";O3";
                                 break;
                             case "Cer_AP":
                                 CermideFragmentation.CerApFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
-                                name = "Cer " + chainArray[0] + ";3O/" + chainArray[1] + ";(2OH)";
-                                shortName = "Cer " + totalChain + ":" + totalBond + ";4O";
+                                name = "Cer " + chainArray[0] + ";O3/" + chainArray[1] + "(2OH)";
+                                shortName = "Cer " + totalChain + ":" + totalBond + ";O4";
                                 break;
                             case "Cer_NS":
                                 CermideFragmentation.CerNsFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
-                                name = "Cer " + chainArray[0] + ";2O/" + chainArray[1] ;
-                                shortName = "Cer " + totalChain + ":" + totalBond + ";2O";
+                                name = "Cer " + chainArray[0] + ";O2/" + chainArray[1] ;
+                                shortName = "Cer " + totalChain + ":" + totalBond + ";O2";
                                 break;
                             case "Cer_NDS":
                                 CermideFragmentation.CerNdsFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
-                                name = "Cer " + chainArray[0] + ";2O/" + chainArray[1] ;
-                                shortName = "Cer " + totalChain + ":" + totalBond + ";2O";
+                                name = "Cer " + chainArray[0] + ";O2/" + chainArray[1] ;
+                                shortName = "Cer " + totalChain + ":" + totalBond + ";O2";
                                 break;
                             case "Cer_NP":
                                 CermideFragmentation.CerNpFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
-                                name = "Cer " + chainArray[0] + ";3O/" + chainArray[1] ;
-                                shortName = "Cer " + totalChain + ":" + totalBond + ";3O";
+                                name = "Cer " + chainArray[0] + ";O3/" + chainArray[1] ;
+                                shortName = "Cer " + totalChain + ":" + totalBond + ";O3";
                                 break;
                             case "Cer_BS":
                                 CermideFragmentation.CerBsFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
-                                name = "Cer " + chainArray[0] + ";2O/" + chainArray[1] + ";(3OH)";
-                                shortName = "Cer " + totalChain + ":" + totalBond + ";3O";
+                                name = "Cer " + chainArray[0] + ";O2/" + chainArray[1] + "(3OH)";
+                                shortName = "Cer " + totalChain + ":" + totalBond + ";O3";
                                 break;
                             case "Cer_BDS":
                                 CermideFragmentation.CerBdsFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
-                                name = "Cer " + chainArray[0] + ";2O/" + chainArray[1] + ";(3OH)";
-                                shortName = "Cer " + totalChain + ":" + totalBond + ";3O";
+                                name = "Cer " + chainArray[0] + ";O2/" + chainArray[1] + "(3OH)";
+                                shortName = "Cer " + totalChain + ":" + totalBond + ";O3";
                                 break;
 
                             case "Cer_HS":
                                 CermideFragmentation.CerHFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
-                                name = "Cer " + chainArray[0] + ";2O/" + chainArray[1] + ";O";
-                                shortName = "Cer " + totalChain + ":" + totalBond + ";3O";
+                                name = "Cer " + chainArray[0] + ";O2/" + chainArray[1] + ";O";
+                                shortName = "Cer " + totalChain + ":" + totalBond + ";O3";
                                 break;
 
                             case "Cer_HDS":
                                 CermideFragmentation.CerHFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
-                                name = "Cer " + chainArray[0] + ";2O/" + chainArray[1] + ";O";
-                                shortName = "Cer " + totalChain + ":" + totalBond + ";3O";
+                                name = "Cer " + chainArray[0] + ";O2/" + chainArray[1] + ";O";
+                                shortName = "Cer " + totalChain + ":" + totalBond + ";O3";
                                 break;
 
                             case "HexCer_AP":
                                 CermideFragmentation.HexCerApFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
-                                name = "HexCer " + chainArray[0] + ";3O/" + chainArray[1] + ";(2OH)";
-                                shortName = "HexCer " + totalChain + ":" + totalBond + ";4O";
+                                name = "HexCer " + chainArray[0] + ";O3/" + chainArray[1] + "(2OH)";
+                                shortName = "HexCer " + totalChain + ":" + totalBond + ";O4";
                                 break;
                             case "HexCer_NS":
                                 CermideFragmentation.HexCerNFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
-                                name = "HexCer " + chainArray[0] + ";2O/" + chainArray[1];
-                                shortName = "HexCer " + totalChain + ":" + totalBond + ";2O";
+                                name = "HexCer " + chainArray[0] + ";O2/" + chainArray[1];
+                                shortName = "HexCer " + totalChain + ":" + totalBond + ";O2";
                                 break;
                             case "HexCer_NDS":
                                 CermideFragmentation.HexCerNFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
-                                name = "HexCer " + chainArray[0] + ";2O/" + chainArray[1];
-                                shortName = "HexCer " + totalChain + ":" + totalBond + ";2O";
+                                name = "HexCer " + chainArray[0] + ";O2/" + chainArray[1];
+                                shortName = "HexCer " + totalChain + ":" + totalBond + ";O2";
                                 break;
                             case "Hex2Cer":
-                                name = "Hex2Cer " + chainArray[0] + ";2O/" + chainArray[1];
-                                shortName = "Hex2Cer " + totalChain + ":" + totalBond + ";2O";
+                                name = "Hex2Cer " + chainArray[0] + ";O2/" + chainArray[1];
+                                shortName = "Hex2Cer " + totalChain + ":" + totalBond + ";O2";
                                 if(adduct.IonMode =="Negative")
                                 {
                                     if (shortNameList.Contains(shortName)) { continue; }
@@ -325,8 +325,8 @@ namespace CompMs.MspGenerator
                                 CermideFragmentation.Hex2CerFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
                                 break;
                             case "Hex3Cer":
-                                name = "Hex3Cer " + chainArray[0] + ";2O/" + chainArray[1];
-                                shortName = "Hex3Cer " + totalChain + ":" + totalBond + ";2O";
+                                name = "Hex3Cer " + chainArray[0] + ";O2/" + chainArray[1];
+                                shortName = "Hex3Cer " + totalChain + ":" + totalBond + ";O2";
                                 if (adduct.IonMode == "Negative")
                                 {
                                     if (shortNameList.Contains(shortName)) { continue; }
@@ -336,26 +336,26 @@ namespace CompMs.MspGenerator
                                 CermideFragmentation.Hex3CerFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
                                 break;
                             case "HexCer_HS":
-                                name = "HexCer " + chainArray[0] + ";2O/" + chainArray[1] + ";O";
-                                shortName = "HexCer " + totalChain + ":" + totalBond + ";3O";
+                                name = "HexCer " + chainArray[0] + ";O2/" + chainArray[1] + ";O";
+                                shortName = "HexCer " + totalChain + ":" + totalBond + ";O3";
                                 CermideFragmentation.HexCerHFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
                                 break;
                             case "HexCer_HDS":
-                                name = "HexCer " + chainArray[0] + ";2O/" + chainArray[1] + ";O";
-                                shortName = "HexCer " + totalChain + ":" + totalBond + ";3O";
+                                name = "HexCer " + chainArray[0] + ";O2/" + chainArray[1] + ";O";
+                                shortName = "HexCer " + totalChain + ":" + totalBond + ";O3";
 
                                 CermideFragmentation.HexCerHFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
                                 break;
 
                             case "CerP":
-                                name = "CerP " + chainArray[0] + ";2O/" + chainArray[1];
-                                shortName = "CerP " + totalChain + ":" + totalBond + ";2O";
+                                name = "CerP " + chainArray[0] + ";O2/" + chainArray[1];
+                                shortName = "CerP " + totalChain + ":" + totalBond + ";O2";
                                 CermideFragmentation.CerPFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
                                 break;
 
                             case "GM3":
-                                name = "GM3 " + chainArray[0] + ";2O/" + chainArray[1];
-                                shortName = "GM3 " + totalChain + ":" + totalBond + ";2O";
+                                name = "GM3 " + chainArray[0] + ";O2/" + chainArray[1];
+                                shortName = "GM3 " + totalChain + ":" + totalBond + ";O2";
                                 if (adduct.IonMode == "Negative")
                                 {
                                     if (shortNameList.Contains(shortName)) { continue; }
@@ -366,8 +366,8 @@ namespace CompMs.MspGenerator
                                 break;
 
                             case "GD1a":
-                                name = lipidClass + " " + chainArray[0] + ";2O/" + chainArray[1];
-                                shortName = lipidClass + " " + totalChain + ":" + totalBond + ";2O";
+                                name = lipidClass + " " + chainArray[0] + ";O2/" + chainArray[1];
+                                shortName = lipidClass + " " + totalChain + ":" + totalBond + ";O2";
                                 if (adduct.IonMode == "Negative")
                                 {
                                     if (shortNameList.Contains(shortName)) { continue; }
@@ -377,8 +377,8 @@ namespace CompMs.MspGenerator
                                 CermideFragmentation.GD1aFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon, sphDouble, acylCarbon, acylDouble, acylOx);
                                 break;
                             case "GD1b":
-                                name = lipidClass + " " + chainArray[0] + ";2O/" + chainArray[1];
-                                shortName = lipidClass + " " + totalChain + ":" + totalBond + ";2O";
+                                name = lipidClass + " " + chainArray[0] + ";O2/" + chainArray[1];
+                                shortName = lipidClass + " " + totalChain + ":" + totalBond + ";O2";
                                 if (adduct.IonMode == "Negative")
                                 {
                                     if (shortNameList.Contains(shortName)) { continue; }
@@ -388,8 +388,8 @@ namespace CompMs.MspGenerator
                                 CermideFragmentation.GD1bFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon, sphDouble, acylCarbon, acylDouble, acylOx);
                                 break;
                             case "GD3":
-                                name = lipidClass + " " + chainArray[0] + ";2O/" + chainArray[1];
-                                shortName = lipidClass + " " + totalChain + ":" + totalBond + ";2O";
+                                name = lipidClass + " " + chainArray[0] + ";O2/" + chainArray[1];
+                                shortName = lipidClass + " " + totalChain + ":" + totalBond + ";O2";
                                 if (adduct.IonMode == "Negative")
                                 {
                                     if (shortNameList.Contains(shortName)) { continue; }
@@ -399,8 +399,8 @@ namespace CompMs.MspGenerator
                                 CermideFragmentation.GD3Fragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon, sphDouble, acylCarbon, acylDouble, acylOx);
                                 break;
                             case "GD2":
-                                name = lipidClass + " " + chainArray[0] + ";2O/" + chainArray[1];
-                                shortName = lipidClass + " " + totalChain + ":" + totalBond + ";2O";
+                                name = lipidClass + " " + chainArray[0] + ";O2/" + chainArray[1];
+                                shortName = lipidClass + " " + totalChain + ":" + totalBond + ";O2";
                                 if (adduct.IonMode == "Negative")
                                 {
                                     if (shortNameList.Contains(shortName)) { continue; }
@@ -411,8 +411,8 @@ namespace CompMs.MspGenerator
                                 break;
 
                             case "GM1":
-                                name = lipidClass + " " + chainArray[0] + ";2O/" + chainArray[1];
-                                shortName = lipidClass + " " + totalChain + ":" + totalBond + ";2O";
+                                name = lipidClass + " " + chainArray[0] + ";O2/" + chainArray[1];
+                                shortName = lipidClass + " " + totalChain + ":" + totalBond + ";O2";
                                 if (adduct.IonMode == "Negative")
                                 {
                                     if (shortNameList.Contains(shortName)) { continue; }
@@ -423,8 +423,8 @@ namespace CompMs.MspGenerator
                                 break;
 
                             case "GQ1b":
-                                name = lipidClass + " " + chainArray[0] + ";2O/" + chainArray[1];
-                                shortName = lipidClass + " " + totalChain + ":" + totalBond + ";2O";
+                                name = lipidClass + " " + chainArray[0] + ";O2/" + chainArray[1];
+                                shortName = lipidClass + " " + totalChain + ":" + totalBond + ";O2";
                                 if (adduct.IonMode == "Negative")
                                 {
                                     if (shortNameList.Contains(shortName)) { continue; }
@@ -435,8 +435,8 @@ namespace CompMs.MspGenerator
                                 break;
 
                             case "GT1b":
-                                name = lipidClass + " " + chainArray[0] + ";2O/" + chainArray[1];
-                                shortName = lipidClass + " " + totalChain + ":" + totalBond + ";2O";
+                                name = lipidClass + " " + chainArray[0] + ";O2/" + chainArray[1];
+                                shortName = lipidClass + " " + totalChain + ":" + totalBond + ";O2";
                                 if (adduct.IonMode == "Negative")
                                 {
                                     if (shortNameList.Contains(shortName)) { continue; }
@@ -446,8 +446,8 @@ namespace CompMs.MspGenerator
                                 CermideFragmentation.GT1bFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon, sphDouble, acylCarbon, acylDouble, acylOx);
                                 break;
                             case "NGcGM3":
-                                name = lipidClass + " " + chainArray[0] + ";2O/" + chainArray[1];
-                                shortName = lipidClass + " " + totalChain + ":" + totalBond + ";2O";
+                                name = lipidClass + " " + chainArray[0] + ";O2/" + chainArray[1];
+                                shortName = lipidClass + " " + totalChain + ":" + totalBond + ";O2";
                                 if (adduct.IonMode == "Negative")
                                 {
                                     if (shortNameList.Contains(shortName)) { continue; }
@@ -458,15 +458,15 @@ namespace CompMs.MspGenerator
                                 break;
 
                             case "MIPC":
-                                name = "MIPC " + chainArray[0] + ";3O/" + chainArray[1] + ";(2OH)";
-                                shortName = "MIPC " + totalChain + ":" + totalBond + ";4O";
+                                name = "MIPC " + chainArray[0] + ";O3/" + chainArray[1] + "(2OH)";
+                                shortName = "MIPC " + totalChain + ":" + totalBond + ";O4";
                                 CermideFragmentation.MipcFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon, sphDouble, acylCarbon, acylDouble, acylOx);
                                 break;
 
                             //conbination
                             case "SM":
-                                name = "SM " + chainArray[0] + ";2O/" + chainArray[1];
-                                shortName = "SM " + totalChain + ":" + totalBond + ";2O";
+                                name = "SM " + chainArray[0] + ";O2/" + chainArray[1];
+                                shortName = "SM " + totalChain + ":" + totalBond + ";O2";
                                 exportLipidClassName = "SM";
                                 if (adduct.AdductIonName == "[M+Na]+")
                                 {
@@ -477,8 +477,8 @@ namespace CompMs.MspGenerator
                                 CermideFragmentation.SmFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
                                 break;
                             case "SM+O":
-                                name = "SM " + chainArray[0] + ";3O/" + chainArray[1];
-                                shortName = "SM " + totalChain + ":" + totalBond + ";3O";
+                                name = "SM " + chainArray[0] + ";O3/" + chainArray[1];
+                                shortName = "SM " + totalChain + ":" + totalBond + ";O3";
                                 exportLipidClassName = "SM";
                                 if (shortNameList.Contains(shortName)) { continue; }
                                 shortNameList.Add(shortName);
@@ -498,8 +498,8 @@ namespace CompMs.MspGenerator
                                 CermideFragmentation.sladdOFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
                                 break;
                             case "SHexCer":
-                                name = "SHexCer " + chainArray[0] + ";2O/" + chainArray[1];
-                                shortName = "SHexCer " + totalChain + ":" + totalBond + ";2O";
+                                name = "SHexCer " + chainArray[0] + ";O2/" + chainArray[1];
+                                shortName = "SHexCer " + totalChain + ":" + totalBond + ";O2";
                                 exportLipidClassName = "SHexCer";
                                 if (adduct.IonMode == "Negative")
                                 {
@@ -510,8 +510,8 @@ namespace CompMs.MspGenerator
                                 CermideFragmentation.SHexCerFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
                                 break;
                             case "SHexCer+O":
-                                name = "SHexCer " + chainArray[0] + ";2O/" + chainArray[1] + ";O";
-                                shortName = "SHexCer " + totalChain + ":" + totalBond + ";3O";
+                                name = "SHexCer " + chainArray[0] + ";O2/" + chainArray[1] + ";O";
+                                shortName = "SHexCer " + totalChain + ":" + totalBond + ";O3";
                                 exportLipidClassName = "SHexCer";
                                 if (adduct.IonMode == "Negative")
                                 {
@@ -523,20 +523,20 @@ namespace CompMs.MspGenerator
                                 break;
 
                             case "PE_Cer_d":
-                                name = "PE-Cer " + chainArray[0] + ";2O/" + chainArray[1];
-                                shortName = "PE-Cer " + totalChain + ":" + totalBond + ";2O";
+                                name = "PE-Cer " + chainArray[0] + ";O2/" + chainArray[1];
+                                shortName = "PE-Cer " + totalChain + ":" + totalBond + ";O2";
                                 exportLipidClassName = "PE_Cer";
                                 CermideFragmentation.peCerdFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
                                 break;
                             case "PE_Cer_d+O":
-                                name = "PE-Cer " + chainArray[0] + ";2O/" + chainArray[1] + ";O";
-                                shortName = "PE-Cer " + totalChain + ":" + totalBond + ";3O";
+                                name = "PE-Cer " + chainArray[0] + ";O2/" + chainArray[1] + ";O";
+                                shortName = "PE-Cer " + totalChain + ":" + totalBond + ";O3";
                                 exportLipidClassName = "PE_Cer";
                                 CermideFragmentation.peCerdAddOFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
                                 break;
                             case "PI_Cer_d+O":
-                                name = "PI-Cer " + chainArray[0] + ";2O/" + chainArray[1] + ";O";
-                                shortName = "PI-Cer " + totalChain + ":" + totalBond + ";3O";
+                                name = "PI-Cer " + chainArray[0] + ";O2/" + chainArray[1] + ";O";
+                                shortName = "PI-Cer " + totalChain + ":" + totalBond + ";O3";
                                 exportLipidClassName = "PI_Cer";
                                 if (adduct.IonMode == "Positive")
                                 {
@@ -548,8 +548,8 @@ namespace CompMs.MspGenerator
                                 break;
 
                             case "PI_Cer_d":
-                                name = "PI-Cer " + chainArray[0] + ";2O/" + chainArray[1] ;
-                                shortName = "PI-Cer " + totalChain + ":" + totalBond + ";2O";
+                                name = "PI-Cer " + chainArray[0] + ";O2/" + chainArray[1] ;
+                                shortName = "PI-Cer " + totalChain + ":" + totalBond + ";O2";
                                 exportLipidClassName = "PI_Cer";
                                 if (adduct.IonMode == "Positive")
                                 {
@@ -697,9 +697,9 @@ namespace CompMs.MspGenerator
                                 //sphMass = sphMass + MassDictionary.OxygenMass;
 
                                 meta = Common.getMetaProperty(rawSmiles);
-                                name = "SM " + chainArray[0] + ";2O/" + chainArray[1] + "(FA " + chainArray[2]+")";
-                                subName = "SM "  + subChain + ":" + subBond + ";2O" + "(FA " + chainArray[2] + ")";
-                                shortName = "SM " + totalChain + ":" + (totalBond + 1) + ";3O";
+                                name = "SM " + chainArray[0] + ";O2/" + chainArray[1] + "(FA " + chainArray[2]+")";
+                                subName = "SM "  + subChain + ":" + subBond + ";O2" + "(FA " + chainArray[2] + ")";
+                                shortName = "SM " + totalChain + ":" + (totalBond + 1) + ";O3";
                                 // ASM cannot determine ceramide chain
                                 if (shortNameList.Contains(subName)) { continue; }
                                 shortNameList.Add(subName);
@@ -718,9 +718,9 @@ namespace CompMs.MspGenerator
 
                                 rawSmiles = headerSmiles + sphSmiles + "%20" + "." + acylSmiles + "%30" + "." + extraAcylSmiles + "%10";
                                 meta = Common.getMetaProperty(rawSmiles);
-                                name = "Cer " + chainArray[0] + ";2O/" + chainArray[1] + ";O(FA " + chainArray[2] + ")";
-                                subName = "Cer " + subChain + ":" + subBond + ";3O" + "(FA " + chainArray[2] + ")";
-                                shortName = "Cer " + totalChain + ":" + (totalBond + 1)+ ";4O";
+                                name = "Cer " + chainArray[0] + ";O2/" + chainArray[1] + ";O(FA " + chainArray[2] + ")";
+                                subName = "Cer " + subChain + ":" + subBond + ";O3" + "(FA " + chainArray[2] + ")";
+                                shortName = "Cer " + totalChain + ":" + (totalBond + 1)+ ";O4";
                                 CermideFragmentation.cerEodsFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon, sphDouble, acylCarbon, acylDouble, acylOx, extraAcylCarbon, extraAcylDouble, extraAcylOx);
 
                                 break;
@@ -734,10 +734,10 @@ namespace CompMs.MspGenerator
 
                                 rawSmiles = headerSmiles + sphSmiles + "%20" + "." + acylSmiles + "%30" + "." + extraAcylSmiles + "%10";
                                 meta = Common.getMetaProperty(rawSmiles);
-                                name = "Cer " + chainArray[0] + ";2O/" + chainArray[1] + ";O(FA " + chainArray[2] + ")";
-                                subName = "Cer " + subChain + ":" + subBond + ";3O" + "(FA " + chainArray[2] + ")";
-                                subName2 = "Cer " + chainArray[0] + ";2O/" + (acylCarbon + extraAcylCarbon) + ":" + (acylDouble + extraAcylDouble + 1) + ";2O";
-                                shortName = "Cer " + totalChain + ":" + (totalBond + 1) + ";4O";
+                                name = "Cer " + chainArray[0] + ";O2/" + chainArray[1] + ";O(FA " + chainArray[2] + ")";
+                                subName = "Cer " + subChain + ":" + subBond + ";O3" + "(FA " + chainArray[2] + ")";
+                                subName2 = "Cer " + chainArray[0] + ";O2/" + (acylCarbon + extraAcylCarbon) + ":" + (acylDouble + extraAcylDouble + 1) + ";O2";
+                                shortName = "Cer " + totalChain + ":" + (totalBond + 1) + ";O4";
                                 if (adduct.IonMode == "Positive")
                                 {
                                     if (shortNameList.Contains(subName2)) { continue; }
@@ -757,10 +757,10 @@ namespace CompMs.MspGenerator
                                 rawSmiles = headerSmiles + sphSmiles + "%20" + "." + acylSmiles + "%30" + "." + extraAcylSmiles + "%10";
 
                                 meta = Common.getMetaProperty(rawSmiles);
-                                name = "HexCer " + chainArray[0] + ";2O/" + chainArray[1] + ";O(FA " + chainArray[2] + ")";
-                                subName = "HexCer " + subChain + ":" + subBond + ";3O" + "(FA " + chainArray[2] + ")";
-                                subName2 = "HexCer " + chainArray[0] + ";2O/" + (acylCarbon + extraAcylCarbon) + ":" + (acylDouble + extraAcylDouble + 1) + ";2O";
-                                shortName = "HexCer " + totalChain + ":" + (totalBond + 1) + ";4O";
+                                name = "HexCer " + chainArray[0] + ";O2/" + chainArray[1] + ";O(FA " + chainArray[2] + ")";
+                                subName = "HexCer " + subChain + ":" + subBond + ";O3" + "(FA " + chainArray[2] + ")";
+                                subName2 = "HexCer " + chainArray[0] + ";O2/" + (acylCarbon + extraAcylCarbon) + ":" + (acylDouble + extraAcylDouble + 1) + ";O2";
+                                shortName = "HexCer " + totalChain + ":" + (totalBond + 1) + ";O4";
                                 if (adduct.IonMode == "Positive")
                                 {
                                     if (shortNameList.Contains(subName2)) { continue; }
@@ -788,9 +788,9 @@ namespace CompMs.MspGenerator
                                 rawSmiles = headerSmiles + sphSmiles + "%20" + "." + acylSmiles + "%30" + "." + extraAcylSmiles + "%10";
                                 meta = Common.getMetaProperty(rawSmiles);
 
-                                name = "Cer " + chainArray[0] + ";2O/" + chainArray[1] + ";(3OH)(FA " + chainArray[2] + ")";
-                                subName = "Cer " + subChain + ":" + subBond + ";3O" + "(FA " + chainArray[2] + ")";
-                                shortName = "Cer " + totalChain + ":" + (totalBond + 1) + ";4O";
+                                name = "Cer " + chainArray[0] + ";O2/" + chainArray[1] + "(3OH)(FA " + chainArray[2] + ")";
+                                subName = "Cer " + subChain + ":" + subBond + ";O3" + "(FA " + chainArray[2] + ")";
+                                shortName = "Cer " + totalChain + ":" + (totalBond + 1) + ";O4";
                                 CermideFragmentation.cerEbdsFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon, sphDouble, acylCarbon, acylDouble, acylOx, extraAcylCarbon, extraAcylDouble, extraAcylOx);
 
                                 break;
@@ -806,9 +806,9 @@ namespace CompMs.MspGenerator
                                 rawSmiles = headerSmiles + sphSmiles + "%20" + "." + acylSmiles + "%30" + "." + extraAcylSmiles + "%10";
                                 meta = Common.getMetaProperty(rawSmiles);
 
-                                name = "AHexCer (O-" + chainArray[2] + ")" + chainArray[0] + ";2O/" + chainArray[1] + ";O";
-                                subName = "Cer " + subChain + ":" + subBond + ";3O" + "(FA " + chainArray[2] + ")";
-                                shortName = "Cer " + totalChain + ":" + (totalBond + 1) + ";4O";
+                                name = "AHexCer (O-" + chainArray[2] + ")" + chainArray[0] + ";O2/" + chainArray[1] + ";O";
+                                subName = "Cer " + subChain + ":" + subBond + ";O3" + "(FA " + chainArray[2] + ")";
+                                shortName = "Cer " + totalChain + ":" + (totalBond + 1) + ";O4";
                                 CermideFragmentation.acylHexCerFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon, sphDouble, acylCarbon, acylDouble, acylOx, extraAcylCarbon, extraAcylDouble, extraAcylOx);
                                 break;
 
@@ -898,7 +898,7 @@ namespace CompMs.MspGenerator
                                 rawSmiles = headerSmiles + sphSmiles + "%20";
                                 meta = Common.getMetaProperty(rawSmiles);
                                 CermideFragmentation.sphingosineFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon, sphDouble);
-                                name = "SPB " + sphString + ";2O";
+                                name = "SPB " + sphString + ";O2";
                                 break;
 
                             case "DHSph":
@@ -907,7 +907,7 @@ namespace CompMs.MspGenerator
                                 rawSmiles = headerSmiles + sphSmiles + "%20";
                                 meta = Common.getMetaProperty(rawSmiles);
                                 CermideFragmentation.sphinganineFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon, sphDouble);
-                                name = "SPB " + sphString + ";2O";
+                                name = "SPB " + sphString + ";O2";
                                 break;
 
                             case "PhytoSph":
@@ -916,7 +916,7 @@ namespace CompMs.MspGenerator
                                 rawSmiles = headerSmiles + sphSmiles + "%20";
                                 meta = Common.getMetaProperty(rawSmiles);
                                 CermideFragmentation.phytosphingosineFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon, sphDouble);
-                                name = "SPB " + sphString + ";3O";
+                                name = "SPB " + sphString + ";O3";
                                 break;
 
                             default:

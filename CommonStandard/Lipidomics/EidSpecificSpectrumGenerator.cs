@@ -15,17 +15,20 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.HydrogenMass * 2,
             MassDiffDictionary.CarbonMass,
         }.Sum();
-        public static SpectrumPeak[] EidSpecificSpectrumGen(ILipid lipid, IChain chain, AdductIon adduct, double nlMass, int dbPosition, double intensity)
+        public static SpectrumPeak[] EidSpecificSpectrumGen(ILipid lipid, IChain chain, AdductIon adduct, double nlMass, double intensity)
         {
             var peaks = new List<SpectrumPeak>();
-            var acylChainLoss = lipid.Mass - chain.Mass - (nlMass - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * 2);
+            if (chain.GetType() == typeof(AcylChain))
+            {
+                nlMass = nlMass - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * 2;
+            }
+            var chainLoss = lipid.Mass - chain.Mass - nlMass;
             var diffs = new double[chain.CarbonCount];
+            var bondPositions = new List<int>();
             for (int i = 0; i < chain.CarbonCount; i++) // numbering from COOH. 18:2(9,12) -> 9 is 8 and 12 is 11 
             {
                 diffs[i] = CH2;
             }
-
-            var bondPositions = new List<int>();
             foreach (var bond in chain.DoubleBond.Bonds) // double bond 18:2(9,12) -> 9 is 9 and 12 is 12 
             {
                 diffs[bond.Position - 1] -= MassDiffDictionary.HydrogenMass;
@@ -36,22 +39,52 @@ namespace CompMs.Common.Lipidomics
             {
                 diffs[i] += diffs[i - 1];
             }
-            var adductMass = adduct.AdductIonName == "[M+NH4]+" ? MassDiffDictionary.ProtonMass : adduct.AdductIonAccurateMass;
-            var defaultMass = acylChainLoss - MassDiffDictionary.HydrogenMass + adductMass;
-            var biginMass = acylChainLoss + diffs[dbPosition - 2] - MassDiffDictionary.HydrogenMass + adductMass;
-            var diffMass = 0.0;
 
-            double[] intArray = { 0.5, 0.5, 0.7, 1, 0.7, 0.5 };
-            for (int i = dbPosition - 2; i < Math.Min(diffs.Length, dbPosition + 3); i++)
+            if (chain.DoubleBond.Count < 3)
             {
-                if (i <= 0 || i + 2 >= diffs.Length) continue;
-                var n = i - (dbPosition - 2);
-                //diffMass = defaultMass + diffs[dbPosition - 2] + (diffs[i + 2] - diffs[dbPosition]); //?
-                diffMass = i < dbPosition ? defaultMass + diffs[i] - MassDiffDictionary.HydrogenMass : i > dbPosition ? defaultMass + diffs[i] + MassDiffDictionary.HydrogenMass : defaultMass + diffs[i];
-                peaks.Add(new SpectrumPeak(diffMass, intensity * intArray[n], $"{chain} db{dbPosition} EID db{i - dbPosition}") { SpectrumComment = SpectrumComment.acylchain });
-                //peaks.Add(new SpectrumPeak(biginMass + CH2 * n, intensity * intArray[n], $"{chain} db{dbPosition} EID db{i - dbPosition}") { SpectrumComment = SpectrumComment.acylchain });
-            }
+                foreach (var dbPosition in bondPositions)
+                {
+                    if (dbPosition == 1) continue;
+                    double[] intArray = { 0.5, 0.5, 0.5, 0.7, 1, 0.7, 0.5 };
 
+                    for (int i = (dbPosition - 1) - 2; i < Math.Min(diffs.Length, (dbPosition - 1) + 5); i++)
+                    {
+                        if (i <= 0) continue;
+                        var n = i - ((dbPosition - 1) - 2);
+                        var diffMass = i == (dbPosition - 1) ? diffs[i] : i >= (dbPosition - 1) ? diffs[i] + MassDiffDictionary.HydrogenMass : diffs[i] - MassDiffDictionary.HydrogenMass;
+                        peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffMass), intensity * intArray[n], $"{chain} db{dbPosition} EID specific(c{i + 1})") { SpectrumComment = SpectrumComment.acylchain });
+                    }
+                }
+            }
+            else if (chain.DoubleBond.Count >= 3 && bondPositions.Contains(bondPositions.Max() - 3) && bondPositions.Contains(bondPositions.Max() - 6))
+            {
+                var dbPosition = bondPositions.Max() - 6;
+                if (bondPositions.Count == 4)
+                {
+                    var spectrum = new List<SpectrumPeak>{
+                        new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1 - 2] + MassDiffDictionary.HydrogenMass), intensity * 0.5, $"{chain} EID specific") { SpectrumComment = SpectrumComment.acylchain } ,
+                        new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1 - 1]) , intensity * 0.5, $"{chain} EID specific") { SpectrumComment = SpectrumComment.acylchain } ,
+                        new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1]), intensity * 0.75, $"{chain} EID specific") { SpectrumComment = SpectrumComment.acylchain } ,
+                        new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1 + 1]) + MassDiffDictionary.HydrogenMass, intensity * 1, $"{chain} EID specific") { SpectrumComment = SpectrumComment.acylchain } ,
+                        new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1 + 2]) + MassDiffDictionary.HydrogenMass, intensity * 0.5, $"{chain} EID specific") { SpectrumComment = SpectrumComment.acylchain } ,
+                    };
+                    peaks.AddRange(spectrum);
+                }
+                else
+                {
+                    var spectrum = new List<SpectrumPeak>{
+                        new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1]), intensity * 0.75, $"{chain} EID specific") { SpectrumComment = SpectrumComment.acylchain } ,
+                        new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1 + 1] + MassDiffDictionary.HydrogenMass), intensity * 1, $"{chain} EID specific") { SpectrumComment = SpectrumComment.acylchain } ,
+                    };
+                    peaks.AddRange(spectrum);
+                }
+            }
+            if (bondPositions.Contains(5) && bondPositions.Contains(8) && bondPositions.Contains(11))
+            {
+                peaks.Add(
+                    new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[2] - MassDiffDictionary.HydrogenMass), intensity * 0.5, $"{chain} C3 specific") { SpectrumComment = SpectrumComment.acylchain }
+                    );
+            }
             return peaks.ToArray();
         }
     }

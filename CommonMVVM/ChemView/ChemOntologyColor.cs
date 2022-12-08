@@ -2626,6 +2626,7 @@ namespace CompMs.CommonMVVM.ChemView {
             { "FA", Color.FromArgb(180, 139, 69, 19) },
             { "OxFA", Color.FromArgb(180, 89, 39, 49) },
             { "FAHFA", Color.FromArgb(180, 148, 0, 211) },
+            { "DMEDFAHFA", Color.FromArgb(180, 148, 0, 211) },
             { "LDGTS", Color.FromArgb(180, 255, 0, 0) },
             { "LPC", Color.FromArgb(180, 50, 205, 50) },
             { "LPE", Color.FromArgb(180, 128, 0, 128) },

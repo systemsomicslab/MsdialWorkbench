@@ -172,6 +172,9 @@ namespace CompMs.MspGenerator
             {"NAGly_FAHFA", "OC(=O)CN%20."},
             {"NAOrn_FAHFA", "NCCCC(N%20)C(O)=O."},
 
+            {"FAHFA-DMED", "O%10."},
+
+
             // single acyl chain
             {"CAR", "C[N+](C)(C)CC(CC([O-])=O)O%10."},  //  old SMILES {"CAR", "C[N+](C)(C)CC(CC(O)=O)O%10."},  20200713 adduct change [M+] -> [M+H]+
             {"NAE", "N%10CCO."},
