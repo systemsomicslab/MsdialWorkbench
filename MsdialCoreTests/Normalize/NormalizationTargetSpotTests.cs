@@ -95,7 +95,7 @@ namespace CompMs.MsdialCore.Normalize.Tests
             };
             var target = new NormalizationTargetSpot(spot);
             target.FillNormalizeProperties();
-            Assert.AreEqual(IonAbundanceUnit.Height, spot.IonAbundanceUnit);
+            Assert.AreEqual(IonAbundanceUnit.Intensity, spot.IonAbundanceUnit);
             foreach (var peak in spot.AlignedPeakProperties) {
                 Assert.AreEqual(peak.PeakHeightTop, peak.NormalizedPeakHeight);
                 Assert.AreEqual(peak.PeakAreaAboveBaseline, peak.NormalizedPeakAreaAboveBaseline);
