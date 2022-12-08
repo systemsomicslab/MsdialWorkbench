@@ -43,7 +43,7 @@ namespace CompMs.MsdialImmsCore.DataObj.Tests
                 }
             );
 
-            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].SerializableAnnotator, dbs.MetabolomicsDataBases[0].DataBase);
+            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].SerializableAnnotator);
 
             var memory = new MemoryStream();
             using (var manager = ZipStreamManager.OpenCreate(memory)) {
@@ -84,13 +84,6 @@ namespace CompMs.MsdialImmsCore.DataObj.Tests
                 Assert.IsTrue(actual.IupacDatabase.Id2AtomElementProperties.ContainsKey(6));
                 Assert.AreEqual(storage.IupacDatabase.Id2AtomElementProperties[6].Count, actual.IupacDatabase.Id2AtomElementProperties[6].Count);
                 Assert.AreEqual(storage.IupacDatabase.Id2AtomElementProperties[6][0].ElementName, actual.IupacDatabase.Id2AtomElementProperties[6][0].ElementName);
-
-                Assert.AreEqual(storage.DataBaseMapper.KeyToAnnotator.Count, actual.DataBaseMapper.KeyToAnnotator.Count);
-                foreach (var key in storage.DataBaseMapper.KeyToAnnotator.Keys) {
-                    Assert.AreEqual(storage.DataBaseMapper.KeyToAnnotator[key].AnnotatorID, actual.DataBaseMapper.KeyToAnnotator[key].AnnotatorID);
-                    Assert.AreEqual(storage.DataBaseMapper.KeyToAnnotator[key].Annotator.GetType().FullName, actual.DataBaseMapper.KeyToAnnotator[key].Annotator.GetType().FullName);
-                    Assert.AreEqual(storage.DataBaseMapper.KeyToAnnotator[key].Annotator.Key, actual.DataBaseMapper.KeyToAnnotator[key].Annotator.Key);
-                }
 
                 Assert.AreEqual(storage.DataBases.MetabolomicsDataBases.Count, actual.DataBases.MetabolomicsDataBases.Count);
                 Assert.AreEqual(storage.DataBases.MetabolomicsDataBases[0].DataBaseID, actual.DataBases.MetabolomicsDataBases[0].DataBaseID);

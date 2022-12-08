@@ -54,7 +54,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
                     new MetabolomicsAnnotatorParameterPair(new DimsMspAnnotator(db, searchParameter, TargetOmics.Metabolomics, "DummyAnnotator", 8), searchParameter) 
                 }
             );
-            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].SerializableAnnotator, dbs.MetabolomicsDataBases[0].DataBase);
+            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].SerializableAnnotator);
 
             var memory = new MemoryStream();
             var serializer = new MsdialIntegrateSerializer();
@@ -109,7 +109,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
                 }
             );
 
-            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].SerializableAnnotator, dbs.MetabolomicsDataBases[0].DataBase);
+            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].SerializableAnnotator);
 
             var memory = new MemoryStream();
             var serializer = new MsdialIntegrateSerializer();
@@ -158,7 +158,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
                     new MetabolomicsAnnotatorParameterPair(new ImmsMspAnnotator(db, searchParameter, TargetOmics.Metabolomics, "DummyAnnotator", 8), searchParameter) 
                 }
             );
-            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].SerializableAnnotator, dbs.MetabolomicsDataBases[0].DataBase);
+            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].SerializableAnnotator);
 
             var memory = new MemoryStream();
             var serializer = new MsdialIntegrateSerializer();
@@ -211,7 +211,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
                 }
             );
 
-            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].SerializableAnnotator, dbs.MetabolomicsDataBases[0].DataBase);
+            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].SerializableAnnotator);
 
             var memory = new MemoryStream();
             var serializer = new MsdialIntegrateSerializer();
@@ -262,7 +262,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
                 }
             );
 
-            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].SerializableAnnotator, dbs.MetabolomicsDataBases[0].DataBase);
+            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].SerializableAnnotator);
 
             var memory = new MemoryStream();
             var serializer = new MsdialIntegrateSerializer();
@@ -329,13 +329,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
         }
 
         private static void AreDataBaseMapperEqual(DataBaseMapper expected, DataBaseMapper actual) {
-            Assert.AreEqual(expected.KeyToAnnotator.Count, actual.KeyToAnnotator.Count);
-            CollectionAssert.AreEquivalent(expected.KeyToAnnotator.Keys, actual.KeyToAnnotator.Keys);
-            foreach (var key in expected.KeyToAnnotator.Keys) {
-                Assert.AreEqual(expected.KeyToAnnotator[key].AnnotatorID, actual.KeyToAnnotator[key].AnnotatorID);
-                Assert.AreEqual(expected.KeyToAnnotator[key].Annotator.GetType().FullName, actual.KeyToAnnotator[key].Annotator.GetType().FullName);
-                Assert.AreEqual(expected.KeyToAnnotator[key].Annotator.Key, actual.KeyToAnnotator[key].Annotator.Key);
-            }
+
         }
 
         private static void AreDataBaseStorageEqual(DataBaseStorage expected, DataBaseStorage actual) {

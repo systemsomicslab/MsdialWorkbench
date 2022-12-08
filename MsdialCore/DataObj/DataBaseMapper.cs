@@ -1,25 +1,16 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Parameter;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using MessagePack;
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace CompMs.MsdialCore.DataObj
 {
     [MessagePackObject]
     public sealed class DataBaseMapper : IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IMatchResultRefer<PeptideMsReference, MsScanMatchResult> {
-        public DataBaseMapper() {
-            MoleculeAnnotators = new List<ISerializableAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>>();
-            PeptideAnnotators = new List<ISerializableAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult>>();
-
-            keyToPeptideAnnotator = new Dictionary<string, IAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult>>();
-
-            keyToRefers = new Dictionary<string, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>>();
-        }
+        private readonly Dictionary<string, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>> _keyToRefers = new Dictionary<string, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>>();
+        private readonly Dictionary<string, IMatchResultRefer<PeptideMsReference, MsScanMatchResult>> _keyToPeptideRefers = new Dictionary<string, IMatchResultRefer<PeptideMsReference, MsScanMatchResult>>();
 
         [IgnoreMember]
         string IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>.Key { get; } = string.Empty;
@@ -33,7 +24,7 @@ namespace CompMs.MsdialCore.DataObj
             if (referId is null) {
                 return null;
             }
-            if (keyToRefers.TryGetValue(referId, out var refer)) {
+            if (_keyToRefers.TryGetValue(referId, out var refer)) {
                 return refer;
             }
             return null;
@@ -47,8 +38,8 @@ namespace CompMs.MsdialCore.DataObj
             if (referId is null) {
                 return null;
             }
-            if (keyToPeptideAnnotator.TryGetValue(referId, out var annotatorContainer)) {
-                return annotatorContainer.Annotator;
+            if (_keyToPeptideRefers.TryGetValue(referId, out var refer)) {
+                return refer;
             }
             return null;
         }
@@ -57,44 +48,12 @@ namespace CompMs.MsdialCore.DataObj
             return FindPeptideMsReferByAnnotatorID(result?.AnnotatorID)?.Refer(result);
         }
 
-        [IgnoreMember]
-        [Obsolete("DataBaseMapper will no longer hold Annotator in the future.")]
-        // Should not use setter.
-        public List<ISerializableAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>> MoleculeAnnotators { get; set; }
-        [IgnoreMember]
-        [Obsolete("DataBaseMapper will no longer hold Annotator in the future.")]
-        public List<ISerializableAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult>> PeptideAnnotators { get; set; }
-
-        private readonly Dictionary<string, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>> keyToRefers;
-
-        [IgnoreMember]
-        public ReadOnlyDictionary<string, IAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>> KeyToAnnotator
-            => new ReadOnlyDictionary<string, IAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>>(keyToAnnotator);
-        private readonly Dictionary<string, IAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>> keyToAnnotator = new Dictionary<string, IAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>>();
-
-        private readonly Dictionary<string, IAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult>> keyToPeptideAnnotator;
-
-        public void Add(ISerializableAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> annotatorContainer) {
-            keyToAnnotator[annotatorContainer.AnnotatorID] = annotatorContainer;
-            MoleculeAnnotators.Add(annotatorContainer);
-            keyToRefers[annotatorContainer.AnnotatorID] = annotatorContainer.Annotator;
-        }
-
-        public void Add(ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> annotator, MoleculeDataBase database) {
-            Add(new DatabaseAnnotatorContainer(annotator, database, new MsRefSearchParameterBase()));
-        }
-
         public void Add(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
-            keyToRefers[refer.Key] = refer;
+            _keyToRefers[refer.Key] = refer;
         }
 
-        public void Add(ISerializableAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult> annotatorContainer) {
-            keyToPeptideAnnotator[annotatorContainer.AnnotatorID] = annotatorContainer;
-            PeptideAnnotators.Add(annotatorContainer);
-        }
-
-        public void Add(ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> annotator, ShotgunProteomicsDB database) {
-            Add(new ShotgunProteomicsDBAnnotatorContainer(annotator, database, new Parameter.ProteomicsParameter(), new MsRefSearchParameterBase()));
+        public void Add(IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer) {
+            _keyToPeptideRefers[refer.Key] = refer;
         }
     }
 }

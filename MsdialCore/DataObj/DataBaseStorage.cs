@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Components;
+﻿using Accord.Diagnostics;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.MessagePack;
 using CompMs.Common.Proteomics.DataObj;
@@ -128,16 +129,15 @@ namespace CompMs.MsdialCore.DataObj
             return result;
         }
 
-        public DataBaseMapper CreateDataBaseMapper() {
-            var mapper = new DataBaseMapper();
+        public void SetDataBaseMapper(DataBaseMapper mapper) {
             foreach (var db in MetabolomicsDataBases) {
                 foreach (var pair in db.Pairs) {
-                    mapper.Add(pair.SerializableAnnotator, db.DataBase);
+                    mapper.Add(pair.SerializableAnnotator);
                 }
             }
             foreach (var db in ProteomicsDataBases) {
                 foreach (var pair in db.Pairs) {
-                    mapper.Add(pair.SerializableAnnotator, db.DataBase);
+                    mapper.Add(pair.SerializableAnnotator);
                 }
             }
             foreach (var db in EadLipidomicsDatabases) {
@@ -145,7 +145,11 @@ namespace CompMs.MsdialCore.DataObj
                     mapper.Add(pair.SerializableAnnotator);
                 }
             }
+        }
 
+        public DataBaseMapper CreateDataBaseMapper() {
+            var mapper = new DataBaseMapper();
+            SetDataBaseMapper(mapper);
             return mapper;
         }
 
