@@ -37,7 +37,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new MSDecResult { },
             };
             var annotator = new MockAnnotator("Annotator");
-            var process = new StandardAnnotationProcess(new MockFactory(annotator.Id), annotator, annotator);
+            var process = new StandardAnnotationProcess(new MockFactory(annotator.Id, annotator), annotator, annotator);
             process.RunAnnotation(chromPeaks, msdecResults, new MockProvider(), 1);
 
             Assert.AreEqual(annotator.Dummy, chromPeaks[0].MatchResults.Representative);
@@ -64,7 +64,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new MSDecResult { },
             };
             var annotator = new MockAnnotator("Annotator");
-            var process = new StandardAnnotationProcess(new MockFactory(annotator.Id), annotator, annotator);
+            var process = new StandardAnnotationProcess(new MockFactory(annotator.Id, annotator), annotator, annotator);
             process.RunAnnotation(chromPeaks, msdecResults, new MockProvider(), 4);
 
             Assert.AreEqual(annotator.Dummy, chromPeaks[0].MatchResults.Representative);
@@ -91,7 +91,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new MSDecResult { },
             };
             var annotator = new MockAnnotator("Annotator");
-            var process = new StandardAnnotationProcess(new MockFactory(annotator.Id), annotator, annotator);
+            var process = new StandardAnnotationProcess(new MockFactory(annotator.Id, annotator), annotator, annotator);
             await process.RunAnnotationAsync(chromPeaks, msdecResults, new MockProvider(), 1);
 
             Assert.AreEqual(annotator.Dummy, chromPeaks[0].MatchResults.Representative);
@@ -118,7 +118,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new MSDecResult { },
             };
             var annotator = new MockAnnotator("Annotator");
-            var process = new StandardAnnotationProcess(new MockFactory(annotator.Id), annotator, annotator);
+            var process = new StandardAnnotationProcess(new MockFactory(annotator.Id, annotator), annotator, annotator);
             await process.RunAnnotationAsync(chromPeaks, msdecResults, new MockProvider(), 4);
 
             Assert.AreEqual(annotator.Dummy, chromPeaks[0].MatchResults.Representative);
@@ -156,6 +156,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
 
         class MockQuery : IAnnotationQuery<MsScanMatchResult>
         {
+            private readonly MockAnnotator _annotator;
+
+            public MockQuery(MockAnnotator annotator) {
+                _annotator = annotator;
+            }
+
             public IMSIonProperty Property => throw new NotImplementedException();
 
             public IMSScanProperty Scan => throw new NotImplementedException();
@@ -169,20 +175,23 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             public MsRefSearchParameterBase Parameter => throw new NotImplementedException();
 
             public IEnumerable<MsScanMatchResult> FindCandidates() {
-                throw new NotImplementedException();
+                return _annotator.FindCandidates(this);
             }
         }
 
         class MockFactory : IAnnotationQueryFactory<MsScanMatchResult>
         {
+            private readonly MockAnnotator _annotator;
+
             public string AnnotatorId { get; }
 
-            public MockFactory(string id) {
+            public MockFactory(string id, MockAnnotator annotator) {
                 AnnotatorId = id;
+                _annotator = annotator;
             }
 
             public IAnnotationQuery<MsScanMatchResult> Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter) {
-                return new MockQuery();
+                return new MockQuery(_annotator);
             }
 
             MsRefSearchParameterBase IAnnotationQueryFactory<MsScanMatchResult>.PrepareParameter() {
