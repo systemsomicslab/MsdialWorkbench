@@ -196,15 +196,8 @@
                                 SelectedItem="{Binding SelectedViewModel}"
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                 SelectionChanged="TabControl_PairwisePlotViewer_SelectionChanged"
+                                ItemContainerStyle="{StaticResource MainWindowTabItemStyle}"
                                 Grid.Row="2">
-                        <TabControl.ItemContainerStyle>
-                            <Style TargetType="TabItem">
-                                <Setter Property="Height" Value="24"/>
-                                <Setter Property="Background" Value="{StaticResource MainThemeColor}"/>
-                                <Setter Property="VerticalContentAlignment" Value="Stretch"/>
-                                <Setter Property="Padding" Value="8,0"/>
-                            </Style>
-                        </TabControl.ItemContainerStyle>
                         <TabControl.ItemTemplate>
                             <DataTemplate>
                                 <DataTemplate.Resources>
@@ -341,6 +334,7 @@
                                     DataContext="{Binding SelectedViewModel.Value}"
                                     ItemsSource="{Binding PeakDetailViewModels}"
                                     SelectedIndex="0"
+                                    ItemContainerStyle="{StaticResource MainWindowTabItemStyle}"
                                     Grid.Row="0">
                             <TabControl.Style>
                                 <Style TargetType="TabControl">
@@ -351,11 +345,6 @@
                                     </Style.Triggers>
                                 </Style>
                             </TabControl.Style>
-                            <TabControl.Resources>
-                                <Style TargetType="TabItem">
-                                    <Setter Property="Background" Value="{StaticResource MainThemeColor}"/>
-                                </Style>
-                            </TabControl.Resources>
                             <TabControl.ContentTemplate>
                                 <DataTemplate>
                                     <DataTemplate.Resources>
