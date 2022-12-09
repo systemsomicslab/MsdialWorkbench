@@ -69,11 +69,15 @@ namespace CompMs.MsdialCore.DataObj {
         [IgnoreMember]
         public float Score { get; set; }
         public float GetScore() {
+            if (MatchedPeptideResults.IsEmptyOrNull()) return 0;
             return MatchedPeptideResults.Select(n => n.PEPScore).Aggregate((x, y) => x * y);
         }
         [IgnoreMember]
         public int MinimumValueOfSharedPeptidesInSearchedProteins { get; set; }
-        public int GetMinimumValueOfSharedPeptidesInSearchedProteins() { return MatchedPeptideResults.Min(n => n.Peptide.SamePeptideNumberInSearchedProteins); }
+        public int GetMinimumValueOfSharedPeptidesInSearchedProteins() {
+            if (MatchedPeptideResults.IsEmptyOrNull()) return 0;
+            return MatchedPeptideResults.Min(n => n.Peptide.SamePeptideNumberInSearchedProteins);
+        }
         [IgnoreMember]
         public List<PeptideMsResult> UniquePeptides { get; set; }
         public List<PeptideMsResult> GetUniquePeptides() {

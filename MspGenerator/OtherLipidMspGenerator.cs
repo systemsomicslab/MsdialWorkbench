@@ -433,16 +433,16 @@ namespace CompMs.MspGenerator
                         var extraChainSmiles = extraChain[3];
 
                         var name = "";
-                        var shortName = "DMEDFAHFA " + " " + totalChain + ":" + totalBond + ";O";
+                        var shortName = "DMEDFAHFA" + " " + totalChain + ":" + totalBond + ";O";
 
-                        var exportLipidClassName = "DMEDFAHFA ";
+                        var exportLipidClassName = "DMEDFAHFA";
                         var rawSmiles = extraChainSmiles + "%10." + baseChainSmiles;
                         var meta = Common.getMetaProperty(rawSmiles);
 
                         // fragment
                         var fragmentList = new List<string>();
                         OtherLipidFragmentation.fahfaDmedFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, baseChainCarbon, baseChainDouble, extraChainCarbon, extraChainDouble, baseChainOxposition);
-                        name = "DMEDFAHFA " + " " + chainArray[1] + "/" + baseChainString;
+                        name = "DMEDFAHFA" + " " + chainArray[1] + "/" + baseChainString;
                         if (chainNameList.Contains(name))
                         {
                             continue;

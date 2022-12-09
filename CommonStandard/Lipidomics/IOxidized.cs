@@ -39,8 +39,8 @@ namespace CompMs.Common.Lipidomics
                 return "";
             }
             else if (UnDecidedCount == 0) {
-                // return ";" + string.Join(",", Oxidises.Select(o => o.ToString() + "OH")); // fix 20221201 MT
-                return "(" + string.Join(",", Oxidises.Select(o => o.ToString() + "OH")) + ")";
+                // return ";" + string.Join(",", Oxidises.Select(o => o.ToString() + "OH")); 
+                return "(" + string.Join(",", Oxidises.Select(o => o.ToString() + "OH")) + ")"; // fix 20221201 MT
             }
             else if (Count == 1) {
                 return ";O";
