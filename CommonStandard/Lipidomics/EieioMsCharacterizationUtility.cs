@@ -6,9 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CompMs.Common.Lipidomics {
+namespace CompMs.Common.Lipidomics
+{
 
-    public class LipidMsCharacterizationResult {
+    public class LipidMsCharacterizationResult
+    {
         public int ClassIonsDetected { get; set; }
         public int ChainIonsDetected { get; set; }
         public int PositionIonsDetected { get; set; }
@@ -26,37 +28,45 @@ namespace CompMs.Common.Lipidomics {
         public double TotalScore { get; set; }
     }
 
-    public static class StandardMsCharacterizationUtility {
+    public static class StandardMsCharacterizationUtility
+    {
 
         public static (ILipid, double[]) GetDefaultCharacterizationResultForAlkylAcylGlycerols(
-           ILipid molecule, LipidMsCharacterizationResult result) {
+           ILipid molecule, LipidMsCharacterizationResult result)
+        {
 
             var chains = molecule.Chains;
             var score = result.TotalScore;
             var counter = result.TotalMatchedIonCount;
 
-            if (!result.IsChainIonsExisted) { // chain existed expected: PC O-36:2
+            if (!result.IsChainIonsExisted)
+            { // chain existed expected: PC O-36:2
                 var obj = new Lipid(molecule.LipidClass, molecule.Mass, new TotalChain(chains.CarbonCount, chains.DoubleBondCount, chains.OxidizedCount, 1, 1, 0));
                 return (obj, new double[2] { score, counter });
             }
-            else { // chain existed expected: PC O-18:0_18:2
+            else
+            { // chain existed expected: PC O-18:0_18:2
                 var deepChains = (SeparatedChains)chains;
-                if (result.IsPositionIonsExisted && result.IsDoubleBondIonsExisted) { // chain existed expected: PC O-18:0/18:2(9,12)
+                if (result.IsPositionIonsExisted && result.IsDoubleBondIonsExisted)
+                { // chain existed expected: PC O-18:0/18:2(9,12)
                     return (molecule, new double[2] { score, counter });
                 }
-                else if (result.IsPositionIonsExisted) { // chain existed expected: PC O-18:0/18:2
+                else if (result.IsPositionIonsExisted)
+                { // chain existed expected: PC O-18:0/18:2
                     var chain1 = deepChains.Chains[0].Accept(ChainShorthandNotation.Default, new ChainDecomposer<IChain>());
                     var chain2 = deepChains.Chains[1].Accept(ChainShorthandNotation.Default, new ChainDecomposer<IChain>());
                     var obj = new Lipid(molecule.LipidClass, molecule.Mass, new PositionLevelChains(chain1, chain2));
                     return (obj, new double[2] { score, counter });
                 }
-                else if (result.IsDoubleBondIonsExisted) { // chain existed expected: PC O-18:0_18:2(9,12)
+                else if (result.IsDoubleBondIonsExisted)
+                { // chain existed expected: PC O-18:0_18:2(9,12)
                     var alkyl1 = deepChains.Chains[0];
                     var acyl2 = deepChains.Chains[1];
                     var obj = new Lipid(molecule.LipidClass, molecule.Mass, new MolecularSpeciesLevelChains(alkyl1, acyl2));
                     return (obj, new double[2] { score, counter });
                 }
-                else { // chain existed expected: PC O-18:0_18:2
+                else
+                { // chain existed expected: PC O-18:0_18:2
                     var chain1 = deepChains.Chains[0].Accept(ChainShorthandNotation.Default, new ChainDecomposer<IChain>());
                     var chain2 = deepChains.Chains[1].Accept(ChainShorthandNotation.Default, new ChainDecomposer<IChain>());
                     var obj = new Lipid(molecule.LipidClass, molecule.Mass, new MolecularSpeciesLevelChains(chain1, chain2));
@@ -66,17 +76,20 @@ namespace CompMs.Common.Lipidomics {
         }
 
         public static (ILipid, double[]) GetDefaultCharacterizationResultForCeramides(
-            ILipid molecule, LipidMsCharacterizationResult result) {
+            ILipid molecule, LipidMsCharacterizationResult result)
+        {
 
             var chains = molecule.Chains;
             var score = result.TotalScore;
             var counter = result.TotalMatchedIonCount;
             var obj = new Lipid(molecule.LipidClass, molecule.Mass, chains);
 
-            if (!result.IsChainIonsExisted) { // chain cannot determine
+            if (!result.IsChainIonsExisted)
+            { // chain cannot determine
                 obj = new Lipid(molecule.LipidClass, molecule.Mass, new TotalChain(chains.CarbonCount, chains.DoubleBondCount, chains.OxidizedCount, 1, 0, 1));
             }
-            else if (!result.IsDoubleBondIonsExisted) { // chain existed expected: SM 18:1;2O/18:1
+            else if (!result.IsDoubleBondIonsExisted)
+            { // chain existed expected: SM 18:1;2O/18:1
                 var deepChains = (SeparatedChains)chains;
                 var sphingo = deepChains.Chains[0];
                 // need to consider (MT)
@@ -88,7 +101,7 @@ namespace CompMs.Common.Lipidomics {
             }
             return (obj, new double[2] { score, counter });
 
-            
+
             //if (!result.IsChainIonsExisted) { // chain existed expected: SM 18:1(4);2O/18:1(9)
             //    var obj = new Lipid(molecule.LipidClass, molecule.Mass, new TotalChain(chains.CarbonCount, chains.DoubleBondCount, chains.OxidizedCount, 1, 0, 1));
             //    return (obj, new double[2] { score, counter });
@@ -130,21 +143,26 @@ namespace CompMs.Common.Lipidomics {
 
 
         public static (ILipid, double[]) GetDefaultCharacterizationResultForGlycerophospholipid(
-            ILipid molecule, LipidMsCharacterizationResult result) {
+            ILipid molecule, LipidMsCharacterizationResult result)
+        {
             var chains = molecule.Chains;
             var score = result.TotalScore;
             var counter = result.TotalMatchedIonCount;
 
-            if (!result.IsChainIonsExisted) { // chain existed expected: PC 36:2
+            if (!result.IsChainIonsExisted)
+            { // chain existed expected: PC 36:2
                 var obj = new Lipid(molecule.LipidClass, molecule.Mass, new TotalChain(chains.CarbonCount, chains.DoubleBondCount, chains.OxidizedCount, 2, 0, 0));
                 return (obj, new double[2] { score, counter });
             }
-            else { // chain existed expected: PC 18:0_18:2
+            else
+            { // chain existed expected: PC 18:0_18:2
                 var deepChains = (SeparatedChains)chains;
-                if (result.IsPositionIonsExisted && result.IsDoubleBondIonsExisted) { // chain existed expected: PC 18:0/18:2(9,12)
+                if (result.IsPositionIonsExisted && result.IsDoubleBondIonsExisted)
+                { // chain existed expected: PC 18:0/18:2(9,12)
                     return (molecule, new double[2] { score, counter });
                 }
-                else if (result.IsPositionIonsExisted) { // chain existed expected: PC 18:0/18:2
+                else if (result.IsPositionIonsExisted)
+                { // chain existed expected: PC 18:0/18:2
                     var acyl1 = new AcylChain(deepChains.Chains[0].CarbonCount,
                         new DoubleBond(deepChains.Chains[0].DoubleBondCount),
                         new Oxidized(deepChains.Chains[0].OxidizedCount));
@@ -154,13 +172,15 @@ namespace CompMs.Common.Lipidomics {
                     var obj = new Lipid(molecule.LipidClass, molecule.Mass, new PositionLevelChains(acyl1, acyl2));
                     return (obj, new double[2] { score, counter });
                 }
-                else if (result.IsDoubleBondIonsExisted) { // chain existed expected: PC 18:0_18:2(9,12)
+                else if (result.IsDoubleBondIonsExisted)
+                { // chain existed expected: PC 18:0_18:2(9,12)
                     var acyl1 = deepChains.Chains[0];
                     var acyl2 = deepChains.Chains[1];
                     var obj = new Lipid(molecule.LipidClass, molecule.Mass, new MolecularSpeciesLevelChains(acyl1, acyl2));
                     return (obj, new double[2] { score, counter });
                 }
-                else { // chain existed expected: PC 18:0_18:2
+                else
+                { // chain existed expected: PC 18:0_18:2
                     var acyl1 = new AcylChain(deepChains.Chains[0].CarbonCount,
                         new DoubleBond(deepChains.Chains[0].DoubleBondCount),
                         new Oxidized(deepChains.Chains[0].OxidizedCount));
@@ -174,22 +194,27 @@ namespace CompMs.Common.Lipidomics {
         }
 
         public static (ILipid, double[]) GetDefaultCharacterizationResultForTriacylGlycerols(
-            ILipid molecule, LipidMsCharacterizationResult result) {
+            ILipid molecule, LipidMsCharacterizationResult result)
+        {
 
             var chains = molecule.Chains;
             var score = result.TotalScore;
             var counter = result.TotalMatchedIonCount;
 
-            if (!result.IsChainIonsExisted) { // chain existed expected: TG 52:3
+            if (!result.IsChainIonsExisted)
+            { // chain existed expected: TG 52:3
                 var obj = new Lipid(molecule.LipidClass, molecule.Mass, new TotalChain(chains.CarbonCount, chains.DoubleBondCount, chains.OxidizedCount, 3, 0, 0));
                 return (obj, new double[2] { score, counter });
             }
-            else { // chain existed expected: TG 16:0_18:1_18:2
+            else
+            { // chain existed expected: TG 16:0_18:1_18:2
                 var deepChains = (SeparatedChains)chains;
-                if (result.IsPositionIonsExisted && result.IsDoubleBondIonsExisted) { // chain existed expected: TG 16:0/18:1(11)/18:2(9,12)
+                if (result.IsPositionIonsExisted && result.IsDoubleBondIonsExisted)
+                { // chain existed expected: TG 16:0/18:1(11)/18:2(9,12)
                     return (molecule, new double[2] { score, counter });
                 }
-                else if (result.IsPositionIonsExisted) { // chain existed expected: TG 16:0/18:1/18:2
+                else if (result.IsPositionIonsExisted)
+                { // chain existed expected: TG 16:0/18:1/18:2
                     var acyl1 = new AcylChain(deepChains.Chains[0].CarbonCount,
                         new DoubleBond(deepChains.Chains[0].DoubleBondCount),
                         new Oxidized(deepChains.Chains[0].OxidizedCount));
@@ -202,14 +227,16 @@ namespace CompMs.Common.Lipidomics {
                     var obj = new Lipid(molecule.LipidClass, molecule.Mass, new PositionLevelChains(acyl1, acyl2, acyl3));
                     return (obj, new double[2] { score, counter });
                 }
-                else if (result.IsDoubleBondIonsExisted) { // chain existed expected:TG 16:0_18:1(11)_18:2(9,12)
+                else if (result.IsDoubleBondIonsExisted)
+                { // chain existed expected:TG 16:0_18:1(11)_18:2(9,12)
                     var acyl1 = deepChains.Chains[0];
                     var acyl2 = deepChains.Chains[1];
                     var acyl3 = deepChains.Chains[2];
                     var obj = new Lipid(molecule.LipidClass, molecule.Mass, new MolecularSpeciesLevelChains(acyl1, acyl2, acyl3));
                     return (obj, new double[2] { score, counter });
                 }
-                else { // chain existed expected: TG 16:0_18:1_18:2
+                else
+                { // chain existed expected: TG 16:0_18:1_18:2
                     var acyl1 = new AcylChain(deepChains.Chains[0].CarbonCount,
                                                new DoubleBond(deepChains.Chains[0].DoubleBondCount),
                                                new Oxidized(deepChains.Chains[0].OxidizedCount));
@@ -225,17 +252,29 @@ namespace CompMs.Common.Lipidomics {
             }
         }
 
+        public static (ILipid, double[]) GetDefaultCharacterizationResultForSingleAcylChainLipid( // MG, CAR, steroidal ether etc.
+            ILipid molecule, LipidMsCharacterizationResult result)
+        {
+            var chains = molecule.Chains;
+            var score = result.TotalScore;
+            var counter = result.TotalMatchedIonCount;
+            var obj = new Lipid(molecule.LipidClass, molecule.Mass, new TotalChain(chains.CarbonCount, chains.DoubleBondCount, chains.OxidizedCount, 1, 0, 0));
+            return (obj, new double[2] { score, counter });
+        }
 
-        public static double GetMatchedCoefficient(List<SpectrumPeak> peaks) {
+        public static double GetMatchedCoefficient(List<SpectrumPeak> peaks)
+        {
             double sum1 = 0, sum2 = 0, mean1 = 0, mean2 = 0, covariance = 0, sqrt1 = 0, sqrt2 = 0;
-            for (int i = 0; i < peaks.Count; i++) {
+            for (int i = 0; i < peaks.Count; i++)
+            {
                 sum1 += peaks[i].Resolution;
                 sum2 += peaks[i].Intensity;
             }
             mean1 = (double)(sum1 / peaks.Count);
             mean2 = (double)(sum2 / peaks.Count);
 
-            for (int i = 0; i < peaks.Count; i++) {
+            for (int i = 0; i < peaks.Count; i++)
+            {
                 covariance += (peaks[i].Resolution - mean1) * (peaks[i].Intensity - mean2);
                 sqrt1 += Math.Pow(peaks[i].Resolution - mean1, 2);
                 sqrt2 += Math.Pow(peaks[i].Intensity - mean2, 2);
@@ -246,11 +285,14 @@ namespace CompMs.Common.Lipidomics {
                 return (double)(covariance / Math.Sqrt(sqrt1 * sqrt2));
         }
 
-        public static bool IsDiagnosticFragmentsExist(List<SpectrumPeak> spectrum, List<SpectrumPeak> refSpectrum, double mzTolerance) {
+        public static bool IsDiagnosticFragmentsExist(List<SpectrumPeak> spectrum, List<SpectrumPeak> refSpectrum, double mzTolerance)
+        {
             var isAllExisted = true;
             if (refSpectrum.IsEmptyOrNull()) return true;
-            foreach (var refpeak in refSpectrum) {
-                if (!IsDiagnosticFragmentExist(spectrum, mzTolerance, refpeak.Mass, refpeak.Intensity * 0.01)) {
+            foreach (var refpeak in refSpectrum)
+            {
+                if (!IsDiagnosticFragmentExist(spectrum, mzTolerance, refpeak.Mass, refpeak.Intensity * 0.01))
+                {
                     isAllExisted = false;
                     break;
                 }
@@ -262,12 +304,15 @@ namespace CompMs.Common.Lipidomics {
         public static bool IsDiagnosticFragmentExist(List<SpectrumPeak> spectrum,
             double mzTolerance,
             double diagnosticMz,
-            double threshold) {
-            for (int i = 0; i < spectrum.Count; i++) {
+            double threshold)
+        {
+            for (int i = 0; i < spectrum.Count; i++)
+            {
                 var mz = spectrum[i].Mass;
                 var intensity = spectrum[i].Intensity; // should be normalized by max intensity to 100
 
-                if (intensity > threshold && Math.Abs(mz - diagnosticMz) < mzTolerance) {
+                if (intensity > threshold && Math.Abs(mz - diagnosticMz) < mzTolerance)
+                {
                     return true;
                 }
             }
@@ -277,10 +322,13 @@ namespace CompMs.Common.Lipidomics {
         public static int CountDetectedIons(
             List<SpectrumPeak> exp_spectrum,
             List<SpectrumPeak> ref_spectrum,
-            double tolerance) {
+            double tolerance)
+        {
             var ionDetectedCounter = 0;
-            foreach (var ion in ref_spectrum) {
-                if (IsDiagnosticFragmentExist(exp_spectrum, tolerance, ion.Mass, ion.Intensity * 0.0001)) {
+            foreach (var ion in ref_spectrum)
+            {
+                if (IsDiagnosticFragmentExist(exp_spectrum, tolerance, ion.Mass, ion.Intensity * 0.0001))
+                {
                     ionDetectedCounter++;
                 }
             }
@@ -288,11 +336,13 @@ namespace CompMs.Common.Lipidomics {
         }
     }
 
-    public static class OadMsCharacterizationUtility {
+    public static class OadMsCharacterizationUtility
+    {
         public static LipidMsCharacterizationResult GetDefaultScore(
             IMSScanProperty scan, MoleculeMsReference reference,
             float tolerance, float mzBegin, float mzEnd,
-            double classIonCutoff, double chainIonCutoff, double positionIonCutoff, double doublebondIonCutoff) {
+            double classIonCutoff, double chainIonCutoff, double positionIonCutoff, double doublebondIonCutoff)
+        {
 
             var exp_spectrum = scan.Spectrum;
             var ref_spectrum = reference.Spectrum;
@@ -342,7 +392,8 @@ namespace CompMs.Common.Lipidomics {
 
             var essentialDBIons = matchedpeaks.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_high)).ToList();
             var essentialDBIons_matched = essentialDBIons.Where(n => n.IsMatched).ToList();
-            if (essentialDBIons.Count == essentialDBIons_matched.Count) {
+            if (essentialDBIons.Count == essentialDBIons_matched.Count)
+            {
                 matchedCoefficient += 1.5;
             }
 
@@ -370,7 +421,7 @@ namespace CompMs.Common.Lipidomics {
     public static class EieioMsCharacterizationUtility
     {
 
-       
+
         public static LipidMsCharacterizationResult GetDefaultScoreForGlycerophospholipid(
             IMSScanProperty scan, MoleculeMsReference reference,
             float tolerance, float mzBegin, float mzEnd,

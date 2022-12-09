@@ -59,6 +59,8 @@ namespace CompMs.Common.Lipidomics
                     generator.Add(LbmClass.DG, new DGSpectrumGenerator());
                     generator.Add(LbmClass.TG, new TGSpectrumGenerator());
                     generator.Add(LbmClass.BMP, new BMPSpectrumGenerator());
+                    generator.Add(LbmClass.HBMP, new HBMPSpectrumGenerator());
+                    generator.Add(LbmClass.CL, new CLSpectrumGenerator());
                     generator.Add(LbmClass.SM, new SMSpectrumGenerator());
                     generator.Add(LbmClass.Cer_NS, new CeramideSpectrumGenerator());
                     generator.Add(LbmClass.Cer_NDS, new CeramideSpectrumGenerator());
@@ -75,11 +77,10 @@ namespace CompMs.Common.Lipidomics
                     generator.Add(LbmClass.DGTS, new DGTSSpectrumGenerator());
                     generator.Add(LbmClass.LDGTA, new LDGTASpectrumGenerator());
                     generator.Add(LbmClass.LDGTS, new LDGTSSpectrumGenerator());
-                    generator.Add(LbmClass.HBMP, new HBMPSpectrumGenerator());
                     generator.Add(LbmClass.GM3, new GM3SpectrumGenerator());
                     generator.Add(LbmClass.SHexCer, new SHexCerSpectrumGenerator());
                     generator.Add(LbmClass.CAR, new CARSpectrumGenerator());
-                    generator.Add(LbmClass.CL, new CLSpectrumGenerator());
+                    generator.Add(LbmClass.DMEDFAHFA, new DMEDFAHFASpectrumGenerator());
 
                     @default = generator;
                 }
@@ -104,7 +105,46 @@ namespace CompMs.Common.Lipidomics
             {
                 if (@eidlipidgenerator is null)
                 {
-                    var generator = new EidDefaultSpectrumGenerator();
+                    var generator = new FacadeLipidSpectrumGenerator();
+                    generator.Add(LbmClass.PC, new PCEidSpectrumGenerator());
+                    generator.Add(LbmClass.LPC, new LPCEidSpectrumGenerator());
+                    generator.Add(LbmClass.EtherPC, new EtherPCEidSpectrumGenerator());
+                    generator.Add(LbmClass.PE, new PEEidSpectrumGenerator());
+                    generator.Add(LbmClass.LPE, new LPEEidSpectrumGenerator());
+                    generator.Add(LbmClass.EtherPE, new EtherPEEidSpectrumGenerator());
+                    generator.Add(LbmClass.PG, new PGEidSpectrumGenerator());
+                    generator.Add(LbmClass.PI, new PIEidSpectrumGenerator());
+                    generator.Add(LbmClass.PS, new PSEidSpectrumGenerator());
+                    generator.Add(LbmClass.PA, new PAEidSpectrumGenerator());
+                    generator.Add(LbmClass.LPG, new LPGEidSpectrumGenerator());
+                    generator.Add(LbmClass.LPI, new LPIEidSpectrumGenerator());
+                    generator.Add(LbmClass.LPS, new LPSEidSpectrumGenerator());
+                    generator.Add(LbmClass.CL, new CLEidSpectrumGenerator());
+                    generator.Add(LbmClass.MG, new MGEidSpectrumGenerator());
+                    generator.Add(LbmClass.DG, new DGEidSpectrumGenerator());
+                    generator.Add(LbmClass.TG, new TGEidSpectrumGenerator());
+                    generator.Add(LbmClass.BMP, new BMPEidSpectrumGenerator());
+                    generator.Add(LbmClass.HBMP, new HBMPEidSpectrumGenerator());
+                    // below here are EID not implemented
+                    generator.Add(LbmClass.SM, new SMSpectrumGenerator());
+                    generator.Add(LbmClass.Cer_NS, new CeramideSpectrumGenerator());
+                    generator.Add(LbmClass.Cer_NDS, new CeramideSpectrumGenerator());
+                    generator.Add(LbmClass.Cer_NP, new CeramidePhytoSphSpectrumGenerator());
+                    generator.Add(LbmClass.Cer_AS, new CeramideSpectrumGenerator());
+                    generator.Add(LbmClass.Cer_ADS, new CeramideSpectrumGenerator());
+                    generator.Add(LbmClass.Cer_AP, new CeramidePhytoSphSpectrumGenerator());
+                    generator.Add(LbmClass.Cer_BS, new CeramideSpectrumGenerator());
+                    generator.Add(LbmClass.Cer_BDS, new CeramideSpectrumGenerator());
+                    //generator.Add(LbmClass.Cer_HS, new CeramideSpectrumGenerator());
+                    //generator.Add(LbmClass.Cer_HDS, new CeramideSpectrumGenerator());
+                    generator.Add(LbmClass.HexCer_NS, new HexCerSpectrumGenerator());
+                    generator.Add(LbmClass.DGTA, new DGTASpectrumGenerator());
+                    generator.Add(LbmClass.DGTS, new DGTSSpectrumGenerator());
+                    generator.Add(LbmClass.LDGTA, new LDGTASpectrumGenerator());
+                    generator.Add(LbmClass.LDGTS, new LDGTSSpectrumGenerator());
+                    generator.Add(LbmClass.GM3, new GM3SpectrumGenerator());
+                    generator.Add(LbmClass.SHexCer, new SHexCerSpectrumGenerator());
+                    generator.Add(LbmClass.CAR, new CARSpectrumGenerator());
                     @eidlipidgenerator = generator;
                 }
                 return @eidlipidgenerator;

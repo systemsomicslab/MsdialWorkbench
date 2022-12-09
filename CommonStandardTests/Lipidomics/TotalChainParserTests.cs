@@ -93,7 +93,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.IsInstanceOfType(((MolecularSpeciesLevelChains)actual).Chains[0], typeof(AlkylChain));
             Assert.IsInstanceOfType(((MolecularSpeciesLevelChains)actual).Chains[1], typeof(AcylChain));
 
-            actual = parser.Parse("O-16:0_18:2;2O");
+            actual = parser.Parse("O-16:0_18:2;O2");
             Assert.IsInstanceOfType(actual, typeof(MolecularSpeciesLevelChains));
             Assert.AreEqual(34, actual.CarbonCount);
             Assert.AreEqual(2, actual.DoubleBondCount);
@@ -133,8 +133,8 @@ namespace CompMs.Common.Lipidomics.Tests
         [TestMethod]
         public void CeramideParseTest() {
             var parser = TotalChainParser.BuildCeramideParser(2);
-            //var actual = parser.Parse("18:1;O2/44:2;O2");
-            var actual = parser.Parse("18:1;2O/44:2;2O");
+            var actual = parser.Parse("18:1;O2/44:2;O2");
+            //var actual = parser.Parse("18:1;2O/44:2;2O");
             Assert.IsInstanceOfType(actual, typeof(PositionLevelChains));
             Assert.AreEqual(62, actual.CarbonCount);
             Assert.AreEqual(3, actual.DoubleBondCount);

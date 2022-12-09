@@ -509,7 +509,11 @@ namespace Msdial.Lcms.Dataprocess.Scoring
                 case LbmClass.FAHFA:
                     return LipidMsmsCharacterization.JudgeIfFahfa(spectrum, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
-                    
+
+                case LbmClass.DMEDFAHFA:
+                    return LipidMsmsCharacterization.JudgeIfFahfaDMED(spectrum, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
                 case LbmClass.OxFA:
                     return LipidMsmsCharacterization.JudgeIfOxfattyacid(spectrum, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct, totalOxidized);

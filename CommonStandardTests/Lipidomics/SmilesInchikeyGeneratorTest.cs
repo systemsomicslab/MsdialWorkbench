@@ -40,13 +40,13 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual("VWXMLEVTINKCKQ-UHFFFAOYSA-N", result3.InchiKey);
 
             var parser4 = new CeramideLipidParser();
-            var lipid4 = parser4.Parse("Cer 18:1;2O/20:5(5,8,11,14,17)");
+            var lipid4 = parser4.Parse("Cer 18:1;O2/20:5(5,8,11,14,17)");
             var result4 = SmilesInchikeyGenerator.Generate((Lipid)lipid4);
 
             Assert.AreEqual("OCC(NC(=O)CCCC=CCC=CCC=CCC=CCC=CCC)C(O)C=CCCCCCCCCCCCCC", result4.Smiles);
             Assert.AreEqual("VWXMLEVTINKCKQ-UHFFFAOYSA-N", result4.InchiKey);
 
-            // HexCer 18:1;3O/22:0 HexCer_NS
+            // HexCer 18:1;O2/22:0 HexCer_NS
             var sphingo5 = new SphingoChain(18, DoubleBond.CreateFromPosition(4), Oxidized.CreateFromPosition(1, 3));
             var acyl5 = new AcylChain(22, DoubleBond.CreateFromPosition(0), new Oxidized(0));
             var lipid5 = new Lipid(LbmClass.HexCer_NS, 803.648649, new PositionLevelChains(sphingo5, acyl5));
@@ -56,7 +56,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual("YIGARKIIFOHVPF-UHFFFAOYSA-N", result5.InchiKey);
 
             var parser6 = new HexCerLipidParser();
-            var lipid6 = parser6.Parse("HexCer 18:1;2O/22:0");
+            var lipid6 = parser6.Parse("HexCer 18:1;O2/22:0");
             var result6 = SmilesInchikeyGenerator.Generate((Lipid)lipid6);
 
             Assert.AreEqual("OCC1OC(OCC(NC(=O)CCCCCCCCCCCCCCCCCCCCC)C(O)C=CCCCCCCCCCCCCC)C(O)C(O)C1O", result6.Smiles);

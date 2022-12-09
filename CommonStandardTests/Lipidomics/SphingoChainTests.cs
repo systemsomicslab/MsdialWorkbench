@@ -14,7 +14,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(0, chain.DoubleBondCount);
             Assert.AreEqual(2, chain.OxidizedCount);
             Assert.AreEqual(300.29025361466, chain.Mass, 1e-5); // C18H38O2N1
-            Assert.AreEqual("18:0;1OH,3OH", chain.ToString());
+            Assert.AreEqual("18:0(1OH,3OH)", chain.ToString());
             var generator = new MockGenerator();
             var candidates = chain.GetCandidates(generator);
             CollectionAssert.AreEqual(new IChain[] { }, candidates.ToArray());
@@ -25,14 +25,14 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(1, chain.DoubleBondCount);
             Assert.AreEqual(3, chain.OxidizedCount);
             Assert.AreEqual(314.26951774612, chain.Mass, 1e-5); // C18H36O3N1
-            Assert.AreEqual("18:1(4);1OH,3OH,4OH", chain.ToString());
+            Assert.AreEqual("18:1(4)(1OH,3OH,4OH)", chain.ToString());
 
             chain = new SphingoChain(18, new DoubleBond(0), new Oxidized(3, 1, 3));
             Assert.AreEqual(18, chain.CarbonCount);
             Assert.AreEqual(0, chain.DoubleBondCount);
             Assert.AreEqual(3, chain.OxidizedCount);
             Assert.AreEqual(316.28516781026, chain.Mass, 1e-5); // C18H38O3N1
-            Assert.AreEqual("18:0;3O", chain.ToString());
+            Assert.AreEqual("18:0;O3", chain.ToString());
         }
 
         class MockGenerator : IChainGenerator

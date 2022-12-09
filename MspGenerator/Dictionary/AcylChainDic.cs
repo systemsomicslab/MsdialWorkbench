@@ -1616,6 +1616,24 @@ namespace CompMs.MspGenerator
                 {"28:6",new List<string>(){"28","6","1",@"CC/C=C\C/C=C\C/C=C\C/C=C\C/C=C\C/C=C\CCCCCCCC(O%10)C(=O)"}},
                 {"28:7",new List<string>(){"28","7","1",@"CC/C=C\C/C=C\C/C=C\C/C=C\C/C=C\C/C=C\C/C=C\CCCCC(O%10)C(=O)"}},
             };
+        // 20221122
+        public static Dictionary<string, List<string>>
+            fahfaDmedBaseChainDictionary = new Dictionary<string, List<string>>()
+        {
+            {"16:0(2OH)",new List<string>() {"16","0","1", "2", @"CCCCCCCCCCCCCCC(O%10)C(=O)NCCN(C)C"}},
+            {"16:0(9OH)",new List<string>() {"16","0","1", "9", @"CCCCCCCC(O%10)CCCCCCCC(=O)NCCN(C)C"}},
+            {"16:0(10OH)",new List<string>(){"16","0","1","10", @"CCCCCCC(O%10)CCCCCCCCC(=O)NCCN(C)C"}},
+            {"18:0(2OH)",new List<string>() {"18","0","1", "2", @"CCCCCCCCCCCCCCCCC(O%10)C(=O)NCCN(C)C"}},
+            {"18:0(5OH)",new List<string>() {"18","0","1", "5", @"CCCCCCCCCCCCCC(O%10)CCCC(=O)NCCN(C)C" }},
+            {"18:0(9OH)",new List<string>() {"18","0","1", "9", @"CCCCCCCCCC(O%10)CCCCCCCC(=O)NCCN(C)C" }},
+            {"18:0(10OH)",new List<string>(){"18","0","1","10", @"CCCCCCCCC(O%10)CCCCCCCCC(=O)NCCN(C)C"}},
+            {"18:0(12OH)",new List<string>(){"18","0","1","12", @"CCCCCCC(O%10)CCCCCCCCCCC(=O)NCCN(C)C"}},
+            {"18:0(13OH)",new List<string>(){"18","0","1","13", @"CCCCCC(O%10)CCCCCCCCCCCC(=O)NCCN(C)C"}},
+            {"18:1(2OH)",new List<string>() {"18","1","1", "2", @"CCCCCCCCC=CCCCCCCC(O%10)C(=O)NCCN(C)C"}},
+            {"18:1(15OH)",new List<string>(){"18","1","1", "2", @"CCCC(O%10)CCCCC=CCCCCCCCC(=O)NCCN(C)C"}},
+            {"18:2(15OH)",new List<string>(){"18","2","1","15", @"CCCC(O%10)CC=CCC=CCCCCCCCC(=O)NCCN(C)C"}},
+        };
+
     }
 }
 

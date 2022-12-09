@@ -361,6 +361,14 @@ namespace Rfx.Riken.OsakaUniv
                     }
 
                     qcList = qcList.OrderBy(n => n[0]).ToList();
+                    if (qcList.Count == 0) {
+                        foreach (var tFile in analysisFileBeanCollectionPerBatch) {
+                            var tFileProp = tFile.AnalysisFilePropertyBean;
+                            variableProps[tFileProp.AnalysisFileId].NormalizedVariable = variableProps[tFileProp.AnalysisFileId].NormalizedVariable;
+                        }
+                        index++;
+                        continue;
+                    }
 
                     double[] xQcArray = new double[qcList.Count];
                     double[] yQcArray = new double[qcList.Count];
