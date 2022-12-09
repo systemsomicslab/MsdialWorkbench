@@ -6,7 +6,7 @@ namespace CompMs.App.Msdial.Model.Search
     public interface IFilterable : IAnnotatedObject, IChromatogramPeak, IMoleculeProperty
     {
         bool IsMsmsAssigned { get; }
-        bool IsBaseIsotopeIon { get; }
+        bool IsMonoIsotopicIon { get; }
         bool IsBlankFiltered { get; }
         bool IsFragmentQueryExisted { get; }
         bool IsManuallyModifiedForAnnotation { get; }

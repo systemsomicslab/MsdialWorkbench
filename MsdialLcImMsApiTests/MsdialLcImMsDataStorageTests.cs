@@ -40,7 +40,7 @@ namespace CompMs.MsdialLcImMsApi.DataObj.Tests
             dbs.AddMoleculeDataBase(
                 db,
                 new List<IAnnotatorParameterPair<MoleculeDataBase>> {
-                    new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, storage.MsdialLcImMsParameter.PeakPickBaseParam, searchParameter))
+                    new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, storage.MsdialLcImMsParameter.PeakPickBaseParam, searchParameter, ignoreIsotopicPeak: true))
                 }
             );
 

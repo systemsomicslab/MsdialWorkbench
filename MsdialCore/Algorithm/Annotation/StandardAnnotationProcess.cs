@@ -75,9 +75,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
                 var chromPeakFeature = chromPeakFeatures[i];
                 var msdecResult = msdecResults[i];
-                if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
-                    RunAnnotationCore(chromPeakFeature, msdecResult, provider);
-                }
+                RunAnnotationCore(chromPeakFeature, msdecResult, provider);
                 reportAction?.Invoke((double)(i + 1) / chromPeakFeatures.Count);
             };
         }
@@ -91,7 +89,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             Action<double> reportAction) {
             var syncObj = new object();
             var counter = 0;
-            var totalCount = chromPeakFeatures.Count(n => n.PeakCharacter.IsotopeWeightNumber == 0);
+            var totalCount = chromPeakFeatures.Count;
             Enumerable.Range(0, chromPeakFeatures.Count)
                 .AsParallel()
                 .WithCancellation(token)
@@ -99,12 +97,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 .ForAll(i => {
                     var chromPeakFeature = chromPeakFeatures[i];
                     var msdecResult = msdecResults[i];
-                    if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
-                        RunAnnotationCore(chromPeakFeature, msdecResult, provider);
-                        lock (syncObj) {
-                            counter++;
-                            reportAction?.Invoke((double)counter / (double)totalCount);
-                        }
+                    RunAnnotationCore(chromPeakFeature, msdecResult, provider);
+                    lock (syncObj) {
+                        counter++;
+                        reportAction?.Invoke((double)counter / (double)totalCount);
                     }
                 });
         }
@@ -119,9 +115,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
                 var chromPeakFeature = chromPeakFeatures[i];
                 var msdecResult = msdecResults[i];
-                if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
-                    await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, token);
-                }
+                await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, token);
                 reportAction?.Invoke((double)(i + 1) / chromPeakFeatures.Count);
             };
         }
@@ -142,9 +136,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                         try {
                             var chromPeakFeature = pair.Item1;
                             var msdecResult = pair.Item2;
-                            if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
-                                await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, token);
-                            }
+                            await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, token);
                         }
                         finally {
                             sem.Release();

@@ -60,8 +60,8 @@ namespace CompMs.App.MsdialConsole.Process
             var annotationProcess = new StandardAnnotationProcess(
                 new[]
                 {
-                    new AnnotationQueryFactory(annotator, storage.Parameter.PeakPickBaseParam, storage.Parameter.MspSearchParam),
-                    new AnnotationQueryFactory(annotator, storage.Parameter.PeakPickBaseParam, storage.Parameter.TextDbSearchParam),
+                    new AnnotationQueryFactory(annotator, storage.Parameter.PeakPickBaseParam, storage.Parameter.MspSearchParam, ignoreIsotopicPeak: true),
+                    new AnnotationQueryFactory(annotator, storage.Parameter.PeakPickBaseParam, storage.Parameter.TextDbSearchParam, ignoreIsotopicPeak: false),
                 },
                 evaluator,
                 mapper);

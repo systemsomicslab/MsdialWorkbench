@@ -27,15 +27,17 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private readonly IMatchResultFinder<AnnotationQuery, MsScanMatchResult> _annotator;
         private readonly MsRefSearchParameterBase _searchParameter;
         private readonly Func<IMSIonProperty, IReadOnlyList<RawPeakElement>, IReadOnlyList<IsotopicPeak>> _isotopeGetter;
+        private readonly bool _ignoreIsotopicPeak;
 
-        public AnnotationQueryFactory(IMatchResultFinder<AnnotationQuery, MsScanMatchResult> annotator, MsRefSearchParameterBase searchParameter, Func<IMSIonProperty, IReadOnlyList<RawPeakElement>, IReadOnlyList<IsotopicPeak>> isotopeGetter) {
+        private AnnotationQueryFactory(IMatchResultFinder<AnnotationQuery, MsScanMatchResult> annotator, MsRefSearchParameterBase searchParameter, Func<IMSIonProperty, IReadOnlyList<RawPeakElement>, IReadOnlyList<IsotopicPeak>> isotopeGetter, bool ignoreIsotopicPeak) {
             _annotator = annotator;
             _searchParameter = searchParameter ?? throw new ArgumentNullException(nameof(searchParameter));
             _isotopeGetter = isotopeGetter;
+            _ignoreIsotopicPeak = ignoreIsotopicPeak;
             AnnotatorId = annotator.Id;
         }
 
-        public AnnotationQueryFactory(IMatchResultFinder<AnnotationQuery, MsScanMatchResult> annotator, PeakPickBaseParameter peakPickParameter, MsRefSearchParameterBase searchParameter) : this(annotator, searchParameter, GetIsotopeGetter(peakPickParameter)) {
+        public AnnotationQueryFactory(IMatchResultFinder<AnnotationQuery, MsScanMatchResult> annotator, PeakPickBaseParameter peakPickParameter, MsRefSearchParameterBase searchParameter, bool ignoreIsotopicPeak = true) : this(annotator, searchParameter, GetIsotopeGetter(peakPickParameter), ignoreIsotopicPeak) {
 
         }
 
@@ -47,7 +49,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             if (parameter is null) {
                 throw new ArgumentNullException(nameof(parameter));
             }
-            return new AnnotationQuery(property, scan, _isotopeGetter(property, spectrum), ionFeature, parameter, _annotator);
+            return new AnnotationQuery(property, scan, _isotopeGetter(property, spectrum), ionFeature, parameter, _annotator, _ignoreIsotopicPeak);
         }
 
         IAnnotationQuery<MsScanMatchResult> IAnnotationQueryFactory<MsScanMatchResult>.Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter)
@@ -97,7 +99,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             }
 
             var isotopes = DataAccess.GetIsotopicPeaks(spectrum, (float)property.PrecursorMz, _peakPickParameter.CentroidMs1Tolerance);
-            return new PepAnnotationQuery(property, scan, isotopes, ionFeature, parameter, _proteomicsParameter, _annotator);
+            return new PepAnnotationQuery(property, scan, isotopes, ionFeature, parameter, _proteomicsParameter, _annotator, ignoreIsotopicPeak: false);
         }
 
         IAnnotationQuery<MsScanMatchResult> IAnnotationQueryFactory<MsScanMatchResult>.Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter)
@@ -132,7 +134,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            return new AnnotationQuery(property, scan, null, ionFeature, parameter, _annotator);
+            return new AnnotationQuery(property, scan, null, ionFeature, parameter, _annotator, ignoreIsotopicPeak: false);
         }
 
         IAnnotationQuery<MsScanMatchResult> IAnnotationQueryFactory<MsScanMatchResult>.Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter)
@@ -153,16 +155,19 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private readonly IMatchResultFinder<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MsScanMatchResult> _annotator;
         private readonly MsRefSearchParameterBase _searchParameter;
         private readonly Func<IMSIonProperty, IReadOnlyList<RawPeakElement>, IReadOnlyList<IsotopicPeak>> _isotopeGetter;
+        private readonly bool _ignoreIsotopicPeak;
 
-        public AnnotationQueryWithReferenceFactory(
+        private AnnotationQueryWithReferenceFactory(
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             IMatchResultFinder<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MsScanMatchResult> annotator,
             MsRefSearchParameterBase searchParameter,
-            Func<IMSIonProperty, IReadOnlyList<RawPeakElement>, IReadOnlyList<IsotopicPeak>> isotopeGetter) {
+            Func<IMSIonProperty, IReadOnlyList<RawPeakElement>, IReadOnlyList<IsotopicPeak>> isotopeGetter,
+            bool ignoreIsotopicPeak) {
             _refer = refer ?? throw new ArgumentNullException(nameof(refer));
             _annotator = annotator;
             _searchParameter = searchParameter ?? throw new ArgumentNullException(nameof(searchParameter));
             _isotopeGetter = isotopeGetter;
+            _ignoreIsotopicPeak = ignoreIsotopicPeak;
             AnnotatorId = annotator.Id;
         }
 
@@ -170,8 +175,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             IMatchResultFinder<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MsScanMatchResult> annotator,
             PeakPickBaseParameter peakPickParameter,
-            MsRefSearchParameterBase searchParameter)
-            : this(refer, annotator, searchParameter, GetIsotopeGetter(peakPickParameter)) {
+            MsRefSearchParameterBase searchParameter,
+            bool ignoreIsotopicPeak = true)
+            : this(refer, annotator, searchParameter, GetIsotopeGetter(peakPickParameter), ignoreIsotopicPeak) {
 
         }
 
@@ -188,11 +194,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 .Where(r => r != null)
                 .FirstOrDefault(r => !r.Source.HasFlag(SourceType.GeneratedLipid) && !r.Source.HasFlag(SourceType.Unknown));
             if (result is null) {
-                return new AnnotationQueryWithReference(property, scan, null, _isotopeGetter(property, spectrum), ionFeature, parameter, _annotator);
+                return new AnnotationQueryWithReference(property, scan, null, _isotopeGetter(property, spectrum), ionFeature, parameter, _annotator, _ignoreIsotopicPeak);
             }
             else {
                 var reference = _refer.Refer(result);
-                return new AnnotationQueryWithReference(property, scan, reference, _isotopeGetter(property, spectrum), ionFeature, parameter, _annotator);
+                return new AnnotationQueryWithReference(property, scan, reference, _isotopeGetter(property, spectrum), ionFeature, parameter, _annotator, _ignoreIsotopicPeak);
             }
         }
 

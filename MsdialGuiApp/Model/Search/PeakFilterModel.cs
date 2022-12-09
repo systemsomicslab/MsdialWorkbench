@@ -21,7 +21,7 @@ namespace CompMs.App.Msdial.Model.Search
             var checkedFilter = CheckedFilter;
             return AnnotationFilter(filterable, evaluator)
                 && (!checkedFilter.All(DisplayFilter.Ms2Acquired) || filterable.IsMsmsAssigned)
-                && (!checkedFilter.All(DisplayFilter.MolecularIon) || filterable.IsBaseIsotopeIon)
+                && (!checkedFilter.All(DisplayFilter.MolecularIon) || filterable.IsMonoIsotopicIon)
                 && (!checkedFilter.All(DisplayFilter.Blank) || !filterable.IsBlankFiltered)
                 && (!checkedFilter.All(DisplayFilter.UniqueIons) || filterable.IsFragmentQueryExisted)
                 && (!checkedFilter.All(DisplayFilter.ManuallyModified) || filterable.IsManuallyModifiedForAnnotation)

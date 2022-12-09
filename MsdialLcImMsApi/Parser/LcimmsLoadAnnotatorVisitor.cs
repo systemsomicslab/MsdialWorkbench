@@ -60,20 +60,20 @@ namespace CompMs.MsdialLcImMsApi.Parser
 
         public IAnnotationQueryFactory<MsScanMatchResult> Visit(StandardRestorationKey key, IMatchResultFinder<AnnotationQuery, MsScanMatchResult> finder) {
             if (key.SourceType.HasFlag(SourceType.MspDB)) {
-                return new AnnotationQueryFactory(finder, _peakPickParameter, key.Parameter);
+                return new AnnotationQueryFactory(finder, _peakPickParameter, key.Parameter, ignoreIsotopicPeak: true);
             }
             else if (key.SourceType.HasFlag(SourceType.TextDB)) {
-                return new AnnotationQueryFactory(finder, _peakPickParameter, key.Parameter);
+                return new AnnotationQueryFactory(finder, _peakPickParameter, key.Parameter, ignoreIsotopicPeak: false);
             }
             throw new NotSupportedException(key.SourceType.ToString());
         }
 
         public IAnnotationQueryFactory<MsScanMatchResult> Visit(MspDbRestorationKey key, IMatchResultFinder<AnnotationQuery, MsScanMatchResult> finder) {
-            return new AnnotationQueryFactory(finder, _peakPickParameter, _searchParameter.MspSearchParam);
+            return new AnnotationQueryFactory(finder, _peakPickParameter, _searchParameter.MspSearchParam, ignoreIsotopicPeak: true);
         }
 
         public IAnnotationQueryFactory<MsScanMatchResult> Visit(TextDbRestorationKey key, IMatchResultFinder<AnnotationQuery, MsScanMatchResult> finder) {
-            return new AnnotationQueryFactory(finder, _peakPickParameter, _searchParameter.TextDbSearchParam);
+            return new AnnotationQueryFactory(finder, _peakPickParameter, _searchParameter.TextDbSearchParam, ignoreIsotopicPeak: false);
         }
 
         public IAnnotationQueryFactory<MsScanMatchResult> Visit(ShotgunProteomicsRestorationKey key, IMatchResultFinder<PepAnnotationQuery, MsScanMatchResult> finder) {
@@ -81,7 +81,7 @@ namespace CompMs.MsdialLcImMsApi.Parser
         }
 
         public IAnnotationQueryFactory<MsScanMatchResult> Visit(EadLipidDatabaseRestorationKey key, IMatchResultFinder<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MsScanMatchResult> finder) {
-            return new AnnotationQueryWithReferenceFactory(_refer, finder, _peakPickParameter, key.MsRefSearchParameter);
+            return new AnnotationQueryWithReferenceFactory(_refer, finder, _peakPickParameter, key.MsRefSearchParameter, ignoreIsotopicPeak: false);
         }
     }
 }

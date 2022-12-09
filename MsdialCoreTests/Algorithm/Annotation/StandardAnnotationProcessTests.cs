@@ -174,7 +174,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
 
             public MsRefSearchParameterBase Parameter => throw new NotImplementedException();
 
-            public IEnumerable<MsScanMatchResult> FindCandidates() {
+            public IEnumerable<MsScanMatchResult> FindCandidates(bool forceFind = false) {
                 return _annotator.FindCandidates(this);
             }
         }

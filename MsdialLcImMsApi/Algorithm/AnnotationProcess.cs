@@ -34,11 +34,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             Console.WriteLine("Annotation started");
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
                 // count of chrompeakfeatures and msdecresults should be same
-                var chromPeak = chromPeakFeatures[i];
-
-                if (chromPeak.PeakCharacter.IsotopeWeightNumber == 0) {
-                    LcImMsMsMatchMethod(chromPeak, msdecResults, spectrumList, accumulatedSpecList, mspDB, textDB, param);
-                }
+                LcImMsMsMatchMethod(chromPeakFeatures[i], msdecResults, spectrumList, accumulatedSpecList, mspDB, textDB, param);
                 Console.WriteLine("Done {0}/{1}", i, chromPeakFeatures.Count);
             }
         }

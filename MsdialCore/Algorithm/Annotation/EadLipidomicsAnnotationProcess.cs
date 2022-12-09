@@ -20,10 +20,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
                 var chromPeakFeature = chromPeakFeatures[i];
-                if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
-                    var msdecResult = GetRepresentativeMSDecResult(chromPeakFeature, i, msdecResults, parentID2IsotopePeakIDs);
-                    RunAnnotationCore(chromPeakFeature, msdecResult, provider);
-                }
+                var msdecResult = GetRepresentativeMSDecResult(chromPeakFeature, i, msdecResults, parentID2IsotopePeakIDs);
+                RunAnnotationCore(chromPeakFeature, msdecResult, provider);
                 reportAction?.Invoke((double)(i + 1) / chromPeakFeatures.Count);
             };
         }
@@ -33,10 +31,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
                 var chromPeakFeature = chromPeakFeatures[i];
-                if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
-                    var msdecResult = GetRepresentativeMSDecResult(chromPeakFeature, i, msdecResults, parentID2IsotopePeakIDs);
-                    await Task.Run(() => RunAnnotationCoreAsync(chromPeakFeature, msdecResult, provider, token), token).ConfigureAwait(false);
-                }
+                var msdecResult = GetRepresentativeMSDecResult(chromPeakFeature, i, msdecResults, parentID2IsotopePeakIDs);
+                await Task.Run(() => RunAnnotationCoreAsync(chromPeakFeature, msdecResult, provider, token), token).ConfigureAwait(false);
                 reportAction?.Invoke((double)(i + 1) / chromPeakFeatures.Count);
             };
         }

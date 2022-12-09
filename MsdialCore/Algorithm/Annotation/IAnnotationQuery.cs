@@ -14,6 +14,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         IReadOnlyList<IsotopicPeak> Isotopes { get; }
         IonFeatureCharacter IonFeature { get; }
         MsRefSearchParameterBase Parameter { get; }
-        IEnumerable<TResult> FindCandidates();
+        IEnumerable<TResult> FindCandidates(bool forceFind = false);
     }
 }

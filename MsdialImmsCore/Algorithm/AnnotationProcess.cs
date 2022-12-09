@@ -56,9 +56,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
                     var chromPeakFeature = chromPeakFeatures[i];
                     var msdecResult = msdecResults[i];
                     //Console.WriteLine("mass {0}, isotope {1}", chromPeakFeature.Mass, chromPeakFeature.PeakCharacter.IsotopeWeightNumber);
-                    if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
-                        ImmsMatchMethod(chromPeakFeature, msdecResult, spectrumList[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum, queryFactories, mspAnnotator, textDBAnnotator, evaluator, refer, parameter);
-                    }
+                    ImmsMatchMethod(chromPeakFeature, msdecResult, spectrumList[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum, queryFactories, mspAnnotator, textDBAnnotator, evaluator, refer, parameter);
                     ReportProgress.Show(InitialProgress, ProgressMax, i, chromPeakFeatures.Count, reportAction);
                 });
         }
@@ -97,7 +95,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             if (mspAnnotator == null)
                 return;
 
-            var candidates = new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, chromPeakFeature.PeakCharacter, mspSearchParameter, mspAnnotator).FindCandidates( );
+            var candidates = new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, chromPeakFeature.PeakCharacter, mspSearchParameter, mspAnnotator, ignoreIsotopicPeak: true).FindCandidates();
             var results = mspAnnotator.FilterByThreshold(candidates);
             chromPeakFeature.MSRawID2MspIDs[msdecResult.RawSpectrumID] = results.Select(result => result.LibraryIDWhenOrdered).ToList();
             var matches = mspAnnotator.SelectReferenceMatchResults(results);
@@ -121,7 +119,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             if (textDBAnnotator == null)
                 return;
-            var candidates = new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, chromPeakFeature.PeakCharacter, textDBSearchParameter, textDBAnnotator).FindCandidates();
+            var candidates = new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, chromPeakFeature.PeakCharacter, textDBSearchParameter, textDBAnnotator, ignoreIsotopicPeak: false).FindCandidates();
             var results = textDBAnnotator.FilterByThreshold(candidates);
             var matches = textDBAnnotator.SelectReferenceMatchResults(results);
             chromPeakFeature.TextDbIDs.AddRange(matches.Select(result => result.LibraryIDWhenOrdered));

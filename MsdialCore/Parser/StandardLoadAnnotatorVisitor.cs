@@ -47,15 +47,15 @@ namespace CompMs.MsdialCore.Parser
         }       
 
         public IAnnotationQueryFactory<MsScanMatchResult> Visit(StandardRestorationKey key, IMatchResultFinder<AnnotationQuery, MsScanMatchResult> finder) {
-            return new AnnotationQueryFactory(finder, _peakPickParameter, key.Parameter);
+            return new AnnotationQueryFactory(finder, _peakPickParameter, key.Parameter, ignoreIsotopicPeak: key.SourceType != SourceType.TextDB);
         }
 
         public IAnnotationQueryFactory<MsScanMatchResult> Visit(MspDbRestorationKey key, IMatchResultFinder<AnnotationQuery, MsScanMatchResult> finder) {
-            return new AnnotationQueryFactory(finder, _peakPickParameter, _searchParameter.MspSearchParam);
+            return new AnnotationQueryFactory(finder, _peakPickParameter, _searchParameter.MspSearchParam, ignoreIsotopicPeak: true);
         }
 
         public IAnnotationQueryFactory<MsScanMatchResult> Visit(TextDbRestorationKey key, IMatchResultFinder<AnnotationQuery, MsScanMatchResult> finder) {
-            return new AnnotationQueryFactory(finder, _peakPickParameter, _searchParameter.TextDbSearchParam);
+            return new AnnotationQueryFactory(finder, _peakPickParameter, _searchParameter.TextDbSearchParam, ignoreIsotopicPeak: false);
         }
 
         public IAnnotationQueryFactory<MsScanMatchResult> Visit(ShotgunProteomicsRestorationKey key, IMatchResultFinder<PepAnnotationQuery, MsScanMatchResult> finder) {

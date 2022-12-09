@@ -693,7 +693,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
         }
 
         private AnnotationQuery BuildQuery(ChromatogramPeakFeature target, MsRefSearchParameterBase parameter, LcmsTextDBAnnotator annotator) {
-            return new AnnotationQuery(target, target, null, null, parameter, annotator);
+            return new AnnotationQuery(target, target, null, null, parameter, annotator, ignoreIsotopicPeak: false);
         }
     }
 }

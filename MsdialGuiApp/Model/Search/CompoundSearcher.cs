@@ -35,7 +35,7 @@ namespace CompMs.App.Msdial.Model.Search
                 spectrum,
                 ionFeature,
                 MsRefSearchParameter
-            ).FindCandidates().ToList();
+            ).FindCandidates(forceFind: true).ToList();
             foreach (var candidate in candidates) {
                 candidate.Source |= SourceType.Manual;
             }

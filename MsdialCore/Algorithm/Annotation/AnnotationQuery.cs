@@ -13,23 +13,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 {
     public class AnnotationQuery : IAnnotationQuery<MsScanMatchResult>
     {
-        public IMSIonProperty Property { get; }
-        public IMSScanProperty Scan { get; }
-        public IMSScanProperty NormalizedScan {
-            get {
-                if (normalizedScan is null) {
-                    normalizedScan = DataAccess.GetNormalizedMSScanProperty(Scan, Parameter);
-                }
-                return normalizedScan;
-            }
-        }
-        private MSScanProperty normalizedScan;
-
-        public IReadOnlyList<IsotopicPeak> Isotopes { get; }
-        public IonFeatureCharacter IonFeature { get; }
-        public MsRefSearchParameterBase Parameter { get; }
-
-        private readonly IMatchResultFinder<AnnotationQuery, MsScanMatchResult> annotator;
+        private readonly IMatchResultFinder<AnnotationQuery, MsScanMatchResult> _finder;
+        private readonly bool _ignoreIsotopicPeak;
 
         public AnnotationQuery(
             IMSIonProperty property,
@@ -37,7 +22,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             IReadOnlyList<IsotopicPeak> isotopes,
             IonFeatureCharacter ionFeature,
             MsRefSearchParameterBase parameter,
-            IMatchResultFinder<AnnotationQuery, MsScanMatchResult> annotator) {
+            IMatchResultFinder<AnnotationQuery, MsScanMatchResult> finder,
+            bool ignoreIsotopicPeak = true) {
             if (property is null) {
                 throw new ArgumentNullException(nameof(property));
             }
@@ -51,15 +37,31 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             Scan = scan;
             Isotopes = isotopes;
             Parameter = parameter;
-            this.annotator = annotator;
+            _finder = finder;
+            _ignoreIsotopicPeak = ignoreIsotopicPeak;
             IonFeature = ionFeature;
         }
 
-        public IEnumerable<MsScanMatchResult> FindCandidates() {
-            if (annotator != null) {
-                return annotator.FindCandidates(this);
+        public IMSIonProperty Property { get; }
+        public IMSScanProperty Scan { get; }
+        public IMSScanProperty NormalizedScan {
+            get {
+                if (_normalizedScan is null) {
+                    _normalizedScan = DataAccess.GetNormalizedMSScanProperty(Scan, Parameter);
+                }
+                return _normalizedScan;
             }
-            return Enumerable.Empty<MsScanMatchResult>();
+        }
+        private MSScanProperty _normalizedScan;
+        public IReadOnlyList<IsotopicPeak> Isotopes { get; }
+        public IonFeatureCharacter IonFeature { get; }
+        public MsRefSearchParameterBase Parameter { get; }
+
+        public IEnumerable<MsScanMatchResult> FindCandidates(bool forceFind = false) {
+            if (_finder == null || !forceFind && _ignoreIsotopicPeak && !IonFeature.IsMonoIsotopicIon) {
+                return Enumerable.Empty<MsScanMatchResult>();
+            }
+            return _finder.FindCandidates(this);
         }
     }
 }

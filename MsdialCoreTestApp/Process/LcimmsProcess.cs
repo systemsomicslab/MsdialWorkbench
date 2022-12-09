@@ -50,7 +50,7 @@ namespace CompMs.App.MsdialConsole.Process {
             var annotationProcess = new StandardAnnotationProcess(
                 new[]
                 {
-                    new AnnotationQueryFactory(annotator, container.MsdialLcImMsParameter.PeakPickBaseParam, container.MsdialLcImMsParameter.MspSearchParam),
+                    new AnnotationQueryFactory(annotator, container.MsdialLcImMsParameter.PeakPickBaseParam, container.MsdialLcImMsParameter.MspSearchParam, ignoreIsotopicPeak: true),
                 },
                 evaluator,
                 annotator);
