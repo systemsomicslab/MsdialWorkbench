@@ -130,7 +130,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             if (proteinMsResults.IsEmptyOrNull()) return new List<ProteinGroup>(0);
             var groups = new List<ProteinGroup>();
             var dict = new Dictionary<int, List<ProteinMsResult>>();
-            proteinMsResults = proteinMsResults.Where(n => n.MatchedPeptideResults.Count() > 0).OrderByDescending(n => n.MatchedPeptideResults.Count()).ToList();
+            proteinMsResults = proteinMsResults.OrderByDescending(n => n.MatchedPeptideResults.Count()).ToList();
 
             var counter = 0;
             var mergedProteins = new List<int>();
@@ -173,16 +173,16 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                     for (int k = 0; k < protein.MatchedPeptideResults.Count; k++) {
                         var peptide = protein.MatchedPeptideResults[k].Peptide;
                         var peptideString = peptide.Sequence;
-                        //if (peptideList.Contains(peptideString) && peptide2firstProteinID[peptideString] < j) {
-                        if (peptideList.Contains(peptideString)) {
-                            protein.MatchedPeptideResults.RemoveAt(k);
-                            k--;
+                        if (peptideList.Contains(peptideString) && peptide2firstProteinID[peptideString] < j) {
+                        //if (peptideList.Contains(peptideString)) {
+                            //protein.MatchedPeptideResults.RemoveAt(k);
+                            //k--;
                         }
                         else {
                             peptideList.Add(peptideString);
-                            //if (!peptide2firstProteinID.ContainsKey(peptideString)) {
-                            //    peptide2firstProteinID[peptideString] = j;
-                            //}
+                            if (!peptide2firstProteinID.ContainsKey(peptideString)) {
+                                peptide2firstProteinID[peptideString] = j;
+                            }
                         }
                     }
                     //if (protein.MatchedPeptideResults.IsEmptyOrNull()) {
@@ -296,11 +296,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             foreach (var result in results) {
                 var fastaIdentifier = result.FastaProperty.UniqueIdentifier;
+                var fastaPeptides = result.FastaProperty.Sequence;
                 foreach (var feature in annotatedFeatures) {
                     var matchedMsResult = feature.MatchResults.Representative;
                     var matchedPeptideMs = feature.MatchResults.GetRepresentativeReference(refer);
                     var identifier = matchedPeptideMs.Peptide.DatabaseOrigin;
-                    if (fastaIdentifier == identifier) {
+                    var matchedPeptideSequence = matchedPeptideMs.Peptide.Sequence;
+                    if (fastaPeptides.Contains(matchedPeptideSequence)) {
+                        //if (fastaIdentifier == identifier) {
                         result.IsAnnotated = true;
                         result.MatchedPeptideResults.Add(new PeptideMsResult(matchedPeptideMs.Peptide, feature, result.DatabaseID));
                     }
