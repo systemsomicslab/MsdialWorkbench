@@ -3521,14 +3521,14 @@ namespace Riken.Metabolomics.Lipidomics
             doubleBondCount = 0;
             oxidizedCount = 0;
 
-            //pattern: 18:1, 18:1e, 18:1p d18:1, t20:0, n-18:0, N-19:0, 20:3+3O, 18:2-SN1, O-18:1, P-18:1, N-18:1, 16:0;O, 18:2;2O, 18:2;(2OH)
+            //pattern: 18:1, 18:1e, 18:1p d18:1, t20:0, n-18:0, N-19:0, 20:3+3O, 18:2-SN1, O-18:1, P-18:1, N-18:1, 16:0;O, 18:2;2O -> 18:2;O2, 18:2;(2OH) -> 18:2(2OH)
             //try convertion
             var isPlasmenyl = chainString.Contains("P-") ? true : false;
             chainString = chainString.Replace("O-", "").Replace("P-", "").Replace("N-", "").Replace("e", "").Replace("p", "").Replace("m", "").Replace("n-", "").Replace("d", "").Replace("t", "");
 
             // for oxidized moiety parser
             if (chainString.Contains(";"))
-            { // e.g. 18:2;2O, 18:2;(2OH)
+            { // e.g. 18:2;2O, 18:2;(2OH),18:2;O2
                 var chain = chainString.Split(';')[0];
                 var oxidizedmoiety = chainString.Split(';')[1]; //2O, (2OH)
                 //modified by MT 2020/12/11 & 2021/01/12
@@ -3549,6 +3549,23 @@ namespace Riken.Metabolomics.Lipidomics
                 var chain = chainString.Split('+')[0]; // 20:3
                 var expectedOxCount = chainString.Split('+')[1].Replace("O", ""); //2
                 if (expectedOxCount == string.Empty || expectedOxCount == "")
+                {
+                    expectedOxCount = "1";
+                }
+                int.TryParse(expectedOxCount, out oxidizedCount);
+                chainString = chain;
+            }
+            else if (chainString.Contains("("))
+            { // e.g. 18:2(2OH)
+                var chain = chainString.Split('(')[0];
+                var oxidizedmoiety = chainString.Split('(')[1]; //2OH)
+                //modified by MT 2020/12/11 & 2021/01/12
+                var expectedOxCount = oxidizedmoiety.Replace("O", string.Empty).Replace("H", string.Empty).Replace("(", string.Empty).Replace(")", string.Empty);
+                if (expectedOxCount == string.Empty || expectedOxCount == "")
+                {
+                    expectedOxCount = "1";
+                }
+                else if (oxidizedmoiety.Contains("2OH)") || oxidizedmoiety.Contains("3OH)"))
                 {
                     expectedOxCount = "1";
                 }
@@ -3766,7 +3783,7 @@ namespace Riken.Metabolomics.Lipidomics
             if (moleculeString.Split(' ').Length == 1) return null;
 
             // pattern [1] ADGGA 12:0_12:0_12:0
-            // pattern [2] AHexCer (O-14:0)16:1;2O/14:0;O
+            // pattern [2] AHexCer (O-14:0)16:1;2O/14:0;O, ADGGA (O-24:0)17:2_22:6  
             // pattern [3] SM 30:1;2O(FA 14:0)
             // pattern [4] Cer 14:0;2O/12:0;(3OH)(FA 12:0) -> [0]14:0;2O, [1]12:0;(3OH), [3]12:0
             // pattern [5] Cer 14:1;2O/12:0;(2OH)
@@ -3795,10 +3812,11 @@ namespace Riken.Metabolomics.Lipidomics
             Regex reg = new Regex(@"\(d([0-9]*)\)");
             chainString = reg.Replace(chainString, "");
 
-            var pattern2 = @"(\()(?<chain1>.+?)(\))(?<chain2>.+?)(/)(?<chain3>.+?$)";
+            var pattern2 = @"(\()(?<chain1>.+?)(\))(?<chain2>.+?)([/_])(?<chain3>.+?$)";
             var pattern3 = @"(?<chain1>.+?)(\(FA )(?<chain2>.+?)(\))";
             var pattern4 = @"(?<chain1>.+?)(/)(?<chain2>.+?)(\(FA )(?<chain3>.+?)(\))";
             var pattern12 = @"(\(FA )(?<chain2>.+?)(\))(?<chain1>.+?$)";
+            var pattern13 = @"(\()(?<chain1>.+?)(\))(?<chain2>.+?)(_)(?<chain3>.+?$)";
 
             if (chainString.Contains("/") && chainString.Contains("(FA"))
             { // pattern 4
@@ -3827,13 +3845,13 @@ namespace Riken.Metabolomics.Lipidomics
                 }
                 //Console.WriteLine();
             }
-            else if (chainString.Contains("(O-") && chainString.Contains("/"))
+            else if (chainString.Contains("(O-") && Regex.IsMatch(chainString,"[/_]"))
             { // pattern 2
                 var regexes = Regex.Match(chainString, pattern2).Groups;
                 chains = new List<string>() { regexes["chain1"].Value, regexes["chain2"].Value, regexes["chain3"].Value };
                 //Console.WriteLine();
             }
-            else
+             else
             {
                 chainString = chainString.Replace('/', '_');
                 acylArray = chainString.Split('_');

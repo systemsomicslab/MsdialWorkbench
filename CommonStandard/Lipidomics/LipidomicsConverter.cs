@@ -3300,7 +3300,7 @@ namespace CompMs.Common.Lipidomics
             if (chainString.Contains(";"))
             { // e.g. 18:2;2O, 18:2;(2OH)
                 var chain = chainString.Split(';')[0];
-                var oxidizedmoiety = chainString.Split(';')[1]; //2O, (2OH)
+                var oxidizedmoiety = chainString.Split(';')[1]; //2O, O2
                 //modified by MT 2020/12/11 & 2021/01/12
                 var expectedOxCount = oxidizedmoiety.Replace("O", string.Empty).Replace("H", string.Empty).Replace("(", string.Empty).Replace(")", string.Empty);
                 if (expectedOxCount == string.Empty || expectedOxCount == "")
@@ -3319,6 +3319,23 @@ namespace CompMs.Common.Lipidomics
                 var chain = chainString.Split('+')[0]; // 20:3
                 var expectedOxCount = chainString.Split('+')[1].Replace("O", ""); //2
                 if (expectedOxCount == string.Empty || expectedOxCount == "")
+                {
+                    expectedOxCount = "1";
+                }
+                int.TryParse(expectedOxCount, out oxidizedCount);
+                chainString = chain;
+            }
+            else if (chainString.Contains("("))
+            { // e.g. 18:2;2O, 18:2;(2OH)
+                var chain = chainString.Split('(')[0];
+                var oxidizedmoiety = chainString.Split('(')[1]; //2OH)
+                //modified by MT 2020/12/11 & 2021/01/12
+                var expectedOxCount = oxidizedmoiety.Replace("O", string.Empty).Replace("H", string.Empty).Replace("(", string.Empty).Replace(")", string.Empty);
+                if (expectedOxCount == string.Empty || expectedOxCount == "")
+                {
+                    expectedOxCount = "1";
+                }
+                else if (oxidizedmoiety.Contains("2OH)") || oxidizedmoiety.Contains("3OH)"))
                 {
                     expectedOxCount = "1";
                 }
@@ -3505,7 +3522,7 @@ namespace CompMs.Common.Lipidomics
             if (moleculeString.Split(' ').Length == 1) return null;
 
             // pattern [1] ADGGA 12:0_12:0_12:0
-            // pattern [2] AHexCer (O-14:0)16:1;2O/14:0;O
+            // pattern [2] AHexCer (O-14:0)16:1;2O/14:0;O , ADGGA (O-24:0)17:2_22:6  
             // pattern [3] SM 30:1;2O(FA 14:0)
             // pattern [4] Cer 14:0;2O/12:0;(3OH)(FA 12:0) -> [0]14:0;2O, [1]12:0;(3OH), [3]12:0
             // pattern [5] Cer 14:1;2O/12:0;(2OH)
@@ -3534,7 +3551,7 @@ namespace CompMs.Common.Lipidomics
             Regex reg = new Regex(@"\(d([0-9]*)\)");
             chainString = reg.Replace(chainString, "");
 
-            var pattern2 = @"(\()(?<chain1>.+?)(\))(?<chain2>.+?)(/)(?<chain3>.+?$)";
+            var pattern2 = @"(\()(?<chain1>.+?)(\))(?<chain2>.+?)([/_])(?<chain3>.+?$)";
             var pattern3 = @"(?<chain1>.+?)(\(FA )(?<chain2>.+?)(\))";
             var pattern4 = @"(?<chain1>.+?)(/)(?<chain2>.+?)(\(FA )(?<chain3>.+?)(\))";
             var pattern12 = @"(\(FA )(?<chain2>.+?)(\))(?<chain1>.+?$)";
@@ -3566,7 +3583,7 @@ namespace CompMs.Common.Lipidomics
                 }
                 //Console.WriteLine();
             }
-            else if (chainString.Contains("(O-") && chainString.Contains("/"))
+            else if (chainString.Contains("(O-") && Regex.IsMatch(chainString, "[/_]"))
             { // pattern 2
                 var regexes = Regex.Match(chainString, pattern2).Groups;
                 chains = new List<string>() { regexes["chain1"].Value, regexes["chain2"].Value, regexes["chain3"].Value };

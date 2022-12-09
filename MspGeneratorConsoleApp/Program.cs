@@ -29,18 +29,18 @@ namespace CompMs.MspGenerator
 
 
             ///// RTCCS Prediction
-            var workingDirectry = @"D:\mikikot\Desktop\Tsugawa-san_work\20221121_FAHFA\re\";//作業用フォルダ
-            var toPredictFileName = workingDirectry + @"\txt\20221201103217_conventional_notfound.txt"; // 計算させたいInChIKeyとSMILESのリスト
+            //var workingDirectry = @"d:\mikikot\Desktop\Tsugawa-san_work\20221125_nomenclature\padel_re\";//作業用フォルダ
+            //var toPredictFileName = workingDirectry + @"\txt\20221202093945_conventional_notfound.txt"; // 計算させたいInChIKeyとSMILESのリスト
 
-            var predictionWorkingDirectry = @"F:\takahashi\RTprediction\~from_MSP\setting\";
-            var padelDescriptortypes = predictionWorkingDirectry + @"\para_RTCCS327.xml"; //PaDELに計算させるdescriptorを記述したファイル
-            var descriptorSelecerRTFile = predictionWorkingDirectry + @"\para_RT152.txt"; // RT予測に使用するdescriptorのリスト
-            var descriptorSelecerCSSFile = predictionWorkingDirectry + @"\para_ccs327.txt"; // CCS予測に使用するdescriptorのリスト
-            var rScriptAvdModelPath = @predictionWorkingDirectry;// masterRT.csvとmasterCCS.csvとmodelingファイルの入っているフォルダのpath
-            var rtModelingRdsFile = rScriptAvdModelPath + "xgb_padel_evaluation_RT_2020-06-15.rds";
-            var ccsModelingRdsFile = rScriptAvdModelPath + "xgb_padel_evaluation_CCS_2020-06-15.rds";
-            var padelProgramPath = @"F:\takahashi\RTprediction\~from_MSP\PaDEL-Descriptor\";//PaDELのフォルダパス
-            var rLocationPath = @"D:\Program Files\R\R-4.2.1\bin\x64"; // Rのpath
+            //var predictionWorkingDirectry = @"F:\takahashi\RTprediction\~from_MSP\setting\";
+            //var padelDescriptortypes = predictionWorkingDirectry + @"\para_RTCCS327.xml"; //PaDELに計算させるdescriptorを記述したファイル
+            //var descriptorSelecerRTFile = predictionWorkingDirectry + @"\para_RT152.txt"; // RT予測に使用するdescriptorのリスト
+            //var descriptorSelecerCSSFile = predictionWorkingDirectry + @"\para_ccs327.txt"; // CCS予測に使用するdescriptorのリスト
+            //var rScriptAvdModelPath = @predictionWorkingDirectry;// masterRT.csvとmasterCCS.csvとmodelingファイルの入っているフォルダのpath
+            //var rtModelingRdsFile = rScriptAvdModelPath + "xgb_padel_evaluation_RT_2020-06-15.rds";
+            //var ccsModelingRdsFile = rScriptAvdModelPath + "xgb_padel_evaluation_CCS_2020-06-15.rds";
+            //var padelProgramPath = @"F:\takahashi\RTprediction\~from_MSP\PaDEL-Descriptor\";//PaDELのフォルダパス
+            //var rLocationPath = @"D:\Program Files\R\R-4.2.1\bin\x64"; // Rのpath
 
 
             //RtCcsPredictManager.smilesToSdfOnNCDK(workingDirectry, toPredictFileName);
@@ -49,17 +49,17 @@ namespace CompMs.MspGenerator
             //RtCcsPredictManager.runPaDEL(workingDirectry, padelDescriptortypes, padelProgramPath, toPredictFileName);//networkDriveではうまくいかない？
             //Task.WaitAll();
 
-            //var padelOutFileName = workingDirectry + @"\PadelResult\20221201103217_conventional_notfound.csv"; // PaDELで出力されたファイル(csv)
+            //var padelOutFileName = workingDirectry + @"\PadelResult\20221202093945_conventional_notfound.csv"; // PaDELで出力されたファイル(csv)
 
             //RtCcsPredictManager.selectDescriptor(workingDirectry, padelOutFileName, descriptorSelecerRTFile, descriptorSelecerCSSFile);
             //Task.WaitAll();
 
-            //////////////// modeling on R
-            ////////////////RtCcsPredictOnR.generatePredictModel(workingDirectry, rLocationPath, rScriptAvdModelPath);  // modeling on R
-            ////////////////// RT predict
-            //////////////RtCcsPredictOnR.runRTPredict(workingDirectry , rLocationPath, rScriptAvdModelPath, rtModelingRdsFile);
-            /////////////////// CCS predict
-            //////////////RtCcsPredictOnR.runCcsPredict(workingDirectry, rLocationPath, rScriptAvdModelPath, ccsModelingRdsFile); 
+            ////////////////// modeling on R
+            //////////////////RtCcsPredictOnR.generatePredictModel(workingDirectry, rLocationPath, rScriptAvdModelPath);  // modeling on R
+            //////////////////// RT predict
+            ////////////////RtCcsPredictOnR.runRTPredict(workingDirectry , rLocationPath, rScriptAvdModelPath, rtModelingRdsFile);
+            ///////////////////// CCS predict
+            ////////////////RtCcsPredictOnR.runCcsPredict(workingDirectry, rLocationPath, rScriptAvdModelPath, ccsModelingRdsFile); 
 
             /////RT and CCS predict
             //RtCcsPredictOnR.runPredict(workingDirectry, rLocationPath, rScriptAvdModelPath, rtModelingRdsFile, ccsModelingRdsFile);
@@ -67,9 +67,10 @@ namespace CompMs.MspGenerator
 
             ////////// 上記で算出したpredict結果をmerge
             //RtCcsPredictManager.mergeRtAndCcsResultFiles(workingDirectry, toPredictFileName);
+            //Task.WaitAll();
 
             //var predictedFilesDirectry = workingDirectry + @"\predictResult\";//predict結果の入っているフォルダ。前回作成したものと直近に作成したものを入れておく
-            //var dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_20221201_conventional.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
+            //var dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_20221202_conventional.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
 
             //MergeRTandCCSintoMsp.generateDicOfPredictVs2(predictedFilesDirectry, dbFileName);
 
@@ -117,13 +118,13 @@ namespace CompMs.MspGenerator
             ////////////// 複数作成可　配列リストでRT CCS予測ファイルとファイル名オプションを渡す。
             //MergeRTandCCSintoMsp.mergeRTandCCSintoMspVs3(
             //    workingDirectry + "\\" + exportFileName,
-            //    new List<string[]>{ new string[]{mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20221018_conventional.txt","conventional" },
-            //                        new string[]{mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_NCDK_20221018_TUAT.txt" , "TUAT"} },
+            //    new List<string[]>{ new string[]{mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20221202_conventional.txt","conventional" },
+            //                        new string[]{mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_NCDK_20221205_TUAT.txt" , "TUAT"} },
             //    workingDirectry);
 
             ////上書き用　ファイル名オプション
-            //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + @"Msp20220912142947.jointedmsp",
-            //     mspFolder + @"RT_CCS_predictedFile\predictedRTCCSAll_NCDK_20220913_TUAT.txt",
+            //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + @"Msp20221202142137.jointedmsp",
+            //     mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_NCDK_20221205_TUAT.txt",
             //     workingDirectry,
             //     "TUAT");
 
@@ -665,17 +666,18 @@ namespace CompMs.MspGenerator
 
                 //// RT、CCSの予測結果を求め、mspGeneratorで使っている形式で出力する
                 //// NCDKの結果は 235 descriptor(adductScoreを含まない)
-                //var workingFolder = @"D:\mikikot\Desktop\Tsugawa-san_work\20221018_new_lipid_PT\msp\NCDK\txt\";
+                //var workingFolder = @"d:\mikikot\Desktop\Tsugawa-san_work\20221125_nomenclature\NCDK_re\";
                 //var rtTrainModel = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\NCDK_predictionModel\NCDK_TUAT_RT_202209061305.model";
-                //var rtTestFile = workingFolder + @"\FAHFA-DMED_20221124100326.txt";
+                //var rtTestFile = workingFolder + @"\20221202145236_TUAT_notfound.txt20221202150423.txt";
                 //var ccsTrainModel = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\NCDK_predictionModel\masterCCS_NCDK_202101081945.model";
                 //var ccsTestFile = rtTestFile;
-                //var resultFile = rtTestFile + @"_predicted.txt";
+                //var resultFile = workingFolder + @"\predictResult\" + @"20221202_predicted.txt";
 
                 //RtCcsPredictOnDotNet.mergeRtAndCcsResultFilesVS2(resultFile, rtTrainModel, rtTestFile, ccsTrainModel, ccsTestFile);
+                //Task.WaitAll();
 
                 //var predictedFilesDirectry = workingFolder + @"\predictResult\";//predict結果の入っているフォルダ。前回作成したものと直近に作成したものを入れておく
-                //var dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_NCDK_20221018_TUAT.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
+                //var dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_NCDK_20221205_TUAT.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
 
                 //MergeRTandCCSintoMsp.generateDicOfPredictVs2(predictedFilesDirectry, dbFileName);
 

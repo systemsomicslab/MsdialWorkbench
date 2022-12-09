@@ -189,7 +189,7 @@
                         <Button Content="Browse"
                                 Command="{Binding EnzymeSetCommand, Mode=OneTime}"
                                 Width="64" Height="24" Grid.Column="1" Margin="5,5,0,0"/>
-                        <ItemsControl ItemsSource="{Binding Enzymes, Mode=OneWay}" DisplayMemberPath="Title" VerticalAlignment="Center" Grid.Column="2"/>
+                        <!--<ItemsControl ItemsSource="{Binding Enzymes, Mode=OneWay}" DisplayMemberPath="Title" VerticalAlignment="Center" Grid.Column="2"/>-->
 
                     </Grid>
 
@@ -204,12 +204,12 @@
                         <Button Content="Browse"
                                 Command="{Binding ModificationSetCommand, Mode=OneTime}"
                                 Width="64" Height="24" Grid.Column="1" Margin="5,5,0,0"/>
-                        <GroupBox Header="Fixed:" BorderThickness="0" VerticalAlignment="Center" Grid.Column="2">
+                        <!--<GroupBox Header="Fixed:" BorderThickness="0" VerticalAlignment="Center" Grid.Column="2">
                             <ItemsControl ItemsSource="{Binding FixedModifications, Mode=OneWay}" DisplayMemberPath="Title" Margin="8,0,0,0"/>
                         </GroupBox>
                         <GroupBox Header="Variable:" BorderThickness="0" VerticalAlignment="Center" Grid.Column="3">
                             <ItemsControl ItemsSource="{Binding VariableModifications, Mode=OneWay}" DisplayMemberPath="Title" Margin="8,0,0,0"/>
-                        </GroupBox>
+                        </GroupBox>-->
                     </Grid>
                 </StackPanel>
             </GroupBox>
