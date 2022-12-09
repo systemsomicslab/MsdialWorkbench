@@ -1,29 +1,26 @@
-﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
+﻿using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Parser;
 using MessagePack;
-using System.IO;
+using System.IO.Compression;
 
 namespace CompMs.MsdialCore.DataObj
 {
     [MessagePackObject]
-    public class EadLipidAnnotatorParameterPair : IAnnotatorParameterPair<EadLipidDatabase>
+    public sealed class EadLipidAnnotatorParameterPair : IAnnotatorParameterPair<EadLipidDatabase>
     {
-        private ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> _serializableAnnotator;
-
-        public EadLipidAnnotatorParameterPair(ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> serializableAnnotator, IAnnotationQueryFactory<MsScanMatchResult> annotationQueryFactory) {
-            _serializableAnnotator = serializableAnnotator ?? throw new System.ArgumentNullException(nameof(serializableAnnotator));
+        public EadLipidAnnotatorParameterPair(IAnnotationQueryFactoryGenerationKey<EadLipidDatabase> serializableAnnotatorKey, IAnnotationQueryFactory<MsScanMatchResult> annotationQueryFactory) {
             AnnotationQueryFactory = annotationQueryFactory ?? throw new System.ArgumentNullException(nameof(annotationQueryFactory));
+            SerializableAnnotatorKey = serializableAnnotatorKey ?? throw new System.ArgumentNullException(nameof(serializableAnnotatorKey));
         }
 
         [SerializationConstructor]
-        public EadLipidAnnotatorParameterPair(IReferRestorationKey<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> serializableAnnotatorKey) {
+        public EadLipidAnnotatorParameterPair(IAnnotationQueryFactoryGenerationKey<EadLipidDatabase> serializableAnnotatorKey) {
             SerializableAnnotatorKey = serializableAnnotatorKey ?? throw new System.ArgumentNullException(nameof(serializableAnnotatorKey));
         }
 
         [Key(nameof(SerializableAnnotatorKey))]
-        public IReferRestorationKey<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> SerializableAnnotatorKey { get; private set; }
+        public IAnnotationQueryFactoryGenerationKey<EadLipidDatabase> SerializableAnnotatorKey { get; }
 
         [IgnoreMember]
         public IAnnotationQueryFactory<MsScanMatchResult> AnnotationQueryFactory { get; private set; }
@@ -31,13 +28,16 @@ namespace CompMs.MsdialCore.DataObj
         [IgnoreMember]
         public string AnnotatorID => AnnotationQueryFactory?.AnnotatorId ?? SerializableAnnotatorKey.Key;
 
-        public void Save(Stream stream) {
-            SerializableAnnotatorKey = _serializableAnnotator.Save();
+        public void Save() {
+
         }
 
-        public void Load(Stream stream, ILoadAnnotatorVisitor visitor, IAnnotationQueryFactoryGenerationVisitor factoryGenerationVisitor, EadLipidDatabase dataBase) {
-            _serializableAnnotator = SerializableAnnotatorKey.Accept(visitor, dataBase);
+        public void Load(ILoadAnnotatorVisitor visitor, IAnnotationQueryFactoryGenerationVisitor factoryGenerationVisitor, EadLipidDatabase dataBase) {
             AnnotationQueryFactory = SerializableAnnotatorKey.Accept(factoryGenerationVisitor, visitor, dataBase);
         }
+
+        void IAnnotatorParameterPair<EadLipidDatabase>.Save(ZipArchive archive, string entryName) => Save();
+        void IAnnotatorParameterPair<EadLipidDatabase>.Load(ZipArchive archive, string entryName, ILoadAnnotatorVisitor visitor, IAnnotationQueryFactoryGenerationVisitor factoryGenerationVisitor, EadLipidDatabase database)
+            => Load(visitor, factoryGenerationVisitor, database);
     }
 }

@@ -53,7 +53,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
             dbs.AddMoleculeDataBase(
                 db,
                 new List<IAnnotatorParameterPair<MoleculeDataBase>> {
-                    new MetabolomicsAnnotatorParameterPair(annotator, new AnnotationQueryWithoutIsotopeFactory(annotator, searchParameter))
+                    new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryWithoutIsotopeFactory(annotator, searchParameter))
                 }
             );
             storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].AnnotatorID, dbs.MetabolomicsDataBases[0].DataBase);
@@ -108,7 +108,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
             dbs.AddMoleculeDataBase(
                 db,
                 new List<IAnnotatorParameterPair<MoleculeDataBase>> {
-                    new MetabolomicsAnnotatorParameterPair(annotator, new AnnotationQueryFactory(annotator, storage.MsdialLcmsParameter.PeakPickBaseParam, searchParameter))
+                    new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, storage.MsdialLcmsParameter.PeakPickBaseParam, searchParameter))
                 }
             );
 
@@ -159,7 +159,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
             dbs.AddMoleculeDataBase(
                 db,
                 new List<IAnnotatorParameterPair<MoleculeDataBase>> {
-                    new MetabolomicsAnnotatorParameterPair(annotator, new AnnotationQueryFactory(annotator, storage.MsdialImmsParameter.PeakPickBaseParam, searchParameter))
+                    new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, storage.MsdialImmsParameter.PeakPickBaseParam, searchParameter))
                 }
             );
             storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].AnnotatorID, dbs.MetabolomicsDataBases[0].DataBase);
@@ -212,7 +212,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
             dbs.AddMoleculeDataBase(
                 db,
                 new List<IAnnotatorParameterPair<MoleculeDataBase>> {
-                    new MetabolomicsAnnotatorParameterPair(annotator, new AnnotationQueryFactory(annotator, storage.MsdialLcImMsParameter.PeakPickBaseParam, searchParameter))
+                    new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, storage.MsdialLcImMsParameter.PeakPickBaseParam, searchParameter))
                 }
             );
 
@@ -264,7 +264,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
             dbs.AddMoleculeDataBase(
                 db,
                 new List<IAnnotatorParameterPair<MoleculeDataBase>> {
-                    new MetabolomicsAnnotatorParameterPair(annotator, new AnnotationQueryFactory(annotator, storage.MsdialGcmsParameter.PeakPickBaseParam, searchParameter))
+                    new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, storage.MsdialGcmsParameter.PeakPickBaseParam, searchParameter))
                 }
             );
 

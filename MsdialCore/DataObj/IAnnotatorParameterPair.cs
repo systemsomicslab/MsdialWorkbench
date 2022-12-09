@@ -2,7 +2,7 @@
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Parser;
 using MessagePack;
-using System.IO;
+using System.IO.Compression;
 
 namespace CompMs.MsdialCore.DataObj
 {
@@ -14,7 +14,7 @@ namespace CompMs.MsdialCore.DataObj
         string AnnotatorID { get; }
         IAnnotationQueryFactory<MsScanMatchResult> AnnotationQueryFactory { get; }
 
-        void Save(Stream stream);
-        void Load(Stream stream, ILoadAnnotatorVisitor visitor, IAnnotationQueryFactoryGenerationVisitor factoryGenerationVisitor, TDataBase database);
+        void Save(ZipArchive archive, string entryName);
+        void Load(ZipArchive archive, string entryName, ILoadAnnotatorVisitor visitor, IAnnotationQueryFactoryGenerationVisitor factoryGenerationVisitor, TDataBase database);
     }
 }

@@ -69,6 +69,10 @@ namespace CompMs.App.Msdial.Model.Lcms
         public IAnnotationQueryFactory<MsScanMatchResult> CreateAnnotationQueryFactory(int priority, MoleculeDataBase db, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             return new StandardRestorationKey(AnnotatorID, priority, SearchParameter, AnnotationSource).Accept(_createFuctory(refer), _annotatorVisitor, db);
         }
+
+        public IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> CreateRestorationKey(int priority) {
+            return new StandardRestorationKey(AnnotatorID, priority, SearchParameter, AnnotationSource);
+        }
     }
 
     public sealed class LcmsTextDBAnnotatorSettingModel : BindableBase, IMetabolomicsAnnotatorSettingModel
@@ -104,6 +108,10 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public IAnnotationQueryFactory<MsScanMatchResult> CreateAnnotationQueryFactory(int priority, MoleculeDataBase db, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             return new StandardRestorationKey(AnnotatorID, priority, SearchParameter, AnnotationSource).Accept(_createFuctory(refer), _annotatorVisitor, db);
+        }
+
+        public IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> CreateRestorationKey(int priority) {
+            return new StandardRestorationKey(AnnotatorID, priority, SearchParameter, AnnotationSource);
         }
     }
 
@@ -155,6 +163,10 @@ namespace CompMs.App.Msdial.Model.Lcms
         public IAnnotationQueryFactory<MsScanMatchResult> CreateAnnotationQueryFactory(int priority, ShotgunProteomicsDB db, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             return new ShotgunProteomicsRestorationKey(AnnotatorID, priority, SearchParameter, ProteomicsParameter, SourceType.FastaDB).Accept(_createFuctory(refer), _annotatorVisitor, db);
         }
+
+        public IReferRestorationKey<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> CreateRestorationKey(int priority) {
+            return new ShotgunProteomicsRestorationKey(AnnotatorID, priority, SearchParameter, ProteomicsParameter, SourceType.FastaDB);
+        }
     }
 
     public sealed class LcmsEadLipidAnnotatorSettingModel : BindableBase, IEadLipidAnnotatorSettingModel
@@ -199,6 +211,10 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public IAnnotationQueryFactory<MsScanMatchResult> CreateAnnotationQueryFactory(int priority, EadLipidDatabase db, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             return new EadLipidDatabaseRestorationKey(AnnotatorID, priority, SearchParameter, SourceType.GeneratedLipid).Accept(_createFuctory(refer), _annotatorVisitor, db);
+        }
+
+        public IReferRestorationKey<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> CreateRestorationKey(int priority) {
+            return new EadLipidDatabaseRestorationKey(AnnotatorID, priority, SearchParameter, SourceType.GeneratedLipid);
         }
     }
 

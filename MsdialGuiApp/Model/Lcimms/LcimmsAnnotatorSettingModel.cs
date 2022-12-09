@@ -50,6 +50,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public IAnnotationQueryFactory<MsScanMatchResult> CreateAnnotationQueryFactory(int priority, MoleculeDataBase db, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             return new StandardRestorationKey(AnnotatorID, priority, SearchParameter, AnnotationSource).Accept(_createFuctory(refer), _annotatorVisitor, db);
         }
+
+        public IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> CreateRestorationKey(int priority) {
+            return new StandardRestorationKey(AnnotatorID, priority, SearchParameter, AnnotationSource);
+        }
     }
 
     public sealed class LcimmsTextDBAnnotatorSettingModel : BindableBase, IMetabolomicsAnnotatorSettingModel
@@ -84,6 +88,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public IAnnotationQueryFactory<MsScanMatchResult> CreateAnnotationQueryFactory(int priority, MoleculeDataBase db, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             return new StandardRestorationKey(AnnotatorID, priority, SearchParameter, AnnotationSource).Accept(_createFuctory(refer), _annotatorVisitor, db);
+        }
+
+        public IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> CreateRestorationKey(int priority) {
+            return new StandardRestorationKey(AnnotatorID, priority, SearchParameter, AnnotationSource);
         }
     }
 

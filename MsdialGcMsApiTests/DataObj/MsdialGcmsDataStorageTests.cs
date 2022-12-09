@@ -39,7 +39,7 @@ namespace CompMs.MsdialGcMsApi.DataObj.Tests
             dbs.AddMoleculeDataBase(
                 db,
                 new List<IAnnotatorParameterPair<MoleculeDataBase>> {
-                    new MetabolomicsAnnotatorParameterPair(annotator, new AnnotationQueryFactory(annotator, storage.MsdialGcmsParameter.PeakPickBaseParam, searchParameter))
+                    new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, storage.MsdialGcmsParameter.PeakPickBaseParam, searchParameter))
                 }
             );
 

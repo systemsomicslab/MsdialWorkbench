@@ -84,7 +84,7 @@ namespace CompMs.App.MsdialConsole.Process
             container.DataBases.AddMoleculeDataBase(
                 database,
                 new List<IAnnotatorParameterPair<MoleculeDataBase>> { 
-                    new MetabolomicsAnnotatorParameterPair(annotator, new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, param.TextDbSearchParam))
+                    new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, param.TextDbSearchParam))
                 }
             );
             storage.AddStorage(container);
@@ -187,7 +187,7 @@ namespace CompMs.App.MsdialConsole.Process
             container.DataBases.AddMoleculeDataBase(
                 database,
                 new List<IAnnotatorParameterPair<MoleculeDataBase>> {
-                    new MetabolomicsAnnotatorParameterPair(annotator, new AnnotationQueryWithoutIsotopeFactory(annotator, param.TextDbSearchParam))
+                    new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryWithoutIsotopeFactory(annotator, param.TextDbSearchParam))
                 }
             );
 

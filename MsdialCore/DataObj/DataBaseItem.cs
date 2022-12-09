@@ -38,10 +38,7 @@ namespace CompMs.MsdialCore.DataObj
                     DataBase.Save(dbStream);
                 }
                 foreach (var container in Pairs) {
-                    var annotatorEntry = archive.CreateEntry(Path.Combine(AnnotatorsPath, container.AnnotatorID));
-                    using (var annotatorStream = annotatorEntry.Open()) {
-                        container.Save(annotatorStream);
-                    }
+                    container.Save(archive, Path.Combine(AnnotatorsPath, container.AnnotatorID));
                 }
             }
         }
@@ -53,10 +50,7 @@ namespace CompMs.MsdialCore.DataObj
                     DataBase.Load(dbStream, projectFolderPath);
                 }
                 foreach (var container in Pairs) {
-                    var annotatorEntry = archive.GetEntry(Path.Combine(AnnotatorsPath, container.AnnotatorID));
-                    using (var annotatorStream = annotatorEntry.Open()) {
-                        container.Load(annotatorStream, visitor, factoryGenerationVisitor, DataBase);
-                    }
+                    container.Load(archive, Path.Combine(AnnotatorsPath, container.AnnotatorID), visitor, factoryGenerationVisitor, DataBase);
                 }
             }
         }

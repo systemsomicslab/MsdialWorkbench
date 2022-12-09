@@ -38,7 +38,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             dbs.AddMoleculeDataBase(
                 db,
                 new List<IAnnotatorParameterPair<MoleculeDataBase>> {
-                    new MetabolomicsAnnotatorParameterPair(annotator, new AnnotationQueryFactory(annotator, storage.ParameterBase.PeakPickBaseParam, searchParameter))
+                    new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, storage.ParameterBase.PeakPickBaseParam, searchParameter))
                 }
             );
             storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].AnnotatorID, dbs.MetabolomicsDataBases[0].DataBase);
