@@ -13,12 +13,9 @@ namespace CompMs.MsdialCore.DataObj
     public interface IAnnotatorParameterPair<TQuery, TReference, TResult, TDataBase> where TDataBase : IReferenceDataBase
     {
         string AnnotatorID { get; }
-        MsRefSearchParameterBase SearchParameter { get; }
-        ISerializableAnnotator<TQuery, TReference, TResult, TDataBase> SerializableAnnotator { get; }
+        IAnnotationQueryFactory<MsScanMatchResult> AnnotationQueryFactory { get; }
+
         void Save(Stream stream);
-        void Load(Stream stream, ILoadAnnotatorVisitor visitor, TDataBase database);
-        IAnnotationQueryFactory<MsScanMatchResult> CreateQueryFactory(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, TDataBase database);
-        IAnnotatorContainer<TQuery, TReference, TResult> ConvertToAnnotatorContainer();
-               
+        void Load(Stream stream, ILoadAnnotatorVisitor visitor, IAnnotationQueryFactoryGenerationVisitor factoryGenerationVisitor, TDataBase database);
     }
 }

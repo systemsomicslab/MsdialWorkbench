@@ -141,10 +141,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
 
         class FakeEvaluatorA : IMatchResultEvaluator<MsScanMatchResult>
         {
-            public bool CanEvaluate(MsScanMatchResult result) {
-                return true;
-            }
-
             public List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results) {
                 return results.ToList();
             }
@@ -168,10 +164,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
 
         class FakeEvaluatorB : IMatchResultEvaluator<MsScanMatchResult>
         {
-            public bool CanEvaluate(MsScanMatchResult result) {
-                return true;
-            }
-
             public List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results) {
                 return new List<MsScanMatchResult>(0);
             }

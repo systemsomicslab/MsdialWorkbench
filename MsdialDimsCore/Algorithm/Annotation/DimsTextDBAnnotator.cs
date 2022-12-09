@@ -19,7 +19,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             Id = id;
             referObject = textDB;
             searcher = new MassReferenceSearcher<MoleculeMsReference>(textDB.Database);
-            evaluator = MsScanMatchResultEvaluator.CreateEvaluator(parameter);
+            evaluator = new MsScanMatchResultEvaluator(parameter);
         }
 
         public string Id { get; }
@@ -111,10 +111,6 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
 
         public override MoleculeMsReference Refer(MsScanMatchResult result) {
             return referObject.Refer(result);
-        }
-
-        public bool CanEvaluate(MsScanMatchResult result) {
-            return evaluator.CanEvaluate(result);
         }
     }
 }

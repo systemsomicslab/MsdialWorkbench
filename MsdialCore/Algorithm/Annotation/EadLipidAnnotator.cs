@@ -29,7 +29,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EIEIO, true);
             }
             Parameter = parameter ?? throw new System.ArgumentNullException(nameof(parameter));
-            evaluator = MsScanMatchResultEvaluator.CreateEvaluator(Parameter);
+            evaluator = new MsScanMatchResultEvaluator(Parameter);
         }
 
         public string Id { get; }
@@ -113,10 +113,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public IReferRestorationKey<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> Save() {
             return new EadLipidDatabaseRestorationKey(Key, Priority, Parameter, SourceType.GeneratedLipid);
-        }
-
-        public bool CanEvaluate(MsScanMatchResult result) {
-            return result.AnnotatorID == Id;
         }
     }
 }

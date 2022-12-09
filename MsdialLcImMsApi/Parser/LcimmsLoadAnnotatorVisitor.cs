@@ -10,7 +10,7 @@ using System;
 
 namespace CompMs.MsdialLcImMsApi.Parser
 {
-    internal sealed class LcimmsLoadAnnotatorVisitor : ILoadAnnotatorVisitor
+    public sealed class LcimmsLoadAnnotatorVisitor : ILoadAnnotatorVisitor
     {
         private readonly ParameterBase _parameter;
 
@@ -45,13 +45,13 @@ namespace CompMs.MsdialLcImMsApi.Parser
         }
     }
 
-    internal sealed class LcimmsCreateAnnotationQueryFactoryVisitor : ICreateAnnotationQueryFactoryVisitor {
+    public sealed class LcimmsAnnotationQueryFactoryGenerationVisitor : IAnnotationQueryFactoryGenerationVisitor {
         private readonly PeakPickBaseParameter _peakPickParameter;
         private readonly RefSpecMatchBaseParameter _searchParameter;
         private readonly ProteomicsParameter _proteomicsParameter;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
 
-        public LcimmsCreateAnnotationQueryFactoryVisitor(PeakPickBaseParameter peakPickParameter, RefSpecMatchBaseParameter searchParameter, ProteomicsParameter proteomicsParameter, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+        public LcimmsAnnotationQueryFactoryGenerationVisitor(PeakPickBaseParameter peakPickParameter, RefSpecMatchBaseParameter searchParameter, ProteomicsParameter proteomicsParameter, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             _peakPickParameter = peakPickParameter ?? throw new ArgumentNullException(nameof(peakPickParameter));
             _searchParameter = searchParameter ?? throw new ArgumentNullException(nameof(searchParameter));
             _proteomicsParameter = proteomicsParameter ?? throw new ArgumentNullException(nameof(proteomicsParameter));

@@ -14,6 +14,7 @@ using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialImmsCore.Algorithm.Annotation;
 using CompMs.MsdialImmsCore.DataObj;
 using CompMs.MsdialImmsCore.Parameter;
+using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
 using CompMs.MsdialLcImMsApi.DataObj;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
@@ -48,13 +49,14 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
             var db = new MoleculeDataBase(new[] { new MoleculeMsReference { DatabaseID = 7, Name = "TestDBRef" } }, "DummyDB", DataBaseSource.Msp, SourceType.MspDB);
             var searchParameter = new MsRefSearchParameterBase { MassRangeBegin = 300, };
             var dbs = storage.DataBases;
+            DimsMspAnnotator annotator = new DimsMspAnnotator(db, searchParameter, TargetOmics.Metabolomics, "DummyAnnotator", 8);
             dbs.AddMoleculeDataBase(
                 db,
                 new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
-                    new MetabolomicsAnnotatorParameterPair(new DimsMspAnnotator(db, searchParameter, TargetOmics.Metabolomics, "DummyAnnotator", 8), searchParameter) 
+                    new MetabolomicsAnnotatorParameterPair(annotator, new AnnotationQueryWithoutIsotopeFactory(annotator, searchParameter))
                 }
             );
-            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].SerializableAnnotator);
+            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].AnnotatorID, dbs.MetabolomicsDataBases[0].DataBase);
 
             var memory = new MemoryStream();
             var serializer = new MsdialIntegrateSerializer();
@@ -102,14 +104,15 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
             var db = new MoleculeDataBase(new[] { new MoleculeMsReference { DatabaseID = 7, Name = "TestDBRef" } }, "DummyDB", DataBaseSource.Msp, SourceType.MspDB);
             var searchParameter = new MsRefSearchParameterBase { MassRangeBegin = 300, };
             var dbs = storage.DataBases;
+            LcmsMspAnnotator annotator = new LcmsMspAnnotator(db, searchParameter, TargetOmics.Metabolomics, "DummyAnnotator", 8);
             dbs.AddMoleculeDataBase(
                 db,
                 new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
-                    new MetabolomicsAnnotatorParameterPair(new LcmsMspAnnotator(db, searchParameter, TargetOmics.Metabolomics, "DummyAnnotator", 8), searchParameter) 
+                    new MetabolomicsAnnotatorParameterPair(annotator, new AnnotationQueryFactory(annotator, storage.MsdialLcmsParameter.PeakPickBaseParam, searchParameter))
                 }
             );
 
-            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].SerializableAnnotator);
+            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].AnnotatorID, dbs.MetabolomicsDataBases[0].DataBase);
 
             var memory = new MemoryStream();
             var serializer = new MsdialIntegrateSerializer();
@@ -152,13 +155,14 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
             var db = new MoleculeDataBase(new[] { new MoleculeMsReference { DatabaseID = 7, Name = "TestDBRef" } }, "DummyDB", DataBaseSource.Msp, SourceType.MspDB);
             var searchParameter = new MsRefSearchParameterBase { MassRangeBegin = 300, };
             var dbs = storage.DataBases;
+            ImmsMspAnnotator annotator = new ImmsMspAnnotator(db, searchParameter, TargetOmics.Metabolomics, "DummyAnnotator", 8);
             dbs.AddMoleculeDataBase(
                 db,
                 new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
-                    new MetabolomicsAnnotatorParameterPair(new ImmsMspAnnotator(db, searchParameter, TargetOmics.Metabolomics, "DummyAnnotator", 8), searchParameter) 
+                    new MetabolomicsAnnotatorParameterPair(annotator, new AnnotationQueryFactory(annotator, storage.MsdialImmsParameter.PeakPickBaseParam, searchParameter))
                 }
             );
-            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].SerializableAnnotator);
+            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].AnnotatorID, dbs.MetabolomicsDataBases[0].DataBase);
 
             var memory = new MemoryStream();
             var serializer = new MsdialIntegrateSerializer();
@@ -204,14 +208,15 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
             var db = new MoleculeDataBase(new[] { new MoleculeMsReference { DatabaseID = 7, Name = "TestDBRef" } }, "DummyDB", DataBaseSource.Msp, SourceType.MspDB);
             var searchParameter = new MsRefSearchParameterBase { MassRangeBegin = 300, };
             var dbs = storage.DataBases;
+            var annotator = new LcimmsMspAnnotator(db, searchParameter, TargetOmics.Metabolomics, "DummyAnnotator", 8);
             dbs.AddMoleculeDataBase(
                 db,
                 new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
-                    new MetabolomicsAnnotatorParameterPair(new MassAnnotator(db, searchParameter, TargetOmics.Metabolomics, SourceType.MspDB, "DummyAnnotator", 8), searchParameter) 
+                    new MetabolomicsAnnotatorParameterPair(annotator, new AnnotationQueryFactory(annotator, storage.MsdialLcImMsParameter.PeakPickBaseParam, searchParameter))
                 }
             );
 
-            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].SerializableAnnotator);
+            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].AnnotatorID, dbs.MetabolomicsDataBases[0].DataBase);
 
             var memory = new MemoryStream();
             var serializer = new MsdialIntegrateSerializer();
@@ -255,14 +260,15 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
             var db = new MoleculeDataBase(new[] { new MoleculeMsReference { DatabaseID = 7, Name = "TestDBRef" } }, "DummyDB", DataBaseSource.Msp, SourceType.MspDB);
             var searchParameter = new MsRefSearchParameterBase { MassRangeBegin = 300, };
             var dbs = storage.DataBases;
+            MassAnnotator annotator = new MassAnnotator(db, searchParameter, TargetOmics.Metabolomics, SourceType.MspDB, "DummyAnnotator", 8);
             dbs.AddMoleculeDataBase(
                 db,
                 new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
-                    new MetabolomicsAnnotatorParameterPair(new MassAnnotator(db, searchParameter, TargetOmics.Metabolomics, SourceType.MspDB, "DummyAnnotator", 8), searchParameter) 
+                    new MetabolomicsAnnotatorParameterPair(annotator, new AnnotationQueryFactory(annotator, storage.MsdialGcmsParameter.PeakPickBaseParam, searchParameter))
                 }
             );
 
-            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].SerializableAnnotator);
+            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].AnnotatorID, dbs.MetabolomicsDataBases[0].DataBase);
 
             var memory = new MemoryStream();
             var serializer = new MsdialIntegrateSerializer();
@@ -346,8 +352,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
                 Assert.AreEqual(exp.Pairs.Count, act.Pairs.Count);
                 foreach ((var expPair, var actPair) in exp.Pairs.Zip(act.Pairs)) {
                     Assert.AreEqual(expPair.AnnotatorID, actPair.AnnotatorID);
-                    Assert.AreEqual(expPair.SerializableAnnotator.GetType().FullName, actPair.SerializableAnnotator.GetType().FullName);
-                    Assert.AreEqual(expPair.SerializableAnnotator.Key, actPair.SerializableAnnotator.Key);
+                    Assert.AreEqual(expPair.AnnotationQueryFactory.GetType().FullName, actPair.AnnotationQueryFactory.GetType().FullName);
                 }
             }
         }

@@ -131,10 +131,6 @@ namespace CompMs.MsdialCore.Algorithm.Tests
                 _suggested = suggested;
             }
 
-            public bool CanEvaluate(MsScanMatchResult result) {
-                return true;
-            }
-
             public List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results) {
                 throw new NotImplementedException();
             }

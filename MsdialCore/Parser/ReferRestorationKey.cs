@@ -23,7 +23,7 @@ namespace CompMs.MsdialCore.Parser
         public int Priority { get; }
 
         public abstract ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database);
-        public abstract IAnnotationQueryFactory<MsScanMatchResult> Accept(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, MoleculeDataBase database);
+        public abstract IAnnotationQueryFactory<MsScanMatchResult> Accept(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, MoleculeDataBase database);
     }
 
     [MessagePack.MessagePackObject]
@@ -37,7 +37,7 @@ namespace CompMs.MsdialCore.Parser
             return visitor.Visit(this, database);
         }
 
-        public override IAnnotationQueryFactory<MsScanMatchResult> Accept(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, MoleculeDataBase database) {
+        public override IAnnotationQueryFactory<MsScanMatchResult> Accept(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, MoleculeDataBase database) {
             return factoryVisitor.Visit(this, annotatorVisitor.Visit(this, database));
         }
     }
@@ -53,7 +53,7 @@ namespace CompMs.MsdialCore.Parser
             return visitor.Visit(this, database);
         }
 
-        public override IAnnotationQueryFactory<MsScanMatchResult> Accept(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, MoleculeDataBase database) {
+        public override IAnnotationQueryFactory<MsScanMatchResult> Accept(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, MoleculeDataBase database) {
             return factoryVisitor.Visit(this, annotatorVisitor.Visit(this, database));
         }
     }
@@ -76,7 +76,7 @@ namespace CompMs.MsdialCore.Parser
             return visitor.Visit(this, database);
         }
 
-        public override IAnnotationQueryFactory<MsScanMatchResult> Accept(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, MoleculeDataBase database) {
+        public override IAnnotationQueryFactory<MsScanMatchResult> Accept(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, MoleculeDataBase database) {
             return factoryVisitor.Visit(this, annotatorVisitor.Visit(this, database));
         }
     }
@@ -95,7 +95,7 @@ namespace CompMs.MsdialCore.Parser
         public int Priority { get; }
 
         public abstract ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> Accept(ILoadAnnotatorVisitor visitor, ShotgunProteomicsDB database);
-        public abstract IAnnotationQueryFactory<MsScanMatchResult> Accept(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, ShotgunProteomicsDB database);
+        public abstract IAnnotationQueryFactory<MsScanMatchResult> Accept(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, ShotgunProteomicsDB database);
     }
 
     [MessagePack.MessagePackObject]
@@ -124,7 +124,7 @@ namespace CompMs.MsdialCore.Parser
             return visitor.Visit(this, database);
         }
 
-        public override IAnnotationQueryFactory<MsScanMatchResult> Accept(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, ShotgunProteomicsDB database) {
+        public override IAnnotationQueryFactory<MsScanMatchResult> Accept(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, ShotgunProteomicsDB database) {
             return factoryVisitor.Visit(this, annotatorVisitor.Visit(this, database));
         }
     }
@@ -155,7 +155,7 @@ namespace CompMs.MsdialCore.Parser
             return visitor.Visit(this, database);
         }
 
-        public IAnnotationQueryFactory<MsScanMatchResult> Accept(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, EadLipidDatabase database) {
+        public IAnnotationQueryFactory<MsScanMatchResult> Accept(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, EadLipidDatabase database) {
             return factoryVisitor.Visit(this, annotatorVisitor.Visit(this, database));
         }
     }

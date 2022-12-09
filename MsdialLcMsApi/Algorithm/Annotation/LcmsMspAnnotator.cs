@@ -18,7 +18,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             Id = annotatorID;
             ReferObject = mspDB;
             scorer = new MsReferenceScorer(annotatorID, priority, omics, SourceType.MspDB, CollisionType.HCD, true);
-            evaluator = MsScanMatchResultEvaluator.CreateEvaluator(parameter);
+            evaluator = new MsScanMatchResultEvaluator(parameter);
         }
 
         public string Id { get; }
@@ -91,10 +91,6 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
 
         public bool IsAnnotationSuggested(MsScanMatchResult result) {
             return evaluator.IsAnnotationSuggested(result);
-        }
-
-        bool IMatchResultEvaluator<MsScanMatchResult>.CanEvaluate(MsScanMatchResult result) {
-            return evaluator.CanEvaluate(result);
         }
     }
 }

@@ -89,7 +89,7 @@ namespace CompMs.MsdialCore.DataObj
             }
         }
 
-        public static DataBaseStorage Load(Stream stream, ILoadAnnotatorVisitor visitor, string projectFolderPath) {
+        public static DataBaseStorage Load(Stream stream, ILoadAnnotatorVisitor visitor, IAnnotationQueryFactoryGenerationVisitor factoryGenerationVisitor, string projectFolderPath) {
             DataBaseStorage result;
             try {
                 using (var archive = new ZipArchive(stream, ZipArchiveMode.Read, leaveOpen: true)) {
@@ -101,21 +101,21 @@ namespace CompMs.MsdialCore.DataObj
                     foreach (var item in result.MetabolomicsDataBases) {
                         var dbEntry = archive.GetEntry(Path.Combine(MetabolomicsDataBasePath, item.DataBaseID));
                         using (var dbStream = dbEntry.Open()) {
-                            item.Load(dbStream, visitor, null);
+                            item.Load(dbStream, visitor, factoryGenerationVisitor, projectFolderPath);
                         }
                     }
 
                     foreach (var item in result.ProteomicsDataBases) {
                         var dbEntry = archive.GetEntry(Path.Combine(ProteomicsDataBasePath, item.DataBaseID));
                         using (var dbStream = dbEntry.Open()) {
-                            item.Load(dbStream, visitor, projectFolderPath);
+                            item.Load(dbStream, visitor, factoryGenerationVisitor, projectFolderPath);
                         }
                     }
 
                     foreach (var item in result.EadLipidomicsDatabases) {
                         var dbEntry = archive.GetEntry(Path.Combine(EadLipidomicsDataBasePath, item.DataBaseID));
                         using (var dbStream = dbEntry.Open()) {
-                            item.Load(dbStream, visitor, null);
+                            item.Load(dbStream, visitor, factoryGenerationVisitor, projectFolderPath);
                         }
                     }
                 }
@@ -132,17 +132,17 @@ namespace CompMs.MsdialCore.DataObj
         public void SetDataBaseMapper(DataBaseMapper mapper) {
             foreach (var db in MetabolomicsDataBases) {
                 foreach (var pair in db.Pairs) {
-                    mapper.Add(pair.SerializableAnnotator);
+                    mapper.Add(pair.AnnotatorID, db.DataBase);
                 }
             }
             foreach (var db in ProteomicsDataBases) {
                 foreach (var pair in db.Pairs) {
-                    mapper.Add(pair.SerializableAnnotator);
+                    mapper.Add(pair.AnnotatorID, db.DataBase);
                 }
             }
             foreach (var db in EadLipidomicsDatabases) {
                 foreach (var pair in db.Pairs) {
-                    mapper.Add(pair.SerializableAnnotator);
+                    mapper.Add(pair.AnnotatorID, db.DataBase);
                 }
             }
         }
@@ -153,11 +153,11 @@ namespace CompMs.MsdialCore.DataObj
             return mapper;
         }
 
-        public AnnotationQueryFactoryStorage CreateQueryFactories(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor) {
+        public AnnotationQueryFactoryStorage CreateQueryFactories() {
             return new AnnotationQueryFactoryStorage(
-                MetabolomicsDataBases.SelectMany(db => db.CreateQueryFactories(factoryVisitor, annotatorVisitor)),
-                    ProteomicsDataBases.SelectMany(db => db.CreateQueryFactories(factoryVisitor, annotatorVisitor)),
-                    EadLipidomicsDatabases.SelectMany(db => db.CreateQueryFactories(factoryVisitor, annotatorVisitor)));
+                MetabolomicsDataBases.SelectMany(db => db.CreateQueryFactories()),
+                    ProteomicsDataBases.SelectMany(db => db.CreateQueryFactories()),
+                    EadLipidomicsDatabases.SelectMany(db => db.CreateQueryFactories()));
         }
 
         public static DataBaseStorage CreateEmpty() {

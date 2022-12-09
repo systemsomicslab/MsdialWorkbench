@@ -10,7 +10,7 @@ using System;
 
 namespace CompMs.MsdialImmsCore.Parser
 {
-    sealed class ImmsLoadAnnotatorVisitor : ILoadAnnotatorVisitor
+    public sealed class ImmsLoadAnnotatorVisitor : ILoadAnnotatorVisitor
     {
         public ImmsLoadAnnotatorVisitor(ParameterBase parameter) {
             Parameter = parameter;
@@ -45,13 +45,13 @@ namespace CompMs.MsdialImmsCore.Parser
         }
     }
 
-    internal sealed class ImmsCreateAnnotationQueryFactoryVisitor : ICreateAnnotationQueryFactoryVisitor {
+    public sealed class ImmsAnnotationQueryFactoryGenerationVisitor : IAnnotationQueryFactoryGenerationVisitor {
         private readonly PeakPickBaseParameter _peakPickParameter;
         private readonly RefSpecMatchBaseParameter _searchParameter;
         private readonly ProteomicsParameter _proteomicsParameter;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
 
-        public ImmsCreateAnnotationQueryFactoryVisitor(PeakPickBaseParameter peakPickParameter, RefSpecMatchBaseParameter searchParameter, ProteomicsParameter proteomicsParameter, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+        public ImmsAnnotationQueryFactoryGenerationVisitor(PeakPickBaseParameter peakPickParameter, RefSpecMatchBaseParameter searchParameter, ProteomicsParameter proteomicsParameter, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             _peakPickParameter = peakPickParameter ?? throw new ArgumentNullException(nameof(peakPickParameter));
             _searchParameter = searchParameter ?? throw new ArgumentNullException(nameof(searchParameter));
             _proteomicsParameter = proteomicsParameter ?? throw new ArgumentNullException(nameof(proteomicsParameter));

@@ -46,7 +46,7 @@ namespace CompMs.MsdialCore.DataObj
             }
         }
 
-        public void Load(Stream stream, ILoadAnnotatorVisitor visitor, string projectFolderPath) {
+        public void Load(Stream stream, ILoadAnnotatorVisitor visitor, IAnnotationQueryFactoryGenerationVisitor factoryGenerationVisitor, string projectFolderPath) {
             using (var archive = new ZipArchive(stream, ZipArchiveMode.Read, leaveOpen: true)) {
                 var dbEntry = archive.GetEntry(DataBasePath);
                 using (var dbStream = dbEntry.Open()) {
@@ -55,15 +55,14 @@ namespace CompMs.MsdialCore.DataObj
                 foreach (var container in Pairs) {
                     var annotatorEntry = archive.GetEntry(Path.Combine(AnnotatorsPath, container.AnnotatorID));
                     using (var annotatorStream = annotatorEntry.Open()) {
-                        container.Load(annotatorStream, visitor, DataBase);
+                        container.Load(annotatorStream, visitor, factoryGenerationVisitor, DataBase);
                     }
                 }
             }
         }
 
-        public List<IAnnotationQueryFactory<MsScanMatchResult>> CreateQueryFactories(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor) {
-            var result = new List<IAnnotationQueryFactory<MsScanMatchResult>>();
-            return Pairs.Select(pair => pair.CreateQueryFactory(factoryVisitor, annotatorVisitor, DataBase)).ToList();
+        public List<IAnnotationQueryFactory<MsScanMatchResult>> CreateQueryFactories() {
+            return Pairs.Select(pair => pair.AnnotationQueryFactory).ToList();
         }
     }
 }

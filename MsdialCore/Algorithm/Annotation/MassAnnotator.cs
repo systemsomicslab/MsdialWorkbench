@@ -41,7 +41,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             Priority = priority;
             ReferObject = db;
             searcher = new MassReferenceSearcher<MoleculeMsReference>(db.Database);
-            evaluator = MsScanMatchResultEvaluator.CreateEvaluator(Parameter);
+            evaluator = new MsScanMatchResultEvaluator(Parameter);
         }
 
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> ReferObject;
@@ -247,10 +247,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public bool IsAnnotationSuggested(MsScanMatchResult result) {
             return evaluator.IsAnnotationSuggested(result);
-        }
-
-        public bool CanEvaluate(MsScanMatchResult result) {
-            return evaluator.CanEvaluate(result);
         }
     }
 }

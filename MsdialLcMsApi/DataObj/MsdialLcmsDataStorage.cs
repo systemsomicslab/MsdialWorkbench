@@ -31,8 +31,7 @@ namespace CompMs.MsdialLcMsApi.DataObj
         }
 
         public AnnotationQueryFactoryStorage CreateAnnotationQueryFactoryStorage() {
-            var visitor = new LcmsCreateAnnotationQueryFactoryVisitor(MsdialLcmsParameter.PeakPickBaseParam, MsdialLcmsParameter.RefSpecMatchBaseParam, MsdialLcmsParameter.ProteomicsParam, DataBaseMapper);
-            return DataBases.CreateQueryFactories(visitor, new LcmsLoadAnnotatorVisitor(MsdialLcmsParameter));
+            return DataBases.CreateQueryFactories();
         }
 
         public static IMsdialSerializer Serializer { get; } = new MsdialLcmsSerializer();
@@ -45,9 +44,9 @@ namespace CompMs.MsdialLcMsApi.DataObj
                 }
             }
 
-            protected override async Task LoadDataBasesAsync(IStreamManager streamManager, string path, IMsdialDataStorage<ParameterBase> storage, string projectFolderPath) {
+            protected override async Task LoadDataBasesAsync(IStreamManager streamManager, string path, DataBaseMapper mapper, IMsdialDataStorage<ParameterBase> storage, string projectFolderPath) {
                 using (var stream = await streamManager.Get(path).ConfigureAwait(false)) {
-                    storage.DataBases = DataBaseStorage.Load(stream, new LcmsLoadAnnotatorVisitor(storage.Parameter), projectFolderPath);
+                    storage.DataBases = DataBaseStorage.Load(stream, new LcmsLoadAnnotatorVisitor(storage.Parameter), new LcmsAnnotationQueryFactoryGenerationVisitor(storage.Parameter.PeakPickBaseParam, storage.Parameter.RefSpecMatchBaseParam, storage.Parameter.ProteomicsParam, mapper), projectFolderPath);
                 }
             }
         }

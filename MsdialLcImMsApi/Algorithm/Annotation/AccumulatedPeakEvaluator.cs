@@ -15,14 +15,6 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
             _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
         }
 
-        public bool CanEvaluate(AlignmentSpotProperty result) {
-            return _evaluator.CanEvaluate(result.MatchResults.Representative);
-        }
-
-        public bool CanEvaluate(ChromatogramPeakFeature result) {
-            return _evaluator.CanEvaluate(result.MatchResults.Representative);
-        }
-
         List<AlignmentSpotProperty> IMatchResultEvaluator<AlignmentSpotProperty>.FilterByThreshold(IEnumerable<AlignmentSpotProperty> results) {
             return results.Where(result => _evaluator.FilterByThreshold(result.AlignmentDriftSpotFeatures.Select(spot => spot.MatchResults.Representative)).Any()).ToList();
         }

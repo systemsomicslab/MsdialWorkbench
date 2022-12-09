@@ -26,7 +26,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
             db.Sort(comparer);
             this.omics = omics;
             ReferObject = mspDB;
-            evaluator = MsScanMatchResultEvaluator.CreateEvaluator(parameter);
+            evaluator = new MsScanMatchResultEvaluator(parameter);
         }
 
         public string Id { get; }
@@ -279,10 +279,6 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
 
         public bool IsAnnotationSuggested(MsScanMatchResult result) {
             return evaluator.IsAnnotationSuggested(result);
-        }
-
-        bool IMatchResultEvaluator<MsScanMatchResult>.CanEvaluate(MsScanMatchResult result) {
-            return evaluator.CanEvaluate(result);
         }
     }
 }

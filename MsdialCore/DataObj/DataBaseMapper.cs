@@ -48,6 +48,14 @@ namespace CompMs.MsdialCore.DataObj
             return FindPeptideMsReferByAnnotatorID(result?.AnnotatorID)?.Refer(result);
         }
 
+        public void Add(string annoatorId, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            _keyToRefers[annoatorId] = refer;
+        }
+
+        public void Add(string annoatorId, IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer) {
+            _keyToPeptideRefers[annoatorId] = refer;
+        }
+
         public void Add(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             _keyToRefers[refer.Key] = refer;
         }

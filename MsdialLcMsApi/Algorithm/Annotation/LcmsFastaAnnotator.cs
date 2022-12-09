@@ -35,7 +35,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
             ReferObject = reference;
 
             //OriginalOrderedDecoyPeptideMsRef = reference.DecoyPeptideMsRef;
-            evaluator = MsScanMatchResultEvaluator.CreateEvaluator(msrefSearchParameter);
+            evaluator = new MsScanMatchResultEvaluator(msrefSearchParameter);
         }
 
         public string Id { get; }
@@ -219,10 +219,6 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
 
         public bool IsAnnotationSuggested(MsScanMatchResult result) {
             return evaluator.IsAnnotationSuggested(result);
-        }
-
-        bool IMatchResultEvaluator<MsScanMatchResult>.CanEvaluate(MsScanMatchResult result) {
-            return evaluator.CanEvaluate(result);
         }
     }
 }

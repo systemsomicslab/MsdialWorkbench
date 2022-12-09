@@ -9,10 +9,13 @@ namespace CompMs.MsdialCore.Parser
     [MessagePack.Union(3, typeof(StandardRestorationKey))]
     [MessagePack.Union(4, typeof(ShotgunProteomicsRestorationKey))]
     [MessagePack.Union(5, typeof(EadLipidDatabaseRestorationKey))]
-    public interface IReferRestorationKey<in TQuery, TReference, TResult, in TDatabase>
+    public interface IReferRestorationKey<in TQuery, TReference, TResult, in TDatabase> : IAnnotationQueryFactoryGenerationKey<TDatabase>
     {
         ISerializableAnnotator<TQuery, TReference, TResult, TDatabase> Accept(ILoadAnnotatorVisitor visitor, TDatabase database);
-        IAnnotationQueryFactory<MsScanMatchResult> Accept(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, TDatabase database);
+    }
+
+    public interface IAnnotationQueryFactoryGenerationKey<in TDatabase> {
+        IAnnotationQueryFactory<MsScanMatchResult> Accept(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annoatorVIsitor, TDatabase database);
 
         string Key { get; }
 

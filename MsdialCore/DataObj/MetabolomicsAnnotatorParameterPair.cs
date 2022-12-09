@@ -1,6 +1,5 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Parameter;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Parser;
 using MessagePack;
@@ -9,49 +8,36 @@ using System.IO;
 namespace CompMs.MsdialCore.DataObj
 {
     [MessagePackObject]
-    public class MetabolomicsAnnotatorParameterPair : IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>
+    public sealed class MetabolomicsAnnotatorParameterPair : IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>
     {
-        public MetabolomicsAnnotatorParameterPair(
-            ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> serializableAnnotator,
-            MsRefSearchParameterBase searchParameter) {
-            SerializableAnnotator = serializableAnnotator ?? throw new System.ArgumentNullException(nameof(serializableAnnotator));
-            SearchParameter = searchParameter ?? throw new System.ArgumentNullException(nameof(searchParameter));
+        private ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> _serializableAnnotator;
+
+        public MetabolomicsAnnotatorParameterPair(ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> serializableAnnotator, IAnnotationQueryFactory<MsScanMatchResult> annotationQueryFactory) {
+            _serializableAnnotator = serializableAnnotator ?? throw new System.ArgumentNullException(nameof(serializableAnnotator));
+            AnnotationQueryFactory = annotationQueryFactory ?? throw new System.ArgumentNullException(nameof(annotationQueryFactory));
         }
 
         [SerializationConstructor]
-        public MetabolomicsAnnotatorParameterPair(
-            IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> serializableAnnotatorKey,
-            MsRefSearchParameterBase searchParameter) {
+        public MetabolomicsAnnotatorParameterPair(IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> serializableAnnotatorKey) {
             SerializableAnnotatorKey = serializableAnnotatorKey ?? throw new System.ArgumentNullException(nameof(serializableAnnotatorKey));
-            SearchParameter = searchParameter ?? throw new System.ArgumentNullException(nameof(searchParameter));
         }
-
-        [IgnoreMember]
-        public ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> SerializableAnnotator { get; private set; }
 
         [Key(nameof(SerializableAnnotatorKey))]
         public IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> SerializableAnnotatorKey { get; private set; }
 
-        [Key(nameof(SearchParameter))]
-        public MsRefSearchParameterBase SearchParameter { get; }
+        [IgnoreMember]
+        public string AnnotatorID => AnnotationQueryFactory?.AnnotatorId ?? SerializableAnnotatorKey.Key;
 
         [IgnoreMember]
-        public string AnnotatorID => SerializableAnnotator?.Key ?? SerializableAnnotatorKey.Key;
+        public IAnnotationQueryFactory<MsScanMatchResult> AnnotationQueryFactory { get; private set; }
 
         public void Save(Stream stream) {
-            SerializableAnnotatorKey = SerializableAnnotator.Save();
+            SerializableAnnotatorKey = _serializableAnnotator.Save();
         }
 
-        public void Load(Stream stream, ILoadAnnotatorVisitor visitor, MoleculeDataBase dataBase) {
-            SerializableAnnotator = SerializableAnnotatorKey.Accept(visitor, dataBase);
-        }
-
-        public IAnnotationQueryFactory<MsScanMatchResult> CreateQueryFactory(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, MoleculeDataBase dataBase) {
-            return SerializableAnnotatorKey.Accept(factoryVisitor, annotatorVisitor, dataBase);
-        }
-
-        public IAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> ConvertToAnnotatorContainer() {
-            return new AnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>(SerializableAnnotator, SearchParameter);
+        public void Load(Stream stream, ILoadAnnotatorVisitor visitor, IAnnotationQueryFactoryGenerationVisitor factoryGenerationVisitor, MoleculeDataBase dataBase) {
+            _serializableAnnotator = SerializableAnnotatorKey.Accept(visitor, dataBase);
+            AnnotationQueryFactory = SerializableAnnotatorKey.Accept(factoryGenerationVisitor, visitor, dataBase);
         }
     }
 }

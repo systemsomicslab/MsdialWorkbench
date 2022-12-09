@@ -11,10 +11,15 @@ using System.IO;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public class DataBaseSettingModel : BindableBase
+    public sealed class DataBaseSettingModel : BindableBase
     {
+        private readonly MoleculeDataBase _metabolomicsDB = null;
+        private readonly ShotgunProteomicsDB _proteomicsDB = null;
+        private readonly EadLipidDatabase _eadLipidDatabase = null;
+        private readonly ParameterBase _parameter;
+
         public DataBaseSettingModel(ParameterBase parameter) {
-            this.parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
+            _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
             LipidQueryContainer = parameter.LipidQueryContainer;
             LipidQueryContainer.IonMode = parameter.ProjectParam.IonMode;
 
@@ -23,77 +28,57 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public DataBaseSettingModel(ParameterBase parameter, IReferenceDataBase database) {
-            this.parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
+            _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
             switch (database) {
                 case MoleculeDataBase mdb:
-                    metabolomicsDB = mdb;
+                    _metabolomicsDB = mdb;
                     DBSource = mdb.DataBaseSource;
                     break;
                 case ShotgunProteomicsDB pdb:
-                    proteomicsDB = pdb;
+                    _proteomicsDB = pdb;
                     DBSource = pdb.DataBaseSource;
                     ProteomicsParameter = pdb.ProteomicsParameter;
                     break;
                 case EadLipidDatabase ldb:
-                    this.eadLipidDatabase = ldb;
-                    if (this.parameter.CollistionType == CollisionType.OAD) {
+                    _eadLipidDatabase = ldb;
+                    if (parameter.CollistionType == CollisionType.OAD) {
                         DBSource = DataBaseSource.OadLipid;
                     }
                     else {
                         DBSource = DataBaseSource.EieioLipid;
                     }
                     break;
-
             }
             DataBaseID = database.Id;
             IsLoaded = true;
         }
 
         public string DataBasePath {
-            get => dataBasePath;
-            set => SetProperty(ref dataBasePath, value);
+            get => _dataBasePath;
+            set => SetProperty(ref _dataBasePath, value);
         }
-        private string dataBasePath = string.Empty;
+        private string _dataBasePath = string.Empty;
 
         public string DataBaseID {
-            get => dataBaseID;
-            set => SetProperty(ref dataBaseID, value);
+            get => _dataBaseID;
+            set => SetProperty(ref _dataBaseID, value);
         }
-        private string dataBaseID = string.Empty;
+        private string _dataBaseID = string.Empty;
 
         public DataBaseSource DBSource {
-            get => dBSource;
-            set => SetProperty(ref dBSource, value);
+            get => _dBSource;
+            set => SetProperty(ref _dBSource, value);
         }
-        private DataBaseSource dBSource = DataBaseSource.None;
-
-        //public double MassRangeBegin {
-        //    get => massRangeBegin;
-        //    set => SetProperty(ref massRangeBegin, value);
-        //}
-        //private double massRangeBegin;
-
-        //public double MassRangeEnd {
-        //    get => massRangeEnd;
-        //    set => SetProperty(ref massRangeEnd, value);
-        //}
-        //private double massRangeEnd;
+        private DataBaseSource _dBSource = DataBaseSource.None;
 
         public LipidQueryBean LipidQueryContainer { get; }
 
         public ProteomicsParameter ProteomicsParameter { get; }
 
-        private readonly ParameterBase parameter;
-        public TargetOmics TargetOmics => parameter.TargetOmics;
-        public CollisionType CollisionType => parameter.CollistionType;
+        public TargetOmics TargetOmics => _parameter.TargetOmics;
+        public CollisionType CollisionType => _parameter.CollistionType;
 
         public bool IsLoaded { get; }
-
-        private readonly MoleculeDataBase metabolomicsDB = null;
-
-        private readonly ShotgunProteomicsDB proteomicsDB = null;
-
-        private readonly EadLipidDatabase eadLipidDatabase = null;
 
         public override string ToString() {
             return $"{DataBaseID}({DBSource})";
@@ -119,11 +104,11 @@ namespace CompMs.App.Msdial.Model.Setting
         public MoleculeDataBase CreateMoleculeDataBase() {
             switch (DBSource) {
                 case DataBaseSource.Msp:
-                    return metabolomicsDB ?? LoadMspDataBase();
+                    return _metabolomicsDB ?? LoadMspDataBase();
                 case DataBaseSource.Lbm:
-                    return metabolomicsDB ?? LoadLipidDataBase();
+                    return _metabolomicsDB ?? LoadLipidDataBase();
                 case DataBaseSource.Text:
-                    return metabolomicsDB ?? LoadTextDataBase();
+                    return _metabolomicsDB ?? LoadTextDataBase();
                 default:
                     return null;
             }
@@ -132,8 +117,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public ShotgunProteomicsDB CreatePorteomicsDB() {
             switch (DBSource) {
                 case DataBaseSource.Fasta:
-                    return proteomicsDB ?? new ShotgunProteomicsDB(DataBasePath, DataBaseID, 
-                        ProteomicsParameter, this.parameter.ProjectFolderPath);
+                    return _proteomicsDB ?? new ShotgunProteomicsDB(DataBasePath, DataBaseID, ProteomicsParameter, _parameter.ProjectFolderPath);
                 default:
                     return null;
             }
@@ -142,7 +126,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public EadLipidDatabase CreateEieioLipidDatabase() {
             switch (DBSource) {
                 case DataBaseSource.EieioLipid:
-                    return eadLipidDatabase ?? new EadLipidDatabase(Path.GetTempFileName(), DataBaseID, LipidDatabaseFormat.Dictionary, DataBaseSource.EieioLipid);
+                    return _eadLipidDatabase ?? new EadLipidDatabase(Path.GetTempFileName(), DataBaseID, LipidDatabaseFormat.Dictionary, DataBaseSource.EieioLipid);
                 default:
                     return null;
             }
@@ -151,7 +135,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public EadLipidDatabase CreateOadLipidDatabase() {
             switch (DBSource) {
                 case DataBaseSource.OadLipid:
-                    return eadLipidDatabase ?? new EadLipidDatabase(Path.GetTempFileName(), DataBaseID, LipidDatabaseFormat.Dictionary, DataBaseSource.OadLipid);
+                    return _eadLipidDatabase ?? new EadLipidDatabase(Path.GetTempFileName(), DataBaseID, LipidDatabaseFormat.Dictionary, DataBaseSource.OadLipid);
                 default:
                     return null;
             }
@@ -162,7 +146,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         private MoleculeDataBase LoadLipidDataBase() {
-            return new MoleculeDataBase(LibraryHandler.ReadLipidMsLibrary(DataBasePath, parameter), DataBaseID, DataBaseSource.Lbm, SourceType.MspDB);
+            return new MoleculeDataBase(LibraryHandler.ReadLipidMsLibrary(DataBasePath, _parameter), DataBaseID, DataBaseSource.Lbm, SourceType.MspDB);
         }
 
         private MoleculeDataBase LoadTextDataBase() {

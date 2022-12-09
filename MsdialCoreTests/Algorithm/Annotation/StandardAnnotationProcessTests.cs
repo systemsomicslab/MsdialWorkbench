@@ -185,6 +185,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
 
             public string AnnotatorId { get; }
 
+            int IAnnotationQueryFactory<MsScanMatchResult>.Priority => _annotator.Priority;
+
             public MockFactory(string id, MockAnnotator annotator) {
                 AnnotatorId = id;
                 _annotator = annotator;
@@ -196,6 +198,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
 
             MsRefSearchParameterBase IAnnotationQueryFactory<MsScanMatchResult>.PrepareParameter() {
                 return new MsRefSearchParameterBase();
+            }
+
+            public IMatchResultEvaluator<MsScanMatchResult> CreateEvaluator() {
+                return new MsScanMatchResultEvaluator(new MsRefSearchParameterBase());
             }
         }
 
@@ -268,10 +274,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
 
             public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results) {
                 return results.FirstOrDefault();
-            }
-
-            public bool CanEvaluate(MsScanMatchResult result) {
-                return Id == result.AnnotatorID;
             }
         }
     }

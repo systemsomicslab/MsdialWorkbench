@@ -54,7 +54,6 @@ namespace CompMs.App.Msdial.Model.Imms
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             _broker = broker;
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
-            _storage.DataBaseMapper = _storage.DataBases.CreateDataBaseMapper();
 
             var parameter = _storage.Parameter;
             if (parameter.ProviderFactoryParameter is null) {

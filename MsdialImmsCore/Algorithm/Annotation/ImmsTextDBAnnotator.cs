@@ -24,7 +24,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             Id = sourceKey;
             db.Sort(comparer);
             ReferObject = textDB;
-            evaluator = MsScanMatchResultEvaluator.CreateEvaluator(parameter);
+            evaluator = new MsScanMatchResultEvaluator(parameter);
         }
 
         public string Id { get; }
@@ -183,10 +183,6 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
         public bool IsAnnotationSuggested(MsScanMatchResult result) {
             return evaluator.IsAnnotationSuggested(result);
-        }
-
-        public bool CanEvaluate(MsScanMatchResult result) {
-            return evaluator.CanEvaluate(result);
         }
     }
 }

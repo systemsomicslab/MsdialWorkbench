@@ -11,7 +11,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         List<TResult> SelectReferenceMatchResults(IEnumerable<TResult> results);
         bool IsReferenceMatched(TResult result);
         bool IsAnnotationSuggested(TResult result);
-        bool CanEvaluate(TResult result);
     }
 
     public static class MatchResultEvaluatorExtension {
@@ -27,10 +26,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             public ConsumingEvaluatorImpl(IMatchResultEvaluator<TTarget> evaluator, Func<TSource, TTarget> consumer) {
                 _evaluator = evaluator;
                 _consumer = consumer;
-            }
-
-            public bool CanEvaluate(TSource result) {
-                return _evaluator.CanEvaluate(_consumer(result));
             }
 
             public List<TSource> FilterByThreshold(IEnumerable<TSource> results) {
@@ -73,7 +68,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 _isSuggested = isSuggested;
             }
 
-            public bool CanEvaluate(TTarget result) => _evaluator.CanEvaluate(result);
             public List<TTarget> FilterByThreshold(IEnumerable<TTarget> results) => _evaluator.FilterByThreshold(results);
             public bool IsAnnotationSuggested(TTarget result) => _isSuggested(result);
             public bool IsReferenceMatched(TTarget result) => _isRefMatchted(result);

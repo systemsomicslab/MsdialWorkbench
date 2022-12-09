@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Components;
+﻿using Accord.Collections;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
@@ -15,8 +16,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 {
     public interface IAnnotationQueryFactory<out T> {
         string AnnotatorId { get; }
+        int Priority { get; }
         IAnnotationQuery<T> Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter);
         MsRefSearchParameterBase PrepareParameter();
+        IMatchResultEvaluator<MsScanMatchResult> CreateEvaluator();
     }
 
     public sealed class AnnotationQueryFactory : IAnnotationQueryFactory<MsScanMatchResult>
@@ -37,6 +40,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public string AnnotatorId { get; }
+
+        int IAnnotationQueryFactory<MsScanMatchResult>.Priority => _annotator.Priority;
 
         public AnnotationQuery Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter) {
             if (parameter is null) {
@@ -62,6 +67,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             }
             return GetIsotope;
         }
+
+        IMatchResultEvaluator<MsScanMatchResult> IAnnotationQueryFactory<MsScanMatchResult>.CreateEvaluator() {
+            return new MsScanMatchResultEvaluator(_searchParameter);
+        }
     }
 
     public sealed class PepAnnotationQueryFactory : IAnnotationQueryFactory<MsScanMatchResult> {
@@ -80,6 +89,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public string AnnotatorId { get; }
 
+        int IAnnotationQueryFactory<MsScanMatchResult>.Priority => _annotator.Priority;
+
         public PepAnnotationQuery Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter) {
             if (parameter is null) {
                 throw new ArgumentNullException(nameof(parameter));
@@ -94,6 +105,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         MsRefSearchParameterBase IAnnotationQueryFactory<MsScanMatchResult>.PrepareParameter() {
             return new MsRefSearchParameterBase(_searchParameter);
+        }
+
+        IMatchResultEvaluator<MsScanMatchResult> IAnnotationQueryFactory<MsScanMatchResult>.CreateEvaluator() {
+            return new MsScanMatchResultEvaluator(_searchParameter);
         }
     }
 
@@ -110,6 +125,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public string AnnotatorId { get; }
 
+        int IAnnotationQueryFactory<MsScanMatchResult>.Priority => _annotator.Priority;
+
         public AnnotationQuery Create(IMSIonProperty property, IMSScanProperty scan, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter) {
             if (parameter is null) {
                 throw new ArgumentNullException(nameof(parameter));
@@ -123,6 +140,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         MsRefSearchParameterBase IAnnotationQueryFactory<MsScanMatchResult>.PrepareParameter() {
             return new MsRefSearchParameterBase(_searchParameter);
+        }
+
+        IMatchResultEvaluator<MsScanMatchResult> IAnnotationQueryFactory<MsScanMatchResult>.CreateEvaluator() {
+            return new MsScanMatchResultEvaluator(_searchParameter);
         }
     }
 
@@ -156,6 +177,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public string AnnotatorId { get; }
 
+        int IAnnotationQueryFactory<MsScanMatchResult>.Priority => _annotator.Priority;
+
         public AnnotationQueryWithReference Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter) {
             if (parameter is null) {
                 throw new ArgumentNullException(nameof(parameter));
@@ -178,6 +201,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         MsRefSearchParameterBase IAnnotationQueryFactory<MsScanMatchResult>.PrepareParameter() {
             return new MsRefSearchParameterBase(_searchParameter);
+        }
+
+        IMatchResultEvaluator<MsScanMatchResult> IAnnotationQueryFactory<MsScanMatchResult>.CreateEvaluator() {
+            return new MsScanMatchResultEvaluator(_searchParameter);
         }
 
         private static Func<IMSIonProperty, IReadOnlyList<RawPeakElement>, IReadOnlyList<IsotopicPeak>> GetIsotopeGetter(PeakPickBaseParameter peakPickParameter) {

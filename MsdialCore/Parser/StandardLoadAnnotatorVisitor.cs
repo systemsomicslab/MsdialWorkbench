@@ -37,11 +37,11 @@ namespace CompMs.MsdialCore.Parser
         }
     }
 
-    public sealed class StandardCreateAnnotationQueryFactoryVisitor : ICreateAnnotationQueryFactoryVisitor {
+    public sealed class StandardAnnotationQueryFactoryGenerationVisitor : IAnnotationQueryFactoryGenerationVisitor {
         private readonly PeakPickBaseParameter _peakPickParameter;
         private readonly RefSpecMatchBaseParameter _searchParameter;
 
-        public StandardCreateAnnotationQueryFactoryVisitor(PeakPickBaseParameter peakPickParameter, RefSpecMatchBaseParameter searchParameter) {
+        public StandardAnnotationQueryFactoryGenerationVisitor(PeakPickBaseParameter peakPickParameter, RefSpecMatchBaseParameter searchParameter) {
             _peakPickParameter = peakPickParameter ?? throw new ArgumentNullException(nameof(peakPickParameter));
             _searchParameter = searchParameter;
         }       

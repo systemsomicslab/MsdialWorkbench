@@ -24,7 +24,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             Id = annotatorID;
             this.db.Sort(comparer);
             this.ReferObject = textDB;
-            Evaluator = MsScanMatchResultEvaluator.CreateEvaluator(parameter);
+            Evaluator = new MsScanMatchResultEvaluator(parameter);
         }
 
         public string Id { get; }
@@ -182,10 +182,6 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
 
         public bool IsAnnotationSuggested(MsScanMatchResult result) {
             return Evaluator.IsAnnotationSuggested(result);
-        }
-
-        bool IMatchResultEvaluator<MsScanMatchResult>.CanEvaluate(MsScanMatchResult result) {
-            return Evaluator.CanEvaluate(result);
         }
     }
 }

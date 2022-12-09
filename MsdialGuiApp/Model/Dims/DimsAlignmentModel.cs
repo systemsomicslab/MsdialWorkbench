@@ -76,7 +76,7 @@ namespace CompMs.App.Msdial.Model.Dims
             _dataBaseMapper = mapper;
             _matchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
 
-            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databaseStorage, mapper, parameter.PeakPickBaseParam);
+            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databaseStorage, mapper);
 
             InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Dims).AddTo(Disposables);
 

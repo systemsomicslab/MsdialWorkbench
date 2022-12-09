@@ -49,7 +49,7 @@ namespace CompMs.App.MsdialConsole.Process
         private int Execute(ProjectDataStorage projectDataStorage, IMsdialDataStorage<MsdialLcmsParameter> storage, string outputFolder, bool isProjectSaved) {
             var files = storage.AnalysisFiles;
             var tasks = new Task[files.Count];
-            var evaluator = MsScanMatchResultEvaluator.CreateEvaluator(storage.Parameter.MspSearchParam);
+            var evaluator = new MsScanMatchResultEvaluator(storage.Parameter.MspSearchParam);
             var database = new MoleculeDataBase(storage.MspDB, storage.Parameter.MspFilePath, DataBaseSource.Msp, SourceType.MspDB);
             var annotator = new LcmsMspAnnotator(database, storage.Parameter.MspSearchParam, storage.Parameter.TargetOmics, storage.Parameter.MspFilePath, 1);
             var textdatabase = new MoleculeDataBase(storage.TextDB, storage.Parameter.TextDBFilePath, DataBaseSource.Text, SourceType.TextDB);

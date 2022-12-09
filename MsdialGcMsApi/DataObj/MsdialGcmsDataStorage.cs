@@ -30,8 +30,7 @@ namespace CompMs.MsdialGcMsApi.DataObj
         }
 
         public AnnotationQueryFactoryStorage CreateAnnotationQueryFactoryStorage() {
-            var visitor = new StandardCreateAnnotationQueryFactoryVisitor(MsdialGcmsParameter.PeakPickBaseParam, MsdialGcmsParameter.RefSpecMatchBaseParam);
-            return DataBases.CreateQueryFactories(visitor, new StandardLoadAnnotatorVisitor(MsdialGcmsParameter));
+            return DataBases.CreateQueryFactories();
         }
 
         public static IMsdialSerializer Serializer { get; } = new MsdialGcmsSerializer();

@@ -16,13 +16,12 @@ namespace CompMs.MsdialDimsCore.DataObj
         public MsdialDimsParameter MsdialDimsParameter { get; set; }
 
         public AnnotationQueryFactoryStorage CreateAnnotationQueryFactoryStorage() {
-            var visitor = new DimsCreateAnnotationQueryFactoryVisitor(MsdialDimsParameter.PeakPickBaseParam, MsdialDimsParameter.RefSpecMatchBaseParam, MsdialDimsParameter.ProteomicsParam, DataBaseMapper);
-            return DataBases.CreateQueryFactories(visitor, new DimsLoadAnnotatorVisitor(MsdialDimsParameter));
+            return DataBases.CreateQueryFactories();
         }
 
         [IgnoreMember]
-        public ICreateAnnotationQueryFactoryVisitor CreateAnnotationQueryFactoryVisitor
-            => new DimsCreateAnnotationQueryFactoryVisitor(MsdialDimsParameter.PeakPickBaseParam, MsdialDimsParameter.RefSpecMatchBaseParam, MsdialDimsParameter.ProteomicsParam, DataBaseMapper);
+        public IAnnotationQueryFactoryGenerationVisitor CreateAnnotationQueryFactoryVisitor
+            => new DimsAnnotationQueryFactoryGenerationVisitor(MsdialDimsParameter.PeakPickBaseParam, MsdialDimsParameter.RefSpecMatchBaseParam, MsdialDimsParameter.ProteomicsParam, DataBaseMapper);
 
         MsdialDimsParameter IMsdialDataStorage<MsdialDimsParameter>.Parameter => MsdialDimsParameter;
 
@@ -49,9 +48,9 @@ namespace CompMs.MsdialDimsCore.DataObj
                 }
             }
 
-            protected override async Task LoadDataBasesAsync(IStreamManager streamManager, string path, IMsdialDataStorage<ParameterBase> storage, string projectFolderPath) {
+            protected override async Task LoadDataBasesAsync(IStreamManager streamManager, string path, DataBaseMapper mapper, IMsdialDataStorage<ParameterBase> storage, string projectFolderPath) {
                 using (var stream = await streamManager.Get(path).ConfigureAwait(false)) {
-                    storage.DataBases = DataBaseStorage.Load(stream, new DimsLoadAnnotatorVisitor(storage.Parameter), projectFolderPath);
+                    storage.DataBases = DataBaseStorage.Load(stream, new DimsLoadAnnotatorVisitor(storage.Parameter), new DimsAnnotationQueryFactoryGenerationVisitor(storage.Parameter.PeakPickBaseParam, storage.Parameter.RefSpecMatchBaseParam, storage.Parameter.ProteomicsParam, mapper), projectFolderPath);
                 }
             }
         }

@@ -21,6 +21,7 @@ namespace CompMs.App.Msdial.Model.Setting
         MsRefSearchParameterBase SearchParameter { get; }
 
         List<ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> CreateAnnotator(MoleculeDataBase db, int priority, TargetOmics omics);
+        IAnnotationQueryFactory<MsScanMatchResult> CreateAnnotationQueryFactory(int priority, MoleculeDataBase db, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer);
     }
 
     public interface IProteomicsAnnotatorSettingModel : IAnnotatorSettingModel
@@ -28,6 +29,7 @@ namespace CompMs.App.Msdial.Model.Setting
         MsRefSearchParameterBase SearchParameter { get; }
 
         List<ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> CreateAnnotator(ShotgunProteomicsDB db, int priority, TargetOmics omics);
+        IAnnotationQueryFactory<MsScanMatchResult> CreateAnnotationQueryFactory(int priority, ShotgunProteomicsDB db, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer);
     }
 
     public interface IEadLipidAnnotatorSettingModel : IAnnotatorSettingModel
@@ -35,6 +37,7 @@ namespace CompMs.App.Msdial.Model.Setting
         MsRefSearchParameterBase SearchParameter { get; }
 
         List<ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>> CreateAnnotator(EadLipidDatabase db, int priority);
+        IAnnotationQueryFactory<MsScanMatchResult> CreateAnnotationQueryFactory(int priority, EadLipidDatabase db, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer);
     }
 
     public interface IAnnotatorSettingModelFactory
