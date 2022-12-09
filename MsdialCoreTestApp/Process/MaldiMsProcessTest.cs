@@ -83,7 +83,7 @@ namespace CompMs.App.MsdialConsole.Process
             container.DataBases = DataBaseStorage.CreateEmpty();
             container.DataBases.AddMoleculeDataBase(
                 database,
-                new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> { 
+                new List<IAnnotatorParameterPair<MoleculeDataBase>> { 
                     new MetabolomicsAnnotatorParameterPair(annotator, new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, param.TextDbSearchParam))
                 }
             );
@@ -186,7 +186,7 @@ namespace CompMs.App.MsdialConsole.Process
             container.DataBases = new DataBaseStorage(null, null, null);
             container.DataBases.AddMoleculeDataBase(
                 database,
-                new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
+                new List<IAnnotatorParameterPair<MoleculeDataBase>> {
                     new MetabolomicsAnnotatorParameterPair(annotator, new AnnotationQueryWithoutIsotopeFactory(annotator, param.TextDbSearchParam))
                 }
             );

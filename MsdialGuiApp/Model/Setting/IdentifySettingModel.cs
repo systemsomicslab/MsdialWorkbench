@@ -2,9 +2,7 @@
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
-using CompMs.Common.Proteomics.DataObj;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -36,8 +34,8 @@ namespace CompMs.App.Msdial.Model.Setting
             AnnotatorModels = new ObservableCollection<IAnnotatorSettingModel>(annotators.Select(pair => pair.Model));
         }
 
-        private static void Restore<TQuery, TReference, TResult, TDataBase>(
-            IEnumerable<DataBaseItem<TQuery, TReference, TResult, TDataBase>> items,
+        private static void Restore<TDataBase>(
+            IEnumerable<DataBaseItem<TDataBase>> items,
             IList<DataBaseSettingModel> dataBaseModels,
             IList<(int, IAnnotatorSettingModel)> annotatorModels,
             IAnnotatorSettingModelFactory annotatorFactory,
@@ -176,7 +174,7 @@ namespace CompMs.App.Msdial.Model.Setting
                             if (db is null) {
                                 return;
                             }
-                            var results = new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>();
+                            var results = new List<IAnnotatorParameterPair<MoleculeDataBase>>();
                             foreach (var annotatorModel in group) {
                                 var index = AnnotatorModels.IndexOf(annotatorModel);
                                 var annotators = annotatorModel.CreateAnnotator(db, AnnotatorModels.Count - index, parameter.TargetOmics);
@@ -205,7 +203,7 @@ namespace CompMs.App.Msdial.Model.Setting
                             if (db is null) {
                                 return;
                             }
-                            var results = new List<IAnnotatorParameterPair<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>>();
+                            var results = new List<IAnnotatorParameterPair<ShotgunProteomicsDB>>();
                             foreach (var annotatorModel in group) {
                                 var index = AnnotatorModels.IndexOf(annotatorModel);
                                 var annotators = annotatorModel.CreateAnnotator(db, AnnotatorModels.Count - index, parameter.TargetOmics);
@@ -234,7 +232,7 @@ namespace CompMs.App.Msdial.Model.Setting
                             if (db is null) {
                                 return;
                             }
-                            var results = new List<IAnnotatorParameterPair<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>>();
+                            var results = new List<IAnnotatorParameterPair<EadLipidDatabase>>();
                             foreach (var annotatorModel in group) {
                                 var index = AnnotatorModels.IndexOf(annotatorModel);
                                 var annotators = annotatorModel.CreateAnnotator(db, AnnotatorModels.Count - index);

@@ -42,14 +42,14 @@ namespace CompMs.App.MsdialConsole.Process
             var mspAnnotator = new ImmsMspAnnotator(mdb, storage.Parameter.MspSearchParam, storage.Parameter.TargetOmics, "MspDB", -1);
             db.AddMoleculeDataBase(
                 mdb,
-                new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
+                new List<IAnnotatorParameterPair<MoleculeDataBase>> {
                     new MetabolomicsAnnotatorParameterPair(mspAnnotator, new AnnotationQueryFactory(mspAnnotator, storage.Parameter.PeakPickBaseParam, storage.Parameter.MspSearchParam))
                 });
             var tdb = new MoleculeDataBase(storage.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB);
             var textDBAnnotator = new ImmsTextDBAnnotator(tdb, storage.Parameter.TextDbSearchParam, "TextDB", -1);
             db.AddMoleculeDataBase(
                 tdb,
-                new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
+                new List<IAnnotatorParameterPair<MoleculeDataBase>> {
                     new MetabolomicsAnnotatorParameterPair(textDBAnnotator, new AnnotationQueryFactory(textDBAnnotator, storage.Parameter.PeakPickBaseParam, storage.Parameter.TextDbSearchParam))
                 });
             var evaluator = FacadeMatchResultEvaluator.FromDataBases(db);

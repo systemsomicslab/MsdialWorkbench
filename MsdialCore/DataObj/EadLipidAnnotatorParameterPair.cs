@@ -8,7 +8,7 @@ using System.IO;
 namespace CompMs.MsdialCore.DataObj
 {
     [MessagePackObject]
-    public class EadLipidAnnotatorParameterPair : IAnnotatorParameterPair<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>
+    public class EadLipidAnnotatorParameterPair : IAnnotatorParameterPair<EadLipidDatabase>
     {
         private ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> _serializableAnnotator;
 

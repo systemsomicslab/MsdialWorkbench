@@ -9,7 +9,7 @@ using System.IO;
 namespace CompMs.MsdialCore.DataObj
 {
     [MessagePackObject]
-    public sealed class ProteomicsAnnotatorParameterPair : IAnnotatorParameterPair<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>
+    public sealed class ProteomicsAnnotatorParameterPair : IAnnotatorParameterPair<ShotgunProteomicsDB>
     {
         private ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> _serializableAnnotator;
 

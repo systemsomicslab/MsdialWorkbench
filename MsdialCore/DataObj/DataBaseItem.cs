@@ -10,11 +10,11 @@ using System.Linq;
 namespace CompMs.MsdialCore.DataObj
 {
     [MessagePackObject]
-    public class DataBaseItem<TQuery, TReference, TResult, TDataBase> where TDataBase: IReferenceDataBase
+    public sealed class DataBaseItem<TDataBase> where TDataBase: IReferenceDataBase
     {
         public DataBaseItem(
             TDataBase dataBase,
-            List<IAnnotatorParameterPair<TQuery, TReference, TResult, TDataBase>> pairs) {
+            List<IAnnotatorParameterPair<TDataBase>> pairs) {
             DataBase = dataBase;
             Pairs = pairs;
         }
@@ -26,7 +26,7 @@ namespace CompMs.MsdialCore.DataObj
         public TDataBase DataBase { get; }
 
         [Key(nameof(Pairs))]
-        public List<IAnnotatorParameterPair<TQuery, TReference, TResult, TDataBase>> Pairs { get; }
+        public List<IAnnotatorParameterPair<TDataBase>> Pairs { get; }
 
         private static readonly string DataBasePath = "DataBase";
         private static readonly string AnnotatorsPath = "Annotators";

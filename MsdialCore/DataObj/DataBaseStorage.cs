@@ -1,9 +1,4 @@
-﻿using Accord.Diagnostics;
-using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
-using CompMs.Common.MessagePack;
-using CompMs.Common.Proteomics.DataObj;
-using CompMs.MsdialCore.Algorithm.Annotation;
+﻿using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.Parser;
 using MessagePack;
 using System.Collections.Generic;
@@ -19,39 +14,39 @@ namespace CompMs.MsdialCore.DataObj
         // MessagePack use this constructor
         [SerializationConstructor]
         public DataBaseStorage(
-            List<DataBaseItem<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> metabolomicsDataBases,
-            List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> proteomicsDataBases,
-            List<DataBaseItem<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>> eadLipidomicsDataBases) {
-            MetabolomicsDataBases = metabolomicsDataBases ?? new List<DataBaseItem<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>();
-            ProteomicsDataBases = proteomicsDataBases ?? new List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>>();
-            EadLipidomicsDatabases = eadLipidomicsDataBases ?? new List<DataBaseItem<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>>();
+            List<DataBaseItem<MoleculeDataBase>> metabolomicsDataBases,
+            List<DataBaseItem<ShotgunProteomicsDB>> proteomicsDataBases,
+            List<DataBaseItem<EadLipidDatabase>> eadLipidomicsDataBases) {
+            MetabolomicsDataBases = metabolomicsDataBases ?? new List<DataBaseItem<MoleculeDataBase>>();
+            ProteomicsDataBases = proteomicsDataBases ?? new List<DataBaseItem<ShotgunProteomicsDB>>();
+            EadLipidomicsDatabases = eadLipidomicsDataBases ?? new List<DataBaseItem<EadLipidDatabase>>();
         }
 
         [Key(nameof(MetabolomicsDataBases))]
-        public List<DataBaseItem<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> MetabolomicsDataBases { get; }
+        public List<DataBaseItem<MoleculeDataBase>> MetabolomicsDataBases { get; }
 
         [Key(nameof(ProteomicsDataBases))]
-        public List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> ProteomicsDataBases { get; }
+        public List<DataBaseItem<ShotgunProteomicsDB>> ProteomicsDataBases { get; }
 
         [Key(nameof(EadLipidomicsDatabases))]
-        public List<DataBaseItem<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>> EadLipidomicsDatabases { get; }
+        public List<DataBaseItem<EadLipidDatabase>> EadLipidomicsDatabases { get; }
 
         public void AddMoleculeDataBase(
             MoleculeDataBase db,
-            List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> annotators) {
-            MetabolomicsDataBases.Add(new DataBaseItem<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>(db, annotators));
+            List<IAnnotatorParameterPair<MoleculeDataBase>> annotators) {
+            MetabolomicsDataBases.Add(new DataBaseItem<MoleculeDataBase>(db, annotators));
         }
 
         public void AddProteomicsDataBase(
             ShotgunProteomicsDB db,
-            List<IAnnotatorParameterPair<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> annotators) {
-            ProteomicsDataBases.Add(new DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>(db, annotators));
+            List<IAnnotatorParameterPair<ShotgunProteomicsDB>> annotators) {
+            ProteomicsDataBases.Add(new DataBaseItem<ShotgunProteomicsDB>(db, annotators));
         }
 
         public void AddEadLipidomicsDataBase(
             EadLipidDatabase db,
-            List<IAnnotatorParameterPair<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>> annotators) {
-            EadLipidomicsDatabases.Add(new DataBaseItem<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>(db, annotators));
+            List<IAnnotatorParameterPair<EadLipidDatabase>> annotators) {
+            EadLipidomicsDatabases.Add(new DataBaseItem<EadLipidDatabase>(db, annotators));
         }
 
         private static readonly string StoragePath = "Storage";
@@ -122,9 +117,9 @@ namespace CompMs.MsdialCore.DataObj
             }
             catch (InvalidDataException) {
                 result = new DataBaseStorage(
-                    new List<DataBaseItem<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>(),
-                    new List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>>(),
-                    new List<DataBaseItem<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>>());
+                    new List<DataBaseItem<MoleculeDataBase>>(),
+                    new List<DataBaseItem<ShotgunProteomicsDB>>(),
+                    new List<DataBaseItem<EadLipidDatabase>>());
             }
             return result;
         }
@@ -162,9 +157,9 @@ namespace CompMs.MsdialCore.DataObj
 
         public static DataBaseStorage CreateEmpty() {
             return new DataBaseStorage(
-                new List<DataBaseItem<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>(),
-                new List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>>(),
-                new List<DataBaseItem<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>>());
+                new List<DataBaseItem<MoleculeDataBase>>(),
+                new List<DataBaseItem<ShotgunProteomicsDB>>(),
+                new List<DataBaseItem<EadLipidDatabase>>());
         }
     }
 }

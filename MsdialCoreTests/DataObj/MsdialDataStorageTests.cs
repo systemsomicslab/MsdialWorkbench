@@ -37,7 +37,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             MassAnnotator annotator = new MassAnnotator(db, searchParameter, TargetOmics.Metabolomics, SourceType.MspDB, "DummyAnnotator", 8);
             dbs.AddMoleculeDataBase(
                 db,
-                new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
+                new List<IAnnotatorParameterPair<MoleculeDataBase>> {
                     new MetabolomicsAnnotatorParameterPair(annotator, new AnnotationQueryFactory(annotator, storage.ParameterBase.PeakPickBaseParam, searchParameter))
                 }
             );
