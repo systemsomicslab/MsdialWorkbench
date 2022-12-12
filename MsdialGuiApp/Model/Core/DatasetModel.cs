@@ -10,6 +10,7 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialIntegrate.Parser;
 using Microsoft.Win32;
+using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.IO;
@@ -29,7 +30,7 @@ namespace CompMs.App.Msdial.Model.Core
         public DatasetModel(IMsdialDataStorage<ParameterBase> storage, IMessageBroker broker) {
             Storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _broker = broker;
-            _projectBaseParameter = new ProjectBaseParameterModel(Storage.Parameter.ProjectParam);
+            _projectBaseParameter = new ProjectBaseParameterModel(Storage.Parameter.ProjectParam).AddTo(Disposables);
             var files = new AnalysisFileBeanModelCollection(Storage.AnalysisFiles.Select(file => new AnalysisFileBeanModel(file)));
             _analysisFileBeanModelCollection = files;
             AnalysisFilePropertyResetModel = new AnalysisFilePropertyResetModel(files, _projectBaseParameter);

@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.ViewModel.Chart;
 using System;
 using System.Globalization;
@@ -19,6 +20,9 @@ namespace CompMs.App.Msdial.ViewModel.Converter
 
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture) {
             if (values.Length >= 2 && values[0] is AlignmentSpotPropertyModel spot && values[1] is IObservable<IBarItemsLoader> loader) {
+                if (values.Length >= 3 && values[2] is FileClassPropertiesModel fileClasses) {
+                    return new SmallClassBarChartViewModel(SpotBarItemCollection.Create(spot, loader), fileClasses);
+                }
                 return new SmallClassBarChartViewModel(SpotBarItemCollection.Create(spot, loader));
             }
             if (values.Length >= 1 && values[0] is SpotBarItemCollection collection) {

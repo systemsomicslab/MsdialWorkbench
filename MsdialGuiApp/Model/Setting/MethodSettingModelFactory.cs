@@ -489,7 +489,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            var method = new ImagingImmsMethodModel(_analysisFileBeanModelCollection, storage);
+            var method = new ImagingImmsMethodModel(_analysisFileBeanModelCollection, storage, _projectBaseParameter);
             return method;
         }
     }

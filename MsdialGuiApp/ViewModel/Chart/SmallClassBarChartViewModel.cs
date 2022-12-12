@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
@@ -9,19 +10,24 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    public class SmallClassBarChartViewModel : ViewModelBase
+    internal sealed class SmallClassBarChartViewModel : ViewModelBase
     {
-        public SmallClassBarChartViewModel(SpotBarItemCollection collection) {
+        public SmallClassBarChartViewModel(SpotBarItemCollection collection, FileClassPropertiesModel fileClasses = null) {
             Collection = collection;
             var collectionChanged = Collection
                 .CollectionChangedAsObservable()
                 .ToUnit()
                 .StartWith(Unit.Default)
                 .Select(_ => Collection);
-            HorizontalAxis = collectionChanged
-                .Select(c => c.Select(item => item.Class).ToArray())
-                .ToReactiveCategoryAxisManager()
-                .AddTo(Disposables);
+            if (fileClasses is null) {
+                HorizontalAxis = collectionChanged
+                    .Select(c => c.Select(item => item.Class).ToArray())
+                    .ToReactiveCategoryAxisManager()
+                    .AddTo(Disposables);
+            }
+            else {
+                HorizontalAxis = fileClasses.OrderedClasses.ToReactiveCategoryAxisManager().AddTo(Disposables);
+            }
             VerticalAxis = collectionChanged
                 .Where(c => c.Count > 0)
                 .Select(c => (0d, c.Max(item => item.Height)))

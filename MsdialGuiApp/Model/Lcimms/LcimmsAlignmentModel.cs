@@ -260,10 +260,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var classBrush = new KeyBrushMapper<BarItem, string>(classToColor, item => item.Class, Colors.Blue);
             var barItemsLoaderData = new BarItemsLoaderData("Loader", "Intensity", observableBarItemsLoader, Observable.Return(true));
             var barItemsLoaderDataProperty = new ReactiveProperty<BarItemsLoaderData>(barItemsLoaderData).AddTo(Disposables);
-            RtBarChartModel = new BarChartModel(accumulatedTarget, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush), projectBaseParameter).AddTo(Disposables);
-            DtBarChartModel = new BarChartModel(target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush), projectBaseParameter).AddTo(Disposables);
+            RtBarChartModel = new BarChartModel(accumulatedTarget, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush), projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
+            DtBarChartModel = new BarChartModel(target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush), projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
 
-            AlignmentSpotTableModel = new LcimmsAlignmentSpotTableModel(driftProps, target, Observable.Return(classBrush), observableBarItemsLoader).AddTo(Disposables);
+            AlignmentSpotTableModel = new LcimmsAlignmentSpotTableModel(driftProps, target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, observableBarItemsLoader).AddTo(Disposables);
 
             MsdecResult = target.Where(t => t != null)
                 .Select(t => loader.LoadMSDecResult(t.MasterAlignmentID))

@@ -14,7 +14,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    internal sealed class ProjectBaseParameterModel : BindableBase
+    internal sealed class ProjectBaseParameterModel : DisposableModelBase
     {
         private readonly ProjectBaseParameter _projectParameter;
 
@@ -48,7 +48,7 @@ namespace CompMs.App.Msdial.Model.DataObj
                     Color.FromArgb(_classnameToColorBytes[class_][3], _classnameToColorBytes[class_][0], _classnameToColorBytes[class_][1], _classnameToColorBytes[class_][2]),
                     _classnameToOrder[class_]));
             _classProperties = new ObservableCollection<FileClassPropertyModel>(properties);
-            ClassProperties = new ReadOnlyObservableCollection<FileClassPropertyModel>(_classProperties);
+            ClassProperties = new FileClassPropertiesModel(_classProperties).AddTo(Disposables);
 
             _classProperties.ObserveRemoveChanged().Subscribe(property =>
             {
@@ -75,7 +75,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         private readonly Dictionary<string, int> _classnameToOrder;
         private readonly Dictionary<string, List<byte>> _classnameToColorBytes;
 
-        public ReadOnlyObservableCollection<FileClassPropertyModel> ClassProperties { get; }
+        public FileClassPropertiesModel ClassProperties { get; }
         private readonly ObservableCollection<FileClassPropertyModel> _classProperties;
 
         public bool IsBoxPlotForAlignmentResult {
