@@ -15,7 +15,9 @@ namespace CompMs.Graphics.IO
         public IElementFormatter Formatter { get; set; } = new NoneFormatter();
 
 
+#pragma warning disable 67
         public event EventHandler CanExecuteChanged;
+#pragma warning restore 67
 
         public bool CanExecute(object parameter) {
             return true;

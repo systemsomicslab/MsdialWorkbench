@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Table;
 using CompMs.Graphics.Base;
 using Reactive.Bindings;
@@ -46,13 +47,16 @@ namespace CompMs.App.Msdial.Model.Dims
             ObservableCollection<AlignmentSpotPropertyModel> spots,
             IReactiveProperty<AlignmentSpotPropertyModel> target,
             IObservable<IBrushMapper<BarItem>> classBrush,
+            FileClassPropertiesModel classProperties,
             IObservable<IBarItemsLoader> barItemsLoader)
             : base(spots, target, spots.Select(spot => spot.MassCenter).DefaultIfEmpty().Min(), spots.Select(spot => spot.MassCenter).DefaultIfEmpty().Max()) {
             ClassBrush = classBrush;
             BarItemsLoader = barItemsLoader;
+            FileClassProperties = classProperties;
         }
 
         public IObservable<IBrushMapper<BarItem>> ClassBrush { get; }
         public IObservable<IBarItemsLoader> BarItemsLoader { get; }
+        public FileClassPropertiesModel FileClassProperties { get; }
     }
 }

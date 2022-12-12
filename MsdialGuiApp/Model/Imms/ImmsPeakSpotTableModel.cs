@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Table;
 using CompMs.Graphics.Base;
 using Reactive.Bindings;
@@ -48,16 +49,19 @@ namespace CompMs.App.Msdial.Model.Imms
             ObservableCollection<AlignmentSpotPropertyModel> spots,
             IReactiveProperty<AlignmentSpotPropertyModel> target,
             IObservable<IBrushMapper<BarItem>> classBrush,
+            FileClassPropertiesModel classProperties,
             IObservable<IBarItemsLoader> barItemsLoader)
             : base(spots, target,
                   spots.Select(peak => peak.MassCenter).DefaultIfEmpty().Min(), spots.Select(peak => peak.MassCenter).DefaultIfEmpty().Max(),
                   spots.Select(peak => peak.TimesCenter).DefaultIfEmpty().Min(), spots.Select(peak => peak.TimesCenter).DefaultIfEmpty().Max()) {
             ClassBrush = classBrush;
             BarItemsLoader = barItemsLoader;
+            FileClassProperties = classProperties;
         }
 
         public IObservable<IBrushMapper<BarItem>> ClassBrush { get; }
         public IObservable<IBarItemsLoader> BarItemsLoader { get; }
+        public FileClassPropertiesModel FileClassProperties { get; }
     }
 
     internal sealed class ImmsAnalysisPeakTableModel : ImmsPeakSpotTableModel<ChromatogramPeakFeatureModel>
