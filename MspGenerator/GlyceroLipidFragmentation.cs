@@ -1178,6 +1178,11 @@ namespace CompMs.MspGenerator
                 var fra01comment = "[M+H]+ Precursor Mass";
                 fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
 
+                //var fra02mass = fra01mass - MassDictionary.H2OMass;
+                //var fra02int = 10;
+                //var fra02comment = "[M+H]+ -H2O";
+                //fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+
                 var fra04mass = fra01mass - (12 * 2 + MassDictionary.HydrogenMass * 8 + MassDictionary.NitrogenMass + MassDictionary.OxygenMass * 4 + MassDictionary.PhosphorusMass);
                 var fra04int = 999;
                 var fra04comment = "NL of C2H8NO4P";

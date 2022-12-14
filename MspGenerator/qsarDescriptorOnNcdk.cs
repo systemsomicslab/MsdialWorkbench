@@ -88,7 +88,7 @@ namespace CompMs.MspGenerator
 
                 var descriptorsAll = new Dictionary<long, Dictionary<string, double>>();
                 ParallelOptions parallelOptions = new ParallelOptions();
-                parallelOptions.MaxDegreeOfParallelism = 4;
+                parallelOptions.MaxDegreeOfParallelism = 1;
                 Parallel.For(0, queries.Count, parallelOptions, i =>
                 {
                     var id = long.Parse(queries[i][0]);

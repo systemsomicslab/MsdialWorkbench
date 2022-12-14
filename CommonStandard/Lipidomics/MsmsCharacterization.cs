@@ -57,9 +57,12 @@ namespace CompMs.Common.Lipidomics
                         + MassDiffDictionary.OxygenMass * 4
                         + MassDiffDictionary.PhosphorusMass
                         + Proton;
+                    var PEHeader = 141.019094261 + Proton;
                     var isClassIonFound2 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEHeaderLoss, 5.0);
                     var isClassIonFound3 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEspecific, 1.0);
+                    var isClassIonFound4 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEHeader, 3.0);
                     if (isClassIonFound2 && isClassIonFound3) return null;
+                    if (isClassIonFound4) return null;
 
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
@@ -1918,6 +1921,11 @@ namespace CompMs.Common.Lipidomics
                     var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIon1Found != true) return null;
                     //
+                    // for eieio
+                    var PEHeader = 141.019094261 + Proton;
+                    var isClassIonFound4 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEHeader, 3.0);
+                    if (isClassIonFound4) return null;
+
                     var candidates = new List<LipidMolecule>();
                     var chainSuffix = "";
                     var diagnosticMzExist = 0.0;
@@ -6500,8 +6508,8 @@ AdductIon adduct)
 
                             var query = new List<SpectrumPeak>
                                         {
-                                        new SpectrumPeak() { Mass = NL_SN1, Intensity = 10.0 },
-                                        new SpectrumPeak() { Mass = NL_SN1_header, Intensity = 10.0 },
+                                        new SpectrumPeak() { Mass = NL_SN1, Intensity = 0.5 },
+                                        new SpectrumPeak() { Mass = NL_SN1_header, Intensity = 5.0 },
                                         };
 
                             var foundCount = 0;

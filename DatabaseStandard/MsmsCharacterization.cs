@@ -49,9 +49,12 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                         + MassDiffDictionary.OxygenMass * 4
                         + MassDiffDictionary.PhosphorusMass
                         + Proton;
+                    var PEHeader = 141.019094261 + Proton;
                     var isClassIonFound2 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEHeaderLoss, 5.0);
                     var isClassIonFound3 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEspecific, 1.0);
+                    var isClassIonFound4 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEHeader, 3.0);
                     if (isClassIonFound2 && isClassIonFound3) return null;
+                    if (isClassIonFound4) return null;
 
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
@@ -6429,8 +6432,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                             var query = new List<Peak>
                                         {
-                                        new Peak() { Mz = NL_SN1, Intensity = 10.0 },
-                                        new Peak() { Mz = NL_SN1_header, Intensity = 10.0 },
+                                        new Peak() { Mz = NL_SN1, Intensity = 0.5 },
+                                        new Peak() { Mz = NL_SN1_header, Intensity = 5.0 },
                                         };
 
                             var foundCount = 0;

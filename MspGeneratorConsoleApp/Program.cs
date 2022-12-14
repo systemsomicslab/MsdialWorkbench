@@ -140,8 +140,8 @@ namespace CompMs.MspGenerator
 
             //var addingChain1 = new List<string>
             //{
-            //    "23:0" ,"24:0","24:1","25:0","26:0","26:1","27:0","28:0","28:1",
-            //    "29:0","30:0","30:1","32:0","32:1"
+            //    "20:0","20:1","22:0","22:1","23:0","25:0","26:0","26:1","27:0","28:0","28:1",
+            //    "29:0","30:0","30:1","32:0","32:1","34:0","34:1","36:0","36:1"
             //};
 
 
@@ -153,7 +153,7 @@ namespace CompMs.MspGenerator
             //var faChain2 = new List<string>();
             //var faChain3 = new List<string>();
 
-            //var outputFolder = @"D:\mikikot\Desktop\Tsugawa-san_work\20221121_FAHFA\re";
+            //var outputFolder = @"d:\mikikot\Desktop\Tsugawa-san_work\20221108_ccs_table\calcuration\msp\";
 
             //// check
             //outputFolder = @"D:\MSDIALmsp_generator\outputFolder\test\";
@@ -620,11 +620,11 @@ namespace CompMs.MspGenerator
                 //// 1行目(ヘッダー行)が"SMILES"となっている列を認識してdescriptorを算出する。
                 /// RtCcsPredictOnDotNet.GenerateQsarDescriptorFileVS2();//--old
                 //var workingFolder =
-                // @"d:\mikikot\Desktop\Tsugawa-san_work\20221125_nomenclature\NCDK\";
+                // @"d:\mikikot\Desktop\Tsugawa-san_work\20221108_ccs_table\calcuration\3\";
 
                 //qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
-                //    (workingFolder + @"\20221201103217_conventional_notfound.txt",
-                //     workingFolder + @"\20221201103217_NCDK_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
+                //    (workingFolder + @"\re.txt",
+                //     workingFolder + @"\20221213_NCDK_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
 
                 //qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
                 //    (@"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\InChIKeySmilesRtList.txt",
@@ -668,16 +668,16 @@ namespace CompMs.MspGenerator
                 //// NCDKの結果は 235 descriptor(adductScoreを含まない)
                 //var workingFolder = @"d:\mikikot\Desktop\Tsugawa-san_work\20221125_nomenclature\NCDK_re\";
                 //var rtTrainModel = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\NCDK_predictionModel\NCDK_TUAT_RT_202209061305.model";
-                //var rtTestFile = workingFolder + @"\20221202145236_TUAT_notfound.txt20221202150423.txt";
+                //var rtTestFile = workingFolder + @"\20221213_NCDK_3.txt";
                 //var ccsTrainModel = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\NCDK_predictionModel\masterCCS_NCDK_202101081945.model";
                 //var ccsTestFile = rtTestFile;
-                //var resultFile = workingFolder + @"\predictResult\" + @"20221202_predicted.txt";
+                //var resultFile = workingFolder + @"\predictResult\" + @"20221213_20221213_NCDK_3.txt_predicted.txt";
 
                 //RtCcsPredictOnDotNet.mergeRtAndCcsResultFilesVS2(resultFile, rtTrainModel, rtTestFile, ccsTrainModel, ccsTestFile);
                 //Task.WaitAll();
 
                 //var predictedFilesDirectry = workingFolder + @"\predictResult\";//predict結果の入っているフォルダ。前回作成したものと直近に作成したものを入れておく
-                //var dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_NCDK_20221205_TUAT.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
+                //var dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_NCDK_20221213_TUAT.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
 
                 //MergeRTandCCSintoMsp.generateDicOfPredictVs2(predictedFilesDirectry, dbFileName);
 
