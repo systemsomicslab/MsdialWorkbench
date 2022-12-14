@@ -1,6 +1,4 @@
-﻿using CompMs.App.Msdial.Model.Search;
-using CompMs.CommonMVVM;
-using CompMs.MsdialCore.Algorithm.Annotation;
+﻿using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
@@ -11,33 +9,37 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Export
 {
-    public sealed class ExportFormat : BindableBase
+    internal sealed class ExportFormat : BindableBase
     {
-        private readonly string _fileExtension;
+        private readonly string _label;
+        private readonly string _extension;
+        private readonly string _separator;
 
-        public ExportFormat(string label, string extension, IAlignmentExporter exporter, AlignmentLongCSVExporter longExporter, IMetadataAccessor metaAccessor) {
-            Label = label;
-            _fileExtension = extension;
-            Exporter = exporter;
-            LongExporter = longExporter;
-            MetaAccessor = metaAccessor ?? throw new ArgumentNullException(nameof(metaAccessor));
+        private ExportFormat(string label, string extension, string separator) {
+            _label = label;
+            _extension = extension;
+            _separator = separator;
         }
 
-        public string Label { get; }
-        public IAlignmentExporter Exporter { get; }
-        public AlignmentLongCSVExporter LongExporter { get; }
-        public IMetadataAccessor MetaAccessor { get; }
+        public string Label => _label;
+        public IAlignmentExporter CreateWideExporter() => new AlignmentCSVExporter(_separator);
+        public AlignmentLongCSVExporter CreateLongExporter() =>  new AlignmentLongCSVExporter(_separator);
 
         public string WithExtension(string filename) {
-            return filename + "." + _fileExtension;
+            return filename + "." + _extension;
         }
+
+        public static ExportFormat Tsv { get; } = new ExportFormat("txt", "txt", "\t");
+        public static ExportFormat Csv { get; } = new ExportFormat("csv", "csv", ",");
     }
 
-    public sealed class ExportMethod : BindableBase {
+    internal sealed class ExportMethod : BindableBase {
         private readonly IReadOnlyList<AnalysisFileBean> _analysisFiles;
+        private readonly IAlignmentMetadataAccessorFactory _accessorFactory;
 
-        public ExportMethod(IReadOnlyList<AnalysisFileBean> analysisFiles, params ExportFormat[] formats) {
+        public ExportMethod(IReadOnlyList<AnalysisFileBean> analysisFiles, IAlignmentMetadataAccessorFactory accessorFactory, params ExportFormat[] formats) {
             _analysisFiles = analysisFiles ?? throw new ArgumentNullException(nameof(analysisFiles));
+            _accessorFactory = accessorFactory ?? throw new ArgumentNullException(nameof(accessorFactory));
             Formats = formats;
         }
 
@@ -55,6 +57,12 @@ namespace CompMs.App.Msdial.Model.Export
         }
         private bool _isLongFormat = false;
 
+        public bool TrimToExcelLimit {
+            get => _trimToExcelLimit;
+            set => SetProperty(ref _trimToExcelLimit, value);
+        }
+        private bool _trimToExcelLimit = true;
+
         public void Export(string outNameTemplate, string exportDirectory, IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes) {
             if (IsLongFormat) {
                 ExportLong(outNameTemplate, exportDirectory, spots, msdecResults, notification, exportTypes);
@@ -69,20 +77,21 @@ namespace CompMs.App.Msdial.Model.Export
             var outMetaFile = Format.WithExtension(outMetaName);
             var outMetaPath = Path.Combine(exportDirectory, outMetaFile);
             notification?.Invoke(outMetaFile);
+            var exporter = Format.CreateLongExporter();
             using (var outstream = File.Open(outMetaPath, FileMode.Create, FileAccess.Write)) {
-                Format.LongExporter.ExportMeta(
+                exporter.ExportMeta(
                     outstream,
                     spots,
                     msdecResults,
-                    Format.MetaAccessor);
+                    _accessorFactory.CreateAccessor(TrimToExcelLimit));
             }
 
-            var outValueName = string.Format(outNameTemplate, "Peaks");
+            var outValueName = string.Format(outNameTemplate, "PeakValues");
             var outValueFile = Format.WithExtension(outValueName);
             var outValuePath = Path.Combine(exportDirectory, outValueFile);
             notification?.Invoke(outValueFile);
             using (var outstream = File.Open(outValuePath, FileMode.Create, FileAccess.Write)) {
-                Format.LongExporter.ExportValue(
+                exporter.ExportValue(
                     outstream,
                     spots,
                     _analysisFiles,
@@ -91,6 +100,8 @@ namespace CompMs.App.Msdial.Model.Export
         }
 
         public void ExportWide(string outNameTemplate, string exportDirectory, IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes) {
+            var exporter = Format.CreateWideExporter();
+            var accessor = _accessorFactory.CreateAccessor(TrimToExcelLimit);
             foreach (var exportType in exportTypes) {
                 var outName = string.Format(outNameTemplate, exportType.TargetLabel);
                 var outFile = Format.WithExtension(outName);
@@ -98,12 +109,12 @@ namespace CompMs.App.Msdial.Model.Export
                 notification?.Invoke(outFile);
 
                 using (var outstream = File.Open(outPath, FileMode.Create, FileAccess.Write)) {
-                    Format.Exporter.Export(
+                    exporter.Export(
                         outstream,
                         spots,
                         msdecResults,
                         _analysisFiles,
-                        Format.MetaAccessor,
+                        accessor,
                         exportType.QuantValueAccessor,
                         exportType.Stats);
                 }
