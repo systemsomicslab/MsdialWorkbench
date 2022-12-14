@@ -85,10 +85,15 @@ namespace CompMs.Common.Algorithm.PeakPick {
                     var datapoints = new List<ChromatogramDataPoint>();
                     datapoints.Add(new ChromatogramDataPoint(i, peaklist[i].Time, peaklist[i].Mz, peaklist[i].Intensity, firstDiffPeaklist[i], secondDiffPeaklist[i]));
                     searchRealLeftEdge(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist);
-                    i = searchRightEdgeCandidate(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, slopeNoise, slopeNoiseFoldCriteria, amplitudeNoise, peaktopNoise, _minimumDatapointCriteria);
-                    i = searchRealRightEdge(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, ref infinitLoopCheck, ref infinitLoopID, out var isBreak);
-                    if (isBreak) break;
-                    if (datapoints.Count < _minimumDatapointCriteria) continue;
+                    var j = searchRightEdgeCandidate(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, slopeNoise, slopeNoiseFoldCriteria, amplitudeNoise, peaktopNoise, _minimumDatapointCriteria);
+                    j = searchRealRightEdge(j, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, ref infinitLoopCheck, ref infinitLoopID, out var isBreak);
+                    if (isBreak) {
+                        break;
+                    }
+                    i = Math.Max(i, j);
+                    if (datapoints.Count < _minimumDatapointCriteria) {
+                        continue;
+                    }
                     curateDatapoints(datapoints, averagePeakWidth, out var peaktopID);
 
                     peakHeightFromBaseline(datapoints, peaktopID, out var maxPeakHeight, out var minPeakHeight);
@@ -151,10 +156,15 @@ namespace CompMs.Common.Algorithm.PeakPick {
                     var datapoints = new List<double[]>();
                     datapoints.Add(new double[] { i, peaklist[i].ChromXs.Value, peaklist[i].Mass, peaklist[i].Intensity, firstDiffPeaklist[i], secondDiffPeaklist[i] });
                     searchRealLeftEdge(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist);
-                    i = searchRightEdgeCandidate(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, slopeNoise, slopeNoiseFoldCriteria, amplitudeNoise, peaktopNoise, minimumDatapointCriteria);
-                    i = searchRealRightEdge(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, ref infinitLoopCheck, ref infinitLoopID, out var isBreak);
-                    if (isBreak) break;
-                    if (datapoints.Count < minimumDatapointCriteria) continue;
+                    var j = searchRightEdgeCandidate(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, slopeNoise, slopeNoiseFoldCriteria, amplitudeNoise, peaktopNoise, minimumDatapointCriteria);
+                    j = searchRealRightEdge(j, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, ref infinitLoopCheck, ref infinitLoopID, out var isBreak);
+                    i = Math.Max(i, j);
+                    if (isBreak) {
+                        break;
+                    }
+                    if (datapoints.Count < minimumDatapointCriteria) {
+                        continue;
+                    }
                     curateDatapoints(datapoints, averagePeakWidth, out var peaktopID);
 
                     peakHeightFromBaseline(datapoints, peaktopID, out var maxPeakHeight, out var minPeakHeight);
