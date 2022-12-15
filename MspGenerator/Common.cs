@@ -247,7 +247,7 @@ namespace CompMs.MspGenerator
                 case "NAOrn_FAHFA":
                     OtherLipidMspGenerator.fahfasGenerator(chain1, chain2, lipidClass, output);
                     break;
-                case "FAHFA-DMED":
+                case "DMEDFAHFA":
                     OtherLipidMspGenerator.fahfaDmedGenerator(chain1, chain2, lipidClass, output);
                     break;
 
@@ -280,6 +280,9 @@ namespace CompMs.MspGenerator
                 case "Cer_EBDS": // BDS
                 case "AHexCer": //AS
                     CeramideMspGenerator.threeChainsCeramideGenerator(chain1, chain2, chain3, lipidClass, output);
+                    break;
+                case "DMEDFAHFAHFA": //AS
+                    OtherLipidMspGenerator.fahfahfaDmedGenerator(chain1, chain2, chain3, lipidClass, output);
                     break;
 
                 default:

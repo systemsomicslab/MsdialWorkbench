@@ -468,6 +468,105 @@ namespace CompMs.MspGenerator
             }
         }
 
+        public static void fahfahfaDmedGenerator(List<string> Chain1, List<string> chain2, List<string> chain3, string lipidClass, string output)
+        {
+            var wholeChainList = new List<string>();
+
+            for (int i = 0; i < Chain1.Count; i++)
+            {
+                for (int j = 0; j < chain2.Count; j++)
+                {
+                    for (int k = 0; k < chain2.Count; k++)
+                    {
+                        var chainList = new List<string> { Chain1[i], chain2[j], chain3[k] };
+                        wholeChainList.Add(string.Join("\t", chainList));
+                    }
+                }
+            }
+            wholeChainList = wholeChainList.Distinct().ToList();
+            var smileslist = new List<string>();
+            var smilesHeaderDict = SmilesLipidHeader.HeaderDictionary;
+            var headerSmiles = smilesHeaderDict[lipidClass];
+
+            var adducts = adductDic.lipidClassAdductDic[lipidClass];
+            var baseChainDic = AcylChainDic.fahfaDmedBaseChainDictionary;
+            var extraChainDic = AcylChainDic.FattyAcylChainDictionary;
+            foreach (var adductIon in adducts)
+            {
+                var adduct = adductDic.adductIonDic[adductIon];
+                var shortNameList = new List<string>();
+                var shortNameList2 = new List<string>();
+
+                var ionmode = adduct.IonMode;
+                var fileSurfix = adduct.AdductSurfix + "_" + ionmode.Substring(0, 3);
+                var filename = lipidClass + "_" + fileSurfix + ".msp";
+                var chainNameList = new List<string>();
+                using (var sw = new StreamWriter(output + "\\" + filename, false, Encoding.ASCII))
+                {
+                    for (int i = 0; i < wholeChainList.Count; i++)
+                    {
+                        var chainArray = wholeChainList[i].Split('\t');
+
+                        var baseChain = baseChainDic[chainArray[0]];
+                        var baseChainCarbon = int.Parse(baseChain[0]);
+                        var baseChainDouble = int.Parse(baseChain[1]);
+                        var baseChainOxposition = int.Parse(baseChain[2]);
+                        var baseChainString = baseChain[0] + ":" + baseChain[1] + ";O";
+
+                        var hfaChain = baseChainDic[chainArray[1]];
+                        var hfaChainCarbon = int.Parse(hfaChain[0]);
+                        var hfaChainDouble = int.Parse(hfaChain[1]);
+                        var hfaChainOxposition = int.Parse(hfaChain[2]);
+                        var hfaChainString = hfaChain[0] + ":" + hfaChain[1] + ";O";
+
+                        var extraChain = extraChainDic[chainArray[2]];
+                        var extraChainCarbon = int.Parse(extraChain[0]);
+                        var extraChainDouble = int.Parse(extraChain[1]);
+
+                        var totalChain = baseChainCarbon + hfaChainCarbon + extraChainCarbon;
+                        var totalBond = baseChainDouble + hfaChainDouble + extraChainDouble;
+
+                        var baseChainSmiles = baseChain[4].Replace("%10", "%20");
+                        var hfaChainSmiles = hfaChain[4].Replace("NCCN(C)C","%20.");
+
+                        var extraChainSmiles = extraChain[3];
+
+                        var name = "";
+                        //var shortName = "DMEDFAHFAHFA" + " " + totalChain + ":" + totalBond + ";O";
+
+                        var exportLipidClassName = "DMEDFAHFAHFA";
+                        var rawSmiles = extraChainSmiles + "%10."  + hfaChainSmiles + baseChainSmiles;
+                        var meta = Common.getMetaProperty(rawSmiles);
+
+                        // fragment
+                        var fragmentList = new List<string>();
+                        name = "DMEDFAHFAHFA" + " " + chainArray[2] + "/" + hfaChainString + "/" + baseChainString;
+                        if (chainNameList.Contains(name))
+                        {
+                            continue;
+                        }
+                        OtherLipidFragmentation.fahfaDmedFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, baseChainCarbon, baseChainDouble, extraChainCarbon, extraChainDouble, baseChainOxposition);
+
+                        //
+                        var precursorMZ = Math.Round(meta.ExactMass + adduct.AdductIonMass, 4);
+                        ExportMSP.exportMspFile(sw, precursorMZ, meta.Formula, name, meta.Smiles, meta.inChIKey, adduct.AdductIonName, ionmode, exportLipidClassName, fragmentList);
+
+                        smileslist.Add(meta.inChIKey + "\t" + meta.Smiles);
+                        chainNameList.Add(name);
+
+                    }
+                }
+                var smilesOutputFile = output + "\\" + lipidClass + "_InChIKey-smiles.txt";
+                smileslist = smileslist.Distinct().ToList();
+                using (var sw = new StreamWriter(smilesOutputFile, false, Encoding.ASCII))
+                {
+                    sw.WriteLine("InChIKey\tSMILES");
+                    foreach (var smiles in smileslist)
+                        sw.WriteLine(smiles);
+                }
+            }
+        }
+
         public static void singleAcylChainLipidGenerator(List<string> Chain1, string lipidClass, string output)
         {
             var wholeChainList = new List<string>();
