@@ -37,12 +37,12 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
 
         public MsScanMatchResult Annotate(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
-            return FindCandidatesCore(query.Property, DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter), query.Isotopes, parameter, omics, Key).FirstOrDefault();
+            return FindCandidatesCore(query.Property, query.NormalizedScan, query.Isotopes, parameter, omics, Key).FirstOrDefault();
         }
 
         public List<MsScanMatchResult> FindCandidates(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
-            return FindCandidatesCore(query.Property, DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter), query.Isotopes, parameter, omics, Key);
+            return FindCandidatesCore(query.Property, query.NormalizedScan, query.Isotopes, parameter, omics, Key);
         }
 
 
@@ -62,7 +62,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
 
         public MsScanMatchResult CalculateScore(IAnnotationQuery<MsScanMatchResult> query, MoleculeMsReference reference) {
             var parameter = query.Parameter ?? Parameter;
-            var normScan = DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter);
+            var normScan = query.NormalizedScan;
             var result = CalculateScoreCore(query.Property, normScan, query.Isotopes, reference, reference.IsotopicPeaks, parameter, omics, Key);
             ValidateCore(result, query.Property, normScan, reference, parameter, omics);
             return result;
@@ -207,7 +207,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
 
         public void Validate(MsScanMatchResult result, IAnnotationQuery<MsScanMatchResult> query, MoleculeMsReference reference) {
             var parameter = query.Parameter ?? Parameter;
-            ValidateCore(result, query.Property, DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter), reference, parameter, omics);
+            ValidateCore(result, query.Property, query.NormalizedScan, reference, parameter, omics);
         }
 
         private static void ValidateCore(

@@ -1019,10 +1019,6 @@ namespace CompMs.MsdialCore.Utility {
             return peaklist;
         }
 
-        public static MSScanProperty GetNormalizedMSScanProperty(IMSScanProperty scanProp, ParameterBase param) {
-            return GetNormalizedMSScanProperty(scanProp, param.MspSearchParam);
-        }
-
         public static MSScanProperty GetNormalizedMSScanProperty(IMSScanProperty scanProp, MsRefSearchParameterBase specMatchParam) {
             var prop = new MSScanProperty() {
                 ChromXs = scanProp.ChromXs, IonMode = scanProp.IonMode, PrecursorMz = scanProp.PrecursorMz,

@@ -49,7 +49,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             var rValue = rType == RetentionType.RT ? msdecResult.ChromXs.RT.Value : msdecResult.ChromXs.RI.Value;
             var rTolerance = rType == RetentionType.RT ? _parameter.MspSearchParam.RtTolerance : _parameter.MspSearchParam.RiTolerance;
             var factor = _parameter.MspSearchParam.IsUseTimeForAnnotationFiltering ? 1.0F : 2.0F;
-            var normMSScanProp = DataAccess.GetNormalizedMSScanProperty(msdecResult, _parameter);
+            var normMSScanProp = DataAccess.GetNormalizedMSScanProperty(msdecResult, _parameter.MspSearchParam);
 
             rTolerance *= factor;
 
