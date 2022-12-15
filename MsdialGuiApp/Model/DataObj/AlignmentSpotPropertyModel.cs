@@ -249,14 +249,14 @@ namespace CompMs.App.Msdial.Model.DataObj
         IMoleculeProperty IPeakSpotModel.Molecule => innerModel;
 
         public void SetConfidence(MoleculeMsReference reference, MsScanMatchResult result) {
-            DataAccess.SetMoleculeMsPropertyAsConfidence(innerModel, reference, result);
+            DataAccess.SetMoleculeMsPropertyAsConfidence(innerModel, reference);
             MatchResults.RemoveManuallyResults();
             MatchResults.AddResult(result);
             OnPropertyChanged(string.Empty);
         }
 
         public void SetUnsettled(MoleculeMsReference reference, MsScanMatchResult result) {
-            DataAccess.SetMoleculeMsPropertyAsUnsettled(innerModel, reference, result);
+            DataAccess.SetMoleculeMsPropertyAsUnsettled(innerModel, reference);
             MatchResults.RemoveManuallyResults();
             MatchResults.AddResult(result);
             OnPropertyChanged(string.Empty);

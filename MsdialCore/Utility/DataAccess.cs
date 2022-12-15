@@ -1168,18 +1168,18 @@ namespace CompMs.MsdialCore.Utility {
             feature.Name = "w/o MS2: " + result.Name;
         }
 
-        public static void SetMoleculeMsPropertyAsConfidence<T>(T feature, MoleculeMsReference reference, MsScanMatchResult result)
+        public static void SetMoleculeMsPropertyAsConfidence<T>(T feature, MoleculeMsReference reference)
             where T: IMoleculeProperty, IIonProperty {
             SetMoleculePropertyCore(feature, reference);
             feature.SetAdductType(reference.AdductType);
-            feature.Name = result.Name;
+            feature.Name = reference.Name;
         }
 
-        public static void SetMoleculeMsPropertyAsUnsettled<T>(T feature, MoleculeMsReference reference, MsScanMatchResult result)
+        public static void SetMoleculeMsPropertyAsUnsettled<T>(T feature, MoleculeMsReference reference)
             where T: IMoleculeProperty, IIonProperty {
             SetMoleculePropertyCore(feature, reference);
             feature.SetAdductType(reference.AdductType);
-            feature.Name = $"Unsettled: {result.Name}";
+            feature.Name = $"Unsettled: {reference.Name}";
         }
 
         private static void SetMoleculePropertyCore(IMoleculeProperty property, MoleculeMsReference reference) {
