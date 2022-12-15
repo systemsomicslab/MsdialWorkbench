@@ -194,6 +194,7 @@
     <Compile Include="UI\ExecutableBar.cs" />
     <Compile Include="UI\LabeledBar.cs" />
     <Compile Include="UI\LabeledContent.cs" />
+    <Compile Include="UI\NumericUpDown.cs" />
     <Compile Include="UI\ProgressBarMultiContainerVM.cs" />
     <Compile Include="UI\ProgressBarMultiContainerWindow.xaml.cs">
       <DependentUpon>ProgressBarMultiContainerWindow.xaml</DependentUpon>
