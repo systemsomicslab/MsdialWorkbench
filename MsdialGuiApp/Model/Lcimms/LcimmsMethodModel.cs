@@ -64,14 +64,15 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             List<AnalysisFileBean> analysisFiles = analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File).ToList();
             var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
-            var metadataAccessor = new LcimmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter);
+            var metadataAccessorFactory = new LcimmsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter);
             AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(PeakFilterModel, matchResultEvaluator.Contramap((IFilterable filterable) => filterable.MatchResults.Representative));
             var peakGroup = new AlignmentExportGroupModel(
                 "Peaks",
                 new ExportMethod(
                     analysisFiles,
-                    new ExportFormat("txt", "txt", new AlignmentCSVExporter(), new AlignmentLongCSVExporter(), metadataAccessor),
-                    new ExportFormat("csv", "csv", new AlignmentCSVExporter(separator: ","), new AlignmentLongCSVExporter(separator: ","), metadataAccessor)
+                    metadataAccessorFactory,
+                    ExportFormat.Tsv,
+                    ExportFormat.Csv
                 ),
                 new[]
                 {

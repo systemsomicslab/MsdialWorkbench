@@ -53,7 +53,8 @@ namespace CompMs.MsdialCore.Export
 
         private void WriteMetaContent(StreamWriter writer, AlignmentSpotProperty spot, MSDecResult msdecResult, string[] header, IMetadataAccessor meataAccessor) {
             var contents = meataAccessor.GetContent(spot, msdecResult);
-            writer.WriteLine(string.Join(_separator, header.Select(col => contents[col])));
+            var metaContents = header.Select(col => contents[col]);
+            writer.WriteLine(string.Join(_separator, metaContents));
         }
 
         private void WriteValueHeader(StreamWriter writer, IEnumerable<string> header) {
@@ -64,7 +65,7 @@ namespace CompMs.MsdialCore.Export
             var id = spot.MasterAlignmentID.ToString();
             var dicts = quantAccessors.Select(accessor => accessor.GetQuantValues(spot)).ToList();
             foreach (var file in files) {
-                var row = new[] { id, file.AnalysisFileName, file.AnalysisFileClass }.Concat(dicts.Select(dict => dict[file.AnalysisFileName]));
+                IEnumerable<string> row = new[] { id, file.AnalysisFileName, file.AnalysisFileClass }.Concat(dicts.Select(dict => dict[file.AnalysisFileName]));
                 writer.WriteLine(string.Join(_separator, row));
             }
         }
