@@ -41,7 +41,7 @@
             </Grid.Style>
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="4*" MaxWidth="540"/>
+                <ColumnDefinition Width="3*" MaxWidth="405"/>
                 <ColumnDefinition Width="2*" MaxWidth="260"/>
                 <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
@@ -123,7 +123,7 @@
             </StackPanel>
 
             <DockPanel Grid.Row="0" Grid.Column="2"
-                       Margin="8">
+                       Margin="20,8,8,8">
                 <TextBlock Text="Open recent projects" FontSize="20" Margin="0,8"
                            DockPanel.Dock="Top"/>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">

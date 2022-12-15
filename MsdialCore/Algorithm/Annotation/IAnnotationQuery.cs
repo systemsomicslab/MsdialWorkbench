@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public interface ICallableAnnotationQuery<out TResult>
+    public interface IAnnotationQuery<out TResult>
     {
         IMSIonProperty Property { get; }
         IMSScanProperty Scan { get; }
@@ -14,17 +14,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         IReadOnlyList<IsotopicPeak> Isotopes { get; }
         IonFeatureCharacter IonFeature { get; }
         MsRefSearchParameterBase Parameter { get; }
-
-        IEnumerable<TResult> FindCandidates();
-    }
-
-    public interface IAnnotationQuery
-    {
-        IMSIonProperty Property { get; }
-        IMSScanProperty Scan { get; }
-        IMSScanProperty NormalizedScan { get; }
-        IReadOnlyList<IsotopicPeak> Isotopes { get; }
-        IonFeatureCharacter IonFeature { get; }
-        MsRefSearchParameterBase Parameter { get; }
+        IEnumerable<TResult> FindCandidates(bool forceFind = false);
     }
 }

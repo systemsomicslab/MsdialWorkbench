@@ -58,7 +58,7 @@ namespace CompMs.App.Msdial.Model.Dims
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
 
-            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databaseStorage, mapper, parameter.PeakPickBaseParam);
+            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databaseStorage, mapper);
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, status: ~(FilterEnableStatus.Rt | FilterEnableStatus.Dt)).AddTo(Disposables);
 

@@ -61,6 +61,9 @@ namespace CompMs.App.Msdial.View.PeakCuration
         private void DataGrid_RawData_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
             var selectedData = _sampleTableViewerInAlignmentVM.SelectedData;
             var parameter = _sampleTableViewerInAlignmentVM.Parameter;
+            if (selectedData is null || parameter is null) {
+                return;
+            }
 
             var window = new ChromatogramManualPeakPickViewerLegacy(selectedData, parameter)
             {

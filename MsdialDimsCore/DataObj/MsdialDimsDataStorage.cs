@@ -15,14 +15,18 @@ namespace CompMs.MsdialDimsCore.DataObj
         [Key(6)]
         public MsdialDimsParameter MsdialDimsParameter { get; set; }
 
+        public AnnotationQueryFactoryStorage CreateAnnotationQueryFactoryStorage() {
+            return DataBases.CreateQueryFactories();
+        }
+
+        [IgnoreMember]
+        public IAnnotationQueryFactoryGenerationVisitor CreateAnnotationQueryFactoryVisitor
+            => new DimsAnnotationQueryFactoryGenerationVisitor(MsdialDimsParameter.PeakPickBaseParam, MsdialDimsParameter.RefSpecMatchBaseParam, MsdialDimsParameter.ProteomicsParam, DataBaseMapper);
+
         MsdialDimsParameter IMsdialDataStorage<MsdialDimsParameter>.Parameter => MsdialDimsParameter;
 
         protected override void SaveMsdialDataStorageCore(Stream stream) {
             MessagePackDefaultHandler.SaveToStream(this, stream);
-        }
-
-        protected override void SaveDataBaseMapper(Stream stream) {
-
         }
 
         public Task SaveParameterAsync(Stream stream) {
@@ -44,9 +48,9 @@ namespace CompMs.MsdialDimsCore.DataObj
                 }
             }
 
-            protected override async Task LoadDataBasesAsync(IStreamManager streamManager, string path, IMsdialDataStorage<ParameterBase> storage, string projectFolderPath) {
+            protected override async Task LoadDataBasesAsync(IStreamManager streamManager, string path, DataBaseMapper mapper, IMsdialDataStorage<ParameterBase> storage, string projectFolderPath) {
                 using (var stream = await streamManager.Get(path).ConfigureAwait(false)) {
-                    storage.DataBases = DataBaseStorage.Load(stream, new DimsLoadAnnotatorVisitor(storage.Parameter), projectFolderPath);
+                    storage.DataBases = DataBaseStorage.Load(stream, new DimsLoadAnnotatorVisitor(storage.Parameter), new DimsAnnotationQueryFactoryGenerationVisitor(storage.Parameter.PeakPickBaseParam, storage.Parameter.RefSpecMatchBaseParam, storage.Parameter.ProteomicsParam, mapper), projectFolderPath);
                 }
             }
         }

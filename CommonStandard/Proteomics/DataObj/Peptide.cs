@@ -16,7 +16,20 @@ namespace CompMs.Common.Proteomics.DataObj {
         [Key(1)]
         public int DatabaseOriginID { get; set; }
         [IgnoreMember]
-        public string Sequence { get => SequenceObj.IsEmptyOrNull() ? string.Empty : String.Join("", SequenceObj.Select(n => n.OneLetter.ToString())); } // original amino acid sequence
+        public string Sequence {
+
+            get {
+                if (cacheSequence is null) {
+                    cacheSequence = SequenceObj.IsEmptyOrNull() ?
+                    string.Empty :
+                    String.Join("", SequenceObj.Select(n => n.OneLetter.ToString()));
+                }
+                return cacheSequence;
+            }
+        } // original amino acid sequence
+
+        private string cacheSequence = null;
+
         [IgnoreMember]
         public string ModifiedSequence { get => SequenceObj.IsEmptyOrNull() ? string.Empty : String.Join("", SequenceObj.Select(n => n.Code())); }
         [Key(2)]
@@ -42,7 +55,10 @@ namespace CompMs.Common.Proteomics.DataObj {
         [Key(9)]
         public Dictionary<int, int> ResidueCodeIndexToModificationIndex { get; set; } = new Dictionary<int, int>();
 
-        public int CountModifiedAminoAcids() { return SequenceObj.Count(n => n.IsModified()); }
+        public int CountModifiedAminoAcids() {
+            if (SequenceObj == null) return 0;
+            return SequenceObj.Count(n => n.IsModified()); 
+        }
 
         public void GenerateSequenceObj(string proteinSeq, int start, int end, Dictionary<int, int> ResidueCodeIndexToModificationIndex, Dictionary<int, string> ID2Code, Dictionary<string, AminoAcid> Code2AminoAcidObj) {
             SequenceObj = GetSequenceObj(proteinSeq, start, end, ResidueCodeIndexToModificationIndex, ID2Code, Code2AminoAcidObj);

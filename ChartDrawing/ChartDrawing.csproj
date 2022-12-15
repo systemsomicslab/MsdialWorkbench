@@ -158,6 +158,7 @@
     <Compile Include="Helper\ChartDistanceCalculator.cs" />
     <Compile Include="Helper\ColorHelper.cs" />
     <Compile Include="Helper\ExpressionHelper.cs" />
+    <Compile Include="Helper\GeometricCalculationHelper.cs" />
     <Compile Include="Helper\NotifyCollectionChangedHelper.cs" />
     <Compile Include="IO\CopyImageAsCommand.cs" />
     <Compile Include="IO\CopyImageAsDialog.xaml.cs">
@@ -188,6 +189,7 @@
     <Compile Include="Base\DataPoint.cs" />
     <Compile Include="Chart\ScatterControl.cs" />
     <Compile Include="Template\ComboBoxItemTemplateSelector.cs" />
+    <Compile Include="UI\AreaSelector.cs" />
     <Compile Include="UI\ColorPicker.cs" />
     <Compile Include="UI\ExecutableBar.cs" />
     <Compile Include="UI\LabeledBar.cs" />

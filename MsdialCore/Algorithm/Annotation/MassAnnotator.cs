@@ -6,7 +6,6 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
-using CompMs.Common.Lipidomics;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
@@ -17,7 +16,7 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public class MassAnnotator : ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>
+    public class MassAnnotator : ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>
     {
         private readonly TargetOmics omics;
         private readonly SourceType source;
@@ -42,19 +41,19 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             Priority = priority;
             ReferObject = db;
             searcher = new MassReferenceSearcher<MoleculeMsReference>(db.Database);
-            evaluator = MsScanMatchResultEvaluator.CreateEvaluator(Parameter);
+            evaluator = new MsScanMatchResultEvaluator(Parameter);
         }
 
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> ReferObject;
         private readonly MassReferenceSearcher<MoleculeMsReference> searcher;
         private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
 
-        public MsScanMatchResult Annotate(IAnnotationQuery query) {
+        public MsScanMatchResult Annotate(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
             return FindCandidatesCore(query.Property, DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter), query.Isotopes, parameter, omics, source, Key).FirstOrDefault();
         }
 
-        public List<MsScanMatchResult> FindCandidates(IAnnotationQuery query) {
+        public List<MsScanMatchResult> FindCandidates(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
             return FindCandidatesCore(query.Property, DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter), query.Isotopes, parameter, omics, source, Key);
         }
@@ -73,7 +72,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             return results.OrderByDescending(result => result.TotalScore).ToList();
         }
 
-        public MsScanMatchResult CalculateScore(IAnnotationQuery query, MoleculeMsReference reference) {
+        public MsScanMatchResult CalculateScore(IAnnotationQuery<MsScanMatchResult> query, MoleculeMsReference reference) {
             var parameter = query.Parameter ?? Parameter;
             var normScan = DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter);
             var result = CalculateScoreCore(query.Property, normScan, query.Isotopes, reference, reference.IsotopicPeaks, parameter, omics, source, Key);
@@ -153,7 +152,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             return ReferObject.Refer(result);
         }
 
-        public List<MoleculeMsReference> Search(IAnnotationQuery query) {
+        public List<MoleculeMsReference> Search(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
             return SearchBound(query.Property, parameter.Ms1Tolerance).ToList();
         }
@@ -169,7 +168,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             return MolecularFormulaUtility.ConvertPpmToMassAccuracy(mass, ppm);
         }
 
-        public void Validate(MsScanMatchResult result, IAnnotationQuery query, MoleculeMsReference reference) {
+        public void Validate(MsScanMatchResult result, IAnnotationQuery<MsScanMatchResult> query, MoleculeMsReference reference) {
             var parameter = query.Parameter ?? Parameter;
             ValidateCore(result, query.Property, DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter), reference, parameter, omics);
         }
@@ -232,7 +231,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             return evaluator.SelectReferenceMatchResults(results);
         }
 
-        public IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Save() {
+        public IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Save() {
             switch (source) {
                 case SourceType.MspDB:
                     return new MspDbRestorationKey(sourceKey, Priority);

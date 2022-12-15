@@ -59,7 +59,7 @@ namespace CompMs.App.Msdial.Model.Imms
             _files = files ?? throw new ArgumentNullException(nameof(files));
             _dataBaseMapper = mapper;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
-            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper, parameter.PeakPickBaseParam).Items;
+            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper).Items;
 
             var BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName, fileCollection);
             var observableBarItemsLoader = Observable.Return(BarItemsLoader);
@@ -164,7 +164,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 Colors.Blue);
             var barItemsLoaderData = new BarItemsLoaderData("Loader", "Intensity", observableBarItemsLoader, Observable.Return(true));
             var barItemsLoaderDataProperty = new ReactiveProperty<BarItemsLoaderData>(barItemsLoaderData).AddTo(Disposables);
-            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush), projectBaseParameter).AddTo(Disposables);
+            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush), projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
 
             var eicFile = alignmentFileBean.EicFilePath;
             var classToColor = parameter.ClassnameToColorBytes
@@ -181,7 +181,7 @@ namespace CompMs.App.Msdial.Model.Imms
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(Ms1Spots, Target, Observable.Return(classBrush), observableBarItemsLoader).AddTo(Disposables);
+            AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(Ms1Spots, Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, observableBarItemsLoader).AddTo(Disposables);
 
             MsdecResult = Target.Where(t => t != null)
                 .Select(t => loader.LoadMSDecResult(t.MasterAlignmentID))

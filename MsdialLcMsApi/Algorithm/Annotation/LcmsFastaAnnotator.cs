@@ -35,7 +35,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
             ReferObject = reference;
 
             //OriginalOrderedDecoyPeptideMsRef = reference.DecoyPeptideMsRef;
-            evaluator = MsScanMatchResultEvaluator.CreateEvaluator(msrefSearchParameter);
+            evaluator = new MsScanMatchResultEvaluator(msrefSearchParameter);
         }
 
         public string Id { get; }

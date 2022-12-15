@@ -127,6 +127,6 @@
     <value>http://prime.psc.riken.jp/compms/msdial/vmsdial.json</value>
   </data>
   <data name="VERSION" xml:space="preserve">
-    <value>5.1.221118</value>
+    <value>5.1.221118-dev</value>
   </data>
 </root>

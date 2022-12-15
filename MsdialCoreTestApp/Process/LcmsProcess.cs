@@ -49,17 +49,22 @@ namespace CompMs.App.MsdialConsole.Process
         private int Execute(ProjectDataStorage projectDataStorage, IMsdialDataStorage<MsdialLcmsParameter> storage, string outputFolder, bool isProjectSaved) {
             var files = storage.AnalysisFiles;
             var tasks = new Task[files.Count];
-            var evaluator = MsScanMatchResultEvaluator.CreateEvaluator(storage.Parameter.MspSearchParam);
+            var evaluator = new MsScanMatchResultEvaluator(storage.Parameter.MspSearchParam);
             var database = new MoleculeDataBase(storage.MspDB, storage.Parameter.MspFilePath, DataBaseSource.Msp, SourceType.MspDB);
             var annotator = new LcmsMspAnnotator(database, storage.Parameter.MspSearchParam, storage.Parameter.TargetOmics, storage.Parameter.MspFilePath, 1);
             var textdatabase = new MoleculeDataBase(storage.TextDB, storage.Parameter.TextDBFilePath, DataBaseSource.Text, SourceType.TextDB);
             var textannotator = new LcmsTextDBAnnotator(database, storage.Parameter.TextDbSearchParam, storage.Parameter.TextDBFilePath, 2);
-            var annotationProcess = new StandardAnnotationProcess<AnnotationQuery>(
-                new AnnotationQueryWithoutIsotopeFactory(annotator),
-                new IAnnotatorContainer<AnnotationQuery, MoleculeMsReference, MsScanMatchResult>[] {
-                    new AnnotatorContainer<AnnotationQuery, MoleculeMsReference, MsScanMatchResult>(annotator, storage.Parameter.MspSearchParam),
-                    new AnnotatorContainer<AnnotationQuery, MoleculeMsReference, MsScanMatchResult>(textannotator, storage.Parameter.TextDbSearchParam),
-                });
+            var mapper = new DataBaseMapper();
+            mapper.Add(annotator);
+            mapper.Add(textannotator);
+            var annotationProcess = new StandardAnnotationProcess(
+                new[]
+                {
+                    new AnnotationQueryFactory(annotator, storage.Parameter.PeakPickBaseParam, storage.Parameter.MspSearchParam, ignoreIsotopicPeak: true),
+                    new AnnotationQueryFactory(annotator, storage.Parameter.PeakPickBaseParam, storage.Parameter.TextDbSearchParam, ignoreIsotopicPeak: false),
+                },
+                evaluator,
+                mapper);
             var process = new FileProcess(new StandardDataProviderFactory(5, false), storage, annotationProcess, evaluator);
             var sem = new SemaphoreSlim(Environment.ProcessorCount / 2);
             foreach ((var file, var idx) in files.WithIndex()) {

@@ -10,7 +10,7 @@ using System;
 
 namespace CompMs.MsdialImmsCore.Parser
 {
-    sealed class ImmsLoadAnnotatorVisitor : ILoadAnnotatorVisitor
+    public sealed class ImmsLoadAnnotatorVisitor : ILoadAnnotatorVisitor
     {
         public ImmsLoadAnnotatorVisitor(ParameterBase parameter) {
             Parameter = parameter;
@@ -18,7 +18,7 @@ namespace CompMs.MsdialImmsCore.Parser
 
         public ParameterBase Parameter { get; }
 
-        public ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(StandardRestorationKey key, MoleculeDataBase database) {
+        public ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(StandardRestorationKey key, MoleculeDataBase database) {
             if (key.SourceType.HasFlag(SourceType.MspDB)) {
                 return new ImmsMspAnnotator(database, key.Parameter, Parameter.TargetOmics, key.Key, key.Priority);
             }
@@ -28,11 +28,11 @@ namespace CompMs.MsdialImmsCore.Parser
             throw new NotSupportedException(key.SourceType.ToString());
         }
 
-        public ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(MspDbRestorationKey key, MoleculeDataBase database) {
+        public ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(MspDbRestorationKey key, MoleculeDataBase database) {
             return new ImmsMspAnnotator(database, Parameter.MspSearchParam, Parameter.TargetOmics, key.Key, key.Priority);
         }
 
-        public ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(TextDbRestorationKey key, MoleculeDataBase database) {
+        public ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(TextDbRestorationKey key, MoleculeDataBase database) {
             return new ImmsTextDBAnnotator(database, Parameter.TextDbSearchParam, key.Key, key.Priority);
         }
 
@@ -40,8 +40,48 @@ namespace CompMs.MsdialImmsCore.Parser
             throw new NotSupportedException();
         }
 
-        public ISerializableAnnotator<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> Visit(EadLipidDatabaseRestorationKey key, EadLipidDatabase database) {
+        public ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> Visit(EadLipidDatabaseRestorationKey key, EadLipidDatabase database) {
             return new EadLipidAnnotator(database, key.Key, key.Priority, key.MsRefSearchParameter);
+        }
+    }
+
+    public sealed class ImmsAnnotationQueryFactoryGenerationVisitor : IAnnotationQueryFactoryGenerationVisitor {
+        private readonly PeakPickBaseParameter _peakPickParameter;
+        private readonly RefSpecMatchBaseParameter _searchParameter;
+        private readonly ProteomicsParameter _proteomicsParameter;
+        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+
+        public ImmsAnnotationQueryFactoryGenerationVisitor(PeakPickBaseParameter peakPickParameter, RefSpecMatchBaseParameter searchParameter, ProteomicsParameter proteomicsParameter, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            _peakPickParameter = peakPickParameter ?? throw new ArgumentNullException(nameof(peakPickParameter));
+            _searchParameter = searchParameter ?? throw new ArgumentNullException(nameof(searchParameter));
+            _proteomicsParameter = proteomicsParameter ?? throw new ArgumentNullException(nameof(proteomicsParameter));
+            _refer = refer ?? throw new ArgumentNullException(nameof(refer));
+        }
+
+        public IAnnotationQueryFactory<MsScanMatchResult> Visit(StandardRestorationKey key, IMatchResultFinder<AnnotationQuery, MsScanMatchResult> finder) {
+            if (key.SourceType.HasFlag(SourceType.MspDB)) {
+                return new AnnotationQueryFactory(finder, _peakPickParameter, key.Parameter, ignoreIsotopicPeak: true);
+            }
+            else if (key.SourceType.HasFlag(SourceType.TextDB)) {
+                return new AnnotationQueryFactory(finder, _peakPickParameter, key.Parameter, ignoreIsotopicPeak: false);
+            }
+            throw new NotSupportedException(key.SourceType.ToString());
+        }
+
+        public IAnnotationQueryFactory<MsScanMatchResult> Visit(MspDbRestorationKey key, IMatchResultFinder<AnnotationQuery, MsScanMatchResult> finder) {
+            return new AnnotationQueryFactory(finder, _peakPickParameter, _searchParameter.MspSearchParam, ignoreIsotopicPeak: true);
+        }
+
+        public IAnnotationQueryFactory<MsScanMatchResult> Visit(TextDbRestorationKey key, IMatchResultFinder<AnnotationQuery, MsScanMatchResult> finder) {
+            return new AnnotationQueryFactory(finder, _peakPickParameter, _searchParameter.TextDbSearchParam, ignoreIsotopicPeak: false);
+        }
+
+        public IAnnotationQueryFactory<MsScanMatchResult> Visit(ShotgunProteomicsRestorationKey key, IMatchResultFinder<PepAnnotationQuery, MsScanMatchResult> finder) {
+            return new PepAnnotationQueryFactory(finder, _peakPickParameter, key.MsRefSearchParameter, _proteomicsParameter);
+        }
+
+        public IAnnotationQueryFactory<MsScanMatchResult> Visit(EadLipidDatabaseRestorationKey key, IMatchResultFinder<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MsScanMatchResult> finder) {
+            return new AnnotationQueryWithReferenceFactory(_refer, finder, _peakPickParameter, key.MsRefSearchParameter, ignoreIsotopicPeak: false);
         }
     }
 }

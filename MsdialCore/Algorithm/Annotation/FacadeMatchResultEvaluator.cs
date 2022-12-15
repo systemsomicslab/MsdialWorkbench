@@ -1,7 +1,7 @@
 ﻿using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
-using System;
+using CompMs.MsdialCore.Parser;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -48,33 +48,41 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 .Argmax(result => (result?.Source ?? SourceType.None, result?.Priority ?? -1, result?.TotalScore ?? 0));
         }
 
-        [Obsolete("This method is for refactoring and will be removed in the near future.")]
-        public static FacadeMatchResultEvaluator FromDataBaseMapper(DataBaseMapper mapper) {
-            var evaluator = new FacadeMatchResultEvaluator();
-            foreach (var annotator in mapper.MoleculeAnnotators) {
-                evaluator.Add(annotator.AnnotatorID, annotator.Annotator);
-            }
-            foreach (var annotator in mapper.PeptideAnnotators) {
-                evaluator.Add(annotator.AnnotatorID, annotator.Annotator);
-            }
-            return evaluator;
-        }
-
         public static FacadeMatchResultEvaluator FromDataBases(DataBaseStorage storage) {
             var evaluator = new FacadeMatchResultEvaluator();
             foreach (var db in storage.MetabolomicsDataBases) {
                 foreach (var pair in db.Pairs) {
-                    evaluator.Add(pair.AnnotatorID, pair.SerializableAnnotator);
+                    evaluator.Add(pair.AnnotatorID, pair.AnnotationQueryFactory.CreateEvaluator());
                 }
             }
             foreach (var db in storage.ProteomicsDataBases) {
                 foreach (var pair in db.Pairs) {
-                    evaluator.Add(pair.AnnotatorID, pair.SerializableAnnotator);
+                    evaluator.Add(pair.AnnotatorID, pair.AnnotationQueryFactory.CreateEvaluator());
                 }
             }
             foreach (var db in storage.EadLipidomicsDatabases) {
                 foreach (var pair in db.Pairs) {
-                    evaluator.Add(pair.AnnotatorID, pair.SerializableAnnotator);
+                    evaluator.Add(pair.AnnotatorID, pair.AnnotationQueryFactory.CreateEvaluator());
+                }
+            }
+            return evaluator;
+        }
+
+        public static FacadeMatchResultEvaluator FromDataBases(DataBaseStorage storage, IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor) {
+            var evaluator = new FacadeMatchResultEvaluator();
+            foreach (var db in storage.MetabolomicsDataBases) {
+                foreach (var pair in db.Pairs) {
+                    evaluator.Add(pair.AnnotatorID, new MsScanMatchResultEvaluator(pair.AnnotationQueryFactory.PrepareParameter()));
+                }
+            }
+            foreach (var db in storage.ProteomicsDataBases) {
+                foreach (var pair in db.Pairs) {
+                    evaluator.Add(pair.AnnotatorID, new MsScanMatchResultEvaluator(pair.AnnotationQueryFactory.PrepareParameter()));
+                }
+            }
+            foreach (var db in storage.EadLipidomicsDatabases) {
+                foreach (var pair in db.Pairs) {
+                    evaluator.Add(pair.AnnotatorID, new MsScanMatchResultEvaluator(pair.AnnotationQueryFactory.PrepareParameter()));
                 }
             }
             return evaluator;

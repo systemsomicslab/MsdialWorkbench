@@ -30,6 +30,10 @@ namespace CompMs.MsdialImmsCore.DataObj
             return MessagePackDefaultHandler.LoadFromStream<MsdialImmsParameter>(stream);
         }
 
+        public AnnotationQueryFactoryStorage CreateAnnotationQueryFactoryStorage() {
+            return DataBases.CreateQueryFactories();
+        }
+
         public static IMsdialSerializer Serializer { get; } = new MsdialImmsSerializer();
 
         class MsdialImmsSerializer : MsdialSerializer, IMsdialSerializer
@@ -40,9 +44,9 @@ namespace CompMs.MsdialImmsCore.DataObj
                 }
             }
 
-            protected override async Task LoadDataBasesAsync(IStreamManager streamManager, string path, IMsdialDataStorage<ParameterBase> storage, string projectFolderPath) {
+            protected override async Task LoadDataBasesAsync(IStreamManager streamManager, string path, DataBaseMapper mapper, IMsdialDataStorage<ParameterBase> storage, string projectFolderPath) {
                 using (var stream = await streamManager.Get(path).ConfigureAwait(false)) {
-                    storage.DataBases = DataBaseStorage.Load(stream, new ImmsLoadAnnotatorVisitor(storage.Parameter), projectFolderPath);
+                    storage.DataBases = DataBaseStorage.Load(stream, new ImmsLoadAnnotatorVisitor(storage.Parameter), new ImmsAnnotationQueryFactoryGenerationVisitor(storage.Parameter.PeakPickBaseParam, storage.Parameter.RefSpecMatchBaseParam, storage.Parameter.ProteomicsParam, mapper), projectFolderPath);
                 }
             }
         }

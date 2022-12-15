@@ -80,7 +80,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             var annotator = new MassAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Metabolomics, SourceType.MspDB, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100 };
-            var results = annotator.FindCandidates(BuildQuery(target, annotator));
+            var results = BuildQuery(target, annotator).FindCandidates();
             var expected = new[]
             {
                 db[0].Name, db[1].Name, db[2].Name,
@@ -388,7 +388,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
         }
 
         private AnnotationQuery BuildQuery(ChromatogramPeakFeature target, MassAnnotator annotator) {
-            return new AnnotationQuery(target, target, null, null, new MsRefSearchParameterBase(), annotator);
+            return new AnnotationQuery(target, target, null, null, new MsRefSearchParameterBase(), annotator, ignoreIsotopicPeak: false);
         }
     }
 }

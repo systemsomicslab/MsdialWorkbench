@@ -21,21 +21,15 @@ namespace CompMs.App.Msdial.Model.Search
 
         public IReadOnlyList<CompoundSearcher> Items => _items;
 
-        public static CompoundSearcherCollection BuildSearchers(DataBaseStorage databases, DataBaseMapper mapper, PeakPickBaseParameter parameter) {
+        public static CompoundSearcherCollection BuildSearchers(DataBaseStorage databases, DataBaseMapper mapper) {
             var metabolomicsSearchers = databases
                 .MetabolomicsDataBases
                 .SelectMany(db => db.Pairs)
-                .Select(pair => new CompoundSearcher(
-                    new AnnotationQueryWithoutIsotopeFactory(pair.SerializableAnnotator),
-                    pair.SearchParameter,
-                    pair.SerializableAnnotator));
+                .Select(pair => new CompoundSearcher(pair.AnnotationQueryFactory, mapper));
             var lipidomicsSearchers = databases
                 .EadLipidomicsDatabases
                 .SelectMany(db => db.Pairs)
-                .Select(pair => new CompoundSearcher(
-                    new AnnotationQueryWithReferenceFactory(mapper, pair.SerializableAnnotator, parameter),
-                    pair.SearchParameter,
-                    pair.SerializableAnnotator));
+                .Select(pair => new CompoundSearcher(pair.AnnotationQueryFactory, mapper));
             return new CompoundSearcherCollection(metabolomicsSearchers.Concat(lipidomicsSearchers));
         }
     }

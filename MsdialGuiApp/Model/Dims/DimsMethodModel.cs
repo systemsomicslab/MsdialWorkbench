@@ -128,38 +128,24 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public AlignmentResultExportModel AlignmentResultExportModel { get; }
 
-        private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage) {
-            var containers = new List<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
-            foreach (var annotators in storage.MetabolomicsDataBases) {
-                containers.AddRange(annotators.Pairs.Select(annotator => annotator.ConvertToAnnotatorContainer()));
-            }
-            return new StandardAnnotationProcess<IAnnotationQuery>(
-                containers.Select(container => (
-                    new AnnotationQueryWithoutIsotopeFactory(container.Annotator) as IAnnotationQueryFactory<IAnnotationQuery>,
-                    container
-                )).ToList());
+        private IAnnotationProcess BuildAnnotationProcess() {
+            var queryFatoires = Storage.CreateAnnotationQueryFactoryStorage();
+            return new StandardAnnotationProcess(queryFatoires.MoleculeQueryFactories, _matchResultEvaluator, Storage.DataBaseMapper);
         }
 
-        private IAnnotationProcess BuildEadLipidomicsAnnotationProcess(DataBaseStorage storage, DataBaseMapper mapper, ParameterBase parameter) {
-            var containerPairs = new List<(IAnnotationQueryFactory<IAnnotationQuery>, IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>)>();
-            foreach (var annotators in storage.MetabolomicsDataBases) {
-                containerPairs.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryFactory(annotator.SerializableAnnotator, parameter.PeakPickBaseParam) as IAnnotationQueryFactory<IAnnotationQuery>, annotator.ConvertToAnnotatorContainer())));
-            }
-            var eadAnnotationQueryFactoryTriple = new List<(IAnnotationQueryFactory<ICallableAnnotationQuery<MsScanMatchResult>>, IMatchResultEvaluator<MsScanMatchResult>, MsRefSearchParameterBase)>();
-            foreach (var annotators in storage.EadLipidomicsDatabases) {
-                eadAnnotationQueryFactoryTriple.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryWithReferenceFactory(mapper, annotator.SerializableAnnotator, parameter.PeakPickBaseParam) as IAnnotationQueryFactory<ICallableAnnotationQuery<MsScanMatchResult>>, annotator.SerializableAnnotator as IMatchResultEvaluator<MsScanMatchResult>, annotator.SearchParameter)));
-            }
-            return new EadLipidomicsAnnotationProcess<IAnnotationQuery>(containerPairs, eadAnnotationQueryFactoryTriple, mapper);
+        private IAnnotationProcess BuildEadLipidomicsAnnotationProcess() {
+            var queryFactories = Storage.CreateAnnotationQueryFactoryStorage();
+            return new EadLipidomicsAnnotationProcess(queryFactories.MoleculeQueryFactories, queryFactories.SecondQueryFactories, Storage.DataBaseMapper, _matchResultEvaluator);
         }
 
         public override async Task RunAsync(ProcessOption option, CancellationToken token) {
             // Storage.DataBaseMapper = BuildDataBaseMapper(Storage.DataBases);
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
             if (Storage.Parameter.TargetOmics == TargetOmics.Lipidomics && (Storage.Parameter.CollistionType == CollisionType.EIEIO || Storage.Parameter.CollistionType == CollisionType.OAD)) {
-                _annotationProcess = BuildEadLipidomicsAnnotationProcess(Storage.DataBases, Storage.DataBaseMapper, Storage.Parameter);
+                _annotationProcess = BuildEadLipidomicsAnnotationProcess();
             }
             else {
-                _annotationProcess = BuildAnnotationProcess(Storage.DataBases);
+                _annotationProcess = BuildAnnotationProcess();
             }
 
             var processOption = option;

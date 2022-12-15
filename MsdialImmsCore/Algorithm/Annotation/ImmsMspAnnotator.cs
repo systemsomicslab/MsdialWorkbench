@@ -18,7 +18,7 @@ using System.Linq;
 
 namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 {
-    public class ImmsMspAnnotator : StandardRestorableBase, ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>
+    public class ImmsMspAnnotator : StandardRestorableBase, ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>
     {
         private static readonly IComparer<IMSIonProperty> comparer = CompositeComparer.Build<IMSIonProperty>(MassComparer.Comparer, CollisionCrossSectionComparer.Comparer);
 
@@ -28,7 +28,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             this.db.Sort(comparer);
             this.omics = omics;
             this.ReferObject = mspDB;
-            evaluator = MsScanMatchResultEvaluator.CreateEvaluator(parameter);
+            evaluator = new MsScanMatchResultEvaluator(parameter);
         }
 
         public string Id { get; }
@@ -36,12 +36,12 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
         private readonly TargetOmics omics;
         private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
 
-        public MsScanMatchResult Annotate(IAnnotationQuery query) {
+        public MsScanMatchResult Annotate(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
             return FindCandidatesCore(query.Property, query.Scan, query.Isotopes, parameter, omics, Key).FirstOrDefault();
         }
 
-        public List<MsScanMatchResult> FindCandidates(IAnnotationQuery query) {
+        public List<MsScanMatchResult> FindCandidates(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
             return FindCandidatesCore(query.Property, query.Scan, query.Isotopes, parameter, omics, Key);
         }
@@ -63,7 +63,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             return results.OrderByDescending(result => result.TotalScore).ToList();
         }
 
-        public MsScanMatchResult CalculateScore(IAnnotationQuery query, MoleculeMsReference reference) {
+        public MsScanMatchResult CalculateScore(IAnnotationQuery<MsScanMatchResult> query, MoleculeMsReference reference) {
             var parameter = query.Parameter ?? Parameter;
             var scan = DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter);
             var result = CalculateScoreCore(query.Property, scan, query.Isotopes, reference, reference.IsotopicPeaks, parameter, omics, Key);
@@ -158,7 +158,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             => searcher ?? (searcher = new MassReferenceSearcher<MoleculeMsReference>(db));
         private MassReferenceSearcher<MoleculeMsReference> searcher;
 
-        public List<MoleculeMsReference> Search(IAnnotationQuery query) {
+        public List<MoleculeMsReference> Search(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
             return parameter.IsUseCcsForAnnotationFiltering
                 ? SearchWithCcsCore(query.Property, parameter.Ms1Tolerance, parameter.CcsTolerance).ToList()

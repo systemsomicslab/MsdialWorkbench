@@ -169,7 +169,8 @@
                                 <chart:SmallClassBarChart.DataContext>
                                     <MultiBinding Converter="{StaticResource CollectionToViewModel}">
                                         <Binding/>
-                                        <Binding Path="DataContext.BarItemsLoader" RelativeSource="{RelativeSource AncestorType=DataGrid}"/>
+                                        <Binding Path="(DataGrid.DataContext).(vm:DimsAlignmentSpotTableViewModel.BarItemsLoader)" RelativeSource="{RelativeSource AncestorType=DataGrid}"/>
+                                        <Binding Path="(DataGrid.DataContext).(vm:DimsAlignmentSpotTableViewModel.FileClassPropertiesModel)" RelativeSource="{RelativeSource AncestorType=DataGrid}"/>
                                     </MultiBinding>
                                 </chart:SmallClassBarChart.DataContext>
                             </chart:SmallClassBarChart>

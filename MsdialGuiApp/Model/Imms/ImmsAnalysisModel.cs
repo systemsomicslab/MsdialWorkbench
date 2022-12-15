@@ -55,7 +55,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             _provider = provider;
             _dataBaseMapper = mapper;
-            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper, parameter.PeakPickBaseParam).Items;
+            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper).Items;
             _parameter = parameter as MsdialImmsParameter;
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, status: ~FilterEnableStatus.Rt).AddTo(Disposables);

@@ -55,7 +55,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public void MappingToProteinDatabase(
             AnalysisFileBean file,
-            List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> databases,
+            List<DataBaseItem<ShotgunProteomicsDB>> databases,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer, 
             ParameterBase param) {
@@ -68,7 +68,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         private void MappingToProteinDatabase(string file, List<ChromatogramPeakFeature> features,
-            List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> databases,
+            List<DataBaseItem<ShotgunProteomicsDB>> databases,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer,
             ParameterBase param) {
@@ -105,7 +105,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         public void MappingToProteinDatabase(
             string file,
             AlignmentResultContainer alignmentContainer,
-            List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> databases,
+            List<DataBaseItem<ShotgunProteomicsDB>> databases,
             IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             ParameterBase param) {
@@ -118,7 +118,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             MsdialProteomicsSerializer.SaveProteinResultContainer(file, container);
         }
 
-        public Dictionary<string, ModificationContainer> GetDB2ModificationContainer(List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> databases) {
+        public Dictionary<string, ModificationContainer> GetDB2ModificationContainer(List<DataBaseItem<ShotgunProteomicsDB>> databases) {
             var dict = new Dictionary<string, ModificationContainer>();
             foreach (var database in databases) {
                 dict[database.DataBaseID] = database.DataBase.ModificationContainer;
@@ -133,19 +133,27 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             proteinMsResults = proteinMsResults.OrderByDescending(n => n.MatchedPeptideResults.Count()).ToList();
 
             var counter = 0;
+            var mergedProteins = new List<int>();
             for (int i = 0; i < proteinMsResults.Count; i++) {
-                var pepIDs = proteinMsResults[i].MatchedPeptideResults.Select(n => n.Peptide.DatabaseOriginID + "|" + n.Peptide.Position.Start.ToString() + "|" + n.Peptide.Position.End.ToString()).ToList();
+                //var pepIDs = proteinMsResults[i].MatchedPeptideResults.Select(n => n.Peptide.DatabaseOriginID + "|" + n.Peptide.Position.Start.ToString() + "|" + n.Peptide.Position.End.ToString()).ToList();
+                var pepIDs = proteinMsResults[i].MatchedPeptideResults.Select(n => n.Peptide.Sequence).ToList();
                 var proteinAID = proteinMsResults[i].Index;
-                if (isProteinValuesContainsKey(dict, proteinAID)) {
-                    continue;
-                }
+                if (mergedProteins.Contains(proteinAID)) continue;
+                //if (isProteinValuesContainsKey(dict, proteinAID)) {
+                //    continue;
+                //}
                 dict[counter] = new List<ProteinMsResult>() { proteinMsResults[i] };
+                mergedProteins.Add(proteinAID);
 
                 for (int j = i + 1; j < proteinMsResults.Count; j++) {
                     var proteinBID = proteinMsResults[j].Index;
-                    var cPepIDs = proteinMsResults[j].MatchedPeptideResults.Select(n => n.Peptide.DatabaseOriginID + "|" + n.Peptide.Position.Start.ToString() + "|" + n.Peptide.Position.End.ToString()).ToList();
+                    if (mergedProteins.Contains(proteinBID)) continue;
+
+                    //var cPepIDs = proteinMsResults[j].MatchedPeptideResults.Select(n => n.Peptide.DatabaseOriginID + "|" + n.Peptide.Position.Start.ToString() + "|" + n.Peptide.Position.End.ToString()).ToList();
+                    var cPepIDs = proteinMsResults[j].MatchedPeptideResults.Select(n => n.Peptide.Sequence).ToList();
                     if (isMatchedIDs(pepIDs, cPepIDs)) {
                         dict[counter].Add(proteinMsResults[j]);
+                        mergedProteins.Add(proteinBID);
                     }
                 }
                 counter++;
@@ -164,10 +172,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                     var protein = group.ProteinMsResults[j];
                     for (int k = 0; k < protein.MatchedPeptideResults.Count; k++) {
                         var peptide = protein.MatchedPeptideResults[k].Peptide;
-                        var peptideString = peptide.ModifiedSequence;
+                        var peptideString = peptide.Sequence;
                         if (peptideList.Contains(peptideString) && peptide2firstProteinID[peptideString] < j) {
-                            protein.MatchedPeptideResults.RemoveAt(k);
-                            k--;
+                        //if (peptideList.Contains(peptideString)) {
+                            //protein.MatchedPeptideResults.RemoveAt(k);
+                            //k--;
                         }
                         else {
                             peptideList.Add(peptideString);
@@ -176,10 +185,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                             }
                         }
                     }
-                    if (protein.MatchedPeptideResults.IsEmptyOrNull()) {
-                        group.ProteinMsResults.RemoveAt(j);
-                        j--;
-                    }
+                    //if (protein.MatchedPeptideResults.IsEmptyOrNull()) {
+                    //    group.ProteinMsResults.RemoveAt(j);
+                    //    j--;
+                    //}
                 }
                 if (group.ProteinMsResults.IsEmptyOrNull()) {
                     groups.RemoveAt(i);
@@ -244,7 +253,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public List<ProteinMsResult> MappingToProteinDatabase(
             List<ChromatogramPeakFeature> features,
-            List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> databases,
+            List<DataBaseItem<ShotgunProteomicsDB>> databases,
             IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer,
             IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             var featureObjs = DataAccess.GetChromPeakFeatureObjectsIntegratingRtAndDriftData(features);
@@ -255,11 +264,15 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             foreach (var result in results) {
                 var fastaIdentifier = result.FastaProperty.UniqueIdentifier;
+                var fastaPeptides = result.FastaProperty.Sequence;
+
                 foreach (var feature in annotatedFeatures) {
                     var matchedMsResult = feature.MatchResults.Representative;
                     var matchedPeptideMs = feature.MatchResults.GetRepresentativeReference(refer);
                     var identifier = matchedPeptideMs.Peptide.DatabaseOrigin;
-                    if (fastaIdentifier == identifier) {
+                    var matchedPeptideSequence = matchedPeptideMs.Peptide.Sequence;
+                    if (fastaPeptides.Contains(matchedPeptideSequence)) {
+                        //if (fastaIdentifier == identifier) {
                         result.IsAnnotated = true;
                         result.MatchedPeptideResults.Add(new PeptideMsResult(matchedPeptideMs.Peptide, feature, result.DatabaseID));
                     }
@@ -272,7 +285,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public List<ProteinMsResult> MappingToProteinDatabase(
             List<AlignmentSpotProperty> features,
-            List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> databases,
+            List<DataBaseItem<ShotgunProteomicsDB>> databases,
             IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer,
             IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             var featureObjs = DataAccess.GetAlignmentSpotPropertiesIntegratingRtAndDriftData(features);
@@ -283,11 +296,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             foreach (var result in results) {
                 var fastaIdentifier = result.FastaProperty.UniqueIdentifier;
+                var fastaPeptides = result.FastaProperty.Sequence;
                 foreach (var feature in annotatedFeatures) {
                     var matchedMsResult = feature.MatchResults.Representative;
                     var matchedPeptideMs = feature.MatchResults.GetRepresentativeReference(refer);
                     var identifier = matchedPeptideMs.Peptide.DatabaseOrigin;
-                    if (fastaIdentifier == identifier) {
+                    var matchedPeptideSequence = matchedPeptideMs.Peptide.Sequence;
+                    if (fastaPeptides.Contains(matchedPeptideSequence)) {
+                        //if (fastaIdentifier == identifier) {
                         result.IsAnnotated = true;
                         result.MatchedPeptideResults.Add(new PeptideMsResult(matchedPeptideMs.Peptide, feature, result.DatabaseID));
                     }
@@ -299,7 +315,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public List<ProteinMsResult> InitializeProteinMsResults(
-            List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> databases) {
+            List<DataBaseItem<ShotgunProteomicsDB>> databases) {
             var proteins = new List<ProteinMsResult>();
             var counter = 0;
             foreach (var item in databases) {

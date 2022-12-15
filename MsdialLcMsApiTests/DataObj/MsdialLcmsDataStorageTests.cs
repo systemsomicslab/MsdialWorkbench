@@ -38,14 +38,15 @@ namespace CompMs.MsdialLcMsApi.DataObj.Tests
             var db = new MoleculeDataBase(new[] { new MoleculeMsReference { DatabaseID = 7, Name = "TestDBRef" } }, "DummyDB", DataBaseSource.Msp, SourceType.MspDB);
             var searchParameter = new MsRefSearchParameterBase { MassRangeBegin = 300, };
             var dbs = storage.DataBases;
+            LcmsMspAnnotator annotator = new LcmsMspAnnotator(db, searchParameter, TargetOmics.Metabolomics, "DummyAnnotator", 8);
             dbs.AddMoleculeDataBase(
                 db,
-                new List<IAnnotatorParameterPair<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
-                    new MetabolomicsAnnotatorParameterPair(new LcmsMspAnnotator(db, searchParameter, TargetOmics.Metabolomics, "DummyAnnotator", 8), searchParameter) 
+                new List<IAnnotatorParameterPair<MoleculeDataBase>> {
+                    new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, storage.MsdialLcmsParameter.PeakPickBaseParam, searchParameter, ignoreIsotopicPeak: true))
                 }
             );
 
-            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].SerializableAnnotator, dbs.MetabolomicsDataBases[0].DataBase);
+            storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].AnnotatorID, dbs.MetabolomicsDataBases[0].DataBase);
 
             var memory = new MemoryStream();
             using (var manager = ZipStreamManager.OpenCreate(memory)) {
@@ -84,13 +85,6 @@ namespace CompMs.MsdialLcMsApi.DataObj.Tests
                 Assert.AreEqual(storage.IupacDatabase.Id2AtomElementProperties[6].Count, actual.IupacDatabase.Id2AtomElementProperties[6].Count);
                 Assert.AreEqual(storage.IupacDatabase.Id2AtomElementProperties[6][0].ElementName, actual.IupacDatabase.Id2AtomElementProperties[6][0].ElementName);
 
-                Assert.AreEqual(storage.DataBaseMapper.KeyToAnnotator.Count, actual.DataBaseMapper.KeyToAnnotator.Count);
-                foreach (var key in storage.DataBaseMapper.KeyToAnnotator.Keys) {
-                    Assert.AreEqual(storage.DataBaseMapper.KeyToAnnotator[key].AnnotatorID, actual.DataBaseMapper.KeyToAnnotator[key].AnnotatorID);
-                    Assert.AreEqual(storage.DataBaseMapper.KeyToAnnotator[key].Annotator.GetType().FullName, actual.DataBaseMapper.KeyToAnnotator[key].Annotator.GetType().FullName);
-                    Assert.AreEqual(storage.DataBaseMapper.KeyToAnnotator[key].Annotator.Key, actual.DataBaseMapper.KeyToAnnotator[key].Annotator.Key);
-                }
-
                 Assert.AreEqual(storage.DataBases.MetabolomicsDataBases.Count, actual.DataBases.MetabolomicsDataBases.Count);
                 Assert.AreEqual(storage.DataBases.MetabolomicsDataBases[0].DataBaseID, actual.DataBases.MetabolomicsDataBases[0].DataBaseID);
                 Assert.AreEqual(storage.DataBases.MetabolomicsDataBases[0].DataBase.Id, actual.DataBases.MetabolomicsDataBases[0].DataBase.Id);
@@ -100,8 +94,7 @@ namespace CompMs.MsdialLcMsApi.DataObj.Tests
                 Assert.AreEqual(storage.DataBases.MetabolomicsDataBases[0].DataBase.Database[0].Name, actual.DataBases.MetabolomicsDataBases[0].DataBase.Database[0].Name);
                 Assert.AreEqual(storage.DataBases.MetabolomicsDataBases[0].Pairs.Count, actual.DataBases.MetabolomicsDataBases[0].Pairs.Count);
                 Assert.AreEqual(storage.DataBases.MetabolomicsDataBases[0].Pairs[0].AnnotatorID, actual.DataBases.MetabolomicsDataBases[0].Pairs[0].AnnotatorID);
-                Assert.AreEqual(storage.DataBases.MetabolomicsDataBases[0].Pairs[0].SerializableAnnotator.GetType().FullName, actual.DataBases.MetabolomicsDataBases[0].Pairs[0].SerializableAnnotator.GetType().FullName);
-                Assert.AreEqual(storage.DataBases.MetabolomicsDataBases[0].Pairs[0].SerializableAnnotator.Key, actual.DataBases.MetabolomicsDataBases[0].Pairs[0].SerializableAnnotator.Key);
+                Assert.AreEqual(storage.DataBases.MetabolomicsDataBases[0].Pairs[0].AnnotationQueryFactory.GetType().FullName, actual.DataBases.MetabolomicsDataBases[0].Pairs[0].AnnotationQueryFactory.GetType().FullName);
             }
         }
     }

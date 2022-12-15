@@ -62,7 +62,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             _provider = provider;
             DataBaseMapper = mapper;
             Parameter = parameter;
-            CompoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper, parameter.PeakPickBaseParam).Items;
+            CompoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper).Items;
 
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
                 // These 3 lines must be moved to somewhere for swithcing/updating the alignment result
@@ -257,9 +257,11 @@ namespace CompMs.App.Msdial.Model.Lcms
                 r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d),
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
-            var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
-            MoleculeStructureModel = moleculeStructureModel;
-            Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
+            if (parameter.ProjectParam.TargetOmics != TargetOmics.Proteomics) {
+                var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
+                MoleculeStructureModel = moleculeStructureModel;
+                Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
+            }
         }
 
         private static readonly double RtTol = 0.5;

@@ -112,7 +112,7 @@ namespace CompMs.MsdialCore.Normalize.Tests
             // PA and unknown
             for (int i = 4; i < 7; i++) {
                 Assert.AreEqual(-1, spots[i].InternalStandardAlignmentID);
-                Assert.AreEqual(IonAbundanceUnit.Height, spots[i].IonAbundanceUnit);
+                Assert.AreEqual(IonAbundanceUnit.Intensity, spots[i].IonAbundanceUnit);
                 Assert.AreEqual(spots[i].AlignedPeakProperties[0].PeakHeightTop, spots[i].AlignedPeakProperties[0].NormalizedPeakHeight);
                 Assert.AreEqual(spots[i].AlignedPeakProperties[1].PeakHeightTop, spots[i].AlignedPeakProperties[1].NormalizedPeakHeight);
                 Assert.AreEqual(spots[i].AlignedPeakProperties[0].PeakAreaAboveBaseline, spots[i].AlignedPeakProperties[0].NormalizedPeakAreaAboveBaseline);

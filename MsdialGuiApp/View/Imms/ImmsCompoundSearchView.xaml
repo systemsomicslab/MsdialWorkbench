@@ -7,6 +7,7 @@
              xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type={x:Type vm:ImmsCompoundSearchVM}}"
              d:DesignHeight="720" d:DesignWidth="1280">
@@ -152,10 +153,10 @@
                 <ContentControl Content="{Binding File, Mode=OneTime}"
                                 ContentTemplate="{StaticResource FileInfoTemplate}"
                                 Margin="8"/>
-                <ContentControl Content="{Binding PeakSpot.MSIon, Mode=OneTime}"
+                <ContentControl Content="{Binding PeakSpot.(do:IPeakSpotModel.MSIon), Mode=OneTime}"
                                 ContentTemplate="{StaticResource PeakInfoTemplate}"
                                 Margin="8"/>
-                <ContentControl Content="{Binding PeakSpot.Molecule, Mode=OneTime}"
+                <ContentControl Content="{Binding PeakSpot.(do:IPeakSpotModel.Molecule), Mode=OneTime}"
                                 ContentTemplate="{StaticResource AnnotationInfoTemplate}"
                                 Margin="8"/>
             </WrapPanel>

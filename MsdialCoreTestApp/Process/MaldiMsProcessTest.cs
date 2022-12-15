@@ -83,13 +83,13 @@ namespace CompMs.App.MsdialConsole.Process
             container.DataBases = DataBaseStorage.CreateEmpty();
             container.DataBases.AddMoleculeDataBase(
                 database,
-                new List<IAnnotatorParameterPair<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> { 
-                    new MetabolomicsAnnotatorParameterPair(annotator, param.TextDbSearchParam)
+                new List<IAnnotatorParameterPair<MoleculeDataBase>> { 
+                    new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, param.TextDbSearchParam, ignoreIsotopicPeak: false))
                 }
             );
             storage.AddStorage(container);
 
-            var evaluator = MsScanMatchResultEvaluator.CreateEvaluator(param.TextDbSearchParam);
+            var evaluator = new MsScanMatchResultEvaluator(param.TextDbSearchParam);
             var processor = new MsdialImmsCore.Process.FileProcess(container, null, null, evaluator);
             processor.RunAsync(file, provider).Wait();
             using (var fs = File.Open(storage.ProjectParameter.FilePath, FileMode.Create))
@@ -180,14 +180,14 @@ namespace CompMs.App.MsdialConsole.Process
                 MspDB = mspDB, TextDB = txtDB, IsotopeTextDB = isotopeTextDB, IupacDatabase = iupacDB, MsdialDimsParameter = param
             };
 
-            var evaluator = MsScanMatchResultEvaluator.CreateEvaluator(param.TextDbSearchParam);
+            var evaluator = new MsScanMatchResultEvaluator(param.TextDbSearchParam);
             var database = new MoleculeDataBase(txtDB, reffile, DataBaseSource.Text, SourceType.TextDB);
             var annotator = new CompMs.MsdialDimsCore.Algorithm.Annotation.DimsTextDBAnnotator(database, param.TextDbSearchParam, param.TextDBFilePath, 1);
             container.DataBases = new DataBaseStorage(null, null, null);
             container.DataBases.AddMoleculeDataBase(
                 database,
-                new List<IAnnotatorParameterPair<IAnnotationQuery, Common.Components.MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
-                    new MetabolomicsAnnotatorParameterPair(annotator, param.TextDbSearchParam)
+                new List<IAnnotatorParameterPair<MoleculeDataBase>> {
+                    new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryWithoutIsotopeFactory(annotator, param.TextDbSearchParam))
                 }
             );
 
@@ -229,15 +229,10 @@ namespace CompMs.App.MsdialConsole.Process
         }
 
         private static IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage) {
-            var containers = new List<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
-            foreach (var annotators in storage.MetabolomicsDataBases) {
-                containers.AddRange(annotators.Pairs.Select(annotator => annotator.ConvertToAnnotatorContainer()));
-            }
-            return new StandardAnnotationProcess<IAnnotationQuery>(
-                containers.Select(container => (
-                    new AnnotationQueryWithoutIsotopeFactory(container.Annotator) as IAnnotationQueryFactory<IAnnotationQuery>,
-                    container
-                )).ToList());
+            return new StandardAnnotationProcess(
+                storage.CreateQueryFactories().MoleculeQueryFactories,
+                FacadeMatchResultEvaluator.FromDataBases(storage),
+                storage.CreateDataBaseMapper());
         }
     }
 

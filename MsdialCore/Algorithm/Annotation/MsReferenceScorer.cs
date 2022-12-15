@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public class MsReferenceScorer : IReferenceScorer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
+    public class MsReferenceScorer : IReferenceScorer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>
     {
         public MsReferenceScorer(string id, int priority, TargetOmics omics, SourceType source, CollisionType collisionType, bool useMs2) {
             this.id = id;
@@ -31,7 +31,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private readonly CollisionType collisionType;
         private readonly bool useMs2;
 
-        public MsScanMatchResult Score(IAnnotationQuery query, MoleculeMsReference reference) {
+        public MsScanMatchResult Score(IAnnotationQuery<MsScanMatchResult> query, MoleculeMsReference reference) {
             return CalculateScore(query.Property, query.NormalizedScan, query.Isotopes, reference, reference.IsotopicPeaks, query.Parameter);
         }
 
