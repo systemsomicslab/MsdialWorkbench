@@ -232,3 +232,8 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
+
+
+Don't exclude shimadzu assemblies
+!Assemblies/shimadzu/x64
+Assemblies/shimadzu/x64/.svn
