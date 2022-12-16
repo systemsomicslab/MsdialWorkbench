@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.ViewModel.Chart;
@@ -47,14 +48,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             analysisAsObservable
                 .Where(vm => vm != null)
-                .Select(vm => ShowExperimentSpectrumCommand.WithLatestFrom(vm.ExperimentSpectrumViewModel, (a, b) => b))
-                .Switch()
+                .SelectSwitch(vm => ShowExperimentSpectrumCommand.WithLatestFrom(vm.ExperimentSpectrumViewModel, (a, b) => b))
                 .Subscribe(vm => broker.Publish(vm))
                 .AddTo(Disposables);
 
             var selectedViewModel = this.ObserveProperty(vm => vm.SelectedViewModel)
-                .Select(vm => vm.StartWith(vm.Value))
-                .Switch()
+                .SelectSwitch(vm => vm.StartWith(vm.Value))
                 .ToReactiveProperty()
                 .AddTo(Disposables);
             var proteinResultContainerAsObservable =

@@ -59,38 +59,33 @@ namespace CompMs.App.Msdial.ViewModel.Search
             MetaboliteFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
             MetaboliteFilterKeyword
                 .Where(keywords => !(keywords is null))
-                .Select(keywords => Observable.FromAsync(token => model.SetMetaboliteKeywordsAsync(keywords.Split(), token)))
-                .Switch()
+                .SelectSwitch(keywords => Observable.FromAsync(token => model.SetMetaboliteKeywordsAsync(keywords.Split(), token)))
                 .Subscribe()
                 .AddTo(Disposables);
             ProteinFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
             ProteinFilterKeyword
                 .Where(keywords => !(keywords is null))
-                .Select(keywords => Observable.FromAsync(token => model.SetProteinKeywordsAsync(keywords.Split(), token)))
-                .Switch()
+                .SelectSwitch(keywords => Observable.FromAsync(token => model.SetProteinKeywordsAsync(keywords.Split(), token)))
                 .Subscribe()
                 .AddTo(Disposables);
             CommentFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
             CommentFilterKeyword
-                .Where(keywords => !(keywords is null))
-                .Select(keywords => Observable.FromAsync(token => model.SetCommentKeywordsAsync(keywords.Split(), token)))
-                .Switch()
+                .Where(keywords => keywords != null)
+                .SelectSwitch(keywords => Observable.FromAsync(token => model.SetCommentKeywordsAsync(keywords.Split(), token)))
                 .Subscribe()
                 .AddTo(Disposables);
 
             OntologyFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
             OntologyFilterKeyword
-                .Where(keywords => !(keywords is null))
-                .Select(keywords => Observable.FromAsync(token => model.SetOntologyKeywordsAsync(keywords.Split(), token)))
-                .Switch()
+                .Where(keywords => keywords != null)
+                .SelectSwitch(keywords => Observable.FromAsync(token => model.SetOntologyKeywordsAsync(keywords.Split(), token)))
                 .Subscribe()
                 .AddTo(Disposables);
 
             AdductFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
             AdductFilterKeyword
-                .Where(keywords => !(keywords is null))
-                .Select(keywords => Observable.FromAsync(token => model.SetAdductKeywordsAsync(keywords.Split(), token)))
-                .Switch()
+                .Where(keywords => keywords != null)
+                .SelectSwitch(keywords => Observable.FromAsync(token => model.SetAdductKeywordsAsync(keywords.Split(), token)))
                 .Subscribe()
                 .AddTo(Disposables);
 
@@ -120,8 +115,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
             var ifIsNotEditting = needRefresh;
 
             IsEditting
-                .Select(isEditting => isEditting ? ifIsEditting : ifIsNotEditting)
-                .Switch()
+                .SelectSwitch(isEditting => isEditting ? ifIsEditting : ifIsNotEditting)
                 .Throttle(TimeSpan.FromMilliseconds(500))
                 .ObserveOnUIDispatcher()
                 .SelectMany(_ => Observable.Defer(() => {

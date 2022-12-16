@@ -23,28 +23,27 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             var dataset = project
-                .Select(psvm => psvm.DatasetSettingViewModel)
-                .Switch();
+                .SelectSwitch(psvm => psvm.DatasetSettingViewModel);
             DatasetSettingViewModel = dataset
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             var method = dataset
-                .Select(dsvm => dsvm?.MethodSettingViewModel ?? Observable.Never<MethodSettingViewModel>())
-                .Switch();
+                .Where(dsvm => dsvm != null)
+                .SelectSwitch(dsvm => dsvm.MethodSettingViewModel);
             MethodSettingViewModel = method
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             SelectedSettingViewModel = new ReactivePropertySlim<ISettingViewModel>().AddTo(Disposables);
             SelectedParentSettingViewModel = SelectedSettingViewModel
-                .Switch(ToParentSettingViewModel)
+                .SelectSwitch(ToParentSettingViewModel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
             ObserveHasErrors = new[]
             {
-                project.Switch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
-                dataset.Switch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
-                method.Switch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
+                project.SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
+                dataset.SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
+                method.SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
             }.CombineLatestValuesAreAllFalse()
             .Inverse()
             .ToReadOnlyReactivePropertySlim()
@@ -52,22 +51,22 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             ObserveChangeAfterDecide = new[]
             {
-                project.Switch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
-                dataset.Switch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
-                method.Switch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
+                project.SelectSwitch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
+                dataset.SelectSwitch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
+                method.SelectSwitch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
             }.CombineLatestValuesAreAnyTrue()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
             ContinueCommand = SelectedParentSettingViewModel
-                .Switch(vm => vm?.ObserveHasErrors ?? Observable.Return(true))
+                .SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(true))
                 .Inverse()
                 .ToReactiveCommand()
                 .AddTo(Disposables);
             ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
             CanRun = SelectedParentSettingViewModel
-                .Switch(vm => vm is MethodSettingViewModel
+                .SelectSwitch(vm => vm is MethodSettingViewModel
                     ? vm.ObserveHasErrors
                     : Observable.Return(true))
                 .Inverse()
@@ -91,29 +90,28 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             var dataset = project
-                .Select(psvm => psvm.DatasetSettingViewModel)
-                .Switch();
+                .SelectSwitch(psvm => psvm.DatasetSettingViewModel);
             DatasetSettingViewModel = dataset
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             var method = dataset
-                .Select(dsvm => dsvm?.MethodSettingViewModel ?? Observable.Never<MethodSettingViewModel>())
-                .Switch();
+                .Where(dsvm => dsvm != null)
+                .SelectSwitch(dsvm => dsvm.MethodSettingViewModel);
             MethodSettingViewModel = method
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
             SelectedSettingViewModel = new ReactivePropertySlim<ISettingViewModel>().AddTo(Disposables);
             SelectedParentSettingViewModel = SelectedSettingViewModel
-                .Switch(ToParentSettingViewModel)
+                .SelectSwitch(ToParentSettingViewModel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
             ObserveHasErrors = new[]
             {
-                project.Switch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
-                dataset.Switch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
-                method.Switch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
+                project.SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
+                dataset.SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
+                method.SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
             }.CombineLatestValuesAreAllFalse()
             .Inverse()
             .ToReadOnlyReactivePropertySlim()
@@ -121,22 +119,22 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             ObserveChangeAfterDecide = new[]
             {
-                project.Switch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
-                dataset.Switch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
-                method.Switch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
+                project.SelectSwitch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
+                dataset.SelectSwitch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
+                method.SelectSwitch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
             }.CombineLatestValuesAreAnyTrue()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
             ContinueCommand = SelectedParentSettingViewModel
-                .Switch(vm => vm?.ObserveHasErrors ?? Observable.Return(true))
+                .SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(true))
                 .Inverse()
                 .ToReactiveCommand()
                 .AddTo(Disposables);
             ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
             CanRun = SelectedParentSettingViewModel
-                .Switch(vm => vm is MethodSettingViewModel
+                .SelectSwitch(vm => vm is MethodSettingViewModel
                     ? vm.ObserveHasErrors
                     : Observable.Return(true))
                 .Inverse()
@@ -165,23 +163,23 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             var method = dataset
-                .Select(dsvm => dsvm?.MethodSettingViewModel ?? Observable.Never<MethodSettingViewModel>())
-                .Switch();
+                .Where(dsvm => dsvm != null)
+                .SelectSwitch(dsvm => dsvm.MethodSettingViewModel);
             MethodSettingViewModel = method
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
             SelectedSettingViewModel = new ReactivePropertySlim<ISettingViewModel>().AddTo(Disposables);
             SelectedParentSettingViewModel = SelectedSettingViewModel
-                .Switch(ToParentSettingViewModel)
+                .SelectSwitch(ToParentSettingViewModel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
             ObserveHasErrors = new[]
             {
-                project.Switch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
-                dataset.Switch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
-                method.Switch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
+                project.SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
+                dataset.SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
+                method.SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
             }.CombineLatestValuesAreAllFalse()
             .Inverse()
             .ToReadOnlyReactivePropertySlim()
@@ -189,15 +187,15 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             ObserveChangeAfterDecide = new[]
             {
-                project.Switch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
-                dataset.Switch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
-                method.Switch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
+                project.SelectSwitch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
+                dataset.SelectSwitch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
+                method.SelectSwitch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
             }.CombineLatestValuesAreAnyTrue()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
             ContinueCommand = SelectedParentSettingViewModel
-                .Switch(vm => vm?.ObserveHasErrors ?? Observable.Return(true))
+                .SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(true))
                 .Inverse()
                 .ToReactiveCommand()
                 .AddTo(Disposables);
@@ -205,7 +203,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .AddTo(Disposables);
 
             CanRun = SelectedParentSettingViewModel
-                .Switch(vm => vm is MethodSettingViewModel
+                .SelectSwitch(vm => vm is MethodSettingViewModel
                     ? vm.ObserveHasErrors
                     : Observable.Return(true))
                 .Inverse()
@@ -240,15 +238,15 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             SelectedSettingViewModel = new ReactivePropertySlim<ISettingViewModel>().AddTo(Disposables);
             SelectedParentSettingViewModel = SelectedSettingViewModel
-                .Switch(ToParentSettingViewModel)
+                .SelectSwitch(ToParentSettingViewModel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
             ObserveHasErrors = new[]
             {
-                project.Switch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
-                dataset.Switch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
-                method.Switch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
+                project.SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
+                dataset.SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
+                method.SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
             }.CombineLatestValuesAreAllFalse()
             .Inverse()
             .ToReadOnlyReactivePropertySlim()
@@ -256,22 +254,22 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             ObserveChangeAfterDecide = new[]
             {
-                project.Switch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
-                dataset.Switch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
-                method.Switch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
+                project.SelectSwitch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
+                dataset.SelectSwitch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
+                method.SelectSwitch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
             }.CombineLatestValuesAreAnyTrue()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
             ContinueCommand = SelectedParentSettingViewModel
-                .Switch(vm => vm?.ObserveHasErrors ?? Observable.Return(true))
+                .SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(true))
                 .Inverse()
                 .ToReactiveCommand()
                 .AddTo(Disposables);
             ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
             CanRun = SelectedParentSettingViewModel
-                .Switch(vm => vm is MethodSettingViewModel
+                .SelectSwitch(vm => vm is MethodSettingViewModel
                     ? vm.ObserveHasErrors
                     : Observable.Return(true))
                 .Inverse()
@@ -303,15 +301,15 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             SelectedSettingViewModel = new ReactivePropertySlim<ISettingViewModel>().AddTo(Disposables);
             SelectedParentSettingViewModel = SelectedSettingViewModel
-                .Switch(ToParentSettingViewModel)
+                .SelectSwitch(ToParentSettingViewModel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
             ObserveHasErrors = new[]
             {
-                project.Switch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
-                dataset.Switch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
-                method.Switch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
+                project.SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
+                dataset.SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
+                method.SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(false)),
             }.CombineLatestValuesAreAllFalse()
             .Inverse()
             .ToReadOnlyReactivePropertySlim()
@@ -319,22 +317,22 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             ObserveChangeAfterDecide = new[]
             {
-                project.Switch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
-                dataset.Switch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
-                method.Switch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
+                project.SelectSwitch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
+                dataset.SelectSwitch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
+                method.SelectSwitch(vm => vm?.ObserveChangeAfterDecision ?? Observable.Return(false)),
             }.CombineLatestValuesAreAnyTrue()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
             ContinueCommand = SelectedParentSettingViewModel
-                .Switch(vm => vm?.ObserveHasErrors ?? Observable.Return(true))
+                .SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(true))
                 .Inverse()
                 .ToReactiveCommand()
                 .AddTo(Disposables);
             ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
             CanRun = SelectedParentSettingViewModel
-                .Switch(vm => vm is MethodSettingViewModel
+                .SelectSwitch(vm => vm is MethodSettingViewModel
                     ? vm.ObserveHasErrors.Inverse()
                     : Observable.Return(false))
                 .ToReactiveProperty()

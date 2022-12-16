@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Dims;
+using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
@@ -148,7 +149,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             }
 
             return method.ObserveProperty(m => m.AlignmentModel)
-                .Where(m => m != null)
+                .SkipNull()
                 .Select(m => new DimsAlignmentViewModel(m, compoundSearchService, peakSpotTableService, broker, focusControlManager))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim();

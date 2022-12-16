@@ -6,6 +6,7 @@ using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Statistics;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.DataStructure;
@@ -92,7 +93,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }
             }
             var accumulatedTarget = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
-            var target = accumulatedTarget.Where(t => !(t is null))
+            var target = accumulatedTarget.SkipNull()
                 .Delay(TimeSpan.FromSeconds(.05d))
                 .Select(t =>
                 {
@@ -105,7 +106,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             var accumulatedPropModels = new ObservableCollection<AlignmentSpotPropertyModel>(orderedProps);
             var propModels = new ReactiveCollection<AlignmentSpotPropertyModel>(UIDispatcherScheduler.Default).AddTo(Disposables);
-            accumulatedTarget.Where(t => !(t is null))
+            accumulatedTarget.SkipNull()
                 .Select(t =>
                 {
                     var (lo, hi) = propRanges[t];
@@ -265,7 +266,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             AlignmentSpotTableModel = new LcimmsAlignmentSpotTableModel(driftProps, target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, observableBarItemsLoader).AddTo(Disposables);
 
-            MsdecResult = target.Where(t => t != null)
+            MsdecResult = target.SkipNull()
                 .Select(t => loader.LoadMSDecResult(t.MasterAlignmentID))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -292,7 +293,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             peakInformationModel.Add(t => new HeightAmount(t?.HeightAverage ?? 0d));
             PeakInformationModel = peakInformationModel;
 
-            var compoundDetailModel = new CompoundDetailModel(target.Select(t => t?.ObserveProperty(p => p.ScanMatchResult) ?? Observable.Never<MsScanMatchResult>()).Switch().Publish().RefCount(), mapper).AddTo(Disposables);
+            var compoundDetailModel = new CompoundDetailModel(target.SkipNull().SelectSwitch(t => t.ObserveProperty(p => p.ScanMatchResult)).Publish().RefCount(), mapper).AddTo(Disposables);
             compoundDetailModel.Add(
                 r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d),
                 r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d),

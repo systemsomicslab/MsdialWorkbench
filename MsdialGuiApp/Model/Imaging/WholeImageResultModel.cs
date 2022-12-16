@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Design;
@@ -61,7 +62,7 @@ namespace CompMs.App.Msdial.Model.Imaging
                     (peak, pixelPeaks) => new IntensityImageModel(pixelPeaks, maldiFrameInfos, peak, laserInfo)));
             Intensities = new ReadOnlyObservableCollection<IntensityImageModel>(_intensities);
             Target.Select(p => _intensities.FirstOrDefault(intensity => intensity.Peak == p))
-                .Where(p => p != null)
+                .SkipNull()
                 .Subscribe(intensity => SelectedPeakIntensities = intensity)
                 .AddTo(Disposables);
         }

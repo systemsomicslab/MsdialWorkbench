@@ -134,7 +134,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 .Select(chromatogram => new RangeSelectableChromatogramModel(chromatogram))
                 .DisposePreviousValue()
                 .CombineLatest(
-                    Target.Where(t => t != null),
+                    Target.SkipNull(),
                     (model, t) => new ExperimentSpectrumModel(model, AnalysisFileModel, provider, t.InnerModel, DataBaseMapper, Parameter))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -253,12 +253,11 @@ namespace CompMs.App.Msdial.Model.Lcms
                 t => new AreaAmount(t?.PeakArea ?? 0d));
             PeakInformationModel = peakInformationModel;
 
-            var compoundDetailModel = new CompoundDetailModel(Target.Select(t => t?.ObserveProperty(p => p.ScanMatchResult) ?? Observable.Never<MsScanMatchResult>()).Switch().Publish().RefCount(), mapper).AddTo(Disposables);
+            var compoundDetailModel = new CompoundDetailModel(Target.SkipNull().SelectSwitch(t => t.ObserveProperty(p => p.ScanMatchResult)).Publish().RefCount(), mapper).AddTo(Disposables);
             compoundDetailModel.Add(
                 r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d),
                 r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d),
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
-            Target.Do(_ => Console.WriteLine("Target changed.")).Subscribe();
             CompoundDetailModel = compoundDetailModel;
             if (parameter.ProjectParam.TargetOmics != TargetOmics.Proteomics) {
                 var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);

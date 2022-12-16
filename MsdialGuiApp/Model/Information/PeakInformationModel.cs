@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Utility;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -25,17 +26,18 @@ namespace CompMs.App.Msdial.Model.Information
     internal sealed class PeakInformationAnalysisModel : DisposableModelBase, IPeakInformationModel
     {
         public PeakInformationAnalysisModel(IObservable<ChromatogramPeakFeatureModel> model) {
-            model.Where(m => !(m is null))
+            model.SkipNull()
                 .Select(m =>
                 {
-                    var disposables = new CompositeDisposable();
-                    disposables.Add(m.ObserveProperty(m_ => m_.Name).Subscribe(m_ => Annotation = m_));
-                    disposables.Add(m.ObserveProperty(m_ => m_.AdductIonName).Subscribe(m_ => AdductIonName = m_));
-                    disposables.Add(m.ObserveProperty(m_ => m_.Formula).Subscribe(m_ => Formula = m_?.FormulaString));
-                    disposables.Add(m.ObserveProperty(m_ => m_.Ontology).Subscribe(m_ => Ontology = m_));
-                    disposables.Add(m.ObserveProperty(m_ => m_.InChIKey).Subscribe(m_ => InChIKey = m_));
-                    disposables.Add(m.ObserveProperty(m_ => m_.Comment).Subscribe(m_ => Comment = m_));
-                    return disposables;
+                    return new CompositeDisposable
+                    {
+                        m.ObserveProperty(m_ => m_.Name).Subscribe(m_ => Annotation = m_),
+                        m.ObserveProperty(m_ => m_.AdductIonName).Subscribe(m_ => AdductIonName = m_),
+                        m.ObserveProperty(m_ => m_.Formula).Subscribe(m_ => Formula = m_?.FormulaString),
+                        m.ObserveProperty(m_ => m_.Ontology).Subscribe(m_ => Ontology = m_),
+                        m.ObserveProperty(m_ => m_.InChIKey).Subscribe(m_ => InChIKey = m_),
+                        m.ObserveProperty(m_ => m_.Comment).Subscribe(m_ => Comment = m_)
+                    };
                 }).DisposePreviousValue()
                 .Subscribe()
                 .AddTo(Disposables);
@@ -123,16 +125,17 @@ namespace CompMs.App.Msdial.Model.Information
     internal sealed class PeakInformationAlignmentModel : DisposableModelBase, IPeakInformationModel
     {
         public PeakInformationAlignmentModel(IObservable<AlignmentSpotPropertyModel> model) {
-            model.Where(m => !(m is null))
+            model.SkipNull()
                 .Select(m => {
-                    var disposables = new CompositeDisposable();
-                    disposables.Add(m.ObserveProperty(m_ => m_.Name).Subscribe(m_ => Annotation = m_));
-                    disposables.Add(m.ObserveProperty(m_ => m_.AdductIonName).Subscribe(m_ => AdductIonName = m_));
-                    disposables.Add(m.ObserveProperty(m_ => m_.Formula).Subscribe(m_ => Formula = m_?.FormulaString));
-                    disposables.Add(m.ObserveProperty(m_ => m_.Ontology).Subscribe(m_ => Ontology = m_));
-                    disposables.Add(m.ObserveProperty(m_ => m_.InChIKey).Subscribe(m_ => InChIKey = m_));
-                    disposables.Add(m.ObserveProperty(m_ => m_.Comment).Subscribe(m_ => Comment = m_));
-                    return disposables;
+                    return new CompositeDisposable
+                    {
+                        m.ObserveProperty(m_ => m_.Name).Subscribe(m_ => Annotation = m_),
+                        m.ObserveProperty(m_ => m_.AdductIonName).Subscribe(m_ => AdductIonName = m_),
+                        m.ObserveProperty(m_ => m_.Formula).Subscribe(m_ => Formula = m_?.FormulaString),
+                        m.ObserveProperty(m_ => m_.Ontology).Subscribe(m_ => Ontology = m_),
+                        m.ObserveProperty(m_ => m_.InChIKey).Subscribe(m_ => InChIKey = m_),
+                        m.ObserveProperty(m_ => m_.Comment).Subscribe(m_ => Comment = m_)
+                    };
                 }).DisposePreviousValue()
                 .Subscribe()
                 .AddTo(Disposables);

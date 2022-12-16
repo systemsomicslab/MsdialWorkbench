@@ -33,7 +33,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             RemoveCommand = new ReactiveCommand().AddTo(Disposables);
             RemoveCommand.WithLatestFrom(SelectedAdduct)
                 .Select(p => p.Second?.Model)
-                .Where(m => m != null)
+                .SkipNull()
                 .Subscribe(Model.RemoveAdductIon)
                 .AddTo(Disposables);
 
