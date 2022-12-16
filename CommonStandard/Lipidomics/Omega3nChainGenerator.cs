@@ -16,7 +16,7 @@ namespace CompMs.Common.Lipidomics
             return carbon >= doubleBond * 3 + 3 && doubleBond >= 0;
         }
 
-        private static readonly int eariestPositionOfOx = 3;
+        private static readonly int eariestPositionOfOx = 2;
         public IEnumerable<IChain> Generate(AcylChain chain) {
             var bs = EnumerateDoubleBond(chain.CarbonCount, chain.DoubleBond);
             var os = EnumerateOxidized(chain.CarbonCount, chain.Oxidized, eariestPositionOfOx).ToArray();

@@ -168,7 +168,7 @@ namespace CompMs.Common.Lipidomics
                 foreach (var chain in chains.Chains)
                 {
                     if (chain.DoubleBond.Count == 0 || chain.DoubleBond.UnDecidedCount > 0) continue;
-                    if (chain.DoubleBondCount == 2 || chain.DoubleBondCount == 3) continue;
+                    if (chain.DoubleBondCount == 2) continue;
                     var peaks = EidSpecificSpectrumGenerator.EidSpecificSpectrumGen(lipid, chain, adduct, nlMass, intensity);
                     if (chain.DoubleBondCount == 1)
                     {

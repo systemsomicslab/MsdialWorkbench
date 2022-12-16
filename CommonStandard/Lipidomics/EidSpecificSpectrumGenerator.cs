@@ -73,7 +73,7 @@ namespace CompMs.Common.Lipidomics
                 else
                 {
                     var spectrum = new List<SpectrumPeak>{
-                        new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1]), intensity * 0.75, $"{chain} EID specific") { SpectrumComment = SpectrumComment.acylchain } ,
+                        new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1]), intensity * 0.25, $"{chain} EID specific") { SpectrumComment = SpectrumComment.acylchain } ,
                         new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1 + 1] + MassDiffDictionary.HydrogenMass), intensity * 1, $"{chain} EID specific") { SpectrumComment = SpectrumComment.acylchain } ,
                     };
                     peaks.AddRange(spectrum);
