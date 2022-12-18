@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.View.PeakCuration;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
@@ -57,9 +58,9 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalRange = hrox.Merge(nopeak).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             VerticalRange = vrox.Merge(nopeak).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
-            var isSelected = model.Select(m => !(m is null)).ToReactiveProperty().AddTo(Disposables);
+            var isSelected = model.Select(m => m != null).ToReactiveProperty().AddTo(Disposables);
             IsSelected = isSelected;
-            var isLoaded = model.Where(m => !(m is null)).Select(m => m.AlignedPeakPropertiesModelAsObservable).Switch().Select(props => props?.Any() ?? false);
+            var isLoaded = model.SkipNull().SelectSwitch(m => m.AlignedPeakPropertiesModelAsObservable).Select(props => props?.Any() ?? false);
             IsPeakLoaded = new[]
             {
                 isSelected,
@@ -104,7 +105,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
             return new AlignmentEicModel(
                 source,
-                source.Select(loader.LoadEicAsObservable).Switch(),
+                source.SelectSwitch(loader.LoadEicAsObservable),
                 AnalysisFiles,
                 Param,
                 horizontalSelector, verticalSelector

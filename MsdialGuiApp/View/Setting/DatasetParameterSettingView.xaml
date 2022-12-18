@@ -91,6 +91,7 @@
                 <CheckBox Content="Imaging"
                           IsChecked="{Binding Imaging.Value, Mode=TwoWay}"
                           Margin="8,8,0,0"
+                          Visibility="Collapsed"
                           Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
                     <CheckBox.IsEnabled>
                         <MultiBinding Converter="{StaticResource BooleanAll}">

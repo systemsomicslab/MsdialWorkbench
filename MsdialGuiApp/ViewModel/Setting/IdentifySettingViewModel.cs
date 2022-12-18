@@ -152,7 +152,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .AddTo(Disposables);
             AddAnnotatorCommand = new[]{
                 dbIsNotNull,
-                DataBaseViewModel.Where(vm => !(vm is null)).Select(vm => vm.ObserveHasErrors).Switch().Inverse(),
+                DataBaseViewModel.Where(vm => vm != null).SelectSwitch(vm => vm.ObserveHasErrors).Inverse(),
                 dataBasesDoesnotHaveError,
                 annotatorsDoesnotHaveError,
             }.CombineLatestValuesAreAllTrue()

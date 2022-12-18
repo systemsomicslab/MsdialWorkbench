@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Statistics;
+using CompMs.App.Msdial.Utility;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -27,7 +28,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
             NormalizeCommand = new[]{
                 model.CanNormalizeProperty,
-                IsSetViewModelVisible.Select(v => v ? isSetViewModel.IsEditting.StartWith(isSetViewModel.IsEditting.Value).Inverse() : Observable.Return(true)).Switch(),
+                IsSetViewModelVisible.SelectSwitch(v => v ? isSetViewModel.IsEditting.StartWith(isSetViewModel.IsEditting.Value).Inverse() : Observable.Return(true)),
             }.CombineLatestValuesAreAllTrue()
                 .ToReactiveCommand()
                 .WithSubscribe(Normalize)

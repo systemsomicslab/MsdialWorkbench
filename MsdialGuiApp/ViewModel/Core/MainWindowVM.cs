@@ -62,12 +62,12 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             var datasetViewModel = projectViewModel
-                .Switch(project => project?.CurrentDatasetViewModel ?? Observable.Never<DatasetViewModel>())
+                .SelectSwitch(project => project?.CurrentDatasetViewModel ?? Observable.Never<DatasetViewModel>())
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
                 //.Switch(project => project?.CurrentDatasetViewModel.StartWith(project.CurrentDatasetViewModel.Value));
             var methodViewModel = datasetViewModel
-                .Switch(dataset => dataset?.MethodViewModel ?? Observable.Never<MethodViewModel>())
+                .SelectSwitch(dataset => dataset?.MethodViewModel ?? Observable.Never<MethodViewModel>())
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             //.Switch(dataset => dataset?.MethodViewModel.StartWith(dataset.MethodViewModel.Value));

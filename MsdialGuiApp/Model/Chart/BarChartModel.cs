@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Utility;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
@@ -15,7 +16,7 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class BarChartModel : DisposableModelBase {
         public BarChartModel(IObservable<AlignmentSpotPropertyModel> source, IReactiveProperty<BarItemsLoaderData> barItemsLoaderData, IList<BarItemsLoaderData> barItemsLoaderDatas, IObservable<IBrushMapper<BarItem>> classBrush, ProjectBaseParameterModel projectBaseParameter, FileClassPropertiesModel fileClassProperties) {
-            var barItemsLoader = barItemsLoaderData.Where(data => !(data is null)).Select(data => data.ObservableLoader).Switch().ToReactiveProperty().AddTo(Disposables);
+            var barItemsLoader = barItemsLoaderData.Where(data => data != null).SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
             var barItemCollectionSource = source.CombineLatest(barItemsLoader,
                     (src, loader) => src is null || loader is null
                         ? new BarItemCollection()
@@ -23,13 +24,11 @@ namespace CompMs.App.Msdial.Model.Chart
                 .ToReactiveProperty()
                 .AddTo(Disposables);
             BarItemsSource = barItemCollectionSource
-                .Select(collection => collection.ObservableItems)
-                .Switch()
+                .SelectSwitch(collection => collection.ObservableItems)
                 .ToReactiveProperty()
                 .AddTo(Disposables);
             IsLoading = barItemCollectionSource
-                .Select(collection => collection.ObservableLoading)
-                .Switch();
+                .SelectSwitch(collection => collection.ObservableLoading);
 
             ClassBrush = classBrush;
             BarItemsLoaderData = barItemsLoaderData;
@@ -52,8 +51,7 @@ namespace CompMs.App.Msdial.Model.Chart
             Elements.VerticalProperty = nameof(BarItem.Height);
             barItemsLoaderData
                 .Where(data => !(data is null))
-                .Select(data => data.AxisLabel)
-                .Switch()
+                .SelectSwitch(data => data.AxisLabel)
                 .Subscribe(label => Elements.VerticalTitle = label)
                 .AddTo(Disposables);
 

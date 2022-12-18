@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
@@ -62,7 +63,7 @@ namespace CompMs.App.Msdial.Model.Loader
                 var peaks = _peakInfo.Chromatogram.Select(peak => new PeakItem(peak)).ToList();
                 var area = new[]
                 {
-                    _peak.Where(p => !(p is null)).Select(p => peaks.Where(item => p.ChromXsLeft.Value <= item.Time && item.Time <= p.ChromXsRight.Value).ToList()),
+                    _peak.SkipNull().Select(p => peaks.Where(item => p.ChromXsLeft.Value <= item.Time && item.Time <= p.ChromXsRight.Value).ToList()),
                     _peak.Where(p => p is null).Select(_ => new List<PeakItem>(0)),
                 }.Merge();
 

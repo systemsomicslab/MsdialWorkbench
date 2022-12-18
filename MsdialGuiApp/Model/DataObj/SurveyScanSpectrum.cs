@@ -1,4 +1,5 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.App.Msdial.Utility;
+using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -12,8 +13,7 @@ namespace CompMs.App.Msdial.Model.DataObj
     {
         public SurveyScanSpectrum(IObservable<ChromatogramPeakFeatureModel> selectedPeak, Func<ChromatogramPeakFeatureModel, IObservable<List<SpectrumPeakWrapper>>> loadSpectrum) {
             Spectrum = selectedPeak
-                .Select(loadSpectrum)
-                .Switch()
+                .SelectSwitch(loadSpectrum)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
