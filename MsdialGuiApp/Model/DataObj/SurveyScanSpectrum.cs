@@ -4,7 +4,6 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
@@ -19,8 +18,8 @@ namespace CompMs.App.Msdial.Model.DataObj
 
             Loaded = new[]
             {
-                selectedPeak.Select(_ => false),
-                Spectrum.Delay(TimeSpan.FromSeconds(.1d)).Select(_ => true),
+                selectedPeak.ToConstant(false),
+                Spectrum.Delay(TimeSpan.FromSeconds(.1d)).ToConstant(true),
             }.Merge()
             .Throttle(TimeSpan.FromSeconds(.3d))
             .ToReadOnlyReactivePropertySlim()

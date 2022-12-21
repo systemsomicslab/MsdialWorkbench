@@ -52,6 +52,10 @@ namespace CompMs.App.Msdial.Utility
             return source.Select(selector).Switch();
         }
 
+        public static IObservable<T> TakeNull<T>(this IObservable<T> source) {
+            return source.Where(x => x == null);
+        }
+
         public static IObservable<T> SkipNull<T>(this IObservable<T> source) {
             return source.Where(x => x != null);
         }

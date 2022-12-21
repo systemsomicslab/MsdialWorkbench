@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Utility;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
@@ -49,26 +50,24 @@ namespace CompMs.App.Msdial.Model.Chart
 
             HorizontalAxis = spots.CollectionChangedAsObservable().ToUnit()
                 .StartWith(Unit.Default)
-                .Select(_ => Observable.Defer(() =>
+                .SelectSwitch(_ => Observable.Defer(() =>
                 {
                     if (!(spots?.Any() ?? false) || horizontalSelector == null) {
                         return Observable.Return(new Range(0, 1));
                     }
                     return Observable.Return(new Range(spots.Min(horizontalSelector), spots.Max(horizontalSelector)));
                 }))
-                .Switch()
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
             VerticalAxis = spots.CollectionChangedAsObservable().ToUnit()
                 .StartWith(Unit.Default)
-                .Select(_ => Observable.Defer(() =>
+                .SelectSwitch(_ => Observable.Defer(() =>
                 {
                     if (!(spots?.Any() ?? false) || verticalSelector == null) {
                         return Observable.Return(new Range(0, 1));
                     }
                     return Observable.Return(new Range(spots.Min(verticalSelector), spots.Max(verticalSelector)));
                 }))
-                .Switch()
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
         }

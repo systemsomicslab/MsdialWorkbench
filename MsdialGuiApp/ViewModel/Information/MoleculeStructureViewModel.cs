@@ -5,7 +5,6 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
 namespace CompMs.App.Msdial.ViewModel.Information
@@ -17,9 +16,13 @@ namespace CompMs.App.Msdial.ViewModel.Information
         public MoleculeStructureViewModel(MoleculeStructureModel model) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             var current = model.ObserveProperty(m => m.Current).SkipNull().ToReactiveProperty().AddTo(Disposables);
-            Image = current.SelectSwitch(c => Observable.FromAsync(() => c?.Image ?? Task.FromResult<BitmapSource>(null)).StartWith((BitmapSource)null))
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
+            Image = new[]
+            {
+                current.TakeNull().ToConstant((BitmapSource)null),
+                current.SkipNull().Select(c => c.Image).Switch(),
+            }.Merge()
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
             IsLoading = current.SkipNull().SelectSwitch(c => c.ObserveProperty(m => m.IsLoading))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);

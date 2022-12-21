@@ -95,8 +95,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             var change = ObserveChanges.TakeFirstAfterEach(decide);
             ObserveChangeAfterDecision = new[]
             {
-                change.Select(_ => true),
-                decide.Select(_ => false),
+                change.ToConstant(true),
+                decide.ToConstant(false),
             }.Merge()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
