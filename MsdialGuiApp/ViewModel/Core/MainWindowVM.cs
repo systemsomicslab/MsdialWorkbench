@@ -65,22 +65,14 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 .SelectSwitch(project => project?.CurrentDatasetViewModel ?? Observable.Never<DatasetViewModel>())
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-                //.Switch(project => project?.CurrentDatasetViewModel.StartWith(project.CurrentDatasetViewModel.Value));
             var methodViewModel = datasetViewModel
                 .SelectSwitch(dataset => dataset?.MethodViewModel ?? Observable.Never<MethodViewModel>())
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            //.Switch(dataset => dataset?.MethodViewModel.StartWith(dataset.MethodViewModel.Value));
 
             ProjectViewModel = projectViewModel;
-            //.ToReadOnlyReactivePropertySlim()
-            //.AddTo(Disposables);
             DatasetViewModel = datasetViewModel;
-            //.ToReadOnlyReactivePropertySlim()
-            //.AddTo(Disposables);
             MethodViewModel = methodViewModel;
-                // .ToReadOnlyReactivePropertySlim()
-                // .AddTo(Disposables);
 
             var projectSaveEnableState = new ReactivePropertySlim<bool>(true);
             CreateNewProjectCommand = projectSaveEnableState.ToAsyncReactiveCommand()

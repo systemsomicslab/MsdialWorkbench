@@ -23,7 +23,7 @@ namespace CompMs.App.Msdial.Model.Setting
             if (methodSettingModel is null) {
                 MethodSettingModel = DatasetSettingModel
                     .SkipNull()
-                    .SelectSwitch(m => m.ObserveProperty(m_ => m_.MethodSettingModel, isPushCurrentValueAtFirst: false).StartWith(m.MethodSettingModel))
+                    .SelectSwitch(m => m.ObserveProperty(m_ => m_.MethodSettingModel))
                     .ToReadOnlyReactivePropertySlim()
                     .AddTo(Disposables);
             }
