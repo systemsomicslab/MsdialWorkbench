@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Utility;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
@@ -48,28 +47,17 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalProperty = string.Empty;
             VerticalProperty = string.Empty;
 
-            HorizontalAxis = spots.CollectionChangedAsObservable().ToUnit()
-                .StartWith(Unit.Default)
-                .SelectSwitch(_ => Observable.Defer(() =>
-                {
-                    if (!(spots?.Any() ?? false) || horizontalSelector == null) {
-                        return Observable.Return(new Range(0, 1));
-                    }
-                    return Observable.Return(new Range(spots.Min(horizontalSelector), spots.Max(horizontalSelector)));
-                }))
+            var unitRange = new Range(0d, 1d);
+            var collectionChanged = spots.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default).Publish();
+            HorizontalAxis = collectionChanged
+                .Select(_ => spots.Any() ? new Range(spots.Min(horizontalSelector), spots.Max(horizontalSelector)) : unitRange)
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
-            VerticalAxis = spots.CollectionChangedAsObservable().ToUnit()
-                .StartWith(Unit.Default)
-                .SelectSwitch(_ => Observable.Defer(() =>
-                {
-                    if (!(spots?.Any() ?? false) || verticalSelector == null) {
-                        return Observable.Return(new Range(0, 1));
-                    }
-                    return Observable.Return(new Range(spots.Min(verticalSelector), spots.Max(verticalSelector)));
-                }))
+            VerticalAxis = collectionChanged
+                .Select(_ => spots.Any() ? new Range(spots.Min(verticalSelector), spots.Max(verticalSelector)) : unitRange)
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
+            Disposables.Add(collectionChanged.Connect());
         }
 
         public ObservableCollection<AlignmentSpotPropertyModel> Spots { get; }
