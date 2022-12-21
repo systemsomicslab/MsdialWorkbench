@@ -54,7 +54,7 @@ namespace CompMs.Graphics.Behavior
         static void ZoomOnMouseWheel(object sender, MouseWheelEventArgs e) {
             if (sender is FrameworkElement fe) {
                 var p = e.GetPosition(fe);
-                var scale = 1 - GetDelta(fe) * Math.Sign(e.Delta);
+                var scale = e.Delta < 0 ? 1 + GetDelta(fe) : 1 / (1 + GetDelta(fe));
 
                 var haxis = ChartBaseControl.GetHorizontalAxis(fe);
                 if (haxis != null) {

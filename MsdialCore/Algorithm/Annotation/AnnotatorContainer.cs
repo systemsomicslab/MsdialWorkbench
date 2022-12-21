@@ -49,10 +49,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
     }
 
     [MessagePackObject]
-    public sealed class DatabaseAnnotatorContainer : ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
+    public sealed class DatabaseAnnotatorContainer : ISerializableAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>
     {
         public DatabaseAnnotatorContainer(
-            ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> annotator,
+            ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> annotator,
             MoleculeDataBase database,
             MsRefSearchParameterBase parameter) {
             if (annotator is null) {
@@ -75,7 +75,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public DatabaseAnnotatorContainer(
-            IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> annotatorKey,
+            IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> annotatorKey,
             MoleculeDataBase database,
             MsRefSearchParameterBase parameter) {
             AnnotatorKey = annotatorKey;
@@ -85,12 +85,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         [IgnoreMember]
-        public ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Annotator { get; private set; }
+        public ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Annotator { get; private set; }
         [IgnoreMember]
         public string AnnotatorID { get; }
 
         [Key("AnnotatorKey")]
-        public IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> AnnotatorKey { get; set; }
+        public IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> AnnotatorKey { get; set; }
 
         [Key("Parameter")]
         public MsRefSearchParameterBase Parameter { get; set; }
@@ -100,7 +100,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         [IgnoreMember]
         public string DatabaseID { get; }
 
-        IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>.Annotator => Annotator;
+        IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> IAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>.Annotator => Annotator;
 
         public void Save(Stream stream) {
             Database.Save(stream);
@@ -186,10 +186,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
     }
 
     [MessagePackObject]
-    public sealed class EadLipidDatabaseAnnotatorContainer : ISerializableAnnotatorContainer<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult>
+    public sealed class EadLipidDatabaseAnnotatorContainer : ISerializableAnnotatorContainer<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult>
     {
         public EadLipidDatabaseAnnotatorContainer(
-            ISerializableAnnotator<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> annotator,
+            ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> annotator,
             EadLipidDatabase database,
             MsRefSearchParameterBase parameter) {
             if (annotator is null) {
@@ -212,7 +212,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public EadLipidDatabaseAnnotatorContainer(
-            IReferRestorationKey<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> annotatorKey,
+            IReferRestorationKey<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> annotatorKey,
             EadLipidDatabase database,
             MsRefSearchParameterBase parameter) {
             AnnotatorKey = annotatorKey;
@@ -222,12 +222,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         [IgnoreMember]
-        public ISerializableAnnotator<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> Annotator { get; private set; }
+        public ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> Annotator { get; private set; }
         [IgnoreMember]
         public string AnnotatorID { get; }
 
         [Key(nameof(AnnotatorKey))]
-        public IReferRestorationKey<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> AnnotatorKey { get; set; }
+        public IReferRestorationKey<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> AnnotatorKey { get; set; }
 
         [Key(nameof(Parameter))]
         public MsRefSearchParameterBase Parameter { get; set; }
@@ -238,7 +238,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         [IgnoreMember]
         public string DatabaseID { get; }
 
-        IAnnotator<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult> IAnnotatorContainer<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult>.Annotator => Annotator;
+        IAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult> IAnnotatorContainer<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult>.Annotator => Annotator;
 
         public void Save(Stream stream) {
             Database.Save(stream);

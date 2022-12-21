@@ -7,6 +7,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Process;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -21,8 +22,8 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         private readonly FacadeMatchResultEvaluator _evaluator;
         private readonly IDataProviderFactory<AnalysisFileBeanModel> _providerFactory;
 
-        public ImagingImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage)
-            : base(analysisFileBeanModelCollection, Enumerable.Empty<AlignmentFileBean>(), new ProjectBaseParameterModel(storage.Parameter.ProjectParam)) {
+        public ImagingImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter)
+            : base(analysisFileBeanModelCollection, Enumerable.Empty<AlignmentFileBean>(), projectBaseParameter) {
             _storage = storage;
             _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             _providerFactory = storage.Parameter.ProviderFactoryParameter.Create().ContraMap((AnalysisFileBeanModel file) => file.File.LoadRawMeasurement(true, true, 5, 5000));

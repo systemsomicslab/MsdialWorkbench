@@ -2,9 +2,7 @@
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
-using CompMs.Common.Proteomics.DataObj;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -36,8 +34,8 @@ namespace CompMs.App.Msdial.Model.Setting
             AnnotatorModels = new ObservableCollection<IAnnotatorSettingModel>(annotators.Select(pair => pair.Model));
         }
 
-        private static void Restore<TQuery, TReference, TResult, TDataBase>(
-            IEnumerable<DataBaseItem<TQuery, TReference, TResult, TDataBase>> items,
+        private static void Restore<TDataBase>(
+            IEnumerable<DataBaseItem<TDataBase>> items,
             IList<DataBaseSettingModel> dataBaseModels,
             IList<(int, IAnnotatorSettingModel)> annotatorModels,
             IAnnotatorSettingModelFactory annotatorFactory,
@@ -48,7 +46,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 var dbModel = new DataBaseSettingModel(parameter, dataBase.DataBase);
                 dataBaseModels.Add(dbModel);
                 foreach (var pair in dataBase.Pairs) {
-                    annotatorModels.Add((pair.SerializableAnnotator.Priority, annotatorFactory.Create(dbModel, pair.AnnotatorID, pair.SearchParameter)));
+                    annotatorModels.Add((pair.AnnotationQueryFactory.Priority, annotatorFactory.Create(dbModel, pair.AnnotatorID, pair.AnnotationQueryFactory.PrepareParameter())));
                 }
             }
         }
@@ -151,19 +149,19 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private bool isCompleted;
 
-        public DataBaseStorage Create() {
-            if (IsReadOnly) {
-                return null;
-            }
+        public DataBaseStorage Create(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             var result = DataBaseStorage.CreateEmpty();
-            SetAnnotatorContainer(result);
-            SetProteomicsAnnotatorContainer(result);
-            SetEadLipidomicsAnnotatorContainer(result);
+            if (IsReadOnly) {
+                return result;
+            }
+            SetAnnotatorContainer(result, refer);
+            SetProteomicsAnnotatorContainer(result, refer);
+            SetEadLipidomicsAnnotatorContainer(result, refer);
             IsCompleted = true;
             return result;
         }
 
-        private void SetAnnotatorContainer(DataBaseStorage storage) {
+        private void SetAnnotatorContainer(DataBaseStorage storage, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             var request = new ProcessMessageRequest("Loading msp, lbm and text libraries...",
                 async () =>
                 {
@@ -176,11 +174,13 @@ namespace CompMs.App.Msdial.Model.Setting
                             if (db is null) {
                                 return;
                             }
-                            var results = new List<IAnnotatorParameterPair<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>();
+                            var results = new List<IAnnotatorParameterPair<MoleculeDataBase>>();
                             foreach (var annotatorModel in group) {
                                 var index = AnnotatorModels.IndexOf(annotatorModel);
                                 var annotators = annotatorModel.CreateAnnotator(db, AnnotatorModels.Count - index, parameter.TargetOmics);
-                                results.AddRange(annotators.Select(annotator => new MetabolomicsAnnotatorParameterPair(annotator, annotatorModel.SearchParameter)));
+                                var queryFactory = annotatorModel.CreateAnnotationQueryFactory(AnnotatorModels.Count - index, db, refer);
+                                var key = annotatorModel.CreateRestorationKey(AnnotatorModels.Count - index);
+                                results.AddRange(annotators.Select(annotator => new MetabolomicsAnnotatorParameterPair(key, queryFactory)));
                             }
                             storage.AddMoleculeDataBase(db, results);
                         });
@@ -191,7 +191,7 @@ namespace CompMs.App.Msdial.Model.Setting
             _broker.Publish(request);
         }
 
-        private void SetProteomicsAnnotatorContainer(DataBaseStorage storage) {
+        private void SetProteomicsAnnotatorContainer(DataBaseStorage storage, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             var request = new ProcessMessageRequest("Loading fasta libraries...",
                 async () =>
                 {
@@ -204,11 +204,13 @@ namespace CompMs.App.Msdial.Model.Setting
                             if (db is null) {
                                 return;
                             }
-                            var results = new List<IAnnotatorParameterPair<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>>();
+                            var results = new List<IAnnotatorParameterPair<ShotgunProteomicsDB>>();
                             foreach (var annotatorModel in group) {
                                 var index = AnnotatorModels.IndexOf(annotatorModel);
                                 var annotators = annotatorModel.CreateAnnotator(db, AnnotatorModels.Count - index, parameter.TargetOmics);
-                                results.AddRange(annotators.Select(annotator => new ProteomicsAnnotatorParameterPair(annotator, annotatorModel.SearchParameter, db.ProteomicsParameter)));
+                                var queryFactory = annotatorModel.CreateAnnotationQueryFactory(AnnotatorModels.Count - index, db, refer);
+                                var key = annotatorModel.CreateRestorationKey(AnnotatorModels.Count - index);
+                                results.AddRange(annotators.Select(annotator => new ProteomicsAnnotatorParameterPair(key, queryFactory, db.ProteomicsParameter)));
                             }
                             storage.AddProteomicsDataBase(db, results);
                         });
@@ -219,7 +221,7 @@ namespace CompMs.App.Msdial.Model.Setting
             _broker.Publish(request);
         }
 
-        private void SetEadLipidomicsAnnotatorContainer(DataBaseStorage storage) {
+        private void SetEadLipidomicsAnnotatorContainer(DataBaseStorage storage, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             var request = new ProcessMessageRequest("Building in silico lipid libraries...",
                 async () =>
                 {
@@ -232,11 +234,13 @@ namespace CompMs.App.Msdial.Model.Setting
                             if (db is null) {
                                 return;
                             }
-                            var results = new List<IAnnotatorParameterPair<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>>();
+                            var results = new List<IAnnotatorParameterPair<EadLipidDatabase>>();
                             foreach (var annotatorModel in group) {
                                 var index = AnnotatorModels.IndexOf(annotatorModel);
                                 var annotators = annotatorModel.CreateAnnotator(db, AnnotatorModels.Count - index);
-                                results.AddRange(annotators.Select(annotator => new EadLipidAnnotatorParameterPair(annotator, annotatorModel.SearchParameter)));
+                                var queryFactory = annotatorModel.CreateAnnotationQueryFactory(AnnotatorModels.Count - index, db, refer);
+                                var key = annotatorModel.CreateRestorationKey(AnnotatorModels.Count - index);
+                                results.AddRange(annotators.Select(annotator => new EadLipidAnnotatorParameterPair(key, queryFactory)));
                             }
                             storage.AddEadLipidomicsDataBase(db, results);
                         });

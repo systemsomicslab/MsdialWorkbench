@@ -19,13 +19,13 @@ namespace CompMs.Common.Lipidomics
 
         public IEnumerable<IChain> Generate(AcylChain chain) {
             var bs = EnumerateBonds(chain.CarbonCount, chain.DoubleBond).ToArray();
-            var os = EnumerateOxidized(chain.CarbonCount, chain.Oxidized, Begin).ToArray();
+            var os = EnumerateOxidized(chain.CarbonCount, chain.Oxidized, 2).ToArray();
             return bs.SelectMany(_ => os, (b, o) => new AcylChain(chain.CarbonCount, b, o));
         }
 
         public IEnumerable<IChain> Generate(AlkylChain chain) {
             var bs = EnumerateBonds(chain.CarbonCount, chain.DoubleBond).ToArray();
-            var os = EnumerateOxidized(chain.CarbonCount, chain.Oxidized, Begin).ToArray();
+            var os = EnumerateOxidized(chain.CarbonCount, chain.Oxidized, 2).ToArray();
             return bs.SelectMany(_ => os, (b, o) => new AlkylChain(chain.CarbonCount, b, o));
         }
 

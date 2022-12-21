@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Components;
+﻿using CompMs.App.Msdial.Utility;
+using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
@@ -41,8 +42,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 .Where(pair => pair.exporter != null)
                 .WithLatestFrom(Spectrum, (pair, spectrum_) => (pair.stream, pair.exporter, spectrum_))
                 .Where(triple => triple.spectrum_ != null)
-                .Select(triple => Observable.FromAsync(token => triple.exporter.SaveAsync(triple.stream, triple.spectrum_, token)))
-                .Switch()
+                .SelectSwitch(triple => Observable.FromAsync(token => triple.exporter.SaveAsync(triple.stream, triple.spectrum_, token)))
                 .Subscribe()
                 .AddTo(Disposables);
             SaveAsObservable = save;

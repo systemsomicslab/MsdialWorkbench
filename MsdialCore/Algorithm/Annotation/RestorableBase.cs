@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public abstract class StandardRestorableBase : IRestorableRefer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>
+    public abstract class StandardRestorableBase : IRestorableRefer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>
     {
         public StandardRestorableBase(
             IEnumerable<MoleculeMsReference> db,
@@ -38,7 +38,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public abstract MoleculeMsReference Refer(MsScanMatchResult result);
 
-        public virtual IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Save() {
+        public virtual IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Save() {
             return new StandardRestorationKey(Key, Priority, Parameter, SourceType);
         }
     }

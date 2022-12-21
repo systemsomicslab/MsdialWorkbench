@@ -5,6 +5,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.DataStructure;
@@ -101,7 +102,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }
             }
             var accumulatedTarget = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
-            var target = accumulatedTarget.Where(t => !(t is null))
+            var target = accumulatedTarget.SkipNull()
                 .Delay(TimeSpan.FromSeconds(.05d))
                 .Select(t => {
                     var idx = orderedPeaks.IndexOf(t);
@@ -114,7 +115,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var accumulatedPeakModels = new ObservableCollection<ChromatogramPeakFeatureModel>(orderedPeaks);
             var peakModels = new ReactiveCollection<ChromatogramPeakFeatureModel>(UIDispatcherScheduler.Default).AddTo(Disposables);
             //peakModels.AddRangeOnScheduler(peakTree.Query(0, orderedPeaks.Length));
-            accumulatedTarget.Where(t => !(t is null))
+            accumulatedTarget.SkipNull()
                 .Select(t => {
                     var (lo, hi) = peakRanges[t];
                     return peakTree.Query(lo, hi);
@@ -234,7 +235,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var spectraExporter = new NistSpectraExporter(target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
             var decLoader = new MSDecLoader(analysisFileModel.DeconvolutionFilePath).AddTo(Disposables);
             _decLoader = decLoader;
-            var msdecResult = target.Where(t => !(t is null))
+            var msdecResult = target.SkipNull()
                 .Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -335,7 +336,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 t => new HeightAmount(t?.Intensity ?? 0d),
                 t => new AreaAmount(t?.PeakArea ?? 0d));
             PeakInformationModel = peakInformationModel;
-            var compoundDetailModel = new CompoundDetailModel(target.Select(t => t?.ScanMatchResult), mapper).AddTo(Disposables);
+            var compoundDetailModel = new CompoundDetailModel(target.SkipNull().SelectSwitch(t => t?.ObserveProperty(p => p.ScanMatchResult)).Publish().RefCount(), mapper).AddTo(Disposables);
             compoundDetailModel.Add(
                 r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d),
                 r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d),
@@ -346,7 +347,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             MoleculeStructureModel = moleculeStructureModel;
             Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
 
-            var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper, parameter.PeakPickBaseParam);
+            var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper);
             CompoundSearchModel = target
                 .CombineLatest(msdecResult, (t, r) => t is null || r is null ? null : new LcimmsCompoundSearchModel(analysisFileModel, t, r, searcherCollection.Items))
                 .DisposePreviousValue()

@@ -5,6 +5,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -62,7 +63,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             _provider = provider;
             DataBaseMapper = mapper;
             Parameter = parameter;
-            CompoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper, parameter.PeakPickBaseParam).Items;
+            CompoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper).Items;
 
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
                 // These 3 lines must be moved to somewhere for swithcing/updating the alignment result
@@ -133,7 +134,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 .Select(chromatogram => new RangeSelectableChromatogramModel(chromatogram))
                 .DisposePreviousValue()
                 .CombineLatest(
-                    Target.Where(t => t != null),
+                    Target.SkipNull(),
                     (model, t) => new ExperimentSpectrumModel(model, AnalysisFileModel, provider, t.InnerModel, DataBaseMapper, Parameter))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -251,15 +252,18 @@ namespace CompMs.App.Msdial.Model.Lcms
                 t => new HeightAmount(t?.Intensity ?? 0d),
                 t => new AreaAmount(t?.PeakArea ?? 0d));
             PeakInformationModel = peakInformationModel;
-            var compoundDetailModel = new CompoundDetailModel(Target.Select(t => t?.ScanMatchResult), mapper).AddTo(Disposables);
+
+            var compoundDetailModel = new CompoundDetailModel(Target.SkipNull().SelectSwitch(t => t.ObserveProperty(p => p.ScanMatchResult)).Publish().RefCount(), mapper).AddTo(Disposables);
             compoundDetailModel.Add(
                 r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d),
                 r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d),
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
-            var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
-            MoleculeStructureModel = moleculeStructureModel;
-            Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
+            if (parameter.ProjectParam.TargetOmics != TargetOmics.Proteomics) {
+                var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
+                MoleculeStructureModel = moleculeStructureModel;
+                Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
+            }
         }
 
         private static readonly double RtTol = 0.5;

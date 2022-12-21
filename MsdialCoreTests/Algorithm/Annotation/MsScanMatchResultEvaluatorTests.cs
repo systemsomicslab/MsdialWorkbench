@@ -21,7 +21,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = isUseTime,
                 IsUseCcsForAnnotationFiltering = isUseCcs,
             };
-            var evaluator = MsScanMatchResultEvaluator.CreateEvaluator(parameter);
+            var evaluator = new MsScanMatchResultEvaluator(parameter);
             var results = CreateResults();
 
             var actuals = evaluator.FilterByThreshold(results);
@@ -41,7 +41,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = isUseTime,
                 IsUseCcsForAnnotationFiltering = isUseCcs,
             };
-            var evaluator = MsScanMatchResultEvaluator.CreateEvaluator(parameter);
+            var evaluator = new MsScanMatchResultEvaluator(parameter);
             var results = CreateResults();
 
             var actuals = results.Select(result => evaluator.IsAnnotationSuggested(result)).ToList();
@@ -60,7 +60,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = isUseTime,
                 IsUseCcsForAnnotationFiltering = isUseCcs,
             };
-            var evaluator = MsScanMatchResultEvaluator.CreateEvaluator(parameter);
+            var evaluator = new MsScanMatchResultEvaluator(parameter);
             var results = CreateResults();
 
             var actuals = results.Select(result => evaluator.IsReferenceMatched(result)).ToList();
@@ -80,7 +80,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = isUseTime,
                 IsUseCcsForAnnotationFiltering = isUseCcs,
             };
-            var evaluator = MsScanMatchResultEvaluator.CreateEvaluator(parameter);
+            var evaluator = new MsScanMatchResultEvaluator(parameter);
             var results = CreateResults();
 
             var actuals = evaluator.SelectReferenceMatchResults(results);

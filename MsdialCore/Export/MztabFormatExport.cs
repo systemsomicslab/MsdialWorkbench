@@ -17,8 +17,7 @@ namespace CompMs.MsdialCore.Export
 {
     public class MztabFormatExport : BaseMetadataAccessor
     {
-        public MztabFormatExport(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter) : base(refer, parameter)
-        {
+        public MztabFormatExport(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter) : base(refer, parameter) {
         }
 
         public readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;

@@ -81,7 +81,7 @@ namespace CompMs.MsdialCore.Utility {
             Parallel.ForEach(quereis, fQuery => {
                 if (fQuery.IsValidated) {
                     var sequence = fQuery.Sequence;
-                    var digestedPeptides = ProteinDigestion.GetDigestedPeptideSequences(sequence, cleavageSites, char2AA, maxMissedCleavage, fQuery.UniqueIdentifier, fQuery.Index);
+                    var digestedPeptides = ProteinDigestion.GetDigestedPeptideSequences(sequence, cleavageSites, char2AA, maxMissedCleavage, fQuery.UniqueIdentifier, fQuery.Index, minimumPeptideLength);
                     if (!digestedPeptides.IsEmptyOrNull()) {
                         var mPeptides = ModificationUtility.GetModifiedPeptides(digestedPeptides, modContainer, maxNumberOfModificationsPerPeptide, minPeptideMass, maxPeptideMass);
                         lock (syncObj) {
@@ -104,7 +104,7 @@ namespace CompMs.MsdialCore.Utility {
                 }
             });
             foreach (var peptide in peptides) {
-                //Console.WriteLine(peptide.ModifiedSequence);
+                //Console.WriteLine(peptide.SequenceObj.Count);
                 peptide.SamePeptideNumberInSearchedProteins = sequence2Count[peptide.Sequence];
             }
 

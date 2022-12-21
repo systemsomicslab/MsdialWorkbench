@@ -64,14 +64,15 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             List<AnalysisFileBean> analysisFiles = analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File).ToList();
             var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
-            var metadataAccessor = new LcimmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter);
+            var metadataAccessorFactory = new LcimmsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter);
             AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(PeakFilterModel, matchResultEvaluator.Contramap((IFilterable filterable) => filterable.MatchResults.Representative));
             var peakGroup = new AlignmentExportGroupModel(
                 "Peaks",
                 new ExportMethod(
                     analysisFiles,
-                    new ExportFormat("txt", "txt", new AlignmentCSVExporter(), new AlignmentLongCSVExporter(), metadataAccessor),
-                    new ExportFormat("csv", "csv", new AlignmentCSVExporter(separator: ","), new AlignmentLongCSVExporter(separator: ","), metadataAccessor)
+                    metadataAccessorFactory,
+                    ExportFormat.Tsv,
+                    ExportFormat.Csv
                 ),
                 new[]
                 {
@@ -173,8 +174,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public override async Task RunAsync(ProcessOption option, CancellationToken token) {
             // Set analysis param
-            var parameter = Storage.Parameter;
-            annotationProcess = BuildAnnotationProcess(Storage.DataBases, parameter.PeakPickBaseParam);
+            annotationProcess = BuildAnnotationProcess();
 
             var processOption = option;
             // Run Identification
@@ -194,16 +194,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
         }
 
-        private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, PeakPickBaseParameter parameter) {
-            var pairs = storage.MetabolomicsDataBases.SelectMany(db => db.Pairs).ToArray();
-            var factories = pairs.Select(pair => new AnnotationQueryFactory(pair.SerializableAnnotator, parameter)).ToArray();
-            var parameters = pairs.Select(pair => pair.SearchParameter).ToArray();
-            var evaluator = new FacadeMatchResultEvaluator();
-            var refer = storage.CreateDataBaseMapper();
-            foreach (var pair in pairs) {
-                evaluator.Add(pair.AnnotatorID, pair.SerializableAnnotator);
-            }
-            return new LcimmsStandardAnnotationProcess(factories, parameters, evaluator, refer);
+        private IAnnotationProcess BuildAnnotationProcess() {
+            return new LcimmsStandardAnnotationProcess(Storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories, matchResultEvaluator, Storage.DataBaseMapper);
         }
 
         private bool RunFileProcess(List<AnalysisFileBean> analysisFiles, ProcessBaseParameter parameter) {

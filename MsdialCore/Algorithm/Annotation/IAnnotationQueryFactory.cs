@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Components;
+﻿using Accord.Collections;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
@@ -13,43 +14,50 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public interface ICallableAnnotationQueryFactory<out T> {
+    public interface IAnnotationQueryFactory<out T> {
         string AnnotatorId { get; }
-        ICallableAnnotationQuery<T> Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter);
+        int Priority { get; }
+        IAnnotationQuery<T> Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter);
+        MsRefSearchParameterBase PrepareParameter();
+        IMatchResultEvaluator<MsScanMatchResult> CreateEvaluator();
     }
 
-    public interface IAnnotationQueryFactory<out T>
+    public sealed class AnnotationQueryFactory : IAnnotationQueryFactory<MsScanMatchResult>
     {
-        string AnnotatorId { get; }
-        T Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter);
-    }
+        private readonly IMatchResultFinder<AnnotationQuery, MsScanMatchResult> _annotator;
+        private readonly MsRefSearchParameterBase _searchParameter;
+        private readonly Func<IMSIonProperty, IReadOnlyList<RawPeakElement>, IReadOnlyList<IsotopicPeak>> _isotopeGetter;
+        private readonly bool _ignoreIsotopicPeak;
 
-    public sealed class AnnotationQueryFactory : IAnnotationQueryFactory<AnnotationQuery>, ICallableAnnotationQueryFactory<MsScanMatchResult>
-    {
-        private readonly IMatchResultFinder<AnnotationQuery, MsScanMatchResult> annotator;
-        private readonly Func<IMSIonProperty, IReadOnlyList<RawPeakElement>, IReadOnlyList<IsotopicPeak>> isotopeGetter;
-
-        public AnnotationQueryFactory(IMatchResultFinder<AnnotationQuery, MsScanMatchResult> annotator, Func<IMSIonProperty, IReadOnlyList<RawPeakElement>, IReadOnlyList<IsotopicPeak>> isotopeGetter) {
-            this.annotator = annotator;
-            this.isotopeGetter = isotopeGetter;
+        private AnnotationQueryFactory(IMatchResultFinder<AnnotationQuery, MsScanMatchResult> annotator, MsRefSearchParameterBase searchParameter, Func<IMSIonProperty, IReadOnlyList<RawPeakElement>, IReadOnlyList<IsotopicPeak>> isotopeGetter, bool ignoreIsotopicPeak) {
+            _annotator = annotator;
+            _searchParameter = searchParameter ?? throw new ArgumentNullException(nameof(searchParameter));
+            _isotopeGetter = isotopeGetter;
+            _ignoreIsotopicPeak = ignoreIsotopicPeak;
             AnnotatorId = annotator.Id;
         }
 
-        public AnnotationQueryFactory(IMatchResultFinder<AnnotationQuery, MsScanMatchResult> annotator, PeakPickBaseParameter peakPickParameter) : this(annotator, GetIsotopeGetter(peakPickParameter)) {
+        public AnnotationQueryFactory(IMatchResultFinder<AnnotationQuery, MsScanMatchResult> annotator, PeakPickBaseParameter peakPickParameter, MsRefSearchParameterBase searchParameter, bool ignoreIsotopicPeak = true) : this(annotator, searchParameter, GetIsotopeGetter(peakPickParameter), ignoreIsotopicPeak) {
 
         }
 
         public string AnnotatorId { get; }
 
+        int IAnnotationQueryFactory<MsScanMatchResult>.Priority => _annotator.Priority;
+
         public AnnotationQuery Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter) {
             if (parameter is null) {
                 throw new ArgumentNullException(nameof(parameter));
             }
-            return new AnnotationQuery(property, scan, isotopeGetter(property, spectrum), ionFeature, parameter, annotator);
+            return new AnnotationQuery(property, scan, _isotopeGetter(property, spectrum), ionFeature, parameter, _annotator, _ignoreIsotopicPeak);
         }
 
-        ICallableAnnotationQuery<MsScanMatchResult> ICallableAnnotationQueryFactory<MsScanMatchResult>.Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter)
+        IAnnotationQuery<MsScanMatchResult> IAnnotationQueryFactory<MsScanMatchResult>.Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter)
             => Create(property, scan, spectrum, ionFeature, parameter);
+
+        MsRefSearchParameterBase IAnnotationQueryFactory<MsScanMatchResult>.PrepareParameter() {
+            return new MsRefSearchParameterBase(_searchParameter);
+        }
 
         private static Func<IMSIonProperty, IReadOnlyList<RawPeakElement>, IReadOnlyList<IsotopicPeak>> GetIsotopeGetter(PeakPickBaseParameter peakPickParameter) {
             if (peakPickParameter is null) {
@@ -61,84 +69,121 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             }
             return GetIsotope;
         }
+
+        IMatchResultEvaluator<MsScanMatchResult> IAnnotationQueryFactory<MsScanMatchResult>.CreateEvaluator() {
+            return new MsScanMatchResultEvaluator(_searchParameter);
+        }
     }
 
-    public sealed class PepAnnotationQueryFactory : IAnnotationQueryFactory<PepAnnotationQuery>, ICallableAnnotationQueryFactory<MsScanMatchResult> {
-        private readonly PeakPickBaseParameter peakPickParameter;
-        private readonly IMatchResultFinder<PepAnnotationQuery, MsScanMatchResult> annotator;
+    public sealed class PepAnnotationQueryFactory : IAnnotationQueryFactory<MsScanMatchResult> {
+        private readonly PeakPickBaseParameter _peakPickParameter;
+        private readonly MsRefSearchParameterBase _searchParameter;
+        private readonly IMatchResultFinder<PepAnnotationQuery, MsScanMatchResult> _annotator;
+        private readonly ProteomicsParameter _proteomicsParameter;
 
-        public PepAnnotationQueryFactory(IMatchResultFinder<PepAnnotationQuery, MsScanMatchResult> annotator, PeakPickBaseParameter peakPickParameter, ProteomicsParameter proteomicsParameter) {
-            this.peakPickParameter = peakPickParameter ?? throw new ArgumentNullException(nameof(peakPickParameter));
-            ProteomicsParameter = proteomicsParameter;
-            this.annotator = annotator ?? throw new ArgumentNullException(nameof(annotator));
+        public PepAnnotationQueryFactory(IMatchResultFinder<PepAnnotationQuery, MsScanMatchResult> annotator, PeakPickBaseParameter peakPickParameter, MsRefSearchParameterBase searchParameter, ProteomicsParameter proteomicsParameter) {
+            _peakPickParameter = peakPickParameter ?? throw new ArgumentNullException(nameof(peakPickParameter));
+            _searchParameter = searchParameter ?? throw new ArgumentNullException(nameof(searchParameter));
+            _proteomicsParameter = proteomicsParameter;
+            _annotator = annotator ?? throw new ArgumentNullException(nameof(annotator));
             AnnotatorId = annotator.Id;
         }
 
         public string AnnotatorId { get; }
 
-        private readonly ProteomicsParameter ProteomicsParameter;
+        int IAnnotationQueryFactory<MsScanMatchResult>.Priority => _annotator.Priority;
 
         public PepAnnotationQuery Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter) {
             if (parameter is null) {
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            var isotopes = DataAccess.GetIsotopicPeaks(spectrum, (float)property.PrecursorMz, peakPickParameter.CentroidMs1Tolerance);
-            return new PepAnnotationQuery(property, scan, isotopes, ionFeature, parameter, ProteomicsParameter, annotator);
+            var isotopes = DataAccess.GetIsotopicPeaks(spectrum, (float)property.PrecursorMz, _peakPickParameter.CentroidMs1Tolerance);
+            return new PepAnnotationQuery(property, scan, isotopes, ionFeature, parameter, _proteomicsParameter, _annotator, ignoreIsotopicPeak: false);
         }
 
-        ICallableAnnotationQuery<MsScanMatchResult> ICallableAnnotationQueryFactory<MsScanMatchResult>.Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter)
+        IAnnotationQuery<MsScanMatchResult> IAnnotationQueryFactory<MsScanMatchResult>.Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter)
             => Create(property, scan, spectrum, ionFeature, parameter);
+
+        MsRefSearchParameterBase IAnnotationQueryFactory<MsScanMatchResult>.PrepareParameter() {
+            return new MsRefSearchParameterBase(_searchParameter);
+        }
+
+        IMatchResultEvaluator<MsScanMatchResult> IAnnotationQueryFactory<MsScanMatchResult>.CreateEvaluator() {
+            return new MsScanMatchResultEvaluator(_searchParameter);
+        }
     }
 
-    public sealed class AnnotationQueryWithoutIsotopeFactory : IAnnotationQueryFactory<AnnotationQuery>, ICallableAnnotationQueryFactory<MsScanMatchResult>
+    public sealed class AnnotationQueryWithoutIsotopeFactory : IAnnotationQueryFactory<MsScanMatchResult>
     {
-        private readonly IMatchResultFinder<AnnotationQuery, MsScanMatchResult> annotator;
+        private readonly IMatchResultFinder<AnnotationQuery, MsScanMatchResult> _annotator;
+        private readonly MsRefSearchParameterBase _searchParameter;
 
-        public AnnotationQueryWithoutIsotopeFactory(IMatchResultFinder<AnnotationQuery, MsScanMatchResult> annotator) {
-            this.annotator = annotator ?? throw new ArgumentNullException(nameof(annotator));
+        public AnnotationQueryWithoutIsotopeFactory(IMatchResultFinder<AnnotationQuery, MsScanMatchResult> annotator, MsRefSearchParameterBase searchParameter) {
+            _annotator = annotator ?? throw new ArgumentNullException(nameof(annotator));
+            _searchParameter = searchParameter ?? throw new ArgumentNullException(nameof(searchParameter));
             AnnotatorId = annotator.Id;
         }
 
         public string AnnotatorId { get; }
 
-        public AnnotationQuery Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter) {
+        int IAnnotationQueryFactory<MsScanMatchResult>.Priority => _annotator.Priority;
+
+        public AnnotationQuery Create(IMSIonProperty property, IMSScanProperty scan, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter) {
             if (parameter is null) {
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            return new AnnotationQuery(property, scan, null, ionFeature, parameter, annotator);
+            return new AnnotationQuery(property, scan, null, ionFeature, parameter, _annotator, ignoreIsotopicPeak: false);
         }
 
-        ICallableAnnotationQuery<MsScanMatchResult> ICallableAnnotationQueryFactory<MsScanMatchResult>.Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter)
-            => Create(property, scan, spectrum, ionFeature, parameter);
+        IAnnotationQuery<MsScanMatchResult> IAnnotationQueryFactory<MsScanMatchResult>.Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter)
+            => Create(property, scan, ionFeature, parameter);
+
+        MsRefSearchParameterBase IAnnotationQueryFactory<MsScanMatchResult>.PrepareParameter() {
+            return new MsRefSearchParameterBase(_searchParameter);
+        }
+
+        IMatchResultEvaluator<MsScanMatchResult> IAnnotationQueryFactory<MsScanMatchResult>.CreateEvaluator() {
+            return new MsScanMatchResultEvaluator(_searchParameter);
+        }
     }
 
-    public sealed class AnnotationQueryWithReferenceFactory : IAnnotationQueryFactory<AnnotationQueryWithReference>, ICallableAnnotationQueryFactory<MsScanMatchResult>
+    public sealed class AnnotationQueryWithReferenceFactory : IAnnotationQueryFactory<MsScanMatchResult>
     {
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
-        private readonly IMatchResultFinder<(IAnnotationQuery, MoleculeMsReference), MsScanMatchResult> annotator;
-        private readonly Func<IMSIonProperty, IReadOnlyList<RawPeakElement>, IReadOnlyList<IsotopicPeak>> isotopeGetter;
+        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+        private readonly IMatchResultFinder<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MsScanMatchResult> _annotator;
+        private readonly MsRefSearchParameterBase _searchParameter;
+        private readonly Func<IMSIonProperty, IReadOnlyList<RawPeakElement>, IReadOnlyList<IsotopicPeak>> _isotopeGetter;
+        private readonly bool _ignoreIsotopicPeak;
 
-        public AnnotationQueryWithReferenceFactory(
+        private AnnotationQueryWithReferenceFactory(
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
-            IMatchResultFinder<(IAnnotationQuery, MoleculeMsReference), MsScanMatchResult> annotator,
-            Func<IMSIonProperty, IReadOnlyList<RawPeakElement>, IReadOnlyList<IsotopicPeak>> isotopeGetter) {
-            this.refer = refer ?? throw new ArgumentNullException(nameof(refer));
-            this.annotator = annotator;
-            this.isotopeGetter = isotopeGetter;
+            IMatchResultFinder<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MsScanMatchResult> annotator,
+            MsRefSearchParameterBase searchParameter,
+            Func<IMSIonProperty, IReadOnlyList<RawPeakElement>, IReadOnlyList<IsotopicPeak>> isotopeGetter,
+            bool ignoreIsotopicPeak) {
+            _refer = refer ?? throw new ArgumentNullException(nameof(refer));
+            _annotator = annotator;
+            _searchParameter = searchParameter ?? throw new ArgumentNullException(nameof(searchParameter));
+            _isotopeGetter = isotopeGetter;
+            _ignoreIsotopicPeak = ignoreIsotopicPeak;
             AnnotatorId = annotator.Id;
         }
 
         public AnnotationQueryWithReferenceFactory(
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
-            IMatchResultFinder<(IAnnotationQuery, MoleculeMsReference), MsScanMatchResult> annotator,
-            PeakPickBaseParameter peakPickParameter)
-            : this(refer, annotator, GetIsotopeGetter(peakPickParameter)) {
+            IMatchResultFinder<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MsScanMatchResult> annotator,
+            PeakPickBaseParameter peakPickParameter,
+            MsRefSearchParameterBase searchParameter,
+            bool ignoreIsotopicPeak = true)
+            : this(refer, annotator, searchParameter, GetIsotopeGetter(peakPickParameter), ignoreIsotopicPeak) {
 
         }
 
         public string AnnotatorId { get; }
+
+        int IAnnotationQueryFactory<MsScanMatchResult>.Priority => _annotator.Priority;
 
         public AnnotationQueryWithReference Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter) {
             if (parameter is null) {
@@ -149,16 +194,24 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 .Where(r => r != null)
                 .FirstOrDefault(r => !r.Source.HasFlag(SourceType.GeneratedLipid) && !r.Source.HasFlag(SourceType.Unknown));
             if (result is null) {
-                return new AnnotationQueryWithReference(property, scan, null, isotopeGetter(property, spectrum), ionFeature, parameter, annotator);
+                return new AnnotationQueryWithReference(property, scan, null, _isotopeGetter(property, spectrum), ionFeature, parameter, _annotator, _ignoreIsotopicPeak);
             }
             else {
-                var reference = refer.Refer(result);
-                return new AnnotationQueryWithReference(property, scan, reference, isotopeGetter(property, spectrum), ionFeature, parameter, annotator);
+                var reference = _refer.Refer(result);
+                return new AnnotationQueryWithReference(property, scan, reference, _isotopeGetter(property, spectrum), ionFeature, parameter, _annotator, _ignoreIsotopicPeak);
             }
         }
 
-        ICallableAnnotationQuery<MsScanMatchResult> ICallableAnnotationQueryFactory<MsScanMatchResult>.Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter)
+        IAnnotationQuery<MsScanMatchResult> IAnnotationQueryFactory<MsScanMatchResult>.Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter)
             => Create(property, scan, spectrum, ionFeature, parameter);
+
+        MsRefSearchParameterBase IAnnotationQueryFactory<MsScanMatchResult>.PrepareParameter() {
+            return new MsRefSearchParameterBase(_searchParameter);
+        }
+
+        IMatchResultEvaluator<MsScanMatchResult> IAnnotationQueryFactory<MsScanMatchResult>.CreateEvaluator() {
+            return new MsScanMatchResultEvaluator(_searchParameter);
+        }
 
         private static Func<IMSIonProperty, IReadOnlyList<RawPeakElement>, IReadOnlyList<IsotopicPeak>> GetIsotopeGetter(PeakPickBaseParameter peakPickParameter) {
             if (peakPickParameter is null) {

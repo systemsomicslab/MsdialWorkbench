@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace CompMs.MsdialDimsCore.Algorithm.Annotation
 {
-    public class DimsMspAnnotator : StandardRestorableBase, ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>
+    public class DimsMspAnnotator : StandardRestorableBase, ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>
     {
         private readonly TargetOmics omics;
 
@@ -23,7 +23,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             Id = sourceKey;
             ReferObject = mspDB;
             searcher = new MassReferenceSearcher<MoleculeMsReference>(mspDB.Database);
-            evaluator = MsScanMatchResultEvaluator.CreateEvaluator(parameter);
+            evaluator = new MsScanMatchResultEvaluator(parameter);
         }
 
         public string Id { get; }
@@ -32,14 +32,14 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> ReferObject;
         private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
 
-        public MsScanMatchResult Annotate(IAnnotationQuery query) {
+        public MsScanMatchResult Annotate(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
-            return FindCandidatesCore(query.Property, DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter), parameter, Key).FirstOrDefault();
+            return FindCandidatesCore(query.Property, query.NormalizedScan, parameter, Key).FirstOrDefault();
         }
 
-        public List<MsScanMatchResult> FindCandidates(IAnnotationQuery query) {
+        public List<MsScanMatchResult> FindCandidates(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
-            return FindCandidatesCore(query.Property, DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter), parameter, Key);
+            return FindCandidatesCore(query.Property, query.NormalizedScan, parameter, Key);
         }
 
         private List<MsScanMatchResult> FindCandidatesCore(IMSProperty property, IMSScanProperty scan, MsRefSearchParameterBase parameter, string sourceKey) {
@@ -52,13 +52,12 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             return results.OrderByDescending(result => result.TotalScore).ToList();
         }
 
-        public MsScanMatchResult CalculateScore(IAnnotationQuery query, MoleculeMsReference reference) {
+        public MsScanMatchResult CalculateScore(IAnnotationQuery<MsScanMatchResult> query, MoleculeMsReference reference) {
             var parameter = query.Parameter ?? Parameter;
-            return CalculateScoreCore(query.Property, query.Scan, reference, parameter, Key);
+            return CalculateScoreCore(query.Property, query.NormalizedScan, reference, parameter, Key);
         }
 
-        private MsScanMatchResult CalculateScoreCore(IMSProperty property, IMSScanProperty scan, MoleculeMsReference reference, MsRefSearchParameterBase parameter, string source) {
-            var normScan = DataAccess.GetNormalizedMSScanProperty(scan, parameter);
+        private MsScanMatchResult CalculateScoreCore(IMSProperty property, IMSScanProperty normScan, MoleculeMsReference reference, MsRefSearchParameterBase parameter, string source) {
             var result = new MsScanMatchResult
             {
                 Name = reference.Name,
@@ -137,7 +136,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             return ReferObject.Refer(result);
         }
 
-        public List<MoleculeMsReference> Search(IAnnotationQuery query) {
+        public List<MoleculeMsReference> Search(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
             return SearchBound(query.Property, parameter.Ms1Tolerance).ToList();
         }

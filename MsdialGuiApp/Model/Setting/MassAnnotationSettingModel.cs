@@ -21,14 +21,14 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         MoleculeDataBase molecules;
-        public ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> Build(ParameterBase parameter) {
+        public ISerializableAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> Build(ParameterBase parameter) {
             if (molecules is null) {
                 molecules = LoadDataBase(parameter);
             }
             return Build(parameter.ProjectParam, molecules);
         }
 
-        private ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules) {
+        private ISerializableAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules) {
             return new DatabaseAnnotatorContainer(
                 new MassAnnotator(molecules, Parameter, projectParameter.TargetOmics, AnnotationSource, DataBaseID, -1),
                 molecules,

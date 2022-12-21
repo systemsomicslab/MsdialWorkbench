@@ -112,7 +112,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public IdentifySettingModel CreateIdentifySetting() {
             var parameter = storage.Parameter;
-            var model = new IdentifySettingModel(parameter, new DimsAnnotatorSettingModelFactory(), process, _messageBroker, storage.DataBases);
+            var model = new IdentifySettingModel(parameter, new DimsAnnotatorSettingModelFactory(parameter), process, _messageBroker, storage.DataBases);
 
             if (parameter.TargetOmics == TargetOmics.Lipidomics) {
                 if (model.DataBaseModels.Count == 0) {
@@ -206,7 +206,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public IdentifySettingModel CreateIdentifySetting() {
             var parameter = storage.Parameter;
-            var model = new IdentifySettingModel(storage.Parameter, new LcmsAnnotatorSettingFactory(), process, _broker, storage.DataBases);
+            var model = new IdentifySettingModel(storage.Parameter, new LcmsAnnotatorSettingFactory(parameter), process, _broker, storage.DataBases);
 
             if (parameter.TargetOmics == TargetOmics.Lipidomics) {
                 if (model.DataBaseModels.Count == 0) {
@@ -287,7 +287,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public IdentifySettingModel CreateIdentifySetting() {
             var parameter = storage.Parameter;
-            var model = new IdentifySettingModel(storage.Parameter, new ImmsAnnotatorSettingModelFactory(), process, _broker, storage.DataBases);
+            var model = new IdentifySettingModel(storage.Parameter, new ImmsAnnotatorSettingModelFactory(parameter), process, _broker, storage.DataBases);
 
             if (parameter.TargetOmics == TargetOmics.Lipidomics) {
                 if (model.DataBaseModels.Count == 0) {
@@ -367,7 +367,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public IdentifySettingModel CreateIdentifySetting() {
             var parameter = storage.Parameter;
-            var model = new IdentifySettingModel(storage.Parameter, new LcimmsAnnotatorSettingFactory(), process, _broker, storage.DataBases);
+            var model = new IdentifySettingModel(storage.Parameter, new LcimmsAnnotatorSettingFactory(parameter), process, _broker, storage.DataBases);
 
             if (parameter.TargetOmics == TargetOmics.Lipidomics) {
                 if (model.DataBaseModels.Count == 0) {
@@ -447,7 +447,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public IdentifySettingModel CreateIdentifySetting() {
             var parameter = storage.Parameter;
-            var model = new IdentifySettingModel(storage.Parameter, new ImmsAnnotatorSettingModelFactory(), process, _broker, storage.DataBases);
+            var model = new IdentifySettingModel(storage.Parameter, new ImmsAnnotatorSettingModelFactory(parameter), process, _broker, storage.DataBases);
 
             if (parameter.TargetOmics == TargetOmics.Lipidomics) {
                 if (model.DataBaseModels.Count == 0) {
@@ -489,7 +489,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            var method = new ImagingImmsMethodModel(_analysisFileBeanModelCollection, storage);
+            var method = new ImagingImmsMethodModel(_analysisFileBeanModelCollection, storage, _projectBaseParameter);
             return method;
         }
     }

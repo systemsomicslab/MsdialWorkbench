@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.CommonMVVM;
@@ -56,7 +57,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
 
             SetUnknownCommand = setUnknownCommand ?? canSet.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
 
-            ParameterHasErrors = ParameterVM.Select(parameter =>
+            ParameterHasErrors = ParameterVM.SelectSwitch(parameter =>
                 parameter is null
                     ? Observable.Return(true)
                     : new[]
@@ -65,7 +66,6 @@ namespace CompMs.App.Msdial.ViewModel.Search
                         parameter.Ms2Tolerance.ObserveHasErrors,
                     }.CombineLatestValuesAreAllFalse()
                     .Inverse())
-            .Switch()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
@@ -77,7 +77,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
             .ToReactiveCommand()
             .AddTo(Disposables);
 
-            Compounds = ParameterVM.Select(parameter =>
+            Compounds = ParameterVM.SelectSwitch(parameter =>
                 parameter is null
                     ? Observable.Never<Unit>()
                     : new[]
@@ -86,10 +86,8 @@ namespace CompMs.App.Msdial.ViewModel.Search
                         parameter.Ms2Tolerance.ToUnit(),
                         SearchCommand.ToUnit(),
                     }.Merge())
-            .Switch()
             .Where(_ => !ParameterHasErrors.Value)
-            .Select(_ => Observable.FromAsync(SearchAsync))
-            .Switch()
+            .SelectSwitch(_ => Observable.FromAsync(SearchAsync))
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 

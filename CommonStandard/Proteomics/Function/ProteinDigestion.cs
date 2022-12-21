@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj;
+using CompMs.Common.Extension;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.Common.Proteomics.Parser;
 using System;
@@ -65,8 +66,8 @@ namespace CompMs.Common.Proteomics.Function {
                         peptides.Add(peptide);
                 }
             }
-
-            return peptides;
+            if (peptides.IsEmptyOrNull()) return null;
+            return peptides.Where(n => n.SequenceObj.Count >= minimumPeptideLength).ToList();
         }
 
         public static List<string> GetCleavageSites(List<string> selectedEnzymes) {

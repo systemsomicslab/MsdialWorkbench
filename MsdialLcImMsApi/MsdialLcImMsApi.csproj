@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <Folder Include="Algorithm\Alignment\" />
-    <Folder Include="Parser\" />
   </ItemGroup>
 
   <ItemGroup>

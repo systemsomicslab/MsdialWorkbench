@@ -1,7 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
-using CompMs.Common.Parameter;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -10,8 +9,6 @@ using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,16 +16,13 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
 {
     public sealed class LcimmsStandardAnnotationProcess : IAnnotationProcess
     {
-        public LcimmsStandardAnnotationProcess(IReadOnlyList<ICallableAnnotationQueryFactory<MsScanMatchResult>> queryFactories, IReadOnlyList<MsRefSearchParameterBase> searchParameters, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
-            Debug.Assert(queryFactories.Count == searchParameters.Count, "Query factories and search parameters sizes are different.");
+        public LcimmsStandardAnnotationProcess(IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> queryFactories, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             _queryFacotries = queryFactories ?? throw new ArgumentNullException(nameof(queryFactories));
-            _searchParameters = searchParameters ?? throw new ArgumentNullException(nameof(searchParameters));
             _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _refer = refer ?? throw new ArgumentNullException(nameof(refer));
         }
 
-        private readonly IReadOnlyList<ICallableAnnotationQueryFactory<MsScanMatchResult>> _queryFacotries;
-        private readonly IReadOnlyList<MsRefSearchParameterBase> _searchParameters;
+        private readonly IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> _queryFacotries;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
 
@@ -71,8 +65,8 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
 
         private void RunInnerAnnotationCore(ChromatogramPeakFeature parentChromatogramPeakFeature, ChromatogramPeakFeature chromatogramPeakFeature, MSDecResult msdecResult, IDataProvider provider) {
             var spectrum = provider.LoadMsSpectrumFromIndex(chromatogramPeakFeature.MS1RawSpectrumIdTop).Spectrum;
-            foreach (var (factory, parameter) in _queryFacotries.Zip(_searchParameters)) {
-                var query = factory.Create(chromatogramPeakFeature, msdecResult, spectrum, chromatogramPeakFeature.PeakCharacter, parameter);
+            foreach (var factory in _queryFacotries) {
+                var query = factory.Create(chromatogramPeakFeature, msdecResult, spectrum, chromatogramPeakFeature.PeakCharacter, factory.PrepareParameter());
                 var candidates = query.FindCandidates();
                 var results = _evaluator.FilterByThreshold(candidates);
                 var matches = _evaluator.SelectReferenceMatchResults(results);

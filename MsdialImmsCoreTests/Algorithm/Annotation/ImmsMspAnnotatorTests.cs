@@ -738,7 +738,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
         }
 
         private AnnotationQuery BuildQuery(ChromatogramPeakFeature target, MsRefSearchParameterBase parameter, ImmsMspAnnotator annotator) {
-            return new AnnotationQuery(target, target, null, null, parameter ?? new MsRefSearchParameterBase(), annotator);
+            return new AnnotationQuery(target, target, null, null, parameter ?? new MsRefSearchParameterBase(), annotator, ignoreIsotopicPeak: false);
         }
     }
 }

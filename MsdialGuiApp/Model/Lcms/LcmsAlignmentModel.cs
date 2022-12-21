@@ -6,6 +6,7 @@ using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Statistics;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -76,7 +77,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             Parameter = parameter;
             _files = files ?? throw new ArgumentNullException(nameof(files));
             _dataBaseMapper = mapper;
-            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper, parameter.PeakPickBaseParam).Items;
+            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper).Items;
 
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
@@ -91,7 +92,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
 
             _decLoader = new MSDecLoader(_alignmentFile.SpectraFilePath).AddTo(Disposables);
-            _msdecResult = Target.Where(t => t != null)
+            _msdecResult = Target.SkipNull()
                 .Select(t => _decLoader.LoadMSDecResult(t.MasterAlignmentID))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -188,8 +189,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             var classBrush = projectBaseParameter.ClassProperties
                 .CollectionChangedAsObservable().ToUnit()
                 .StartWith(Unit.Default)
-                .Select(_ => projectBaseParameter.ClassProperties.Select(prop => prop.ObserveProperty(p => p.Color).Select(_2 => prop)).CombineLatest())
-                .Switch()
+                .SelectSwitch(_ => projectBaseParameter.ClassProperties.Select(prop => prop.ObserveProperty(p => p.Color).Select(_2 => prop)).CombineLatest())
                 .Select(lst => new KeyBrushMapper<string>(lst.ToDictionary(item => item.Name, item => item.Color)))
                 .ToReactiveProperty().AddTo(Disposables);
             var barBrush = classBrush.Select(bm => bm.Contramap((BarItem item) => item.Class));
@@ -207,7 +207,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 normalizedHeightLoader, normalizedAreaBaselineLoader, normalizedAreaZeroLoader,
             };
             var barItemsLoaderDataProperty = NormalizationSetModel.Normalized.Select(_ => normalizedHeightLoader).ToReactiveProperty(barItemLoaderDatas.First()).AddTo(Disposables);
-            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, barItemLoaderDatas, barBrush, projectBaseParameter).AddTo(Disposables);
+            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, barItemLoaderDatas, barBrush, projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
 
             // Class eic
             var fileIdToFileName = files.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileName);
@@ -223,8 +223,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            var barItemsLoaderProperty = barItemsLoaderDataProperty.Where(data => !(data is null)).Select(data => data.ObservableLoader).Switch().ToReactiveProperty().AddTo(Disposables);
-            AlignmentSpotTableModel = new LcmsAlignmentSpotTableModel(Ms1Spots, Target, barBrush, barItemsLoaderProperty).AddTo(Disposables);
+            var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
+            AlignmentSpotTableModel = new LcmsAlignmentSpotTableModel(Ms1Spots, Target, barBrush, projectBaseParameter.ClassProperties, barItemsLoaderProperty).AddTo(Disposables);
 
             CanSearchCompound = new[]
             {
@@ -252,16 +252,18 @@ namespace CompMs.App.Msdial.Model.Lcms
             peakInformationModel.Add(t => new HeightAmount(t?.HeightAverage ?? 0d));
             PeakInformationModel = peakInformationModel;
 
-            var compoundDetailModel = new CompoundDetailModel(Target.Select(t => t?.ScanMatchResult), mapper).AddTo(Disposables);
+            var compoundDetailModel = new CompoundDetailModel(Target.SkipNull().SelectSwitch(t => t.ObserveProperty(p => p.ScanMatchResult)).Publish().RefCount(), mapper).AddTo(Disposables);
             compoundDetailModel.Add(
                 r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d),
                 r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d),
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
 
-            var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
-            MoleculeStructureModel = moleculeStructureModel;
-            Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
+            if (parameter.ProjectParam.TargetOmics != TargetOmics.Proteomics) {
+                var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
+                MoleculeStructureModel = moleculeStructureModel;
+                Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
+            }
 
             MultivariateAnalysisSettingModel = new MultivariateAnalysisSettingModel(parameter, Ms1Spots, evaluator, files, classBrush);
         }

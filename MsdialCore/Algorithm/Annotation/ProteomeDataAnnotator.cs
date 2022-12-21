@@ -55,7 +55,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public void MappingToProteinDatabase(
             AnalysisFileBean file,
-            List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> databases,
+            List<DataBaseItem<ShotgunProteomicsDB>> databases,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer, 
             ParameterBase param) {
@@ -68,7 +68,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         private void MappingToProteinDatabase(string file, List<ChromatogramPeakFeature> features,
-            List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> databases,
+            List<DataBaseItem<ShotgunProteomicsDB>> databases,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer,
             ParameterBase param) {
@@ -105,7 +105,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         public void MappingToProteinDatabase(
             string file,
             AlignmentResultContainer alignmentContainer,
-            List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> databases,
+            List<DataBaseItem<ShotgunProteomicsDB>> databases,
             IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             ParameterBase param) {
@@ -118,7 +118,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             MsdialProteomicsSerializer.SaveProteinResultContainer(file, container);
         }
 
-        public Dictionary<string, ModificationContainer> GetDB2ModificationContainer(List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> databases) {
+        public Dictionary<string, ModificationContainer> GetDB2ModificationContainer(List<DataBaseItem<ShotgunProteomicsDB>> databases) {
             var dict = new Dictionary<string, ModificationContainer>();
             foreach (var database in databases) {
                 dict[database.DataBaseID] = database.DataBase.ModificationContainer;
@@ -253,7 +253,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public List<ProteinMsResult> MappingToProteinDatabase(
             List<ChromatogramPeakFeature> features,
-            List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> databases,
+            List<DataBaseItem<ShotgunProteomicsDB>> databases,
             IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer,
             IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             var featureObjs = DataAccess.GetChromPeakFeatureObjectsIntegratingRtAndDriftData(features);
@@ -285,7 +285,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public List<ProteinMsResult> MappingToProteinDatabase(
             List<AlignmentSpotProperty> features,
-            List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> databases,
+            List<DataBaseItem<ShotgunProteomicsDB>> databases,
             IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer,
             IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             var featureObjs = DataAccess.GetAlignmentSpotPropertiesIntegratingRtAndDriftData(features);
@@ -315,7 +315,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public List<ProteinMsResult> InitializeProteinMsResults(
-            List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> databases) {
+            List<DataBaseItem<ShotgunProteomicsDB>> databases) {
             var proteins = new List<ProteinMsResult>();
             var counter = 0;
             foreach (var item in databases) {

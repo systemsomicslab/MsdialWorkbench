@@ -77,9 +77,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             var expectedScores = new List<double>
             {
                 result.AcurateMassSimilarity,
-                (result.WeightedDotProduct + result.SimpleDotProduct + result.ReverseDotProduct) / 3,
-                result.MatchedPeaksPercentage,
-                result.RtSimilarity,
+                (result.WeightedDotProduct * 1 + result.SimpleDotProduct * 1  + result.ReverseDotProduct * 2  + result.MatchedPeaksPercentage * 3) / 4,
+                result.RtSimilarity * .5,
             }.Average();
             Assert.AreEqual(expectedScores, result.TotalScore);
         }
@@ -147,9 +146,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             var expectedScores = new List<double>
             {
                 result.AcurateMassSimilarity,
-                (result.WeightedDotProduct + result.SimpleDotProduct + result.ReverseDotProduct) / 3,
-                result.MatchedPeaksPercentage,
-                result.CcsSimilarity,
+                (result.WeightedDotProduct * 1  + result.SimpleDotProduct * 1 + result.ReverseDotProduct * 2 + result.MatchedPeaksPercentage * 3) / 4,
+                result.CcsSimilarity * .5,
             }.Average();
             Assert.AreEqual(expectedScores, result.TotalScore, 1e-6);
         }
@@ -217,8 +215,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             var expectedScores = new List<double>
             {
                 result.AcurateMassSimilarity,
-                (result.WeightedDotProduct + result.SimpleDotProduct + result.ReverseDotProduct) / 3,
-                result.MatchedPeaksPercentage,
+                (result.WeightedDotProduct * 1 + result.SimpleDotProduct * 1 + result.ReverseDotProduct * 2 + result.MatchedPeaksPercentage * 3) / 4,
             }.Average();
             Assert.AreEqual((float)expectedScores, result.TotalScore);
         }

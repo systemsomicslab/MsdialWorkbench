@@ -158,6 +158,7 @@
     <Compile Include="Helper\ChartDistanceCalculator.cs" />
     <Compile Include="Helper\ColorHelper.cs" />
     <Compile Include="Helper\ExpressionHelper.cs" />
+    <Compile Include="Helper\GeometricCalculationHelper.cs" />
     <Compile Include="Helper\NotifyCollectionChangedHelper.cs" />
     <Compile Include="IO\CopyImageAsCommand.cs" />
     <Compile Include="IO\CopyImageAsDialog.xaml.cs">
@@ -188,10 +189,12 @@
     <Compile Include="Base\DataPoint.cs" />
     <Compile Include="Chart\ScatterControl.cs" />
     <Compile Include="Template\ComboBoxItemTemplateSelector.cs" />
+    <Compile Include="UI\AreaSelector.cs" />
     <Compile Include="UI\ColorPicker.cs" />
     <Compile Include="UI\ExecutableBar.cs" />
     <Compile Include="UI\LabeledBar.cs" />
     <Compile Include="UI\LabeledContent.cs" />
+    <Compile Include="UI\NumericUpDown.cs" />
     <Compile Include="UI\ProgressBarMultiContainerVM.cs" />
     <Compile Include="UI\ProgressBarMultiContainerWindow.xaml.cs">
       <DependentUpon>ProgressBarMultiContainerWindow.xaml</DependentUpon>

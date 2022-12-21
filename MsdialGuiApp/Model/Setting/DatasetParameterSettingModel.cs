@@ -216,8 +216,8 @@ namespace CompMs.App.Msdial.Model.Setting
             var storage = CreateDataStorage(parameter);
             storage.AnalysisFiles = fileSettingModel.IncludedFiles.ToList();
             storage.IupacDatabase = IupacResourceParser.GetIUPACDatabase(); //Get IUPAC reference
-            storage.DataBaseMapper = new DataBaseMapper();
             storage.DataBases = DataBaseStorage.CreateEmpty();
+            storage.DataBaseMapper = new DataBaseMapper();
 
             var dataset = new DatasetModel(storage, _broker);
             next?.Invoke(dataset);

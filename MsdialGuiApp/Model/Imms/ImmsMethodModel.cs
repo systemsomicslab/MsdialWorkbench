@@ -54,7 +54,6 @@ namespace CompMs.App.Msdial.Model.Imms
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             _broker = broker;
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
-            _storage.DataBaseMapper = _storage.DataBases.CreateDataBaseMapper();
 
             var parameter = _storage.Parameter;
             if (parameter.ProviderFactoryParameter is null) {
@@ -65,14 +64,15 @@ namespace CompMs.App.Msdial.Model.Imms
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All);
 
             List<AnalysisFileBean> analysisFiles = analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File).ToList();
-            var metadataAccessor = new ImmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter);
+            var metadataAccessorFactory = new ImmsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter);
             AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(PeakFilterModel, _matchResultEvaluator.Contramap((IFilterable filterable) => filterable.MatchResults.Representative));
             var peakGroup = new AlignmentExportGroupModel(
                 "Peaks",
                 new ExportMethod(
                     analysisFiles,
-                    new ExportFormat("txt", "txt", new AlignmentCSVExporter(), new AlignmentLongCSVExporter(), metadataAccessor),
-                    new ExportFormat("csv", "csv", new AlignmentCSVExporter(separator: ","), new AlignmentLongCSVExporter(separator: ","), metadataAccessor)
+                    metadataAccessorFactory,
+                    ExportFormat.Tsv,
+                    ExportFormat.Csv
                 ),
                 new[]
                 {

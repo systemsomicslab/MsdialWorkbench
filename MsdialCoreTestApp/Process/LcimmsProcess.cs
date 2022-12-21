@@ -46,11 +46,14 @@ namespace CompMs.App.MsdialConsole.Process {
             var accProviderFactory = new LcimmsAccumulateDataProviderFactory();
             var database = new MoleculeDataBase(container.MspDB, container.MsdialLcImMsParameter.MspFilePath, DataBaseSource.Msp, SourceType.MspDB);
             var annotator = new LcimmsMspAnnotator(database, container.MsdialLcImMsParameter.MspSearchParam, container.MsdialLcImMsParameter.TargetOmics, container.MsdialLcImMsParameter.MspFilePath, 1);
-            var annotationProcess = new StandardAnnotationProcess<AnnotationQuery>(
-                new AnnotationQueryWithoutIsotopeFactory(annotator),
-                new IAnnotatorContainer<AnnotationQuery, MoleculeMsReference, MsScanMatchResult>[] {
-                    new AnnotatorContainer<AnnotationQuery, MoleculeMsReference, MsScanMatchResult>(annotator, container.MsdialLcImMsParameter.MspSearchParam)
-                });
+            var evaluator = FacadeMatchResultEvaluator.FromDataBases(container.DataBases);
+            var annotationProcess = new StandardAnnotationProcess(
+                new[]
+                {
+                    new AnnotationQueryFactory(annotator, container.MsdialLcImMsParameter.PeakPickBaseParam, container.MsdialLcImMsParameter.MspSearchParam, ignoreIsotopicPeak: true),
+                },
+                evaluator,
+                annotator);
             var streamManager = new DirectoryTreeStreamManager(outputFolder);
             var exporter = new AnalysisCSVExporter("\t");
             var metadata = new LcmsAnalysisMetadataAccessor(annotator, container.MsdialLcImMsParameter);

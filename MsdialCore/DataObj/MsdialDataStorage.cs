@@ -12,8 +12,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.DataObj
 {
-    public interface IMsdialDataStorage<out T> where T: ParameterBase
-    {
+    public interface IMsdialDataStorage<out T> where T : ParameterBase {
         List<AnalysisFileBean> AnalysisFiles { get; set; }
         List<AlignmentFileBean> AlignmentFiles { get; set; }
         List<MoleculeMsReference> MspDB { get; set; }
@@ -29,6 +28,7 @@ namespace CompMs.MsdialCore.DataObj
         T LoadParameter(Stream stream);
 
         void FixDatasetFolder(string projectFolder);
+        AnnotationQueryFactoryStorage CreateAnnotationQueryFactoryStorage();
     }
 
     [MessagePackObject]
@@ -55,9 +55,6 @@ namespace CompMs.MsdialCore.DataObj
             using (var stream = await streamManager.Create(MsdialSerializer.Combine(prefix, MsdialSerializer.GetNewMspFileName(projectTitle))).ConfigureAwait(false)) {
                 SaveMspDB(stream);
             }
-            using (var stream = await streamManager.Create(MsdialSerializer.Combine(prefix, MsdialSerializer.GetNewZippedDatabaseFileName(projectTitle))).ConfigureAwait(false)) {
-                SaveDataBaseMapper(stream);
-            }
             using (var stream = await streamManager.Create(MsdialSerializer.Combine(prefix, MsdialSerializer.GetDataBasesFileName(projectTitle))).ConfigureAwait(false)) {
                 await Task.Run(() => SaveDataBases(stream)).ConfigureAwait(false);
             }
@@ -73,10 +70,6 @@ namespace CompMs.MsdialCore.DataObj
 
         protected virtual void SaveMspDB(Stream stream) {
             MoleculeMsRefMethods.SaveMspToStream(MspDB, stream);
-        }
-
-        protected virtual void SaveDataBaseMapper(Stream stream) {
-            DataBaseMapper?.Save(stream);
         }
 
         protected virtual void SaveDataBases(Stream stream) {
@@ -133,8 +126,10 @@ namespace CompMs.MsdialCore.DataObj
 
             public virtual async Task<IMsdialDataStorage<ParameterBase>> LoadAsync(IStreamManager streamManager, string projectTitle, string projectFolderPath, string prefix = "") {
                 var storage = await LoadMsdialDataStorageCoreAsync(streamManager, Combine(prefix, projectTitle)).ConfigureAwait(false);
-                await LoadDataBasesAsync(streamManager, Combine(prefix, GetDataBasesFileName(projectTitle)), storage, projectFolderPath).ConfigureAwait(false);
-                await LoadDataBaseMapperAsync(streamManager, Combine(prefix, GetNewZippedDatabaseFileName(projectTitle)), storage).ConfigureAwait(false);
+                var mapper =  new DataBaseMapper();
+                await LoadDataBasesAsync(streamManager, Combine(prefix, GetDataBasesFileName(projectTitle)), mapper, storage, projectFolderPath).ConfigureAwait(false);
+                LoadDataBaseMapper(mapper, storage);
+                storage.DataBaseMapper = mapper;
                 storage.MspDB = await LoadMspDBAsync(streamManager, Combine(prefix, GetNewMspFileName(projectTitle))).ConfigureAwait(false);
                 return storage;
             }
@@ -151,14 +146,13 @@ namespace CompMs.MsdialCore.DataObj
                 }
             }
 
-            protected virtual Task LoadDataBaseMapperAsync(IStreamManager streamManager, string path, IMsdialDataStorage<ParameterBase> storage) {
-                storage.DataBaseMapper = storage.DataBases.CreateDataBaseMapper();
-                return Task.CompletedTask;
+            private void LoadDataBaseMapper(DataBaseMapper mapper, IMsdialDataStorage<ParameterBase> storage) {
+                storage.DataBases.SetDataBaseMapper(mapper);
             }
 
-            protected virtual async Task LoadDataBasesAsync(IStreamManager streamManager, string path, IMsdialDataStorage<ParameterBase> storage, string projectFolderPath) {
+            protected virtual async Task LoadDataBasesAsync(IStreamManager streamManager, string path, DataBaseMapper mapper, IMsdialDataStorage<ParameterBase> storage, string projectFolderPath) {
                 using (var stream = await streamManager.Get(path).ConfigureAwait(false)) {
-                    storage.DataBases = DataBaseStorage.Load(stream, new StandardLoadAnnotatorVisitor(storage.Parameter), projectFolderPath);
+                    storage.DataBases = DataBaseStorage.Load(stream, new StandardLoadAnnotatorVisitor(storage.Parameter), new StandardAnnotationQueryFactoryGenerationVisitor(storage.Parameter.PeakPickBaseParam, storage.Parameter.RefSpecMatchBaseParam), projectFolderPath);
                 }
             }
 
@@ -209,6 +203,10 @@ namespace CompMs.MsdialCore.DataObj
 
         public ParameterBase LoadParameter(Stream stream) {
             return MessagePackDefaultHandler.LoadFromStream<ParameterBase>(stream);
+        }
+
+        public AnnotationQueryFactoryStorage CreateAnnotationQueryFactoryStorage() {
+            return DataBases.CreateQueryFactories();
         }
     }
 }

@@ -1,24 +1,22 @@
-﻿using CompMs.App.Msdial.Common;
-using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Utility;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
-using CompMs.Graphics.Design;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class BarChartModel : DisposableModelBase {
-        public BarChartModel(IObservable<AlignmentSpotPropertyModel> source, IReactiveProperty<BarItemsLoaderData> barItemsLoaderData, IList<BarItemsLoaderData> barItemsLoaderDatas, IObservable<IBrushMapper<BarItem>> classBrush, ProjectBaseParameterModel projectBaseParameter) {
-            var barItemsLoader = barItemsLoaderData.Where(data => !(data is null)).Select(data => data.ObservableLoader).Switch().ToReactiveProperty().AddTo(Disposables);
+        public BarChartModel(IObservable<AlignmentSpotPropertyModel> source, IReactiveProperty<BarItemsLoaderData> barItemsLoaderData, IList<BarItemsLoaderData> barItemsLoaderDatas, IObservable<IBrushMapper<BarItem>> classBrush, ProjectBaseParameterModel projectBaseParameter, FileClassPropertiesModel fileClassProperties) {
+            var barItemsLoader = barItemsLoaderData.Where(data => data != null).SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
             var barItemCollectionSource = source.CombineLatest(barItemsLoader,
                     (src, loader) => src is null || loader is null
                         ? new BarItemCollection()
@@ -26,13 +24,11 @@ namespace CompMs.App.Msdial.Model.Chart
                 .ToReactiveProperty()
                 .AddTo(Disposables);
             BarItemsSource = barItemCollectionSource
-                .Select(collection => collection.ObservableItems)
-                .Switch()
+                .SelectSwitch(collection => collection.ObservableItems)
                 .ToReactiveProperty()
                 .AddTo(Disposables);
             IsLoading = barItemCollectionSource
-                .Select(collection => collection.ObservableLoading)
-                .Switch();
+                .SelectSwitch(collection => collection.ObservableLoading);
 
             ClassBrush = classBrush;
             BarItemsLoaderData = barItemsLoaderData;
@@ -55,13 +51,11 @@ namespace CompMs.App.Msdial.Model.Chart
             Elements.VerticalProperty = nameof(BarItem.Height);
             barItemsLoaderData
                 .Where(data => !(data is null))
-                .Select(data => data.AxisLabel)
-                .Switch()
+                .SelectSwitch(data => data.AxisLabel)
                 .Subscribe(label => Elements.VerticalTitle = label)
                 .AddTo(Disposables);
 
-            var classToOrder = projectBaseParameter.ObserveProperty(p => p.ClassProperties).Select(props => props.ToDictionary(prop => prop.Name, prop => prop.ObserveProperty(p => p.Order))).ToReactiveProperty().AddTo(Disposables);
-            OrderedClasses = barItemCollectionSource.Select(src => src.ObservableItems).Switch().CombineLatest(classToOrder, (items, c2o) => items.Select(item => c2o.TryGetValue(item.Class, out var order) ? order.Select(o => (o, item.Class)) : Observable.Return((-1, item.Class))).CombineLatest()).Switch().Select(pairs => pairs.OrderBy(pair => pair.Item1).Select(pair => pair.Item2).ToList());
+            OrderedClasses = fileClassProperties.OrderedClasses;
         }
 
         public IObservable<List<BarItem>> BarItemsSource { get; }
@@ -72,6 +66,6 @@ namespace CompMs.App.Msdial.Model.Chart
         public GraphElements Elements { get; } = new GraphElements();
 
         public IObservable<bool> IsLoading { get; }
-        public IObservable<List<string>> OrderedClasses { get; }
+        public IObservable<IReadOnlyList<string>> OrderedClasses { get; }
     }
 }

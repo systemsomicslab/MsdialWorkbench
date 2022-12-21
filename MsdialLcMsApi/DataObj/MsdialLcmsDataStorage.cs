@@ -21,10 +21,6 @@ namespace CompMs.MsdialLcMsApi.DataObj
             MessagePackDefaultHandler.SaveToStream(this, stream);
         }
 
-        protected override void SaveDataBaseMapper(Stream stream) {
-
-        }
-
         public Task SaveParameterAsync(Stream stream) {
             MessagePackDefaultHandler.SaveToStream(MsdialLcmsParameter, stream);
             return Task.CompletedTask;
@@ -32,6 +28,10 @@ namespace CompMs.MsdialLcMsApi.DataObj
 
         public MsdialLcmsParameter LoadParameter(Stream stream) {
             return MessagePackDefaultHandler.LoadFromStream<MsdialLcmsParameter>(stream);
+        }
+
+        public AnnotationQueryFactoryStorage CreateAnnotationQueryFactoryStorage() {
+            return DataBases.CreateQueryFactories();
         }
 
         public static IMsdialSerializer Serializer { get; } = new MsdialLcmsSerializer();
@@ -44,9 +44,9 @@ namespace CompMs.MsdialLcMsApi.DataObj
                 }
             }
 
-            protected override async Task LoadDataBasesAsync(IStreamManager streamManager, string path, IMsdialDataStorage<ParameterBase> storage, string projectFolderPath) {
+            protected override async Task LoadDataBasesAsync(IStreamManager streamManager, string path, DataBaseMapper mapper, IMsdialDataStorage<ParameterBase> storage, string projectFolderPath) {
                 using (var stream = await streamManager.Get(path).ConfigureAwait(false)) {
-                    storage.DataBases = DataBaseStorage.Load(stream, new LcmsLoadAnnotatorVisitor(storage.Parameter), projectFolderPath);
+                    storage.DataBases = DataBaseStorage.Load(stream, new LcmsLoadAnnotatorVisitor(storage.Parameter), new LcmsAnnotationQueryFactoryGenerationVisitor(storage.Parameter.PeakPickBaseParam, storage.Parameter.RefSpecMatchBaseParam, storage.Parameter.ProteomicsParam, mapper), projectFolderPath);
                 }
             }
         }

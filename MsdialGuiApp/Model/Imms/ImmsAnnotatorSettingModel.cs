@@ -6,7 +6,10 @@ using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Parser;
 using CompMs.MsdialImmsCore.Algorithm.Annotation;
+using CompMs.MsdialImmsCore.Parser;
 using System;
 using System.Collections.Generic;
 
@@ -15,9 +18,14 @@ namespace CompMs.App.Msdial.Model.Imms
 
     public sealed class ImmsMspAnnotatorSettingModel : BindableBase, IMetabolomicsAnnotatorSettingModel
     {
-        public ImmsMspAnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter) {
+        private readonly ILoadAnnotatorVisitor _annotatorVisitor;
+        private readonly Func<IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IAnnotationQueryFactoryGenerationVisitor> _createFuctory;
+
+        public ImmsMspAnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter, ILoadAnnotatorVisitor annotatorVisitor, Func<IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IAnnotationQueryFactoryGenerationVisitor> createFuctory) {
             DataBaseSettingModel = dataBaseSettingModel;
             AnnotatorID = annotatorID;
+            _annotatorVisitor = annotatorVisitor;
+            _createFuctory = createFuctory;
             if (dataBaseSettingModel.DBSource == DataBaseSource.Msp) {
                 SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
                     SimpleDotProductCutOff = 0.5F,
@@ -51,19 +59,32 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public MsRefSearchParameterBase SearchParameter { get; } = new MsRefSearchParameterBase();
 
-        public List<ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> CreateAnnotator(MoleculeDataBase db, int priority, TargetOmics omics) {
-            return new List<ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
+        public List<ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> CreateAnnotator(MoleculeDataBase db, int priority, TargetOmics omics) {
+            return new List<ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
                 new ImmsMspAnnotator(db, SearchParameter, omics, AnnotatorID, priority)
             };
+        }
+
+        public IAnnotationQueryFactory<MsScanMatchResult> CreateAnnotationQueryFactory(int priority, MoleculeDataBase db, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            return new StandardRestorationKey(AnnotatorID, priority, SearchParameter, AnnotationSource).Accept(_createFuctory(refer), _annotatorVisitor, db);
+        }
+
+        public IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> CreateRestorationKey(int priority) {
+            return new StandardRestorationKey(AnnotatorID, priority, SearchParameter, AnnotationSource);
         }
     }
 
     public sealed class ImmsTextDBAnnotatorSettingModel : BindableBase, IMetabolomicsAnnotatorSettingModel
     {
-        public ImmsTextDBAnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter) {
+        private readonly ILoadAnnotatorVisitor _annotatorVisitor;
+        private readonly Func<IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IAnnotationQueryFactoryGenerationVisitor> _createFuctory;
+
+        public ImmsTextDBAnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter, ILoadAnnotatorVisitor annotatorVisitor, Func<IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IAnnotationQueryFactoryGenerationVisitor> createFuctory) {
             DataBaseSettingModel = dataBaseSettingModel;
             AnnotatorID = annotatorID;
             SearchParameter = searchParameter ?? new MsRefSearchParameterBase();
+            _annotatorVisitor = annotatorVisitor;
+            _createFuctory = createFuctory;
         }
 
         public DataBaseSettingModel DataBaseSettingModel { get; }
@@ -78,16 +99,27 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public MsRefSearchParameterBase SearchParameter { get; } = new MsRefSearchParameterBase();
 
-        public List<ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> CreateAnnotator(MoleculeDataBase db, int priority, TargetOmics omics) {
-            return new List<ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
+        public List<ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> CreateAnnotator(MoleculeDataBase db, int priority, TargetOmics omics) {
+            return new List<ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
                 new ImmsTextDBAnnotator(db, SearchParameter, AnnotatorID, priority)
             };
+        }
+
+        public IAnnotationQueryFactory<MsScanMatchResult> CreateAnnotationQueryFactory(int priority, MoleculeDataBase db, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            return new StandardRestorationKey(AnnotatorID, priority, SearchParameter, AnnotationSource).Accept(_createFuctory(refer), _annotatorVisitor, db);
+        }
+
+        public IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> CreateRestorationKey(int priority) {
+            return new StandardRestorationKey(AnnotatorID, priority, SearchParameter, AnnotationSource);
         }
     }
 
     public sealed class ImmsEadLipidAnnotatorSettingModel : BindableBase, IEadLipidAnnotatorSettingModel
     {
-        public ImmsEadLipidAnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter) {
+        private readonly ILoadAnnotatorVisitor _annotatorVisitor;
+        private readonly Func<IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IAnnotationQueryFactoryGenerationVisitor> _createFuctory;
+
+        public ImmsEadLipidAnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter, ILoadAnnotatorVisitor annotatorVisitor, Func<IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IAnnotationQueryFactoryGenerationVisitor> createFuctory) {
             DataBaseSettingModel = dataBaseSettingModel;
             AnnotatorID = annotatorID;
             SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
@@ -97,6 +129,8 @@ namespace CompMs.App.Msdial.Model.Imms
                 MatchedPeaksPercentageCutOff = 0.0F,
                 MinimumSpectrumMatch = 1
             };
+            _annotatorVisitor = annotatorVisitor;
+            _createFuctory = createFuctory;
         }
 
         public DataBaseSettingModel DataBaseSettingModel { get; }
@@ -111,25 +145,45 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public MsRefSearchParameterBase SearchParameter { get; } = new MsRefSearchParameterBase();
 
-        public List<ISerializableAnnotator<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>> CreateAnnotator(EadLipidDatabase db, int priority) {
-            return new List<ISerializableAnnotator<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>> {
+        public List<ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>> CreateAnnotator(EadLipidDatabase db, int priority) {
+            return new List<ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>> {
                 new EadLipidAnnotator(db, AnnotatorID, priority, SearchParameter),
             };
+        }
+
+        public IAnnotationQueryFactory<MsScanMatchResult> CreateAnnotationQueryFactory(int priority, EadLipidDatabase db, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            return new EadLipidDatabaseRestorationKey(AnnotatorID, priority, SearchParameter, SourceType.GeneratedLipid).Accept(_createFuctory(refer), _annotatorVisitor, db);
+        }
+
+        public IReferRestorationKey<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> CreateRestorationKey(int priority) {
+            return new EadLipidDatabaseRestorationKey(AnnotatorID, priority, SearchParameter, SourceType.GeneratedLipid);
         }
     }
 
     public sealed class ImmsAnnotatorSettingModelFactory : IAnnotatorSettingModelFactory
     {
+        private readonly ParameterBase _parameter;
+        private readonly ILoadAnnotatorVisitor _annotatorVisitor;
+
+        public ImmsAnnotatorSettingModelFactory(ParameterBase parameter) {
+            _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
+            _annotatorVisitor = new ImmsLoadAnnotatorVisitor(parameter);
+        }
+
+        private IAnnotationQueryFactoryGenerationVisitor CreateFactory(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            return new ImmsAnnotationQueryFactoryGenerationVisitor(_parameter.PeakPickBaseParam, _parameter.RefSpecMatchBaseParam, _parameter.ProteomicsParam, refer);
+        }
+
         public IAnnotatorSettingModel Create(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter = null) {
             switch (dataBaseSettingModel.DBSource) {
                 case DataBaseSource.Msp:
                 case DataBaseSource.Lbm:
-                    return new ImmsMspAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter);
+                    return new ImmsMspAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter, _annotatorVisitor, CreateFactory);
                 case DataBaseSource.Text:
-                    return new ImmsTextDBAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter);
+                    return new ImmsTextDBAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter, _annotatorVisitor, CreateFactory);
                 case DataBaseSource.EieioLipid:
                 case DataBaseSource.OadLipid:
-                    return new ImmsEadLipidAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter);
+                    return new ImmsEadLipidAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter, _annotatorVisitor, CreateFactory);
                 default:
                     throw new NotSupportedException(nameof(dataBaseSettingModel.DBSource));
             }

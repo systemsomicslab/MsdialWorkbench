@@ -8,11 +8,9 @@ namespace CompMs.MsdialCore.Export
 {
     public class AlignmentCSVExporter : BaseAlignmentExporter
     {
-        public AlignmentCSVExporter() {
-            Separator = "\t";
-        }
+        private const string DEFAULT_SEPARATOR = "\t";
 
-        public AlignmentCSVExporter(string separator) {
+        public AlignmentCSVExporter(string separator = DEFAULT_SEPARATOR) {
             Separator = separator;
         }
 
@@ -62,7 +60,7 @@ namespace CompMs.MsdialCore.Export
                     string.Join(Separator, stats.SelectMany(stat => Enumerable.Repeat(stat, classHeaders.Count))),
                 }).TrimEnd());
             sw.WriteLine(
-                JoinContents(Separator,
+                JoinContents(
                     metaHeaders,
                     quantHeaders,
                     stats.SelectMany(_ => classHeaders)
@@ -84,7 +82,7 @@ namespace CompMs.MsdialCore.Export
             var statValues = stats.Select(stat => quantAccessor.GetStatsValues(spot, stat))
                 .SelectMany(dict => classHeaders.Select(clss => dict[clss]));
             sw.WriteLine(
-                JoinContents(Separator,
+                JoinContents(
                     metaHeaders.Select(header => metadata[header]),
                     quantHeaders.Select(header => quantValues[header]),
                     statValues));
@@ -94,8 +92,9 @@ namespace CompMs.MsdialCore.Export
             return string.Join(separator, Enumerable.Repeat(rep, numColumn));
         }
 
-        private static string JoinContents(string separator, params IEnumerable<string>[] contents) {
-            return string.Join(separator, contents.SelectMany(content => content));
+        private string JoinContents(params IEnumerable<string>[] contentss) {
+            var contents = contentss.SelectMany(cs => cs);
+            return string.Join(Separator, contents);
         }
     }
 }

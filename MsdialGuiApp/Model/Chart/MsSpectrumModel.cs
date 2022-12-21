@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager;
@@ -213,8 +214,8 @@ namespace CompMs.App.Msdial.Model.Chart
             where T: U, V {
 
             return new MsSpectrumModel(
-                source.Select(src => upperLoader.LoadSpectrumAsObservable(src)).Switch(),
-                source.Select(src => lowerLoader.LoadSpectrumAsObservable(src)).Switch(),
+                source.SelectSwitch(src => upperLoader.LoadSpectrumAsObservable(src)),
+                source.SelectSwitch(src => lowerLoader.LoadSpectrumAsObservable(src)),
                 new PropertySelector<SpectrumPeak, double>(horizontalProperty, horizontalSelector),
                 new PropertySelector<SpectrumPeak, double>(verticalProperty, verticalSelector),
                 new GraphLabels(graphTitle, horizontalTitle, verticalTitle, labelProperty, orderingProperty),

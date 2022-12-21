@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
@@ -55,7 +56,7 @@ namespace CompMs.App.Msdial.Model.Search
             _msdecResult = msdecResult ?? throw new ArgumentNullException(nameof(msdecResult));
 
             var referenceSpectrum = this.ObserveProperty(m => m.SelectedReference)
-                .Where(c => c != null)
+                .SkipNull()
                 .Select(c => c.Spectrum)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);

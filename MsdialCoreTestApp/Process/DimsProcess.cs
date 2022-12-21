@@ -2,6 +2,7 @@
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Parameter;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -38,15 +39,19 @@ namespace CompMs.App.MsdialConsole.Process
             var files = storage.AnalysisFiles;
             var mspAnnotator = new DimsMspAnnotator(new MoleculeDataBase(storage.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), storage.MsdialDimsParameter.MspSearchParam, storage.MsdialDimsParameter.TargetOmics, "MspDB", -1);
             var textAnnotator = new DimsTextDBAnnotator(new MoleculeDataBase(storage.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), storage.MsdialDimsParameter.TextDbSearchParam, "TextDB", -1);
-            var annotationProcess = new StandardAnnotationProcess<IAnnotationQuery>(
-                new List<(IAnnotationQueryFactory<IAnnotationQuery>, IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>)>
+            var mapper = new DataBaseMapper();
+            mapper.Add(mspAnnotator);
+            mapper.Add(textAnnotator);
+            var evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
+            
+            var annotationProcess = new StandardAnnotationProcess(
+                new[]
                 {
-                    (new AnnotationQueryWithoutIsotopeFactory(mspAnnotator),
-                     new AnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(mspAnnotator, storage.MsdialDimsParameter.MspSearchParam)),
-                    (new AnnotationQueryWithoutIsotopeFactory(textAnnotator),
-                     new AnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(textAnnotator, storage.MsdialDimsParameter.TextDbSearchParam))
-                });
-            var evaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(storage.DataBaseMapper);
+                    new AnnotationQueryWithoutIsotopeFactory(mspAnnotator, storage.MsdialDimsParameter.MspSearchParam),
+                    new AnnotationQueryWithoutIsotopeFactory(textAnnotator, storage.MsdialDimsParameter.TextDbSearchParam)
+                },
+                evaluator,
+                mapper);
             foreach (var file in files) {
                 ProcessFile.Run(file, providerFactory.Create(file), storage, annotationProcess, evaluator);
             }

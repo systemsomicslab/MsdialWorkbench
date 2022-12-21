@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Graphics.Base;
 using Reactive.Bindings;
@@ -82,10 +83,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             BarItemsLoader = model.BarItemsLoader;
             ClassBrush = model.ClassBrush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             IsEdittng = isEdittng ?? throw new ArgumentNullException(nameof(isEdittng));
+            FileClassPropertiesModel = model.FileClassProperties;
         }
 
         public IReactiveProperty IsEdittng { get; }
         public IObservable<IBarItemsLoader> BarItemsLoader { get; }
         public ReadOnlyReactivePropertySlim<IBrushMapper<BarItem>> ClassBrush { get; }
+        public FileClassPropertiesModel FileClassPropertiesModel { get; }
     }
 }

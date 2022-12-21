@@ -149,7 +149,7 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public bool IsUnknown => innerModel.IsUnknown;
         public bool IsMsmsAssigned => innerModel.IsMsmsAssigned || (innerModel.AlignmentDriftSpotFeatures?.Any(spot => spot.IsMsmsAssigned) ?? false);
-        public bool IsBaseIsotopeIon => innerModel.PeakCharacter.IsotopeWeightNumber == 0;
+        public bool IsMonoIsotopicIon => innerModel.PeakCharacter.IsMonoIsotopicIon;
         public bool IsBlankFiltered => innerModel.FeatureFilterStatus.IsBlankFiltered;
         public bool IsFragmentQueryExisted => innerModel.FeatureFilterStatus.IsFragmentExistFiltered;
         public bool IsManuallyModifiedForAnnotation => innerModel.IsManuallyModifiedForAnnotation;
@@ -249,14 +249,14 @@ namespace CompMs.App.Msdial.Model.DataObj
         IMoleculeProperty IPeakSpotModel.Molecule => innerModel;
 
         public void SetConfidence(MoleculeMsReference reference, MsScanMatchResult result) {
-            DataAccess.SetMoleculeMsPropertyAsConfidence(innerModel, reference, result);
+            DataAccess.SetMoleculeMsPropertyAsConfidence(innerModel, reference);
             MatchResults.RemoveManuallyResults();
             MatchResults.AddResult(result);
             OnPropertyChanged(string.Empty);
         }
 
         public void SetUnsettled(MoleculeMsReference reference, MsScanMatchResult result) {
-            DataAccess.SetMoleculeMsPropertyAsUnsettled(innerModel, reference, result);
+            DataAccess.SetMoleculeMsPropertyAsUnsettled(innerModel, reference);
             MatchResults.RemoveManuallyResults();
             MatchResults.AddResult(result);
             OnPropertyChanged(string.Empty);

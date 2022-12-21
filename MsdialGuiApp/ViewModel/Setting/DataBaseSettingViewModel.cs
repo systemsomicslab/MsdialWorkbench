@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Lipidomics;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -117,7 +118,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             ObserveHasErrors = new[]
             {
                 commonNoError,
-                DBSource.Select(src => src == DataBaseSource.Fasta ? proteomicsNoError : Observable.Return(true)).Switch(),
+                DBSource.SelectSwitch(src => src == DataBaseSource.Fasta ? proteomicsNoError : Observable.Return(true)),
             }.CombineLatestValuesAreAllTrue()
             .Inverse()
             .ToReadOnlyReactivePropertySlim()

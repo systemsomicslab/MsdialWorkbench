@@ -6,6 +6,7 @@ using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Statistics;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -59,7 +60,7 @@ namespace CompMs.App.Msdial.Model.Imms
             _files = files ?? throw new ArgumentNullException(nameof(files));
             _dataBaseMapper = mapper;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
-            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper, parameter.PeakPickBaseParam).Items;
+            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper).Items;
 
             var BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName, fileCollection);
             var observableBarItemsLoader = Observable.Return(BarItemsLoader);
@@ -164,7 +165,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 Colors.Blue);
             var barItemsLoaderData = new BarItemsLoaderData("Loader", "Intensity", observableBarItemsLoader, Observable.Return(true));
             var barItemsLoaderDataProperty = new ReactiveProperty<BarItemsLoaderData>(barItemsLoaderData).AddTo(Disposables);
-            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush), projectBaseParameter).AddTo(Disposables);
+            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush), projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
 
             var eicFile = alignmentFileBean.EicFilePath;
             var classToColor = parameter.ClassnameToColorBytes
@@ -181,9 +182,9 @@ namespace CompMs.App.Msdial.Model.Imms
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(Ms1Spots, Target, Observable.Return(classBrush), observableBarItemsLoader).AddTo(Disposables);
+            AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(Ms1Spots, Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, observableBarItemsLoader).AddTo(Disposables);
 
-            MsdecResult = Target.Where(t => t != null)
+            MsdecResult = Target.SkipNull()
                 .Select(t => loader.LoadMSDecResult(t.MasterAlignmentID))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -204,7 +205,7 @@ namespace CompMs.App.Msdial.Model.Imms
             peakInformationModel.Add(t => new HeightAmount(t?.HeightAverage ?? 0d));
             PeakInformationModel = peakInformationModel;
 
-            var compoundDetailModel = new CompoundDetailModel(Target.Select(t => t?.ScanMatchResult), mapper).AddTo(Disposables);
+            var compoundDetailModel = new CompoundDetailModel(Target.SkipNull().SelectSwitch(t => t.ObserveProperty(p => p.ScanMatchResult)).Publish().RefCount(), mapper).AddTo(Disposables);
             compoundDetailModel.Add(
                 r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d),
                 r_ => new CcsSimilarity(r_?.CcsSimilarity ?? 0d),
