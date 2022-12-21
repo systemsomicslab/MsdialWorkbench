@@ -10,7 +10,7 @@
               mc:Ignorable="d"
               Icon="/Resources/msdial_icon.ico"
               d:DataContext="{d:DesignInstance Type={x:Type vm:MainWindowVM}}"
-              Title="{Binding ProjectFile, StringFormat='MS-DIAL alpha version {0}'}" Height="800" Width="1280">
+              Title="{Binding DatasetViewModel.Value.Parameter.ProjectParam.ProjectFolderPath, StringFormat='Dataset: {0}', FallbackValue=MSDIAL}" Height="800" Width="1280">
     <i:Interaction.Triggers>
         <i:PropertyChangedTrigger Binding="{Binding MethodViewModel.Value, Mode=OneWay}">
             <i:CallMethodAction TargetObject="{Binding RelativeSource={RelativeSource AncestorType=Window}}"

@@ -5,14 +5,11 @@ using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
-using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.Graphics.UI.Message;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -21,8 +18,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Core
 {
@@ -194,36 +189,6 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         public AsyncReactiveCommand SaveProjectCommand { get; }
         public AsyncReactiveCommand SaveAsProjectCommand { get; }
-
-        public DelegateCommand<Window> SaveParameterCommand => _saveParameterCommand ?? (_saveParameterCommand = new DelegateCommand<Window>(owner => SaveParameter(owner, Storage)));
-        private DelegateCommand<Window> _saveParameterCommand;
-
-        private static void SaveParameter(Window owner, IMsdialDataStorage<ParameterBase> storage) {
-            // TODO: implement process when parameter save failed.
-            var sfd = new SaveFileDialog
-            {
-                Filter = "MED file(*.med)|*.med",
-                Title = "Save file dialog",
-                InitialDirectory = storage.Parameter.ProjectFolderPath
-            };
-
-            if (sfd.ShowDialog() == true) {
-                Mouse.OverrideCursor = Cursors.Wait;
-
-                var message = new ShortMessageWindow()
-                {
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                    Text = "Saving the parameter...",
-                };
-                message.Show();
-
-                MessagePackHandler.SaveToFile(storage.Parameter, sfd.FileName);
-
-                message.Close();
-                Mouse.OverrideCursor = null;
-            }
-        }
 
         public DelegateCommand GoToTutorialCommand => _goToTutorialCommand ?? (_goToTutorialCommand = new DelegateCommand(GoToTutorial));
         private DelegateCommand _goToTutorialCommand;
