@@ -404,6 +404,27 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             }
         }
 
+        public void MoveToDataCollectionSetting() {
+            var vm = MethodSettingViewModel.Value?.GetDataCollectionSetting();
+            if (vm != null) {
+                SelectedSettingViewModel.Value = vm;
+            }
+        }
+
+        public void MoveToIdentificationSetting() {
+            var vm = MethodSettingViewModel.Value?.GetIdentificationSetting();
+            if (vm != null) {
+                SelectedSettingViewModel.Value = vm;
+            }
+        }
+
+        public void MoveToAlignmentSetting() {
+            var vm = MethodSettingViewModel.Value?.GetAlignmentSetting();
+            if (vm != null) {
+                SelectedSettingViewModel.Value = vm;
+            }
+        }
+
         private Task RunProcessAsync() {
             DialogResult.Value = true;
             return Task.CompletedTask;

@@ -163,6 +163,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         private async Task ExecuteAllMethodProcess() {
             using (var vm = new ProcessSettingViewModel(Model.CurrentProject, Model.CurrentProject.CurrentDataset, Model.CurrentProject.CurrentDataset.AllProcessMethodSettingModel, _broker)) {
+                vm.MoveToDataCollectionSetting();
                 await RunProcess(vm);
             }
         }
@@ -171,6 +172,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         private async Task ExecuteIdentificationMethodProcess() {
             using (var vm = new ProcessSettingViewModel(Model.CurrentProject, Model.CurrentProject.CurrentDataset, Model.CurrentProject.CurrentDataset.IdentificationProcessMethodSettingModel, _broker)) {
+                vm.MoveToIdentificationSetting();
                 await RunProcess(vm);
             }
         }
@@ -179,6 +181,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         private async Task ExecuteAlignmentMethodProcess() {
             using (var vm = new ProcessSettingViewModel(Model.CurrentProject, Model.CurrentProject.CurrentDataset, Model.CurrentProject.CurrentDataset.AlignmentProcessMethodSettingModel, _broker)) {
+                vm.MoveToAlignmentSetting();
                 await RunProcess(vm);
             }
         }
