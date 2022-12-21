@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Chart;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager;
+using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
@@ -30,21 +31,21 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             if (horizontalAxis is null) {
                 horizontalAxis = model.HorizontalRangeSource
-                    .ToReactiveAxisManager<double>(new ConstantMargin(40))
+                    .ToReactiveContinuousAxisManager<double>(new ConstantMargin(40))
                     .AddTo(Disposables);
             }
             HorizontalAxis = horizontalAxis;
 
             if (upperVerticalAxis is null) {
                 upperVerticalAxis = model.UpperVerticalRangeSource
-                    .ToReactiveAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Standard)
+                    .ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Standard)
                     .AddTo(Disposables);
             }
             UpperVerticalAxis = upperVerticalAxis;
 
             if (lowerVerticalAxis is null) {
                 lowerVerticalAxis = model.LowerVerticalRangeSource
-                    .ToReactiveAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Standard)
+                    .ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Standard)
                     .AddTo(Disposables);
             }
             LowerVerticalAxis = lowerVerticalAxis;

@@ -369,7 +369,6 @@
     <Compile Include="ViewModel\Chart\EicViewModel.cs" />
     <Compile Include="ViewModel\Chart\MsSpectrumViewModel.cs" />
     <Compile Include="ViewModel\Chart\RawDecSpectrumsViewModel.cs" />
-    <Compile Include="ViewModel\Chart\ReactiveAxisManager.cs" />
     <Compile Include="Model\Export\AnalysisResultExportModel.cs" />
     <Compile Include="Model\Loader\IBarItemsLoader.cs" />
     <Compile Include="Model\DataObj\AxisData.cs" />

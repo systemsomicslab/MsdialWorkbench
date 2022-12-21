@@ -37,7 +37,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 var upperVerticalAxis = this.model
                     .DecRefSpectrumModels
                     .UpperVerticalRangeSource
-                    .ToReactiveAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent)
+                    .ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent)
                     .AddTo(Disposables);
                 var upperLogVerticalAxis = this.model
                     .DecRefSpectrumModels
