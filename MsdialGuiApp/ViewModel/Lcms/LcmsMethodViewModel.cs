@@ -82,20 +82,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             return _model.LoadAlignmentFileAsync(alignmentFile.File, token);
         }
 
-        public DelegateCommand<Window> ExportAnalysisResultCommand => _exportAnalysisResultCommand ?? (_exportAnalysisResultCommand = new DelegateCommand<Window>(ExportAnalysis));
-        private DelegateCommand<Window> _exportAnalysisResultCommand;
+        public DelegateCommand ExportAnalysisResultCommand => _exportAnalysisResultCommand ?? (_exportAnalysisResultCommand = new DelegateCommand(ExportAnalysis));
+        private DelegateCommand _exportAnalysisResultCommand;
 
-        private void ExportAnalysis(Window owner) {
+        private void ExportAnalysis() {
             var m = _model.ExportAnalysis();
             using (var vm = new AnalysisResultExportViewModel(m)) {
-                var dialog = new AnalysisResultExportWin
-                {
-                    DataContext = vm,
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                };
-
-                dialog.ShowDialog();
+                _broker.Publish(vm);
             }
         }
 

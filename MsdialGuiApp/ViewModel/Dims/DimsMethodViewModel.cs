@@ -67,38 +67,31 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             return _model.LoadAlignmentFileAsync(alignmentFile.File, token);
         }
 
-        public DelegateCommand<Window> ExportAnalysisResultCommand => exportAnalysisResultCommand ?? (exportAnalysisResultCommand = new DelegateCommand<Window>(ExportAnalysis));
-        private DelegateCommand<Window> exportAnalysisResultCommand;
+        public DelegateCommand ExportAnalysisResultCommand => _exportAnalysisResultCommand ?? (_exportAnalysisResultCommand = new DelegateCommand(ExportAnalysis));
+        private DelegateCommand _exportAnalysisResultCommand;
 
-        private void ExportAnalysis(Window owner) {
+        private void ExportAnalysis() {
             var container = _model.Storage;
-            var spectraTypes = new List<Model.Export.SpectraType>
+            var spectraTypes = new List<SpectraType>
             {
-                new Model.Export.SpectraType(
+                new SpectraType(
                     ExportspectraType.deconvoluted,
                     new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.deconvoluted)),
-                new Model.Export.SpectraType(
+                new SpectraType(
                     ExportspectraType.centroid,
                     new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.centroid)),
-                new Model.Export.SpectraType(
+                new SpectraType(
                     ExportspectraType.profile,
                     new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.profile)),
             };
-            var spectraFormats = new List<Model.Export.SpectraFormat>
+            var spectraFormats = new List<SpectraFormat>
             {
-                new Model.Export.SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
+                new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
             };
 
             var model = new AnalysisResultExportModel(_model.AnalysisFileModelCollection, spectraTypes, spectraFormats, _model.ProviderFactory.ContraMap((AnalysisFileBeanModel file) => file.File));
             using (var vm = new AnalysisResultExportViewModel(model)) {
-                var dialog = new AnalysisResultExportWin
-                {
-                    DataContext = vm,
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                };
-
-                dialog.ShowDialog();
+                _broker.Publish(vm);
             }
         }
 

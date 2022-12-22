@@ -4,7 +4,6 @@ using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Search;
-using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Setting;
@@ -25,7 +24,6 @@ using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcImMsApi.Algorithm;
 using CompMs.MsdialLcImMsApi.Algorithm.Alignment;
 using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
-using CompMs.MsdialLcImMsApi.Export;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcImMsApi.Process;
 using Reactive.Bindings.Extensions;
@@ -282,23 +280,16 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         public void ShowTIC(Window owner) {
-            var container = Storage;
             var analysisModel = AnalysisModel;
             if (analysisModel is null) return;
 
             var tic = analysisModel.EicLoader.LoadTic();
             var vm = new ChromatogramsViewModel(new ChromatogramsModel("Total ion chromatogram", new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC"),
                 "Total ion chromatogram", "Retention time", "Absolute ion abundance"));
-            var view = new DisplayChromatogramsView() {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            view.Show();
+            _broker.Publish(vm);
         }
 
         public void ShowBPC(Window owner) {
-            var container = Storage;
             var analysisModel = AnalysisModel;
             if (analysisModel is null) return;
 
@@ -306,12 +297,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var vm = new ChromatogramsViewModel(new ChromatogramsModel("Base peak chromatogram", 
                 new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC"),
                 "Base peak chromatogram", "Retention time", "Absolute ion abundance"));
-            var view = new DisplayChromatogramsView() {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            view.Show();
+            _broker.Publish(vm);
         }
 
         public void ShowEIC(Window owner) {
@@ -340,18 +326,12 @@ namespace CompMs.App.Msdial.Model.Lcimms
                         displayChroms.Add(chrom);
                     }
                     var vm = new ChromatogramsViewModel(new ChromatogramsModel("EIC", displayChroms, "EIC", "Retention time [min]", "Absolute ion abundance"));
-                    var view = new DisplayChromatogramsView() {
-                        DataContext = vm,
-                        Owner = owner,
-                        WindowStartupLocation = WindowStartupLocation.CenterOwner
-                    };
-                    view.Show();
+                    _broker.Publish(vm);
                 }
             }
         }
 
         public void ShowTicBpcRepEIC(Window owner) {
-            var container = Storage;
             var analysisModel = AnalysisModel;
             if (analysisModel is null) return;
 
@@ -361,7 +341,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             var maxPeakMz = analysisModel.Ms1Peaks.Argmax(n => n.Intensity).Mass;
 
-
             var displayChroms = new List<DisplayChromatogram>() {
                 new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC"),
                 new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC"),
@@ -369,12 +348,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             };
 
             var vm = new ChromatogramsViewModel(new ChromatogramsModel("TIC, BPC, and highest peak m/z's EIC", displayChroms, "TIC, BPC, and highest peak m/z's EIC", "Retention time [min]", "Absolute ion abundance"));
-            var view = new DisplayChromatogramsView() {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            view.Show();
+            _broker.Publish(vm);
         }
     }
 }

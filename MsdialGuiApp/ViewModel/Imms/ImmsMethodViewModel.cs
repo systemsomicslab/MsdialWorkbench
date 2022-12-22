@@ -47,12 +47,12 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             return model.LoadAlignmentFileAsync(alignmentFile.File, token);
         }
 
-        public DelegateCommand<Window> ExportAnalysisResultCommand => exportAnalysisResultCommand ?? (exportAnalysisResultCommand = new DelegateCommand<Window>(model.ExportAnalysis));
-        private DelegateCommand<Window> exportAnalysisResultCommand;
+        public DelegateCommand ExportAnalysisResultCommand => _exportAnalysisResultCommand ?? (_exportAnalysisResultCommand = new DelegateCommand(model.ExportAnalysis));
+        private DelegateCommand _exportAnalysisResultCommand;
         
 
-        public DelegateCommand ExportAlignmentResultCommand => exportAlignmentResultCommand ?? (exportAlignmentResultCommand = new DelegateCommand(ExportAlignment));
-        private DelegateCommand exportAlignmentResultCommand;
+        public DelegateCommand ExportAlignmentResultCommand => _exportAlignmentResultCommand ?? (_exportAlignmentResultCommand = new DelegateCommand(ExportAlignment));
+        private DelegateCommand _exportAlignmentResultCommand;
 
         private void ExportAlignment() {
             using (var vm = new AlignmentResultExportViewModel(model.AlignmentResultExportModel, _broker)) {

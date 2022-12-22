@@ -273,7 +273,7 @@ namespace CompMs.App.Msdial.Model.Imms
             .AddTo(Disposables);
         }
 
-        public void ExportAnalysis(Window owner) {
+        public void ExportAnalysis() {
             var container = _storage;
             var spectraTypes = new List<SpectraType>
             {
@@ -294,14 +294,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             var model = new AnalysisResultExportModel(AnalysisFileModelCollection, spectraTypes, spectraFormats, ProviderFactory.ContraMap((AnalysisFileBeanModel file) => file.File));
             using (var vm = new AnalysisResultExportViewModel(model)) {
-                var dialog = new AnalysisResultExportWin
-                {
-                    DataContext = vm,
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                };
-
-                dialog.ShowDialog();
+                _broker.Publish(vm);
             }
         }
 
@@ -313,12 +306,7 @@ namespace CompMs.App.Msdial.Model.Imms
             var vm = new ChromatogramsViewModel(
                 new ChromatogramsModel("Total ion chromatogram", 
                 new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC"), "Total ion chromatogram", "Mobility", "Absolute ion abundance"));
-            var view = new DisplayChromatogramsView() {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            view.Show();
+            _broker.Publish(vm);
         }
 
         public void ShowBPC(Window owner) {
@@ -328,12 +316,7 @@ namespace CompMs.App.Msdial.Model.Imms
             var bpc = analysisModel.EicLoader.LoadBpc();
             var vm = new ChromatogramsViewModel(new ChromatogramsModel("Base peak chromatogram", new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC"),
                 "Base peak chromatogram", "Mobility", "Absolute ion abundance"));
-            var view = new DisplayChromatogramsView() {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            view.Show();
+            _broker.Publish(vm);
         }
 
         public void ShowEIC(Window owner) {
@@ -361,12 +344,7 @@ namespace CompMs.App.Msdial.Model.Imms
                         displayChroms.Add(chrom);
                     }
                     var vm = new ChromatogramsViewModel(new ChromatogramsModel("EIC", displayChroms, "EIC", "Mobility", "Absolute ion abundance"));
-                    var view = new DisplayChromatogramsView() {
-                        DataContext = vm,
-                        Owner = owner,
-                        WindowStartupLocation = WindowStartupLocation.CenterOwner
-                    };
-                    view.Show();
+                    _broker.Publish(vm);
                 }
             }
         }
@@ -389,12 +367,7 @@ namespace CompMs.App.Msdial.Model.Imms
             };
 
             var vm = new ChromatogramsViewModel(new ChromatogramsModel("TIC, BPC, and highest peak m/z's EIC", displayChroms, "TIC, BPC, and highest peak m/z's EIC", "Mobility", "Absolute ion abundance"));
-            var view = new DisplayChromatogramsView() {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            view.Show();
+            _broker.Publish(vm);
         }
     }
 }
