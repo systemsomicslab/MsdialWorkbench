@@ -17,6 +17,7 @@ namespace CompMs.App.Msdial.Model.Export
     internal sealed class AnalysisResultExportModel : BindableBase
     {
         private readonly IDataProviderFactory<AnalysisFileBeanModel> _providerFactory;
+        private readonly object _syncObject = new object();
 
         public AnalysisResultExportModel(
             AnalysisFileBeanModelCollection files,
@@ -66,16 +67,24 @@ namespace CompMs.App.Msdial.Model.Export
         public ObservableCollection<AnalysisFileBeanModel> UnSelectedFiles { get; }
 
         public void Selects(IEnumerable<AnalysisFileBeanModel> files) {
-            foreach (var file in files) {
-                UnSelectedFiles.Remove(file);
-                SelectedFiles.Add(file);
+            lock (_syncObject) {
+                foreach (var file in files) {
+                    if (UnSelectedFiles.Contains(file)) {
+                        UnSelectedFiles.Remove(file);
+                        SelectedFiles.Add(file);
+                    }
+                }
             }
         }
  
         public void UnSelects(IEnumerable<AnalysisFileBeanModel> files) {
-            foreach (var file in files) {
-                SelectedFiles.Remove(file);
-                UnSelectedFiles.Add(file);
+            lock (_syncObject) {
+                foreach (var file in files) {
+                    if (SelectedFiles.Contains(file)) {
+                        SelectedFiles.Remove(file);
+                        UnSelectedFiles.Add(file);
+                    }
+                }
             }
         }
 
@@ -135,7 +144,6 @@ namespace CompMs.App.Msdial.Model.Export
         public IAnalysisMetadataAccessor Accessor { get; }
 
         public IReadOnlyList<MSDecResult> GetSpectra(AnalysisFileBeanModel file) {
-            var collections = MSDecResultCollection.DeserializeAsync(file.File);
             return MsdecResultsReader.ReadMSDecResults(file.DeconvolutionFilePath, out _, out _);
         }
     }
