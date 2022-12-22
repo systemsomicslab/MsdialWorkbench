@@ -292,7 +292,8 @@ namespace CompMs.App.Msdial.Model.Imms
                 new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
             };
 
-            using (var vm = new AnalysisResultExportViewModel(container.AnalysisFiles, spectraTypes, spectraFormats, ProviderFactory)) {
+            var model = new AnalysisResultExportModel(AnalysisFileModelCollection, spectraTypes, spectraFormats, ProviderFactory.ContraMap((AnalysisFileBeanModel file) => file.File));
+            using (var vm = new AnalysisResultExportViewModel(model)) {
                 var dialog = new AnalysisResultExportWin
                 {
                     DataContext = vm,

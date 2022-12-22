@@ -1,4 +1,6 @@
-﻿using CompMs.App.Msdial.Model.Dims;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Dims;
+using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.ViewModel.Core;
@@ -10,6 +12,7 @@ using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialDimsCore.Export;
 using Reactive.Bindings;
@@ -86,7 +89,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 new Model.Export.SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
             };
 
-            using (var vm = new AnalysisResultExportViewModel(container.AnalysisFiles, spectraTypes, spectraFormats, _model.ProviderFactory)) {
+            var model = new AnalysisResultExportModel(_model.AnalysisFileModelCollection, spectraTypes, spectraFormats, _model.ProviderFactory.ContraMap((AnalysisFileBeanModel file) => file.File));
+            using (var vm = new AnalysisResultExportViewModel(model)) {
                 var dialog = new AnalysisResultExportWin
                 {
                     DataContext = vm,

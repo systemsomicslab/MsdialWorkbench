@@ -1,102 +1,76 @@
-﻿using CompMs.App.Msdial.Model.Export;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Export;
 using CompMs.CommonMVVM;
-using CompMs.CommonMVVM.Common;
 using CompMs.CommonMVVM.Validator;
-using CompMs.MsdialCore.Algorithm;
-using CompMs.MsdialCore.DataObj;
-using System.Collections.Generic;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.ViewModel.Export
 {
     internal sealed class AnalysisResultExportViewModel : ViewModelBase
     {
-        public AnalysisResultExportViewModel(
-            IEnumerable<AnalysisFileBean> files,
-            IEnumerable<SpectraType> spectraTypes,
-            IEnumerable<SpectraFormat> spectraFormats,
-            IDataProviderFactory<AnalysisFileBean> providerFactory)
-            : this(new AnalysisResultExportModel(files, spectraTypes, spectraFormats, providerFactory)) {
-
-        }
+        private readonly AnalysisResultExportModel _model;
 
         public AnalysisResultExportViewModel(AnalysisResultExportModel model) {
+            _model = model ?? throw new ArgumentNullException(nameof(model));
 
-            Model = model;
+            SelectedFrom = model.UnSelectedFiles.ToReadOnlyReactiveCollection(file => new FileBeanSelection(file)).AddTo(Disposables);
+            SelectedTo = model.SelectedFiles.ToReadOnlyReactiveCollection(file => new FileBeanSelection(file)).AddTo(Disposables);
 
-            SelectedFrom = Model.UnSelectedFiles.ToMappedReadOnlyObservableCollection(file => new FileBeanSelection(file));
-            Disposables.Add(SelectedFrom);
-            SelectedTo = Model.SelectedFiles.ToMappedReadOnlyObservableCollection(file => new FileBeanSelection(file));
-            Disposables.Add(SelectedTo);
+            ExportSpectraTypes = new ReadOnlyObservableCollection<SpectraType>(model.ExportSpectraTypes);
+            ExportSpectraFileFormats = new ReadOnlyObservableCollection<SpectraFormat>(model.ExportSpectraFileFormats);
 
-            ExportSpectraTypes = new ReadOnlyObservableCollection<SpectraType>(Model.ExportSpectraTypes);
-            ExportSpectraFileFormats = new ReadOnlyObservableCollection<SpectraFormat>(Model.ExportSpectraFileFormats);
+            model.ObserveProperty(m => m.SelectedSpectraType).Subscribe(t => SelectedSpectraType = t).AddTo(Disposables);
+            model.ObserveProperty(m => m.SelectedFileFormat).Subscribe(f => SelectedFileFormat = f).AddTo(Disposables);
+            model.ObserveProperty(m => m.IsotopeExportMax).Subscribe(m => IsotopeExportMax = m).AddTo(Disposables);
 
-            var notifir = new PropertyChangedNotifier(Model);
-            Disposables.Add(notifir);
-            notifir
-                .SubscribeTo(nameof(Model.SelectedSpectraType), () => SelectedSpectraType = Model.SelectedSpectraType)
-                .SubscribeTo(nameof(Model.SelectedFileFormat), () => SelectedFileFormat = Model.SelectedFileFormat)
-                .SubscribeTo(nameof(Model.IsotopeExportMax), () => IsotopeExportMax = Model.IsotopeExportMax);
-
-            SelectedSpectraType = Model.SelectedSpectraType;
-            SelectedFileFormat = Model.SelectedFileFormat;
-            DestinationFolder = Model.DestinationFolder;
-
-            ValidateProperty(nameof(SelectedSpectraType), SelectedSpectraType);
-            ValidateProperty(nameof(SelectedFileFormat), SelectedFileFormat);
-            ValidateProperty(nameof(DestinationFolder), DestinationFolder);
+            ExportPeakCommand = this.ErrorsChangedAsObservable().ToUnit()
+                .StartWith(Unit.Default)
+                .Select(_ => !HasValidationErrors)
+                .ToAsyncReactiveCommand()
+                .WithSubscribe(ExportPeakAsync)
+                .AddTo(Disposables);
         }
 
-        public AnalysisResultExportModel Model { get; }
+        public AsyncReactiveCommand ExportPeakCommand { get; }
+        private Task ExportPeakAsync() => Task.Run(_model.Export);
 
-        public DelegateCommand ExportPeakCommand => _exportPeakCommand ?? (_exportPeakCommand = new DelegateCommand(ExportPeak, CanExportPeak));
-        private DelegateCommand _exportPeakCommand;
-
-        private void ExportPeak() {
-            _result = Task.Run(Model.Export);
-            ExportPeakCommand.RaiseCanExecuteChanged();
-        }
-        private Task _result;
-
-        private bool CanExportPeak() {
-            return _result?.Status != TaskStatus.Running && !HasValidationErrors;
-        }
-
-        public MappedReadOnlyObservableCollection<AnalysisFileBean, FileBeanSelection> SelectedFrom { get; }
-
-        public MappedReadOnlyObservableCollection<AnalysisFileBean, FileBeanSelection> SelectedTo { get; }
+        public ReadOnlyReactiveCollection<FileBeanSelection> SelectedFrom { get; }
+        public ReadOnlyReactiveCollection<FileBeanSelection> SelectedTo { get; }
 
         public DelegateCommand AddItemsCommand => _addItemsCommand ?? (_addItemsCommand = new DelegateCommand(AddItems));
         private DelegateCommand _addItemsCommand;
 
         private void AddItems() {
-            Model.Selects(SelectedFrom.Where(file => file.IsChecked).Select(file => file.File).ToList());
+            _model.Selects(SelectedFrom.Where(file => file.IsChecked).Select(file => file.File));
         }
 
         public DelegateCommand AddAllItemsCommand => _addAllItemsCommand ?? (_addAllItemsCommand = new DelegateCommand(AddAllItems));
         private DelegateCommand _addAllItemsCommand;
 
         private void AddAllItems() {
-            Model.Selects(SelectedFrom.Select(file => file.File).ToList());
+            _model.Selects(SelectedFrom.Select(file => file.File));
         }
 
         public DelegateCommand RemoveItemsCommand => _removeItemsCommand ?? (_removeItemsCommand = new DelegateCommand(RemoveItems));
         private DelegateCommand _removeItemsCommand;
 
         private void RemoveItems() {
-            Model.UnSelects(SelectedTo.Where(file => file.IsChecked).Select(file => file.File).ToList());
+            _model.UnSelects(SelectedTo.Where(file => file.IsChecked).Select(file => file.File));
         }
 
         public DelegateCommand RemoveAllItemsCommand => _removeAllItemsCommand ?? (_removeAllItemsCommand = new DelegateCommand(RemoveAllItems));
         private DelegateCommand _removeAllItemsCommand;
 
         private void RemoveAllItems() {
-            Model.UnSelects(SelectedTo.Select(file => file.File).ToList());
+            _model.UnSelects(SelectedTo.Select(file => file.File));
         }
 
         public DelegateCommand SelectDestinationCommand => _selectDestinationCommand ?? (_selectDestinationCommand = new DelegateCommand(SelectDestination));
@@ -108,16 +82,14 @@ namespace CompMs.App.Msdial.ViewModel.Export
             get {
                 return _destinationFolder;
             }
-
             set {
                 if (SetProperty(ref _destinationFolder, value)) {
                     if (!ContainsError(nameof(DestinationFolder))) {
-                        Model.DestinationFolder = _destinationFolder;
+                        _model.DestinationFolder = _destinationFolder;
                     }
                 }
             }
         }
-
         private string _destinationFolder;
 
         public void SelectDestination() {
@@ -132,24 +104,23 @@ namespace CompMs.App.Msdial.ViewModel.Export
 
         public ReadOnlyObservableCollection<SpectraType> ExportSpectraTypes { get; }
 
-        public ReadOnlyObservableCollection<SpectraFormat> ExportSpectraFileFormats { get; }
-
         [Required(ErrorMessage = "Choose a spectra type.")]
         public SpectraType SelectedSpectraType {
             get {
-                return selectedSpectraType;
+                return _selectedSpectraType;
             }
 
             set {
-                if (SetProperty(ref selectedSpectraType, value)) {
+                if (SetProperty(ref _selectedSpectraType, value)) {
                     if (!ContainsError(nameof(SelectedSpectraType))) {
-                        Model.SelectedSpectraType = selectedSpectraType;
+                        _model.SelectedSpectraType = _selectedSpectraType;
                     }
                 }
             }
         }
+        private SpectraType _selectedSpectraType;
 
-        private SpectraType selectedSpectraType;
+        public ReadOnlyObservableCollection<SpectraFormat> ExportSpectraFileFormats { get; }
 
         [Required(ErrorMessage = "Choose a spectra format.")]
         public SpectraFormat SelectedFileFormat {
@@ -160,12 +131,11 @@ namespace CompMs.App.Msdial.ViewModel.Export
             set {
                 if (SetProperty(ref _selectedFileFormat, value)) {
                     if (!ContainsError(nameof(SelectedFileFormat))) {
-                        Model.SelectedFileFormat = _selectedFileFormat;
+                        _model.SelectedFileFormat = _selectedFileFormat;
                     }
                 }
             }
         }
-
         private SpectraFormat _selectedFileFormat;
 
         public int IsotopeExportMax {
@@ -175,42 +145,28 @@ namespace CompMs.App.Msdial.ViewModel.Export
             set {
                 if (SetProperty(ref _isotopeExportMax, value)) {
                     if (!ContainsError(nameof(IsotopeExportMax))) {
-                        Model.IsotopeExportMax = _isotopeExportMax;
+                        _model.IsotopeExportMax = _isotopeExportMax;
                     }
                 }
             }
         }
-
         private int _isotopeExportMax = 2;
-
-        protected override void OnErrorsChanged([CallerMemberName] string propertyname = "") {
-            base.OnErrorsChanged(propertyname);
-            ExportPeakCommand.RaiseCanExecuteChanged();
-        }
     }
 
     internal sealed class FileBeanSelection : ViewModelBase
     {
-        public FileBeanSelection(AnalysisFileBean file) {
+        public FileBeanSelection(AnalysisFileBeanModel file) {
             File = file;
         }
 
-        public AnalysisFileBean File { get; }
+        public AnalysisFileBeanModel File { get; }
 
         public string FileName => File.AnalysisFileName;
-
-        public bool IsSelected {
-            get => _isSelected;
-            set => SetProperty(ref _isSelected, value);
-        }
-
-        private bool _isSelected = false;
 
         public bool IsChecked {
             get => _isChecked;
             set => SetProperty(ref _isChecked, value);
         }
-
         private bool _isChecked;
     }
 }
