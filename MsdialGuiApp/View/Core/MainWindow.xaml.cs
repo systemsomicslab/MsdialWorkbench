@@ -90,6 +90,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(OpenMultivariateAnalysisSettingView);
             broker.ToObservable<PCAPLSResultViewModel>()
                 .Subscribe(OpenPCAPLSResultView);
+            broker.ToObservable<AnalysisResultExportViewModel>()
+                .Subscribe(OpenAnalysisResultExportDialog);
             broker.ToObservable<AlignmentResultExportViewModel>()
                 .Subscribe(OpenAlignmentResultExportDialog);
 #if RELEASE
@@ -339,6 +341,16 @@ namespace CompMs.App.Msdial.View.Core
                 window.Closed += (s, e) => vm.Dispose();
                 window.Show();
             });
+        }
+
+        private void OpenAnalysisResultExportDialog(AnalysisResultExportViewModel vm) {
+            var dialog = new AnalysisResultExportWin
+            {
+                DataContext = vm,
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            };
+            dialog.ShowDialog();
         }
 
         private void OpenAlignmentResultExportDialog(AlignmentResultExportViewModel vm) {
