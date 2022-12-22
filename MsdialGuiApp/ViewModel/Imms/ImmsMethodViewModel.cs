@@ -1,9 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.Imms;
+using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -15,7 +17,6 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
 {
@@ -47,8 +48,14 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             return model.LoadAlignmentFileAsync(alignmentFile.File, token);
         }
 
-        public DelegateCommand ExportAnalysisResultCommand => _exportAnalysisResultCommand ?? (_exportAnalysisResultCommand = new DelegateCommand(model.ExportAnalysis));
+        public DelegateCommand ExportAnalysisResultCommand => _exportAnalysisResultCommand ?? (_exportAnalysisResultCommand = new DelegateCommand(ExportAnalysis));
         private DelegateCommand _exportAnalysisResultCommand;
+
+        private void ExportAnalysis() {
+            using (var vm = new AnalysisResultExportViewModel(model.CreateExportAnalysisResult())) {
+                _broker.Publish(vm);
+            }
+        }
         
 
         public DelegateCommand ExportAlignmentResultCommand => _exportAlignmentResultCommand ?? (_exportAlignmentResultCommand = new DelegateCommand(ExportAlignment));
@@ -60,17 +67,63 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }
         }
 
-        public DelegateCommand<Window> ShowTicCommand => showTicCommand ?? (showTicCommand = new DelegateCommand<Window>(model.ShowTIC));
-        private DelegateCommand<Window> showTicCommand;
+        public DelegateCommand ShowTicCommand => _showTicCommand ?? (_showTicCommand = new DelegateCommand(ShowTIC));
+        private DelegateCommand _showTicCommand;
 
-        public DelegateCommand<Window> ShowBpcCommand => showBpcCommand ?? (showBpcCommand = new DelegateCommand<Window>(model.ShowBPC));
-        private DelegateCommand<Window> showBpcCommand;
+        private void ShowTIC() {
+            var m = model.PrepareTIC();
+            if (m is null) {
+                return;
+            }
+            var vm = new ChromatogramsViewModel(m);
+            _broker.Publish(vm);
+        } 
 
-        public DelegateCommand<Window> ShowTicBpcRepEICCommand => showTicBpcRepEIC ?? (showTicBpcRepEIC = new DelegateCommand<Window>(model.ShowTicBpcRepEIC));
-        private DelegateCommand<Window> showTicBpcRepEIC;
+        public DelegateCommand ShowBpcCommand => _showBpcCommand ?? (_showBpcCommand = new DelegateCommand(ShowBPC));
+        private DelegateCommand _showBpcCommand;
 
-        public DelegateCommand<Window> ShowEicCommand => showEicCommand ?? (showEicCommand = new DelegateCommand<Window>(model.ShowEIC));
-        private DelegateCommand<Window> showEicCommand;
+        private void ShowBPC() {
+            var m = model.PrepareBPC();
+            if (m is null) {
+                return;
+            }
+            var vm = new ChromatogramsViewModel(m);
+            _broker.Publish(vm);
+        }
+
+        public DelegateCommand ShowTicBpcRepEICCommand => _showTicBpcRepEIC ?? (_showTicBpcRepEIC = new DelegateCommand(ShowTicBpcRepEIC));
+        private DelegateCommand _showTicBpcRepEIC;
+
+        private void ShowTicBpcRepEIC() {
+            var m = model.PrepareTicBpcRepEIC();
+            if (m is null) {
+                return;
+            }
+            var vm = new ChromatogramsViewModel(m);
+            _broker.Publish(vm);
+        }
+
+        public DelegateCommand ShowEicCommand => _showEicCommand ?? (_showEicCommand = new DelegateCommand(ShowEIC));
+        private DelegateCommand _showEicCommand;
+
+        private void ShowEIC() {
+            var m = model.PrepareEicSetting();
+            if (m is null) {
+                return;
+            }
+            using (var settingvm = new DisplayEicSettingViewModel(m)) {
+                _broker.Publish(settingvm);
+                if (!settingvm.DialogResult) {
+                    return;
+                }
+            }
+            var chromatograms = m.PrepareChromatograms();
+            if (chromatograms is null) {
+                return;
+            }
+            var vm = new ChromatogramsViewModel(chromatograms);
+            _broker.Publish(vm);
+        }
 
         private static IReadOnlyReactiveProperty<ImmsAnalysisViewModel> ConvertToAnalysisViewModel(
             ImmsMethodModel method,

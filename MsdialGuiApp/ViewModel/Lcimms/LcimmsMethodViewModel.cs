@@ -1,9 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.Lcimms;
+using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -16,7 +18,6 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
@@ -66,17 +67,60 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             }
         }
 
-        public DelegateCommand<Window> ShowTicCommand => showTicCommand ?? (showTicCommand = new DelegateCommand<Window>(_model.ShowTIC));
-        private DelegateCommand<Window> showTicCommand;
+        public DelegateCommand ShowTicCommand => _showTicCommand ?? (_showTicCommand = new DelegateCommand(ShowTIC));
+        private DelegateCommand _showTicCommand;
 
-        public DelegateCommand<Window> ShowBpcCommand => showBpcCommand ?? (showBpcCommand = new DelegateCommand<Window>(_model.ShowBPC));
-        private DelegateCommand<Window> showBpcCommand;
+        private void ShowTIC() {
+            var model = _model.PrepareTIC();
+            if (model is null) {
+                return;
+            }
+            var vm = new ChromatogramsViewModel(model);
+            _broker.Publish(vm);
+        }
 
-        public DelegateCommand<Window> ShowTicBpcRepEICCommand => showTicBpcRepEIC ?? (showTicBpcRepEIC = new DelegateCommand<Window>(_model.ShowTicBpcRepEIC));
-        private DelegateCommand<Window> showTicBpcRepEIC;
+        public DelegateCommand ShowBpcCommand => _showBpcCommand ?? (_showBpcCommand = new DelegateCommand(ShowBPC));
+        private DelegateCommand _showBpcCommand;
 
-        public DelegateCommand<Window> ShowEicCommand => showEicCommand ?? (showEicCommand = new DelegateCommand<Window>(_model.ShowEIC));
-        private DelegateCommand<Window> showEicCommand;
+        private void ShowBPC() {
+            var model = _model.PrepareBPC();
+            if (model is null) {
+                return;
+            }
+            var vm = new ChromatogramsViewModel(model);
+            _broker.Publish(vm);
+        }
+
+        public DelegateCommand ShowTicBpcRepEICCommand => _showTicBpcRepEIC ?? (_showTicBpcRepEIC = new DelegateCommand(ShowTicBpcRepEIC));
+        private DelegateCommand _showTicBpcRepEIC;
+
+        private void ShowTicBpcRepEIC() {
+            var model = _model.PrepareTicBpcRepEIC();
+            if (model is null) {
+                return;
+            }
+            var vm = new ChromatogramsViewModel(model);
+            _broker.Publish(vm);
+        }
+
+        public DelegateCommand ShowEicCommand => _showEicCommand ?? (_showEicCommand = new DelegateCommand(ShowEIC));
+        private DelegateCommand _showEicCommand;
+
+        public void ShowEIC() {
+            var model = _model.PrepareEicSetting();
+            using (var settingvm = new DisplayEicSettingViewModel(model)){
+                _broker.Publish(settingvm);
+                if (!settingvm.DialogResult) {
+                    return;
+                }
+            }
+            var chromatograms = model.PrepareChromatograms();
+            if (chromatograms is null) {
+                return;
+            }
+            var vm = new ChromatogramsViewModel(chromatograms);
+            _broker.Publish(vm);
+        }
 
         private static IReadOnlyReactiveProperty<LcimmsAnalysisViewModel> ConvertToAnalysisViewModel(
             LcimmsMethodModel method,
