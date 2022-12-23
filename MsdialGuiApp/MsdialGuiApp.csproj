@@ -175,6 +175,7 @@
     <Compile Include="Model\Imaging\ImagingRoiModel.cs" />
     <Compile Include="Model\Imaging\ImaginRoiCompareModel.cs" />
     <Compile Include="Model\Imaging\MaldiFrames.cs" />
+    <Compile Include="Model\Imaging\RoiEditModel.cs" />
     <Compile Include="Model\Imaging\RoiModel.cs" />
     <Compile Include="Model\Imaging\IntensityImageModel.cs" />
     <Compile Include="Model\Imaging\RoiPeakSummaryModel.cs" />
@@ -346,6 +347,7 @@
     <Compile Include="ViewModel\Imaging\ImagingRoiCompareViewModel.cs" />
     <Compile Include="ViewModel\Imaging\ImagingRoiViewModel.cs" />
     <Compile Include="ViewModel\Imaging\IntensityImageViewModel.cs" />
+    <Compile Include="ViewModel\Imaging\RoiEditViewModel.cs" />
     <Compile Include="ViewModel\Imaging\RoiPeakSummaryViewModel.cs" />
     <Compile Include="ViewModel\Imaging\RoiViewModel.cs" />
     <Compile Include="ViewModel\Imaging\WholeImageResultViewModel.cs" />

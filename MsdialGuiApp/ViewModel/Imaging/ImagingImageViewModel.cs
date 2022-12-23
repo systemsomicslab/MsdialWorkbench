@@ -19,6 +19,8 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
             var moleculeStructure = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
             PeakDetailViewModels = new ViewModelBase[] { peakInfo, moleculeStructure, };
             Ms2ViewModels = new ViewModelBase[0];
+            RoiEditViewModel = new RoiEditViewModel(model.RoiEditModel).AddTo(Disposables);
+            AddRoiCommand = new AsyncReactiveCommand().WithSubscribe(model.AddRoiAsync).AddTo(Disposables);
         }
 
         public string ImageTitle => _model.File.AnalysisFileName;
@@ -29,7 +31,10 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
         }
         private ImagingRoiViewModel _selectedRoiViewModel;
         public WholeImageResultViewModel ImageResultViewModel { get; }
+        public RoiEditViewModel RoiEditViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
         public ViewModelBase[] Ms2ViewModels { get; }
+
+        public AsyncReactiveCommand AddRoiCommand { get; }
     }
 }

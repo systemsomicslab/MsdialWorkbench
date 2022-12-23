@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:info="clr-namespace:CompMs.App.Msdial.View.Information"
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.ImagingImms"
@@ -16,49 +17,54 @@
              d:Background="White"
              d:DesignHeight="780" d:DesignWidth="1280">
     <UserControl.Resources>
-        <DataTemplate DataType="{x:Type vm:ImagingMainViewModel}" x:Key="ImageSelector">
-            <DataTemplate.Resources>
-                <DataTemplate DataType="{x:Type imvm:ImagingRoiViewModel}">
-                    <TextBlock Text="{Binding Id}"/>
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type imvm:ImagingImageViewModel}">
-                    <Expander BorderThickness="0"
-                              IsExpanded="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}">
-                        <Expander.Header>
-                            <Run Text="{Binding ImageTitle, Mode=OneWay}"/>
-                        </Expander.Header>
-                        <ListBox ItemsSource="{Binding RoiViewModels}"
-                                 SelectedItem="{Binding SelectedRoiViewModel}"/>
-                    </Expander>
-                </DataTemplate>
-            </DataTemplate.Resources>
-            <GroupBox Header="Images" BorderThickness="0">
-                <GroupBox.Template>
-                    <ControlTemplate TargetType="GroupBox">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <Border Background="{StaticResource MainThemeColor}"
-                                    BorderBrush="Black"
-                                    BorderThickness=".5"
-                                    HorizontalAlignment="Stretch"
-                                    Grid.Row="0">
-                                <ContentPresenter HorizontalAlignment="Center"
-                                                  ContentSource="Header"
-                                                  RecognizesAccessKey="True"/>
-                            </Border>
-                            <ContentPresenter Grid.Row="1"/>
-                        </Grid>
-                    </ControlTemplate>
-                </GroupBox.Template>
-                <ListBox ItemsSource="{Binding ImageViewModels}"
-                         SelectedItem="{Binding SelectedImageViewModel}"
-                         IsSynchronizedWithCurrentItem="True">
-                </ListBox>
-            </GroupBox>
-        </DataTemplate>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <DataTemplate DataType="{x:Type vm:ImagingMainViewModel}" x:Key="ImageSelector">
+                <DataTemplate.Resources>
+                    <DataTemplate DataType="{x:Type imvm:ImagingRoiViewModel}">
+                        <TextBlock Text="{Binding Id}"/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type imvm:ImagingImageViewModel}">
+                        <Expander BorderThickness="0"
+                                  IsExpanded="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}">
+                            <Expander.Header>
+                                <Run Text="{Binding ImageTitle, Mode=OneWay}"/>
+                            </Expander.Header>
+                            <ListBox ItemsSource="{Binding RoiViewModels}"
+                                     SelectedItem="{Binding SelectedRoiViewModel}"/>
+                        </Expander>
+                    </DataTemplate>
+                </DataTemplate.Resources>
+                <GroupBox Header="Images" BorderThickness="0">
+                    <GroupBox.Template>
+                        <ControlTemplate TargetType="GroupBox">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Border Background="{StaticResource MainThemeColor}"
+                                        BorderBrush="Black"
+                                        BorderThickness=".5"
+                                        HorizontalAlignment="Stretch"
+                                        Grid.Row="0">
+                                    <ContentPresenter HorizontalAlignment="Center"
+                                                      ContentSource="Header"
+                                                      RecognizesAccessKey="True"/>
+                                </Border>
+                                <ContentPresenter Grid.Row="1"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </GroupBox.Template>
+                    <ListBox ItemsSource="{Binding ImageViewModels}"
+                             SelectedItem="{Binding SelectedImageViewModel}"
+                             IsSynchronizedWithCurrentItem="True">
+                    </ListBox>
+                </GroupBox>
+            </DataTemplate>
+        </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -94,16 +100,41 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <Border x:Name="ImageContainer"
-                    ClipToBounds="True"
-                    Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
-                <Grid behavior:AddMovabilityBehavior.PositionBase="{Binding ElementName=ImageContainer}">
-                    <chart:BitmapImageView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.SelectedPeakIntensities.Value.BitmapImageViewModel}"
-                                           behavior:AddMovabilityBehavior.IsEnabled="False"/>
-                    <chart:BitmapImageView DataContext="{Binding SelectedImageViewModel.SelectedRoiViewModel.Roi.RoiImage}"
-                                           behavior:AddMovabilityBehavior.IsEnabled="False"/>
-                </Grid>
-            </Border>
+            <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal"
+                            Margin="8"
+                            Grid.Row="0">
+                    <CheckBox Content="Select ROI"
+                              IsChecked="{Binding SelectedImageViewModel.RoiEditViewModel.IsEditable}"/>
+                    <Button Content="Calculate ROI" Command="{Binding SelectedImageViewModel.AddRoiCommand}"
+                            Margin="8,0"/>
+                </StackPanel>
+                <Border x:Name="ImageContainer"
+                        ClipToBounds="True"
+                        Grid.Row="1">
+                    <Viewbox behavior:AddMovabilityBehavior.PositionBase="{Binding ElementName=ImageContainer}"
+                             behavior:AddMovabilityBehavior.IsEnabled="{Binding SelectedImageViewModel.RoiEditViewModel.IsEditable, Converter={StaticResource NegativeConverter}}"
+                             Stretch="Uniform">
+                        <Grid Width="{Binding SelectedImageViewModel.RoiEditViewModel.Area.Width}"
+                              Height="{Binding SelectedImageViewModel.RoiEditViewModel.Area.Height}">
+                            <chart:BitmapImageView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.SelectedPeakIntensities.Value.BitmapImageViewModel}"
+                                                   behavior:AddMovabilityBehavior.IsEnabled="False"/>
+                            <chart:BitmapImageView DataContext="{Binding SelectedImageViewModel.SelectedRoiViewModel.Roi.RoiImage}"
+                                                   behavior:AddMovabilityBehavior.IsEnabled="False"/>
+                            <ui:AreaSelector SelectedPoints="{Binding Path=SelectedImageViewModel.RoiEditViewModel.Area.Points, Mode=TwoWay}"
+                                             Background="Transparent"
+                                             Stroke="Red"
+                                             VerticalAlignment="Stretch"
+                                             HorizontalAlignment="Stretch"
+                                             IsSelectable="{Binding SelectedImageViewModel.RoiEditViewModel.IsEditable, Mode=OneWay}"/>
+                        </Grid>
+                    </Viewbox>
+                </Border>
+            </Grid>
             <chart:PeakView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.PeakPlotViewModel}"
                             Grid.Row="1" Grid.Column="1"/>
             <chart:BarChartView DataContext="{Binding SelectedRoiCompareViewModel.BarChartViewModel}"

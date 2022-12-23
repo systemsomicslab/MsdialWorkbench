@@ -21,10 +21,10 @@ namespace CompMs.App.Msdial.Model.Imaging
             Mz = peak.Mz;
             Drift = peak.Drift;
 
-            var xmin = frameInfos.XIndexPosMin - 1;
-            var ymin = frameInfos.YIndexPosMin - 1;
-            var width = frameInfos.XIndexWidth + 2;
-            var height = frameInfos.YIndexHeight + 2;
+            var xmin = BitmapImageModel.WithMarginToPoint(frameInfos.XIndexPosMin);
+            var ymin = BitmapImageModel.WithMarginToPoint(frameInfos.YIndexPosMin);
+            var width = BitmapImageModel.WithMarginToLength(frameInfos.XIndexWidth);
+            var height = BitmapImageModel.WithMarginToLength(frameInfos.YIndexHeight);
             var pf = PixelFormats.Indexed8;
             var stride = (pf.BitsPerPixel + 7) / 8;
             var image = new byte[width * stride * height];

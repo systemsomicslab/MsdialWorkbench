@@ -18,6 +18,7 @@ namespace CompMs.App.Msdial.Model.Imaging
         public ImagingRoiModel(string id, RoiModel roi, RawSpectraOnPixels rawSpectraOnPixels, IEnumerable<ChromatogramPeakFeatureModel> peaks, ReactiveProperty<ChromatogramPeakFeatureModel> selectedPeak) {
             Id = id;
             Roi = roi ?? throw new ArgumentNullException(nameof(roi));
+
             RoiPeakSummaries = new ObservableCollection<RoiPeakSummaryModel>(
                 rawSpectraOnPixels.PixelPeakFeaturesList.Zip(peaks, (pixelFeaturs, peak) => new RoiPeakSummaryModel(roi, pixelFeaturs, peak)));
             RoiPeakSummaries.Select(m => selectedPeak.Where(p => m.Peak == p).ToConstant(m)).Merge().Subscribe(m => SelectedRoiPeakSummary = m).AddTo(Disposables);
