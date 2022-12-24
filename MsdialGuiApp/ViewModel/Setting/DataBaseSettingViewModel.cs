@@ -50,7 +50,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             .AddTo(Disposables);
             DataBaseID.Where(_ => !DataBaseID.HasErrors).Subscribe(id => Model.DataBaseID = id).AddTo(Disposables);
 
-            DBSources = new List<DataBaseSource> { DataBaseSource.Msp, DataBaseSource.Lbm, DataBaseSource.Text, DataBaseSource.Fasta, DataBaseSource.EieioLipid, DataBaseSource.OadLipid }.AsReadOnly();
+            DBSources = new List<DataBaseSource> { DataBaseSource.Msp, DataBaseSource.Lbm, DataBaseSource.Text, DataBaseSource.Fasta, DataBaseSource.EieioLipid, DataBaseSource.OadLipid, DataBaseSource.EidLipid }.AsReadOnly();
             DBSource = DataBasePath
                 .Where(path => !string.IsNullOrEmpty(path))
                 .Select(path => Path.GetExtension(path))
@@ -78,7 +78,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             DBSource.Where(src => src == DataBaseSource.OadLipid)
                 .Subscribe(_ => DataBaseID.Value = "OadDatabase")
                 .AddTo(Disposables);
-            IsDataBasePathEnabled = DBSource.Select(src => (src != DataBaseSource.EieioLipid && src != DataBaseSource.OadLipid)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            DBSource.Where(src => src == DataBaseSource.EidLipid)
+                .Subscribe(_ => DataBaseID.Value = "EidDatabase")
+                .AddTo(Disposables);
+            IsDataBasePathEnabled = DBSource.Select(src => (src != DataBaseSource.EieioLipid && src != DataBaseSource.OadLipid && src != DataBaseSource.EidLipid)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             DBSource.Where(_ => !DBSource.HasErrors)
                 .Subscribe(source => Model.DBSource = source)
                 .AddTo(Disposables);

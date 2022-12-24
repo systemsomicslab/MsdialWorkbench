@@ -182,6 +182,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 case DataBaseSource.Text:
                     return new DimsMetabolomicsAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter, _annotatorVisitor, CreateFactory);
                 case DataBaseSource.EieioLipid:
+                case DataBaseSource.EidLipid:
                 case DataBaseSource.OadLipid:
                     return new DimsEadLipidAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter, _annotatorVisitor, CreateFactory);
                 default:

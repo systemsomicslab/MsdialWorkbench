@@ -420,9 +420,7 @@ namespace CompMs.Common.Lipidomics
 
     public static class EieioMsCharacterizationUtility
     {
-
-
-        public static LipidMsCharacterizationResult GetDefaultScoreForGlycerophospholipid(
+        public static LipidMsCharacterizationResult GetDefaultScore(
             IMSScanProperty scan, MoleculeMsReference reference,
             float tolerance, float mzBegin, float mzEnd,
             double classIonCutoff, double chainIonCutoff, double positionIonCutoff, double doublebondIonCutoff)
@@ -439,9 +437,6 @@ namespace CompMs.Common.Lipidomics
             // check lipid class ion's existence
             var classions = matchedpeaks.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.metaboliteclass)).ToList();
             var isClassMustIonsExisted = classions.All(ion => !ion.IsAbsolutelyRequiredFragmentForAnnotation || ion.IsMatched);
-            // classions.Where(n => n.IsAbsolutelyRequiredFragmentForAnnotation).Count()
-            // == classions.Where(n => n.IsAbsolutelyRequiredFragmentForAnnotation && n.IsMatched).Count()
-            // ? true : false;
             var classionsDetected = classions.Count(n => n.IsMatched);
             var isClassIonExisted = isClassMustIonsExisted && classionsDetected >= classIonCutoff
                 ? true : false;
@@ -453,9 +448,6 @@ namespace CompMs.Common.Lipidomics
             // check lipid chain ion's existence
             var chainIons = matchedpeaks.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.acylchain)).ToList();
             var isChainMustIonsExisted = chainIons.All(ion => !ion.IsAbsolutelyRequiredFragmentForAnnotation || ion.IsMatched);
-            // chainIons.Where(n => n.IsAbsolutelyRequiredFragmentForAnnotation).Count()
-            // == chainIons.Where(n => n.IsAbsolutelyRequiredFragmentForAnnotation && n.IsMatched).Count()
-            // ? true : false;
             var chainIonsDetected = chainIons.Count(n => n.IsMatched);
             var isChainIonExisted = isChainMustIonsExisted && chainIonsDetected >= chainIonCutoff
                 ? true : false;
@@ -466,9 +458,6 @@ namespace CompMs.Common.Lipidomics
             // check lipid position ion's existence
             var positionIons = matchedpeaks.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.snposition)).ToList();
             var isPositionMustIonsExisted = positionIons.All(ion => !ion.IsAbsolutelyRequiredFragmentForAnnotation || ion.IsMatched);
-            // positionIons.Where(n => n.IsAbsolutelyRequiredFragmentForAnnotation).Count()
-            // == positionIons.Where(n => n.IsAbsolutelyRequiredFragmentForAnnotation && n.IsMatched).Count()
-            // ? true : false;
             var positionIonsDetected = positionIons.Count(n => n.IsMatched);
             var isPositionIonExisted = isPositionMustIonsExisted && positionIonsDetected >= positionIonCutoff
                 ? true : false;
@@ -482,10 +471,6 @@ namespace CompMs.Common.Lipidomics
             var matchedCount = doublebondIons_matched.Count;
             var matchedPercent = matchedCount / (doublebondIons.Count + 1e-10);
             var matchedCoefficient = StandardMsCharacterizationUtility.GetMatchedCoefficient(doublebondIons_matched);
-
-            //var dbhigh_enriched = doublebondIons_matched.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_high)).Sum(n => n.Resolution);
-            //var dblow_enriched = doublebondIons_matched.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_low)).Sum(n => n.Resolution);
-            //var dbBonusScore = dbhigh_enriched > 3.0 * dblow_enriched ? 0.5 : 0.0;
 
             var isDoubleBondIdentified = matchedPercent > doublebondIonCutoff * 0.5 ? true : false;
 
@@ -506,75 +491,6 @@ namespace CompMs.Common.Lipidomics
 
             return result;
 
-            //if (adduct.AdductIonName == "[M+H]+") {
-
-            //    // check lipid class ion's existence
-            //    var classions = ref_spectrum.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.metaboliteclass)).ToList();
-            //    var classionsDetected = EadMsCharacterizationUtility.CountDetectedIons(exp_spectrum, classions, tolerance);
-            //    var isClassIonExisted = false;
-
-            //    var classMustIons = classions.Where(n => n.IsAbsolutelyRequiredFragmentForAnnotation == true).ToList();
-            //    var isClassMustIonsExisted = IsDiagnosticFragmentsExist(exp_spectrum, classMustIons, tolerance);
-
-            //    if (isClassMustIonsExisted && classionsDetected >= classIonCutoff) {
-            //        isClassIonExisted = true;
-            //    }
-            //    result.ClassIonsDetected = classionsDetected;
-            //    result.IsClassIonsExisted = isClassIonExisted;
-
-            //    // check lipid chain ion's existence
-            //    var chainIons = ref_spectrum.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.acylchain)).ToList();
-            //    var chainIonsDetected = EadMsCharacterizationUtility.CountDetectedIons(exp_spectrum, chainIons, tolerance);
-            //    var isChainIonExisted = false;
-            //    if (chainIonsDetected >= chainIonCutoff) {
-            //        isChainIonExisted = true;
-            //    }
-            //    result.ChainIonsDetected = chainIonsDetected;
-            //    result.IsChainIonsExisted = isChainIonExisted;
-
-            //    // check lipid position ion's existence
-            //    var positionIons = ref_spectrum.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.snposition)).ToList();
-            //    var positionIonsDetected = EadMsCharacterizationUtility.CountDetectedIons(exp_spectrum, positionIons, tolerance); ;
-            //    var isPositionIonExisted = false;
-            //    if (positionIonsDetected >= positionIonCutoff) {
-            //        isPositionIonExisted = true;
-            //    }
-
-            //    result.PositionIonsDetected = positionIonsDetected;
-            //    result.IsPositionIonsExisted = isPositionIonExisted;
-
-            //    // check the dtected ion nudouble bond position
-            //    var doublebondIons = ref_spectrum.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond)).ToList();
-
-            //    var matchedpeaks = MsScanMatching.GetMachedSpectralPeaks(exp_spectrum, doublebondIons, tolerance, mzBegin, mzEnd);
-            //    var matchedpeaks_matched = matchedpeaks.Where(n => n.IsMatched).ToList();
-
-            //    //var matchedions = MsScanMatching.GetMatchedPeaksScores(exp_spectrum, doublebondIons, tolerance, mzBegin, mzEnd);
-            //    var matchedCount = matchedpeaks_matched.Count;
-            //    var matchedPercent = (double)matchedCount / (double)doublebondIons.Count;
-
-            //    var dbhigh_enriched = matchedpeaks_matched.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_high)).Sum(n => n.Resolution);
-            //    var dblow_enriched = matchedpeaks_matched.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_low)).Sum(n => n.Resolution);
-            //    var dbBonusScore = dbhigh_enriched > 3.0 * dblow_enriched ? 0.5 : 0.0;
-
-            //    var isDoubleBondIdentified = matchedPercent > doublebondIonCutoff ? true : false;
-
-            //    result.DoubleBondIonsDetected = (int)matchedCount;
-            //    result.DoubleBondMatchedPercent = matchedPercent;
-            //    result.IsDoubleBondIonsExisted = isDoubleBondIdentified;
-
-            //    result.ClassIonScore = isClassIonExisted ? 1.0 : 0.0;
-            //    result.ChainIonScore = isChainIonExisted ? 1.0 : 0.0;
-            //    result.PositionIonScore = isPositionIonExisted ? 1.0 : 0.0;
-            //    result.DoubleBondIonScore = matchedPercent + dbBonusScore;
-
-            //    var score = result.ClassIonScore + result.ChainIonScore + result.PositionIonScore + result.DoubleBondIonScore;
-            //    var counter = classionsDetected + chainIonsDetected + positionIonsDetected + matchedCount;
-            //    result.TotalScore = score;
-            //    result.TotalMatchedIonCount = counter;
-
-            //}
-            //return result;
         }
 
     }

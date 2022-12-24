@@ -174,7 +174,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
                 annotationProcess = BuildProteoMetabolomicsAnnotationProcess();
             }
-            else if(parameter.TargetOmics == TargetOmics.Lipidomics && (parameter.CollistionType == CollisionType.EIEIO || parameter.CollistionType == CollisionType.OAD)) {
+            else if(parameter.TargetOmics == TargetOmics.Lipidomics && 
+                (parameter.CollistionType == CollisionType.EIEIO || parameter.CollistionType == CollisionType.OAD || parameter.CollistionType == CollisionType.EID)) {
                 annotationProcess = BuildEadLipidomicsAnnotationProcess();
             }
             else {

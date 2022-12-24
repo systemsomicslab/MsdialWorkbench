@@ -142,7 +142,8 @@ namespace CompMs.App.Msdial.Model.Dims
         public override async Task RunAsync(ProcessOption option, CancellationToken token) {
             // Storage.DataBaseMapper = BuildDataBaseMapper(Storage.DataBases);
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
-            if (Storage.Parameter.TargetOmics == TargetOmics.Lipidomics && (Storage.Parameter.CollistionType == CollisionType.EIEIO || Storage.Parameter.CollistionType == CollisionType.OAD)) {
+            if (Storage.Parameter.TargetOmics == TargetOmics.Lipidomics && 
+                (Storage.Parameter.CollistionType == CollisionType.EIEIO || Storage.Parameter.CollistionType == CollisionType.OAD || Storage.Parameter.CollistionType == CollisionType.EID)) {
                 _annotationProcess = BuildEadLipidomicsAnnotationProcess();
             }
             else {

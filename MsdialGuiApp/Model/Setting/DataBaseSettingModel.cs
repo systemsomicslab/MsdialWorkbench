@@ -41,11 +41,10 @@ namespace CompMs.App.Msdial.Model.Setting
                     break;
                 case EadLipidDatabase ldb:
                     _eadLipidDatabase = ldb;
-                    if (parameter.CollistionType == CollisionType.OAD) {
-                        DBSource = DataBaseSource.OadLipid;
-                    }
-                    else {
-                        DBSource = DataBaseSource.EieioLipid;
+                    switch (parameter.CollistionType) {
+                        case CollisionType.OAD: DBSource = DataBaseSource.OadLipid; break;
+                        case CollisionType.EIEIO: DBSource = DataBaseSource.EieioLipid; break;
+                        case CollisionType.EID: DBSource = DataBaseSource.EidLipid; break;
                     }
                     break;
             }
@@ -96,6 +95,8 @@ namespace CompMs.App.Msdial.Model.Setting
                     return CreateEieioLipidDatabase();
                 case DataBaseSource.OadLipid:
                     return CreateOadLipidDatabase();
+                case DataBaseSource.EidLipid:
+                    return CreateEidLipidDatabase();
                 default:
                     throw new NotSupportedException(DBSource.ToString());
             }
@@ -127,6 +128,15 @@ namespace CompMs.App.Msdial.Model.Setting
             switch (DBSource) {
                 case DataBaseSource.EieioLipid:
                     return _eadLipidDatabase ?? new EadLipidDatabase(Path.GetTempFileName(), DataBaseID, LipidDatabaseFormat.Dictionary, DataBaseSource.EieioLipid);
+                default:
+                    return null;
+            }
+        }
+
+        public EadLipidDatabase CreateEidLipidDatabase() {
+            switch (DBSource) {
+                case DataBaseSource.EidLipid:
+                    return _eadLipidDatabase ?? new EadLipidDatabase(Path.GetTempFileName(), DataBaseID, LipidDatabaseFormat.Dictionary, DataBaseSource.EidLipid);
                 default:
                     return null;
             }

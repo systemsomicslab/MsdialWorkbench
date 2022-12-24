@@ -25,11 +25,16 @@ namespace CompMs.MsdialCore.DataObj
         public EadLipidDictionaryDatabase(string dbPath, string id, DataBaseSource source) {
             _dbPath = dbPath;
             _id = id;
-            if (source == DataBaseSource.OadLipid) {
-                _lipidGenerator = FacadeLipidSpectrumGenerator.OadLipidGenerator;
-            }
-            else {
-                _lipidGenerator = FacadeLipidSpectrumGenerator.Default;
+            switch (source) {
+                case DataBaseSource.OadLipid:
+                    _lipidGenerator = FacadeLipidSpectrumGenerator.OadLipidGenerator;
+                    break;
+                case DataBaseSource.EieioLipid:
+                    _lipidGenerator = FacadeLipidSpectrumGenerator.Default;
+                    break;
+                case DataBaseSource.EidLipid:
+                    _lipidGenerator = FacadeLipidSpectrumGenerator.EidLipidGenerator;
+                    break;
             }
             _comparer = new LipidNameAdductPairComparer();
             _lipidToReference = new ConcurrentDictionary<(ILipid, AdductIon), Lazy<MoleculeMsReference>>(_comparer);

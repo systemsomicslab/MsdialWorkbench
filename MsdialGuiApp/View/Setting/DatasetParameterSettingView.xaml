@@ -200,7 +200,7 @@
         <GroupBox Header="Collision type"
                   Visibility="{Binding IsChecked, ElementName=RadioButton_DataDependentMSMS, Converter={StaticResource BooleanToVisibility}}"
                   IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}">
-            <UniformGrid Columns="5">
+            <UniformGrid Columns="6">
                 <UniformGrid.Resources>
                     <Style TargetType="RadioButton">
                         <Setter Property="Margin" Value="8"/>
@@ -214,6 +214,8 @@
                              IsChecked="{Binding CollisionType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=HotECD}"/>
                 <RadioButton Content="EIEIO"
                              IsChecked="{Binding CollisionType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=EIEIO}"/>
+                <RadioButton Content="EID"
+                             IsChecked="{Binding CollisionType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=EID}"/>
                 <RadioButton Content="OAD"
                              IsChecked="{Binding CollisionType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=OAD}"/>
             </UniformGrid>
