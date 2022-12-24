@@ -162,7 +162,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 spot => spot.Intensity,
                 "Representation vs. Reference",
                 "m/z",
-                "Abundance",
+                "Relative abundance",
                 nameof(SpectrumPeak.Mass),
                 nameof(SpectrumPeak.Intensity),
                 nameof(SpectrumPeak.Mass),

@@ -176,7 +176,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 peak => peak.Intensity,
                 "Representative vs. Reference",
                 "m/z",
-                "Abundance",
+                "Relative abundance",
                 nameof(SpectrumPeak.Mass),
                 nameof(SpectrumPeak.Intensity),
                 nameof(SpectrumPeak.Mass),

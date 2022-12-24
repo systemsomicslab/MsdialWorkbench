@@ -473,11 +473,11 @@
     </Style>
 
     <Style TargetType="{x:Type chart:MultiChart}" x:Key="VerticalConcatChartFormal">
-        <Style.Resources>
+        <!--<Style.Resources>
             <Style TargetType="chart:Annotator">
                 <Setter Property="FontSize" Value="17"/>
             </Style>
-        </Style.Resources>
+        </Style.Resources>-->
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Black"/>
         <Setter Property="Template">
