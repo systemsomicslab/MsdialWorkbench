@@ -11,5 +11,7 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
         }
 
         public RoiPeakSummaryModel Model { get; }
+
+        public double AccumulatedIntensity => Model.AccumulatedIntensity;
     }
 }

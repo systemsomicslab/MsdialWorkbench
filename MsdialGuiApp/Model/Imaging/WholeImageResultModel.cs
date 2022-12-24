@@ -22,9 +22,8 @@ namespace CompMs.App.Msdial.Model.Imaging
         private readonly ChromatogramPeakFeatureCollection _peaks;
         private readonly ObservableCollection<IntensityImageModel> _intensities;
         private readonly List<Raw2DElement> _elements;
-        private int _roiId = 0;
 
-        public WholeImageResultModel(AnalysisFileBeanModel file, MaldiFrames maldiFrames) {
+        public WholeImageResultModel(AnalysisFileBeanModel file, MaldiFrames maldiFrames, RoiModel wholeRoi) {
             File = file ?? throw new ArgumentNullException(nameof(file));
             _peaks = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath, default).Result;
             Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(_peaks.Items.Select(item => new ChromatogramPeakFeatureModel(item)));
@@ -52,10 +51,10 @@ namespace CompMs.App.Msdial.Model.Imaging
                 HorizontalProperty = nameof(ChromatogramPeakFeatureModel.ChromXValue),
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             }.AddTo(Disposables);
-            var wholeRoi = new RoiModel(file, maldiFrames, Colors.Red);
             _elements = Peaks.Select(item => new Raw2DElement(item.Mass, item.Drift.Value)).ToList();
             var rawSpectraOnPixels = wholeRoi.RetrieveRawSpectraOnPixels(_elements);
-            ImagingRoiModel = new ImagingRoiModel($"ROI{_roiId++}", wholeRoi, rawSpectraOnPixels, Peaks, Target).AddTo(Disposables);
+            ImagingRoiModel = new ImagingRoiModel($"ROI{wholeRoi.Id}", wholeRoi, rawSpectraOnPixels, Peaks, Target).AddTo(Disposables);
+            ImagingRoiModel.Select();
 
             MaldiFrameLaserInfo laserInfo = file.File.GetMaldiFrameLaserInfo();
             _intensities = new ObservableCollection<IntensityImageModel>(
@@ -82,7 +81,9 @@ namespace CompMs.App.Msdial.Model.Imaging
 
         public async Task<ImagingRoiModel> CreateImagingRoiModelAsync(RoiModel roi) {
             var rawSpectraOnPixels = await Task.Run(() => roi.RetrieveRawSpectraOnPixels(_elements)).ConfigureAwait(false);
-            return new ImagingRoiModel($"ROI{_roiId++}", roi, rawSpectraOnPixels, Peaks, Target);
+            var result = new ImagingRoiModel($"ROI{roi.Id}", roi, rawSpectraOnPixels, Peaks, Target);
+            result.Select();
+            return result;
         }
     }
 }

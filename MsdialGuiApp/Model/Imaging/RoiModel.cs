@@ -12,10 +12,11 @@ using System.Windows.Media.Imaging;
 namespace CompMs.App.Msdial.Model.Imaging
 {
     internal sealed class RoiModel : BindableBase {
-        public RoiModel(AnalysisFileBeanModel file, MaldiFrames frames, Color color) {
+        public RoiModel(AnalysisFileBeanModel file, int id, MaldiFrames frames, Color color) {
             File = file ?? throw new ArgumentNullException(nameof(file));
+            Id = id;
             Frames = frames ?? throw new ArgumentNullException(nameof(frames));
-
+            Color = color;
             int width = BitmapImageModel.WithMarginToLength(frames.XIndexWidth);
             int height = BitmapImageModel.WithMarginToLength(frames.YIndexHeight);
             int xmin = BitmapImageModel.WithMarginToPoint(frames.XIndexPosMin);
@@ -60,7 +61,9 @@ namespace CompMs.App.Msdial.Model.Imaging
         }
 
         public AnalysisFileBeanModel File { get; }
+        public int Id { get; }
         public MaldiFrames Frames { get; }
+        public Color Color { get; }
         public BitmapImageModel RoiImage { get; }
 
         public RawSpectraOnPixels RetrieveRawSpectraOnPixels(List<Raw2DElement> targetElements) {

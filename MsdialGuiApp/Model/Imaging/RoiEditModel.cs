@@ -21,11 +21,11 @@ namespace CompMs.App.Msdial.Model.Imaging
 
         public RoiArea CurrentArea { get; }
 
-        public RoiModel CreateRoi(Color color) {
+        public RoiModel CreateRoi(int id, Color color) {
             if (CurrentArea is null) {
                 return null;
             }
-            return new RoiModel(_file, CurrentArea.ContainFrames(), color);
+            return new RoiModel(_file, id, CurrentArea.ContainFrames(), color);
         }
     }
 

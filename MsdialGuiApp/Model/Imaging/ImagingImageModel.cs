@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.CommonMVVM;
 using Reactive.Bindings.Extensions;
@@ -6,18 +7,20 @@ using System;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Imaging
 {
     internal sealed class ImagingImageModel : DisposableModelBase
     {
         private readonly SemaphoreSlim _semaphoreSlim;
+        private int _roiId = 0; 
 
         public ImagingImageModel(AnalysisFileBeanModel file) {
             File = file ?? throw new ArgumentNullException(nameof(file));
             var maldiFrames = new MaldiFrames(file.File.GetMaldiFrames());
-            ImageResult = new WholeImageResultModel(file, maldiFrames).AddTo(Disposables);
+            var wholeRoi = new RoiModel(file, _roiId, maldiFrames, ChartBrushes.GetChartBrush(_roiId).Color);
+            ++_roiId;
+            ImageResult = new WholeImageResultModel(file, maldiFrames, wholeRoi).AddTo(Disposables);
 
             ImagingRoiModels = new ObservableCollection<ImagingRoiModel>
             {
@@ -49,7 +52,8 @@ namespace CompMs.App.Msdial.Model.Imaging
         public async Task AddRoiAsync() {
             await _semaphoreSlim.WaitAsync();
             try {
-                var roi = RoiEditModel.CreateRoi(Colors.Purple);
+                var roi = RoiEditModel.CreateRoi(_roiId, ChartBrushes.GetChartBrush(_roiId).Color);
+                ++_roiId;
                 if (roi is null) {
                     return;
                 }

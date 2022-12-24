@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.CommonMVVM;
 using Reactive.Bindings.Extensions;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Imaging
 {
@@ -15,5 +16,6 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
         }
 
         public BitmapImageViewModel RoiImage { get; }
+        public Color Color => _model.Color;
     }
 }
