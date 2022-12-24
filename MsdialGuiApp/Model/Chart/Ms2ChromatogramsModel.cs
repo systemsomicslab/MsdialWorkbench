@@ -60,9 +60,9 @@ namespace CompMs.App.Msdial.Model.Chart
 
             ChromatogramsModel = new[]
             {
-                IsRawSelected.Where(x => x).Select(_ => rawChromatograms),
-                IsDeconvolutedSelected.Where(x => x).Select(_ => deconvolutedChromatograms),
-                IsBothSelected.Where(x => x).Select(_ => bothChromatograms),
+                IsRawSelected.Where(x => x).ToConstant(rawChromatograms),
+                IsDeconvolutedSelected.Where(x => x).ToConstant(deconvolutedChromatograms),
+                IsBothSelected.Where(x => x).ToConstant(bothChromatograms),
             }.Merge()
             .Switch()
             .ToReadOnlyReactivePropertySlim()

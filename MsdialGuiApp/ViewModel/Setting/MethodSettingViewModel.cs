@@ -101,6 +101,18 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             return Model.TryRunAsync(default);
         }
 
+        public ISettingViewModel GetDataCollectionSetting() {
+            return SettingViewModels.OfType<DataCollectionSettingViewModel>().FirstOrDefault();
+        }
+
+        public ISettingViewModel GetIdentificationSetting() {
+            return SettingViewModels.OfType<IdentifySettingViewModel>().FirstOrDefault();
+        }
+
+        public ISettingViewModel GetAlignmentSetting() {
+            return SettingViewModels.OfType<AlignmentParameterSettingViewModel>().FirstOrDefault();
+        }
+
         // TODO: delete method
         private static IAnnotatorSettingViewModelFactory CreateAnnotatorViewModelFactory(IMsdialDataStorage<ParameterBase> storage) {
             switch (storage) {

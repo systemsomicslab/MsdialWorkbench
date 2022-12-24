@@ -1,13 +1,9 @@
-﻿using CompMs.App.Msdial.Common;
-using CompMs.App.Msdial.Model.Chart;
+﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Search;
-using CompMs.App.Msdial.View.Chart;
-using CompMs.App.Msdial.View.Setting;
-using CompMs.App.Msdial.ViewModel.Chart;
-using CompMs.App.Msdial.ViewModel.Setting;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
@@ -25,7 +21,6 @@ using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcImMsApi.Algorithm;
 using CompMs.MsdialLcImMsApi.Algorithm.Alignment;
 using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
-using CompMs.MsdialLcImMsApi.Export;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcImMsApi.Process;
 using Reactive.Bindings.Extensions;
@@ -36,7 +31,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcimms
@@ -281,79 +275,43 @@ namespace CompMs.App.Msdial.Model.Lcimms
             AlignmentModel?.SaveProject();
         }
 
-        public void ShowTIC(Window owner) {
-            var container = Storage;
+        public ChromatogramsModel PrepareTIC() {
             var analysisModel = AnalysisModel;
-            if (analysisModel is null) return;
+            if (analysisModel is null) {
+                return null;
+            }
 
             var tic = analysisModel.EicLoader.LoadTic();
-            var vm = new ChromatogramsViewModel(new ChromatogramsModel("Total ion chromatogram", new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC"),
-                "Total ion chromatogram", "Retention time", "Absolute ion abundance"));
-            var view = new DisplayChromatogramsView() {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            view.Show();
+            var pen = new Pen(Brushes.Black, 1.0);
+            pen.Freeze();
+            return new ChromatogramsModel("Total ion chromatogram", new DisplayChromatogram(tic, pen, "TIC"), "Total ion chromatogram", "Retention time", "Absolute ion abundance");
         }
 
-        public void ShowBPC(Window owner) {
-            var container = Storage;
+        public ChromatogramsModel PrepareBPC() {
             var analysisModel = AnalysisModel;
-            if (analysisModel is null) return;
+            if (analysisModel is null) {
+                return null;
+            }
 
             var bpc = analysisModel.EicLoader.LoadBpc();
-            var vm = new ChromatogramsViewModel(new ChromatogramsModel("Base peak chromatogram", 
-                new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC"),
-                "Base peak chromatogram", "Retention time", "Absolute ion abundance"));
-            var view = new DisplayChromatogramsView() {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            view.Show();
+            var pen = new Pen(Brushes.Red, 1.0);
+            pen.Freeze();
+            return new ChromatogramsModel("Base peak chromatogram", new DisplayChromatogram(bpc, pen, "BPC"), "Base peak chromatogram", "Retention time", "Absolute ion abundance");
         }
 
-        public void ShowEIC(Window owner) {
-            var container = Storage;
+        public DisplayEicSettingModel PrepareEicSetting() {
             var analysisModel = AnalysisModel;
-            if (analysisModel is null) return;
-
-            var param = container.Parameter;
-            var model = new Setting.DisplayEicSettingModel(analysisModel.EicLoader, param);
-            var dialog = new EICDisplaySettingView() {
-                DataContext = new DisplayEicSettingViewModel(model),
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            if (dialog.ShowDialog() == true) {
-                param.AdvancedProcessOptionBaseParam.DiplayEicSettingValues = model.DiplayEicSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0).ToList();
-                var displayEICs = param.AdvancedProcessOptionBaseParam.DiplayEicSettingValues;
-                if (!displayEICs.IsEmptyOrNull()) {
-                    var displayChroms = new List<DisplayChromatogram>();
-                    var counter = 0;
-                    foreach (var set in displayEICs.Where(n => n.Mass > 0 && n.MassTolerance > 0)) {
-                        var eic = analysisModel.EicLoader.LoadEicTrace(set.Mass, set.MassTolerance);
-                        var subtitle = "[" + Math.Round(set.Mass - set.MassTolerance, 4).ToString() + "-" + Math.Round(set.Mass + set.MassTolerance, 4).ToString() + "]";
-                        var chrom = new DisplayChromatogram(eic, new Pen(ChartBrushes.GetChartBrush(counter), 1.0), set.Title + "; " + subtitle);
-                        counter++;
-                        displayChroms.Add(chrom);
-                    }
-                    var vm = new ChromatogramsViewModel(new ChromatogramsModel("EIC", displayChroms, "EIC", "Retention time [min]", "Absolute ion abundance"));
-                    var view = new DisplayChromatogramsView() {
-                        DataContext = vm,
-                        Owner = owner,
-                        WindowStartupLocation = WindowStartupLocation.CenterOwner
-                    };
-                    view.Show();
-                }
+            if (analysisModel is null) {
+                return null;
             }
+            return new DisplayEicSettingModel(analysisModel.EicLoader, Storage.Parameter);
         }
 
-        public void ShowTicBpcRepEIC(Window owner) {
-            var container = Storage;
+        public ChromatogramsModel PrepareTicBpcRepEIC() {
             var analysisModel = AnalysisModel;
-            if (analysisModel is null) return;
+            if (analysisModel is null) {
+                return null;
+            }
 
             var tic = analysisModel.EicLoader.LoadTic();
             var bpc = analysisModel.EicLoader.LoadBpc();
@@ -361,20 +319,18 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             var maxPeakMz = analysisModel.Ms1Peaks.Argmax(n => n.Intensity).Mass;
 
-
+            Pen ticPen = new Pen(Brushes.Black, 1.0);
+            ticPen.Freeze();
+            Pen bpcPen = new Pen(Brushes.Red, 1.0);
+            bpcPen.Freeze();
+            Pen eicPen = new Pen(Brushes.Blue, 1.0);
+            eicPen.Freeze();
             var displayChroms = new List<DisplayChromatogram>() {
-                new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC"),
-                new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC"),
-                new DisplayChromatogram(eic, new Pen(Brushes.Blue, 1.0), "EIC of m/z " + Math.Round(maxPeakMz, 5).ToString())
+                new DisplayChromatogram(tic, ticPen, "TIC"),
+                new DisplayChromatogram(bpc, bpcPen, "BPC"),
+                new DisplayChromatogram(eic, eicPen, "EIC of m/z " + Math.Round(maxPeakMz, 5).ToString())
             };
-
-            var vm = new ChromatogramsViewModel(new ChromatogramsModel("TIC, BPC, and highest peak m/z's EIC", displayChroms, "TIC, BPC, and highest peak m/z's EIC", "Retention time [min]", "Absolute ion abundance"));
-            var view = new DisplayChromatogramsView() {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            view.Show();
+            return new ChromatogramsModel("TIC, BPC, and highest peak m/z's EIC", displayChroms, "TIC, BPC, and highest peak m/z's EIC", "Retention time [min]", "Absolute ion abundance");
         }
     }
 }

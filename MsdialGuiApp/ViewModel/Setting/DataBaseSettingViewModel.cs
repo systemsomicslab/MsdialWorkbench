@@ -145,8 +145,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            IsEditable = isEditableModel.Where(m => m == Model).Select(_ => true)
-                .Merge(notEditableModel.Where(m => m == Model).Select(_ => false))
+            IsEditable = isEditableModel.Where(m => m == Model).ToConstant(true)
+                .Merge(notEditableModel.Where(m => m == Model).ToConstant(false))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
         }

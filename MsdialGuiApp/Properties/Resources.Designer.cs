@@ -70,7 +70,7 @@ namespace CompMs.App.Msdial.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Dec. 16th, 2022.
+        ///   Looks up a localized string similar to Dec. 18th, 2022.
         /// </summary>
         public static string LASTEST_UPDATE {
             get {
@@ -88,7 +88,7 @@ namespace CompMs.App.Msdial.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 5.1.221216-dev.
+        ///   Looks up a localized string similar to 5.1.221224.
         /// </summary>
         public static string VERSION {
             get {

@@ -64,7 +64,7 @@ namespace CompMs.App.Msdial.Model.Loader
                 var area = new[]
                 {
                     _peak.SkipNull().Select(p => peaks.Where(item => p.ChromXsLeft.Value <= item.Time && item.Time <= p.ChromXsRight.Value).ToList()),
-                    _peak.Where(p => p is null).Select(_ => new List<PeakItem>(0)),
+                    _peak.TakeNull().Select(_ => new List<PeakItem>(0)),
                 }.Merge();
 
                 return new[]

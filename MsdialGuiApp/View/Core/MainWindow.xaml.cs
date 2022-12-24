@@ -64,34 +64,36 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowProcessMessageDialog);
             broker.ToObservable<FileClassSetViewModel>()
                 .Subscribe(ShowFileClassSetView);
-            broker.ToObservable<ExperimentSpectrumViewModel>()
-                .Subscribe(OpenExperimentSpectrumView);
-            broker.ToObservable<ProteinGroupTableViewModel>()
-                .Subscribe(OpenProteinGroupTable);
             broker.ToObservable<SaveFileNameRequest>()
                 .Subscribe(GetSaveFilePath);
             broker.ToObservable<OpenFileRequest>()
                 .Subscribe(OpenFileDialog);
             broker.ToObservable<ErrorMessageBoxRequest>()
                 .Subscribe(ShowErrorComfirmationMessage);
-            broker.ToObservable<ChromatogramsViewModel>()
-                .Subscribe(ShowDisplayChromatogramsView);
-            broker.ToObservable<DisplayEicSettingViewModel>()
-                .Subscribe(ShowDialogOfEicSettingView);
             broker.ToObservable<AlignedChromatogramModificationViewModelLegacy>()
                 .Subscribe(CreateAlignedChromatogramModificationDialog);
             broker.ToObservable<SampleTableViewerInAlignmentViewModelLegacy>()
                 .Subscribe(CreateSampleTableViewerDialog);
             broker.ToObservable<InternalStandardSetViewModel>()
                 .Subscribe(OpenInternalStandardSetView);
-            broker.ToObservable<NormalizationSetViewModel>()
-                .Subscribe(OpenNormalizationSetView);
-            broker.ToObservable<MultivariateAnalysisSettingViewModel>()
-                .Subscribe(OpenMultivariateAnalysisSettingView);
             broker.ToObservable<PCAPLSResultViewModel>()
                 .Subscribe(OpenPCAPLSResultView);
+            broker.ToObservable<ExperimentSpectrumViewModel>()
+                .Subscribe(ShowChildView<ExperimentSpectrumView>);
+            broker.ToObservable<ProteinGroupTableViewModel>()
+                .Subscribe(ShowChildView<ProteinGroupTable>);
+            broker.ToObservable<ChromatogramsViewModel>()
+                .Subscribe(ShowChildView<DisplayChromatogramsView>);
+            broker.ToObservable<DisplayEicSettingViewModel>()
+                .Subscribe(ShowChildDialog<EICDisplaySettingView>);
+            broker.ToObservable<NormalizationSetViewModel>()
+                .Subscribe(ShowChildDialog<NormalizationSetView>);
+            broker.ToObservable<MultivariateAnalysisSettingViewModel>()
+                .Subscribe(ShowChildView<MultivariateAnalysisSettingView>);
+            broker.ToObservable<AnalysisResultExportViewModel>()
+                .Subscribe(ShowChildDialog<AnalysisResultExportWin>);
             broker.ToObservable<AlignmentResultExportViewModel>()
-                .Subscribe(OpenAlignmentResultExportDialog);
+                .Subscribe(ShowChildDialog<AlignmentResultExportWin>);
 #if RELEASE
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
 #elif DEBUG
@@ -110,6 +112,26 @@ namespace CompMs.App.Msdial.View.Core
                     }
                 }
             });
+        }
+
+        private void ShowChildView<TView>(object viewmodel) where TView : Window, new() {
+            var view = new TView()
+            {
+                DataContext = viewmodel,
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            };
+            view.Show();
+        }
+
+        private void ShowChildDialog<TView>(object viewmodel) where TView : Window, new() {
+            var view = new TView()
+            {
+                DataContext = viewmodel,
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            };
+            view.ShowDialog();
         }
 
         private void ShowMultiProgressBarWindow(ProgressBarMultiContainerRequest request) {
@@ -197,16 +219,6 @@ namespace CompMs.App.Msdial.View.Core
             dialog.Show();
         }
 
-        private void OpenExperimentSpectrumView(ExperimentSpectrumViewModel viewmodel) {
-            var dialog = new ExperimentSpectrumView() { Owner = this, DataContext = viewmodel, };
-            dialog.Show();
-        }
-
-        private void OpenProteinGroupTable(ProteinGroupTableViewModel viewmodel) {
-            var dialog = new ProteinGroupTable() { Owner = this, DataContext = viewmodel, };
-            dialog.Show();
-        }
-
         private void OpenInternalStandardSetView(InternalStandardSetViewModel viewmodel) {
             var dialog = new SettingDialog
             {
@@ -221,32 +233,6 @@ namespace CompMs.App.Msdial.View.Core
                 ApplyCommand = null,
                 FinishCommand = viewmodel.ApplyCommand,
                 CancelCommand = viewmodel.CancelCommand,
-            };
-            dialog.Show();
-        }
-
-        private void OpenNormalizationSetView(NormalizationSetViewModel viewmodel) {
-            if (viewmodel is null) {
-                return;
-            }
-            var view = new NormalizationSetView {
-                DataContext = viewmodel,
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-            view.ShowDialog();
-        }
-
-        private void OpenMultivariateAnalysisSettingView(MultivariateAnalysisSettingViewModel viewmodel) {
-            if (viewmodel is null) {
-                MessageBox.Show("Please select an alignment result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            var dialog = new MultivariateAnalysisSettingView()
-            {
-                DataContext = viewmodel,
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             dialog.Show();
         }
@@ -296,25 +282,6 @@ namespace CompMs.App.Msdial.View.Core
             });
         }
 
-        private void ShowDisplayChromatogramsView(ChromatogramsViewModel viewmodel) {
-            var view = new DisplayChromatogramsView {
-                DataContext = viewmodel,
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            view.Show();
-        }
-
-        private void ShowDialogOfEicSettingView(DisplayEicSettingViewModel viewmodel) {
-            var view = new EICDisplaySettingView
-            {
-                DataContext = viewmodel,
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            view.ShowDialog();
-        }
-
         private void CreateAlignedChromatogramModificationDialog(AlignedChromatogramModificationViewModelLegacy vm) {
             Dispatcher.Invoke(() =>
             {
@@ -339,16 +306,6 @@ namespace CompMs.App.Msdial.View.Core
                 window.Closed += (s, e) => vm.Dispose();
                 window.Show();
             });
-        }
-
-        private void OpenAlignmentResultExportDialog(AlignmentResultExportViewModel vm) {
-            var dialog = new AlignmentResultExportWin
-            {
-                DataContext = vm,
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-            dialog.ShowDialog();
         }
 
         protected override void OnContentRendered(EventArgs e) {

@@ -47,7 +47,7 @@ namespace CompMs.App.Msdial.Model.Chart
             var peaksox = eicChromatograms
                 .Select(chroms => chroms?.SelectMany(chrom => chrom.Peaks).ToArray() ?? new PeakItem[0]);
 
-            var nopeak = peaksox.Where(peaks => !peaks.Any()).Select(_ => new Range(0, 1));
+            var nopeak = peaksox.Where(peaks => !peaks.Any()).ToConstant(new Range(0, 1));
 
             var anypeak = peaksox.Where(peaks => peaks.Any());
             var hrox = anypeak

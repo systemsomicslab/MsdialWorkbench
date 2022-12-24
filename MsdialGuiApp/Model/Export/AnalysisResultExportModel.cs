@@ -1,8 +1,10 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
+using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using System;
 using System.Collections.Generic;
@@ -12,13 +14,16 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Export
 {
-    class AnalysisResultExportModel : ValidatableBase
+    internal sealed class AnalysisResultExportModel : BindableBase
     {
+        private readonly IDataProviderFactory<AnalysisFileBeanModel> _providerFactory;
+        private readonly object _syncObject = new object();
+
         public AnalysisResultExportModel(
-            IEnumerable<AnalysisFileBean> files,
+            AnalysisFileBeanModelCollection files,
             IEnumerable<SpectraType> spectraTypes,
             IEnumerable<SpectraFormat> spectraFormats,
-            IDataProviderFactory<AnalysisFileBean> providerFactory) {
+            IDataProviderFactory<AnalysisFileBeanModel> providerFactory) {
             if (files is null) {
                 throw new ArgumentNullException(nameof(files));
             }
@@ -35,10 +40,10 @@ namespace CompMs.App.Msdial.Model.Export
                 throw new ArgumentNullException(nameof(providerFactory));
             }
 
-            this.providerFactory = providerFactory;
+            _providerFactory = providerFactory;
 
-            UnSelectedFiles = new ObservableCollection<AnalysisFileBean>(files);
-            SelectedFiles = new ObservableCollection<AnalysisFileBean>();
+            UnSelectedFiles = new ObservableCollection<AnalysisFileBeanModel>(files.AnalysisFiles);
+            SelectedFiles = new ObservableCollection<AnalysisFileBeanModel>();
 
             ExportSpectraTypes = new ObservableCollection<SpectraType>(spectraTypes);
             SelectedSpectraType = ExportSpectraTypes.FirstOrDefault();
@@ -47,98 +52,72 @@ namespace CompMs.App.Msdial.Model.Export
             SelectedFileFormat = ExportSpectraFileFormats.FirstOrDefault();
         }
 
-        private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
-
         public void Export() {
-            Export(SelectedFiles);
-        }
-
-        public void Export(IEnumerable<AnalysisFileBean> files) {
-
-            foreach (var file in files) {
-                var provider = providerFactory.Create(file);
+            foreach (var file in SelectedFiles) {
+                var provider = _providerFactory.Create(file);
                 var filename = Path.Combine(DestinationFolder, file.AnalysisFileName + "." + SelectedFileFormat.Format);
                 using (var stream = File.Open(filename, FileMode.Create, FileAccess.Write)) {
-                    Export(file, provider, SelectedFileFormat.Exporter, SelectedSpectraType.Accessor, stream);
+                    var features = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath).Result;
+                    SelectedFileFormat.Export(stream, features.Items, provider, SelectedSpectraType, file);
                 }
             }
         }
 
-        public ObservableCollection<AnalysisFileBean> SelectedFiles {
-            get => selectedFiles;
-            set => SetProperty(ref selectedFiles, value);
-        }
+        public ObservableCollection<AnalysisFileBeanModel> SelectedFiles { get; }
+        public ObservableCollection<AnalysisFileBeanModel> UnSelectedFiles { get; }
 
-        private ObservableCollection<AnalysisFileBean> selectedFiles;
-
-        public ObservableCollection<AnalysisFileBean> UnSelectedFiles {
-            get => unSelectedFiles;
-            set => SetProperty(ref unSelectedFiles, value);
-        }
-
-        private ObservableCollection<AnalysisFileBean> unSelectedFiles;
-
-        public void Selects(IEnumerable<AnalysisFileBean> files) {
-            foreach (var file in files) {
-                UnSelectedFiles.Remove(file);
-                SelectedFiles.Add(file);
+        public void Selects(IEnumerable<AnalysisFileBeanModel> files) {
+            lock (_syncObject) {
+                foreach (var file in files) {
+                    if (UnSelectedFiles.Contains(file)) {
+                        UnSelectedFiles.Remove(file);
+                        SelectedFiles.Add(file);
+                    }
+                }
             }
         }
  
-        public void UnSelects(IEnumerable<AnalysisFileBean> files) {
-            foreach (var file in files) {
-                SelectedFiles.Remove(file);
-                UnSelectedFiles.Add(file);
+        public void UnSelects(IEnumerable<AnalysisFileBeanModel> files) {
+            lock (_syncObject) {
+                foreach (var file in files) {
+                    if (SelectedFiles.Contains(file)) {
+                        SelectedFiles.Remove(file);
+                        UnSelectedFiles.Add(file);
+                    }
+                }
             }
         }
 
         public string DestinationFolder {
-            get => destinationFolder;
-            set => SetProperty(ref destinationFolder, value);
+            get => _destinationFolder;
+            set => SetProperty(ref _destinationFolder, value);
         }
-
-        private string destinationFolder;
+        private string _destinationFolder;
 
         public ObservableCollection<SpectraType> ExportSpectraTypes { get; }
 
+        public SpectraType SelectedSpectraType {
+            get => _selectedSpectraType;
+            set => SetProperty(ref _selectedSpectraType, value);
+        }
+        private SpectraType _selectedSpectraType;
+
         public ObservableCollection<SpectraFormat> ExportSpectraFileFormats { get; }
 
-        public SpectraType SelectedSpectraType {
-            get => selectedSpectraType;
-            set => SetProperty(ref selectedSpectraType, value);
-        }
-
-        private SpectraType selectedSpectraType;
-
         public SpectraFormat SelectedFileFormat {
-            get => selectedFileFormat;
-            set => SetProperty(ref selectedFileFormat, value);
+            get => _selectedFileFormat;
+            set => SetProperty(ref _selectedFileFormat, value);
         }
-
-        private SpectraFormat selectedFileFormat;
+        private SpectraFormat _selectedFileFormat;
 
         public int IsotopeExportMax {
-            get => isotopeExportMax;
-            set => SetProperty(ref isotopeExportMax, value);
+            get => _isotopeExportMax;
+            set => SetProperty(ref _isotopeExportMax, value);
         }
-
-        private int isotopeExportMax = 2;
-
-        public static void Export(
-            AnalysisFileBean file,
-            IDataProvider provider,
-            IAnalysisExporter exporter,
-            IAnalysisMetadataAccessor metaAccessor,
-            Stream dest) {
-
-            var features = MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);
-            var msdecs = MsdecResultsReader.ReadMSDecResults(file.DeconvolutionFilePath, out _, out _);
-
-            exporter.Export(dest, features, msdecs, provider, metaAccessor);
-        }
+        private int _isotopeExportMax = 2;
     }
 
-    class SpectraFormat
+    internal sealed class SpectraFormat
     {
         public SpectraFormat(ExportSpectraFileFormat format, IAnalysisExporter exporter) {
             Format = format;
@@ -147,9 +126,14 @@ namespace CompMs.App.Msdial.Model.Export
 
         public ExportSpectraFileFormat Format { get; }
         public IAnalysisExporter Exporter { get; }
+
+        public void Export(Stream stream, IReadOnlyList<ChromatogramPeakFeature> features, IDataProvider provider, SpectraType spectraType, AnalysisFileBeanModel fileBeanModel) {
+            var msdecs = spectraType.GetSpectra(fileBeanModel);
+            Exporter.Export(stream, features, msdecs, provider, spectraType.Accessor);
+        }
     }
 
-    class SpectraType
+    internal sealed class SpectraType
     {
         public SpectraType(ExportspectraType type, IAnalysisMetadataAccessor accessor) {
             Type = type;
@@ -158,5 +142,9 @@ namespace CompMs.App.Msdial.Model.Export
 
         public ExportspectraType Type { get; }
         public IAnalysisMetadataAccessor Accessor { get; }
+
+        public IReadOnlyList<MSDecResult> GetSpectra(AnalysisFileBeanModel file) {
+            return MsdecResultsReader.ReadMSDecResults(file.DeconvolutionFilePath, out _, out _);
+        }
     }
 }

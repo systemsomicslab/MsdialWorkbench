@@ -30,8 +30,8 @@ namespace CompMs.App.Msdial.Model.Chart
 
             ItemLoaded = new[]
                 {
-                    targetSource.Select(_ => false),
-                    chromatogram_.Delay(TimeSpan.FromSeconds(.05d)).Select(_ => true),
+                    targetSource.ToConstant(false),
+                    chromatogram_.Delay(TimeSpan.FromSeconds(.05d)).ToConstant(true),
                 }.Merge()
                 .Throttle(TimeSpan.FromSeconds(.1d))
                 .ToReadOnlyReactivePropertySlim()

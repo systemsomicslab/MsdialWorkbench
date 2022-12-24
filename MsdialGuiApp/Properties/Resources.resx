@@ -121,12 +121,12 @@
     <value />
   </data>
   <data name="LASTEST_UPDATE" xml:space="preserve">
-    <value>Dec. 16th, 2022</value>
+    <value>Dec. 18th, 2022</value>
   </data>
   <data name="VDD_URI" xml:space="preserve">
     <value>http://prime.psc.riken.jp/compms/msdial/vmsdial.json</value>
   </data>
   <data name="VERSION" xml:space="preserve">
-    <value>5.1.221216-dev</value>
+    <value>5.1.221224</value>
   </data>
 </root>

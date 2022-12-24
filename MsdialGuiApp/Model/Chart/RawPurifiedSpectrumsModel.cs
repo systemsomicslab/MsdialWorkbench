@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Base;
@@ -53,16 +54,16 @@ namespace CompMs.App.Msdial.Model.Chart
 
             UpperSpectrumLoaded = new[]
             {
-                targetSource.Select(_ => false),
-                UpperSpectrumSource.Delay(TimeSpan.FromSeconds(.05d)).Select(_ => true),
+                targetSource.ToConstant(false),
+                UpperSpectrumSource.Delay(TimeSpan.FromSeconds(.05d)).ToConstant(true),
             }.Merge()
             .Throttle(TimeSpan.FromSeconds(.1d))
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
             LowerSpectrumLoaded = new[]
             {
-                targetSource.Select(_ => false),
-                LowerSpectrumSource.Delay(TimeSpan.FromSeconds(.05d)).Select(_ => true),
+                targetSource.ToConstant(false),
+                LowerSpectrumSource.Delay(TimeSpan.FromSeconds(.05d)).ToConstant(true),
             }.Merge()
             .Throttle(TimeSpan.FromSeconds(.1d))
             .ToReadOnlyReactivePropertySlim()
@@ -74,13 +75,13 @@ namespace CompMs.App.Msdial.Model.Chart
             var upperAny = upperSpectrum.Where(spec => spec?.Any() ?? false);
             UpperVerticalRangeSource = upperAny
                 .Select(spec => new Range(spec.Min(verticalSelector), spec.Max(verticalSelector)))
-                .Merge(upperEmpty.Select(_ => new Range(0, 1)));
+                .Merge(upperEmpty.ToConstant(new Range(0, 1)));
             var lowerEmpty = lowerSpectrum.Where(spec => spec is null || !spec.Any());
             var lowerAny = lowerSpectrum.Where(spec => spec?.Any() ?? false);
             LowerVerticalRangeSource = lowerAny
                 .WithLatestFrom(Observable.Return(verticalSelector),
                     (spec, selector) => new Range(spec.Min(selector), spec.Max(selector)))
-                .Merge(lowerEmpty.Select(_ => new Range(0, 1)));
+                .Merge(lowerEmpty.ToConstant(new Range(0, 1)));
 
             HorizontalRangeSource = new[]
             {
