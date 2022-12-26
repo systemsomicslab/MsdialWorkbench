@@ -473,11 +473,11 @@
     </Style>
 
     <Style TargetType="{x:Type chart:MultiChart}" x:Key="VerticalConcatChartFormal">
-        <Style.Resources>
+        <!--<Style.Resources>
             <Style TargetType="chart:Annotator">
                 <Setter Property="FontSize" Value="17"/>
             </Style>
-        </Style.Resources>
+        </Style.Resources>-->
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Black"/>
         <Setter Property="Template">
@@ -746,21 +746,22 @@
                                     behavior:ZoomByDragBehavior.IsEnabled="True"
                                     behavior:ZoomByWheelBehavior.IsEnabled="True"
                                     behavior:MoveByDragBehavior.IsEnabled="True"
-                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True">
+                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True"
+                                    behavior:AxisRangeRecalculationBehavior.IsEnabled="False">
                                 <Grid IsItemsHost="True"/>
                             </Border>
                         </Border>
 
                         <chart:HorizontalAxisControl x:Name="PART_HorizontalAxis"
-                                                    VerticalAxis="{x:Null}"
-                                                    Margin="1,0,0,0"
-                                                    LayoutTransform="{StaticResource RotateL}"
-                                                    Grid.Row="1" Grid.Column="2"/>
+                                                     VerticalAxis="{x:Null}"
+                                                     Margin="1,0,0,0"
+                                                     LayoutTransform="{StaticResource RotateL}"
+                                                     Grid.Row="1" Grid.Column="2"/>
                         <chart:VerticalAxisControl x:Name="PART_VerticalAxis"
-                                                  HorizontalAxis="{x:Null}"
-                                                  Margin="0,0,0,1"
-                                                  LayoutTransform="{StaticResource RotateL}"
-                                                  Grid.Row="2" Grid.RowSpan="2" Grid.Column="1"/>
+                                                   HorizontalAxis="{x:Null}"
+                                                   Margin="0,0,0,1"
+                                                   LayoutTransform="{StaticResource RotateL}"
+                                                   Grid.Row="2" Grid.RowSpan="2" Grid.Column="1"/>
 
                         <TextBlock Name="HorizontalTitle"
                                    Text="{TemplateBinding HorizontalTitle}"

@@ -45,6 +45,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 if (this.collisionType == CollisionType.EIEIO) {
                     matchedPeaksScores = MsScanMatching.GetEieioBasedLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
                 }
+                else if (this.collisionType == CollisionType.EID) {
+                    matchedPeaksScores = MsScanMatching.GetEidBasedLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+                }
                 else if (this.collisionType == CollisionType.OAD) {
                     matchedPeaksScores = MsScanMatching.GetOadBasedLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
                 }
@@ -130,7 +133,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             ValidateBase(result, property, reference, parameter);
             if (omics == TargetOmics.Lipidomics) {
-                if (collisionType == CollisionType.EIEIO || collisionType == CollisionType.OAD) {
+                if (collisionType == CollisionType.EIEIO || collisionType == CollisionType.OAD || collisionType == CollisionType.EID) {
                     ValidateOnEadLipidomics(result, scan, reference, parameter);
                 }
                 else {
@@ -191,9 +194,21 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             MoleculeMsReference reference,
             MsRefSearchParameterBase parameter) {
 
-            (var lipid, _) = collisionType == CollisionType.OAD
-                ? MsScanMatching.GetOadBasedLipidMoleculeAnnotationResult(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd)
-                : MsScanMatching.GetEieioBasedLipidMoleculeAnnotationResult(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+            ILipid lipid;
+            switch (collisionType) {
+                case CollisionType.OAD:
+                    (lipid, _) = MsScanMatching.GetOadBasedLipidMoleculeAnnotationResult(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+                    break;
+                case CollisionType.EIEIO:
+                    (lipid, _) = MsScanMatching.GetEieioBasedLipidMoleculeAnnotationResult(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+                    break;
+                case CollisionType.EID:
+                    (lipid, _) = MsScanMatching.GetEidBasedLipidMoleculeAnnotationResult(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+                    break;
+                default:
+                    (lipid, _) = MsScanMatching.GetEieioBasedLipidMoleculeAnnotationResult(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+                    break;
+            }
 
             if (lipid is null) {
                 lipid = FacadeLipidParser.Default.Parse(reference.Name);

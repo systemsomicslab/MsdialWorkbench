@@ -230,7 +230,12 @@ namespace CompMs.App.Msdial.Model.Setting
                         var task = Task.Run(() =>
                         {
                             var dbModel = group.Key;
-                            EadLipidDatabase db = dbModel.DBSource == DataBaseSource.OadLipid ? dbModel.CreateOadLipidDatabase() : dbModel.CreateEieioLipidDatabase();
+                            EadLipidDatabase db = null;
+                            switch (dbModel.DBSource) {
+                                case DataBaseSource.OadLipid: db = dbModel.CreateOadLipidDatabase(); break;
+                                case DataBaseSource.EieioLipid: db = dbModel.CreateEieioLipidDatabase(); break;
+                                case DataBaseSource.EidLipid: db = dbModel.CreateEidLipidDatabase(); break;
+                            }
                             if (db is null) {
                                 return;
                             }

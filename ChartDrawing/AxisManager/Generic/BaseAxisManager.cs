@@ -109,8 +109,10 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         public void UpdateInitialRange(Range range) {
             InitialRangeCore = range;
-            Focus(InitialRangeCore);
+            InitialRange = CoerceRange(range, Bounds);
+            Range = InitialRange;
             OnInitialRangeChanged();
+            // Focus(InitialRangeCore);
         }
 
         public bool Contains(AxisValue value) {
@@ -136,11 +138,6 @@ namespace CompMs.Graphics.AxisManager.Generic
         }
 
         public void Reset() {
-            Focus(InitialRange);
-        }
-
-        public void Reset(double drawableLength) {
-            Recalculate(drawableLength);
             Focus(InitialRange);
         }
 

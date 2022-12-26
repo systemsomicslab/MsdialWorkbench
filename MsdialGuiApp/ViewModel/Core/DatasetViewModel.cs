@@ -14,6 +14,7 @@ using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
+using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -61,6 +62,8 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         public IDatasetModel Model { get; }
 
+        public ParameterBase Parameter => Model?.Storage?.Parameter; // To show the project folder path in MainWindow title.
+
         public ReadOnlyReactivePropertySlim<MethodViewModel> MethodViewModel { get; }
 
         public ReactiveCommand FilePropertyResetCommand { get; }
@@ -91,7 +94,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
                     return LcimmsMethodViewModel.Create(lcim, compoundSearchService, peakSpotTableService, _messageBroker);
                 // case GcmsMethodModel _:
                 case ImagingImmsMethodModel iim:
-                    return new ImagingMainViewModel(iim);
+                    return new ImagingMainViewModel(iim, _messageBroker);
                 default:
                     return null;
             }

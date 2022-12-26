@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Utility;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
@@ -10,7 +11,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    class SurveyScanModel : DisposableModelBase
+    internal sealed class SurveyScanModel : DisposableModelBase
     {
         public SurveyScanModel(
             SurveyScanSpectrum surveyScanSpectrum,
@@ -23,29 +24,31 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalSelector = horizontalSelector;
             VerticalSelector = verticalSelector;
 
-            var nospec = SpectrumSource.Where(spec => !spec.Any()).Select(_ => new Range(0, 1));
-
-            var anyspec = SpectrumSource.Where(spec => spec.Any());
+            var nospec = SpectrumSource.Where(spec => !spec.Any()).Publish();
+            var anyspec = SpectrumSource.Where(spec => spec.Any()).Publish();
             var hrox = anyspec
                 .Select(spec => new Range(spec.Min(HorizontalSelector), spec.Max(HorizontalSelector)));
             var vrox = anyspec
                 .Select(spec => new Range(spec.Min(VerticalSelector), spec.Max(VerticalSelector)));
 
-            HorizontalRangeSource = hrox.Merge(nospec).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            VerticalRangeSource = vrox.Merge(nospec).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            HorizontalRangeSource = hrox.Merge(nospec.ToConstant(new Range(0, 1))).ToReactiveProperty().AddTo(Disposables);
+            VerticalRangeSource = vrox.Merge(nospec.ToConstant(new Range(0, 1))).ToReactiveProperty().AddTo(Disposables);
 
             var maxIntensitySource = anyspec
                 .Select(spectrum => spectrum.Max(spec => spec?.Intensity) ?? 0d)
-                .Merge(nospec.Select(_ => 0d));
+                .Merge(nospec.ToConstant(0d));
 
             var splashKey = anyspec
                 .Select(spectrum => spectrum.CalculateSplashKey())
-                .Merge(nospec.Select(_ => "N/A"));
+                .Merge(nospec.ToConstant("N/A"));
 
             maxIntensitySource
                 .Zip(splashKey, (intensity, key) => string.Format("MS1 spectra max intensity: {0}\n{1}", intensity, key))
                 .Subscribe(title => Elements.GraphTitle = title)
                 .AddTo(Disposables);
+
+            Disposables.Add(nospec.Connect());
+            Disposables.Add(anyspec.Connect());
         }
 
         public ReadOnlyReactivePropertySlim<bool> SurveyScanLoaded { get; }

@@ -3,7 +3,7 @@ using System.Windows;
 
 namespace CompMs.CommonMVVM.WindowService
 {
-    public class DialogService<TView, TViewModel> : IWindowService<TViewModel> where TView : Window, new() {
+    public sealed class DialogService<TView, TViewModel> : IWindowService<TViewModel> where TView : Window, new() {
         public DialogService() {
 
         }
@@ -20,7 +20,7 @@ namespace CompMs.CommonMVVM.WindowService
             var dialog = new TView()
             {
                 Owner = Owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                WindowStartupLocation = WindowStartupLocation,
                 DataContext = viewmodel,
             };
 
@@ -31,7 +31,7 @@ namespace CompMs.CommonMVVM.WindowService
             var dialog = new TView()
             {
                 Owner = Owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                WindowStartupLocation = WindowStartupLocation,
                 DataContext = viewmodel,
             };
 

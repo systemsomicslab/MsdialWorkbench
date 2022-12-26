@@ -132,7 +132,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 TotalScoreCutoff = 0.0F,
                 AndromedaScoreCutOff = 0.0F,
                 MassRangeBegin = 100,
-                MassRangeEnd = 1250
+                MassRangeEnd = 1500
             };
             _annotatorVisitor = annotatorVisitor;
             _createFuctory = createFuctory;
@@ -242,6 +242,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 case DataBaseSource.Fasta:
                     return new LcmsProteomicsAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter, _annotatorVisitor, CreateFactory);
                 case DataBaseSource.EieioLipid:
+                case DataBaseSource.EidLipid:
                 case DataBaseSource.OadLipid:
                     return new LcmsEadLipidAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter, _annotatorVisitor, CreateFactory);
                 default:

@@ -187,6 +187,9 @@
     <Compile Include="UI\ImageZoomTest.xaml.cs">
       <DependentUpon>ImageZoomTest.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\NumericUpDownTest.xaml.cs">
+      <DependentUpon>NumericUpDownTest.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\RangeSlider.xaml.cs">
       <DependentUpon>RangeSlider.xaml</DependentUpon>
     </Compile>
@@ -342,6 +345,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\ImageZoomTest.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\NumericUpDownTest.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

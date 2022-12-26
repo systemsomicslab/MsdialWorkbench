@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
@@ -98,12 +99,8 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 }).AddTo(Disposables);
             new IObservable<IReadOnlyReactiveProperty<IResultViewModel>>[]
             {
-                SelectedAnalysisFile
-                    .Where(file => !(file is null))
-                    .Select(_ => AnalysisViewModel),
-                SelectedAlignmentFile
-                    .Where(file => !(file is null))
-                    .Select(_ => AlignmentViewModel),
+                SelectedAnalysisFile.SkipNull().ToConstant(AnalysisViewModel),
+                SelectedAlignmentFile.SkipNull().ToConstant(AlignmentViewModel),
             }.Merge()
             .Subscribe(vm => SelectedViewModel = vm)
             .AddTo(Disposables);

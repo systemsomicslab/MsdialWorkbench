@@ -49,6 +49,10 @@ namespace CompMs.Graphics.Core.Base
             }
             return new Range(Math.Min(Minimum.Value, other.Minimum.Value), Math.Max(Maximum.Value, other.Maximum.Value));
         }
+
+        public override string ToString() {
+            return $"{Minimum.Value}-{Maximum.Value}";
+        }
     }
 
     public class RangeTypeConverter : TypeConverter

@@ -24,12 +24,11 @@
             <TextBlock Text="Directory:"
                        VerticalAlignment="Center"
                        DockPanel.Dock="Left"/>
-            <Button Content="Select"
+            <Button Content="Browse"
                     Command="{Binding SelectDestinationCommand}"
-                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                     Width="64"
                     DockPanel.Dock="Right"/>
-            <TextBox Text="{Binding DestinationFolder}"
+            <TextBox Text="{Binding DestinationFolder, UpdateSourceTrigger=PropertyChanged}"
                      Validation.ErrorTemplate="{StaticResource BasicErrorTemplate}"
                      VerticalContentAlignment="Center"
                      Margin="8,0"/>
@@ -63,11 +62,13 @@
             <TextBlock Text="Available files to export"
                        Grid.Row="0" Grid.Column="0"/>
             <ListBox ItemsSource="{Binding SelectedFrom}"
+                     SelectionMode="Multiple"
                      Grid.Row="1" Grid.Column="0"/>
 
             <TextBlock Text="File to be exported"
                        Grid.Row="0" Grid.Column="2"/>
             <ListBox ItemsSource="{Binding SelectedTo}"
+                     SelectionMode="Multiple"
                      Grid.Row="1" Grid.Column="2"/>
 
             <StackPanel VerticalAlignment="Center"

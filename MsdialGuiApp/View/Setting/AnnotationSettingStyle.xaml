@@ -166,6 +166,12 @@
                         <TextBox Text="{Binding MaxPeptideMass.Value, UpdateSourceTrigger=PropertyChanged}"
                                  HorizontalContentAlignment="Right"/>
                     </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Minimum peptide length:"
+                                       AppendLabel=""
+                                       DataContext="{Binding ProteomicsParameterVM}">
+                        <TextBox Text="{Binding MinimumPeptideLength.Value, UpdateSourceTrigger=PropertyChanged}"
+                                 HorizontalContentAlignment="Right"/>
+                    </ui:LabeledContent>
                     <ui:LabeledContent PrependLabel="MS2 mass range begin:"
                                        AppendLabel="Da"
                                        DataContext="{Binding ProteomicsParameterVM}">

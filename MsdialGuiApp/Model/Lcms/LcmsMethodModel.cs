@@ -5,18 +5,14 @@ using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using CompMs.Common.Parameter;
-using CompMs.Common.Proteomics.DataObj;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm.Alignment;
@@ -65,16 +61,15 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             List<AnalysisFileBean> analysisFiles = analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File).ToList();
             var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
-            var  metadataAccessor = storage.Parameter.TargetOmics == TargetOmics.Proteomics
-                ? (IMetadataAccessor)new LcmsProteomicsMetadataAccessor(storage.DataBaseMapper, storage.Parameter)
-                : (IMetadataAccessor)new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter);
+            var metadataAccessorFactory = new LcmsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter);
             AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(PeakFilterModel, _matchResultEvaluator.Contramap((IFilterable filterable) => filterable.MatchResults.Representative));
             var peakGroup = new AlignmentExportGroupModel(
                 "Peaks",
                 new ExportMethod(
                     analysisFiles,
-                    new ExportFormat("txt", "txt", new AlignmentCSVExporter(), new AlignmentLongCSVExporter(), metadataAccessor),
-                    new ExportFormat("csv", "csv", new AlignmentCSVExporter(separator: ","), new AlignmentLongCSVExporter(separator: ","), metadataAccessor)
+                    metadataAccessorFactory,
+                    ExportFormat.Tsv,
+                    ExportFormat.Csv
                 ),
                 new[]
                 {
@@ -175,7 +170,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
                 annotationProcess = BuildProteoMetabolomicsAnnotationProcess();
             }
-            else if(parameter.TargetOmics == TargetOmics.Lipidomics && (parameter.CollistionType == CollisionType.EIEIO || parameter.CollistionType == CollisionType.OAD)) {
+            else if(parameter.TargetOmics == TargetOmics.Lipidomics && 
+                (parameter.CollistionType == CollisionType.EIEIO || parameter.CollistionType == CollisionType.OAD || parameter.CollistionType == CollisionType.EID)) {
                 annotationProcess = BuildEadLipidomicsAnnotationProcess();
             }
             else {
@@ -354,7 +350,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
             };
 
-            return new AnalysisResultExportModel(container.AnalysisFiles, spectraTypes, spectraFormats, _providerFactory);
+            return new AnalysisResultExportModel(AnalysisFileModelCollection, spectraTypes, spectraFormats, _providerFactory.ContraMap((AnalysisFileBeanModel file) => file.File));
         }
 
         public ChromatogramsModel ShowTIC() {

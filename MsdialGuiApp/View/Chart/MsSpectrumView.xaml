@@ -118,6 +118,7 @@
                                              OrderingPropertyName="{Binding DataContext.OrderingProperty.Value, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                              Brush="Black"
                                              Overlap="Horizontal, Direct"
+                                             Format="F4"
                                              ClipToBounds="True"/>
                         </Grid>
                     </DataTemplate>
@@ -212,6 +213,7 @@
                                  ContentAlignment="BottomCenter"
                                  Brush="Black"
                                  Overlap="Horizontal, Direct"
+                                 Format="F4"
                                  ClipToBounds="True"/>
             </Grid>
         </chart:MultiChart>

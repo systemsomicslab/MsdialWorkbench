@@ -10,7 +10,7 @@ namespace CompMs.Common.Lipidomics
             float tolerance, float mzBegin, float mzEnd)
         {
 
-            var defaultResult = EieioMsCharacterizationUtility.GetDefaultScoreForGlycerophospholipid(
+            var defaultResult = EieioMsCharacterizationUtility.GetDefaultScore(
                     scan, reference, tolerance, mzBegin, mzEnd, 2, 1, 1, 0.5);
             return StandardMsCharacterizationUtility.GetDefaultCharacterizationResultForSingleAcylChainLipid(molecule, defaultResult);
         }

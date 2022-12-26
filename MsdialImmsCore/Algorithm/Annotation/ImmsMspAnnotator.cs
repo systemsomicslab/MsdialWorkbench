@@ -38,19 +38,18 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
         public MsScanMatchResult Annotate(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
-            return FindCandidatesCore(query.Property, query.Scan, query.Isotopes, parameter, omics, Key).FirstOrDefault();
+            return FindCandidatesCore(query.Property, query.NormalizedScan, query.Isotopes, parameter, omics, Key).FirstOrDefault();
         }
 
         public List<MsScanMatchResult> FindCandidates(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
-            return FindCandidatesCore(query.Property, query.Scan, query.Isotopes, parameter, omics, Key);
+            return FindCandidatesCore(query.Property, query.NormalizedScan, query.Isotopes, parameter, omics, Key);
         }
 
         private List<MsScanMatchResult> FindCandidatesCore(
-            IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes,
+            IMSIonProperty property, IMSScanProperty normScan, IReadOnlyList<IsotopicPeak> isotopes,
             MsRefSearchParameterBase parameter, TargetOmics omics, string sourceKey) {
 
-            var normScan = DataAccess.GetNormalizedMSScanProperty(scan, parameter);
             var candidates = parameter.IsUseCcsForAnnotationFiltering
                 ? SearchWithCcsCore(property, parameter.Ms1Tolerance, parameter.CcsTolerance)
                 : SearchCore(property, parameter.Ms1Tolerance);
@@ -65,9 +64,9 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
         public MsScanMatchResult CalculateScore(IAnnotationQuery<MsScanMatchResult> query, MoleculeMsReference reference) {
             var parameter = query.Parameter ?? Parameter;
-            var scan = DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter);
-            var result = CalculateScoreCore(query.Property, scan, query.Isotopes, reference, reference.IsotopicPeaks, parameter, omics, Key);
-            ValidateCore(result, query.Property, scan, reference, parameter, omics);
+            var normScan = query.NormalizedScan;
+            var result = CalculateScoreCore(query.Property, normScan, query.Isotopes, reference, reference.IsotopicPeaks, parameter, omics, Key);
+            ValidateCore(result, query.Property, normScan, reference, parameter, omics);
             return result;
         }
 

@@ -22,11 +22,17 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             Id = id ?? throw new System.ArgumentNullException(nameof(id));
             Priority = priority;
             EadLipidDatabase = db ?? throw new System.ArgumentNullException(nameof(db));
-            if (db.Source == DataBaseSource.OadLipid) {
-                scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.OAD, true);
-            }
-            else {
-                scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EIEIO, true);
+
+            switch (db.Source) {
+                case DataBaseSource.OadLipid:
+                    scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.OAD, true);
+                    break;
+                case DataBaseSource.EidLipid:
+                    scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EID, true);
+                    break;
+                case DataBaseSource.EieioLipid:
+                    scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EIEIO, true);
+                    break;
             }
             Parameter = parameter ?? throw new System.ArgumentNullException(nameof(parameter));
             evaluator = new MsScanMatchResultEvaluator(Parameter);

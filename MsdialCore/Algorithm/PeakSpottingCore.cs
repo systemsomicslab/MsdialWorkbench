@@ -602,7 +602,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 if (spec.MsLevel <= 1) continue;
                 // for tsugawa own research
 #if DEBUG
-                //if (spec.ExperimentID != 5) continue;
+                //if (spec.ExperimentID != 1) continue;
 #endif
 
                 if (spec.MsLevel == 2 && spec.Precursor != null && scanPolarity == spec.ScanPolarity) {

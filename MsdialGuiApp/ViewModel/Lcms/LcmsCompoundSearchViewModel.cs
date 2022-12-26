@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Search;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -13,7 +14,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     internal sealed class LcmsCompoundSearchViewModel : CompoundSearchVM
     {
         public LcmsCompoundSearchViewModel(ICompoundSearchModel model, ICommand setUnknownCommand) : base(model, setUnknownCommand) {
-            ParameterHasErrors = ParameterVM.Select(parameter =>
+            ParameterHasErrors = ParameterVM.SelectSwitch(parameter =>
                 parameter is null
                     ? Observable.Return(true)
                     : new[]
@@ -23,7 +24,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                         parameter.RtTolerance.ObserveHasErrors,
                     }.CombineLatestValuesAreAllFalse()
                     .Inverse())
-            .Switch()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
@@ -34,7 +34,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }.CombineLatestValuesAreAllFalse()
             .ToReactiveCommand().AddTo(Disposables);
 
-            Compounds = ParameterVM.Select(parameter =>
+            Compounds = ParameterVM.SelectSwitch(parameter =>
                 parameter is null
                     ? Observable.Never<Unit>()
                     : new[]
@@ -43,10 +43,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                         parameter.Ms2Tolerance.ToUnit(),
                         parameter.RtTolerance.ToUnit(),
                     }.Merge())
-                .Switch()
                 .Where(_ => !ParameterHasErrors.Value)
-                .Select(_ => Observable.FromAsync(SearchAsync))
-                .Switch()
+                .SelectSwitch(_ => Observable.FromAsync(SearchAsync))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 

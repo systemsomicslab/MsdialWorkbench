@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace CompMs.MsdialLcMsApi.Export
 {
     public class LcmsProteomicsMetadataAccessor : ProteomicsBaseAccessor {
-        public LcmsProteomicsMetadataAccessor(IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer, ParameterBase parameter) : base(refer, parameter) {
+        public LcmsProteomicsMetadataAccessor(IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer, bool trimSpectrumToExcelLimit) : base(refer, trimSpectrumToExcelLimit) {
 
         }
     }
@@ -19,11 +19,9 @@ namespace CompMs.MsdialLcMsApi.Export
 
     public class LcmsMetadataAccessor : BaseMetadataAccessor
     {
-        public LcmsMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter) : base(refer, parameter) {
+        public LcmsMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, bool trimSpectrumToExcelLimit) : base(refer, parameter, trimSpectrumToExcelLimit) {
 
         }
-
-
 
         protected override string[] GetHeadersCore() {
             return new string[] {

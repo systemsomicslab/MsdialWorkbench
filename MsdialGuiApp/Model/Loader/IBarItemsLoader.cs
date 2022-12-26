@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.Mathematics.Basic;
 using Reactive.Bindings.Extensions;
 using System;
@@ -36,8 +37,8 @@ namespace CompMs.App.Msdial.Model.Loader
                 var loading = target.AlignedPeakPropertiesModelAsObservable.Select(props => props is null);
                 var propertiesAsObserable = new[]
                 {
-                    target.AlignedPeakPropertiesModelAsObservable.Where(props => props is null).Select(_ => Enumerable.Empty<AlignmentChromPeakFeatureModel>()),
-                    target.AlignedPeakPropertiesModelAsObservable.Where(props => !(props is null)).CombineLatest(includes, (props, includes_) => props.Zip(includes_, (prop, include) => (prop, include)).Where(p => p.include).Select(p => p.prop)),
+                    target.AlignedPeakPropertiesModelAsObservable.TakeNull().Select(_ => Enumerable.Empty<AlignmentChromPeakFeatureModel>()),
+                    target.AlignedPeakPropertiesModelAsObservable.SkipNull().CombineLatest(includes, (props, includes_) => props.Zip(includes_, (prop, include) => (prop, include)).Where(p => p.include).Select(p => p.prop)),
                 }.Merge();
 
                 var barItems = Observable.CombineLatest(

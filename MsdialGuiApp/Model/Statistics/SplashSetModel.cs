@@ -70,7 +70,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             };
             OutputUnit = OutputUnits.FirstOrDefault();
 
-            CanNormalizeProperty = this.ObserveProperty(m => m.SplashProduct).Select(product => product?.CanNormalize(_spots) ?? Observable.Return(false)).Switch().ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            CanNormalizeProperty = this.ObserveProperty(m => m.SplashProduct).SelectSwitch(product => product?.CanNormalize(_spots) ?? Observable.Return(false)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
 
         public ObservableCollection<SplashProduct> SplashProducts { get; }

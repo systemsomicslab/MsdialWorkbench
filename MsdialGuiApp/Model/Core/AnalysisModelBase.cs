@@ -1,9 +1,9 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -35,7 +35,7 @@ namespace CompMs.App.Msdial.Model.Core {
             Target = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
 
             decLoader = new MSDecLoader(analysisFileModel.DeconvolutionFilePath).AddTo(Disposables);
-            MsdecResult = Target.Where(t => !(t is null))
+            MsdecResult = Target.SkipNull()
                 .Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);

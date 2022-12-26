@@ -1,4 +1,5 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.App.Msdial.Utility;
+using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.Reactive.Linq;
@@ -21,8 +22,8 @@ namespace CompMs.App.Msdial.Model.Setting
             }
             if (methodSettingModel is null) {
                 MethodSettingModel = DatasetSettingModel
-                    .Select(m => m?.ObserveProperty(m_ => m_.MethodSettingModel, isPushCurrentValueAtFirst: false).StartWith(m.MethodSettingModel) ?? Observable.Never<MethodSettingModel>())
-                    .Switch()
+                    .SkipNull()
+                    .SelectSwitch(m => m.ObserveProperty(m_ => m_.MethodSettingModel))
                     .ToReadOnlyReactivePropertySlim()
                     .AddTo(Disposables);
             }

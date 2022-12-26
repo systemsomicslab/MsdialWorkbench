@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Utility;
 using Reactive.Bindings;
 using System;
 using System.Collections.ObjectModel;
@@ -16,15 +17,13 @@ namespace CompMs.App.Msdial.Model.DataObj
                 .Where(loader_ => !(loader_ is null))
                 .Select(loader_ => loader_.LoadBarItemsAsObservable(spot));
             _unsubscriber = collectionsAsObservable
-                .Select(collections => collections.ObservableItems)
-                .Switch()
+                .SelectSwitch(collections => collections.ObservableItems)
                 .Subscribe(items => {
                     collection.ClearOnScheduler();
                     collection.AddRangeOnScheduler(items);
                 });
             IsLoading = collectionsAsObservable
-                .Select(collections => collections.ObservableLoading)
-                .Switch()
+                .SelectSwitch(collections => collections.ObservableLoading)
                 .ToReadOnlyReactivePropertySlim();
             _collection = collection;
         }

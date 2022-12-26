@@ -33,7 +33,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             RemoveCommand = new ReactiveCommand().AddTo(Disposables);
             RemoveCommand.WithLatestFrom(SelectedAdduct)
                 .Select(p => p.Second?.Model)
-                .Where(m => m != null)
+                .SkipNull()
                 .Subscribe(Model.RemoveAdductIon)
                 .AddTo(Disposables);
 
@@ -45,8 +45,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             var changes = ObserveChanges.TakeFirstAfterEach(decide);
             ObserveChangeAfterDecision = new[]
             {
-                changes.Select(_ => true),
-                decide.Select(_ => false),
+                changes.ToConstant(true),
+                decide.ToConstant(false),
             }.Merge()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);

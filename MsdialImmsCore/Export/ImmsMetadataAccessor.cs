@@ -14,7 +14,7 @@ namespace CompMs.MsdialImmsCore.Export
 {
     public class ImmsMetadataAccessor : BaseMetadataAccessor
     {
-        public ImmsMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter) : base(refer, parameter) {
+        public ImmsMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, bool trimSpectrumToExcelLimit) : base(refer, parameter, trimSpectrumToExcelLimit) {
 
         }
 
