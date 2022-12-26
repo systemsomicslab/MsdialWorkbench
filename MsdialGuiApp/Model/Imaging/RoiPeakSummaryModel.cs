@@ -17,6 +17,7 @@ namespace CompMs.App.Msdial.Model.Imaging
         }
 
         public ChromatogramPeakFeatureModel Peak { get; }
-        public double AccumulatedIntensity => _pixelFeatures.IntensityArray.Average();
+        public double AccumulatedIntensity => (_accumulatedIntensity ?? (_accumulatedIntensity = _pixelFeatures.IntensityArray.Average())).Value;
+        private double? _accumulatedIntensity = null;
     }
 }
