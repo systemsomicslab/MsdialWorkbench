@@ -23,6 +23,8 @@ namespace CompMs.MspGenerator
             { "[M+H-H2O]+",new AdductIon(){ AdductIonName= "[M+H-H2O]+", AdductIonMass = MassDictionary.Proton-MassDictionary.H2OMass ,AdductSurfix ="H-H2O", IonMode ="Positive"} },
             { "[M+2H]2+",new AdductIon(){ AdductIonName= "[M+2H]2+", AdductIonMass = MassDictionary.Proton*2 ,AdductSurfix ="2H+", IonMode ="Positive"} },
             { "[M+2NH4]2+",new AdductIon(){ AdductIonName= "[M+2NH4]2+", AdductIonMass = MassDictionary.NH4Adduct*2 ,AdductSurfix ="2NH4", IonMode ="Positive"} },
+            { "[M+K]+",new AdductIon(){ AdductIonName= "[M+K]+", AdductIonMass = MassDictionary.KAdduct ,AdductSurfix ="K", IonMode ="Positive"} },
+            { "[M+Li]+",new AdductIon(){ AdductIonName= "[M+Li]+", AdductIonMass = MassDictionary.LiAdduct ,AdductSurfix ="Li", IonMode ="Positive"} },
 
         };
 
@@ -40,6 +42,8 @@ namespace CompMs.MspGenerator
                     { "H-H2O_Pos","[M+H-H2O]+"},
                     { "2H+_Pos","[M+2H]2+"},
                     { "2NH4_Pos","[M+2NH4]2+" },
+                    { "K_Pos","[M+K]+" },
+                    { "Li_Pos","[M+Li]+" },
         };
 
 
@@ -286,6 +290,9 @@ namespace CompMs.MspGenerator
                 //FAHFA-DMED 20221122
                 {"DMEDFAHFA",  new List<string>(){ "[M+H]+" } },
                 {"DMEDFAHFAHFA",  new List<string>(){ "[M+H]+" } },
+                {"DMED-FA",  new List<string>(){ "[M+H]+" } },
+                {"DMED-OxFA",  new List<string>(){ "[M+H]+" } },
+                {"FAHFAHFA",  new List<string>(){ "[M-H]-" } },
 
 
     };

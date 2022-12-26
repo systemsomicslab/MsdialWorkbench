@@ -1815,6 +1815,157 @@ namespace CompMs.MspGenerator
             }
         }
 
+        public static void fahfahfaDmedFragment(List<string> fragmentList, string adduct, double exactMass, int baseCarbon, int baseDouble, int extraCarbon, int extraDouble, int baseOxPosition)
+        {
+            var baseMass = acylChainMass(baseCarbon, baseDouble, 1);
+            var extraChainMass = acylChainMass(extraCarbon, extraDouble, 0);
+            var dmesMass = 12 * 4 + MassDictionary.NitrogenMass * 2 + MassDictionary.HydrogenMass * 10;
+            if (adduct == "[M+HCOO]-" || adduct == "[M+CH3COO]-" || adduct == "[M-H]-")
+            {
+                var fra01mass = 0.0;
+                var fra01int = 0;
+                var fra01comment = "";
+                if (adduct == "[M+HCOO]-" || adduct == "[M+CH3COO]-")
+                {
+                    fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                    fra01int = 10;
+                    fra01comment = adduct;
+                    fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+                }
+                var fra02mass = exactMass + adductDic.adductIonDic["[M-H]-"].AdductIonMass;
+                var fra02int = 999;
+                var fra02comment = "[M-H]-";
+                fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+            }
+            else if (adduct == "[M+H]+")
+            {
+                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01int = 999;
+                var fra01comment = adduct;
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+
+                var fra02mass = baseMass + dmesMass - MassDictionary.H2OMass + MassDictionary.Proton;
+                var fra02int = 500;
+                var fra02comment = "base HFA chain -H2O";
+                fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+
+                var fra03mass = fra02mass - 12 * 2 - MassDictionary.NitrogenMass - MassDictionary.HydrogenMass * 7;
+                var fra03int = 500;
+                var fra03comment = "base HFA chain -H2O and C2NH7 loss"; ;
+                fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
+
+                var fra04mass = fra01mass - 12 * 2 - MassDictionary.NitrogenMass - MassDictionary.HydrogenMass * 7;
+                var fra04int = 500;
+                var fra04comment = "C2NH7 loss"; ;
+                fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
+
+                var fra05mass = fra01mass - extraChainMass - MassDictionary.OxygenMass;
+                var fra05int = 100;
+                var fra05comment = "extra acyl chain loss";
+                fragmentList.Add(fra05mass + "\t" + fra05int + "\t" + fra05comment);
+            }
+        }
+
+        public static void fahfahfaFragment(List<string> fragmentList, string adduct, double exactMass, int baseCarbon, int baseDouble, int extraCarbon, int extraDouble, int baseOxPosition)
+        {
+            var baseMass = acylChainMass(baseCarbon, baseDouble, 1);
+            var extraChainMass = acylChainMass(extraCarbon, extraDouble, 0);
+            if (adduct == "[M+HCOO]-" || adduct == "[M+CH3COO]-" || adduct == "[M-H]-")
+            {
+                var fra01mass = 0.0;
+                var fra01int = 0;
+                var fra01comment = "";
+                if (adduct == "[M+HCOO]-" || adduct == "[M+CH3COO]-")
+                {
+                    fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                    fra01int = 10;
+                    fra01comment = adduct;
+                    fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+                }
+                var fra02mass = exactMass + adductDic.adductIonDic["[M-H]-"].AdductIonMass;
+                var fra02int = 999;
+                var fra02comment = "[M-H]-";
+                fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+
+                var fra03mass = baseMass - MassDictionary.H2OMass - MassDictionary.Proton;
+                var fra03int = 500;
+                var fra03comment = "base HFA chain -H2O";
+                fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
+
+                var fra04mass = fra02mass - extraChainMass - MassDictionary.OxygenMass;
+                var fra04int = 500;
+                var fra04comment = "extra acyl chain loss";
+                fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
+
+                var fra05mass = extraChainMass + MassDictionary.OxygenMass- MassDictionary.Proton;
+                var fra05int = 500;
+                var fra05comment = "extra acyl chain fragment";
+                fragmentList.Add(fra05mass + "\t" + fra05int + "\t" + fra05comment);
+            }
+            else if (adduct == "[M+H]+")
+            {
+                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01int = 999;
+                var fra01comment = adduct;
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+
+
+
+                var fra04mass = fra01mass - 12 * 2 - MassDictionary.NitrogenMass - MassDictionary.HydrogenMass * 7;
+                var fra04int = 500;
+                var fra04comment = "C2NH7 loss"; ;
+                fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
+
+            }
+        }
+        public static void FaFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double)
+        {
+            //{ "FA" ,    new List<string>() { "[M-H]-" }    },
+            var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
+
+            if (adduct == "[M-H]-")
+            {
+                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01int = 999;
+                var fra01comment = adduct;
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+            }
+        }
+        public static void DmedFaFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double)
+        {
+            var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
+            if (adduct == "[M+H]+")
+            {
+                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01int = 999;
+                var fra01comment = adduct;
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+                var fra04mass = fra01mass - 12 * 2 - MassDictionary.NitrogenMass - MassDictionary.HydrogenMass * 7;
+                var fra04int = 500;
+                var fra04comment = "C2NH7 loss"; ;
+                fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
+            }
+        }
+
+        public static void DmedOxFaFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double)
+        {
+            var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
+            if (adduct == "[M+H]+")
+            {
+                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01int = 999;
+                var fra01comment = adduct;
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+                var fra03mass = fra01mass - 12 * 2 - MassDictionary.NitrogenMass - MassDictionary.HydrogenMass * 7;
+                var fra03int = 500;
+                var fra03comment = "C2NH7 loss"; ;
+                fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
+                var fra04mass = fra03mass - MassDictionary.H2OMass;
+                var fra04int = 500;
+                var fra04comment = "C2NH7 loss - H2O";
+                fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
+            }
+        }
 
         private static double acylChainMass(int chainCarbon, int chainDouble, int chainOx)
         {

@@ -36,7 +36,8 @@ namespace CompMs.MspGenerator
                         var line = sr.ReadLine();
                         if (line == null || line.Contains("InChIKey")) { continue; }
                         var lineArray = line.Split('\t');
-                        if (lineArray.Length < 12) { continue; }
+                        if (lineArray.Length < 14) { continue; }
+                        if (lineArray.Contains("")) { continue; }
                         predictedList.Add(line);
                     }
                 }
@@ -66,6 +67,7 @@ namespace CompMs.MspGenerator
                 using (var sr = new StreamReader(predictedFile, false))
                 {
                     headerLine = sr.ReadLine();
+                    if (headerLine == ""||headerLine == null) { continue; }
                     var headerLineArray = headerLine.Split('\t');
 
                     while (sr.Peek() > -1)
