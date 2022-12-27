@@ -21,6 +21,12 @@ namespace CompMs.MsdialCore.Algorithm
         public double PrecursorMz { get; set; }
         public AdductIon AdductIon { get; set; }
     }
+
+    public class ChromFeatureTemp {
+        public ChromatogramPeakFeature Feature { get; set; }
+        public ValuePeak[] Peaks { get; set; }
+    }
+
     public class PeakCharacterEstimator {
         private PeakCharacterEstimator() { }
         private static float rtMargin = 0.0177F;
@@ -373,41 +379,84 @@ namespace CompMs.MsdialCore.Algorithm
         private void assignLinksBasedOnChromatogramCorrelation(List<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, ParameterBase param) {
             if (chromPeakFeatures[0].ChromXs.RT.Value < 0) return;
             RawSpectra rawSpectra = new RawSpectra(provider, param.IonMode, param.AcquisitionType);
-            foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && n.PeakShape.PeakPureValue >= 0.9)) {
-                
-                var tTopRt = peak.ChromXsTop.RT.Value;
-                var tLeftRt = peak.ChromXsLeft.RT.Value;
-                var tRightRt = peak.ChromXsRight.RT.Value;
-                var chromatogramRange = new ChromatogramRange(tLeftRt, tRightRt, ChromXType.RT, ChromXUnit.Min);
-                var tPeaklist = rawSpectra.GetMs1ExtractedChromatogram(peak.Mass, param.CentroidMs1Tolerance, chromatogramRange);
-                var tChrom = tPeaklist.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
 
-                foreach (var cPeak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 
-                && !n.PeakCharacter.IsLinked && n.PeakID != peak.PeakID && n.PeakShape.PeakPureValue >= 0.9)) {
+            var pureFeatures = chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && n.PeakShape.PeakPureValue >= 0.9).ToList();
+            var tempFeatures = new List<ChromFeatureTemp>();
+            foreach (var feature in pureFeatures) {
+                var leftRt = feature.ChromXsLeft.RT.Value;
+                var rightRt = feature.ChromXsRight.RT.Value;
+                var chromatogramRange = new ChromatogramRange(leftRt, rightRt, ChromXType.RT, ChromXUnit.Min);
+                var peaks = rawSpectra.GetMs1ExtractedChromatogram_temp2(feature.Mass, param.CentroidMs1Tolerance, chromatogramRange);
+                var sPeaks = peaks.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
 
-                    var cPeaklist = rawSpectra.GetMs1ExtractedChromatogram(cPeak.Mass, param.CentroidMs1Tolerance, chromatogramRange);
-                    var cChrom = cPeaklist.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+                tempFeatures.Add(new ChromFeatureTemp() { Feature = feature, Peaks = sPeaks });
+            }
 
-                    //Debug.WriteLine("tChrom count {0}, cChrom count {1}", tChrom.Count, cChrom.Count);
+            for (int i = 0; i < tempFeatures.Count; i++) {
+                var tPeak = tempFeatures[i].Feature;
+                var tChrom = tempFeatures[i].Peaks;
+
+                for (int j = i + 1; j < tempFeatures.Count; j++) {
+                    if (tempFeatures[j].Feature.PeakCharacter.IsLinked) continue;
+
+                    var cPeak = tempFeatures[j].Feature;
+                    var cChrom = tempFeatures[j].Peaks;
 
                     double scaT = 0.0, scaC = 0.0, cov = 0.0;
-                    for (int i = 0; i < tChrom.Count; i++) {
-                        if (cChrom.Count - 1 < i) break;
-                        scaT += Math.Pow(tChrom[i].Intensity, 2);
-                        scaC += Math.Pow(cChrom[i].Intensity, 2);
-                        cov += tChrom[i].Intensity * cChrom[i].Intensity;
+                    for (int k = 0; k < tChrom.Length; k++) {
+                        if (cChrom.Length - 1 < k) break;
+                        scaT += Math.Pow(tChrom[k].Intensity, 2);
+                        scaC += Math.Pow(cChrom[k].Intensity, 2);
+                        cov += tChrom[k].Intensity * cChrom[k].Intensity;
                     }
                     if (scaT == 0 || scaC == 0) continue;
                     var col = cov / Math.Sqrt(scaT) / Math.Sqrt(scaC);
 
                     if (col > 0.95) {
                         cPeak.PeakCharacter.IsLinked = true;
-                        peak.PeakCharacter.IsLinked = true;
+                        tPeak.PeakCharacter.IsLinked = true;
 
-                        registerLinks(peak, cPeak, PeakLinkFeatureEnum.ChromSimilar);
+                        registerLinks(tPeak, cPeak, PeakLinkFeatureEnum.ChromSimilar);
                     }
                 }
             }
+
+            //foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && n.PeakShape.PeakPureValue >= 0.9)) {
+
+            //    var tTopRt = peak.ChromXsTop.RT.Value;
+            //    var tLeftRt = peak.ChromXsLeft.RT.Value;
+            //    var tRightRt = peak.ChromXsRight.RT.Value;
+            //    var chromatogramRange = new ChromatogramRange(tLeftRt, tRightRt, ChromXType.RT, ChromXUnit.Min);
+
+            //    var tPeaklist = rawSpectra.GetMs1ExtractedChromatogram(peak.Mass, param.CentroidMs1Tolerance, chromatogramRange);
+            //    var tChrom = tPeaklist.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+
+            //    foreach (var cPeak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0
+            //    && !n.PeakCharacter.IsLinked && n.PeakID != peak.PeakID && n.PeakShape.PeakPureValue >= 0.9)) {
+
+            //        var cPeaklist = rawSpectra.GetMs1ExtractedChromatogram(cPeak.Mass, param.CentroidMs1Tolerance, chromatogramRange);
+            //        var cChrom = cPeaklist.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+
+            //        //Debug.WriteLine("tChrom count {0}, cChrom count {1}", tChrom.Count, cChrom.Count);
+
+            //        double scaT = 0.0, scaC = 0.0, cov = 0.0;
+            //        for (int i = 0; i < tChrom.Count; i++) {
+            //            if (cChrom.Count - 1 < i) break;
+            //            scaT += Math.Pow(tChrom[i].Intensity, 2);
+            //            scaC += Math.Pow(cChrom[i].Intensity, 2);
+            //            cov += tChrom[i].Intensity * cChrom[i].Intensity;
+            //        }
+            //        if (scaT == 0 || scaC == 0) continue;
+            //        var col = cov / Math.Sqrt(scaT) / Math.Sqrt(scaC);
+
+            //        if (col > 0.95) {
+            //            cPeak.PeakCharacter.IsLinked = true;
+            //            peak.PeakCharacter.IsLinked = true;
+
+            //            registerLinks(peak, cPeak, PeakLinkFeatureEnum.ChromSimilar);
+            //        }
+            //    }
+            //}
         }
 
         // just copied from the previous adduct estimator, should be checked for the improvement

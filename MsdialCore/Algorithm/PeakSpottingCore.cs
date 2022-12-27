@@ -601,9 +601,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 var spec = ms2SpectrumList[i];
                 if (spec.MsLevel <= 1) continue;
                 // for tsugawa own research
-#if DEBUG
-                //if (spec.ExperimentID != 1) continue;
-#endif
+                if (spec.ExperimentID != 7) continue;
 
                 if (spec.MsLevel == 2 && spec.Precursor != null && scanPolarity == spec.ScanPolarity) {
                     if (IsInMassWindow(mass, spec, ms2Tol, _parameter.AcquisitionType)) {

@@ -68,7 +68,8 @@ namespace CompMs.MsdialLcImMsApi.Process
             PeakAnnotation(annotationProcess, spectrumProvider, chromPeakFeatures, targetCE2MSDecResults, parameter, reportAction, token);
 
             // characterizatin
-            PeakCharacterization(targetCE2MSDecResults, spectrumProvider, chromPeakFeatures, evaluator, parameter, reportAction);
+            //PeakCharacterization(targetCE2MSDecResults, spectrumProvider, chromPeakFeatures, evaluator, parameter, reportAction);
+            PeakCharacterization(targetCE2MSDecResults, accSpectrumProvider, chromPeakFeatures, evaluator, parameter, reportAction);
 
             // file save
             SaveToFile(file, chromPeakFeatures, targetCE2MSDecResults);
