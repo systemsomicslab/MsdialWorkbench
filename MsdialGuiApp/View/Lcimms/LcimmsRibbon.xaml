@@ -69,14 +69,14 @@
                                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                                        KeyTip="N"/>
             <RibbonApplicationMenuItem Header="Open project" ImageSource="{StaticResource Open_is}"
-                                       Command="{Binding OpenProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                       Command="{Binding DataContext.OpenProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                                        KeyTip="O"/>
             <RibbonApplicationSplitMenuItem Header="Save" ImageSource="{StaticResource Save_is}"
-                                            Command="{Binding SaveProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                            Command="{Binding DataContext.SaveProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                             KeyTip="S">
                 <RibbonApplicationMenuItem Header="Save as..." ImageSource="{StaticResource Save_as_is}"
-                                           Command="{Binding SaveAsProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                           Command="{Binding DataContext.SaveAsProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                            KeyTip="A"/>
                 <RibbonApplicationMenuItem Header="Save parameter as..."
                                            Command="{Binding DataContext.DatasetViewModel.Value.SaveParameterAsCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
