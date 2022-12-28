@@ -43,7 +43,7 @@ namespace CompMs.MsdialCore.DataObj
                 case LipidDatabaseFormat.Dictionary:
                 default:
                     DatabaseFormat = LipidDatabaseFormat.Dictionary;
-                    _innerDb = new EadLipidDictionaryDatabase(dbPath, id, Source);
+                    _innerDb = new EadLipidDictionaryDatabase(id, Source);
                     break;
             }
         }
@@ -92,7 +92,7 @@ namespace CompMs.MsdialCore.DataObj
                     if (File.Exists(_dbPath)) {
                         File.Delete(_dbPath);
                     }
-                    _innerDb = new EadLipidDictionaryDatabase(_dbPath, Id, Source);
+                    _innerDb = new EadLipidDictionaryDatabase(Id, Source);
                     _innerDb.SetReferences(references);
                     DatabaseFormat = LipidDatabaseFormat.Dictionary;
                     break;

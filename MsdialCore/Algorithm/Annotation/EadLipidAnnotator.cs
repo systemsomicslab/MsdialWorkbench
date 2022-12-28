@@ -12,30 +12,36 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public class EadLipidAnnotator : 
+    public sealed class EadLipidAnnotator : 
         ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>, 
         IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, 
         IMatchResultEvaluator<MsScanMatchResult>
     {
+        private readonly ILipidGenerator _lipidGenerator;
+        private readonly EadLipidDatabase _lipidDatabase;
+        private readonly IReferenceScorer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> _scorer;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
+        private readonly MsRefSearchParameterBase _parameter;
+
         public EadLipidAnnotator(EadLipidDatabase db, string id, int priority, MsRefSearchParameterBase parameter) {
-            lipidGenerator = new LipidGenerator(new TotalChainVariationGenerator(chainGenerator: new Omega3nChainGenerator(), minLength: 6));
-            Id = id ?? throw new System.ArgumentNullException(nameof(id));
+            _lipidGenerator = new LipidGenerator(new TotalChainVariationGenerator(chainGenerator: new Omega3nChainGenerator(), minLength: 6));
+            Id = id ?? throw new ArgumentNullException(nameof(id));
             Priority = priority;
-            EadLipidDatabase = db ?? throw new System.ArgumentNullException(nameof(db));
+            _lipidDatabase = db ?? throw new ArgumentNullException(nameof(db));
 
             switch (db.Source) {
                 case DataBaseSource.OadLipid:
-                    scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.OAD, true);
+                    _scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.OAD, useMs2: true);
                     break;
                 case DataBaseSource.EidLipid:
-                    scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EID, true);
+                    _scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EID, useMs2: true);
                     break;
                 case DataBaseSource.EieioLipid:
-                    scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EIEIO, true);
+                    _scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EIEIO, useMs2: true);
                     break;
             }
-            Parameter = parameter ?? throw new System.ArgumentNullException(nameof(parameter));
-            evaluator = new MsScanMatchResultEvaluator(Parameter);
+            _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
+            _evaluator = new MsScanMatchResultEvaluator(_parameter);
         }
 
         public string Id { get; }
@@ -44,18 +50,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         public string Key => Id;
         public int Priority { get; }
 
-        private readonly ILipidGenerator lipidGenerator;
-        private readonly EadLipidDatabase EadLipidDatabase;
-        private readonly IReferenceScorer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> scorer;
-        private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
-        private readonly MsRefSearchParameterBase Parameter;
-
         public MsScanMatchResult Annotate((IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference) query) {
             return FindCandidates(query).FirstOrDefault();
         }
 
         public MsScanMatchResult CalculateScore((IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference) query, MoleculeMsReference reference) {
-            var result = scorer.Score(query.Item1, reference);
+            var result = _scorer.Score(query.Item1, reference);
             var parameter = query.Item1.Parameter;
             result.IsReferenceMatched = result.IsPrecursorMzMatch && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch) && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && result.IsSpectrumMatch;
             result.IsAnnotationSuggested = result.IsPrecursorMzMatch && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch) && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && !result.IsReferenceMatched;
@@ -63,7 +63,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results) {
-            return evaluator.FilterByThreshold(results);
+            return _evaluator.FilterByThreshold(results);
         }
 
         public List<MsScanMatchResult> FindCandidates((IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference) query) {
@@ -74,15 +74,15 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public bool IsAnnotationSuggested(MsScanMatchResult result) {
-            return evaluator.IsAnnotationSuggested(result);
+            return _evaluator.IsAnnotationSuggested(result);
         }
 
         public bool IsReferenceMatched(MsScanMatchResult result) {
-            return evaluator.IsReferenceMatched(result);
+            return _evaluator.IsReferenceMatched(result);
         }
 
         public MoleculeMsReference Refer(MsScanMatchResult result) {
-            return ((IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>)EadLipidDatabase).Refer(result);
+            return ((IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>)_lipidDatabase).Refer(result);
         }
 
         public List<MoleculeMsReference> Search((IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference) query) {
@@ -92,25 +92,26 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 return new List<MoleculeMsReference>(0);
             }
             var description = LipidDescription.Class | LipidDescription.Chain | LipidDescription.SnPosition | LipidDescription.DoubleBondPosition;
-            var lipids = GenerateLipid(lipid, lipidGenerator).Where(n => n.Description.HasFlag(description));
-            var references = EadLipidDatabase.Generates(lipids, lipid, reference.AdductType, reference).Where(r => !(r is null)).ToList();
-            // var references = lipids.Select(l => EadLipidDatabase.Generate(l, reference.AdductType, reference)).Where(reference_ => reference_ != null).ToList();
-            // EadLipidDatabase.Register(references, lipid);
+            var lipids = GenerateLipid(lipid).Where(lipid_ => lipid_.Description.HasFlag(description));
+            var references = _lipidDatabase.Generates(lipids, lipid, reference.AdductType, reference).Where(r => !(r is null)).ToList();
             return references;
         }
 
-        private static IEnumerable<ILipid> GenerateLipid(ILipid lipid, ILipidGenerator lipidGenerator) {
-            return lipid.Generate(lipidGenerator).
-                SelectMany(l => GenerateLipid(l, lipidGenerator)).
+        private IEnumerable<ILipid> GenerateLipid(ILipid lipid) {
+            if (_lipidDatabase.Source == DataBaseSource.OadLipid && lipid.AnnotationLevel >= 2) {
+                return new[] { lipid };
+            }
+            return lipid.Generate(_lipidGenerator).
+                SelectMany(GenerateLipid).
                 Prepend(lipid);
         }
 
         public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results) {
-            return evaluator.SelectReferenceMatchResults(results);
+            return _evaluator.SelectReferenceMatchResults(results);
         }
 
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results) {
-            return evaluator.SelectTopHit(results);
+            return _evaluator.SelectTopHit(results);
         }
 
         private ILipid ConvertToLipid(IMoleculeProperty molecule) {
@@ -118,7 +119,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public IReferRestorationKey<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> Save() {
-            return new EadLipidDatabaseRestorationKey(Key, Priority, Parameter, SourceType.GeneratedLipid);
+            return new EadLipidDatabaseRestorationKey(Key, Priority, _parameter, SourceType.GeneratedLipid);
         }
     }
 }
