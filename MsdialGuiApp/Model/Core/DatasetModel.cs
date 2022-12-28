@@ -124,12 +124,9 @@ namespace CompMs.App.Msdial.Model.Core
 
         public async Task LoadAsync() {
             var factory = new MethodSettingModelFactory(_analysisFileBeanModelCollection, Storage, _projectBaseParameter, ProcessOption.All, _broker);
-            Method = await Task.Run(async () =>
-            {
-                var method = factory.BuildMethod();
-                await method.LoadAsync(default).ConfigureAwait(false);
-                return method;
-            });
+            var method = factory.BuildMethod();
+            await method.LoadAsync(default).ConfigureAwait(false);
+            Method = method;
         }
 
         public static async Task<DatasetModel> LoadAsync(string datasetFile, IMessageBroker broker) {
