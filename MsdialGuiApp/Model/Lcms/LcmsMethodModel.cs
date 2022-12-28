@@ -226,11 +226,13 @@ namespace CompMs.App.Msdial.Model.Lcms
                 vm_ =>
                 {
                     var processor = new MsdialLcMsApi.Process.FileProcess(_providerFactory, storage, annotationProcess, _matchResultEvaluator);
-                    return processor.RunAllAsync(
+                    var runner = new ProcessRunner(processor);
+                    return runner.RunAllAsync(
                         storage.AnalysisFiles,
                         vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
                         Math.Max(1, storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
-                        vm_.Increment);
+                        vm_.Increment,
+                        default);
                 },
                 storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());
             _broker.Publish(request);
@@ -242,11 +244,13 @@ namespace CompMs.App.Msdial.Model.Lcms
                 vm_ =>
                 {
                     var processor = new MsdialLcMsApi.Process.FileProcess(_providerFactory, storage, annotationProcess, _matchResultEvaluator);
-                    return processor.AnnotateAllAsync(
+                    var runner = new ProcessRunner(processor);
+                    return runner.AnnotateAllAsync(
                         storage.AnalysisFiles,
                         vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
                         Math.Max(1, storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
-                        vm_.Increment);
+                        vm_.Increment,
+                        default);
                 },
                 storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());
             _broker.Publish(request);

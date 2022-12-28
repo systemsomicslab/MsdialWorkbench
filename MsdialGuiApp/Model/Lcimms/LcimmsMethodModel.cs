@@ -166,15 +166,24 @@ namespace CompMs.App.Msdial.Model.Lcimms
             .AddTo(Disposables);
         }
 
-        public override async Task RunAsync(ProcessOption option, CancellationToken token) {
+        public override async Task RunAsync(ProcessOption processOption, CancellationToken token) {
             // Set analysis param
             annotationProcess = BuildAnnotationProcess();
 
-            var processOption = option;
             // Run Identification
-            if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
-                if (!RunFileProcess(Storage.AnalysisFiles, Storage.Parameter.ProcessBaseParam)) {
-                    return;
+            if (processOption.HasFlag(ProcessOption.Identification)) {
+                int usable = Math.Max(Storage.Parameter.ProcessBaseParam.UsableNumThreads / 2, 1);
+                FileProcess processor = new FileProcess(providerFactory, accProviderFactory, annotationProcess, matchResultEvaluator, Storage, isGuiProcess: true);
+                var runner = new ProcessRunner(processor);
+                if (processOption.HasFlag(ProcessOption.Identification)) {
+                    if (!RunFileProcess(Storage.AnalysisFiles, usable, runner)) {
+                        return;
+                    }
+                }
+                else {
+                    if (!RunAnnotation(Storage.AnalysisFiles, usable, runner)) {
+                        return;
+                    }
                 }
             }
 
@@ -192,30 +201,17 @@ namespace CompMs.App.Msdial.Model.Lcimms
             return new LcimmsStandardAnnotationProcess(Storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories, matchResultEvaluator, Storage.DataBaseMapper);
         }
 
-        private bool RunFileProcess(List<AnalysisFileBean> analysisFiles, ProcessBaseParameter parameter) {
+        private bool RunFileProcess(List<AnalysisFileBean> analysisFiles, int usable, ProcessRunner runner) {
             var request = new ProgressBarMultiContainerRequest(
-                async vm =>
-                {
-                    var tasks = new List<Task>();
-                    var usable = Math.Max(parameter.UsableNumThreads / 2, 1);
-                    using (var sem = new SemaphoreSlim(usable, usable)) {
-                        foreach ((var analysisFile, var pb) in analysisFiles.Zip(vm.ProgressBarVMs)) {
-                            var task = Task.Run(async () =>
-                            {
-                                await sem.WaitAsync();
-                                try {
-                                    FileProcess.Run(analysisFile, providerFactory, accProviderFactory, annotationProcess, matchResultEvaluator, Storage, isGuiProcess: true, reportAction: (int v) => pb.CurrentValue = v);
-                                    vm.Increment();
-                                }
-                                finally {
-                                    sem.Release();
-                                }
-                            });
-                            tasks.Add(task);
-                        }
-                        await Task.WhenAll(tasks).ConfigureAwait(false);
-                    }
-                },
+                vm => runner.RunAllAsync(analysisFiles, vm.ProgressBarVMs.Select(vm_ => (Action<int>)((int v) => vm_.CurrentValue = v)), usable, vm.Increment, default),
+                analysisFiles.Select(file => file.AnalysisFileName).ToArray());
+            _broker.Publish(request);
+            return request.Result ?? false;
+        }
+
+        private bool RunAnnotation(List<AnalysisFileBean> analysisFiles, int usable, ProcessRunner runner) {
+            var request = new ProgressBarMultiContainerRequest(
+                vm => runner.AnnotateAllAsync(analysisFiles, vm.ProgressBarVMs.Select(vm_ => (Action<int>)((int v) => vm_.CurrentValue = v)), usable, vm.Increment, default),
                 analysisFiles.Select(file => file.AnalysisFileName).ToArray());
             _broker.Publish(request);
             return request.Result ?? false;
@@ -225,8 +221,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var request = new ProgressBarRequest("Process alignment..", isIndeterminate: true,
                 async _ =>
                 {
-                    Func<AnalysisFileBean, RawMeasurement> map = (AnalysisFileBean file) => DataAccess.LoadMeasurement(file, false, true, 5, 1000);
-                    AlignmentProcessFactory aFactory = new LcimmsAlignmentProcessFactory(Storage, matchResultEvaluator, providerFactory.ContraMap(map), accProviderFactory.ContraMap(map));
+                    RawMeasurement map(AnalysisFileBean file) {
+                        return DataAccess.LoadMeasurement(file, false, true, 5, 1000);
+                    }
+                    AlignmentProcessFactory aFactory = new LcimmsAlignmentProcessFactory(Storage, matchResultEvaluator, providerFactory.ContraMap((Func<AnalysisFileBean, RawMeasurement>)map), accProviderFactory.ContraMap((Func<AnalysisFileBean, RawMeasurement>)map));
                     var alignmentFile = Storage.AlignmentFiles.Last();
                     var aligner = aFactory.CreatePeakAligner();
                     var result = await Task.Run(() => aligner.Alignment(Storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer)).ConfigureAwait(false);

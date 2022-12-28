@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.MsdialLcMsApi.Process
 {
-    public sealed class FileProcess {
+    public sealed class FileProcess : IFileProcessor {
         private readonly IDataProviderFactory<AnalysisFileBean> _factory;
         private readonly PeakPickProcess _peakPickProcess;
         private readonly SpectrumDeconvolutionProcess _spectrumDeconvolutionProcess;
@@ -38,16 +38,6 @@ namespace CompMs.MsdialLcMsApi.Process
             _spectrumDeconvolutionProcess = new SpectrumDeconvolutionProcess(storage);
             _peakAnnotationProcess = new PeakAnnotationProcess(annotationProcess, storage, evaluator);
         }       
-
-        public Task RunAllAsync(IEnumerable<AnalysisFileBean> files, IEnumerable<Action<int>> reportActions, int numParallel, Action afterEachRun, CancellationToken token = default) {
-            var consumer = new Consumer(files, reportActions, afterEachRun, token);
-            return Task.WhenAll(consumer.ConsumeAllAsync(RunAsync, numParallel));
-        }
-
-        public Task AnnotateAllAsync(IEnumerable<AnalysisFileBean> files, IEnumerable<Action<int>> reportActions, int numParallel, Action afterEachRun, CancellationToken token = default) {
-            var consumer = new Consumer(files, reportActions, afterEachRun, token);
-            return Task.WhenAll(consumer.ConsumeAllAsync(AnnotateAsync, numParallel));
-        }
 
         public async Task RunAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token = default) {
             var provider = _factory.Create(file);
@@ -77,8 +67,8 @@ namespace CompMs.MsdialLcMsApi.Process
         }
 
         public async Task AnnotateAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token = default) {
-            var peakTask = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath);
-            var resultsTask = Task.WhenAll(MSDecResultCollection.DeserializeAsync(file));
+            var peakTask = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath, token);
+            var resultsTask = Task.WhenAll(MSDecResultCollection.DeserializeAsync(file, token));
             var provider = _factory.Create(file);
 
             // annotations
@@ -108,33 +98,6 @@ namespace CompMs.MsdialLcMsApi.Process
             }
 
             return Task.WhenAll(t1, t2);
-        }
-
-        class Consumer {
-            private readonly ConcurrentQueue<(AnalysisFileBean File, Action<int> Report)> _queue;
-            private readonly Action _afterEachRun;
-            private readonly CancellationToken _token;
-
-            public Consumer(IEnumerable<AnalysisFileBean> files, IEnumerable<Action<int>> reportActions, Action afterEachRun, CancellationToken token) {
-                _queue = new ConcurrentQueue<(AnalysisFileBean, Action<int>)>(files.Zip(reportActions, (file, report) => (file, report)));
-                _afterEachRun = afterEachRun;
-                _token = token;
-            }
-
-            public async Task ConsumeAsync(Func<AnalysisFileBean, Action<int>, CancellationToken, Task> process) {
-                while (_queue.TryDequeue(out var pair)) {
-                    await process(pair.File, pair.Report, _token).ConfigureAwait(false);
-                    _afterEachRun?.Invoke();
-                }
-            }
-
-            public Task[] ConsumeAllAsync(Func<AnalysisFileBean, Action<int>, CancellationToken, Task> process, int parallel) {
-                var tasks = new Task[parallel];
-                for (int i = 0; i < parallel; i++) {
-                    tasks[i] = Task.Run(() => ConsumeAsync(process), _token);
-                }
-                return tasks;
-            }
         }
     }
 }
