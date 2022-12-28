@@ -286,7 +286,12 @@
                                                   Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
                                                   Style="{StaticResource FocusWhenVisible}"/>
     <chartSetting:BarChartOfAlignedSpotSettingRibbonTab ContextualTabGroupHeader="Graph tools"
-                                                        DataContext="{Binding AlignmentViewModel.Value.BarChartViewModel}"
+                                                        DataContext="{Binding AlignmentViewModel.Value.RtBarChartViewModel}"
+                                                        d:DataContext="{d:DesignInstance Type={x:Type vmchart:BarChartViewModel}}"
+                                                        Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
+                                                        Style="{StaticResource FocusWhenVisible}"/>
+    <chartSetting:BarChartOfAlignedSpotSettingRibbonTab ContextualTabGroupHeader="Graph tools"
+                                                        DataContext="{Binding AlignmentViewModel.Value.DtBarChartViewModel}"
                                                         d:DataContext="{d:DesignInstance Type={x:Type vmchart:BarChartViewModel}}"
                                                         Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
                                                         Style="{StaticResource FocusWhenVisible}"/>
