@@ -488,6 +488,9 @@
     <Compile Include="View\ChartSetting\Ms2ChromatogramSettingRibbonTab.xaml.cs">
       <DependentUpon>Ms2ChromatogramSettingRibbonTab.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\ChartSetting\RepRefViewSettingRibbonTab.xaml.cs">
+      <DependentUpon>RepRefViewSettingRibbonTab.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Chart\AlignmentEicView.xaml.cs">
       <DependentUpon>AlignmentEicView.xaml</DependentUpon>
     </Compile>
@@ -849,6 +852,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ChartSetting\Ms2ChromatogramSettingRibbonTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ChartSetting\RepRefViewSettingRibbonTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

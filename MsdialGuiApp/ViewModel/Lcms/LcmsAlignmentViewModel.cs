@@ -56,7 +56,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
             PlotViewModel = new AlignmentPeakPlotViewModel(_model.PlotModel, peakPlotAction, peakPlotFocused).AddTo(Disposables);
 
-            Ms2SpectrumViewModel = new MsSpectrumViewModel(_model.Ms2SpectrumModel).AddTo(Disposables);
+            var (msSpectrumViewFocusAction, msSpectrumViewFocused) = focusControlManager.Request();
+            Ms2SpectrumViewModel = new MsSpectrumViewModel(model.Ms2SpectrumModel, focusAction: msSpectrumViewFocusAction, isFocused: msSpectrumViewFocused).AddTo(Disposables);
 
             var (barChartViewFocusAction, barChartViewFocused) = focusControlManager.Request();
             BarChartViewModel = new BarChartViewModel(_model.BarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);

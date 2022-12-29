@@ -442,7 +442,9 @@
                                         <chart:RawPurifiedView DataContext="{Binding DataContext.AnalysisViewModel.Value, ElementName=TabControl_MS2Viewer}"/>
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type vmchart:MsSpectrumViewModel}">
-                                        <chart:RepRefView DataContext="{Binding DataContext.AlignmentViewModel.Value, ElementName=TabControl_MS2Viewer}">
+                                        <chart:RepRefView DataContext="{Binding DataContext.AlignmentViewModel.Value, ElementName=TabControl_MS2Viewer}"
+                                                          xmlns:behavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
+                                                          behavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Ms2SpectrumViewModel.FocusAction, Mode=OneWay}">
                                             <chart:RepRefView.ContextMenu>
                                                 <ContextMenu>
                                                     <MenuItem Header="Save spectra table as.."

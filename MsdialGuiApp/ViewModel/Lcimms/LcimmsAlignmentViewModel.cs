@@ -62,7 +62,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             RtMzPlotViewModel = new AlignmentPeakPlotViewModel(model.RtMzPlotModel, peakPlotFocusAction, peakPlotFocused).AddTo(Disposables);
             DtMzPlotViewModel = new AlignmentPeakPlotViewModel(model.DtMzPlotModel, peakPlotFocusAction, peakPlotFocused).AddTo(Disposables);
 
-            Ms2SpectrumViewModel = new MsSpectrumViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
+            var (msSpectrumViewFocusAction, msSpectrumViewFocused) = focusControlManager.Request();
+            Ms2SpectrumViewModel = new MsSpectrumViewModel(model.Ms2SpectrumModel, focusAction: msSpectrumViewFocusAction, isFocused: msSpectrumViewFocused).AddTo(Disposables);
 
             var (barChartViewFocusAction, barChartViewFocused) = focusControlManager.Request();
             RtBarChartViewModel = new BarChartViewModel(model.RtBarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
