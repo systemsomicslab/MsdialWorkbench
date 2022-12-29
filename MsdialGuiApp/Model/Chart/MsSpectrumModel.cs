@@ -58,8 +58,8 @@ namespace CompMs.App.Msdial.Model.Chart
 
             var upperMsSpectrum = upperSpectrum.Select(spectrum => new MsSpectrum(spectrum));
             var upperVerticalRangeProperty = upperMsSpectrum
-                .Select(msSpectrum => msSpectrum.GetSpectrumRange(spec => verticalPropertySelector.Selector(spec)));
-            UpperVerticalRangeSource = upperVerticalRangeProperty;
+                .Select(msSpectrum => msSpectrum.GetSpectrumRange(spec => verticalPropertySelector.Selector(spec)))
+                .Publish();
             var upperContinuousVerticalAxis = upperVerticalRangeProperty
                 .ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent)
                 .AddTo(Disposables);
@@ -67,15 +67,41 @@ namespace CompMs.App.Msdial.Model.Chart
                 .Select(range => (range.Minimum.Value, range.Maximum.Value))
                 .ToReactiveLogScaleAxisManager(new ConstantMargin(0, 30), 1d, 1d)
                 .AddTo(Disposables);
+            var upperSqrtVerticalAxis = upperVerticalRangeProperty
+                .Select(range => (range.Minimum.Value, range.Maximum.Value))
+                .ToReactiveSqrtAxisManager(new ConstantMargin(0, 30), 0, 0)
+                .AddTo(Disposables);
+            Disposables.Add(upperVerticalRangeProperty.Connect());
             UpperVerticalAxisItemCollection = new ObservableCollection<AxisItemModel>(new[]
             {
-                new AxisItemModel(upperContinuousVerticalAxis, "Normal"),
+                new AxisItemModel(upperContinuousVerticalAxis, "Relative"),
                 new AxisItemModel(upperLogVerticalAxis, "Log10"),
+                new AxisItemModel(upperSqrtVerticalAxis, "Sqrt"),
             });
 
             var lowerMsSpectrum = lowerSpectrum.Select(spectrum => new MsSpectrum(spectrum));
-            var lowerVerticalRangeSource = lowerMsSpectrum
-                .Select(msSpectrum => msSpectrum.GetSpectrumRange(spec => verticalPropertySelector.Selector(spec)));
+            var lowerVerticalRangeProperty = lowerMsSpectrum
+                .Select(msSpectrum => msSpectrum.GetSpectrumRange(spec => verticalPropertySelector.Selector(spec)))
+                .Publish();
+            var lowerVerticalAxis = lowerVerticalRangeProperty.ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent);
+            var lowerContinuousVerticalAxis = lowerVerticalRangeProperty
+                .ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent)
+                .AddTo(Disposables);
+            var lowerLogVerticalAxis = lowerVerticalRangeProperty
+                .Select(range => (range.Minimum.Value, range.Maximum.Value))
+                .ToReactiveLogScaleAxisManager(new ConstantMargin(0, 30), 1d, 1d)
+                .AddTo(Disposables);
+            var lowerSqrtVerticalAxis = lowerVerticalRangeProperty
+                .Select(range => (range.Minimum.Value, range.Maximum.Value))
+                .ToReactiveSqrtAxisManager(new ConstantMargin(0, 30), 0, 0)
+                .AddTo(Disposables);
+            Disposables.Add(lowerVerticalRangeProperty.Connect());
+            LowerVerticalAxisItemCollection = new ObservableCollection<AxisItemModel>(new[]
+            {
+                new AxisItemModel(lowerContinuousVerticalAxis, "Normal"),
+                new AxisItemModel(lowerLogVerticalAxis, "Log10"),
+                new AxisItemModel(lowerSqrtVerticalAxis, "Sqrt"),
+            });
 
             var horizontalRangeSource = new[]
             {
@@ -86,8 +112,7 @@ namespace CompMs.App.Msdial.Model.Chart
             var horizontalAxis = horizontalRangeSource.ToReactiveContinuousAxisManager<double>(new ConstantMargin(40)).AddTo(Disposables);
             var horizontalAxisObservable = Observable.Return(horizontalAxis);
             var upperVerticalAxisObservable = new ReactivePropertySlim<AxisItemModel>(UpperVerticalAxisItemCollection[0]).AddTo(Disposables);
-            var lowerVerticalAxis = lowerVerticalRangeSource.ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent);
-            var lowerVerticalAxisObservable = Observable.Return(lowerVerticalAxis);
+            var lowerVerticalAxisObservable = new ReactivePropertySlim<AxisItemModel>(LowerVerticalAxisItemCollection[0]).AddTo(Disposables);
             if (upperSpectrumBrush is null)
                 upperSpectrumBrush = Observable.Return(GetBrush(Brushes.Blue));
             if (lowerSpectrumBrush is null)
@@ -97,8 +122,9 @@ namespace CompMs.App.Msdial.Model.Chart
 
             HorizontalAxis = horizontalAxisObservable;
             UpperVerticalAxisItem = upperVerticalAxisObservable;
-            UpperVerticalAxis = UpperVerticalAxisItem.Select(item => item.AxisManager);
-            LowerVerticalAxis = lowerVerticalAxisObservable;
+            UpperVerticalAxis = UpperVerticalAxisItem.SkipNull().Select(item => item.AxisManager);
+            LowerVerticalAxisItem = lowerVerticalAxisObservable;
+            LowerVerticalAxis = LowerVerticalAxisItem.SkipNull().Select(item => item.AxisManager);
             VerticalPropertySelector = verticalPropertySelector;
             HorizontalPropertySelector = horizontalPropertySelector;
             GraphLabels = graphLabels;
@@ -153,13 +179,15 @@ namespace CompMs.App.Msdial.Model.Chart
         public SingleSpectrumModel UpperSpectrumModel { get; }
         public SingleSpectrumModel UpperProductSpectrumModel { get; }
         public SingleSpectrumModel UpperDifferenceSpectrumModel { get; }
-
         public SingleSpectrumModel LowerSpectrumModel { get; }
 
         public IObservable<IAxisManager<double>> HorizontalAxis { get; }
-        public IObservable<IAxisManager<double>> UpperVerticalAxis { get; }
-        public IObservable<IAxisManager<double>> LowerVerticalAxis { get; }
 
+        public IObservable<IAxisManager<double>> LowerVerticalAxis { get; }
+        public ReactivePropertySlim<AxisItemModel> LowerVerticalAxisItem { get; }
+        public ObservableCollection<AxisItemModel> LowerVerticalAxisItemCollection { get; }
+
+        public IObservable<IAxisManager<double>> UpperVerticalAxis { get; }
         public ReactivePropertySlim<AxisItemModel> UpperVerticalAxisItem { get; }
         public ObservableCollection<AxisItemModel> UpperVerticalAxisItemCollection { get; }
 
@@ -180,8 +208,6 @@ namespace CompMs.App.Msdial.Model.Chart
         public void SaveLowerSpectrum(Stream stream) {
             LowerSpectrumModel.Save(stream);
         }
-
-        public IObservable<Range> UpperVerticalRangeSource { get; }
 
         public void SwitchViewToAllSpectrum() {
             UpperSpectrumModel.IsVisible.Value = true;

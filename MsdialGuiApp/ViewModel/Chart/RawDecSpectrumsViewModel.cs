@@ -1,8 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.AxisManager;
-using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -15,12 +13,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 {
     internal sealed class RawDecSpectrumsViewModel : ViewModelBase
     {
-        public RawDecSpectrumsViewModel(RawDecSpectrumsModel model, Action focusAction, IObservable<bool> isFocused) {
-            this.model = model;
+        private readonly RawDecSpectrumsModel _model;
 
-            IObservable<IAxisManager<double>> horizontalAxisSource = null;
-            IObservable<IAxisManager<double>> upperVerticalAxisSource = null;
-            IObservable<IAxisManager<double>> lowerVerticalAxisSource = null;
+        public RawDecSpectrumsViewModel(RawDecSpectrumsModel model, Action focusAction, IObservable<bool> isFocused) {
+            _model = model;
             FocusAction = focusAction;
             IsFocused = isFocused.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
@@ -33,58 +29,26 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 SelectedMs2Id = model.RawLoader.Ms2IdSelector;
             }
 
-            if (upperVerticalAxisSource is null) {
-                var upperVerticalAxis = this.model
-                    .DecRefSpectrumModels
-                    .UpperVerticalRangeSource
-                    .ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent)
-                    .AddTo(Disposables);
-                var upperLogVerticalAxis = this.model
-                    .DecRefSpectrumModels
-                    .UpperVerticalRangeSource
-                    .Select(range => (range.Minimum.Value, range.Maximum.Value))
-                    .ToReactiveLogScaleAxisManager(new ConstantMargin(0, 30), 1d, 1d)
-                    .AddTo(Disposables);
-
-                var axis = new AxisItemModel(upperVerticalAxis, "Normal");
-                UpperVerticalAxiss = new ObservableCollection<AxisItemModel>(new[]
-                {
-                    axis,
-                    new AxisItemModel(upperLogVerticalAxis, "Log10"),
-                });
-                UpperVerticalAxis = new ReactivePropertySlim<AxisItemModel>(axis).AddTo(Disposables);
-                upperVerticalAxisSource = UpperVerticalAxis.Where(item => item != null).Select(item => item.AxisManager);
-            }
-            else {
-                UpperVerticalAxiss = new ObservableCollection<AxisItemModel>();
-                UpperVerticalAxis = new ReactivePropertySlim<AxisItemModel>().AddTo(Disposables);
-            }
-
             RawRefSpectrumViewModels = new MsSpectrumViewModel(
-                this.model.RawRefSpectrumModels,
-                horizontalAxisSource,
-                upperVerticalAxisSource,
-                lowerVerticalAxisSource);
+                model.RawRefSpectrumModels,
+                lowerVerticalAxisSource: _model.DecRefSpectrumModels.LowerVerticalAxis,
+                focusAction: focusAction,
+                isFocused: isFocused);
 
             DecRefSpectrumViewModels = new MsSpectrumViewModel(
-                this.model.DecRefSpectrumModels,
-                horizontalAxisSource,
-                upperVerticalAxisSource,
-                lowerVerticalAxisSource);
+                model.DecRefSpectrumModels,
+                lowerVerticalAxisSource: _model.DecRefSpectrumModels.LowerVerticalAxis,
+                focusAction: focusAction,
+                isFocused: isFocused);
         }
 
-        private readonly RawDecSpectrumsModel model;
-
         public MsSpectrumViewModel RawRefSpectrumViewModels { get; }
-
         public MsSpectrumViewModel DecRefSpectrumViewModels { get; }
-
-        public ObservableCollection<AxisItemModel> UpperVerticalAxiss { get; }
-
-        public ReactivePropertySlim<AxisItemModel> UpperVerticalAxis { get; }
 
         public ReadOnlyReactivePropertySlim<List<MsSelectionItem>> Ms2IdList { get; }
         public ReactivePropertySlim<MsSelectionItem> SelectedMs2Id { get; }
+        public ReactivePropertySlim<AxisItemModel> LowerVerticalAxisItem => _model.DecRefSpectrumModels.LowerVerticalAxisItem;
+        public ObservableCollection<AxisItemModel> LowerVerticalAxisItemCollection => _model.DecRefSpectrumModels.LowerVerticalAxisItemCollection;
 
         public Action FocusAction { get; }
         public ReadOnlyReactivePropertySlim<bool> IsFocused { get; }

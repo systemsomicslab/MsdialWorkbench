@@ -9,18 +9,23 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    public class MsSpectrumViewModel : ViewModelBase
+    public sealed class MsSpectrumViewModel : ViewModelBase
     {
+        private readonly MsSpectrumModel _model;
+
         public MsSpectrumViewModel(
             MsSpectrumModel model,
             IObservable<IAxisManager<double>> horizontalAxisSource = null,
             IObservable<IAxisManager<double>> upperVerticalAxisSource = null,
-            IObservable<IAxisManager<double>> lowerVerticalAxisSource = null) {
+            IObservable<IAxisManager<double>> lowerVerticalAxisSource = null,
+            Action focusAction = null,
+            IObservable<bool> isFocused = null) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
@@ -38,10 +43,12 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             LowerVerticalAxis = (lowerVerticalAxisSource ?? model.LowerSpectrumModel.VerticalAxis)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+            LowerVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel>(model.LowerVerticalAxisItemCollection);
 
             UpperVerticalAxis = (upperVerticalAxisSource ?? model.UpperSpectrumModel.VerticalAxis)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+            UpperVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel>(model.UpperVerticalAxisItemCollection);
 
             UpperSpectrum = model.UpperSpectrumModel.Spectrum
                 .ToReadOnlyReactivePropertySlim()
@@ -102,6 +109,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             SwitchCompareSpectrumCommand = new ReactiveCommand()
                 .WithSubscribe(model.SwitchViewToCompareSpectrum)
                 .AddTo(Disposables);
+            _model = model;
+            FocusAction = focusAction;
+            IsFocused = (isFocused ?? Observable.Never<bool>()).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
 
         public ReadOnlyReactiveCollection<SingleSpectrumViewModel> UpperSpectraViewModel { get; }
@@ -113,10 +123,12 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<bool> SpectrumLoaded { get; }
         public ReadOnlyReactivePropertySlim<bool> ReferenceHasSpectrumInfomation { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> HorizontalAxis { get; }
-
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> UpperVerticalAxis { get; }
-
+        public ReactivePropertySlim<AxisItemModel> UpperVerticalAxisItem => _model.UpperVerticalAxisItem;
+        public ReadOnlyObservableCollection<AxisItemModel> UpperVerticalAxisItemCollection { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> LowerVerticalAxis { get; }
+        public ReactivePropertySlim<AxisItemModel> LowerVerticalAxisItem => _model.LowerVerticalAxisItem;
+        public ReadOnlyObservableCollection<AxisItemModel> LowerVerticalAxisItemCollection { get; }
 
         public ReadOnlyReactivePropertySlim<string> GraphTitle { get; }
 
@@ -139,6 +151,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReactiveCommand SwitchAllSpectrumCommand { get; }
 
         public ReactiveCommand SwitchCompareSpectrumCommand { get; }
+
+        public Action FocusAction { get; }
+        public ReadOnlyReactivePropertySlim<bool> IsFocused { get; }
 
         public ReactiveCommand SaveUpperSpectrumCommand { get; }
 

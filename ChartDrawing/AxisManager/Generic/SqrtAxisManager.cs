@@ -22,6 +22,10 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         }
 
+        public SqrtAxisManager(Range range, IChartMargin margin, double lowBound, double highBound) : base(range, margin, ConvertToRange(lowBound, highBound)) {
+
+        }
+
         public SqrtAxisManager(double low, double high) : this(ConvertToRange(low, high)) {
 
         }
