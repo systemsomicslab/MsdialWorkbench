@@ -175,7 +175,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 int usable = Math.Max(Storage.Parameter.ProcessBaseParam.UsableNumThreads / 2, 1);
                 FileProcess processor = new FileProcess(providerFactory, accProviderFactory, annotationProcess, matchResultEvaluator, Storage, isGuiProcess: true);
                 var runner = new ProcessRunner(processor);
-                if (processOption.HasFlag(ProcessOption.Identification)) {
+                if (processOption.HasFlag(ProcessOption.PeakSpotting)) {
                     if (!RunFileProcess(Storage.AnalysisFiles, usable, runner)) {
                         return;
                     }
