@@ -39,12 +39,14 @@ namespace CompMs.App.Msdial.Model.Imaging
             var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
             MoleculeStructureModel = moleculeStructureModel;
             ImageResult.Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
+            SaveImagesModel = new SaveImagesModel(ImageResult, ImagingRoiModels);
             _semaphoreSlim = new SemaphoreSlim(1, 1).AddTo(Disposables);
         }
 
         public WholeImageResultModel ImageResult { get; }
         public ObservableCollection<ImagingRoiModel> ImagingRoiModels { get; }
         public RoiEditModel RoiEditModel { get; }
+        public SaveImagesModel SaveImagesModel { get; }
         public AnalysisFileBeanModel File { get; }
         public PeakInformationAnalysisModel PeakInformationModel { get; }
         public MoleculeStructureModel MoleculeStructureModel { get; }

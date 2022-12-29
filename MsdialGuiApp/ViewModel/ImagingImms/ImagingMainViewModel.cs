@@ -27,7 +27,7 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
                   new ViewModelSwitcher(Observable.Never<ViewModelBase>(), Observable.Never<ViewModelBase>(), new IObservable<ViewModelBase>[0])) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _broker = broker;
-            ImageViewModels = model.ImageModels.ToReadOnlyReactiveCollection(m => new ImagingImageViewModel(m)).AddTo(Disposables);
+            ImageViewModels = model.ImageModels.ToReadOnlyReactiveCollection(m => new ImagingImageViewModel(m, broker)).AddTo(Disposables);
             RoiCompareViewModels = new ReadOnlyObservableCollection<ImagingRoiCompareViewModel>(new ObservableCollection<ImagingRoiCompareViewModel>());
         }
 

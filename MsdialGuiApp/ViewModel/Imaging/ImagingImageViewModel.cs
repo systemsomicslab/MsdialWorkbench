@@ -4,6 +4,7 @@ using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Helpers;
+using Reactive.Bindings.Notifiers;
 using System.Collections.ObjectModel;
 
 namespace CompMs.App.Msdial.ViewModel.Imaging
@@ -12,7 +13,7 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
     {
         private readonly ImagingImageModel _model;
 
-        public ImagingImageViewModel(ImagingImageModel model) {
+        public ImagingImageViewModel(ImagingImageModel model, IMessageBroker broker) {
             _model = model ?? throw new System.ArgumentNullException(nameof(model));
             RoiViewModels = model.ImagingRoiModels.ToReadOnlyReactiveCollection(m => new ImagingRoiViewModel(m)).AddTo(Disposables);
             SelectedRoiViewModels = RoiViewModels.ToFilteredReadOnlyObservableCollection(vm => vm.IsSelected.Value, vm => vm.IsSelected).AddTo(Disposables);
@@ -22,6 +23,7 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
             PeakDetailViewModels = new ViewModelBase[] { peakInfo, moleculeStructure, };
             Ms2ViewModels = new ViewModelBase[0];
             RoiEditViewModel = new RoiEditViewModel(model.RoiEditModel).AddTo(Disposables);
+            SaveImagesViewModel = new SaveImagesViewModel(model.SaveImagesModel, broker).AddTo(Disposables);
             AddRoiCommand = new AsyncReactiveCommand().WithSubscribe(model.AddRoiAsync).AddTo(Disposables);
         }
 
@@ -30,6 +32,7 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
         public IFilteredReadOnlyObservableCollection<ImagingRoiViewModel> SelectedRoiViewModels { get; }
         public WholeImageResultViewModel ImageResultViewModel { get; }
         public RoiEditViewModel RoiEditViewModel { get; }
+        public SaveImagesViewModel SaveImagesViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
         public ViewModelBase[] Ms2ViewModels { get; }
 

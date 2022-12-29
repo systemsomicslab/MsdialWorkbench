@@ -179,6 +179,7 @@
     <Compile Include="Model\Imaging\RoiModel.cs" />
     <Compile Include="Model\Imaging\IntensityImageModel.cs" />
     <Compile Include="Model\Imaging\RoiPeakSummaryModel.cs" />
+    <Compile Include="Model\Imaging\SaveImagesModel.cs" />
     <Compile Include="Model\Imaging\WholeImageResultModel.cs" />
     <Compile Include="Model\ImagingImms\ImagingImmsMethodModel.cs" />
     <Compile Include="Model\Imms\ImmsAlignmentMetadataAccessorFactory.cs" />
@@ -350,6 +351,7 @@
     <Compile Include="ViewModel\Imaging\RoiEditViewModel.cs" />
     <Compile Include="ViewModel\Imaging\RoiPeakSummaryViewModel.cs" />
     <Compile Include="ViewModel\Imaging\RoiViewModel.cs" />
+    <Compile Include="ViewModel\Imaging\SaveImagesViewModel.cs" />
     <Compile Include="ViewModel\Imaging\WholeImageResultViewModel.cs" />
     <Compile Include="ViewModel\Information\CompoundDetailViewModel.cs" />
     <Compile Include="ViewModel\Information\MoleculeStructureViewModel.cs" />

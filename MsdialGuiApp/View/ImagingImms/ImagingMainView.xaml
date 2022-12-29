@@ -125,7 +125,7 @@
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" MaxWidth="240"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Orientation="Vertical"
                             Margin="8"
@@ -142,6 +142,25 @@
                             <CheckBox x:Name="SelectorVisibility" Content="Selector visible"/>
                             <Button Content="Calculate"
                                     Command="{Binding SelectedImageViewModel.AddRoiCommand}"/>
+                        </ItemsControl>
+                    </GroupBox>
+
+                    <GroupBox Header="Save commands">
+                        <ItemsControl>
+                            <ItemsControl.ItemContainerStyle>
+                                <Style TargetType="ContentControl">
+                                    <Setter Property="Margin" Value="4"/>
+                                </Style>
+                            </ItemsControl.ItemContainerStyle>
+                            <ContentControl>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBox Text="{Binding SelectedImageViewModel.SaveImagesViewModel.Path.Value}"
+                                             Width="100"
+                                             TextWrapping="NoWrap"/>
+                                    <Button Content="Browse" Command="{Binding SelectedImageViewModel.SaveImagesViewModel.BrowseCommand}"/>
+                                </StackPanel>
+                            </ContentControl>
+                            <Button Content="Save" Command="{Binding SelectedImageViewModel.SaveImagesViewModel.SaveCommand}"/>
                         </ItemsControl>
                     </GroupBox>
                 </StackPanel>

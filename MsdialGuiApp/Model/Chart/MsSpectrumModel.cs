@@ -98,7 +98,7 @@ namespace CompMs.App.Msdial.Model.Chart
             Disposables.Add(lowerVerticalRangeProperty.Connect());
             LowerVerticalAxisItemCollection = new ObservableCollection<AxisItemModel>(new[]
             {
-                new AxisItemModel(lowerContinuousVerticalAxis, "Normal"),
+                new AxisItemModel(lowerContinuousVerticalAxis, "Relative"),
                 new AxisItemModel(lowerLogVerticalAxis, "Log10"),
                 new AxisItemModel(lowerSqrtVerticalAxis, "Sqrt"),
             });
