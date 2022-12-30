@@ -151,8 +151,20 @@ namespace CompMs.MsdialLcImMsApi.Process
                 parameter.NumThreads, token, reportAction);
             var iupacDB = storage.IupacDatabase;
             IsotopeEstimator.Process(chromPeakFeatures, parameter, iupacDB);
+            CopyIsotopeInformation2DriftFeatures(chromPeakFeatures);
+
             CcsEstimator.Process(chromPeakFeatures, parameter, parameter.IonMobilityType, coeff, parameter.IsAllCalibrantDataImported);
             return chromPeakFeatures;
+        }
+
+        private void CopyIsotopeInformation2DriftFeatures(List<ChromatogramPeakFeature> features) {
+            foreach (var feature in features) {
+                foreach(var dFeature in feature.DriftChromFeatures) {
+                    dFeature.PeakCharacter.IsotopeWeightNumber = feature.PeakCharacter.IsotopeWeightNumber;
+                    dFeature.PeakCharacter.Charge = feature.PeakCharacter.Charge;
+                    dFeature.PeakCharacter.IsotopeParentPeakID = feature.PeakCharacter.IsotopeParentPeakID;
+                }
+            }
         }
 
         private static Dictionary<double, List<MSDecResult>> SpectrumDeconvolution(
