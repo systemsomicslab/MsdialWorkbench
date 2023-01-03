@@ -880,7 +880,12 @@ namespace CompMs.Common.Algorithm.PeakPick {
             }
         }
 
-        private static ChromatogramGlobalProperty FindChromatogramGlobalProperties(IReadOnlyList<ChromatogramPeak> peaklist, int noiseEstimateBin, int minNoiseWindowSize, double minNoiseLevel, double noiseFactor)
+        private static ChromatogramGlobalProperty FindChromatogramGlobalProperties(
+            IReadOnlyList<ChromatogramPeak> peaklist, 
+            int noiseEstimateBin, 
+            int minNoiseWindowSize,
+            double minNoiseLevel, 
+            double noiseFactor)
         {
             // checking chromatogram properties
             var baseIntensites = peaklist.Select(peak => peak.Intensity).ToList();

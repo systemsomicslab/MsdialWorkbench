@@ -245,6 +245,11 @@ namespace CompMs.MsdialCore.Algorithm
         public void CharacterAssigner(List<ChromatogramPeakFeature> chromPeakFeatures,
             IDataProvider provider, IReadOnlyList<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param) {
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return;
+            //foreach (var feature in chromPeakFeatures) {
+            //    if (feature.MasterPeakID == 10999) {
+            //        Console.WriteLine();
+            //    }
+            //}
 
             // if the first inchikey is same, it's recognized as the same metabolite.
             assignLinksBasedOnInChIKeys(chromPeakFeatures, evaluator);
