@@ -248,7 +248,7 @@ namespace CompMs.MsdialCore.DataObj {
             //}
         }
 
-        public void Save(Stream stream) {
+        public void Save(Stream stream, bool forceSerialize = false) {
 
         }
 

@@ -267,7 +267,7 @@ namespace CompMs.MsdialCore.DataObj
             Dispose(disposing: false);
         }
 
-        public void Save(Stream stream) {
+        public void Save(Stream stream, bool forceSerialize = false) {
             CloseConnection(connection);
             Retry(5, TimeSpan.FromMilliseconds(500), () =>
             {

@@ -128,8 +128,8 @@ namespace CompMs.MsdialCore.Export.Tests
             Assert.AreEqual("0.83", dict["Total score"]);
             Assert.AreEqual("12.34", dict["S/N average"]);
             Assert.AreEqual("GGG", dict["Spectrum reference file name"]);
-            Assert.AreEqual("701.12345 345;702.12345 12", dict["MS1 isotopic spectrum"]);
-            Assert.AreEqual("700.12345 999;600.12345 164;400.12345 190;300.12345 587", dict["MS/MS spectrum"]);
+            Assert.AreEqual("701.12345:345 702.12345:12", dict["MS1 isotopic spectrum"]);
+            Assert.AreEqual("700.12345:999 600.12345:164 400.12345:190 300.12345:587", dict["MS/MS spectrum"]);
         }
 
         [TestMethod()]

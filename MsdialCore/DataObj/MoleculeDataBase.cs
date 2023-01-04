@@ -3,7 +3,6 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using MessagePack;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,11 +12,14 @@ namespace CompMs.MsdialCore.DataObj
     [MessagePackObject]
     public class MoleculeDataBase : IReferenceDataBase, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>
     {
+        private bool _needSerialize;
+
         public MoleculeDataBase(IEnumerable<MoleculeMsReference> source, string id, DataBaseSource dbsource, SourceType type) {
             Database = new MoleculeMsReferenceCollection(source.ToList());
             Id = id;
             SourceType = type;
             DataBaseSource = dbsource;
+            _needSerialize = true;
         }
 
         public MoleculeDataBase(IList<MoleculeMsReference> list, string id, DataBaseSource dbsource, SourceType type) {
@@ -25,12 +27,15 @@ namespace CompMs.MsdialCore.DataObj
             Id = id;
             SourceType = type;
             DataBaseSource = dbsource;
+            _needSerialize = true;
         }
 
+        [SerializationConstructor]
         public MoleculeDataBase(string id, SourceType type, DataBaseSource dbsource) {
             Id = id;
             SourceType = type;
             DataBaseSource = dbsource;
+            _needSerialize = true;// false;
         }
 
         [IgnoreMember]
@@ -45,8 +50,11 @@ namespace CompMs.MsdialCore.DataObj
 
         string IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>.Key => Id;
 
-        public void Save(Stream stream) {
-            LargeListMessagePack.Serialize(stream, Database);
+        public void Save(Stream stream, bool forceSerialize = false) {
+            if (_needSerialize || forceSerialize) {
+                LargeListMessagePack.Serialize(stream, Database);
+                //_needSerialize = false;
+            }
         }
 
         public void Load(Stream stream, string folderpath) {

@@ -62,7 +62,7 @@ namespace CompMs.MsdialCore.DataObj
             return _innerDb.Generates(lipids, seed, adduct, baseReference);
         }
 
-        public void Save(Stream stream) {
+        public void Save(Stream stream, bool forceSerialize = false) {
             _innerDb.Save(stream);
         }
 

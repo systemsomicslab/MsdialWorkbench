@@ -56,24 +56,15 @@ namespace CompMs.MsdialCore.DataObj
         public void Save(Stream stream) {
             using (var archive = new ZipArchive(stream, ZipArchiveMode.Create, leaveOpen: true)) {
                 foreach (var item in MetabolomicsDataBases) {
-                    var dbEntry = archive.CreateEntry(Path.Combine(MetabolomicsDataBasePath, item.DataBaseID));
-                    using (var dbStream = dbEntry.Open()) {
-                        item.Save(dbStream);
-                    }
+                    item.Save(archive, MetabolomicsDataBasePath);
                 }
 
                 foreach (var item in ProteomicsDataBases) {
-                    var dbEntry = archive.CreateEntry(Path.Combine(ProteomicsDataBasePath, item.DataBaseID));
-                    using (var dbStream = dbEntry.Open()) {
-                        item.Save(dbStream);
-                    }
+                    item.Save(archive, ProteomicsDataBasePath);
                 }
 
                 foreach (var item in EadLipidomicsDatabases) {
-                    var dbEntry = archive.CreateEntry(Path.Combine(EadLipidomicsDataBasePath, item.DataBaseID));
-                    using (var dbStream = dbEntry.Open()) {
-                        item.Save(dbStream);
-                    }
+                    item.Save(archive, EadLipidomicsDataBasePath);
                     item.DataBase.SwitchTo(LipidDatabaseFormat.Dictionary);
                 }
 
@@ -94,24 +85,15 @@ namespace CompMs.MsdialCore.DataObj
                     }
 
                     foreach (var item in result.MetabolomicsDataBases) {
-                        var dbEntry = archive.GetEntry(Path.Combine(MetabolomicsDataBasePath, item.DataBaseID));
-                        using (var dbStream = dbEntry.Open()) {
-                            item.Load(dbStream, visitor, factoryGenerationVisitor, projectFolderPath);
-                        }
+                        item.Load(archive, MetabolomicsDataBasePath, visitor, factoryGenerationVisitor, projectFolderPath);
                     }
 
                     foreach (var item in result.ProteomicsDataBases) {
-                        var dbEntry = archive.GetEntry(Path.Combine(ProteomicsDataBasePath, item.DataBaseID));
-                        using (var dbStream = dbEntry.Open()) {
-                            item.Load(dbStream, visitor, factoryGenerationVisitor, projectFolderPath);
-                        }
+                        item.Load(archive, ProteomicsDataBasePath, visitor, factoryGenerationVisitor, projectFolderPath);
                     }
 
                     foreach (var item in result.EadLipidomicsDatabases) {
-                        var dbEntry = archive.GetEntry(Path.Combine(EadLipidomicsDataBasePath, item.DataBaseID));
-                        using (var dbStream = dbEntry.Open()) {
-                            item.Load(dbStream, visitor, factoryGenerationVisitor, projectFolderPath);
-                        }
+                        item.Load(archive, EadLipidomicsDataBasePath, visitor, factoryGenerationVisitor, projectFolderPath);
                     }
                 }
             }

@@ -105,7 +105,7 @@ namespace CompMs.MsdialCore.DataObj
             }
         }
 
-        void IReferenceDataBase.Save(Stream stream) {
+        void IReferenceDataBase.Save(Stream stream, bool forceSerialize = false) {
             MessagePackDefaultHandler.SaveLargeListToStream(_references, stream);
         }
 
