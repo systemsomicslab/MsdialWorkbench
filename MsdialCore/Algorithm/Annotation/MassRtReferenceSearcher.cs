@@ -1,24 +1,24 @@
-﻿using CompMs.Common.DataStructure;
-using CompMs.Common.Interfaces;
-using System;
+﻿using CompMs.Common.Interfaces;
+using CompMs.Common.Utility;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
     public sealed class MassRtReferenceSearcher<T> : IReferenceSearcher<T, IMSSearchQuery> where T: IMSProperty
     {
-        public MassRtReferenceSearcher(IEnumerable<T> db) {
-            tree = KdTree.Build(db, x => x.PrecursorMz, x => x.ChromXs.RT.Value);   
-        }
+        private List<T> _db;
 
-        private readonly KdTree<T> tree;
+        public MassRtReferenceSearcher(IEnumerable<T> db) {
+            _db = db.OrderBy(x => x.PrecursorMz).ToList();
+        }
 
         public IReadOnlyList<T> Search(IMSSearchQuery query) {
             var lower = query.LowerLimit();
             var upper = query.UpperLimit();
-            return tree.RangeSearch(
-                new[] { lower.PrecursorMz, lower.ChromXs.RT.Value, },
-                new[] { upper.PrecursorMz, upper.ChromXs.RT.Value, });
+            var lo = ((IReadOnlyList<IMSProperty>)_db).LowerBound(lower, MassComparer.Comparer);
+            var hi = ((IReadOnlyList<IMSProperty>)_db).UpperBound(upper, MassComparer.Comparer);
+            return _db.GetRange(lo, hi - lo).Where(x => lower.ChromXs.RT.Value <= x.ChromXs.RT.Value && x.ChromXs.RT.Value <= upper.ChromXs.RT.Value).ToArray();
         }
     }
 }
