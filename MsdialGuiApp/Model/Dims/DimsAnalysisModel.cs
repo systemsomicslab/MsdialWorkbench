@@ -94,7 +94,7 @@ namespace CompMs.App.Msdial.Model.Dims
             var vAxis = Observable.Return(new Range(-0.5, 0.5))
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
-            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.Mass, peak => peak.KMD, Target, labelSource, selectedBrush, brushes, verticalAxis: vAxis)
+            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.Mass, peak => peak.KMD, Target, labelSource, selectedBrush, brushes, new PeakLinkModel(Ms1Peaks), verticalAxis: vAxis)
             {
                 VerticalTitle = "Kendrick mass defect",
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.KMD),
