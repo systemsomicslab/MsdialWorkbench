@@ -245,6 +245,9 @@ namespace Riken.Metabolomics.Lipidomics
                     setSingleAcylChainsLipidAnnotation(molecule, query);
                     break;
                 case "FA":
+                case "DMEDFA":
+                case "OxFA":
+                case "DMEDOxFA":
                     setSingleAcylChainsLipidAnnotation(molecule, query);
                     break;
                 case "FAHFA":
@@ -955,6 +958,9 @@ namespace Riken.Metabolomics.Lipidomics
                     level = "Chain resolved";
                     break;
                 case "FA":
+                case "DMEDFA":
+                case "OxFA":
+                case "DMEDOxFA":
                     level = "Chain resolved";
                     break;
                 case "FAHFA":
@@ -1652,6 +1658,9 @@ namespace Riken.Metabolomics.Lipidomics
                     level = "Chain resolved";
                     break;
                 case "FA":
+                case "DMEDFA":
+                case "OxFA":
+                case "DMEDOxFA":
                     level = "Chain resolved";
                     break;
                 case "FAHFA":
@@ -2353,6 +2362,9 @@ namespace Riken.Metabolomics.Lipidomics
                     level = "Chain resolved";
                     break;
                 case "FA":
+                case "DMEDFA":
+                case "OxFA":
+                case "DMEDOxFA":
                     level = "Chain resolved";
                     break;
                 case "FAHFA":
@@ -3986,12 +3998,15 @@ namespace Riken.Metabolomics.Lipidomics
                 case LbmClass.CoQ: return "CoQ";
                 case LbmClass.CAR: return "ACar";
                 case LbmClass.FA: return "FA";
+                case LbmClass.OxFA: return "OxFA";
                 case LbmClass.NAE: return "NAE";
                 case LbmClass.NAGly: return "NAAG";
                 case LbmClass.NAGlySer: return "NAAGS";
                 case LbmClass.NAOrn: return "NAAO";
                 case LbmClass.FAHFA: return "FAHFA";
                 case LbmClass.DMEDFAHFA: return "DMEDFAHFA";
+                case LbmClass.DMEDFA: return "DMEDFA";
+                case LbmClass.DMEDOxFA: return "DMEDOxFA";
                 case LbmClass.PhytoSph: return "Phytosphingosine";
                 case LbmClass.DHSph: return "Sphinganine";
                 case LbmClass.Sph: return "Sphingosine";
@@ -4158,6 +4173,8 @@ namespace Riken.Metabolomics.Lipidomics
                 case LbmClass.NATau: return "NATau";
                 case LbmClass.FAHFA: return "FAHFA";
                 case LbmClass.DMEDFAHFA: return "DMEDFAHFA";
+                case LbmClass.DMEDFA: return "DMEDFA";
+                case LbmClass.DMEDOxFA: return "DMEDFA";
                 case LbmClass.PhytoSph: return "PhytoSph";
                 case LbmClass.DHSph: return "DHSph";
                 case LbmClass.Sph: return "Sph";
@@ -4344,8 +4361,11 @@ namespace Riken.Metabolomics.Lipidomics
 
                 case "ACar": return LbmClass.CAR;
                 case "FA": return LbmClass.FA;
+                case "OxFA": return LbmClass.OxFA;
                 case "FAHFA": return LbmClass.FAHFA;
                 case "DMEDFAHFA": return LbmClass.DMEDFAHFA;
+                case "DMEDFA": return LbmClass.DMEDFA;
+                case "DMEDOxFA": return LbmClass.DMEDOxFA;
 
                 case "NAE": return LbmClass.NAE;
                 case "NAAG": return LbmClass.NAGly;
@@ -4597,6 +4617,7 @@ namespace Riken.Metabolomics.Lipidomics
                 case "OxFA": return LbmClass.OxFA;
                 case "FAHFA": return LbmClass.FAHFA;
                 case "DMEDFAHFA": return LbmClass.DMEDFAHFA;
+                case "DMEDFA": return LbmClass.DMEDFA;
 
                 case "NAE": return LbmClass.NAE;
                 case "NAGly": return LbmClass.NAGly;
@@ -4813,6 +4834,9 @@ namespace Riken.Metabolomics.Lipidomics
 
                 case "ACar": return "Acyl carnitine";
                 case "FA": return "Free fatty acid";
+                case "OxFA": return "Free fatty acid";
+                case "DMEDFA": return "Free fatty acid";
+                case "DMEDOxFA": return "Free fatty acid";
                 case "FAHFA": return "Fatty acid ester of hydroxyl fatty acid";
                 case "DMEDFAHFA": return "Fatty acid ester of hydroxyl fatty acid";
 
@@ -4929,6 +4953,8 @@ namespace Riken.Metabolomics.Lipidomics
                 case "OxFA": return "FattyAcyls";
                 case "FAHFA": return "FattyAcyls";
                 case "DMEDFAHFA": return "FattyAcyls";
+                case "DMEDFA": return "FattyAcyls";
+                case "DMEDOxFA": return "FattyAcyls";
 
                 case "MG": return "Glycerolipids";
                 case "DG": return "Glycerolipids";

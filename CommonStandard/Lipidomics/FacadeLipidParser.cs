@@ -72,6 +72,7 @@ namespace CompMs.Common.Lipidomics
                         new CARLipidParser(),
                         new CLLipidParser(),
                         new DMEDFAHFALipidParser(),
+                        new DMEDFALipidParser(),
                     }.ForEach(parser.Add);
                     @default = parser;
                 }

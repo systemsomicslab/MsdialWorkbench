@@ -49,7 +49,7 @@ namespace CompMs.Common.Enum
         DGTA, LDGTA,
         NATau, NAPhe,
         PT,
-        DMEDFAHFA
+        DMEDFAHFA, DMEDFA, DMEDOxFA
     }
 
     /// <summary>

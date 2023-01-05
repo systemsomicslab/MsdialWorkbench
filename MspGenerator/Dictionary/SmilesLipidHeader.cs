@@ -167,8 +167,8 @@ namespace CompMs.MspGenerator
             //FA
             {"FA", "O%10."},
             {"OxFA", "O%10."},
-            {"DMED-FA",  "N%10CCN(C)C." },
-            {"DMED-OxFA",  "N%10CCN(C)C." },
+            {"DMEDFA",  "N%10CCN(C)C." },
+            {"DMEDOxFA",  "N%10CCN(C)C." },
 
 
             //FAHFA

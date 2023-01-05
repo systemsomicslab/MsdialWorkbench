@@ -302,6 +302,10 @@ namespace Riken.Metabolomics.Lipidomics
                         result = LipidMsmsCharacterization.JudgeIfFattyacid(spectrum, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
                         break;
+                    case LbmClass.OxFA:
+                        result = LipidMsmsCharacterization.JudgeIfOxfattyacid(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct, totalOxidized);
+                        break;
                     case LbmClass.FAHFA:
                         result = LipidMsmsCharacterization.JudgeIfFahfa(spectrum, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
@@ -310,8 +314,12 @@ namespace Riken.Metabolomics.Lipidomics
                         result = LipidMsmsCharacterization.JudgeIfFahfaDMED(spectrum, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
                         break;
-                    case LbmClass.OxFA:
-                        result = LipidMsmsCharacterization.JudgeIfOxfattyacid(spectrum, ms2tol, refMz,
+                    case LbmClass.DMEDFA:
+                        result = LipidMsmsCharacterization.JudgeIfDmedFattyacid(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.DMEDOxFA:
+                        result = LipidMsmsCharacterization.JudgeIfDmedOxfattyacid(spectrum, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct, totalOxidized);
                         break;
                     case LbmClass.EtherOxPC:

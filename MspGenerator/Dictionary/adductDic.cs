@@ -290,8 +290,8 @@ namespace CompMs.MspGenerator
                 //FAHFA-DMED 20221122
                 {"DMEDFAHFA",  new List<string>(){ "[M+H]+" } },
                 {"DMEDFAHFAHFA",  new List<string>(){ "[M+H]+" } },
-                {"DMED-FA",  new List<string>(){ "[M+H]+" } },
-                {"DMED-OxFA",  new List<string>(){ "[M+H]+" } },
+                {"DMEDFA",  new List<string>(){ "[M+H]+" } },
+                {"DMEDOxFA",  new List<string>(){ "[M+H]+" } },
                 {"FAHFAHFA",  new List<string>(){ "[M-H]-" } },
 
 

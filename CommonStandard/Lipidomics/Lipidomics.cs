@@ -301,6 +301,10 @@ namespace CompMs.Common.Lipidomics {
                         result = LipidMsmsCharacterization.JudgeIfFattyacid(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
                         break;
+                    case LbmClass.DMEDFA:
+                        result = LipidMsmsCharacterization.JudgeIfDmedFattyacid(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
                     case LbmClass.FAHFA:
                         result = LipidMsmsCharacterization.JudgeIfFahfa(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
@@ -311,6 +315,10 @@ namespace CompMs.Common.Lipidomics {
                         break;
                     case LbmClass.OxFA:
                         result = LipidMsmsCharacterization.JudgeIfOxfattyacid(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct, totalOxidized);
+                        break;
+                    case LbmClass.DMEDOxFA:
+                        result = LipidMsmsCharacterization.JudgeIfDmedOxfattyacid(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct, totalOxidized);
                         break;
                     case LbmClass.EtherOxPC:

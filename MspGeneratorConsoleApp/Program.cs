@@ -75,11 +75,11 @@ namespace CompMs.MspGenerator
             //MergeRTandCCSintoMsp.generateDicOfPredictVs2(predictedFilesDirectry, dbFileName);
 
             //var workingFolder =
-            //        @"D:\mikikot\Desktop\Tsugawa-san_work\20221121_FAHFA\re2\";
+            //        @"D:\mikikot\Desktop\Tsugawa-san_work\20221121_FAHFA\DMEDFA\";
 
             //var outputResultFolderPath = workingFolder;// + "\\mergeToMsp\\";　// mergeした結果の出力フォルダ
-            //var mspFilePath = workingFolder + @"\FAHFA-DMED_H_Pos.msp"; //mergeするmspファイル
-            //var dbFileName = workingFolder + @"\calc\predictResult\predictedRTCCSAll_NCDK_20221215_TUAT.txt";
+            //var mspFilePath = workingFolder + @"\DMEDFAandDMEDOxFA_H_Pos.msp"; //mergeするmspファイル
+            //var dbFileName = @"D:\mikikot\Desktop\Tsugawa-san_work\20221121_FAHFA\DMEDFA\DMEDFA_H_Pos_predicted.txt";
             //MergeRTandCCSintoMsp.mergeRTandCCSintoMspVs2(mspFilePath, dbFileName, outputResultFolderPath, "TUAT");
 
 
@@ -581,9 +581,9 @@ namespace CompMs.MspGenerator
             //FA-DMED 20221221
 
             //faChain1 = Common.GenerateAcylChains(2, 0, 44, 12);
-            //Common.switchingLipid(faChain1, "DMED-FA", outputFolder);
+            //Common.switchingLipid(faChain1, "DMEDFA", outputFolder);
             //faChain1 = Common.GenerateAcylChains(8, 0, 28, 12);
-            //Common.switchingLipid(faChain1, "DMED-OxFA", outputFolder);
+            //Common.switchingLipid(faChain1, "DMEDOxFA", outputFolder);
 
             ////FAHFAHFA
             //var baseChains = new List<string>
@@ -654,16 +654,16 @@ namespace CompMs.MspGenerator
 
 
             {
-                //// C#上のXGBoostでRT、CCSのpredictionをおこなう
-                //// NCDKを利用したdescriptorの出力 (string inputFile, string outputFile)
-                //// inputFile <- InChIKeyとSMILESを含んだテーブルデータを渡す。
-                //// 1行目(ヘッダー行)が"SMILES"となっている列を認識してdescriptorを算出する。
-                /// RtCcsPredictOnDotNet.GenerateQsarDescriptorFileVS2();//--old
-                var workingFolder = @"D:\mikikot\Desktop\Tsugawa-san_work\20221221_msp_cleaning\calcuration\NCDK\";
+                // C#上のXGBoostでRT、CCSのpredictionをおこなう
+                // NCDKを利用したdescriptorの出力 (string inputFile, string outputFile)
+                // inputFile <- InChIKeyとSMILESを含んだテーブルデータを渡す。
+                // 1行目(ヘッダー行)が"SMILES"となっている列を認識してdescriptorを算出する。
+                // RtCcsPredictOnDotNet.GenerateQsarDescriptorFileVS2();//--old
+                //var workingFolder = @"D:\mikikot\Desktop\Tsugawa-san_work\20221121_FAHFA\FA\calc\";
 
                 //qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
-                //    (workingFolder + @"\20221221153605_TUAT_notfound.txt",
-                //     workingFolder + @"\20221221_NCDK_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
+                //    (workingFolder + @"\20230105152244_notfound.txt",
+                //     workingFolder + @"\20230105_NCDK_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
 
                 //qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
                 //    (@"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\InChIKeySmilesRtList.txt",
@@ -706,11 +706,11 @@ namespace CompMs.MspGenerator
                 //// RT、CCSの予測結果を求め、mspGeneratorで使っている形式で出力する
                 //// NCDKの結果は 235 descriptor(adductScoreを含まない)
                 //workingFolder = @"D:\mikikot\Desktop\Tsugawa-san_work\20221221_msp_cleaning\calcuration\NCDK\2\";
-                //var rtTrainModel = @"\\MTBDT\Mtb_info\data\lipidmics database\LipidBlast_MSP_NEW_2020\NCDK_predictionModel\NCDK_TUAT_RT_202209061305.model";
-                //var rtTestFile = @"D:\mikikot\Desktop\Tsugawa-san_work\20221221_msp_cleaning\calcuration\NCDK\2\20221222120554_TUAT_notfound.txt20221222120650.txt";
-                //var ccsTrainModel = @"\\MTBDT\Mtb_info\data\lipidmics database\LipidBlast_MSP_NEW_2020\NCDK_predictionModel\masterCCS_NCDK_202101081945.model";
+                //var rtTrainModel = @"\\MTBDT\Mtbinfo_Data\lipidmics database\LipidBlast_MSP_NEW_2020\NCDK_predictionModel\NCDK_TUAT_RT_202209061305.model";
+                //var rtTestFile = @"D:\mikikot\Desktop\Tsugawa-san_work\20221121_FAHFA\FA\calc\20230105_NCDK_20230105152433.txt";
+                //var ccsTrainModel = @"\\MTBDT\Mtbinfo_Data\lipidmics database\LipidBlast_MSP_NEW_2020\NCDK_predictionModel\masterCCS_NCDK_202101081945.model";
                 //var ccsTestFile = rtTestFile;
-                //var resultFile = workingFolder + @"\predicted\" + @"20221222120650_predicted.txt";
+                //var resultFile = workingFolder + @"\DMEDFA_H_Pos_predicted.txt";
 
                 //RtCcsPredictOnDotNet.mergeRtAndCcsResultFilesVS2(resultFile, rtTrainModel, rtTestFile, ccsTrainModel, ccsTestFile);
                 //Task.WaitAll();

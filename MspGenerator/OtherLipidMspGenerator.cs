@@ -82,7 +82,7 @@ namespace CompMs.MspGenerator
                                     name = lipidClass + " " + chainArray[0];
                                 }
                                 break;
-                            case "DMED-FA":
+                            case "DMEDFA":
                                 OtherLipidFragmentation.DmedFaFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, fa1Chain, fa1Double);
                                 name = lipidClass + " " + fa1Chain + ":" + fa1Double;
                                 break;
@@ -173,9 +173,9 @@ namespace CompMs.MspGenerator
                                     name = "FA" + " " + fa1Chain + ":" + fa1Double + ";O" + (fa1Ox.ToString() == "1" ? "" : fa1Ox.ToString());
                                 }
                                 break;
-                            case "DMED-OxFA":
+                            case "DMEDOxFA":
                                 OtherLipidFragmentation.DmedOxFaFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, fa1Chain, fa1Double);
-                                name = lipidClass + " " + fa1Chain + ":" + fa1Double + ";O" + (fa1Ox.ToString() == "1" ? "" : fa1Ox.ToString());
+                                name = "DMEDFA" + " " + fa1Chain + ":" + fa1Double + ";O" + (fa1Ox.ToString() == "1" ? "" : fa1Ox.ToString());
                                 break;
                         }
                         //

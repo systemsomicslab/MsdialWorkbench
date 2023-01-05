@@ -363,11 +363,11 @@ namespace CompMs.MspGenerator
                     break;
                 //FA
                 case "FA":
-                case "DMED-FA":
+                case "DMEDFA":
                     OtherLipidMspGenerator.faGenerator(chain1, lipidClass, output);
                     break;
                 case "OxFA":
-                case "DMED-OxFA":
+                case "DMEDOxFA":
                     OtherLipidMspGenerator.oxFaGenerator(chain1, lipidClass, output);
                     break;
                 case "alphaOxFA":
