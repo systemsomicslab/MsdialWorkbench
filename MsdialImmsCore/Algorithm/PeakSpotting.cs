@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Algorithm.PeakPick;
+﻿using Accord.Diagnostics;
+using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
@@ -86,28 +87,28 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 return new List<ChromatogramPeakFeature>(0);
             }
 
-            var chromPeakFeatures = GetChromatogramPeakFeatures(chromatogram, peakDetector);
+            Chromatogram_temp2 smoothedChromatogram = chromatogram.ChromatogramSmoothing(_parameter.PeakPickBaseParam.SmoothingMethod, _parameter.PeakPickBaseParam.SmoothingLevel);
+            var chromPeakFeatures = GetChromatogramPeakFeatures(chromatogram, peakDetector, smoothedChromatogram);
             var subtractedFeatures = GetBackgroundSubtractedPeaks(chromPeakFeatures, chromatogram);
             var collection = new ChromatogramPeakFeatureCollection(subtractedFeatures);
-            collection.SetRawMs1Id(chromatogram.Peaks);
+            collection.SetRawMs1Id(smoothedChromatogram.Peaks);
             return subtractedFeatures;
         }
 
-        private List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(Chromatogram_temp2 chromatogram, PeakDetection peakDetector) {
-            var smoothedPeaklist = chromatogram.Smoothing(_parameter.PeakPickBaseParam.SmoothingMethod, _parameter.PeakPickBaseParam.SmoothingLevel);
-            var detectedPeaks = peakDetector.PeakDetectionVS1(smoothedPeaklist);
+        private List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(Chromatogram_temp2 chromatogram, PeakDetection peakDetector, Chromatogram_temp2 smoothedChromatogram) {
+            var detectedPeaks = peakDetector.PeakDetectionVS1(smoothedChromatogram);
             var chromPeakFeatures = new List<ChromatogramPeakFeature>();
             foreach (var result in detectedPeaks) {
                 if (result.IntensityAtPeakTop <= 0) {
                     continue;
                 }
-                var mass = chromatogram.Peaks[result.ScanNumAtPeakTop].Mz;
+                var mass = smoothedChromatogram.Peaks[result.ScanNumAtPeakTop].Mz;
                 //option
                 //Users can prepare their-own 'exclusion mass' list to exclude unwanted peak features
                 if (_parameter.PeakPickBaseParam.ShouldExclude(mass)) {
                     continue;
                 }
-                chromPeakFeatures.Add(ChromatogramPeakFeature.FromPeakDetectionResult(result, chromatogram, mass, _parameter.ProjectParam.IonMode));
+                chromPeakFeatures.Add(ChromatogramPeakFeature.FromPeakDetectionResult(result, chromatogram, smoothedChromatogram.Peaks, mass, _parameter.ProjectParam.IonMode));
             }
             return chromPeakFeatures;
         }

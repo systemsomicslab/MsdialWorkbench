@@ -104,7 +104,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                 .WithCancellation(token)
                 .WithDegreeOfParallelism(numThreads)
                 .Select(targetMass => {
-                    var chromPeakFeatures = GetChromatogramPeakFeatures(rawSpectra, accSpectra, accSpectrumProvider, targetMass, chromatogramRange, peakDetector);
+                    var chromPeakFeatures = GetChromatogramPeakFeatures(rawSpectra, accSpectra, accSpectrumProvider, (float)targetMass, chromatogramRange, peakDetector);
                     Interlocked.Increment(ref counter);
                     lock (syncObj) {
                         ReportProgress.Show(InitialProgress, ProgressMax, counter, targetMasses.Count, reportAction);
@@ -143,22 +143,22 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                 .AsOrdered()
                 .WithCancellation(token)
                 .WithDegreeOfParallelism(numThreads)
-                .Select(targetedScan => GetChromatogramPeakFeatures(rawSpectra, accSpectra, accSpectrumProvider, (float)targetedScan.PrecursorMz, chromatogramRange, peakDetector))
+                .Select(targetedScan => GetChromatogramPeakFeatures(rawSpectra, accSpectra, accSpectrumProvider, targetedScan.PrecursorMz, chromatogramRange, peakDetector))
                 .Where(features => !features.IsEmptyOrNull())
                 .ToList();
             return _peakSpottingCore.GetCombinedChromPeakFeatures(chromPeakFeaturesList, accSpectrumProvider);
         }
 
-        private List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(RawSpectra rawSpectra, RawSpectra accSpectra, IDataProvider accSpectrumProvider, float focusedMass, ChromatogramRange chromatogramRange, PeakDetection peakDetector) {
+        private List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(RawSpectra rawSpectra, RawSpectra accSpectra, IDataProvider accSpectrumProvider, double focusedMass, ChromatogramRange chromatogramRange, PeakDetection peakDetector) {
             //get EIC chromatogram
             var chromatogram = accSpectra.GetMs1ExtractedChromatogram_temp2(focusedMass, _parameter.MassSliceWidth, chromatogramRange);
             if (chromatogram.IsEmpty) return null;
             var chromPeakFeatures = _peakSpottingCore.GetChromatogramPeakFeatures(chromatogram, peakDetector);
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return null;
-            _peakSpottingCore.SetRawDataAccessID2ChromatogramPeakFeaturesFor4DChromData(chromPeakFeatures, accSpectrumProvider, chromatogram.Peaks);
+            _peakSpottingCore.SetRawDataAccessID2ChromatogramPeakFeaturesFor4DChromData(chromPeakFeatures, accSpectrumProvider);
 
             //filtering out noise peaks considering smoothing effects and baseline effects
-            var backgroundSubtracted = _peakSpottingCore.GetBackgroundSubtractedPeaks(chromPeakFeatures, chromatogram.Peaks);
+            var backgroundSubtracted = _peakSpottingCore.GetBackgroundSubtractedPeaks(chromPeakFeatures, chromatogram);
             if (backgroundSubtracted == null || backgroundSubtracted.Count == 0) return null;
 
             var driftAxisPeaks = _peakSpottingCore.ExecutePeakDetectionOnDriftTimeAxis(backgroundSubtracted, rawSpectra, _parameter.AccumulatedRtRange);

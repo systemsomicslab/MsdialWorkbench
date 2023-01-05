@@ -25,6 +25,10 @@ namespace CompMs.MsdialCore.Algorithm
             return provider.LoadMsSpectrums()[index];
         }
 
+        public static RawSpectrum LoadMs1SpectrumFromIndex(this IDataProvider provider, int index) {
+            return provider.LoadMs1Spectrums()[index];
+        }
+
         public static double GetMinimumCollisionEnergy(this IDataProvider provider) {
             return provider.LoadMsSpectrums().DefaultIfEmpty().Min(s => s?.CollisionEnergy) ?? -1d;
         }

@@ -121,15 +121,15 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             int topScanNum = minimumID;
 
             var ms2ValuePeaksList = DataAccess.GetMs2ValuePeaks(provider, precursorMz, startIndex, endIndex, curatedSpectra.Select(x => (double)x.Mass).ToList(), param, targetCE);
-            var sMs2ValuePeakList = new List<ValuePeak[]>();
-            foreach (var ms2Peaks in ms2ValuePeaksList) { 
-                var sMs2Peaks = new Chromatogram_temp2(ms2Peaks, ChromXType.RT, ChromXUnit.Min).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
-                sMs2ValuePeakList.Add(sMs2Peaks);
+            var sMs2Chromatograms = new List<Chromatogram_temp2>();
+            foreach (var ms2Peaks in ms2ValuePeaksList) {
+                Chromatogram_temp2 chromatogram = new Chromatogram_temp2(ms2Peaks, ChromXType.RT, ChromXUnit.Min).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
+                sMs2Chromatograms.Add(chromatogram);
             }
 
             //Do MS2Dec deconvolution
-            if (sMs2ValuePeakList.Count > 0) {
-                var msdecResult = MSDecHandler.GetMSDecResult(sMs2ValuePeakList, param, topScanNum);
+            if (sMs2Chromatograms.Count > 0) {
+                var msdecResult = MSDecHandler.GetMSDecResult(sMs2Chromatograms, param, topScanNum);
                 if (msdecResult == null) { //if null (any pure chromatogram is not found.)
                     if (param.IsDoAndromedaMs2Deconvolution)
                         return MSDecObjectHandler.GetAndromedaSpectrum(chromPeakFeature, curatedSpectra, param, iupac, Math.Abs(chromPeakFeature.PeakCharacter.Charge));

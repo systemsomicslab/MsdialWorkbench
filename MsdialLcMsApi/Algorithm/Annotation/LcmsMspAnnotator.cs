@@ -31,14 +31,13 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
         }
 
         public List<MsScanMatchResult> FindCandidates(IAnnotationQuery<MsScanMatchResult> query) {
-            return FindCandidatesCore(query, query.Parameter ?? Parameter);
+            return FindCandidatesCore(query, query.Parameter ?? Parameter).ToList();
         }
 
-        private List<MsScanMatchResult> FindCandidatesCore(IAnnotationQuery<MsScanMatchResult> query, MsRefSearchParameterBase parameter) {
+        private IEnumerable<MsScanMatchResult> FindCandidatesCore(IAnnotationQuery<MsScanMatchResult> query, MsRefSearchParameterBase parameter) {
             return SearchCore(query.Property, parameter)
                 .Select(candidate => CalculateScore(query, candidate))
-                .OrderByDescending(result => result.TotalScore)
-                .ToList();
+                .OrderByDescending(result => result.TotalScore);
         }
 
         public MsScanMatchResult CalculateScore(IAnnotationQuery<MsScanMatchResult> query, MoleculeMsReference reference) {

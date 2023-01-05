@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Algorithm.PeakPick;
+﻿using Accord.Diagnostics;
+using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
@@ -386,7 +387,7 @@ namespace CompMs.MsdialCore.DataObj
             };
         }
 
-        public static ChromatogramPeakFeature FromPeakDetectionResult(PeakDetectionResult peakDetectionResult, Chromatogram_temp2 chromatogram, double mz, IonMode ionMode) {
+        public static ChromatogramPeakFeature FromPeakDetectionResult(PeakDetectionResult peakDetectionResult, Chromatogram_temp2 chromatogram, IReadOnlyList<ValuePeak> smoothedChromatogram, double mz, IonMode ionMode) {
             if (peakDetectionResult == null) {
                 return null;
             }
@@ -411,11 +412,12 @@ namespace CompMs.MsdialCore.DataObj
             {
                 MasterPeakID = peakDetectionResult.PeakID,
                 PeakID = peakDetectionResult.PeakID,
+                IonMode = ionMode,
 
                 //assign the scan number of MS1 and MS/MS for precursor ion's peaks
-                MS1RawSpectrumIdTop = chromatogram.Peaks[peakDetectionResult.ScanNumAtPeakTop].Id,
-                MS1RawSpectrumIdLeft = chromatogram.Peaks[peakDetectionResult.ScanNumAtLeftPeakEdge].Id,
-                MS1RawSpectrumIdRight = chromatogram.Peaks[peakDetectionResult.ScanNumAtRightPeakEdge].Id,
+                MS1RawSpectrumIdTop = smoothedChromatogram[peakDetectionResult.ScanNumAtPeakTop].Id,
+                MS1RawSpectrumIdLeft = smoothedChromatogram[peakDetectionResult.ScanNumAtLeftPeakEdge].Id,
+                MS1RawSpectrumIdRight = smoothedChromatogram[peakDetectionResult.ScanNumAtRightPeakEdge].Id,
 
                 PeakShape = new ChromatogramPeakShape()
                 {
