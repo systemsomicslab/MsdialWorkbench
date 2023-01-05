@@ -77,7 +77,7 @@ namespace CompMs.MsdialCore.Algorithm.Tests
             var evaluator = new FakeEvaluator(matched: "matched", suggested: "suggested");
             var stubParameter = new ParameterBase();
 
-            new PeakCharacterEstimator(0, 100).CharacterAssigner(peaks, stubProvider, stubDecs, evaluator, stubParameter);
+            new PeakCharacterEstimator(0, 100).CharacterAssigner(peaks, stubDecs, evaluator, stubParameter, new RawSpectra(stubProvider, stubParameter.IonMode, stubParameter.AcquisitionType));
 
             Assert.IsTrue(peaks[0].PeakCharacter.IsLinked);
             Assert.AreEqual(1, peaks[0].PeakCharacter.AdductParent);
