@@ -746,7 +746,7 @@ namespace CompMs.MsdialCore.MSDec {
                 if (results == null || results.Count == 0) continue;
                 //save as peakarea bean
                 foreach (var result in results) {
-                    var mass = chromatogram.Peaks[result.ScanNumAtPeakTop].Mz;
+                    var mass = chromatogram.Mz(result.ScanNumAtPeakTop);
                     var chromPeakFeature = DataAccess.GetChromatogramPeakFeature(result, type, unit, mass, param.ProjectParam.IonMode);
                     chromPeakFeature.PeakID = index; // this information is needed in the later process.
                     peakSpots.Add(chromPeakFeature);

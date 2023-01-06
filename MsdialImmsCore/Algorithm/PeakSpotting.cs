@@ -91,7 +91,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             var chromPeakFeatures = GetChromatogramPeakFeatures(chromatogram, peakDetector, smoothedChromatogram);
             var subtractedFeatures = GetBackgroundSubtractedPeaks(chromPeakFeatures, chromatogram);
             var collection = new ChromatogramPeakFeatureCollection(subtractedFeatures);
-            collection.SetRawMs1Id(smoothedChromatogram.Peaks);
+            collection.SetRawMs1Id(smoothedChromatogram);
             return subtractedFeatures;
         }
 
@@ -102,13 +102,13 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 if (result.IntensityAtPeakTop <= 0) {
                     continue;
                 }
-                var mass = smoothedChromatogram.Peaks[result.ScanNumAtPeakTop].Mz;
+                var mass = smoothedChromatogram.Mz(result.ScanNumAtPeakTop);
                 //option
                 //Users can prepare their-own 'exclusion mass' list to exclude unwanted peak features
                 if (_parameter.PeakPickBaseParam.ShouldExclude(mass)) {
                     continue;
                 }
-                chromPeakFeatures.Add(ChromatogramPeakFeature.FromPeakDetectionResult(result, chromatogram, smoothedChromatogram.Peaks, mass, _parameter.ProjectParam.IonMode));
+                chromPeakFeatures.Add(ChromatogramPeakFeature.FromPeakDetectionResult(result, chromatogram, mass, _parameter.ProjectParam.IonMode));
             }
             return chromPeakFeatures;
         }

@@ -20,12 +20,12 @@ namespace CompMs.MsdialCore.DataObj
 
         public ReadOnlyCollection<ChromatogramPeakFeature> Items { get; }
 
-        public void SetRawMs1Id(IReadOnlyList<ValuePeak> peaklist) {
+        public void SetRawMs1Id(Chromatogram_temp2 chromatogram) {
             foreach (var item in _items) {
                 var peakFeature = item.PeakFeature;
-                item.MS1RawSpectrumIdLeft = peaklist[peakFeature.ChromScanIdLeft].Id;
-                item.MS1RawSpectrumIdTop = peaklist[peakFeature.ChromScanIdTop].Id;
-                item.MS1RawSpectrumIdRight = peaklist[peakFeature.ChromScanIdRight].Id;
+                item.MS1RawSpectrumIdLeft = chromatogram.Id(peakFeature.ChromScanIdLeft);
+                item.MS1RawSpectrumIdTop = chromatogram.Id(peakFeature.ChromScanIdTop);
+                item.MS1RawSpectrumIdRight = chromatogram.Id(peakFeature.ChromScanIdRight);
             }
         }
 

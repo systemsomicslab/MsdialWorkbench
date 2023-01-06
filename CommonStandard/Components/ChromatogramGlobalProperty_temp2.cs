@@ -7,188 +7,71 @@ using System.Linq;
 namespace CompMs.Common.Components
 {
     public sealed class ChroChroChromatogram {
-        public ChroChroChromatogram(Chromatogram_temp2 chromatogram, ChromatogramGlobalProperty_temp2 globalProperty, DifferencialCoefficients differencialCoefficients, ChromatogramNoises noises) {
-            Chromatogram = chromatogram;
-            GlobalProperty = globalProperty;
-            DifferencialCoefficients = differencialCoefficients;
-            Noises = noises;
-        }
+        private readonly Chromatogram_temp2 _chromatogram;
+        private readonly ChromatogramGlobalProperty_temp2 _globalProperty;
+        private readonly DifferencialCoefficients _differencialCoefficients;
+        private readonly ChromatogramNoises _noises;
 
-        public Chromatogram_temp2 Chromatogram { get; }
-        public ChromatogramGlobalProperty_temp2 GlobalProperty { get; }
-        public DifferencialCoefficients DifferencialCoefficients { get; }
-        public ChromatogramNoises Noises { get; }
+        internal ChroChroChromatogram(Chromatogram_temp2 chromatogram, ChromatogramGlobalProperty_temp2 globalProperty, DifferencialCoefficients differencialCoefficients, ChromatogramNoises noises) {
+            _chromatogram = chromatogram;
+            _globalProperty = globalProperty;
+            _differencialCoefficients = differencialCoefficients;
+            _noises = noises;
+        }
 
         public bool IsPeakStarted(int index, double slopeNoiseFoldCriteria) {
-            return DifferencialCoefficients.FirstDiffPeaklist[index] > Noises.SlopeNoise * slopeNoiseFoldCriteria &&
-                DifferencialCoefficients.FirstDiffPeaklist[index + 1] > Noises.SlopeNoise * slopeNoiseFoldCriteria;
+            return _differencialCoefficients.FirstDiffPeaklist[index] > _noises.SlopeNoise * slopeNoiseFoldCriteria &&
+                _differencialCoefficients.FirstDiffPeaklist[index + 1] > _noises.SlopeNoise * slopeNoiseFoldCriteria;
         }
 
-        internal int SearchRealLeftEdge2(int i) {
-            var ssPeaklist = GlobalProperty.SmoothedChromatogram.Peaks;
-            //search real left edge within 5 data points
-            for (int j = 0; j <= 5; j++) {
-                if (i - j - 1 < 0 || ssPeaklist[i - j].Intensity <= ssPeaklist[i - j - 1].Intensity) {
-                    return i - j;
-                }
-            }
-            return i - 6;
-        }
-
-        internal int SearchRightEdgeCandidate2(int i, double minimumDatapointCriteria, double slopeNoiseFoldCriteria) {
+        internal int SearchRightEdgeCandidate(int i, double minimumDatapointCriteria, double slopeNoiseFoldCriteria) {
             var j = i;
-            var peaktopCheck = false;
+            var foundPeakTop = false;
             var peaktopCheckPoint = j;
-            while (true) {
-                if (j + 2 == GlobalProperty.SmoothedChromatogram.Peaks.Count - 1) break;
+            while (j + 2 != _globalProperty.SmoothedChromatogram.Length - 1) {
                 j++;
 
                 // peak top check
-                if (peaktopCheck == false &&
-                    (DifferencialCoefficients.FirstDiffPeaklist[j - 1] > 0 && DifferencialCoefficients.FirstDiffPeaklist[j] < 0) || (DifferencialCoefficients.FirstDiffPeaklist[j - 1] > 0 && DifferencialCoefficients.FirstDiffPeaklist[j + 1] < 0) && DifferencialCoefficients.SecondDiffPeaklist[j] < -1 * (double)Noises.PeakTopNoise) {
-                    peaktopCheck = true; peaktopCheckPoint = j;
+                if (!foundPeakTop && (_differencialCoefficients.FirstDiffPeaklist[j - 1] > 0 && _differencialCoefficients.FirstDiffPeaklist[j] < 0) || (_differencialCoefficients.FirstDiffPeaklist[j - 1] > 0 && _differencialCoefficients.FirstDiffPeaklist[j + 1] < 0) && _differencialCoefficients.SecondDiffPeaklist[j] < -1 * (double)_noises.PeakTopNoise) {
+                    foundPeakTop = true; peaktopCheckPoint = j;
                 }
 
-                if (peaktopCheck == false &&
-                    GlobalProperty.SmoothedChromatogram.Peaks[j - 2].Intensity <= GlobalProperty.SmoothedChromatogram.Peaks[j - 1].Intensity &&
-                    GlobalProperty.SmoothedChromatogram.Peaks[j - 1].Intensity <= GlobalProperty.SmoothedChromatogram.Peaks[j].Intensity &&
-                    GlobalProperty.SmoothedChromatogram.Peaks[j].Intensity >= GlobalProperty.SmoothedChromatogram.Peaks[j + 1].Intensity &&
-                    GlobalProperty.SmoothedChromatogram.Peaks[j + 1].Intensity >= GlobalProperty.SmoothedChromatogram.Peaks[j + 2].Intensity) {
-                    peaktopCheck = true; peaktopCheckPoint = j;
+                if (!foundPeakTop && _globalProperty.SmoothedChromatogram.IsLargePeakTop(j)) {
+                    foundPeakTop = true; peaktopCheckPoint = j;
                 }
 
                 // peak top check force
-                if (peaktopCheck == false && minimumDatapointCriteria < 1.5 &&
-                    (GlobalProperty.SmoothedChromatogram.Peaks[j - 2].Intensity <= GlobalProperty.SmoothedChromatogram.Peaks[j - 1].Intensity &&
-                     GlobalProperty.SmoothedChromatogram.Peaks[j - 1].Intensity <= GlobalProperty.SmoothedChromatogram.Peaks[j].Intensity &&
-                     GlobalProperty.SmoothedChromatogram.Peaks[j].Intensity >= GlobalProperty.SmoothedChromatogram.Peaks[j + 1].Intensity) ||
-                    (GlobalProperty.SmoothedChromatogram.Peaks[j - 1].Intensity <= GlobalProperty.SmoothedChromatogram.Peaks[j].Intensity &&
-                     GlobalProperty.SmoothedChromatogram.Peaks[j].Intensity >= GlobalProperty.SmoothedChromatogram.Peaks[j + 1].Intensity &&
-                     GlobalProperty.SmoothedChromatogram.Peaks[j + 1].Intensity >= GlobalProperty.SmoothedChromatogram.Peaks[j + 2].Intensity)) {
-                    peaktopCheck = true; peaktopCheckPoint = j;
+                if (!foundPeakTop && minimumDatapointCriteria < 1.5 && _globalProperty.SmoothedChromatogram.IsBroadPeakTop(j)) {
+                    foundPeakTop = true; peaktopCheckPoint = j;
                 }
 
 
                 var minimumPointFromTop = minimumDatapointCriteria <= 3 ? 1 : minimumDatapointCriteria * 0.5;
-                if (peaktopCheck == true && peaktopCheckPoint + minimumPointFromTop <= j - 1) {
-                    if (DifferencialCoefficients.FirstDiffPeaklist[j] > -1 * (double)Noises.SlopeNoise * slopeNoiseFoldCriteria) break;
-                    if (Math.Abs(GlobalProperty.SmoothedChromatogram.Peaks[j - 2].Intensity - GlobalProperty.SmoothedChromatogram.Peaks[j - 1].Intensity) < (double)Noises.AmplitudeNoise &&
-                          Math.Abs(GlobalProperty.SmoothedChromatogram.Peaks[j - 1].Intensity - GlobalProperty.SmoothedChromatogram.Peaks[j].Intensity) < (double)Noises.AmplitudeNoise) break;
+                if (foundPeakTop && peaktopCheckPoint + minimumPointFromTop <= j - 1) {
+                    if (_differencialCoefficients.FirstDiffPeaklist[j] > -1 * _noises.SlopeNoise * slopeNoiseFoldCriteria) break;
 
-                    if (GlobalProperty.SmoothedChromatogram.Peaks[j - 2].Intensity >= GlobalProperty.SmoothedChromatogram.Peaks[j - 1].Intensity &&
-                        GlobalProperty.SmoothedChromatogram.Peaks[j - 1].Intensity >= GlobalProperty.SmoothedChromatogram.Peaks[j].Intensity &&
-                        GlobalProperty.SmoothedChromatogram.Peaks[j].Intensity <= GlobalProperty.SmoothedChromatogram.Peaks[j + 1].Intensity &&
-                        GlobalProperty.SmoothedChromatogram.Peaks[j + 1].Intensity <= GlobalProperty.SmoothedChromatogram.Peaks[j + 2].Intensity) break;
+                    if (_globalProperty.SmoothedChromatogram.IsFlat(j - 1, _noises.AmplitudeNoise)) break;
+
+                    if (_globalProperty.SmoothedChromatogram.IsLargeBottom(j)) break;
 
                     // peak right check force
-                    if (minimumDatapointCriteria < 1.5 &&
-                        (GlobalProperty.SmoothedChromatogram.Peaks[j - 2].Intensity >= GlobalProperty.SmoothedChromatogram.Peaks[j - 1].Intensity &&
-                         GlobalProperty.SmoothedChromatogram.Peaks[j - 1].Intensity >= GlobalProperty.SmoothedChromatogram.Peaks[j].Intensity &&
-                         GlobalProperty.SmoothedChromatogram.Peaks[j].Intensity <= GlobalProperty.SmoothedChromatogram.Peaks[j + 1].Intensity) ||
-                        (GlobalProperty.SmoothedChromatogram.Peaks[j - 1].Intensity >= GlobalProperty.SmoothedChromatogram.Peaks[j].Intensity &&
-                         GlobalProperty.SmoothedChromatogram.Peaks[j].Intensity <= GlobalProperty.SmoothedChromatogram.Peaks[j + 1].Intensity &&
-                         GlobalProperty.SmoothedChromatogram.Peaks[j + 1].Intensity <= GlobalProperty.SmoothedChromatogram.Peaks[j + 2].Intensity)) {
-                        peaktopCheck = true; peaktopCheckPoint = j;
+                    if (minimumDatapointCriteria < 1.5 && _globalProperty.SmoothedChromatogram.IsBroadBottom(j)) {
+                        foundPeakTop = true; peaktopCheckPoint = j;
                     }
                 }
             }
             return j;
         }
 
-        internal int SearchRealRightEdge2(int i, ref bool infinitLoopCheck, ref int infinitLoopID, out bool isBreak) {
-            //Search real right edge within 5 data points
-            var isTooLongRightEdge = false;
-            var trackcounter = 0;
-            isBreak = false;
-
-            //case: wrong edge is in right of real edge
-            for (int j = 0; j <= 5; j++) {
-                if (i - j - 1 < 0 || GlobalProperty.SmoothedChromatogram.Peaks[i - j].Intensity <= GlobalProperty.SmoothedChromatogram.Peaks[i - j - 1].Intensity) {
-                    break;
-                }
-                isTooLongRightEdge = true;
-                trackcounter++;
-            }
-            if (isTooLongRightEdge) {
-                var k = i - trackcounter;
-                if (infinitLoopCheck && k == infinitLoopID && k > GlobalProperty.SmoothedChromatogram.Peaks.Count - 10) {
-                    isBreak = true;
-                }
-                else {
-                    infinitLoopCheck = true;
-                    infinitLoopID = k;
-                }
-                return k;
-            }
-
-            //case: wrong edge is in left of real edge
-            for (int j = 0; j <= 5; j++) {
-                if (i + j + 1 > GlobalProperty.SmoothedChromatogram.Peaks.Count - 1) break;
-                if (GlobalProperty.SmoothedChromatogram.Peaks[i + j].Intensity <= GlobalProperty.SmoothedChromatogram.Peaks[i + j + 1].Intensity) break;
-                if (GlobalProperty.SmoothedChromatogram.Peaks[i + j].Intensity > GlobalProperty.SmoothedChromatogram.Peaks[i + j + 1].Intensity) {
-                    trackcounter++;
-                }
-            }
-            return i + trackcounter;
-        }
-
         internal bool IsNoise(double maxPeakHeight, double minPeakHeight, double _minimumAmplitudeCriteria, double amplitudeNoiseFoldCriteria, int start, int end) {
-            return maxPeakHeight < GlobalProperty.Noise || minPeakHeight < _minimumAmplitudeCriteria || minPeakHeight < (double)Noises.AmplitudeNoise * amplitudeNoiseFoldCriteria || (GlobalProperty.IsHighBaseline && Math.Min(Chromatogram.Peaks[start].Intensity, Chromatogram.Peaks[end - 1].Intensity) < (double)GlobalProperty.BaselineMedian);
-        }
-
-        internal int GetPeakTop(int start, int end) {
-            var peakTopIntensity = double.MinValue;
-            var peakTopId = start;
-            for (int i = start; i < end; i++) {
-                if (peakTopIntensity < Chromatogram.Peaks[i].Intensity) {
-                    peakTopIntensity = Chromatogram.Peaks[i].Intensity;
-                    peakTopId = i;
-                }
-            }
-            return peakTopId;
-        }
-
-        internal (int, int, int) CuratPeakRange(int start, int end, double averagePeakWidth) {
-            var peakTopId = GetPeakTop(start, end);
-
-            var newStart = start;
-            for (int j = peakTopId - (int)averagePeakWidth; j >= start; j--) {
-                if (j - 1 < start) {
-                    break;
-                }
-                if (Chromatogram.Peaks[j - 1].Intensity >= Chromatogram.Peaks[j].Intensity) {
-                    newStart = j;
-                    break;
-                }
-            }
-
-            var newEnd = end;
-            for (int j = peakTopId + (int)averagePeakWidth; j < end; j++) {
-                if (j + 1 >= end) {
-                    break;
-                }
-                if (Chromatogram.Peaks[j].Intensity <= Chromatogram.Peaks[j + 1].Intensity) {
-                    newEnd = j + 1;
-                    break;
-                }
-            }
-
-            return (newStart, peakTopId, newEnd);
-        }
-
-        internal (double, double) PeakHeightFromBounds(int start, int end, int top) {
-            var topIntensity = Chromatogram.Peaks[top].Intensity;
-            var leftIntensity = Chromatogram.Peaks[start].Intensity;
-            var rightIntensity = Chromatogram.Peaks[end - 1].Intensity;
-            return (topIntensity - Math.Max(leftIntensity, rightIntensity), topIntensity - Math.Min(leftIntensity, rightIntensity));
+            return maxPeakHeight < _globalProperty.Noise || minPeakHeight < _minimumAmplitudeCriteria || minPeakHeight < (double)_noises.AmplitudeNoise * amplitudeNoiseFoldCriteria || (_globalProperty.IsHighBaseline && _chromatogram.AnyBoundsLowHeight(start, end, _globalProperty.BaselineMedian));
         }
 
         internal PeakDetectionResult GetPeakDetectionResult(int peakTopId, int start, int end, double noiseFactor, double maxPeakHeight) {
             //1. Check HWHM criteria and calculate shapeness value, symmetry value, base peak value, ideal value, non ideal value
             if (end - start <= 3) return null;
 
-            var peaks = Chromatogram.Peaks;
-            if (peaks[peakTopId].Intensity - peaks[start].Intensity < 0 && peaks[peakTopId].Intensity - peaks[end - 1].Intensity < 0) return null;
+            if (_chromatogram.PeakHeightFromBounds(start, end, peakTopId).MaxHeight < 0) return null;
 
             var idealSlopeValue = 0d;
             var nonIdealSlopeValue = 0d;
@@ -198,25 +81,25 @@ namespace CompMs.Common.Components
             int leftPeakFivePercentId = -1;
             int leftPeakHalfId = -1;
             for (int j = peakTopId; j >= start; j--) {
-                if (peakHalfDiff > Math.Abs((peaks[peakTopId].Intensity - peaks[start].Intensity) / 2 - (peaks[j].Intensity - peaks[start].Intensity))) {
-                    peakHalfDiff = Math.Abs((peaks[peakTopId].Intensity - peaks[start].Intensity) / 2 - (peaks[j].Intensity - peaks[start].Intensity));
+                if (peakHalfDiff > Math.Abs((_chromatogram.IntensityDifference(peakTopId, start) / 2) - _chromatogram.IntensityDifference(j, start))) {
+                    peakHalfDiff = Math.Abs((_chromatogram.IntensityDifference(peakTopId, start) / 2) - _chromatogram.IntensityDifference(j, start));
                     leftPeakHalfId = j;
                 }
 
-                if (peakFivePercentDiff > Math.Abs((peaks[peakTopId].Intensity - peaks[start].Intensity) / 5 - (peaks[j].Intensity - peaks[start].Intensity))) {
-                    peakFivePercentDiff = Math.Abs((peaks[peakTopId].Intensity - peaks[start].Intensity) / 5 - (peaks[j].Intensity - peaks[start].Intensity));
+                if (peakFivePercentDiff > Math.Abs((_chromatogram.IntensityDifference(peakTopId, start) / 5) - _chromatogram.IntensityDifference(j, start))) {
+                    peakFivePercentDiff = Math.Abs((_chromatogram.IntensityDifference(peakTopId, start) / 5) - _chromatogram.IntensityDifference(j, start));
                     leftPeakFivePercentId = j;
                 }
 
                 if (j == peakTopId) continue;
 
-                if (leftShapenessValue < (peaks[peakTopId].Intensity - peaks[j].Intensity) / (peakTopId - j) / Math.Sqrt(peaks[peakTopId].Intensity))
-                    leftShapenessValue = (peaks[peakTopId].Intensity - peaks[j].Intensity) / (peakTopId - j) / Math.Sqrt(peaks[peakTopId].Intensity);
+                if (leftShapenessValue < _chromatogram.IntensityDifference(peakTopId, j) / (peakTopId - j) / Math.Sqrt(_chromatogram.Intensity(peakTopId)))
+                    leftShapenessValue = _chromatogram.IntensityDifference(peakTopId, j) / (peakTopId - j) / Math.Sqrt(_chromatogram.Intensity(peakTopId));
 
-                if (peaks[j + 1].Intensity - peaks[j].Intensity >= 0)
-                    idealSlopeValue += Math.Abs(peaks[j + 1].Intensity - peaks[j].Intensity);
+                if (_chromatogram.IntensityDifference(j + 1, j) >= 0)
+                    idealSlopeValue += Math.Abs(_chromatogram.IntensityDifference(j + 1, j));
                 else
-                    nonIdealSlopeValue += Math.Abs(peaks[j + 1].Intensity - peaks[j].Intensity);
+                    nonIdealSlopeValue += Math.Abs(_chromatogram.IntensityDifference(j + 1, j));
             }
 
             peakHalfDiff = double.MaxValue;
@@ -225,48 +108,48 @@ namespace CompMs.Common.Components
             int rightPeakHalfId = -1;
             int rightPeakFivePercentId = -1;
             for (int j = peakTopId; j < end; j++) {
-                if (peakHalfDiff > Math.Abs((peaks[peakTopId].Intensity - peaks[end - 1].Intensity) / 2 - (peaks[j].Intensity - peaks[end - 1].Intensity))) {
-                    peakHalfDiff = Math.Abs((peaks[peakTopId].Intensity - peaks[end - 1].Intensity) / 2 - (peaks[j].Intensity - peaks[end - 1].Intensity));
+                if (peakHalfDiff > Math.Abs((_chromatogram.IntensityDifference(peakTopId, end - 1)) / 2 - (_chromatogram.IntensityDifference(j, end - 1)))) {
+                    peakHalfDiff = Math.Abs((_chromatogram.IntensityDifference(peakTopId, end - 1)) / 2 - (_chromatogram.IntensityDifference(j, end - 1)));
                     rightPeakHalfId = j;
                 }
 
-                if (peakFivePercentDiff > Math.Abs((peaks[peakTopId].Intensity - peaks[end - 1].Intensity) / 5 - (peaks[j].Intensity - peaks[end - 1].Intensity))) {
-                    peakFivePercentDiff = Math.Abs((peaks[peakTopId].Intensity - peaks[end - 1].Intensity) / 5 - (peaks[j].Intensity - peaks[end - 1].Intensity));
+                if (peakFivePercentDiff > Math.Abs((_chromatogram.IntensityDifference(peakTopId, end - 1)) / 5 - (_chromatogram.IntensityDifference(j, end - 1)))) {
+                    peakFivePercentDiff = Math.Abs((_chromatogram.IntensityDifference(peakTopId, end - 1)) / 5 - (_chromatogram.IntensityDifference(j, end - 1)));
                     rightPeakFivePercentId = j;
                 }
 
                 if (j == peakTopId) continue;
 
-                if (rightShapenessValue < (peaks[peakTopId].Intensity - peaks[j].Intensity) / (j - peakTopId) / Math.Sqrt(peaks[peakTopId].Intensity))
-                    rightShapenessValue = (peaks[peakTopId].Intensity - peaks[j].Intensity) / (j - peakTopId) / Math.Sqrt(peaks[peakTopId].Intensity);
+                if (rightShapenessValue < _chromatogram.IntensityDifference(peakTopId, j) / (j - peakTopId) / Math.Sqrt(_chromatogram.Intensity(peakTopId)))
+                    rightShapenessValue = _chromatogram.IntensityDifference(peakTopId, j) / (j - peakTopId) / Math.Sqrt(_chromatogram.Intensity(peakTopId));
 
-                if (peaks[j - 1].Intensity - peaks[j].Intensity >= 0)
-                    idealSlopeValue += Math.Abs(peaks[j - 1].Intensity - peaks[j].Intensity);
+                if (_chromatogram.IntensityDifference(j - 1, j) >= 0)
+                    idealSlopeValue += Math.Abs(_chromatogram.IntensityDifference(j - 1, j));
                 else
-                    nonIdealSlopeValue += Math.Abs(peaks[j - 1].Intensity - peaks[j].Intensity);
+                    nonIdealSlopeValue += Math.Abs(_chromatogram.IntensityDifference(j - 1, j));
             }
 
             double gaussianNormalize;
             double basePeakValue;
-            int peakHalfId = -1;
-            if (peaks[start].Intensity <= peaks[end - 1].Intensity) {
-                gaussianNormalize = peaks[peakTopId].Intensity - peaks[start].Intensity;
+            int peakHalfId;
+            if (_chromatogram.IntensityDifference(start, end - 1) <= 0) {
+                gaussianNormalize = _chromatogram.IntensityDifference(peakTopId, start);
                 peakHalfId = leftPeakHalfId;
-                basePeakValue = Math.Abs((peaks[peakTopId].Intensity - peaks[end - 1].Intensity) / (peaks[peakTopId].Intensity - peaks[start].Intensity));
+                basePeakValue = Math.Abs((_chromatogram.IntensityDifference(peakTopId, end - 1)) / (_chromatogram.IntensityDifference(peakTopId, start)));
             }
             else {
-                gaussianNormalize = peaks[peakTopId].Intensity - peaks[end - 1].Intensity;
+                gaussianNormalize = _chromatogram.IntensityDifference(peakTopId, end - 1);
                 peakHalfId = rightPeakHalfId;
-                basePeakValue = Math.Abs((peaks[peakTopId].Intensity - peaks[start].Intensity) / (peaks[peakTopId].Intensity - peaks[end - 1].Intensity));
+                basePeakValue = Math.Abs((_chromatogram.IntensityDifference(peakTopId, start)) / (_chromatogram.IntensityDifference(peakTopId, end - 1)));
             }
 
             double symmetryValue;
-            if (Math.Abs(peaks[peakTopId].Time - peaks[leftPeakFivePercentId].Time) <= Math.Abs(peaks[peakTopId].Time - peaks[rightPeakFivePercentId].Time))
-                symmetryValue = Math.Abs(peaks[peakTopId].Time - peaks[leftPeakFivePercentId].Time) / Math.Abs(peaks[peakTopId].Time - peaks[rightPeakFivePercentId].Time);
+            if (Math.Abs(_chromatogram.TimeDifference(peakTopId, leftPeakFivePercentId)) <= Math.Abs(_chromatogram.TimeDifference(peakTopId, rightPeakFivePercentId)))
+                symmetryValue = Math.Abs(_chromatogram.TimeDifference(peakTopId, leftPeakFivePercentId)) / Math.Abs(_chromatogram.TimeDifference(peakTopId, rightPeakFivePercentId));
             else
-                symmetryValue = Math.Abs(peaks[peakTopId].Time - peaks[rightPeakFivePercentId].Time) / Math.Abs(peaks[peakTopId].Time - peaks[leftPeakFivePercentId].Time);
+                symmetryValue = Math.Abs(_chromatogram.TimeDifference(peakTopId, rightPeakFivePercentId)) / Math.Abs(_chromatogram.TimeDifference(peakTopId, leftPeakFivePercentId));
 
-            double peakHwhm = Math.Abs(peaks[peakHalfId].Time - peaks[peakTopId].Time);
+            double peakHwhm = Math.Abs(_chromatogram.TimeDifference(peakHalfId, peakTopId));
 
             //2. Calculate peak pure value (from gaussian area and real area)
             double gaussianSigma = peakHwhm / Math.Sqrt(2 * Math.Log(2));
@@ -276,7 +159,7 @@ namespace CompMs.Common.Components
             double leftPeakArea = 0;
             double rightPeakArea = 0;
             for (int j = start; j < end - 1; j++) {
-                realAreaAboveZero += (peaks[j].Intensity + peaks[j + 1].Intensity) * (peaks[j + 1].Time - peaks[j].Time) * 0.5;
+                realAreaAboveZero += _chromatogram.CalculateArea(j + 1, j);
                 if (j == peakTopId - 1)
                     leftPeakArea = realAreaAboveZero;
                 else if (j == end - 2)
@@ -284,15 +167,15 @@ namespace CompMs.Common.Components
             }
 
 
-            double realAreaAboveBaseline = realAreaAboveZero - (peaks[start].Intensity + peaks[end - 1].Intensity) * (peaks[end - 1].Time - peaks[start].Time) / 2;
+            double realAreaAboveBaseline = realAreaAboveZero - _chromatogram.CalculateArea(end - 1, start);
 
-            if (peaks[start].Intensity <= peaks[end - 1].Intensity) {
-                leftPeakArea = leftPeakArea - peaks[start].Intensity * (peaks[peakTopId].Time - peaks[start].Time);
-                rightPeakArea = rightPeakArea - peaks[start].Intensity * (peaks[end - 1].Time - peaks[peakTopId].Time);
+            if (_chromatogram.IntensityDifference(start, end - 1) <= 0) {
+                leftPeakArea -= _chromatogram.Intensity(start) * (_chromatogram.TimeDifference(peakTopId, start));
+                rightPeakArea -= _chromatogram.Intensity(start) * (_chromatogram.TimeDifference(end - 1, peakTopId));
             }
             else {
-                leftPeakArea = leftPeakArea - peaks[end - 1].Intensity * (peaks[peakTopId].Time - peaks[start].Time);
-                rightPeakArea = rightPeakArea - peaks[end - 1].Intensity * (peaks[end - 1].Time - peaks[peakTopId].Time);
+                leftPeakArea -= _chromatogram.Intensity(end - 1) * (_chromatogram.TimeDifference(peakTopId, start));
+                rightPeakArea -= _chromatogram.Intensity(end - 1) * (_chromatogram.TimeDifference(end - 1, peakTopId));
             }
 
             double gaussianSimilarityLeftValue;
@@ -313,7 +196,7 @@ namespace CompMs.Common.Components
             if (peakPureValue < 0) peakPureValue = 0;
 
             //3. Set area information
-            var estimatedNoise = Math.Max(1f, (float)(GlobalProperty.Noise / noiseFactor));
+            var estimatedNoise = Math.Max(1f, (float)(_globalProperty.Noise / noiseFactor));
             return new PeakDetectionResult
             {
                 PeakID = -1,
@@ -324,13 +207,13 @@ namespace CompMs.Common.Components
                 BasePeakValue = (float)basePeakValue,
                 GaussianSimilarityValue = (float)gaussinaSimilarityValue,
                 IdealSlopeValue = (float)idealSlopeValue,
-                IntensityAtLeftPeakEdge = (float)peaks[start].Intensity,
-                IntensityAtPeakTop = (float)peaks[peakTopId].Intensity,
-                IntensityAtRightPeakEdge = (float)peaks[end - 1].Intensity,
+                IntensityAtLeftPeakEdge = (float)_chromatogram.Intensity(start),
+                IntensityAtPeakTop = (float)_chromatogram.Intensity(peakTopId),
+                IntensityAtRightPeakEdge = (float)_chromatogram.Intensity(end - 1),
                 PeakPureValue = (float)peakPureValue,
-                ChromXAxisAtLeftPeakEdge = (float)peaks[start].Time,
-                ChromXAxisAtPeakTop = (float)peaks[peakTopId].Time,
-                ChromXAxisAtRightPeakEdge = (float)peaks[end - 1].Time,
+                ChromXAxisAtLeftPeakEdge = (float)_chromatogram.Time(start),
+                ChromXAxisAtPeakTop = (float)_chromatogram.Time(peakTopId),
+                ChromXAxisAtRightPeakEdge = (float)_chromatogram.Time(end - 1),
                 ScanNumAtLeftPeakEdge = start,
                 ScanNumAtPeakTop = peakTopId,
                 ScanNumAtRightPeakEdge = end - 1,
@@ -341,16 +224,16 @@ namespace CompMs.Common.Components
             };
         }
 
-        public List<PeakDetectionResult> DetectPeaks(double noiseFactor, double averagePeakWidth, double amplitudeNoiseFoldCriteria, double slopeNoiseFoldCriteria, double minimumDatapointCriteria, double minimumAmplitudeCriteria) {
+        public List<PeakDetectionResult> DetectPeaks(double noiseFactor, int averagePeakWidth, double amplitudeNoiseFoldCriteria, double slopeNoiseFoldCriteria, double minimumDatapointCriteria, double minimumAmplitudeCriteria) {
             var results = new List<PeakDetectionResult>();
             var infinitLoopCheck = false;
             var infinitLoopID = 0;
             var margin = Math.Max((int)minimumDatapointCriteria, 5);
-            for (int i = margin; i < this.GlobalProperty.SmoothedChromatogram.Peaks.Count - margin; i++) {
-                if (this.IsPeakStarted(i, slopeNoiseFoldCriteria)) {
-                    var start = this.SearchRealLeftEdge2(i);
-                    var j = this.SearchRightEdgeCandidate2(i, minimumDatapointCriteria, slopeNoiseFoldCriteria);
-                    j = this.SearchRealRightEdge2(j, ref infinitLoopCheck, ref infinitLoopID, out var isBreak);
+            for (int i = margin; i < _globalProperty.SmoothedChromatogram.Length - margin; i++) {
+                if (IsPeakStarted(i, slopeNoiseFoldCriteria)) {
+                    var start = _globalProperty.SearchRealLeftEdge(i);
+                    var j = SearchRightEdgeCandidate(i, minimumDatapointCriteria, slopeNoiseFoldCriteria);
+                    j = _globalProperty.SearchRealRightEdge(j, ref infinitLoopCheck, ref infinitLoopID, out var isBreak);
                     if (isBreak) {
                         break;
                     }
@@ -358,12 +241,12 @@ namespace CompMs.Common.Components
                     if (j - start + 1 < minimumDatapointCriteria) {
                         continue;
                     }
-                    var (newStart, peakTopID, newEnd) = this.CuratPeakRange(start, j + 1, averagePeakWidth);
-                    var (minPeakHeight, maxPeakHeight) = this.PeakHeightFromBounds(newStart, newEnd, peakTopID);
-                    if (this.IsNoise(maxPeakHeight, minPeakHeight, minimumAmplitudeCriteria, amplitudeNoiseFoldCriteria, newStart, newEnd)) {
+                    var (newStart, peakTopID, newEnd) = _chromatogram.ShrinkPeakRange(start, j + 1, averagePeakWidth);
+                    var (minPeakHeight, maxPeakHeight) = _chromatogram.PeakHeightFromBounds(newStart, newEnd, peakTopID);
+                    if (IsNoise(maxPeakHeight, minPeakHeight, minimumAmplitudeCriteria, amplitudeNoiseFoldCriteria, newStart, newEnd)) {
                         continue;
                     }
-                    var result = this.GetPeakDetectionResult(peakTopID, newStart, newEnd, noiseFactor, maxPeakHeight);
+                    var result = GetPeakDetectionResult(peakTopID, newStart, newEnd, noiseFactor, maxPeakHeight);
                     if (result is null) continue;
                     result.PeakID = results.Count;
                     results.Add(result);
@@ -386,7 +269,7 @@ namespace CompMs.Common.Components
         private readonly static double[] FIRST_DIFF_COEFF = new double[] { -0.2, -0.1, 0, 0.1, 0.2 };
         private readonly static double[] SECOND_DIFF_COEFF = new double[] { 0.14285714, -0.07142857, -0.1428571, -0.07142857, 0.14285714 };
 
-        public ChromatogramGlobalProperty_temp2(double maxIntensity, double minIntensity, double baselineMedian, double noise, bool isHighBaseline,
+        internal ChromatogramGlobalProperty_temp2(double maxIntensity, double minIntensity, double baselineMedian, double noise, bool isHighBaseline,
             Chromatogram_temp2 smoothedPeakList, Chromatogram_temp2 baseline, Chromatogram_temp2 baselineCorrectedPeakList) {
             MaxIntensity = maxIntensity;
             MinIntensity = minIntensity;
@@ -403,33 +286,29 @@ namespace CompMs.Common.Components
         public double BaselineMedian { get; }
         public double Noise { get; }
         public bool IsHighBaseline { get; }
-        public IReadOnlyList<ValuePeak> SmoothedPeakList => SmoothedChromatogram.Peaks;
-        public IReadOnlyList<ValuePeak> Baseline => BaselineChromatogram.Peaks;
-        public IReadOnlyList<ValuePeak> BaselineCorrectedPeakList => BaselineCorrectedChromatogram.Peaks;
         public Chromatogram_temp2 SmoothedChromatogram { get; }
         public Chromatogram_temp2 BaselineChromatogram { get; }
         public Chromatogram_temp2 BaselineCorrectedChromatogram { get; }
 
         public DifferencialCoefficients GenerateDifferencialCoefficients() {
-            var ssPeaklist = SmoothedChromatogram.Peaks;
 
-            var firstDiffPeaklist = new List<double>(ssPeaklist.Count);
-            var secondDiffPeaklist = new List<double>(ssPeaklist.Count);
+            var firstDiffPeaklist = new List<double>(SmoothedChromatogram.Length);
+            var secondDiffPeaklist = new List<double>(SmoothedChromatogram.Length);
 
             var maxFirstDiff = double.MinValue;
             var maxSecondDiff = double.MinValue;
             var maxAmplitudeDiff = double.MinValue;
 
             double firstDiff, secondDiff;
-            int halfDatapoint = (int)(FIRST_DIFF_COEFF.Length / 2);
+            int halfDatapoint = FIRST_DIFF_COEFF.Length / 2;
 
-            for (int i = 0; i < ssPeaklist.Count; i++) {
+            for (int i = 0; i < SmoothedChromatogram.Length; i++) {
                 if (i < halfDatapoint) {
                     firstDiffPeaklist.Add(0);
                     secondDiffPeaklist.Add(0);
                     continue;
                 }
-                if (i >= ssPeaklist.Count - halfDatapoint) {
+                if (i >= SmoothedChromatogram.Length - halfDatapoint) {
                     firstDiffPeaklist.Add(0);
                     secondDiffPeaklist.Add(0);
                     continue;
@@ -437,16 +316,16 @@ namespace CompMs.Common.Components
 
                 firstDiff = secondDiff = 0;
                 for (int j = 0; j < FIRST_DIFF_COEFF.Length; j++) {
-                    firstDiff += FIRST_DIFF_COEFF[j] * ssPeaklist[i + j - halfDatapoint].Intensity;
-                    secondDiff += SECOND_DIFF_COEFF[j] * ssPeaklist[i + j - halfDatapoint].Intensity;
+                    firstDiff += FIRST_DIFF_COEFF[j] * SmoothedChromatogram.Intensity(i + j - halfDatapoint);
+                    secondDiff += SECOND_DIFF_COEFF[j] * SmoothedChromatogram.Intensity(i + j - halfDatapoint);
                 }
                 firstDiffPeaklist.Add(firstDiff);
                 secondDiffPeaklist.Add(secondDiff);
 
                 if (Math.Abs(firstDiff) > maxFirstDiff) maxFirstDiff = Math.Abs(firstDiff);
                 if (secondDiff < 0 && maxSecondDiff < -1 * secondDiff) maxSecondDiff = -1 * secondDiff;
-                if (Math.Abs(ssPeaklist[i].Intensity - ssPeaklist[i - 1].Intensity) > maxAmplitudeDiff)
-                    maxAmplitudeDiff = Math.Abs(ssPeaklist[i].Intensity - ssPeaklist[i - 1].Intensity);
+                if (Math.Abs(SmoothedChromatogram.IntensityDifference(i, i - 1)) > maxAmplitudeDiff)
+                    maxAmplitudeDiff = Math.Abs(SmoothedChromatogram.IntensityDifference(i, i - 1));
             }
             return new DifferencialCoefficients(firstDiffPeaklist, secondDiffPeaklist, maxAmplitudeDiff, maxFirstDiff, maxSecondDiff);
         }
@@ -458,11 +337,10 @@ namespace CompMs.Common.Components
             double amplitudeNoiseThresh = differencialCoefficients.MaxAmplitudeDiff * 0.05, slopeNoiseThresh = differencialCoefficients.MaxFirstDiff * 0.05, peaktopNoiseThresh = differencialCoefficients.MaxSecondDiff * 0.05;
             var firstDiffPeaklist = differencialCoefficients.FirstDiffPeaklist;
             var secondDiffPeaklist = differencialCoefficients.SecondDiffPeaklist;
-            var ssPeaklist = SmoothedChromatogram.Peaks;
-            for (int i = 2; i < ssPeaklist.Count - 2; i++) {
-                if (Math.Abs(ssPeaklist[i + 1].Intensity - ssPeaklist[i].Intensity) < amplitudeNoiseThresh &&
-                    Math.Abs(ssPeaklist[i + 1].Intensity - ssPeaklist[i].Intensity) > 0)
-                    amplitudeNoiseCandidate.Add(Math.Abs(ssPeaklist[i + 1].Intensity - ssPeaklist[i].Intensity));
+            for (int i = 2; i < SmoothedChromatogram.Length - 2; i++) {
+                if (Math.Abs(SmoothedChromatogram.IntensityDifference(i + 1, i)) < amplitudeNoiseThresh &&
+                    Math.Abs(SmoothedChromatogram.IntensityDifference(i + 1, i)) > 0)
+                    amplitudeNoiseCandidate.Add(Math.Abs(SmoothedChromatogram.IntensityDifference(i + 1, i)));
                 if (Math.Abs(firstDiffPeaklist[i]) < slopeNoiseThresh && Math.Abs(firstDiffPeaklist[i]) > 0)
                     slopeNoiseCandidate.Add(Math.Abs(firstDiffPeaklist[i]));
                 if (secondDiffPeaklist[i] < 0 && Math.Abs(secondDiffPeaklist[i]) < peaktopNoiseThresh &&
@@ -473,6 +351,54 @@ namespace CompMs.Common.Components
             var slopeNoise = slopeNoiseCandidate.Count == 0 ? 0.0001 : BasicMathematics.Median(slopeNoiseCandidate);
             var peaktopNoise = peaktopNoiseCandidate.Count == 0 ? 0.0001 : BasicMathematics.Median(peaktopNoiseCandidate);
             return new ChromatogramNoises(amplitudeNoise, slopeNoise, peaktopNoise); ;
+        }
+
+        public int SearchRealLeftEdge(int i) {
+            //search real left edge within 5 data points
+            for (int j = 0; j <= 5; j++) {
+                if (i - j - 1 < 0 || SmoothedChromatogram.IntensityDifference(i - j, i - j - 1) <= 0) {
+                    return i - j;
+                }
+            }
+            return i - 6;
+        }
+
+        internal int SearchRealRightEdge(int i, ref bool infinitLoopCheck, ref int infinitLoopID, out bool isBreak) {
+            //Search real right edge within 5 data points
+            var isTooLongRightEdge = false;
+            var trackcounter = 0;
+            isBreak = false;
+
+            //case: wrong edge is in right of real edge
+            for (int j = 0; j <= 5; j++) {
+                if (i - j - 1 < 0 || SmoothedChromatogram.IntensityDifference(i - j, i - j - 1) <= 0) {
+                    break;
+                }
+                isTooLongRightEdge = true;
+                trackcounter++;
+            }
+            if (isTooLongRightEdge) {
+                var k = i - trackcounter;
+                if (infinitLoopCheck && k == infinitLoopID && k > SmoothedChromatogram.Length - 10) {
+                    isBreak = true;
+                }
+                else {
+                    infinitLoopCheck = true;
+                    infinitLoopID = k;
+                }
+                return k;
+            }
+
+            //case: wrong edge is in left of real edge
+            for (int j = 0; j <= 5; j++) {
+                if (i + j + 1 > SmoothedChromatogram.Length - 1) break;
+                if (SmoothedChromatogram.IntensityDifference(i + j, i + j + 1) <= 0) {
+                    break;
+                }
+
+                trackcounter++;
+            }
+            return i + trackcounter;
         }
     }
 
@@ -493,7 +419,7 @@ namespace CompMs.Common.Components
     }
 
     public sealed class ChromatogramNoises {
-        public ChromatogramNoises(double amplitudeNoise, double slopeNoise, double peakTopNoise) {
+        internal ChromatogramNoises(double amplitudeNoise, double slopeNoise, double peakTopNoise) {
             AmplitudeNoise = amplitudeNoise;
             SlopeNoise = slopeNoise;
             PeakTopNoise = peakTopNoise;

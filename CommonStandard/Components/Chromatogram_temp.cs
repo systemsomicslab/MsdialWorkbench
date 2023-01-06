@@ -1,4 +1,5 @@
 ﻿using Accord.Diagnostics;
+using Accord.Math.Distances;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Mathematics.Basic;
@@ -27,12 +28,29 @@ namespace CompMs.Common.Components {
             _smoother = smoother;
         }
 
+        [Obsolete]
         public IReadOnlyList<ValuePeak> Peaks => _peaks;
         public bool IsEmpty => _peaks.Count == 0;
         public int Length => _peaks.Count;
 
+        public ValuePeak[] AsPeakArray() {
+            return _peaks.ToArray();
+        }
+
         public double Time(int index) {
             return _peaks[index].Time;
+        }
+
+        public double Intensity(int index) {
+            return _peaks[index].Intensity;
+        }
+
+        public double Mz(int index) {
+            return _peaks[index].Mz;
+        }
+
+        public int Id(int index) {
+            return _peaks[index].Id;
         }
 
         public ChromXs PeakChromXs(double chromValue, double mz) {
@@ -41,6 +59,69 @@ namespace CompMs.Common.Components {
                 result.Mz = new MzValue(mz);
             }
             return result;
+        }
+
+        public int GetPeakTopId(int start, int end) {
+            var peakTopIntensity = double.MinValue;
+            var peakTopId = start;
+            for (int i = start; i < end; i++) {
+                if (peakTopIntensity < _peaks[i].Intensity) {
+                    peakTopIntensity = _peaks[i].Intensity;
+                    peakTopId = i;
+                }
+            }
+            return peakTopId;
+        }
+
+        public (int, int, int) ShrinkPeakRange(int start, int end, int averagePeakWidth) {
+            var peakTopId = GetPeakTopId(start, end);
+
+            var newStart = start;
+            for (int j = peakTopId - averagePeakWidth; j >= start; j--) {
+                if (j - 1 < start) {
+                    break;
+                }
+                if (_peaks[j - 1].Intensity >= _peaks[j].Intensity) {
+                    newStart = j;
+                    break;
+                }
+            }
+
+            var newEnd = end;
+            for (int j = peakTopId + averagePeakWidth; j < end; j++) {
+                if (j + 1 >= end) {
+                    break;
+                }
+                if (_peaks[j].Intensity <= _peaks[j + 1].Intensity) {
+                    newEnd = j + 1;
+                    break;
+                }
+            }
+
+            return (newStart, peakTopId, newEnd);
+        }
+
+        public (double MinHeight, double MaxHeight) PeakHeightFromBounds(int start, int end, int top) {
+            var topIntensity = _peaks[top].Intensity;
+            var leftIntensity = _peaks[start].Intensity;
+            var rightIntensity = _peaks[end - 1].Intensity;
+            return (topIntensity - Math.Max(leftIntensity, rightIntensity), topIntensity - Math.Min(leftIntensity, rightIntensity));
+        }
+
+        public bool AnyBoundsLowHeight(int start, int end, double threshold) {
+            return Math.Min(_peaks[start].Intensity, _peaks[end - 1].Intensity) < threshold;
+        }
+
+        public double IntensityDifference(int i, int j) {
+            return _peaks[i].Intensity - _peaks[j].Intensity;
+        }
+
+        public double TimeDifference(int i, int j) {
+            return _peaks[i].Time - _peaks[j].Time;
+        }
+
+        public double CalculateArea(int i, int j) {
+            return (_peaks[i].Intensity + _peaks[j].Intensity) * (_peaks[i].Time - _peaks[j].Time) / 2;
         }
 
         public bool IsValidPeakTop(int topId) {
@@ -73,13 +154,31 @@ namespace CompMs.Common.Components {
         }
 
         public bool IsPeakTop(int topId) {
-            return _peaks[topId - 1].Intensity <= _peaks[topId].Intensity
-                && _peaks[topId].Intensity >= _peaks[topId + 1].Intensity;
+            return _peaks[topId - 1].Intensity <= _peaks[topId].Intensity && _peaks[topId].Intensity >= _peaks[topId + 1].Intensity;
+        }
+
+        public bool IsLargePeakTop(int topId) {
+            return _peaks[topId - 2].Intensity <= _peaks[topId - 1].Intensity && IsPeakTop(topId) && _peaks[topId + 1].Intensity >= _peaks[topId + 2].Intensity;
+        }
+
+        public bool IsBroadPeakTop(int topId) {
+            return IsPeakTop(topId) && (_peaks[topId - 2].Intensity <= _peaks[topId - 1].Intensity || _peaks[topId + 1].Intensity >= _peaks[topId + 2].Intensity);
         }
 
         public bool IsBottom(int bottomId) {
-            return _peaks[bottomId - 1].Intensity >= _peaks[bottomId].Intensity
-                && _peaks[bottomId].Intensity <= _peaks[bottomId + 1].Intensity;
+            return _peaks[bottomId - 1].Intensity >= _peaks[bottomId].Intensity && _peaks[bottomId].Intensity <= _peaks[bottomId + 1].Intensity;
+        }
+
+        public bool IsLargeBottom(int bottomId) {
+            return _peaks[bottomId - 2].Intensity >= _peaks[bottomId - 1].Intensity && IsBottom(bottomId) && _peaks[bottomId + 1].Intensity <= _peaks[bottomId + 2].Intensity;
+        }
+
+        public bool IsBroadBottom(int bottomId) {
+            return IsBottom(bottomId) && (_peaks[bottomId - 2].Intensity >= _peaks[bottomId - 1].Intensity || _peaks[bottomId + 1].Intensity <= _peaks[bottomId + 2].Intensity);
+        }
+
+        public bool IsFlat(int centerId, double amplitudeNoise) {
+            return Math.Abs(_peaks[centerId - 1].Intensity - _peaks[centerId].Intensity) < amplitudeNoise && Math.Abs(_peaks[centerId].Intensity - _peaks[centerId + 1].Intensity) < amplitudeNoise;
         }
 
         public ValuePeak[] TrimPeaks(int left, int right) {
@@ -157,6 +256,19 @@ namespace CompMs.Common.Components {
             var minChromIntensity = GetMinimumIntensity();
             var isHighBaseline = baselineMedian > (maxChromIntensity + minChromIntensity) * 0.5;
             return new ChromatogramGlobalProperty_temp2(maxChromIntensity, minChromIntensity, baselineMedian, noise, isHighBaseline, ssChromatogram, baselineChromatogram, baselineCorrectedChromatogram);
+        }
+
+        public ChroChroChromatogram GetChroChroChromatogram(int noiseEstimateBin, int minNoiseWindowSize, double minNoiseLevel, double noiseFactor) {
+            // 'chromatogram' properties
+            var globalProperty = GetProperty(noiseEstimateBin, minNoiseWindowSize, minNoiseLevel, noiseFactor);
+
+            // differential factors
+            var differencialCoefficients = globalProperty.GenerateDifferencialCoefficients();
+
+            // slope noises
+            var noises = globalProperty.CalculateSlopeNoises(differencialCoefficients);
+
+            return new ChroChroChromatogram(this, globalProperty, differencialCoefficients, noises);
         }
     }
 }

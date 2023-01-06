@@ -55,23 +55,13 @@ namespace CompMs.Common.Algorithm.PeakPick
             // global parameter
             var noiseEstimateBin = 50;
             var minNoiseWindowSize = 10;
-            var minNoiseLevel = 50.0;
-            var noiseFactor = 3.0;
+            var minNoiseLevel = 50d;
+            var noiseFactor = 3d;
+            var chroChroChromatogram = chromatogram.GetChroChroChromatogram(noiseEstimateBin, minNoiseWindowSize, minNoiseLevel, noiseFactor);
 
-            // 'chromatogram' properties
-            var globalProperty = chromatogram.GetProperty(noiseEstimateBin, minNoiseWindowSize, minNoiseLevel, noiseFactor);
-
-            // differential factors
-            var differencialCoefficients = globalProperty.GenerateDifferencialCoefficients();
-
-            // slope noises
-            var noises = globalProperty.CalculateSlopeNoises(differencialCoefficients);
-
-            var averagePeakWidth = 20.0;
-            var amplitudeNoiseFoldCriteria = 4.0;
-            var slopeNoiseFoldCriteria = 2.0;
-
-            var chroChroChromatogram = new ChroChroChromatogram(chromatogram, globalProperty, differencialCoefficients, noises);
+            var averagePeakWidth = 20;
+            var amplitudeNoiseFoldCriteria = 4d;
+            var slopeNoiseFoldCriteria = 2d;
             return chroChroChromatogram.DetectPeaks(noiseFactor, averagePeakWidth, amplitudeNoiseFoldCriteria, slopeNoiseFoldCriteria, _minimumDatapointCriteria, _minimumAmplitudeCriteria);
         }
 

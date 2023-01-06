@@ -369,7 +369,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
             foreach (var result in detectedPeaks) {
                 if (result.IntensityAtPeakTop <= 0) continue;
-                var mass = smoothedChromatogram.Peaks[result.ScanNumAtPeakTop].Mz;
+                var mass = smoothedChromatogram.Mz(result.ScanNumAtPeakTop);
 
                 //option
                 //this method is currently used in LC/MS project.
@@ -382,7 +382,7 @@ namespace CompMs.MsdialCore.Algorithm {
                     }
                 }
                 if (excludeChecker) continue;
-                var chromPeakFeature = ChromatogramPeakFeature.FromPeakDetectionResult(result, chromatogram, smoothedChromatogram.Peaks, mass, _parameter.IonMode);
+                var chromPeakFeature = ChromatogramPeakFeature.FromPeakDetectionResult(result, chromatogram, mass, _parameter.IonMode);
                 chromPeakFeatures.Add(chromPeakFeature);
             }
             return chromPeakFeatures;
