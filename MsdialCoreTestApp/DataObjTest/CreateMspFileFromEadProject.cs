@@ -157,7 +157,7 @@ namespace MsdialPrivateConsoleApp {
 
                     var mainAveSpec = DataAccess.GetAverageSpectrum(spectrum, beginRt, endRt, 0.05, exp);
                     var subtractAveSpec = DataAccess.GetAverageSpectrum(spectrum, beginRtForSub, endRtForSub, 0.05, exp);
-                    var subtractSpec = DataAccess.GetSubtractSpectrum(mainAveSpec, subtractAveSpec, 0.05);
+                    var subtractSpec = DataAccess.GetSubtractSpectrum(mainAveSpec, subtractAveSpec, 0.075);
 
                     writeMspFormat(swAcc, mainAveSpec, compound, rt, theoreticalMz, adduct, polarity, expConditions[exp]);
                     writeMspFormat(swSub, subtractAveSpec, compound, rt, theoreticalMz, adduct, polarity, expConditions[exp]);
@@ -211,10 +211,10 @@ namespace MsdialPrivateConsoleApp {
                         InChIKey = lineArray[5],
                         AdductPos = AdductIonParser.GetAdductIonBean(lineArray[6]),
                         AdductNeg = AdductIonParser.GetAdductIonBean(lineArray[7]),
-                        Superclass = lineArray.Length > 7 ? lineArray[8] : string.Empty,
-                        CClass = lineArray.Length > 8 ? lineArray[9] : string.Empty,
-                        Subclass = lineArray.Length > 9 ? lineArray[10] : string.Empty,
-                        ParentLevel1 = lineArray.Length > 10 ? lineArray[11] : string.Empty,
+                        Superclass = lineArray.Length > 8 ? lineArray[8] : string.Empty,
+                        CClass = lineArray.Length > 9 ? lineArray[9] : string.Empty,
+                        Subclass = lineArray.Length > 10 ? lineArray[10] : string.Empty,
+                        ParentLevel1 = lineArray.Length > 11 ? lineArray[11] : string.Empty,
                     };
                     compounds.Add(compound);
                 }
