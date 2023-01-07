@@ -177,10 +177,9 @@ namespace CompMs.App.Msdial.Model.Setting
                             var results = new List<IAnnotatorParameterPair<MoleculeDataBase>>();
                             foreach (var annotatorModel in group) {
                                 var index = AnnotatorModels.IndexOf(annotatorModel);
-                                var annotators = annotatorModel.CreateAnnotator(db, AnnotatorModels.Count - index, parameter.TargetOmics);
                                 var queryFactory = annotatorModel.CreateAnnotationQueryFactory(AnnotatorModels.Count - index, db, refer);
                                 var key = annotatorModel.CreateRestorationKey(AnnotatorModels.Count - index);
-                                results.AddRange(annotators.Select(annotator => new MetabolomicsAnnotatorParameterPair(key, queryFactory)));
+                                results.Add(new MetabolomicsAnnotatorParameterPair(key, queryFactory));
                             }
                             storage.AddMoleculeDataBase(db, results);
                         });
@@ -207,10 +206,9 @@ namespace CompMs.App.Msdial.Model.Setting
                             var results = new List<IAnnotatorParameterPair<ShotgunProteomicsDB>>();
                             foreach (var annotatorModel in group) {
                                 var index = AnnotatorModels.IndexOf(annotatorModel);
-                                var annotators = annotatorModel.CreateAnnotator(db, AnnotatorModels.Count - index, parameter.TargetOmics);
                                 var queryFactory = annotatorModel.CreateAnnotationQueryFactory(AnnotatorModels.Count - index, db, refer);
                                 var key = annotatorModel.CreateRestorationKey(AnnotatorModels.Count - index);
-                                results.AddRange(annotators.Select(annotator => new ProteomicsAnnotatorParameterPair(key, queryFactory, db.ProteomicsParameter)));
+                                results.Add(new ProteomicsAnnotatorParameterPair(key, queryFactory, db.ProteomicsParameter));
                             }
                             storage.AddProteomicsDataBase(db, results);
                         });
@@ -242,10 +240,9 @@ namespace CompMs.App.Msdial.Model.Setting
                             var results = new List<IAnnotatorParameterPair<EadLipidDatabase>>();
                             foreach (var annotatorModel in group) {
                                 var index = AnnotatorModels.IndexOf(annotatorModel);
-                                var annotators = annotatorModel.CreateAnnotator(db, AnnotatorModels.Count - index);
                                 var queryFactory = annotatorModel.CreateAnnotationQueryFactory(AnnotatorModels.Count - index, db, refer);
                                 var key = annotatorModel.CreateRestorationKey(AnnotatorModels.Count - index);
-                                results.AddRange(annotators.Select(annotator => new EadLipidAnnotatorParameterPair(key, queryFactory)));
+                                results.Add(new EadLipidAnnotatorParameterPair(key, queryFactory));
                             }
                             storage.AddEadLipidomicsDataBase(db, results);
                         });

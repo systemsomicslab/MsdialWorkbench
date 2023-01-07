@@ -13,7 +13,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
     {
         [TestMethod()]
         public void MoleculeDataBaseTest() {
-            var db = new MoleculeDataBase("DB", SourceType.MspDB, DataBaseSource.Msp);
+            var db = new MoleculeDataBase(Array.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB);
             var expected = db;
             MoleculeDataBase actual;
 

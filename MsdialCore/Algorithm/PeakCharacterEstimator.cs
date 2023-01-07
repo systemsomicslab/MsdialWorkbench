@@ -48,6 +48,7 @@ namespace CompMs.MsdialCore.Algorithm
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.PeakID).ToList();
             Initialization(chromPeakFeatures);
 
+            RawSpectra rawSpectra = new RawSpectra(provider, parameter.IonMode, parameter.AcquisitionType);
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.Mass).ToList();
             if (chromPeakFeatures.Count < 10000) {
                 for (int i = 0; i < chromPeakFeatures.Count; i++) {
@@ -66,7 +67,7 @@ namespace CompMs.MsdialCore.Algorithm
                         }
                     }
 
-                    CharacterAssigner(searchedPeakSpots, provider, msdecResults, evaluator, parameter); // TODO: temporarily comment out. fix algorithm. Don't delete!
+                    CharacterAssigner(searchedPeakSpots, msdecResults, evaluator, parameter, rawSpectra); // TODO: temporarily comment out. fix algorithm. Don't delete!
                     ReportProgress.Show(InitialProgress, ProgressMax, i, chromPeakFeatures.Count, reportAction);
                 }
             }
@@ -242,8 +243,7 @@ namespace CompMs.MsdialCore.Algorithm
         // the RT deviations of peakspots should be less than 0.03 min
         // here, each peak is evaluated.
         // the purpose is to group the ions which are recognized as the same metabolite
-        public void CharacterAssigner(List<ChromatogramPeakFeature> chromPeakFeatures,
-            IDataProvider provider, IReadOnlyList<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param) {
+        public void CharacterAssigner(List<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param, RawSpectra rawSpectra) {
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return;
             //foreach (var feature in chromPeakFeatures) {
             //    if (feature.MasterPeakID == 10999) {
@@ -267,7 +267,7 @@ namespace CompMs.MsdialCore.Algorithm
             assignLinksBasedOnAdductPairingMethod(chromPeakFeatures, param);
 
             // linkage by chromatogram correlations
-            assignLinksBasedOnChromatogramCorrelation(chromPeakFeatures, provider, param);
+            assignLinksBasedOnChromatogramCorrelation(chromPeakFeatures, param, rawSpectra);
 
             // linked by partial matching of MS1 and MS2
             if (param.AcquisitionType == AcquisitionType.AIF || param.AcquisitionType == AcquisitionType.SWATH) return;
@@ -381,10 +381,8 @@ namespace CompMs.MsdialCore.Algorithm
         }
 
         // currently, only pure peaks are evaluated by this way.
-        private void assignLinksBasedOnChromatogramCorrelation(List<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, ParameterBase param) {
+        private void assignLinksBasedOnChromatogramCorrelation(List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param, RawSpectra rawSpectra) {
             if (chromPeakFeatures[0].ChromXs.RT.Value < 0) return;
-            RawSpectra rawSpectra = new RawSpectra(provider, param.IonMode, param.AcquisitionType);
-
             var pureFeatures = chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && n.PeakShape.PeakPureValue >= 0.9).ToList();
             var tempFeatures = new List<ChromFeatureTemp>();
             foreach (var feature in pureFeatures) {
@@ -392,7 +390,7 @@ namespace CompMs.MsdialCore.Algorithm
                 var rightRt = feature.ChromXsRight.RT.Value;
                 var chromatogramRange = new ChromatogramRange(leftRt, rightRt, ChromXType.RT, ChromXUnit.Min);
                 var peaks = rawSpectra.GetMs1ExtractedChromatogram_temp2(feature.Mass, param.CentroidMs1Tolerance, chromatogramRange);
-                var sPeaks = peaks.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+                var sPeaks = peaks.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel).AsPeakArray();
 
                 tempFeatures.Add(new ChromFeatureTemp() { Feature = feature, Peaks = sPeaks });
             }

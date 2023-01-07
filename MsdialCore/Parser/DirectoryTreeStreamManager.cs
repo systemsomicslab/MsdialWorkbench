@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Parser
 {
-    public class DirectoryTreeStreamManager : IStreamManager
+    public sealed class DirectoryTreeStreamManager : IStreamManager
     {
         public DirectoryTreeStreamManager(string rootDirectory = "") {
             RootDirectory = rootDirectory;
@@ -31,6 +31,14 @@ namespace CompMs.MsdialCore.Parser
 
         public void Release(Stream stream) {
             stream?.Close();
+        }
+
+        IStreamManager IStreamManager.Join(string relativePath) {
+            return new DirectoryTreeStreamManager(Path.Combine(RootDirectory, relativePath));
+        }
+
+        void IDisposable.Dispose() {
+
         }
     }
 }

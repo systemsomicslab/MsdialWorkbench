@@ -665,22 +665,22 @@ namespace CompMs.MsdialCore.MSDec {
         }
 
 
-        public static MSDecResult GetMSDecResult(List<ValuePeak[]> peaklistList, ParameterBase param, int targetScanNumber,
+        public static MSDecResult GetMSDecResult(List<Chromatogram_temp2> chromatogramList, ParameterBase param, int targetScanNumber,
             ChromXType chromType = ChromXType.RT, ChromXUnit chromUnit = ChromXUnit.Min) {
-            if (peaklistList == null || peaklistList.Count == 0) return null;
+            if (chromatogramList == null || chromatogramList.Count == 0) return null;
             //Peak detections in MS/MS chromatogras
-            var peakSpots = getPeakSpots(peaklistList, param, chromType, chromUnit); if (peakSpots.Count == 0) return null;
+            var peakSpots = getPeakSpots(chromatogramList, param, chromType, chromUnit); if (peakSpots.Count == 0) return null;
 
             //Maps the values of peak shape, symmetry, and qualiy of detected peaks into the array 
             //where the length is equal to the scan number
-            var ms2decBinArray = getMsDecBinArray(peakSpots, peaklistList[0]);
+            var ms2decBinArray = getMsDecBinArray(peakSpots, chromatogramList[0]);
 
             //apply matched filter to extract 'metabolite components' 
             //where peaks having slightly (1-2 scan point diff) different retention times are merged. 
             var matchedFilterArray = getMatchedFileterArray(ms2decBinArray, param.SigmaWindowValue);
 
             //making model chromatograms by considering their peak qualities
-            var modelChromatograms = getModelChromatograms(peaklistList, peakSpots, ms2decBinArray, matchedFilterArray, param);
+            var modelChromatograms = getModelChromatograms(chromatogramList, peakSpots, ms2decBinArray, matchedFilterArray, param);
 
             //What we have to do in DIA-MS data is first to link the peak tops of MS1 chromatogram and of MS2 chromatogram.
             //in the current program, if the peak top defference between MS1 and MS2 chromatograms is less than 1 scan point, they are recognized as the same metabolite.
@@ -700,7 +700,7 @@ namespace CompMs.MsdialCore.MSDec {
                 var modelChromVector = getModelChromatogramVector(minimumID, modelChromatograms, ms2decBinArray);
 
                 //triming MS/MS chromatograms where the retention time range is equal to the range of model chromatogram vector
-                var chromatograms = getMs2Chromatograms(modelChromVector, peaklistList, param);
+                var chromatograms = getMs2Chromatograms(modelChromVector, chromatogramList, param);
                 if (chromatograms.Count == 0) return null;
                 var result = MSDecProcess.GetMsDecResult(modelChromVector, chromatograms);
                 if (result == null) return null;
@@ -737,16 +737,16 @@ namespace CompMs.MsdialCore.MSDec {
             return peakSpots;
         }
 
-        private static List<ChromatogramPeakFeature> getPeakSpots(List<ValuePeak[]> peaklistList, ParameterBase param, ChromXType type, ChromXUnit unit) {
+        private static List<ChromatogramPeakFeature> getPeakSpots(List<Chromatogram_temp2> chromatogramList, ParameterBase param, ChromXType type, ChromXUnit unit) {
             var peakSpots = new List<ChromatogramPeakFeature>();
 
             var detector = new PeakDetection(param.MinimumDatapoints, param.MinimumAmplitude);
-            foreach (var (peaks, index) in peaklistList.WithIndex()) {
-                var results = detector.PeakDetectionVS1(peaks);
+            foreach (var (chromatogram, index) in chromatogramList.WithIndex()) {
+                var results = detector.PeakDetectionVS1(chromatogram);
                 if (results == null || results.Count == 0) continue;
                 //save as peakarea bean
                 foreach (var result in results) {
-                    var mass = (float)peaks[result.ScanNumAtPeakTop].Mz;
+                    var mass = chromatogram.Mz(result.ScanNumAtPeakTop);
                     var chromPeakFeature = DataAccess.GetChromatogramPeakFeature(result, type, unit, mass, param.ProjectParam.IonMode);
                     chromPeakFeature.PeakID = index; // this information is needed in the later process.
                     peakSpots.Add(chromPeakFeature);
@@ -787,13 +787,13 @@ namespace CompMs.MsdialCore.MSDec {
         }
 
 
-        private static MsDecBin[] getMsDecBinArray(List<ChromatogramPeakFeature> peakSpots, ValuePeak[] peaklist) {
+        private static MsDecBin[] getMsDecBinArray(List<ChromatogramPeakFeature> peakSpots, Chromatogram_temp2 chromatogram) {
 
-            var ms2DecBins = new MsDecBin[peaklist.Length];
+            var ms2DecBins = new MsDecBin[chromatogram.Length];
 
             for (int i = 0; i < ms2DecBins.Length; i++) {
                 ms2DecBins[i] = new MsDecBin();
-                ms2DecBins[i].RetentionTime = (float)peaklist[i].Time;
+                ms2DecBins[i].RetentionTime = (float)chromatogram.Time(i);
             }
 
             for (int i = 0; i < peakSpots.Count; i++) {
@@ -908,8 +908,7 @@ namespace CompMs.MsdialCore.MSDec {
             return mPeaklist;
         }
 
-        private static List<ModelChromatogram_temp> getModelChromatograms(List<ValuePeak[]> peaklistList, List<ChromatogramPeakFeature> peakSpots,
-           MsDecBin[] msdecBins, double[] matchedFilterArray, ParameterBase param) {
+        private static List<ModelChromatogram_temp> getModelChromatograms(List<Chromatogram_temp2> chromatogramList, List<ChromatogramPeakFeature> peakSpots, MsDecBin[] msdecBins, double[] matchedFilterArray, ParameterBase param) {
             var regionMarkers = getRegionMarkers(matchedFilterArray);
             var modelChromatograms = new List<ModelChromatogram_temp>();
             //   Debug.WriteLine("Regions count: {regionMarkers.Count}");
@@ -931,14 +930,14 @@ namespace CompMs.MsdialCore.MSDec {
                             peakAreas.Add(peakSpots[peakSpot.PeakSpotID]);
                     }
                 }
-                var modelChrom = getModelChromatogram(peaklistList, peakAreas, msdecBins, param);
+                var modelChrom = getModelChromatogram(chromatogramList, peakAreas, msdecBins, param);
                 if (modelChrom != null) modelChromatograms.Add(modelChrom);
             }
 
             return modelChromatograms;
         }
 
-        private static ModelChromatogram_temp getModelChromatogram(List<ValuePeak[]> peaklistList, List<ChromatogramPeakFeature> peakAreas,
+        private static ModelChromatogram_temp getModelChromatogram(List<Chromatogram_temp2> chromatogramList, List<ChromatogramPeakFeature> peakAreas,
             MsDecBin[] msdecBins, ParameterBase param) {
             if (peakAreas == null || peakAreas.Count == 0) return null;
             var maxSharpnessValue = peakAreas.Max(n => n.PeakShape.ShapenessValue);
@@ -957,14 +956,14 @@ namespace CompMs.MsdialCore.MSDec {
                     modelChrom.ChromScanOfPeakRight = peak.ChromScanIdRight;
                     modelChrom.ModelMzList.Add((float)peak.Mass);
 
-                    peaklist = getTrimedAndSmoothedPeaklist(peaklistList[peak.PeakID], modelChrom.ChromScanOfPeakLeft, modelChrom.ChromScanOfPeakRight);
+                    peaklist = chromatogramList[peak.PeakID].TrimPeaks(modelChrom.ChromScanOfPeakLeft, modelChrom.ChromScanOfPeakRight);
                     baselineCorrectedPeaklist = getBaselineCorrectedPeaklist(peaklist, modelChrom.ChromScanOfPeakTop - modelChrom.ChromScanOfPeakLeft);
                     peaklists.Add(baselineCorrectedPeaklist);
                     firstFlg = true;
                 }
                 else {
                     modelChrom.ModelMzList.Add((float)peak.Mass);
-                    peaklist = getTrimedAndSmoothedPeaklist(peaklistList[peak.PeakID], modelChrom.ChromScanOfPeakLeft, modelChrom.ChromScanOfPeakRight);
+                    peaklist = chromatogramList[peak.PeakID].TrimPeaks(modelChrom.ChromScanOfPeakLeft, modelChrom.ChromScanOfPeakRight);
                     baselineCorrectedPeaklist = getBaselineCorrectedPeaklist(peaklist, modelChrom.ChromScanOfPeakTop - modelChrom.ChromScanOfPeakLeft);
                     peaklists.Add(baselineCorrectedPeaklist);
                 }
@@ -985,18 +984,6 @@ namespace CompMs.MsdialCore.MSDec {
             return modelChrom;
         }
 
-        private static ValuePeak[] getTrimedAndSmoothedPeaklist(ValuePeak[] peaklist, int chromScanOfPeakLeft, int chromScanOfPeakRight) {
-            var mPeaklist = new ValuePeak[chromScanOfPeakRight - chromScanOfPeakLeft + 1];
-            var counter = 0;
-            for (int i = chromScanOfPeakLeft; i <= chromScanOfPeakRight; i++) {
-                var p = peaklist[i];
-                mPeaklist[counter] = new ValuePeak(p.Id, p.Time, p.Mz, p.Intensity);
-                counter++;
-            }
-
-            return mPeaklist;
-        }
-
         private static List<List<ChromatogramPeak>> getMs2Chromatograms(ModelChromVector modelChromVector, List<List<ChromatogramPeak>> peaklistList, ParameterBase param) {
             var peaksList = new List<List<ChromatogramPeak>>();
             foreach (var peaklist in peaklistList) {
@@ -1012,10 +999,10 @@ namespace CompMs.MsdialCore.MSDec {
             return peaksList;
         }
 
-        private static List<ValuePeak[]> getMs2Chromatograms(ModelChromVector modelChromVector, List<ValuePeak[]> peaklistList, ParameterBase param) {
+        private static List<ValuePeak[]> getMs2Chromatograms(ModelChromVector modelChromVector, List<Chromatogram_temp2> chromatogramList, ParameterBase param) {
             var peaksList = new List<ValuePeak[]>();
-            foreach (var peaklist in peaklistList) {
-                var peaks = getTrimedAndSmoothedPeaklist(peaklist, modelChromVector.ChromScanList[0], modelChromVector.ChromScanList[modelChromVector.ChromScanList.Count - 1]);
+            foreach (var chromatogram in chromatogramList) {
+                var peaks = chromatogram.TrimPeaks(modelChromVector.ChromScanList[0], modelChromVector.ChromScanList[modelChromVector.ChromScanList.Count - 1]);
                 var baselineCorrectedPeaks = getBaselineCorrectedPeaklist(peaks, modelChromVector.TargetScanTopInModelChromVector);
                 var peaktopInt = baselineCorrectedPeaks[modelChromVector.TargetScanTopInModelChromVector].Intensity;
 

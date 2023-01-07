@@ -11,7 +11,7 @@ namespace CompMs.MsdialCore.Parser.Tests
         [TestMethod()]
         public async Task ZipStreamManagerTest() {
             var stream = new MemoryStream();
-            var manager = ZipStreamManager.OpenCreate(stream);
+            IStreamManager manager = ZipStreamManager.OpenCreate(stream);
 
             var s = await manager.Create("ABC");
             var t = manager.Create("XYZ");
@@ -27,6 +27,21 @@ namespace CompMs.MsdialCore.Parser.Tests
             s.Write(Encoding.UTF8.GetBytes("xyz"));
             manager.Release(s);
 
+            var subManager = manager.Join("DEF");
+            s = await subManager.Create("GHI");
+            t = manager.Create("JKL");
+
+            Assert.IsFalse(t.IsCompleted);
+            s.Write(Encoding.UTF8.GetBytes("ghi"));
+            Assert.IsFalse(t.IsCompleted);
+            s.Close();
+            await Task.Delay(100);
+            Assert.IsTrue(t.IsCompleted);
+            s = await t;
+            s.Write(Encoding.UTF8.GetBytes("jkl"));
+            manager.Release(s);
+
+            subManager.Dispose();
             manager.Dispose();
 
             manager = ZipStreamManager.OpenGet(stream);
@@ -48,6 +63,25 @@ namespace CompMs.MsdialCore.Parser.Tests
             Assert.AreEqual("xyz", Encoding.UTF8.GetString(buffer));
             s.Close();
 
+            subManager = manager.Join("DEF");
+
+            s = await subManager.Get("GHI");
+            t = manager.Get("JKL");
+
+            Assert.IsFalse(t.IsCompleted);
+            s.Read(buffer, 0, buffer.Length);
+            Assert.AreEqual("ghi", Encoding.UTF8.GetString(buffer));
+            Assert.IsFalse(t.IsCompleted);
+            s.Dispose();
+            await Task.Delay(100);
+            Assert.IsTrue(t.IsCompleted);
+
+            s = await t;
+            s.Read(buffer, 0, buffer.Length);
+            Assert.AreEqual("jkl", Encoding.UTF8.GetString(buffer));
+            s.Close();
+
+            subManager.Dispose();
             manager.Dispose();
         }
     }

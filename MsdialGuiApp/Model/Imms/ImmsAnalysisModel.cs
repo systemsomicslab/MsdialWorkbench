@@ -89,7 +89,7 @@ namespace CompMs.App.Msdial.Model.Imms
                     break;
             }
             var labelsource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelsource, selectedBrush, brushes)
+            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelsource, selectedBrush, brushes, new PeakLinkModel(Ms1Peaks))
             {
                 HorizontalTitle = "Mobility [1/K0]",
                 VerticalTitle = "m/z",

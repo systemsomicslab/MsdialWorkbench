@@ -45,7 +45,7 @@ namespace CompMs.App.Msdial.Model.Imaging
                 Target,
                 Observable.Return(string.Empty),
                 intensityBrush,
-                brushes) {
+                brushes, new PeakLinkModel(Peaks)) {
                 HorizontalTitle = "Mobility [1/K0]",
                 VerticalTitle = "m/z",
                 HorizontalProperty = nameof(ChromatogramPeakFeatureModel.ChromXValue),

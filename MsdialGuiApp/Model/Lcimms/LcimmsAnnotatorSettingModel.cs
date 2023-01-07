@@ -40,13 +40,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public SourceType AnnotationSource { get; } = SourceType.MspDB; 
 
-        public List<ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> CreateAnnotator(MoleculeDataBase db, int priority, TargetOmics omics) {
-            return new List<ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>
-            {
-                new LcimmsMspAnnotator(db, SearchParameter, omics, AnnotatorID, priority),
-            };
-        }
-
         public IAnnotationQueryFactory<MsScanMatchResult> CreateAnnotationQueryFactory(int priority, MoleculeDataBase db, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             return new StandardRestorationKey(AnnotatorID, priority, SearchParameter, AnnotationSource).Accept(_createFuctory(refer), _annotatorVisitor, db);
         }
@@ -79,12 +72,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public SourceType AnnotationSource { get; } = SourceType.TextDB;
 
         public MsRefSearchParameterBase SearchParameter { get; } = new MsRefSearchParameterBase();
-
-        public List<ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> CreateAnnotator(MoleculeDataBase db, int priority, TargetOmics omics) {
-            return new List<ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
-                new LcimmsTextDBAnnotator(db, SearchParameter, AnnotatorID, priority),
-            };
-        }
 
         public IAnnotationQueryFactory<MsScanMatchResult> CreateAnnotationQueryFactory(int priority, MoleculeDataBase db, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             return new StandardRestorationKey(AnnotatorID, priority, SearchParameter, AnnotationSource).Accept(_createFuctory(refer), _annotatorVisitor, db);

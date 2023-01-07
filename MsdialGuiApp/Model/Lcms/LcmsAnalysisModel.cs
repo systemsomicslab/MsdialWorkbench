@@ -104,7 +104,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
             Brush = selectedBrush.Mapper;
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelSource, selectedBrush, brushes)
+            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelSource, selectedBrush, brushes, new PeakLinkModel(Ms1Peaks))
             {
                 HorizontalTitle = "Retention time [min]",
                 VerticalTitle = "m/z",

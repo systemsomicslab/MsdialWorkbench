@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Algorithm.PeakPick;
+﻿using Accord.Diagnostics;
+using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
@@ -411,11 +412,12 @@ namespace CompMs.MsdialCore.DataObj
             {
                 MasterPeakID = peakDetectionResult.PeakID,
                 PeakID = peakDetectionResult.PeakID,
+                IonMode = ionMode,
 
                 //assign the scan number of MS1 and MS/MS for precursor ion's peaks
-                MS1RawSpectrumIdTop = chromatogram.Peaks[peakDetectionResult.ScanNumAtPeakTop].Id,
-                MS1RawSpectrumIdLeft = chromatogram.Peaks[peakDetectionResult.ScanNumAtLeftPeakEdge].Id,
-                MS1RawSpectrumIdRight = chromatogram.Peaks[peakDetectionResult.ScanNumAtRightPeakEdge].Id,
+                MS1RawSpectrumIdTop = chromatogram.Id(peakDetectionResult.ScanNumAtPeakTop),
+                MS1RawSpectrumIdLeft = chromatogram.Id(peakDetectionResult.ScanNumAtLeftPeakEdge),
+                MS1RawSpectrumIdRight = chromatogram.Id(peakDetectionResult.ScanNumAtRightPeakEdge),
 
                 PeakShape = new ChromatogramPeakShape()
                 {
