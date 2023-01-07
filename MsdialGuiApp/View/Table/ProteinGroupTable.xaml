@@ -13,7 +13,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="100"/>
         </Grid.RowDefinitions>
         <!--<TabControl Grid.Row="0">
             <TabItem Header="Protein Groups">-->
@@ -24,10 +24,10 @@
                       AutoGenerateColumns="False"
                       IsSynchronizedWithCurrentItem="True" AlternatingRowBackground="LightBlue" AlternationCount="2">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="GroupID" Binding="{Binding GroupId}" />
-                    <DataGridTextColumn Header="NumberOfProteins" Binding="{Binding NumberOfProteins}" />
-                    <DataGridTextColumn Header="NumberOfUniquePeptides" Binding="{Binding NumberOfUniquePeptides}" />
-                    <DataGridTextColumn Header="NumberOfPeptides" Binding="{Binding NumberOfPeptides}" />
+                    <DataGridTextColumn Header="GroupID" IsReadOnly="True" Binding="{Binding GroupId, Mode=OneTime}" />
+                    <DataGridTextColumn Header="NumberOfProteins" IsReadOnly="True" Binding="{Binding NumberOfProteins, Mode=OneTime}" />
+                    <DataGridTextColumn Header="NumberOfUniquePeptides" IsReadOnly="True" Binding="{Binding NumberOfUniquePeptides, Mode=OneTime}" />
+                    <DataGridTextColumn Header="NumberOfPeptides" IsReadOnly="True" Binding="{Binding NumberOfPeptides, Mode=OneTime}" />
                 </DataGrid.Columns>
             </DataGrid>
 
