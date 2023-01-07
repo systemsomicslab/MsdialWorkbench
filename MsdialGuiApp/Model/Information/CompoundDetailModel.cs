@@ -4,6 +4,7 @@ using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -25,6 +26,7 @@ namespace CompMs.App.Msdial.Model.Information
             }).AddTo(Disposables);
 
             _compoundSimilaritiesMaps = new ObservableCollection<Func<MsScanMatchResult, ISimilarity>>();
+            CompoundSimilarities = new ReadOnlyObservableCollection<ISimilarity>(new ObservableCollection<ISimilarity>());
             result.Select(r => _compoundSimilaritiesMaps.ToReadOnlyReactiveCollection(f => f(r)))
                 .DisposePreviousValue()
                 .Subscribe(cs => CompoundSimilarities = cs)

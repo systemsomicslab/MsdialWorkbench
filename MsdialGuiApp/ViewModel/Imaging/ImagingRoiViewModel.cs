@@ -18,11 +18,13 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
                 vmox => vmox.Select(vm => vm?.Model))
                 .AddTo(Disposables);
             Roi = new RoiViewModel(model.Roi).AddTo(Disposables);
+            IsSelected = model.ToReactivePropertySlimAsSynchronized(m => m.IsSelected).AddTo(Disposables);
         }
 
         public string Id { get; }
         public ReadOnlyReactiveCollection<RoiPeakSummaryViewModel> RoiPeakSummaries { get; }
         public ReactiveProperty<RoiPeakSummaryViewModel> SelectedRoiPeakSummary { get; }
         public RoiViewModel Roi { get; }
+        public ReactivePropertySlim<bool> IsSelected { get; }
     }
 }

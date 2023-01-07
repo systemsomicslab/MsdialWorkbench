@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Xml.Linq;
 
@@ -53,7 +54,8 @@ namespace CompMs.App.Msdial.Model.Statistics
         }
 
         public IObservable<bool> CanNormalize(IReadOnlyList<AlignmentSpotProperty> spots) {
-            return Lipids.ObserveElementPropertyChanged()
+            return Lipids.ObserveElementPropertyChanged().ToUnit()
+                .StartWith(Unit.Default)
                 .Select(_ => Lipids.Any(lipid => lipid.IsRequiredFieldFilled(spots)));
         }
 

@@ -182,6 +182,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 case DataBaseSource.Text:
                     return new ImmsTextDBAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter, _annotatorVisitor, CreateFactory);
                 case DataBaseSource.EieioLipid:
+                case DataBaseSource.EidLipid:
                 case DataBaseSource.OadLipid:
                     return new ImmsEadLipidAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter, _annotatorVisitor, CreateFactory);
                 default:

@@ -69,14 +69,14 @@
                                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                                        KeyTip="N"/>
             <RibbonApplicationMenuItem Header="Open project" ImageSource="{StaticResource Open_is}"
-                                       Command="{Binding OpenProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                       Command="{Binding DataContext.OpenProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                                        KeyTip="O"/>
             <RibbonApplicationSplitMenuItem Header="Save" ImageSource="{StaticResource Save_is}"
-                                            Command="{Binding SaveProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                            Command="{Binding DataContext.SaveProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                             KeyTip="S">
                 <RibbonApplicationMenuItem Header="Save as..." ImageSource="{StaticResource Save_as_is}"
-                                           Command="{Binding SaveAsProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                           Command="{Binding DataContext.SaveAsProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                            KeyTip="A"/>
                 <RibbonApplicationMenuItem Header="Save parameter as..."
                                            Command="{Binding DataContext.DatasetViewModel.Value.SaveParameterAsCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
@@ -280,13 +280,23 @@
                                              d:DataContext="{d:DesignInstance Type={x:Type vmchart:RawDecSpectrumsViewModel}}"
                                              Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
                                              Style="{StaticResource FocusWhenVisible}"/>
+    <chartSetting:RepRefViewSettingRibbonTab ContextualTabGroupHeader="Graph tools"
+                                             DataContext="{Binding AlignmentViewModel.Value.Ms2SpectrumViewModel}"
+                                             d:DataContext="{d:DesignInstance Type={x:Type vmchart:MsSpectrumViewModel}}"
+                                             Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
+                                             Style="{StaticResource FocusWhenVisible}"/>
     <chartSetting:Ms2ChromatogramSettingRibbonTab ContextualTabGroupHeader="Graph tools"
                                                   DataContext="{Binding AnalysisViewModel.Value.Ms2ChromatogramsViewModel}"
                                                   d:DataContext="{d:DesignInstance Type={x:Type vmchart:Ms2ChromatogramsViewModel}}"
                                                   Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
                                                   Style="{StaticResource FocusWhenVisible}"/>
     <chartSetting:BarChartOfAlignedSpotSettingRibbonTab ContextualTabGroupHeader="Graph tools"
-                                                        DataContext="{Binding AlignmentViewModel.Value.BarChartViewModel}"
+                                                        DataContext="{Binding AlignmentViewModel.Value.RtBarChartViewModel}"
+                                                        d:DataContext="{d:DesignInstance Type={x:Type vmchart:BarChartViewModel}}"
+                                                        Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
+                                                        Style="{StaticResource FocusWhenVisible}"/>
+    <chartSetting:BarChartOfAlignedSpotSettingRibbonTab ContextualTabGroupHeader="Graph tools"
+                                                        DataContext="{Binding AlignmentViewModel.Value.DtBarChartViewModel}"
                                                         d:DataContext="{d:DesignInstance Type={x:Type vmchart:BarChartViewModel}}"
                                                         Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
                                                         Style="{StaticResource FocusWhenVisible}"/>

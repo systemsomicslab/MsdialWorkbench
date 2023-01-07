@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.MsdialLcImMsApi.Process
 {
-    public sealed class FileProcess
+    public sealed class FileProcess : IFileProcessor
     {
         private readonly IDataProviderFactory<RawMeasurement> spectrumProviderFactory;
         private readonly IDataProviderFactory<RawMeasurement> accSpectrumProviderFactory;
@@ -62,13 +62,15 @@ namespace CompMs.MsdialLcImMsApi.Process
 
             Console.WriteLine("Deconvolution started");
             var targetCE2MSDecResults = SpectrumDeconvolution(spectrumProvider, chromPeakFeatures, summary, parameter, iupacDB, reportAction, token);
+            var mSDecResultCollections = targetCE2MSDecResults.Select(pair => new MSDecResultCollection(pair.Value, pair.Key)).ToArray();
 
             // annotations
             Console.WriteLine("Annotation started");
-            PeakAnnotation(annotationProcess, spectrumProvider, chromPeakFeatures, targetCE2MSDecResults, parameter, reportAction, token);
+            PeakAnnotation(annotationProcess, spectrumProvider, chromPeakFeatures, mSDecResultCollections, parameter, reportAction, token);
 
             // characterizatin
-            PeakCharacterization(targetCE2MSDecResults, spectrumProvider, chromPeakFeatures, evaluator, parameter, reportAction);
+            //PeakCharacterization(targetCE2MSDecResults, spectrumProvider, chromPeakFeatures, evaluator, parameter, reportAction);
+            PeakCharacterization(mSDecResultCollections, accSpectrumProvider, chromPeakFeatures, evaluator, parameter, reportAction);
 
             // file save
             SaveToFile(file, chromPeakFeatures, targetCE2MSDecResults);
@@ -76,6 +78,28 @@ namespace CompMs.MsdialLcImMsApi.Process
             reportAction?.Invoke(100);
 
             return Task.CompletedTask;
+        }
+
+        public async Task AnnotateAsync(AnalysisFileBean file, Action<int> reportAction = null, CancellationToken token = default) {
+            var rawObj = LoadMeasurement(file, isGuiProcess);
+            var spectrumProvider = spectrumProviderFactory.Create(rawObj);
+            var accSpectrumProvider = accSpectrumProviderFactory.Create(rawObj);
+            var peakTask = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath, token);
+            var resultsTask = Task.WhenAll(MSDecResultCollection.DeserializeAsync(file, token));
+
+            // annotations
+            token.ThrowIfCancellationRequested();
+            Console.WriteLine("Annotation started");
+            var chromPeakFeatures = await peakTask.ConfigureAwait(false);
+            var mSDecResultCollections = await resultsTask.ConfigureAwait(false);
+            PeakAnnotation(annotationProcess, spectrumProvider, chromPeakFeatures.Items, mSDecResultCollections, storage.Parameter, reportAction, token);
+
+            // characterizatin
+            PeakCharacterization(mSDecResultCollections, accSpectrumProvider, chromPeakFeatures.Items, evaluator, storage.Parameter, reportAction);
+
+            // file save
+            await SaveToFileAsync(file, chromPeakFeatures, mSDecResultCollections).ConfigureAwait(false);
+            reportAction?.Invoke(100);
         }
 
         public static void Run(
@@ -127,8 +151,20 @@ namespace CompMs.MsdialLcImMsApi.Process
                 parameter.NumThreads, token, reportAction);
             var iupacDB = storage.IupacDatabase;
             IsotopeEstimator.Process(chromPeakFeatures, parameter, iupacDB);
+            CopyIsotopeInformation2DriftFeatures(chromPeakFeatures);
+
             CcsEstimator.Process(chromPeakFeatures, parameter, parameter.IonMobilityType, coeff, parameter.IsAllCalibrantDataImported);
             return chromPeakFeatures;
+        }
+
+        private void CopyIsotopeInformation2DriftFeatures(List<ChromatogramPeakFeature> features) {
+            foreach (var feature in features) {
+                foreach(var dFeature in feature.DriftChromFeatures) {
+                    dFeature.PeakCharacter.IsotopeWeightNumber = feature.PeakCharacter.IsotopeWeightNumber;
+                    dFeature.PeakCharacter.Charge = feature.PeakCharacter.Charge;
+                    dFeature.PeakCharacter.IsotopeParentPeakID = feature.PeakCharacter.IsotopeParentPeakID;
+                }
+            }
         }
 
         private static Dictionary<double, List<MSDecResult>> SpectrumDeconvolution(
@@ -168,31 +204,31 @@ namespace CompMs.MsdialLcImMsApi.Process
         private static void PeakAnnotation(
             IAnnotationProcess annotationProcess,
             IDataProvider provider,
-            List<ChromatogramPeakFeature> chromPeakFeatures,
-            Dictionary<double, List<MSDecResult>> targetCE2MSDecResults,
+            IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
+            MSDecResultCollection[] mSDecResultCollections,
             MsdialLcImMsParameter parameter,
             Action<int> reportAction,
             CancellationToken token) {
 
             var initial_annotation = 60.0;
             var max_annotation = 30.0;
-            var max_annotation_local = max_annotation / targetCE2MSDecResults.Count;
-            foreach (var (ce2msdecs, index) in targetCE2MSDecResults.WithIndex()) {
-                var msdecResults = ce2msdecs.Value;
+            var max_annotation_local = max_annotation / mSDecResultCollections.Length;
+            foreach (var (mSDecResultCollection, index) in mSDecResultCollections.WithIndex()) {
+                var msdecResults = mSDecResultCollection.MSDecResults;
                 var initial_annotation_local = initial_annotation + max_annotation_local * index;
                 annotationProcess.RunAnnotation(chromPeakFeatures, msdecResults, provider, parameter.NumThreads - 1, token, v => ReportProgress.Show(initial_annotation_local, max_annotation_local, v, chromPeakFeatures.Count, reportAction));
             }
         }
 
         private static void PeakCharacterization(
-            Dictionary<double, List<MSDecResult>> targetCE2MSDecResults,
+            MSDecResultCollection[] mSDecResultCollections,
             IDataProvider provider,
-            List<ChromatogramPeakFeature> chromPeakFeatures,
+            IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             MsdialLcImMsParameter parameter,
             Action<int> reportAction) {
 
-            new PeakCharacterEstimator(90, 10).Process(provider, chromPeakFeatures, targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null,
+            new PeakCharacterEstimator(90, 10).Process(provider, chromPeakFeatures, mSDecResultCollections.Any() ? mSDecResultCollections.Argmin(kvp => kvp.CollisionEnergy).MSDecResults : null,
                 evaluator,
                 parameter, reportAction);
         }
@@ -222,6 +258,22 @@ namespace CompMs.MsdialLcImMsApi.Process
                 }
             }
             file.DeconvolutionFilePathList = dclfiles;
+        }
+
+        private static Task SaveToFileAsync(AnalysisFileBean file, ChromatogramPeakFeatureCollection chromPeakFeatures, IReadOnlyList<MSDecResultCollection> mSDecResultCollections) {
+            Task t1, t2;
+
+            t1 = chromPeakFeatures.SerializeAsync(file);
+
+            if (mSDecResultCollections.Count == 1) {
+                t2 = mSDecResultCollections[0].SerializeAsync(file);
+            }
+            else {
+                file.DeconvolutionFilePathList.Clear();
+                t2 = Task.WhenAll(mSDecResultCollections.Select(mSDecResultCollection => mSDecResultCollection.SerializeWithCEAsync(file)));
+            }
+
+            return Task.WhenAll(t1, t2);
         }
     }
 }

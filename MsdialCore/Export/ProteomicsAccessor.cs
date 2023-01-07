@@ -4,21 +4,21 @@ using CompMs.Common.Interfaces;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 
 namespace CompMs.MsdialCore.Export {
     public abstract class ProteomicsBaseAccessor : IMetadataAccessor {
-        public ProteomicsBaseAccessor(IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer, ParameterBase parameter) {
+        public ProteomicsBaseAccessor(IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer, bool trimSpectrumToExcelLimit = false) {
             this.refer = refer;
-            this.parameter = parameter;
+            _trimSpectrumToExcelLimit = trimSpectrumToExcelLimit;
         }
 
         private readonly IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer;
-        private readonly ParameterBase parameter;
+        private readonly bool _trimSpectrumToExcelLimit;
 
         public string[] GetHeaders() => GetHeadersCore();
 
@@ -88,7 +88,18 @@ namespace CompMs.MsdialCore.Export {
             if (isotopes.IsEmptyOrNull()) {
                 return "null";
             }
-            return string.Join(";", isotopes.Select(isotope => string.Format("{0:F5} {1:F0}", isotope.Mass, isotope.AbsoluteAbundance)));
+            var strSpectrum = string.Join(" ", isotopes.Select(isotope => string.Format("{0:F5}:{1:F0}", isotope.Mass, isotope.AbsoluteAbundance)));
+            if (strSpectrum.Length < ExportConstants.EXCEL_CELL_SIZE_LIMIT || !_trimSpectrumToExcelLimit) {
+                return strSpectrum;
+            }
+            var builder = new StringBuilder();
+            foreach (var isotope in isotopes) {
+                if (builder.Length > ExportConstants.EXCEL_CELL_SIZE_LIMIT) {
+                    break;
+                }
+                builder.Append(string.Format("{0:F5}:{1:F0} ", isotope.Mass, isotope.AbsoluteAbundance));
+            }
+            return builder.ToString();
         }
 
         protected string GetSpectrumListContent(IMSScanProperty msdec) {
@@ -96,7 +107,18 @@ namespace CompMs.MsdialCore.Export {
             if (spectrum.IsEmptyOrNull()) {
                 return "null";
             }
-            return string.Join(";", spectrum.Select(peak => string.Format("{0:F5} {1:F0}", peak.Mass, peak.Intensity)));
+            var strSpectrum = string.Join(" ", spectrum.Select(peak => string.Format("{0:F5}:{1:F0}", peak.Mass, peak.Intensity)));
+            if (strSpectrum.Length < ExportConstants.EXCEL_CELL_SIZE_LIMIT || !_trimSpectrumToExcelLimit) {
+                return strSpectrum;
+            }
+            var builder = new StringBuilder();
+            foreach (var peak in spectrum) {
+                if (builder.Length > ExportConstants.EXCEL_CELL_SIZE_LIMIT) {
+                    break;
+                }
+                builder.Append(string.Format("{0:F5}:{1:F0} ", peak.Mass, peak.Intensity));
+            }
+            return builder.ToString();
         }
 
         protected static string GetPostCurationResult(AlignmentSpotProperty spot) {

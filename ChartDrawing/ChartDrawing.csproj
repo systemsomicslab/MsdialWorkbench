@@ -68,6 +68,7 @@
     <Compile Include="AxisManager\Generic\AbsoluteAxisManager.cs" />
     <Compile Include="AxisManager\Generic\DefectAxisManager.cs" />
     <Compile Include="AxisManager\Generic\RelativeAxisManager.cs" />
+    <Compile Include="AxisManager\Generic\SqrtAxisManager.cs" />
     <Compile Include="AxisManager\ILabelGenerator.cs" />
     <Compile Include="AxisManager\LabelGeneratorBase.cs" />
     <Compile Include="AxisManager\LabelType.cs" />
@@ -194,6 +195,7 @@
     <Compile Include="UI\ExecutableBar.cs" />
     <Compile Include="UI\LabeledBar.cs" />
     <Compile Include="UI\LabeledContent.cs" />
+    <Compile Include="UI\NumericUpDown.cs" />
     <Compile Include="UI\ProgressBarMultiContainerVM.cs" />
     <Compile Include="UI\ProgressBarMultiContainerWindow.xaml.cs">
       <DependentUpon>ProgressBarMultiContainerWindow.xaml</DependentUpon>

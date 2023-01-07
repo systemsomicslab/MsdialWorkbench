@@ -9,9 +9,19 @@ namespace CompMs.App.Msdial.Model.Imaging
     {
         private readonly List<MaldiFrameInfo> _infos;
 
-        public MaldiFrames(List<MaldiFrameInfo> infos) {
-            _infos = infos;
-            Infos = infos.AsReadOnly();
+        public MaldiFrames(IEnumerable<MaldiFrameInfo> infos, MaldiFrames masterFrames) {
+            _infos = infos.ToList();
+            Infos = _infos.AsReadOnly();
+
+            XIndexPosMin = masterFrames.XIndexPosMin;
+            XIndexPosMax = masterFrames.XIndexPosMax;
+            YIndexPosMin = masterFrames.YIndexPosMin;
+            YIndexPosMax = masterFrames.YIndexPosMax;
+        }
+
+        public MaldiFrames(IEnumerable<MaldiFrameInfo> infos) {
+            _infos = infos.ToList();
+            Infos = _infos.AsReadOnly();
 
             XIndexPosMin = infos.Select(info => info.XIndexPos).DefaultIfEmpty(0).Min();
             XIndexPosMax = infos.Select(info => info.XIndexPos).DefaultIfEmpty(1).Max();

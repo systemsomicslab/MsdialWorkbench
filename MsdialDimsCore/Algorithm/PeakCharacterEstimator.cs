@@ -29,7 +29,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
         }
         public List<AdductIon> SearchedAdducts { get; set; } = new List<AdductIon>();
 
-        public void Process(List<ChromatogramPeakFeature> chromPeakFeatures, List<MSDecResult> msdecResults,
+        public void Process(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResults,
             IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase parameter, Action<int> reportAction, IDataProvider provider) {
             
             // some adduct features are automatically insearted even if users did not select any type of adduct
@@ -49,7 +49,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
         // currently, the links for same metabolite, isotope, and adduct are grouped.
         // the others such as found in upper msms and chromatogram correlation are not grouped.
         // in future, I have to create the merge GUI for user side
-        private void AssignPutativePeakgroupIDs(List<ChromatogramPeakFeature> chromPeakFeatures) {
+        private void AssignPutativePeakgroupIDs(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures) {
             var groupID = 0;
             foreach (var peak in chromPeakFeatures) {
                 var peakCharacter = peak.PeakCharacter;
@@ -66,7 +66,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
             }
         }
 
-        private void recPeakGroupAssignment(ChromatogramPeakFeature peak, List<ChromatogramPeakFeature> peakSpots, int groupID, List<int> crawledPeaks) {
+        private void recPeakGroupAssignment(ChromatogramPeakFeature peak, IReadOnlyList<ChromatogramPeakFeature> peakSpots, int groupID, List<int> crawledPeaks) {
             var peakCharacter = peak.PeakCharacter;
             if (peakCharacter.PeakLinks == null || peakCharacter.PeakLinks.Count == 0) return;
             foreach (var linkedPeak in peak.PeakCharacter.PeakLinks) {
@@ -94,7 +94,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
         }
 
 
-        private void Initialization(List<ChromatogramPeakFeature> chromPeakFeatures) {
+        private void Initialization(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures) {
             foreach (var peak in chromPeakFeatures) {
                 var character = peak.PeakCharacter;
                 if (character.IsotopeWeightNumber > 0) {
@@ -134,7 +134,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
             }
         }
 
-        private void FinalizationForAdduct(List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
+        private void FinalizationForAdduct(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
             var defaultAdduct = SearchedAdducts[0];
 
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0)) {
@@ -185,8 +185,8 @@ namespace CompMs.MsdialDimsCore.Algorithm
         // the RT deviations of peakspots should be less than 0.03 min
         // here, each peak is evaluated.
         // the purpose is to group the ions which are recognized as the same metabolite
-        private void CharacterAssigner(List<ChromatogramPeakFeature> chromPeakFeatures,
-            IDataProvider provider, List<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param) {
+        private void CharacterAssigner(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
+            IDataProvider provider, IReadOnlyList<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param) {
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return;
 
             // if the first inchikey is same, it's recognized as the same metabolite.
@@ -213,7 +213,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
             // assignLinksBasedOnPartialMatchingOfMS1MS2(chromPeakFeatures, msdecResults, param);
         }
 
-        private void assignAdductByMsMs(List<ChromatogramPeakFeature> chromPeakFeatures, List<MSDecResult> msdecResults, ParameterBase param) {
+        private void assignAdductByMsMs(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResults, ParameterBase param) {
 
             var isAcetateAdduct = false;
             var isFormateAdduct = false;
@@ -320,7 +320,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
         }
 
         // currently, only pure peaks are evaluated by this way.
-        private void assignLinksBasedOnChromatogramCorrelation(List<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, ParameterBase param) {
+        private void assignLinksBasedOnChromatogramCorrelation(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, ParameterBase param) {
             if (chromPeakFeatures[0].ChromXs.RT.Value < 0) return;
             var rawSpectra = new RawSpectra(provider, param.IonMode, param.AcquisitionType);
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && n.PeakShape.PeakPureValue >= 0.9)) {
@@ -350,7 +350,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
         }
 
         // just copied from the previous adduct estimator, should be checked for the improvement
-        private void assignLinksBasedOnAdductPairingMethod(List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
+        private void assignLinksBasedOnAdductPairingMethod(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && !n.PeakCharacter.IsLinked && !n.IsAdductTypeFormatted)) {
                 var flg = false;
                 var ppm = MolecularFormulaUtility.PpmCalculator(200.0, 200.0 + param.CentroidMs1Tolerance); //based on m/z 200
@@ -399,7 +399,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
             }
         }
 
-        private void assignLinksBasedOnDeterminedAdduct(List<ChromatogramPeakFeature> chromPeakFeatures, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param) {
+        private void assignLinksBasedOnDeterminedAdduct(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param) {
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && n.IsAdductTypeFormatted)) {
                 var centralAdduct = peak.AdductType;
                 var centralExactMass = centralAdduct.ConvertToExactMass(peak.Mass);
@@ -435,7 +435,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
             }
         }
 
-        private void assignLinksBasedOnIdentifiedCompound(List<ChromatogramPeakFeature> chromPeakFeatures, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param) {
+        private void assignLinksBasedOnIdentifiedCompound(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param) {
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0)) {
                 if (peak.IsUnknown || peak.IsAnnotationSuggested(evaluator)) continue;
 
@@ -481,7 +481,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
             }
         }
 
-        private void assignLinksBasedOnInChIKeys(List<ChromatogramPeakFeature> chromPeakFeatures, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+        private void assignLinksBasedOnInChIKeys(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0)) {
                 
                 if (peak.IsUnknown || peak.IsAnnotationSuggested(evaluator)) continue;

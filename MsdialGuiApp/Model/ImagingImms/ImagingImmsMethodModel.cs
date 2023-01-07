@@ -1,14 +1,17 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Imaging;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Export;
+using CompMs.MsdialImmsCore.Export;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Process;
-using Reactive.Bindings.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -76,6 +79,27 @@ namespace CompMs.App.Msdial.Model.ImagingImms
 
         protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
             return null;
+        }
+
+        public AnalysisResultExportModel CreateExportAnalysisModel() {
+            var spectraTypes = new[]
+            {
+                new SpectraType(
+                    ExportspectraType.deconvoluted,
+                    new ImmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.deconvoluted)),
+                new SpectraType(
+                    ExportspectraType.centroid,
+                    new ImmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.centroid)),
+                new SpectraType(
+                    ExportspectraType.profile,
+                    new ImmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.profile)),
+            };
+            var spectraFormats = new[]
+            {
+                new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter(separator: "\t")),
+            };
+
+            return new AnalysisResultExportModel(AnalysisFileModelCollection, spectraTypes, spectraFormats, _providerFactory);
         }
     }
 }

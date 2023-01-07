@@ -4,6 +4,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.ViewModel.Loader;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager;
+using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
@@ -42,7 +43,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             VerticalAxis = model
                 .VerticalRangeAsObservable
-                .ToReactiveAxisManager<double>(new RelativeMargin(0, 0.05), new Range(0, 0), LabelType.Order)
+                .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0, 0.05), new Range(0, 0), LabelType.Order)
                 .AddTo(Disposables);
 
             var brushSource = model.ClassBrush;

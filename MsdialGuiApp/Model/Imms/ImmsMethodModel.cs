@@ -1,14 +1,7 @@
-﻿using CompMs.App.Msdial.Common;
-using CompMs.App.Msdial.Model.Core;
+﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Search;
-using CompMs.App.Msdial.View.Chart;
-using CompMs.App.Msdial.View.Export;
-using CompMs.App.Msdial.View.Setting;
-using CompMs.App.Msdial.ViewModel.Chart;
-using CompMs.App.Msdial.ViewModel.Export;
-using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -30,9 +23,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Media;
 using CompMs.App.Msdial.Model.Export;
+using CompMs.App.Msdial.Model.Setting;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
@@ -64,14 +57,15 @@ namespace CompMs.App.Msdial.Model.Imms
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All);
 
             List<AnalysisFileBean> analysisFiles = analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File).ToList();
-            var metadataAccessor = new ImmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter);
+            var metadataAccessorFactory = new ImmsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter);
             AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(PeakFilterModel, _matchResultEvaluator.Contramap((IFilterable filterable) => filterable.MatchResults.Representative));
             var peakGroup = new AlignmentExportGroupModel(
                 "Peaks",
                 new ExportMethod(
                     analysisFiles,
-                    new ExportFormat("txt", "txt", new AlignmentCSVExporter(), new AlignmentLongCSVExporter(), metadataAccessor),
-                    new ExportFormat("csv", "csv", new AlignmentCSVExporter(separator: ","), new AlignmentLongCSVExporter(separator: ","), metadataAccessor)
+                    metadataAccessorFactory,
+                    ExportFormat.Tsv,
+                    ExportFormat.Csv
                 ),
                 new[]
                 {
@@ -272,7 +266,7 @@ namespace CompMs.App.Msdial.Model.Imms
             .AddTo(Disposables);
         }
 
-        public void ExportAnalysis(Window owner) {
+        public AnalysisResultExportModel CreateExportAnalysisResult() {
             var container = _storage;
             var spectraTypes = new List<SpectraType>
             {
@@ -291,108 +285,65 @@ namespace CompMs.App.Msdial.Model.Imms
                 new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
             };
 
-            using (var vm = new AnalysisResultExportViewModel(container.AnalysisFiles, spectraTypes, spectraFormats, ProviderFactory)) {
-                var dialog = new AnalysisResultExportWin
-                {
-                    DataContext = vm,
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                };
-
-                dialog.ShowDialog();
-            }
+            return new AnalysisResultExportModel(AnalysisFileModelCollection, spectraTypes, spectraFormats, ProviderFactory.ContraMap((AnalysisFileBeanModel file) => file.File));
         }
 
-        public void ShowTIC(Window owner) {
+        public ChromatogramsModel PrepareTIC() {
             var analysisModel = AnalysisModel;
-            if (analysisModel is null) return;
+            if (analysisModel is null) {
+                return null;
+            }
 
             var tic = analysisModel.EicLoader.LoadTic();
-            var vm = new ChromatogramsViewModel(
-                new ChromatogramsModel("Total ion chromatogram", 
-                new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC"), "Total ion chromatogram", "Mobility", "Absolute ion abundance"));
-            var view = new DisplayChromatogramsView() {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            view.Show();
+            Pen pen = new Pen(Brushes.Black, 1.0);
+            pen.Freeze();
+            return new ChromatogramsModel("Total ion chromatogram", new DisplayChromatogram(tic, pen, "TIC"), "Total ion chromatogram", "Mobility", "Absolute ion abundance");
         }
 
-        public void ShowBPC(Window owner) {
+        public ChromatogramsModel PrepareBPC() {
             var analysisModel = AnalysisModel;
-            if (analysisModel is null) return;
+            if (analysisModel is null) {
+                return null;
+            }
 
             var bpc = analysisModel.EicLoader.LoadBpc();
-            var vm = new ChromatogramsViewModel(new ChromatogramsModel("Base peak chromatogram", new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC"),
-                "Base peak chromatogram", "Mobility", "Absolute ion abundance"));
-            var view = new DisplayChromatogramsView() {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            view.Show();
+            Pen pen = new Pen(Brushes.Red, 1.0);
+            pen.Freeze();
+            return new ChromatogramsModel("Base peak chromatogram", new DisplayChromatogram(bpc, pen, "BPC"), "Base peak chromatogram", "Mobility", "Absolute ion abundance");
         }
 
-        public void ShowEIC(Window owner) {
+        public DisplayEicSettingModel PrepareEicSetting() {
             var analysisModel = AnalysisModel;
-            if (analysisModel is null) return;
-
-            var param = _storage.Parameter;
-            var model = new Setting.DisplayEicSettingModel(analysisModel.EicLoader, param);
-            var dialog = new EICDisplaySettingView() {
-                DataContext = new DisplayEicSettingViewModel(model),
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            if (dialog.ShowDialog() == true) {
-                param.AdvancedProcessOptionBaseParam.DiplayEicSettingValues = model.DiplayEicSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0).ToList();
-                var displayEICs = param.AdvancedProcessOptionBaseParam.DiplayEicSettingValues;
-                if (!displayEICs.IsEmptyOrNull()) {
-                    var displayChroms = new List<DisplayChromatogram>();
-                    var counter = 0;
-                    foreach (var set in displayEICs.Where(n => n.Mass > 0 && n.MassTolerance > 0)) {
-                        var eic = analysisModel.EicLoader.LoadEicTrace(set.Mass, set.MassTolerance);
-                        var subtitle = "[" + Math.Round(set.Mass - set.MassTolerance, 4).ToString() + "-" + Math.Round(set.Mass + set.MassTolerance, 4).ToString() + "]";
-                        var chrom = new DisplayChromatogram(eic, new Pen(ChartBrushes.GetChartBrush(counter), 1.0), set.Title + "; " + subtitle);
-                        counter++;
-                        displayChroms.Add(chrom);
-                    }
-                    var vm = new ChromatogramsViewModel(new ChromatogramsModel("EIC", displayChroms, "EIC", "Mobility", "Absolute ion abundance"));
-                    var view = new DisplayChromatogramsView() {
-                        DataContext = vm,
-                        Owner = owner,
-                        WindowStartupLocation = WindowStartupLocation.CenterOwner
-                    };
-                    view.Show();
-                }
+            if (analysisModel is null) {
+                return null;
             }
+            return new DisplayEicSettingModel(analysisModel.EicLoader, _storage.Parameter);
         }
 
-        public void ShowTicBpcRepEIC(Window owner) {
+        public ChromatogramsModel PrepareTicBpcRepEIC() {
             var analysisModel = AnalysisModel;
-            if (analysisModel is null) return;
+            if (analysisModel is null) {
+                return null;
+            }
 
             var tic = analysisModel.EicLoader.LoadTic();
             var bpc = analysisModel.EicLoader.LoadBpc();
             var eic = analysisModel.EicLoader.LoadHighestEicTrace(analysisModel.Ms1Peaks.ToList());
 
             var maxPeakMz = analysisModel.Ms1Peaks.Argmax(n => n.Intensity).Mass;
-
-
+            Pen ticPen = new Pen(Brushes.Black, 1.0);
+            ticPen.Freeze();
+            Pen bpcPen = new Pen(Brushes.Red, 1.0);
+            bpcPen.Freeze();
+            Pen eicPen = new Pen(Brushes.Blue, 1.0);
+            eicPen.Freeze();
             var displayChroms = new List<DisplayChromatogram>() {
-                new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC"),
-                new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC"),
-                new DisplayChromatogram(eic, new Pen(Brushes.Blue, 1.0), "EIC of m/z " + Math.Round(maxPeakMz, 5).ToString())
+                new DisplayChromatogram(tic, ticPen, "TIC"),
+                new DisplayChromatogram(bpc, bpcPen, "BPC"),
+                new DisplayChromatogram(eic, eicPen, "EIC of m/z " + Math.Round(maxPeakMz, 5).ToString())
             };
 
-            var vm = new ChromatogramsViewModel(new ChromatogramsModel("TIC, BPC, and highest peak m/z's EIC", displayChroms, "TIC, BPC, and highest peak m/z's EIC", "Mobility", "Absolute ion abundance"));
-            var view = new DisplayChromatogramsView() {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            view.Show();
+            return new ChromatogramsModel("TIC, BPC, and highest peak m/z's EIC", displayChroms, "TIC, BPC, and highest peak m/z's EIC", "Mobility", "Absolute ion abundance");
         }
     }
 }

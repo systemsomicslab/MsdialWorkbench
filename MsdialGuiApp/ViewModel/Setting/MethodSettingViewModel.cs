@@ -49,12 +49,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             ObserveChanges = SettingViewModels.ObserveElementObservableProperty(vm => vm.ObserveChanges).Select(pack => pack.Value);
 
             ObserveHasErrors = SettingViewModels.ObserveElementObservableProperty(vm => vm.ObserveHasErrors)
-                .Switch(_ => SettingViewModels.Select(vm => vm.ObserveHasErrors).CombineLatestValuesAreAnyTrue())
+                .SelectSwitch(_ => SettingViewModels.Select(vm => vm.ObserveHasErrors).CombineLatestValuesAreAnyTrue())
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
             ObserveChangeAfterDecision = SettingViewModels.ObserveElementObservableProperty(vm => vm.ObserveChangeAfterDecision)
-                .Switch(_ => SettingViewModels.Select(vm => vm.ObserveChangeAfterDecision).CombineLatestValuesAreAnyTrue())
+                .SelectSwitch(_ => SettingViewModels.Select(vm => vm.ObserveChangeAfterDecision).CombineLatestValuesAreAnyTrue())
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -99,6 +99,18 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public Task<bool> TryRunAsync() {
             return Model.TryRunAsync(default);
+        }
+
+        public ISettingViewModel GetDataCollectionSetting() {
+            return SettingViewModels.OfType<DataCollectionSettingViewModel>().FirstOrDefault();
+        }
+
+        public ISettingViewModel GetIdentificationSetting() {
+            return SettingViewModels.OfType<IdentifySettingViewModel>().FirstOrDefault();
+        }
+
+        public ISettingViewModel GetAlignmentSetting() {
+            return SettingViewModels.OfType<AlignmentParameterSettingViewModel>().FirstOrDefault();
         }
 
         // TODO: delete method

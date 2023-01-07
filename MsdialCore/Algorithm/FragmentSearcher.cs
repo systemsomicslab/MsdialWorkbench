@@ -103,14 +103,15 @@ namespace CompMs.MsdialCore.Algorithm {
                 if (query.TimeMax > 0 && featureRt > 0 && featureRt > query.TimeMax) continue;
                 if (query.MobilityMin > 0 && featureDt > 0 && featureDt < query.MobilityMin) continue;
                 if (query.MobilityMax > 0 && featureDt > 0 && featureDt > query.MobilityMax) continue;
-                if (query.AbsoluteIntensityCutoff > 0 && featureHeight > 0 && query.AbsoluteIntensityCutoff > featureHeight) continue;
-                if (query.RelativeIntensityCutoff > 0 && featureRelativeHeight > 0 && featureRelativeHeight < query.RelativeIntensityCutoff) continue;
 
-                if (query.PeakFeatureQueryLevel == PeakFeatureQueryLevel.MS1 &&
-                    query.Mass > 0 && query.MassTolerance > 0 &&
-                    Math.Abs(featureMz - query.Mass) > query.MassTolerance) continue;
-
+                if (query.PeakFeatureQueryLevel == PeakFeatureQueryLevel.MS1) {
+                    if (query.AbsoluteIntensityCutoff > 0 && featureHeight > 0 && query.AbsoluteIntensityCutoff > featureHeight) continue;
+                    if (query.RelativeIntensityCutoff > 0 && featureRelativeHeight > 0 && featureRelativeHeight < query.RelativeIntensityCutoff) continue;
+                    if (query.Mass > 0 && query.MassTolerance > 0 &&
+                        Math.Abs(featureMz - query.Mass) > query.MassTolerance) continue;
+                }
                 flag = true;
+                break;
             }
             return flag;
         }
@@ -166,14 +167,14 @@ namespace CompMs.MsdialCore.Algorithm {
                 if (query.TimeMax > 0 && featureRt > 0 && featureRt > query.TimeMax) continue;
                 if (query.MobilityMin > 0 && featureDt > 0 && featureDt < query.MobilityMin) continue;
                 if (query.MobilityMax > 0 && featureDt > 0 && featureDt > query.MobilityMax) continue;
-                if (query.AbsoluteIntensityCutoff > 0 && featureHeight > 0 && query.AbsoluteIntensityCutoff > featureHeight) continue;
-                if (query.RelativeIntensityCutoff > 0 && featureRelativeHeight > 0 && featureRelativeHeight < query.RelativeIntensityCutoff) continue;
-
-                if (query.PeakFeatureQueryLevel == PeakFeatureQueryLevel.MS1 &&
-                    query.Mass > 0 && query.MassTolerance > 0 &&
-                    Math.Abs(featureMz - query.Mass) > query.MassTolerance) continue;
-
+                if (query.PeakFeatureQueryLevel == PeakFeatureQueryLevel.MS1) {
+                    if (query.AbsoluteIntensityCutoff > 0 && featureHeight > 0 && query.AbsoluteIntensityCutoff > featureHeight) continue;
+                    if (query.RelativeIntensityCutoff > 0 && featureRelativeHeight > 0 && featureRelativeHeight < query.RelativeIntensityCutoff) continue;
+                    if (query.Mass > 0 && query.MassTolerance > 0 &&
+                        Math.Abs(featureMz - query.Mass) > query.MassTolerance) continue;
+                }
                 flag = true;
+                break;
             }
             return flag;
         }

@@ -34,7 +34,7 @@ namespace CompMs.Common.Lipidomics
                         spectrum.AddRange
                         (
                             new[] {
-                                new SpectrumPeak(adduct.ConvertToMz(C5H14NO4P), 300d, "Header") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true }}
+                                new SpectrumPeak(adduct.ConvertToMz(C5H14NO4P), 100d, "Header") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true }}
                         );
 
                     }

@@ -141,7 +141,7 @@ namespace CompMs.Common.FormulaGenerator {
 
             var formulaResults = new List<FormulaResult>();
             var ms2Peaklist = FragmentAssigner.GetCentroidMsMsSpectrum(rawData);
-            var refinedPeaklist = FragmentAssigner.GetRefinedPeaklist(ms2Peaklist, relativeAbundanceCutOff, (mass * (double)adductIon.AdductIonXmer + adductIon.AdductIonAccurateMass) / (double)adductIon.ChargeNumber, ms2Tol, massTolType, false, !param.CanExcuteMS2AdductSearch);
+            var refinedPeaklist = FragmentAssigner.GetRefinedPeaklist(ms2Peaklist, relativeAbundanceCutOff, 0.0, (mass * (double)adductIon.AdductIonXmer + adductIon.AdductIonAccurateMass) / (double)adductIon.ChargeNumber, ms2Tol, massTolType, 1000, false, !param.CanExcuteMS2AdductSearch);
             var neutralLosslist = FragmentAssigner.GetNeutralLossList(refinedPeaklist, rawData.PrecursorMz, ms1Tol);
 
             var syncObj = new object();
@@ -516,7 +516,7 @@ namespace CompMs.Common.FormulaGenerator {
             var ms2Peaklist = FragmentAssigner.GetCentroidMsMsSpectrum(rawData);
 
             if (ms2Peaklist != null && ms2Peaklist.Count != 0) {
-                var refinedPeaklist = FragmentAssigner.GetRefinedPeaklist(ms2Peaklist, relativeAbundanceCutOff, (mass * (double)adductIon.AdductIonXmer + adductIon.AdductIonAccurateMass) / (double)adductIon.ChargeNumber, ms2Tol, massTolType, false, !param.CanExcuteMS2AdductSearch);
+                var refinedPeaklist = FragmentAssigner.GetRefinedPeaklist(ms2Peaklist, relativeAbundanceCutOff, 0.0, (mass * (double)adductIon.AdductIonXmer + adductIon.AdductIonAccurateMass) / (double)adductIon.ChargeNumber, ms2Tol, massTolType, 1000, false, !param.CanExcuteMS2AdductSearch);
                 var neutralLosslist = FragmentAssigner.GetNeutralLossList(refinedPeaklist, rawData.PrecursorMz, ms1Tol);
 
                 if (param.CanExcuteMS2AdductSearch) {

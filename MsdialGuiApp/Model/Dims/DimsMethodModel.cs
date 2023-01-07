@@ -3,10 +3,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
-using CompMs.Common.Extension;
-using CompMs.Common.Parameter;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
@@ -14,11 +11,9 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore;
 using CompMs.MsdialDimsCore.Algorithm.Alignment;
-using CompMs.MsdialDimsCore.Export;
 using CompMs.MsdialDimsCore.Parameter;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -58,15 +53,16 @@ namespace CompMs.App.Msdial.Model.Dims
             ProviderFactory = storage.Parameter.ProviderFactoryParameter.Create(retry: 5, isGuiProcess: true);
 
             List<AnalysisFileBean> analysisFiles = analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File).ToList();
-            var metadataAccessor = new DimsMetadataAccessor(storage.DataBaseMapper, storage.Parameter);
+            DimsAlignmentMetadataAccessorFactory metadataAccessorFactory = new DimsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter);
             var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
             AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(PeakFilterModel, _matchResultEvaluator.Contramap((IFilterable filterable) => filterable.MatchResults.Representative));
             var peakGroup = new AlignmentExportGroupModel(
                 "Peaks",
                 new ExportMethod(
                     analysisFiles,
-                    new ExportFormat("txt", "txt", new AlignmentCSVExporter(), new AlignmentLongCSVExporter(), metadataAccessor),
-                    new ExportFormat("csv", "csv", new AlignmentCSVExporter(separator: ","), new AlignmentLongCSVExporter(separator: ","), metadataAccessor)
+                    metadataAccessorFactory,
+                    ExportFormat.Tsv,
+                    ExportFormat.Csv
                 ),
                 new[]
                 {
@@ -138,21 +134,30 @@ namespace CompMs.App.Msdial.Model.Dims
             return new EadLipidomicsAnnotationProcess(queryFactories.MoleculeQueryFactories, queryFactories.SecondQueryFactories, Storage.DataBaseMapper, _matchResultEvaluator);
         }
 
-        public override async Task RunAsync(ProcessOption option, CancellationToken token) {
-            // Storage.DataBaseMapper = BuildDataBaseMapper(Storage.DataBases);
+        public override async Task RunAsync(ProcessOption processOption, CancellationToken token) {
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
-            if (Storage.Parameter.TargetOmics == TargetOmics.Lipidomics && (Storage.Parameter.CollistionType == CollisionType.EIEIO || Storage.Parameter.CollistionType == CollisionType.OAD)) {
+            if (Storage.Parameter.TargetOmics == TargetOmics.Lipidomics && 
+                (Storage.Parameter.CollistionType == CollisionType.EIEIO || Storage.Parameter.CollistionType == CollisionType.OAD || Storage.Parameter.CollistionType == CollisionType.EID)) {
                 _annotationProcess = BuildEadLipidomicsAnnotationProcess();
             }
             else {
                 _annotationProcess = BuildAnnotationProcess();
             }
 
-            var processOption = option;
             // Run Identification
-            if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
-                if (!RunAnnotationAll(Storage.AnalysisFiles, Storage.Parameter.ProcessBaseParam)) {
-                    return;
+            if (processOption.HasFlag(ProcessOption.Identification)) {
+                var usable = Math.Max(Storage.Parameter.ProcessBaseParam.UsableNumThreads / 2, 1);
+                var processor = new ProcessFile(ProviderFactory, Storage, _annotationProcess, _matchResultEvaluator);
+                var runner = new ProcessRunner(processor);
+                if (processOption.HasFlag(ProcessOption.PeakSpotting)) {
+                    if (!RunProcessAll(Storage.AnalysisFiles, usable, runner)) {
+                        return;
+                    }
+                }
+                else {
+                    if (!RunAnnotationAll(Storage.AnalysisFiles, usable, runner)) {
+                        return;
+                    }
                 }
             }
 
@@ -166,30 +171,17 @@ namespace CompMs.App.Msdial.Model.Dims
             await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
         }
 
-        private bool RunAnnotationAll(List<AnalysisFileBean> analysisFiles, ProcessBaseParameter parameter) {
+        private bool RunProcessAll(List<AnalysisFileBean> analysisFiles, int usable, ProcessRunner runner) {
             var request = new ProgressBarMultiContainerRequest(
-                async vm =>
-                {
-                    var tasks = new List<Task>();
-                    var usable = Math.Max(parameter.UsableNumThreads / 2, 1);
-                    using (var sem = new SemaphoreSlim(usable, usable)) {
-                        foreach ((var analysisfile, var pb) in analysisFiles.Zip(vm.ProgressBarVMs)) {
-                            var task = Task.Run(async () =>
-                            {
-                                await sem.WaitAsync();
-                                try {
-                                    ProcessFile.Run(analysisfile, ProviderFactory.Create(analysisfile), Storage, _annotationProcess, _matchResultEvaluator, reportAction: (int v) => pb.CurrentValue = v);
-                                    vm.Increment();
-                                }
-                                finally {
-                                    sem.Release();
-                                }
-                            });
-                            tasks.Add(task);
-                        }
-                        await Task.WhenAll(tasks).ConfigureAwait(false);
-                    }
-                },
+                vm => runner.RunAllAsync(analysisFiles, vm.ProgressBarVMs.Select(vm_ => (Action<int>)((int v) => vm_.CurrentValue = v)), usable, vm.Increment, default),
+                analysisFiles.Select(file => file.AnalysisFileName).ToArray());
+            _broker.Publish(request);
+            return request.Result ?? false;
+        }
+
+        private bool RunAnnotationAll(List<AnalysisFileBean> analysisFiles, int usable, ProcessRunner runner) {
+            var request = new ProgressBarMultiContainerRequest(
+                vm => runner.AnnotateAllAsync(analysisFiles, vm.ProgressBarVMs.Select(vm_ => (Action<int>)((int v) => vm_.CurrentValue = v)), usable, vm.Increment, default),
                 analysisFiles.Select(file => file.AnalysisFileName).ToArray());
             _broker.Publish(request);
             return request.Result ?? false;

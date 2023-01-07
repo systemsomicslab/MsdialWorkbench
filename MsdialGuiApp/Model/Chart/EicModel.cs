@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Utility;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
@@ -21,7 +22,7 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalProperty = nameof(PeakItem.Time);
             VerticalProperty = nameof(PeakItem.Intensity);
 
-            var sources = targetSource.Select(t => Observable.FromAsync(token => loader.LoadChromatogramAsync(t, token))).Switch();
+            var sources = targetSource.SelectSwitch(t => Observable.FromAsync(token => loader.LoadChromatogramAsync(t, token)));
             var chromatogram_ = sources
                 .ToReactiveProperty()
                 .AddTo(Disposables);
@@ -29,8 +30,8 @@ namespace CompMs.App.Msdial.Model.Chart
 
             ItemLoaded = new[]
                 {
-                    targetSource.Select(_ => false),
-                    chromatogram_.Delay(TimeSpan.FromSeconds(.05d)).Select(_ => true),
+                    targetSource.ToConstant(false),
+                    chromatogram_.Delay(TimeSpan.FromSeconds(.05d)).ToConstant(true),
                 }.Merge()
                 .Throttle(TimeSpan.FromSeconds(.1d))
                 .ToReadOnlyReactivePropertySlim()

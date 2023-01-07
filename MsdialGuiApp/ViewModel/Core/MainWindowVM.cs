@@ -5,14 +5,11 @@ using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
-using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.Graphics.UI.Message;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -21,8 +18,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Core
 {
@@ -62,25 +57,17 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             var datasetViewModel = projectViewModel
-                .Switch(project => project?.CurrentDatasetViewModel ?? Observable.Never<DatasetViewModel>())
+                .SelectSwitch(project => project?.CurrentDatasetViewModel ?? Observable.Never<DatasetViewModel>())
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-                //.Switch(project => project?.CurrentDatasetViewModel.StartWith(project.CurrentDatasetViewModel.Value));
             var methodViewModel = datasetViewModel
-                .Switch(dataset => dataset?.MethodViewModel ?? Observable.Never<MethodViewModel>())
+                .SelectSwitch(dataset => dataset?.MethodViewModel ?? Observable.Never<MethodViewModel>())
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            //.Switch(dataset => dataset?.MethodViewModel.StartWith(dataset.MethodViewModel.Value));
 
             ProjectViewModel = projectViewModel;
-            //.ToReadOnlyReactivePropertySlim()
-            //.AddTo(Disposables);
             DatasetViewModel = datasetViewModel;
-            //.ToReadOnlyReactivePropertySlim()
-            //.AddTo(Disposables);
             MethodViewModel = methodViewModel;
-                // .ToReadOnlyReactivePropertySlim()
-                // .AddTo(Disposables);
 
             var projectSaveEnableState = new ReactivePropertySlim<bool>(true);
             CreateNewProjectCommand = projectSaveEnableState.ToAsyncReactiveCommand()
@@ -171,6 +158,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         private async Task ExecuteAllMethodProcess() {
             using (var vm = new ProcessSettingViewModel(Model.CurrentProject, Model.CurrentProject.CurrentDataset, Model.CurrentProject.CurrentDataset.AllProcessMethodSettingModel, _broker)) {
+                vm.MoveToDataCollectionSetting();
                 await RunProcess(vm);
             }
         }
@@ -179,6 +167,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         private async Task ExecuteIdentificationMethodProcess() {
             using (var vm = new ProcessSettingViewModel(Model.CurrentProject, Model.CurrentProject.CurrentDataset, Model.CurrentProject.CurrentDataset.IdentificationProcessMethodSettingModel, _broker)) {
+                vm.MoveToIdentificationSetting();
                 await RunProcess(vm);
             }
         }
@@ -187,6 +176,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         private async Task ExecuteAlignmentMethodProcess() {
             using (var vm = new ProcessSettingViewModel(Model.CurrentProject, Model.CurrentProject.CurrentDataset, Model.CurrentProject.CurrentDataset.AlignmentProcessMethodSettingModel, _broker)) {
+                vm.MoveToAlignmentSetting();
                 await RunProcess(vm);
             }
         }
@@ -199,36 +189,6 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         public AsyncReactiveCommand SaveProjectCommand { get; }
         public AsyncReactiveCommand SaveAsProjectCommand { get; }
-
-        public DelegateCommand<Window> SaveParameterCommand => _saveParameterCommand ?? (_saveParameterCommand = new DelegateCommand<Window>(owner => SaveParameter(owner, Storage)));
-        private DelegateCommand<Window> _saveParameterCommand;
-
-        private static void SaveParameter(Window owner, IMsdialDataStorage<ParameterBase> storage) {
-            // TODO: implement process when parameter save failed.
-            var sfd = new SaveFileDialog
-            {
-                Filter = "MED file(*.med)|*.med",
-                Title = "Save file dialog",
-                InitialDirectory = storage.Parameter.ProjectFolderPath
-            };
-
-            if (sfd.ShowDialog() == true) {
-                Mouse.OverrideCursor = Cursors.Wait;
-
-                var message = new ShortMessageWindow()
-                {
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                    Text = "Saving the parameter...",
-                };
-                message.Show();
-
-                MessagePackHandler.SaveToFile(storage.Parameter, sfd.FileName);
-
-                message.Close();
-                Mouse.OverrideCursor = null;
-            }
-        }
 
         public DelegateCommand GoToTutorialCommand => _goToTutorialCommand ?? (_goToTutorialCommand = new DelegateCommand(GoToTutorial));
         private DelegateCommand _goToTutorialCommand;

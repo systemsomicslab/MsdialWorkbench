@@ -264,17 +264,25 @@ namespace CompMs.Common.FormulaGenerator.Function {
         /// <param name="analysisParam"></param>
         /// <param name="precursorMz"></param>
         /// <returns></returns>
-        public static List<SpectrumPeak> GetRefinedPeaklist(List<SpectrumPeak> peaklist, double relativeAbundanceCutOff, double precursorMz,
-            double ms2Tol, MassToleranceType massTolType, bool isRemoveIsotopes = false, bool removeAfterPrecursor = true)
+        public static List<SpectrumPeak> GetRefinedPeaklist(
+            List<SpectrumPeak> peaklist, 
+            double relativeAbundanceCutOff, 
+            double absoluteAbundanceCutOff,
+            double precursorMz,
+            double ms2Tol, 
+            MassToleranceType massTolType, 
+            int peakListMax = 1000,
+            bool isRemoveIsotopes = false, 
+            bool removeAfterPrecursor = true)
         {
             if (peaklist == null || peaklist.Count == 0) return new List<SpectrumPeak>();
             double maxIntensity = getMaxIntensity(peaklist);
             var refinedPeaklist = new List<SpectrumPeak>();
-            var peakListMax = 1000;
 
             foreach (var peak in peaklist)
             {
                 if (removeAfterPrecursor && peak.Mass > precursorMz + 0.01) break;
+                if (peak.Intensity < absoluteAbundanceCutOff) continue;
                 if (peak.Intensity >= maxIntensity * relativeAbundanceCutOff * 0.01) { 
                     refinedPeaklist.Add(new SpectrumPeak() { Mass = peak.Mass, Intensity = peak.Intensity, Comment = string.Empty });
                 }

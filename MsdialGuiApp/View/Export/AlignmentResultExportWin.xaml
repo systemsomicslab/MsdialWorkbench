@@ -68,7 +68,8 @@
         <ItemsControl ItemsSource="{Binding Groups}" Margin="8" Grid.Row="2" Grid.RowSpan="4">
             <ItemsControl.Resources>
                 <DataTemplate DataType="{x:Type vm:AlignmentExportGroupViewModel}">
-                    <Expander Header="{Binding Label, Mode=OneTime}" IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
+                    <Expander Header="{Binding Label, Mode=OneTime}" IsExpanded="{Binding IsExpanded, Mode=TwoWay}"
+                              d:IsExpanded="True">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
@@ -121,12 +122,15 @@
                                               Width="100" Margin="8,0,0,0"/>
                                 </StackPanel>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal"
-                                        VerticalAlignment="Bottom"
+                            <StackPanel VerticalAlignment="Bottom"
                                         Margin="8"
                                         Height="30"
                                         Grid.Row="2">
-                                <CheckBox Content="Long format" IsChecked="{Binding IsLongFormat, Mode=TwoWay}"/>
+                                <CheckBox Content="Long format" IsChecked="{Binding IsLongFormat, Mode=TwoWay}"
+                                          ToolTip="Output in Long Format, which is easy to read in R and other tools."/>
+                                <CheckBox Content="Trim content for excel"
+                                          IsChecked="{Binding TrimContentToExcelLimit, Mode=TwoWay}"
+                                          ToolTip="Trim the FIELD value to the 32767 characters that can be written in an Excel cell."/>
                             </StackPanel>
                         </Grid>
                     </Expander>

@@ -24,7 +24,7 @@ namespace CompMs.App.MsdialConsole.Export
 
             var curatedSpots = curator?.MsCleanRCurator(container.AlignmentSpotProperties, decResults, storage.AnalysisFiles, storage.Parameter) ?? container.AlignmentSpotProperties;
 
-            var metadataAccessor = new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter);
+            var metadataAccessor = new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter, false);
             var quantAccessor = new LegacyQuantValueAccessor("Normalized height", storage.Parameter);
             var exporter = new AlignmentCSVExporter();
 

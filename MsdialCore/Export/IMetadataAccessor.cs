@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 
 namespace CompMs.MsdialCore.Export
 {
@@ -20,20 +21,21 @@ namespace CompMs.MsdialCore.Export
     }
 
     public abstract class BaseMetadataAccessor : IMetadataAccessor {
+        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+        private readonly ParameterBase _parameter;
+        private readonly bool _trimSpectrumToExcelLimit;
 
-        public BaseMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter) {
-            this.refer = refer;
-            this.parameter = parameter;
+        public BaseMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, bool trimSpectrumToExcelLimit = false) {
+            _refer = refer;
+            _parameter = parameter;
+            _trimSpectrumToExcelLimit = trimSpectrumToExcelLimit;
         }
-
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
-        private readonly ParameterBase parameter;
 
         public string[] GetHeaders() => GetHeadersCore();
 
         public ReadOnlyDictionary<string, string> GetContent(AlignmentSpotProperty spot, IMSScanProperty msdec) {
             var matchResult = spot.MatchResults.Representative;
-            var reference = refer?.Refer(matchResult);
+            var reference = _refer?.Refer(matchResult);
             return new ReadOnlyDictionary<string, string>(GetContentCore(spot, msdec, reference, matchResult));
         }
 
@@ -91,7 +93,7 @@ namespace CompMs.MsdialCore.Export
                                                                                : ValueOrNull(reference?.Ontology) },
                 { "INCHIKEY", ValueOrNull(reference?.InChIKey) },
                 { "SMILES", ValueOrNull(reference?.SMILES) },
-                { "Annotation tag (VS1.0)" , DataAccess.GetAnnotationCode(matchResult, parameter).ToString() },
+                { "Annotation tag (VS1.0)" , DataAccess.GetAnnotationCode(matchResult, _parameter).ToString() },
                 { "Comment", spot.Comment },
                 { "Manually modified for quantification", spot.IsManuallyModifiedForQuant.ToString() },
                 { "Manually modified for annotation", spot.IsManuallyModifiedForAnnotation.ToString() },
@@ -116,7 +118,18 @@ namespace CompMs.MsdialCore.Export
             if (isotopes.IsEmptyOrNull()) {
                 return "null";
             }
-            return string.Join(";", isotopes.Select(isotope => string.Format("{0:F5} {1:F0}", isotope.Mass, isotope.AbsoluteAbundance)));
+            var strSpectrum = string.Join(" ", isotopes.Select(isotope => string.Format("{0:F5}:{1:F0}", isotope.Mass, isotope.AbsoluteAbundance)));
+            if (strSpectrum.Length < ExportConstants.EXCEL_CELL_SIZE_LIMIT || !_trimSpectrumToExcelLimit) {
+                return strSpectrum;
+            }
+            var builder = new StringBuilder();
+            foreach (var isotope in isotopes) {
+                if (builder.Length > ExportConstants.EXCEL_CELL_SIZE_LIMIT) {
+                    break;
+                }
+                builder.Append(string.Format("{0:F5}:{1:F0} ", isotope.Mass, isotope.AbsoluteAbundance));
+            }
+            return builder.ToString();
         }
 
         protected string GetSpectrumListContent(IMSScanProperty msdec) {
@@ -124,7 +137,18 @@ namespace CompMs.MsdialCore.Export
             if (spectrum.IsEmptyOrNull()) {
                 return "null";
             }
-            return string.Join(";", spectrum.Select(peak => string.Format("{0:F5} {1:F0}", peak.Mass, peak.Intensity)));
+            var strSpectrum = string.Join(" ", spectrum.Select(peak => string.Format("{0:F5}:{1:F0}", peak.Mass, peak.Intensity)));
+            if (strSpectrum.Length < ExportConstants.EXCEL_CELL_SIZE_LIMIT || !_trimSpectrumToExcelLimit) {
+                return strSpectrum;
+            }
+            var builder = new StringBuilder();
+            foreach (var peak in spectrum) {
+                if (builder.Length > ExportConstants.EXCEL_CELL_SIZE_LIMIT) {
+                    break;
+                }
+                builder.Append(string.Format("{0:F5}:{1:F0} ", peak.Mass, peak.Intensity));
+            }
+            return builder.ToString();
         }
 
         protected static string GetPostCurationResult(AlignmentSpotProperty spot) {

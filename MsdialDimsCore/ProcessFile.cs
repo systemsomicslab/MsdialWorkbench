@@ -9,6 +9,7 @@ using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialDimsCore.Parameter;
@@ -16,10 +17,88 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialDimsCore
 {
-    public static class ProcessFile {
+    public sealed class ProcessFile : IFileProcessor {
+        private readonly IDataProviderFactory<AnalysisFileBean> _providerFactory;
+        private readonly IMsdialDataStorage<MsdialDimsParameter> _storage;
+        private readonly IAnnotationProcess _annotationProcess;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
+
+        public ProcessFile(IDataProviderFactory<AnalysisFileBean> providerFactory, IMsdialDataStorage<MsdialDimsParameter> storage, IAnnotationProcess annotationProcess, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+            _providerFactory = providerFactory;
+            _storage = storage;
+            _annotationProcess = annotationProcess;
+            _evaluator = evaluator;
+        }
+
+        public void Run(AnalysisFileBean file, Action<int> reportAction = null, CancellationToken token = default) {
+            var param = _storage.Parameter;
+            // parse raw data
+            Console.WriteLine("Loading spectral information");
+            var provider = _providerFactory.Create(file);
+
+            // faeture detections
+            Console.WriteLine("Peak picking started");
+            var ms1Spectrum = provider.LoadMs1Spectrums().Argmax(spec => spec.Spectrum.Length);
+            var chromPeaks = DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum);
+            var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.Mz, ChromXUnit.Mz).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+
+            var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, param.MinimumDatapoints, param.MinimumAmplitude);
+            if (peakPickResults.IsEmptyOrNull()) return;
+            var peakFeatures = ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, provider, param.AcquisitionType);
+
+            if (peakFeatures.Count == 0) return;
+            // IsotopeEstimator.Process(peakFeatures, param, iupacDB); // in dims, skip the isotope estimation process.
+            SetIsotopes(peakFeatures);
+            SetSpectrumPeaks(peakFeatures, provider);
+
+            // chrom deconvolutions
+            Console.WriteLine("Deconvolution started");
+            var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, peakFeatures);
+            var initial_msdec = 30.0;
+            var max_msdec = 30.0;
+            var msdecProcess = new Algorithm.Ms2Dec(initial_msdec, max_msdec);
+            var targetCE = Math.Round(provider.GetMinimumCollisionEnergy(), 2);
+            var msdecResults = msdecProcess.GetMS2DecResults(provider, peakFeatures, param, summary, targetCE, reportAction, token);
+
+            Console.WriteLine("Annotation started");
+            _annotationProcess.RunAnnotation(peakFeatures, msdecResults, provider, param.NumThreads, token, v => reportAction?.Invoke((int)v));
+
+            var characterEstimator = new Algorithm.PeakCharacterEstimator(90, 10);
+            characterEstimator.Process(peakFeatures, msdecResults, _evaluator, param, reportAction, provider);
+
+            MsdialPeakSerializer.SaveChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath, peakFeatures);
+            MsdecResultsWriter.Write(file.DeconvolutionFilePath, msdecResults);
+
+            reportAction?.Invoke(100);
+        }
+
+        public async Task AnnotateAsync(AnalysisFileBean file, Action<int> reportAction = null, CancellationToken token = default) {
+            var param = _storage.Parameter;
+            // parse raw data
+            Console.WriteLine("Loading spectral information");
+            var provider = _providerFactory.Create(file);
+
+            var peakFeaturesTask = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath, token);
+            var msdecResultssTask = MSDecResultCollection.DeserializeAsync(file, token);
+
+            Console.WriteLine("Annotation started");
+            var peakFeatures = await peakFeaturesTask.ConfigureAwait(false);
+            var targetCE = Math.Round(provider.GetMinimumCollisionEnergy(), 2);
+            var msdecResultss = await Task.WhenAll(msdecResultssTask).ConfigureAwait(false);
+            var msdecResults = msdecResultss.FirstOrDefault(results => results.CollisionEnergy == targetCE) ?? msdecResultss.First();
+            _annotationProcess.RunAnnotation(peakFeatures.Items, msdecResults.MSDecResults, provider, param.NumThreads, token, v => reportAction?.Invoke((int)v));
+
+            var characterEstimator = new Algorithm.PeakCharacterEstimator(90, 10);
+            characterEstimator.Process(peakFeatures.Items, msdecResults.MSDecResults, _evaluator, param, reportAction, provider);
+
+            await peakFeatures.SerializeAsync(file, token).ConfigureAwait(false);
+            reportAction?.Invoke(100);
+        }
+
         public static void Run(
             AnalysisFileBean file,
             IDataProvider provider,
@@ -30,7 +109,6 @@ namespace CompMs.MsdialDimsCore
             CancellationToken token = default) {
 
             var param = storage.Parameter;
-
             // parse raw data
             Console.WriteLine("Loading spectral information");
 
@@ -184,6 +262,14 @@ namespace CompMs.MsdialDimsCore
                     feature.Spectrum = centroidSpec;
                 }
             }
+        }
+
+        Task IFileProcessor.RunAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token) {
+            return Task.Run(() => Run(file, reportAction, token));
+        }
+
+        Task IFileProcessor.AnnotateAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token) {
+            return AnnotateAsync(file, reportAction, token);
         }
     }
 }

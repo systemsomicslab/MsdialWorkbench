@@ -39,7 +39,7 @@ namespace CompMs.Common.Lipidomics
         public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null)
         {
             var oadLipidSpectrumGenerator = new OadLipidSpectrumGenerator();
-            var abundance = 200.0;
+            var abundance = 40.0;
 
             var oadClassFragment = oadLipidSpectrumGenerator.GetClassFragmentSpectrum(lipid, adduct);
             var spectrum = new List<SpectrumPeak>(oadClassFragment.spectrum);

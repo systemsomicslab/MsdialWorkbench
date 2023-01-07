@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
@@ -26,9 +27,8 @@ namespace CompMs.App.Msdial.Model.Chart
         public Ms2ChromatogramsModel(IObservable<ChromatogramPeakFeatureModel> peak, IObservable<MSDecResult> msScan, IMsSpectrumLoader<ChromatogramPeakFeatureModel> loader, IDataProvider provider, ParameterBase parameter) {
             NumberOfChromatograms = new ReactiveProperty<int>(NUMBER_OF_CHROMATOGRAMS).AddTo(Disposables);
 
-            var rawChromatograms = peak.Where(t => !(t is null))
-                .Select(t => loader.LoadSpectrumAsObservable(t).CombineLatest(NumberOfChromatograms, (spectrum, number) => (t, spectrum: spectrum.OrderByDescending(peak_ => peak_.Intensity).Take(number))))
-                .Switch()
+            var rawChromatograms = peak.SkipNull()
+                .SelectSwitch(t => loader.LoadSpectrumAsObservable(t).CombineLatest(NumberOfChromatograms, (spectrum, number) => (t, spectrum: spectrum.OrderByDescending(peak_ => peak_.Intensity).Take(number))))
                 .Select(pair => DataAccess.GetMs2ValuePeaks(provider, pair.t.Mass, pair.t.MS1RawSpectrumIdLeft, pair.t.MS1RawSpectrumIdRight, pair.spectrum.Select(peak_ => (double)peak_.Mass).ToArray(), parameter))
                 .Select(chromatograms => new ChromatogramsModel(
                     "Raw MS/MS chromatogram",
@@ -36,7 +36,7 @@ namespace CompMs.App.Msdial.Model.Chart
                     "Raw MS/MS chromatogram",
                     "Retention time [min]", // TODO: [magic number] Retention time 
                     "Abundance"));
-            var deconvolutedChromatograms = msScan.Where(t => !(t is null))
+            var deconvolutedChromatograms = msScan.SkipNull()
                 .CombineLatest(NumberOfChromatograms, (result, number) => result.DecChromPeaks(number))
                 .Select(chromatograms => new ChromatogramsModel(
                     "Deconvoluted MS/MS chromatogram",
@@ -60,9 +60,9 @@ namespace CompMs.App.Msdial.Model.Chart
 
             ChromatogramsModel = new[]
             {
-                IsRawSelected.Where(x => x).Select(_ => rawChromatograms),
-                IsDeconvolutedSelected.Where(x => x).Select(_ => deconvolutedChromatograms),
-                IsBothSelected.Where(x => x).Select(_ => bothChromatograms),
+                IsRawSelected.Where(x => x).ToConstant(rawChromatograms),
+                IsDeconvolutedSelected.Where(x => x).ToConstant(deconvolutedChromatograms),
+                IsBothSelected.Where(x => x).ToConstant(bothChromatograms),
             }.Merge()
             .Switch()
             .ToReadOnlyReactivePropertySlim()

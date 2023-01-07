@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Base;
@@ -58,8 +59,8 @@ namespace CompMs.App.Msdial.Model.Chart
                 .AddTo(Disposables);
             var rawSpectrumLoaded = new[]
             {
-                targetSource.Select(_ => false),
-                rawSource.Delay(TimeSpan.FromSeconds(.05d)).Select(_ => true),
+                targetSource.ToConstant(false),
+                rawSource.Delay(TimeSpan.FromSeconds(.05d)).ToConstant(true),
             }.Merge()
             .Throttle(TimeSpan.FromSeconds(.1d))
             .ToReadOnlyReactivePropertySlim()
@@ -71,8 +72,8 @@ namespace CompMs.App.Msdial.Model.Chart
                 .AddTo(Disposables);
             var decSpectrumLoaded = new[]
             {
-                targetSource.Select(_ => false),
-                decSource.Delay(TimeSpan.FromSeconds(.05d)).Select(_ => true),
+                targetSource.ToConstant(false),
+                decSource.Delay(TimeSpan.FromSeconds(.05d)).ToConstant(true),
             }.Merge()
             .Throttle(TimeSpan.FromSeconds(.1d))
             .ToReadOnlyReactivePropertySlim()

@@ -19,8 +19,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 list.CollectionChangedAsObservable().ToUnit(),
                 list.ObserveElementProperty(p => p.Order).ToUnit(),
             }.Merge().StartWith(Unit.Default)
-            .Select(_ => Observable.Defer(() => Observable.Return(list.OrderBy(prop => prop.Order).Select(prop => prop.Name).ToList())))
-            .Switch()
+            .Select(_ => list.OrderBy(prop => prop.Order).Select(prop => prop.Name).ToList())
             .ToReactiveProperty();
         }
 

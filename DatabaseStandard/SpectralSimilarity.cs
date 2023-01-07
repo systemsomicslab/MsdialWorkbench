@@ -1543,20 +1543,10 @@ namespace Rfx.Riken.OsakaUniv
         {
             //match definition: if product ion or neutral loss are within the mass tolerance, it will be recognized as MATCH.
             //The smallest intensity difference will be recognized as highest match.
-
-
-
-
-
-
-
-
-
             //product ion matching
             for (int i = 0; i < eMsmsPeaks.Count; i++) {
                 var ePeak = eMsmsPeaks[i];
                 var massTol = massTolType == MassToleranceType.Da ? massTolerance : MolecularFormulaUtility.ConvertPpmToMassAccuracy(ePeak.Mz, massTolerance);
-
                 var minPeakID = -1;
                 var minIntensityDiff = double.MaxValue;
                 var isProduct = false;

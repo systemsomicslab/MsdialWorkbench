@@ -56,6 +56,11 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         [Range(0d, double.MaxValue, ErrorMessage = "Positive value required.")]
         public ReactiveProperty<string> MaxMs2Mz { get; }
 
+        [Required(ErrorMessage = "Minimum peptide length required.")]
+        [RegularExpression("[0-9]+", ErrorMessage = "Invalid format.")]
+        [Range(0d, double.MaxValue, ErrorMessage = "Positive value required.")]
+        public ReactiveProperty<string> MinimumPeptideLength { get; }
+
         private readonly ProteomicsParameter model;
 
         public List<Enzyme> Enzymes { get => model.EnzymesForDigestion; }
@@ -133,6 +138,14 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
                 .Subscribe(x => this.model.MaxMs2Mz = x)
                 .AddTo(Disposables);
 
+            MinimumPeptideLength = new ReactiveProperty<string>(model.MinimumPeptideLength.ToString())
+                .SetValidateAttribute(() => MinimumPeptideLength)
+                .AddTo(Disposables);
+            MinimumPeptideLength.Where(_ => !MinimumPeptideLength.HasErrors)
+                .Select(x => int.Parse(x))
+                .Subscribe(x => this.model.MinimumPeptideLength = x)
+                .AddTo(Disposables);
+
 
             ObserveHasErrors = new[]
             {
@@ -144,6 +157,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
                 MaxPeptideMass.ObserveHasErrors,
                 MinMs2Mz.ObserveHasErrors,
                 MaxMs2Mz.ObserveHasErrors,
+                MinimumPeptideLength.ObserveHasErrors,
 
             }.CombineLatestValuesAreAllFalse()
             .Inverse()

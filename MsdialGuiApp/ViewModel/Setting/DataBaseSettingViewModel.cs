@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Lipidomics;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -49,7 +50,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             .AddTo(Disposables);
             DataBaseID.Where(_ => !DataBaseID.HasErrors).Subscribe(id => Model.DataBaseID = id).AddTo(Disposables);
 
-            DBSources = new List<DataBaseSource> { DataBaseSource.Msp, DataBaseSource.Lbm, DataBaseSource.Text, DataBaseSource.Fasta, DataBaseSource.EieioLipid, DataBaseSource.OadLipid }.AsReadOnly();
+            DBSources = new List<DataBaseSource> { DataBaseSource.Msp, DataBaseSource.Lbm, DataBaseSource.Text, DataBaseSource.Fasta, DataBaseSource.EieioLipid, DataBaseSource.OadLipid, DataBaseSource.EidLipid }.AsReadOnly();
             DBSource = DataBasePath
                 .Where(path => !string.IsNullOrEmpty(path))
                 .Select(path => Path.GetExtension(path))
@@ -77,7 +78,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             DBSource.Where(src => src == DataBaseSource.OadLipid)
                 .Subscribe(_ => DataBaseID.Value = "OadDatabase")
                 .AddTo(Disposables);
-            IsDataBasePathEnabled = DBSource.Select(src => (src != DataBaseSource.EieioLipid && src != DataBaseSource.OadLipid)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            DBSource.Where(src => src == DataBaseSource.EidLipid)
+                .Subscribe(_ => DataBaseID.Value = "EidDatabase")
+                .AddTo(Disposables);
+            IsDataBasePathEnabled = DBSource.Select(src => (src != DataBaseSource.EieioLipid && src != DataBaseSource.OadLipid && src != DataBaseSource.EidLipid)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             DBSource.Where(_ => !DBSource.HasErrors)
                 .Subscribe(source => Model.DBSource = source)
                 .AddTo(Disposables);
@@ -117,7 +121,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             ObserveHasErrors = new[]
             {
                 commonNoError,
-                DBSource.Select(src => src == DataBaseSource.Fasta ? proteomicsNoError : Observable.Return(true)).Switch(),
+                DBSource.SelectSwitch(src => src == DataBaseSource.Fasta ? proteomicsNoError : Observable.Return(true)),
             }.CombineLatestValuesAreAllTrue()
             .Inverse()
             .ToReadOnlyReactivePropertySlim()
@@ -141,8 +145,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            IsEditable = isEditableModel.Where(m => m == Model).Select(_ => true)
-                .Merge(notEditableModel.Where(m => m == Model).Select(_ => false))
+            IsEditable = isEditableModel.Where(m => m == Model).ToConstant(true)
+                .Merge(notEditableModel.Where(m => m == Model).ToConstant(false))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
         }

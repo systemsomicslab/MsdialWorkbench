@@ -416,7 +416,8 @@
                                  DataContext="{Binding AlignmentViewModel.Value}"
                                  Background="{StaticResource MainThemeColor}" 
                                  Height="25">
-                            <chart:RepRefView>
+                            <chart:RepRefView xmlns:behavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
+                                              behavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Ms2SpectrumViewModel.FocusAction, Mode=OneWay}">
                                 <chart:RepRefView.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="Copy spectra as.." Command="{Binding CopyMs2SpectrumCommand, Mode=OneTime}">

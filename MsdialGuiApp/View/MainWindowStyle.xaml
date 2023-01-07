@@ -4,11 +4,6 @@
                     xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
                     xmlns:do="clr-namespace:CompMs.MsdialCore.DataObj;assembly=MsdialCore"
                     xmlns:if="clr-namespace:CompMs.Common.Interfaces;assembly=Common">
-    <!--
-    <mvvm:PercentSliderToLabelConverter x:Key="sliderToLabelConverter" />
-    -->
-    <converter:DoubleToStringConverter x:Key="doubleToStringConverter" />
-    <BooleanToVisibilityConverter x:Key="boolean2visibility"/>
     <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
     <converter:BooleanToEnumConverter x:Key="EnumToBoolean"/>
     <converter:CBoolNegativeConverter x:Key="NegativeConverter"/>

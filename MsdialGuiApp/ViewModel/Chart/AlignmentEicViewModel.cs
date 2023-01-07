@@ -4,6 +4,7 @@ using CompMs.App.Msdial.View.PeakCuration;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager;
+using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
@@ -28,14 +29,14 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             if (horizontalAxis is null) {
                 horizontalAxis = model.HorizontalRange
-                    .ToReactiveAxisManager<double>()
+                    .ToReactiveContinuousAxisManager<double>()
                     .AddTo(Disposables);
             }
             HorizontalAxis = horizontalAxis;
 
             if (verticalAxis is null) {
                 verticalAxis = model.VerticalRange
-                    .ToReactiveAxisManager<double>(new RelativeMargin(0, 0.05), new Range(0, 0), LabelType.Order)
+                    .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0, 0.05), new Range(0, 0), LabelType.Order)
                     .AddTo(Disposables);
             }
             VerticalAxis = verticalAxis;

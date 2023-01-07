@@ -1,4 +1,6 @@
-﻿using CompMs.Common.Algorithm.PeakPick;
+﻿using CompMs.Common.Algorithm.Function;
+using CompMs.Common.Algorithm.PeakPick;
+using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Database;
@@ -1019,10 +1021,6 @@ namespace CompMs.MsdialCore.Utility {
             return peaklist;
         }
 
-        public static MSScanProperty GetNormalizedMSScanProperty(IMSScanProperty scanProp, ParameterBase param) {
-            return GetNormalizedMSScanProperty(scanProp, param.MspSearchParam);
-        }
-
         public static MSScanProperty GetNormalizedMSScanProperty(IMSScanProperty scanProp, MsRefSearchParameterBase specMatchParam) {
             var prop = new MSScanProperty() {
                 ChromXs = scanProp.ChromXs, IonMode = scanProp.IonMode, PrecursorMz = scanProp.PrecursorMz,
@@ -1056,7 +1054,7 @@ namespace CompMs.MsdialCore.Utility {
             if (spectrum.IsEmptyOrNull()) return new List<SpectrumPeak>();
             var peaks = ConvertToDeisotopeAndSingleChargeStateMS2Spectrum(spectrum, param, iupac, precursorCharge);
             if (peaks.IsEmptyOrNull()) return spectrum;
-            return GetBinnedMS2Spectrum(peaks, param.AndromedaDelta, param.AndromedaMaxPeaks);
+            return SpectrumHandler.GetBinnedSpectrum(peaks, param.AndromedaDelta, param.AndromedaMaxPeaks);
         }
 
         /// <summary>
@@ -1092,30 +1090,7 @@ namespace CompMs.MsdialCore.Utility {
         }
 
       
-        public static List<SpectrumPeak> GetBinnedMS2Spectrum(List<SpectrumPeak> spectrum, double delta = 100, int maxPeaks = 12) {
-
-            var peaks = new List<SpectrumPeak>();
-            var range2Peaks = new Dictionary<int, List<SpectrumPeak>>();
-
-            foreach (var peak in spectrum) {
-                var mass = peak.Mass;
-                var massframe = (int)(mass / delta);
-                if (range2Peaks.ContainsKey(massframe))
-                    range2Peaks[massframe].Add(peak);
-                else
-                    range2Peaks[massframe] = new List<SpectrumPeak>() { peak };
-            }
-
-            foreach (var pair in range2Peaks) {
-                var counter = 1;
-                foreach (var peak in pair.Value.OrderByDescending(n => n.Intensity)) {
-                    if (counter > maxPeaks) break;
-                    peaks.Add(peak);
-                    counter++;
-                }
-            }
-            return peaks.OrderBy(n => n.PeakID).ToList();
-        }
+        
 
         // annotation
 
@@ -1172,18 +1147,18 @@ namespace CompMs.MsdialCore.Utility {
             feature.Name = "w/o MS2: " + result.Name;
         }
 
-        public static void SetMoleculeMsPropertyAsConfidence<T>(T feature, MoleculeMsReference reference, MsScanMatchResult result)
+        public static void SetMoleculeMsPropertyAsConfidence<T>(T feature, MoleculeMsReference reference)
             where T: IMoleculeProperty, IIonProperty {
             SetMoleculePropertyCore(feature, reference);
             feature.SetAdductType(reference.AdductType);
-            feature.Name = result.Name;
+            feature.Name = reference.Name;
         }
 
-        public static void SetMoleculeMsPropertyAsUnsettled<T>(T feature, MoleculeMsReference reference, MsScanMatchResult result)
+        public static void SetMoleculeMsPropertyAsUnsettled<T>(T feature, MoleculeMsReference reference)
             where T: IMoleculeProperty, IIonProperty {
             SetMoleculePropertyCore(feature, reference);
             feature.SetAdductType(reference.AdductType);
-            feature.Name = $"Unsettled: {result.Name}";
+            feature.Name = $"Unsettled: {reference.Name}";
         }
 
         private static void SetMoleculePropertyCore(IMoleculeProperty property, MoleculeMsReference reference) {

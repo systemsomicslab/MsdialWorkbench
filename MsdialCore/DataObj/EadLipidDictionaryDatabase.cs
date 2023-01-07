@@ -14,22 +14,25 @@ namespace CompMs.MsdialCore.DataObj
 {
     internal sealed class EadLipidDictionaryDatabase : ILipidDatabase
     {
-        private readonly string _dbPath;
         private readonly string _id;
         private readonly ILipidSpectrumGenerator _lipidGenerator;
         private readonly IEqualityComparer<(ILipid, AdductIon)> _comparer;
         private readonly ConcurrentDictionary<(ILipid, AdductIon), Lazy<MoleculeMsReference>> _lipidToReference;
         private readonly List<MoleculeMsReference> _references;
-        private readonly object syncObject = new object();
+        private readonly object _syncObject = new object();
 
-        public EadLipidDictionaryDatabase(string dbPath, string id, DataBaseSource source) {
-            _dbPath = dbPath;
+        public EadLipidDictionaryDatabase(string id, DataBaseSource source) {
             _id = id;
-            if (source == DataBaseSource.OadLipid) {
-                _lipidGenerator = FacadeLipidSpectrumGenerator.OadLipidGenerator;
-            }
-            else {
-                _lipidGenerator = FacadeLipidSpectrumGenerator.Default;
+            switch (source) {
+                case DataBaseSource.OadLipid:
+                    _lipidGenerator = FacadeLipidSpectrumGenerator.OadLipidGenerator;
+                    break;
+                case DataBaseSource.EieioLipid:
+                    _lipidGenerator = FacadeLipidSpectrumGenerator.Default;
+                    break;
+                case DataBaseSource.EidLipid:
+                    _lipidGenerator = FacadeLipidSpectrumGenerator.EidLipidGenerator;
+                    break;
             }
             _comparer = new LipidNameAdductPairComparer();
             _lipidToReference = new ConcurrentDictionary<(ILipid, AdductIon), Lazy<MoleculeMsReference>>(_comparer);
@@ -52,7 +55,7 @@ namespace CompMs.MsdialCore.DataObj
                 return null;
             }
             if (lipid.GenerateSpectrum(_lipidGenerator, adduct, baseReference) is MoleculeMsReference reference) {
-                lock (syncObject) {
+                lock (_syncObject) {
                     reference.ScanID = _references.Count;
                     _references.Add(reference);
                 }
@@ -91,7 +94,7 @@ namespace CompMs.MsdialCore.DataObj
         void IReferenceDataBase.Load(Stream stream, string folderpath) {
             var references = MessagePackDefaultHandler.LoadLargerListFromStream<MoleculeMsReference>(stream);
             var pairs = references.Select(reference => (FacadeLipidParser.Default.Parse(reference.Name), reference)).ToList();
-            lock (syncObject) {
+            lock (_syncObject) {
                 _references.Clear();
                 _lipidToReference.Clear();
 

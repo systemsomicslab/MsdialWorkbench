@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.DataObj;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
@@ -17,18 +18,30 @@ namespace CompMs.App.Msdial.Model.Imaging
         public ImagingRoiModel(string id, RoiModel roi, RawSpectraOnPixels rawSpectraOnPixels, IEnumerable<ChromatogramPeakFeatureModel> peaks, ReactiveProperty<ChromatogramPeakFeatureModel> selectedPeak) {
             Id = id;
             Roi = roi ?? throw new ArgumentNullException(nameof(roi));
+
             RoiPeakSummaries = new ObservableCollection<RoiPeakSummaryModel>(
                 rawSpectraOnPixels.PixelPeakFeaturesList.Zip(peaks, (pixelFeaturs, peak) => new RoiPeakSummaryModel(roi, pixelFeaturs, peak)));
-            RoiPeakSummaries.Select(m => selectedPeak.Where(p => m.Peak == p).Select(_ => m)).Merge().Subscribe(m => SelectedRoiPeakSummary = m).AddTo(Disposables);
+            RoiPeakSummaries.Select(m => selectedPeak.Where(p => m.Peak == p).ToConstant(m)).Merge().Subscribe(m => SelectedRoiPeakSummary = m).AddTo(Disposables);
         }
 
         public string Id { get; }
         public RoiModel Roi { get; }
         public ObservableCollection<RoiPeakSummaryModel> RoiPeakSummaries { get; }
+
         public RoiPeakSummaryModel SelectedRoiPeakSummary {
             get => _selectedRoiPeakSummary;
             set => SetProperty(ref _selectedRoiPeakSummary, value);
         }
         private RoiPeakSummaryModel _selectedRoiPeakSummary;
+
+        public bool IsSelected {
+            get => _isSelected;
+            set => SetProperty(ref _isSelected, value);
+        }
+        private bool _isSelected;
+
+        public void Select() {
+            IsSelected = true;
+        }
     }
 }

@@ -279,6 +279,11 @@
                                              d:DataContext="{d:DesignInstance Type={x:Type vmchart:RawDecSpectrumsViewModel}}"
                                              Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
                                              Style="{StaticResource FocusWhenVisible}"/>
+    <chartSetting:RepRefViewSettingRibbonTab ContextualTabGroupHeader="Graph tools"
+                                             DataContext="{Binding AlignmentViewModel.Value.Ms2SpectrumViewModel}"
+                                             d:DataContext="{d:DesignInstance Type={x:Type vmchart:MsSpectrumViewModel}}"
+                                             Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
+                                             Style="{StaticResource FocusWhenVisible}"/>
     <chartSetting:Ms2ChromatogramSettingRibbonTab ContextualTabGroupHeader="Graph tools"
                                                   DataContext="{Binding AnalysisViewModel.Value.Ms2ChromatogramsViewModel}"
                                                   d:DataContext="{d:DesignInstance Type={x:Type vmchart:Ms2ChromatogramsViewModel}}"

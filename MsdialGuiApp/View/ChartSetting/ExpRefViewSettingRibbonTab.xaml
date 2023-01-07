@@ -17,10 +17,23 @@
         </RibbonComboBox>
     </RibbonGroup>
     <RibbonGroup Header="Intensity axis type">
-        <RibbonComboBox Label="Axis type"
+        <RibbonComboBox Label="Deconvoluted"
                         VerticalAlignment="Center">
-            <RibbonGallery SelectedItem="{Binding UpperVerticalAxis.Value}">
-                <RibbonGalleryCategory ItemsSource="{Binding UpperVerticalAxiss}" DisplayMemberPath="Label"/>
+            <RibbonGallery SelectedItem="{Binding DecRefSpectrumViewModels.UpperVerticalAxisItem.Value}">
+                <RibbonGalleryCategory ItemsSource="{Binding DecRefSpectrumViewModels.UpperVerticalAxisItemCollection}" DisplayMemberPath="Label"/>
+            </RibbonGallery>
+        </RibbonComboBox>
+        <RibbonComboBox Label="Raw                "
+                        VerticalAlignment="Center">
+            <RibbonGallery SelectedItem="{Binding RawRefSpectrumViewModels.UpperVerticalAxisItem.Value}">
+                <RibbonGalleryCategory ItemsSource="{Binding RawRefSpectrumViewModels.UpperVerticalAxisItemCollection}" DisplayMemberPath="Label"/>
+            </RibbonGallery>
+        </RibbonComboBox>
+        <RibbonComboBox Label="Reference       "
+                        AlternationCount="10"
+                        VerticalAlignment="Center">
+            <RibbonGallery SelectedItem="{Binding DecRefSpectrumViewModels.LowerVerticalAxisItem.Value}">
+                <RibbonGalleryCategory ItemsSource="{Binding DecRefSpectrumViewModels.LowerVerticalAxisItemCollection}" DisplayMemberPath="Label"/>
             </RibbonGallery>
         </RibbonComboBox>
     </RibbonGroup>

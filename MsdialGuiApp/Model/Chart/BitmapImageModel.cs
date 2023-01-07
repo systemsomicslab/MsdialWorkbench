@@ -6,6 +6,8 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class BitmapImageModel : BindableBase
     {
+        public static readonly int ImageMargin = 1;
+
         public BitmapImageModel(BitmapSource bitmapSource, string title) {
             BitmapSource = bitmapSource;
             Title = title;
@@ -24,6 +26,14 @@ namespace CompMs.App.Msdial.Model.Chart
             var bs = BitmapSource.Create(width, height, 96, 96, pf, palette, image, image.Length / height);
             bs.Freeze();
             return new BitmapImageModel(bs, title);
+        }
+
+        public static int WithMarginToLength(int length) {
+            return length + ImageMargin * 2;
+        }
+
+        public static int WithMarginToPoint(int point) {
+            return point - ImageMargin;
         }
     }
 }

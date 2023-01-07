@@ -35,7 +35,7 @@ namespace CompMs.Graphics.Behavior
                     vAxis.Recalculate(fe.ActualHeight);
                     EventHandler handler = (_s, _e) => { vAxis.Recalculate(fe.ActualHeight); vAxis.Reset(); };
                     vAxis.InitialRangeChanged += handler;
-                    SetInitialRangeUpdatorOnHorizontal(fe, handler);
+                    SetInitialRangeUpdatorOnVertical(fe, handler);
                 }
             }
             else {

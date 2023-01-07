@@ -81,7 +81,7 @@
       <HintPath>..\packages\MessagePack.1.7.3.7\lib\net47\MessagePack.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.31\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.39\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -94,14 +94,14 @@
     <Reference Include="RawDataViewer">
       <HintPath>..\Assemblies\RawDataViewer.exe</HintPath>
     </Reference>
-    <Reference Include="ReactiveProperty, Version=7.10.0.0, Culture=neutral, PublicKeyToken=910d1732782c71cb, processorArchitecture=MSIL">
-      <HintPath>..\packages\ReactiveProperty.7.10.0\lib\netstandard2.0\ReactiveProperty.dll</HintPath>
+    <Reference Include="ReactiveProperty, Version=8.2.0.0, Culture=neutral, PublicKeyToken=910d1732782c71cb, processorArchitecture=MSIL">
+      <HintPath>..\packages\ReactiveProperty.8.2.0\lib\net472\ReactiveProperty.dll</HintPath>
     </Reference>
-    <Reference Include="ReactiveProperty.Core, Version=7.10.0.0, Culture=neutral, PublicKeyToken=910d1732782c71cb, processorArchitecture=MSIL">
-      <HintPath>..\packages\ReactiveProperty.Core.7.10.0\lib\netstandard2.0\ReactiveProperty.Core.dll</HintPath>
+    <Reference Include="ReactiveProperty.Core, Version=8.2.0.0, Culture=neutral, PublicKeyToken=910d1732782c71cb, processorArchitecture=MSIL">
+      <HintPath>..\packages\ReactiveProperty.Core.8.2.0\lib\net472\ReactiveProperty.Core.dll</HintPath>
     </Reference>
-    <Reference Include="ReactiveProperty.WPF, Version=7.10.0.0, Culture=neutral, PublicKeyToken=0239185f5eb3b356, processorArchitecture=MSIL">
-      <HintPath>..\packages\ReactiveProperty.WPF.7.10.0\lib\net461\ReactiveProperty.WPF.dll</HintPath>
+    <Reference Include="ReactiveProperty.WPF, Version=8.2.0.0, Culture=neutral, PublicKeyToken=0239185f5eb3b356, processorArchitecture=MSIL">
+      <HintPath>..\packages\ReactiveProperty.WPF.8.2.0\lib\net472\ReactiveProperty.WPF.dll</HintPath>
     </Reference>
     <Reference Include="Splash, Version=1.0.6022.17289, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -161,23 +161,28 @@
     <Compile Include="Model\DataObj\AnalysisFileBeanModelCollection.cs" />
     <Compile Include="Model\DataObj\BarItemCollection.cs" />
     <Compile Include="Model\DataObj\IPeakSpotModel.cs" />
+    <Compile Include="Model\Dims\DimsAlignmentMetadataAccessorFactory.cs" />
     <Compile Include="Model\Export\AlignmentExportGroupModel.cs" />
     <Compile Include="Model\Export\AlignmentResultExportModel.cs" />
     <Compile Include="Model\Export\AlignmentSpectraExportFormat.cs" />
     <Compile Include="Model\Export\AlignmentSpectraExportGroupModel.cs" />
     <Compile Include="Model\Export\ExportFormat.cs" />
     <Compile Include="Model\Export\ExportType.cs" />
+    <Compile Include="Model\Export\IAlignmentMetadataAccessorFactory.cs" />
     <Compile Include="Model\Export\IAlignmentResultExportModel.cs" />
     <Compile Include="Model\Export\ProteinGroupExportModel.cs" />
     <Compile Include="Model\Imaging\ImagingImageModel.cs" />
     <Compile Include="Model\Imaging\ImagingRoiModel.cs" />
     <Compile Include="Model\Imaging\ImaginRoiCompareModel.cs" />
     <Compile Include="Model\Imaging\MaldiFrames.cs" />
+    <Compile Include="Model\Imaging\RoiEditModel.cs" />
     <Compile Include="Model\Imaging\RoiModel.cs" />
     <Compile Include="Model\Imaging\IntensityImageModel.cs" />
     <Compile Include="Model\Imaging\RoiPeakSummaryModel.cs" />
+    <Compile Include="Model\Imaging\SaveImagesModel.cs" />
     <Compile Include="Model\Imaging\WholeImageResultModel.cs" />
     <Compile Include="Model\ImagingImms\ImagingImmsMethodModel.cs" />
+    <Compile Include="Model\Imms\ImmsAlignmentMetadataAccessorFactory.cs" />
     <Compile Include="Model\Information\CompoundDetailModel.cs" />
     <Compile Include="Model\Information\MoleculeStructureModel.cs" />
     <Compile Include="Model\Information\PeakInformationModel.cs" />
@@ -193,9 +198,11 @@
     <Compile Include="Model\DataObj\StandardCompoundModel.cs" />
     <Compile Include="Model\DataObj\SurveyScanSpectrum.cs" />
     <Compile Include="Model\Imms\ImmsAnnotatorSettingModel.cs" />
+    <Compile Include="Model\Lcimms\LcimmsAlignmentMetadataAccessorFactory.cs" />
     <Compile Include="Model\Lcimms\LcimmsCompoundSearchModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsEicLoader.cs" />
     <Compile Include="Model\Lcimms\LcimmsPeakSpotTableModel.cs" />
+    <Compile Include="Model\Lcms\LcmsAlignmentMetadataAccessorFactory.cs" />
     <Compile Include="Model\Loader\BarItemsLoaderData.cs" />
     <Compile Include="Model\Loader\IChromatogramLoader.cs" />
     <Compile Include="Model\Loader\MsSelectionItem.cs" />
@@ -341,8 +348,10 @@
     <Compile Include="ViewModel\Imaging\ImagingRoiCompareViewModel.cs" />
     <Compile Include="ViewModel\Imaging\ImagingRoiViewModel.cs" />
     <Compile Include="ViewModel\Imaging\IntensityImageViewModel.cs" />
+    <Compile Include="ViewModel\Imaging\RoiEditViewModel.cs" />
     <Compile Include="ViewModel\Imaging\RoiPeakSummaryViewModel.cs" />
     <Compile Include="ViewModel\Imaging\RoiViewModel.cs" />
+    <Compile Include="ViewModel\Imaging\SaveImagesViewModel.cs" />
     <Compile Include="ViewModel\Imaging\WholeImageResultViewModel.cs" />
     <Compile Include="ViewModel\Information\CompoundDetailViewModel.cs" />
     <Compile Include="ViewModel\Information\MoleculeStructureViewModel.cs" />
@@ -364,7 +373,6 @@
     <Compile Include="ViewModel\Chart\EicViewModel.cs" />
     <Compile Include="ViewModel\Chart\MsSpectrumViewModel.cs" />
     <Compile Include="ViewModel\Chart\RawDecSpectrumsViewModel.cs" />
-    <Compile Include="ViewModel\Chart\ReactiveAxisManager.cs" />
     <Compile Include="Model\Export\AnalysisResultExportModel.cs" />
     <Compile Include="Model\Loader\IBarItemsLoader.cs" />
     <Compile Include="Model\DataObj\AxisData.cs" />
@@ -479,6 +487,9 @@
     </Compile>
     <Compile Include="View\ChartSetting\Ms2ChromatogramSettingRibbonTab.xaml.cs">
       <DependentUpon>Ms2ChromatogramSettingRibbonTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ChartSetting\RepRefViewSettingRibbonTab.xaml.cs">
+      <DependentUpon>RepRefViewSettingRibbonTab.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Chart\AlignmentEicView.xaml.cs">
       <DependentUpon>AlignmentEicView.xaml</DependentUpon>
@@ -841,6 +852,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ChartSetting\Ms2ChromatogramSettingRibbonTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ChartSetting\RepRefViewSettingRibbonTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

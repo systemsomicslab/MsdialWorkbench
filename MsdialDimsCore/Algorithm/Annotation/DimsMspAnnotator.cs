@@ -34,12 +34,12 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
 
         public MsScanMatchResult Annotate(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
-            return FindCandidatesCore(query.Property, DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter), parameter, Key).FirstOrDefault();
+            return FindCandidatesCore(query.Property, query.NormalizedScan, parameter, Key).FirstOrDefault();
         }
 
         public List<MsScanMatchResult> FindCandidates(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
-            return FindCandidatesCore(query.Property, DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter), parameter, Key);
+            return FindCandidatesCore(query.Property, query.NormalizedScan, parameter, Key);
         }
 
         private List<MsScanMatchResult> FindCandidatesCore(IMSProperty property, IMSScanProperty scan, MsRefSearchParameterBase parameter, string sourceKey) {
@@ -54,11 +54,10 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
 
         public MsScanMatchResult CalculateScore(IAnnotationQuery<MsScanMatchResult> query, MoleculeMsReference reference) {
             var parameter = query.Parameter ?? Parameter;
-            return CalculateScoreCore(query.Property, query.Scan, reference, parameter, Key);
+            return CalculateScoreCore(query.Property, query.NormalizedScan, reference, parameter, Key);
         }
 
-        private MsScanMatchResult CalculateScoreCore(IMSProperty property, IMSScanProperty scan, MoleculeMsReference reference, MsRefSearchParameterBase parameter, string source) {
-            var normScan = DataAccess.GetNormalizedMSScanProperty(scan, parameter);
+        private MsScanMatchResult CalculateScoreCore(IMSProperty property, IMSScanProperty normScan, MoleculeMsReference reference, MsRefSearchParameterBase parameter, string source) {
             var result = new MsScanMatchResult
             {
                 Name = reference.Name,

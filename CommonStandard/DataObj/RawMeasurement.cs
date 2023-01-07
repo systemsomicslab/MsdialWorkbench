@@ -166,6 +166,7 @@ namespace CompMs.Common.DataObj {
         public Units DriftTimeUnit { get; set; }
         public double ScanWindowLowerLimit { get; set; }
         public double ScanWindowUpperLimit { get; set; }
+        public double SourceFragmentationInfoCount { get; set; }
 
         public double CollisionEnergy { get; set; } // for MSE, all ions
         public int ExperimentID { get; set; } 

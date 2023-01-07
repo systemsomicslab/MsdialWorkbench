@@ -16,6 +16,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
             Format = model.ExportMethod.Format;
             SpectraType = model.SpectraType;
             IsLongFormat = model.ExportMethod.IsLongFormat;
+            TrimContentToExcelLimit = model.ExportMethod.TrimToExcelLimit;
         }
 
         public string Label => _model.Label;
@@ -67,5 +68,15 @@ namespace CompMs.App.Msdial.ViewModel.Export
             }
         }
         private bool _isLongFormat;
+
+        public bool TrimContentToExcelLimit {
+            get => _trimContentToExcelLimit;
+            set {
+                if (SetProperty(ref _trimContentToExcelLimit, value)) {
+                    _model.ExportMethod.TrimToExcelLimit = _trimContentToExcelLimit;
+                }
+            }
+        }
+        private bool _trimContentToExcelLimit;
     }
 }

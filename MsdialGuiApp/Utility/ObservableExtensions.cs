@@ -48,8 +48,16 @@ namespace CompMs.App.Msdial.Utility
             return ObserveUntilRemove<ReadOnlyObservableCollection<T>, T, U>(collection, selector);
         }
 
-        public static IObservable<U> Switch<T, U>(this IObservable<T> source, Func<T, IObservable<U>> selector) {
+        public static IObservable<U> SelectSwitch<T, U>(this IObservable<T> source, Func<T, IObservable<U>> selector) {
             return source.Select(selector).Switch();
+        }
+
+        public static IObservable<T> TakeNull<T>(this IObservable<T> source) {
+            return source.Where(x => x == null);
+        }
+
+        public static IObservable<T> SkipNull<T>(this IObservable<T> source) {
+            return source.Where(x => x != null);
         }
 
         public static IObservable<U> ToConstant<T, U>(this IObservable<T> source, U constant) {
