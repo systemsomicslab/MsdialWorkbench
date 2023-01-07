@@ -164,15 +164,25 @@ namespace CompMs.MspGenerator
             //{"lysoDGDG", "C%10C(O)COC1OC(COC2OC(CO)C(O)C(O)C2O)C(O)C(O)C1O."},
             //{"lysoMGDG", "C%10C(O)COC1OC(CO)C(O)C(O)C1O."},
 
+            //FA
+            {"FA", "O%10."},
+            {"OxFA", "O%10."},
+            {"DMEDFA",  "N%10CCN(C)C." },
+            {"DMEDOxFA",  "N%10CCN(C)C." },
+
 
             //FAHFA
             {"FAHFA", "O%20."},
             {"AAHFA", "O%20."},
+
             {"NAGlySer_FAHFA", "OCC(NC(=O)CN%20)C(O)=O."},
             {"NAGly_FAHFA", "OC(=O)CN%20."},
             {"NAOrn_FAHFA", "NCCCC(N%20)C(O)=O."},
 
-            {"FAHFA-DMED", "O%10."},
+            {"DMEDFAHFA", "O%10."},
+            {"DMEDFAHFAHFA", "O%10."},
+
+            {"FAHFAHFA", "O%10."},
 
 
             // single acyl chain

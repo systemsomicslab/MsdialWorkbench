@@ -45,7 +45,7 @@ namespace Rfx.Riken.OsakaUniv
         DGTA,LDGTA,
         NATau,NAPhe,
         PT,
-        DMEDFAHFA
+        DMEDFAHFA, DMEDFA, DMEDOxFA
 
         // new version
         //CerP, SM,

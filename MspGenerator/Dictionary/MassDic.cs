@@ -59,6 +59,8 @@ namespace CompMs.MspGenerator
         public static double Electron = 0.00054858026;
         public static double NH4Adduct = 18.033825553;
         public static double NaAdduct = 22.9892207;
+        public static double KAdduct = 38.96315791f;
+        public static double LiAdduct = 7.01545486f;
         public static double HCOOadduct = 44.998202852;
         public static double CH3COOadduct = 59.013852917;
         public static double C6H10O5 = CarbonMass * 6 + HydrogenMass * 10 + OxygenMass * 5;

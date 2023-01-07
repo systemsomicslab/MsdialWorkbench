@@ -119,6 +119,10 @@ namespace CompMs.Common.Algorithm.Scoring {
 
                 case LbmClass.DMEDFAHFA:
                     return DMEDFAHFAEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.DMEDFA:
+                case LbmClass.DMEDOxFA:
+                    return DMEDFAEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+
 
                 default: return (null, new double[2] { 0.0, 0.0 });
             }
@@ -1232,6 +1236,9 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.FA:
                     return LipidMsmsCharacterization.JudgeIfFattyacid(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.OxFA:
+                    return LipidMsmsCharacterization.JudgeIfOxfattyacid(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct, totalOxidized);
 
                 case LbmClass.FAHFA:
                     return LipidMsmsCharacterization.JudgeIfFahfa(msScanProp, ms2tol, refMz,
@@ -1241,8 +1248,11 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return LipidMsmsCharacterization.JudgeIfFahfaDMED(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
 
-                case LbmClass.OxFA:
-                    return LipidMsmsCharacterization.JudgeIfOxfattyacid(msScanProp, ms2tol, refMz,
+                case LbmClass.DMEDFA:
+                    return LipidMsmsCharacterization.JudgeIfDmedFattyacid(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.DMEDOxFA:
+                    return LipidMsmsCharacterization.JudgeIfDmedOxfattyacid(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct, totalOxidized);
 
                 case LbmClass.EtherOxPC:

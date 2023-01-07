@@ -419,6 +419,9 @@ namespace CompMs.Common.Lipidomics {
                     else
                         return "http://jcbl.jp/wiki/Lipoquality:Resource?lc=" + "ACar " + lipidinfo.Sn1AcylChain + "&ct=c";
                 case "FA":
+                case "DMEDFA":
+                case "OxFA":
+                case "DMEDOxFA":
                     if (lipidinfo.Sn1AcylChain == string.Empty) return string.Empty;
                     else
                         return "http://jcbl.jp/wiki/Lipoquality:Resource?lc=" + "FA " + lipidinfo.Sn1AcylChain + "&ct=c";

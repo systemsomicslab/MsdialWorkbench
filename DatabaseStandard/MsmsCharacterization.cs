@@ -6255,6 +6255,34 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             }
             return null;
         }
+        public static LipidMolecule JudgeIfDmedFattyacid(ObservableCollection<double[]> spectrum, double ms2Tolerance,
+           double theoreticalMz, int totalCarbon, int totalDoubleBond,
+           int minSnCarbon, int maxSnCarbon, int minSnDoubleBond, int maxSnDoubleBond,
+           AdductIon adduct)
+        {
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (maxSnCarbon > totalCarbon) maxSnCarbon = totalCarbon;
+            if (maxSnDoubleBond > totalDoubleBond) maxSnDoubleBond = totalDoubleBond;
+
+            if (adduct.IonMode == IonMode.Positive)
+            {
+                if (adduct.AdductIonName == "[M+H]+")
+                {
+                    var threshold = 5.0;
+                    var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, theoreticalMz, threshold);
+                    if (isClassIonFound == false) return null;
+                    var candidates = new List<LipidMolecule>();
+                    var threshold2 = 1.0;
+                    var diagnosticMz = theoreticalMz - 12 * 2 - MassDiffDictionary.NitrogenMass - MassDiffDictionary.HydrogenMass * 7;
+                    var isClassIonFound2 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold2);
+                    if (isClassIonFound2 == false) return null;
+
+                    return returnAnnotationResult("DMEDFA", LbmClass.DMEDFA, "", theoreticalMz, adduct,
+                       totalCarbon, totalDoubleBond, 0, candidates, 1);
+                }
+            }
+            return null;
+        }
 
         public static LipidMolecule JudgeIfOxfattyacid(ObservableCollection<double[]> spectrum, double ms2Tolerance,
            double theoreticalMz, int totalCarbon, int totalDoubleBond,
@@ -6308,6 +6336,66 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
 
                     return returnAnnotationResult("FA", LbmClass.OxFA, "", theoreticalMz, adduct,
+                       totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
+                }
+            }
+            return null;
+        }
+        public static LipidMolecule JudgeIfDmedOxfattyacid(ObservableCollection<double[]> spectrum, double ms2Tolerance,
+            double theoreticalMz, int totalCarbon, int totalDoubleBond,
+              int minSnCarbon, int maxSnCarbon, int minSnDoubleBond, int maxSnDoubleBond,
+                 AdductIon adduct, int totalOxidized)
+        {
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (maxSnCarbon > totalCarbon) maxSnCarbon = totalCarbon;
+            if (maxSnDoubleBond > totalDoubleBond) maxSnDoubleBond = totalDoubleBond;
+
+            if (adduct.IonMode == IonMode.Positive)
+            {
+                if (adduct.AdductIonName == "[M+H]+")
+                {
+                    var threshold = 1.0;
+                    var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, theoreticalMz, threshold);
+                    if (isClassIonFound == false) return null;
+                    var threshold2 = 1.0;
+                    var diagnosticMz = theoreticalMz - 12 * 2 - MassDiffDictionary.NitrogenMass - MassDiffDictionary.HydrogenMass * 7;
+                    var isClassIonFound2 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold2);
+                    if (isClassIonFound2 == false) return null;
+                    var diagnosticMz2 = diagnosticMz - H2O;
+                    var threshold3 = 0.1;
+                    var isClassIonFound3 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold3);
+                    if (isClassIonFound3 == false) return null;
+
+                    var candidates = new List<LipidMolecule>();
+
+                    //var alphaOHflag01 = theoreticalMz - (12 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 2); // -CO2
+                    //var nl_H2O = theoreticalMz - H2O; // -H2O
+                    //var query = new List<Peak>
+                    //                    {
+                    //                    new Peak() { Mz = alphaOHflag01, Intensity = 10.0 },
+                    //                    new Peak() { Mz = nl_H2O, Intensity = 1.0 }
+                    //                    };
+
+                    //var foundCount = 0;
+                    //var averageIntensity = 0.0;
+                    //countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
+
+                    //if (foundCount == 2 && totalOxidized == 1) //totalOxidized == 1 only 
+                    //{
+                    //    var molecule = getAlphaOxfaMoleculeObjAsLevel1("FA", LbmClass.OxFA, totalCarbon, totalDoubleBond, totalOxidized, averageIntensity);
+                    //    candidates.Add(molecule);
+                    //}
+                    //else if (foundCount == 0) // -H2O was not found -> null
+                    //{
+                    //    // seek -H2O
+                    //    var threshold2 = 0.01;
+                    //    var diagnosticMz = theoreticalMz - H2O;
+                    //    var isClassIonFound2 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold2);
+                    //    if (isClassIonFound2 == false) return null;
+                    //}
+
+
+                    return returnAnnotationResult("DMEDFA", LbmClass.DMEDOxFA, "", theoreticalMz, adduct,
                        totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
                 }
             }

@@ -505,7 +505,10 @@ namespace Msdial.Lcms.Dataprocess.Scoring
                 case LbmClass.FA:
                     return LipidMsmsCharacterization.JudgeIfFattyacid(spectrum, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
-                    
+                case LbmClass.OxFA:
+                    return LipidMsmsCharacterization.JudgeIfOxfattyacid(spectrum, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct, totalOxidized);
+
                 case LbmClass.FAHFA:
                     return LipidMsmsCharacterization.JudgeIfFahfa(spectrum, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
@@ -514,8 +517,11 @@ namespace Msdial.Lcms.Dataprocess.Scoring
                     return LipidMsmsCharacterization.JudgeIfFahfaDMED(spectrum, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
 
-                case LbmClass.OxFA:
-                    return LipidMsmsCharacterization.JudgeIfOxfattyacid(spectrum, ms2tol, refMz,
+                case LbmClass.DMEDFA:
+                    return LipidMsmsCharacterization.JudgeIfDmedFattyacid(spectrum, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.DMEDOxFA:
+                    return LipidMsmsCharacterization.JudgeIfDmedOxfattyacid(spectrum, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct, totalOxidized);
                     
                 case LbmClass.EtherOxPC:

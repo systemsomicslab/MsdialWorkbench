@@ -144,6 +144,8 @@ DCAE	[M+NH4]+	Positive	TRUE
 FA	[M-H]-	Negative	TRUE
 FAHFA	[M-H]-	Negative	TRUE
 DMEDFAHFA	[M+H]+	Positive	FALSE
+DMEDFA	[M+H]+	Positive	FALSE
+DMEDOxFA	[M+H]+	Positive	FALSE
 NAGly	[M-H]-	Negative	TRUE
 NAGly	[M+H]+	Positive	TRUE
 NAGly	[M+NH4]+	Positive	TRUE
