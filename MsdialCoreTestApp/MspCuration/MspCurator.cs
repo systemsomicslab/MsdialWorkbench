@@ -30,6 +30,49 @@ namespace CompMs.App.MsdialConsole.MspCuration {
             }
         }
 
+        public static void Batch_ExtractMSPsByCEField(string inputdir, string outputdir) {
+            var files = Directory.GetFiles(inputdir);
+            var records = new List<MoleculeMsReference>();
+            foreach (var file in files) {
+                var mspRecords = MspFileParser.MspFileReader(file);
+                foreach (var mspRecord in mspRecords) {
+                    records.Add(mspRecord);
+                }
+            }
+
+            var dict = new Dictionary<string, string>() {
+                { "Curated_10CID", "CID 10V" },
+                { "Curated_20CID", "CID 20V" },
+                { "Curated_40CID", "CID 40V" },
+                { "Curated_10CID_15CES", "CID 10V CES 15V" },
+                { "Curated_20CID_15CES", "CID 20V CES 15V" },
+                { "Curated_40CID_15CES", "CID 40V CES 15V" },
+                { "Curated_10KE", "EAD 10eV CID 10V" },
+                { "Curated_15KE", "EAD 15eV CID 10V" },
+                { "Curated_20KE", "EAD 20eV CID 10V" },
+            };
+
+            foreach (var item in dict) {
+                var filepath = Path.Combine(outputdir, item.Key);
+                if (!Directory.Exists(filepath)) {
+                    Directory.CreateDirectory(filepath);
+                }
+            }
+            var dir_list = Directory.GetDirectories(outputdir, "*", SearchOption.TopDirectoryOnly);
+            foreach (var dir in dir_list) {
+                var dirname = Path.GetFileNameWithoutExtension(dir);
+                var path = Path.Combine(dir, dirname + ".msp");
+
+                using (var sw = new StreamWriter(path)) {
+                    foreach (var record in records) {
+                        if (record.FragmentationCondition == dict[dirname]) {
+                            MspFileParser.WriteSpectrumAsMsp(record, sw);
+                        }
+                    }
+                }
+            }
+        }
+
         public static void ExtractMSPsByCEField(string inputDir, string output, string fieldname) {
             var files = Directory.GetFiles(inputDir);
             var records = new List<MoleculeMsReference>();

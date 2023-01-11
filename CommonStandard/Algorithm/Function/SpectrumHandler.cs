@@ -111,12 +111,37 @@ namespace CompMs.Common.Algorithm.Function {
 
         public static List<SpectrumPeak> GetNormalizedPeak4SpectralEntropyCalc(
             List<SpectrumPeak> peaklist,
-            double relativeAbundanceCutOff,
-            double absoluteAbundanceCutOff,
-            double minMz,
-            double maxMz,
             double precursorMz,
-            double ms2Tol) {
+            double ms2Tol = 0.05,
+            double relativeAbundanceCutOff = 0,
+            double absoluteAbundanceCutOff = 0,
+            double minMz = 0,
+            double maxMz = 100000) {
+            if (peaklist == null || peaklist.Count == 0) return new List<SpectrumPeak>();
+            double maxIntensity = peaklist.Max(n => n.Intensity);
+            var refinedPeaklist = new List<SpectrumPeak>();
+
+            foreach (var peak in peaklist) {
+                if (peak.Mass < minMz) continue;
+                if (peak.Mass > maxMz) continue;
+                if (peak.Mass > precursorMz + ms2Tol) continue;
+                if (peak.Intensity < absoluteAbundanceCutOff) continue;
+                if (peak.Intensity >= maxIntensity * relativeAbundanceCutOff * 0.01) {
+                    refinedPeaklist.Add(peak);
+                }
+            }
+            var sumIntensity = refinedPeaklist.Sum(n => n.Intensity);
+            return refinedPeaklist.Select(n => new SpectrumPeak() { Mass = n.Mass, Intensity = n.Intensity / sumIntensity }).ToList();
+        }
+
+        public static List<SpectrumPeak> GetNormalizedPeak4SpectralEntropySimilarityCalc(
+            List<SpectrumPeak> peaklist,
+            double precursorMz,
+            double ms2Tol = 0.05,
+            double relativeAbundanceCutOff = 0,
+            double absoluteAbundanceCutOff = 0,
+            double minMz = 0,
+            double maxMz = 100000) {
             if (peaklist == null || peaklist.Count == 0) return new List<SpectrumPeak>();
             double maxIntensity = peaklist.Max(n => n.Intensity);
             var refinedPeaklist = new List<SpectrumPeak>();

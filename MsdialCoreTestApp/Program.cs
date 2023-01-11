@@ -129,6 +129,43 @@ namespace CompMs.App.MsdialConsole {
             //         .Select(lipid => lipid.GenerateSpectrum(spectrumGenerator, adduct))
             //         .Cast<Common.Components.MoleculeMsReference>());
 
+            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\NEG\20230105_agc_neg.mdproject",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\agc_compounds.txt",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\NEG_MSP");
+
+            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS\20230105_agc_pos.mdproject",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\agc_compounds.txt",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS_MSP");
+
+            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS\2022_11_09_01_52_59.mdproject",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\riken_compounds.txt",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP");
+
+            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\NEG\20230105_riken_neg_stds.mdproject",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\riken_compounds.txt",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\NEG_MSP");
+
+            //MspCurator.Batch_ExtractMSPsByCEField(@"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Curated",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis");
+
+            //MspCurator.Batch_ExtractMSPsByCEField(@"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Curated",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Analysis");
+
+            //MspCurator.Batch_ExtractMSPsByCEField(@"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS_MSP\Curated",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS_MSP\Analysis");
+
+            //MspCurator.Batch_ExtractMSPsByCEField(@"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\NEG_MSP\Curated",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\NEG_MSP\Analysis");
+
+            //MspCurator.Batch_ExtractMSPsByCEField(@"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Curated",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Analysis");
+
+            //MspCurator.Batch_ExtractMSPsByCEField(@"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\NEG_MSP\Curated",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\NEG_MSP\Analysis");
 
             //MspCurator.ExtractMSPsByCEField(
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Curated",
@@ -150,30 +187,20 @@ namespace CompMs.App.MsdialConsole {
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Curated_20KE\MergedMSP_20KE.msp",
             //    "EAD 20eV CID 10V");
 
+            EadSpectraAnalysis.EadSpectraAnalysis.GenerateSpectralEntropyList(
+                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Analysis",
+                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Analysis\Entropy");
+
+            EadSpectraAnalysis.EadSpectraAnalysis.GenerateSpectralEntropyList(
+                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis",
+                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis\Entropy");
+
             //var test = LipidNameConverterTest.Convert2SummedLipidNameTest("TG 18:1_18:1_18:3", "TG");
             //Console.WriteLine(test);
             //Console.ReadLine();
 
 
-            MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\NEG\20230105_agc_neg.mdproject",
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\agc_compounds.txt",
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\NEG_MSP");
 
-            MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS\20230105_agc_pos.mdproject",
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\agc_compounds.txt",
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS_MSP");
-
-            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS\2022_11_09_01_52_59.mdproject",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\riken_compounds.txt",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP");
-
-            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\NEG\20230105_riken_neg_stds.mdproject",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\riken_compounds.txt",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\NEG_MSP");
 
             //MspCurator.MergeMSPs(
             //    @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\POS",
@@ -264,6 +291,13 @@ namespace CompMs.App.MsdialConsole {
             //CreateStatisticsInEieioProject.WriteSummary(
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\20220818_EIEIO_checked_MT\results",
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\20220818_EIEIO_checked_MT\result.txt");
+
+
+            //// swai-kun for 13C plant table curation
+            //LabelDataHandler.LabelDataHandler.ExtractCorrectPeakList(
+            //    @"E:\6_Projects\PROJECT_GlycyrrhizaMetabolomics\glabra leaf\pos\pos_table_vs1.txt",
+            //    @"E:\6_Projects\PROJECT_GlycyrrhizaMetabolomics\glabra leaf\pos\pos_table_vs1_extracted.txt");
+
         }
 
         private static void DumpN(string file, int n) {
