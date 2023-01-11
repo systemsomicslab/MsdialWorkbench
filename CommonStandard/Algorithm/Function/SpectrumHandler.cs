@@ -111,6 +111,7 @@ namespace CompMs.Common.Algorithm.Function {
 
         public static List<SpectrumPeak> GetNormalizedPeak4SpectralEntropyCalc(
             List<SpectrumPeak> peaklist,
+<<<<<<< HEAD
             double precursorMz,
             double ms2Tol = 0.05,
             double relativeAbundanceCutOff = 0,
@@ -142,6 +143,14 @@ namespace CompMs.Common.Algorithm.Function {
             double absoluteAbundanceCutOff = 0,
             double minMz = 0,
             double maxMz = 100000) {
+=======
+            double relativeAbundanceCutOff,
+            double absoluteAbundanceCutOff,
+            double minMz,
+            double maxMz,
+            double precursorMz,
+            double ms2Tol) {
+>>>>>>> 2d7edbb7c5bc88e120c8fa90586868fe91ff7e9e
             if (peaklist == null || peaklist.Count == 0) return new List<SpectrumPeak>();
             double maxIntensity = peaklist.Max(n => n.Intensity);
             var refinedPeaklist = new List<SpectrumPeak>();
