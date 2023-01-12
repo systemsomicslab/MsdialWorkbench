@@ -95,7 +95,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 },
                 peakSpotSupplyer,
                 new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
-                new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()));
+                new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
+                new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
             var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, };
             if (storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
                 exportGroups.Add(new ProteinGroupExportModel(new ProteinGroupExporter(), analysisFiles));
