@@ -1,6 +1,8 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.Extension;
+using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
@@ -107,7 +109,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                 ReportProgress.Show(40.0, 40.0, counter, analysisFiles.Count - 1, reportAction);
             }
             foreach (var spot in spots) {
-                PackingSpot(spot);
+                SetRepresentativeProperties(spot);
             }
             var id2idx = FlattenSpots(spots)
                 .Select((spot, idx) => Tuple.Create(spot, idx))
@@ -139,6 +141,15 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
                     if (spot.AlignedPeakProperties.First(p => p.FileID == analysisFile.AnalysisFileId).MasterPeakID < 0) {
                         Filler.GapFill(ms1Spectra, spectra, spot, analysisFile.AnalysisFileId);
+                    }
+                    if (DataObjConverter.GetRepresentativeFileID(spot.AlignedPeakProperties.Where(p => p.PeakID >= 0).ToArray()) == analysisFile.AnalysisFileId) {
+                        var index = spectra.LowerBound(peak.MS1RawSpectrumIdTop, (s, id) => s.Index.CompareTo(id));
+                        if (index < 0 || spectra == null || index >= spectra.Count) {
+                            spot.IsotopicPeaks = new List<IsotopicPeak>(0);
+                        }
+                        else {
+                            spot.IsotopicPeaks = DataAccess.GetFineIsotopicPeaks(peak, spectra[index], Param.CentroidMs1Tolerance);
+                        }
                     }
 
                     // UNDONE: retrieve spectrum data
@@ -180,12 +191,10 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             };
         }
 
-        private void PackingSpot(AlignmentSpotProperty spot) {
+        private void SetRepresentativeProperties(AlignmentSpotProperty spot) {
             foreach (var child in spot.AlignmentDriftSpotFeatures)
-                DataObjConverter.SetRepresentativeProperty(child);
-
+                SetRepresentativeProperties(child);
             DataObjConverter.SetRepresentativeProperty(spot);
-            //Console.WriteLine(spot.Name + "\t" + spot.AdductType.AdductIonName);
         }
 
         private void SerializeSpotInfo(

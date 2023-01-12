@@ -1,6 +1,8 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
@@ -45,6 +47,15 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             foreach ((var peak, var spot) in peaks.Zip(spots)) {
                 if (spot.AlignedPeakProperties.FirstOrDefault(p => p.FileID == analysisFile.AnalysisFileId).MasterPeakID < 0) {
                     Filler3d.GapFillFirst(accumulated, spot, analysisFile.AnalysisFileId);
+                }
+                if (DataObjConverter.GetRepresentativeFileID(spot.AlignedPeakProperties.Where(p => p.PeakID >= 0).ToArray()) == analysisFile.AnalysisFileId) {
+                    var index = accumulated.LowerBound(peak.MS1AccumulatedMs1RawSpectrumIdTop, (s, id) => s.Index.CompareTo(id));
+                    if (index < 0 || accumulated == null || index >= accumulated.Count) {
+                        spot.IsotopicPeaks = new List<IsotopicPeak>(0);
+                    }
+                    else {
+                        spot.IsotopicPeaks = DataAccess.GetFineIsotopicPeaks(peak, accumulated[index], Param.CentroidMs1Tolerance);
+                    }
                 }
 
                 // UNDONE: retrieve spectrum data
