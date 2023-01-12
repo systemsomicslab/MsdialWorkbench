@@ -132,6 +132,8 @@ namespace CompMs.MsdialCore.Utility {
             return GetIsotopicPeaks(spectrum, targetedMz, massTolerance, maxIsotopes);
         }
 
+
+
         public static List<IsotopicPeak> GetIsotopicPeaks(IReadOnlyList<RawPeakElement> spectrum, float targetedMz, float massTolerance, int maxIsotopes = 2) {
             var startID = SearchCollection.LowerBound(spectrum, new RawPeakElement() { Mz = targetedMz - massTolerance }, (a, b) => a.Mz.CompareTo(b.Mz));
             //var startID = GetMs1StartIndex(targetedMz, massTolerance, spectrum);
@@ -163,6 +165,19 @@ namespace CompMs.MsdialCore.Utility {
             foreach (var isotope in isotopes)
                 isotope.RelativeAbundance = isotope.AbsoluteAbundance / baseIntensity * 100;
 
+            return isotopes;
+        }
+
+        public static List<IsotopicPeak> GetIsotopicFinePeaks(IReadOnlyList<RawPeakElement> spectrum, float targetedMz, float massTolerance, int chargeNum, int maxIsotopes = 2) {
+            var startID = SearchCollection.LowerBound(spectrum, new RawPeakElement() { Mz = targetedMz - massTolerance }, (a, b) => a.Mz.CompareTo(b.Mz));
+            //var startID = GetMs1StartIndex(targetedMz, massTolerance, spectrum);
+            var isotopes = new List<IsotopicPeak>();
+            for (int i = startID; i < spectrum.Count; i++) {
+                var peak = spectrum[i];
+                if (peak.Mz < targetedMz - massTolerance) continue;
+                if (peak.Mz > targetedMz + (double)maxIsotopes / chargeNum + 0.1 / chargeNum + massTolerance) break;
+                isotopes.Add(new IsotopicPeak() { Mass = peak.Mz, AbsoluteAbundance = peak.Intensity });
+            }
             return isotopes;
         }
 

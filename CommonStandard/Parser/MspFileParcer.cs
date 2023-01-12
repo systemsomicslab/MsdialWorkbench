@@ -262,15 +262,11 @@ namespace CompMs.Common.Parser
                     }
                     return false;
                 case "smiles": mspObj.SMILES = fieldValue;  return false;
-<<<<<<< HEAD
                 case "ontology": mspObj.Ontology = fieldValue; return false;
                 case "superclass": mspObj.Ontology += "Superclass_" + fieldValue + ";"; return false;
                 case "class": mspObj.Ontology += "Class_" + fieldValue + ";"; return false;
                 case "subclass": mspObj.Ontology += "Subclass_" + fieldValue + ";"; return false;
                 case "parentlevel1": mspObj.Ontology += "ParentLevel1_" + fieldValue + ";"; return false;
-=======
-                case "ontology": mspObj.Ontology = fieldValue;  return false;
->>>>>>> 2d7edbb7c5bc88e120c8fa90586868fe91ff7e9e
                 case "compoundclass": mspObj.CompoundClass = fieldValue;  return false;
                
                 case "inchi key":

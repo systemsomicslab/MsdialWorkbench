@@ -30,7 +30,6 @@ namespace CompMs.App.MsdialConsole.MspCuration {
             }
         }
 
-<<<<<<< HEAD
         public static void Batch_ExtractMSPsByCEField(string inputdir, string outputdir) {
             var files = Directory.GetFiles(inputdir);
             var records = new List<MoleculeMsReference>();
@@ -74,8 +73,6 @@ namespace CompMs.App.MsdialConsole.MspCuration {
             }
         }
 
-=======
->>>>>>> 2d7edbb7c5bc88e120c8fa90586868fe91ff7e9e
         public static void ExtractMSPsByCEField(string inputDir, string output, string fieldname) {
             var files = Directory.GetFiles(inputDir);
             var records = new List<MoleculeMsReference>();

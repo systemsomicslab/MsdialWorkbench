@@ -129,6 +129,53 @@ namespace CompMs.App.MsdialConsole {
             //         .Select(lipid => lipid.GenerateSpectrum(spectrumGenerator, adduct))
             //         .Cast<Common.Components.MoleculeMsReference>());
 
+
+            // below is the curation process for standard compound spectra
+            // step 1: export msp files from msdial project files
+            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\NEG\20230105_agc_neg.mdproject",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\agc_compounds.txt",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP");
+
+            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS\20230105_agc_pos.mdproject",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\agc_compounds.txt",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP");
+
+            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS\2022_11_09_01_52_59.mdproject",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\riken_compounds.txt",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP");
+
+            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\NEG\20230105_riken_neg_stds.mdproject",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\riken_compounds.txt",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP");
+
+            // step 2: separate files by the collision information, then, merge them into one msp file
+            //MspCurator.Batch_ExtractMSPsByCEField(@"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Curated",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis");
+
+            //MspCurator.Batch_ExtractMSPsByCEField(@"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Curated",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Analysis");
+
+
+            // step 3: calculate spectrum entropy statistics
+            //EadSpectraAnalysis.EadSpectraAnalysis.GenerateSpectralEntropyList(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Analysis",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Analysis\Entropy");
+
+            //EadSpectraAnalysis.EadSpectraAnalysis.GenerateSpectralEntropyList(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis\Entropy");
+
+
+
+            //var test = LipidNameConverterTest.Convert2SummedLipidNameTest("TG 18:1_18:1_18:3", "TG");
+            //Console.WriteLine(test);
+            //Console.ReadLine();
+
+
             //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\NEG\20230105_agc_neg.mdproject",
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\agc_compounds.txt",
@@ -138,77 +185,6 @@ namespace CompMs.App.MsdialConsole {
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS\20230105_agc_pos.mdproject",
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\agc_compounds.txt",
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS_MSP");
-
-            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS\2022_11_09_01_52_59.mdproject",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\riken_compounds.txt",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP");
-
-            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\NEG\20230105_riken_neg_stds.mdproject",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\riken_compounds.txt",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\NEG_MSP");
-
-            //MspCurator.Batch_ExtractMSPsByCEField(@"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Curated",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis");
-
-            //MspCurator.Batch_ExtractMSPsByCEField(@"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Curated",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Analysis");
-
-            //MspCurator.Batch_ExtractMSPsByCEField(@"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS_MSP\Curated",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS_MSP\Analysis");
-
-            //MspCurator.Batch_ExtractMSPsByCEField(@"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\NEG_MSP\Curated",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\NEG_MSP\Analysis");
-
-            //MspCurator.Batch_ExtractMSPsByCEField(@"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Curated",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Analysis");
-
-            //MspCurator.Batch_ExtractMSPsByCEField(@"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\NEG_MSP\Curated",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\NEG_MSP\Analysis");
-
-            //MspCurator.ExtractMSPsByCEField(
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Curated",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Curated_40CID_15CES\MergedMSP_40CID_15CES.msp",
-            //    "CID 40V CES 15V");
-
-            //MspCurator.ExtractMSPsByCEField(
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Curated",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Curated_10KE\MergedMSP_10KE.msp",
-            //    "EAD 10eV CID 10V");
-
-            //MspCurator.ExtractMSPsByCEField(
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Curated",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Curated_15KE\MergedMSP_15KE.msp",
-            //    "EAD 15eV CID 10V");
-
-            //MspCurator.ExtractMSPsByCEField(
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Curated",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Curated_20KE\MergedMSP_20KE.msp",
-            //    "EAD 20eV CID 10V");
-
-            EadSpectraAnalysis.EadSpectraAnalysis.GenerateSpectralEntropyList(
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Analysis",
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Analysis\Entropy");
-
-            EadSpectraAnalysis.EadSpectraAnalysis.GenerateSpectralEntropyList(
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis",
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis\Entropy");
-
-            //var test = LipidNameConverterTest.Convert2SummedLipidNameTest("TG 18:1_18:1_18:3", "TG");
-            //Console.WriteLine(test);
-            //Console.ReadLine();
-
-
-            MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\NEG\20230105_agc_neg.mdproject",
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\agc_compounds.txt",
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\NEG_MSP");
-
-            MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS\20230105_agc_pos.mdproject",
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\agc_compounds.txt",
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS_MSP");
 
             //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS\2022_11_09_01_52_59.mdproject",

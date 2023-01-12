@@ -763,7 +763,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             double minMz = 0.0,
             double maxMz = 10000,
             double relativeAbundanceCutOff = 0.1,
-            double absoluteAbundanceCutOff = 2.0,
+            double absoluteAbundanceCutOff = 3.0,
             double massTolerance = 0.05,
             double massBinningValue = 1.0,
             double intensityScaleFactor = 0.5,
