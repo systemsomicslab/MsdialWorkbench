@@ -168,6 +168,20 @@ namespace CompMs.MsdialCore.Utility {
             return isotopes;
         }
 
+        public static List<IsotopicPeak> GetFineIsotopicPeaks(AlignmentChromPeakFeature peakSpot, RawSpectrum spectrum, float massTolerance, int maxIsotopes = 2) {
+            var peaks = spectrum.Spectrum;
+            var targetedMz = peakSpot.Mass;
+            var startID = peaks.LowerBound(targetedMz - massTolerance, (a, b) => a.Mz.CompareTo(b));
+            var maxIsotopeRange = (maxIsotopes + .1d) / peakSpot.PeakCharacter.Charge;
+            var isotopes = new List<IsotopicPeak>();
+            for (int i = startID; i < peaks.Length; i++) {
+                var peak = peaks[i];
+                if (peak.Mz > targetedMz + maxIsotopeRange + massTolerance) break;
+                isotopes.Add(new IsotopicPeak { Mass = peak.Mz, AbsoluteAbundance = peak.Intensity, });
+            }
+            return isotopes;
+        }
+
         public static List<IsotopicPeak> GetIsotopicFinePeaks(IReadOnlyList<RawPeakElement> spectrum, float targetedMz, float massTolerance, int chargeNum, int maxIsotopes = 2) {
             var startID = SearchCollection.LowerBound(spectrum, new RawPeakElement() { Mz = targetedMz - massTolerance }, (a, b) => a.Mz.CompareTo(b.Mz));
             //var startID = GetMs1StartIndex(targetedMz, massTolerance, spectrum);
