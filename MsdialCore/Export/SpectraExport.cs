@@ -260,10 +260,10 @@ namespace CompMs.MsdialCore.Export
             ChromatogramPeakFeature feature, 
             IEnumerable<SpectrumPeak> spectrum,
             IReadOnlyList<RawSpectrum> spectrumList,
-            DataBaseMapper mapper, 
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, 
             ParameterBase parameter) {
             using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true)) {
-                WriteChromPeakFeatureInfoAsMSP(sw, feature, mapper);
+                WriteChromPeakFeatureInfoAsMSP(sw, feature, refer);
                 WriteParameterInfoAsNist(sw, parameter);
                 var ms1Spectrum = spectrumList.FirstOrDefault(spec => spec.OriginalIndex == feature.MS1RawSpectrumIdTop);
                 if (ms1Spectrum != null) {
@@ -280,15 +280,15 @@ namespace CompMs.MsdialCore.Export
             }
         }
 
-        private static void SaveSpectraTableAsMatFormat(
+        public static void SaveSpectraTableAsMatFormat(
             Stream stream,
             AlignmentSpotProperty feature,
             IEnumerable<SpectrumPeak> spectrum, 
-            DataBaseMapper mapper,
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             ParameterBase parameter,
             AlignmentSpotProperty isotopeTrackedLastSpot) {
             using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true)) {
-                WriteChromPeakFeatureInfoAsMSP(sw, feature, mapper);
+                WriteChromPeakFeatureInfoAsMSP(sw, feature, refer);
                 if (isotopeTrackedLastSpot != null) {
                     WriteIsotopeTrackingFeature(sw, feature, parameter, isotopeTrackedLastSpot);
                 }
@@ -513,14 +513,14 @@ namespace CompMs.MsdialCore.Export
 
         private static void WriteSpectrumPeakInfo(StreamWriter sw, IEnumerable<ISpectrumPeak> massSpectra)
         {
-            if (!massSpectra.IsEmptyOrNull())
+            if (massSpectra is null) {
+                return;
+            }
+            var peaks = massSpectra.Where(spec => spec.Intensity > 0).ToList();
+            sw.WriteLine("Num Peaks: " + peaks.Count);
+            foreach (var peak in peaks)
             {
-                var peaks = massSpectra.Where(spec => spec.Intensity > 0).ToList();
-                sw.WriteLine("Num Peaks: " + peaks.Count);
-                foreach (var peak in peaks)
-                {
-                    sw.WriteLine(Math.Round(peak.Mass, 5) + "\t" + Math.Round(peak.Intensity, 0));
-                }
+                sw.WriteLine(Math.Round(peak.Mass, 5) + "\t" + Math.Round(peak.Intensity, 0));
             }
         }
 
