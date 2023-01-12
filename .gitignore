@@ -10,8 +10,8 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
-# Do not exclude dlls in 'Assemblies' folder
-!Assemblies/*
+# Exclude dlls in 'Assemblies' folder
+/Assemblies
 
 
 # Build results
@@ -233,7 +233,3 @@ _Pvt_Extensions
 # FAKE - F# Make
 .fake/
 
-
-Don't exclude shimadzu assemblies
-!Assemblies/shimadzu/x64
-Assemblies/shimadzu/x64/.svn
