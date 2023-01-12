@@ -1,6 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.Export;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -16,6 +18,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
             _exportCommand = exportCommand;
             SpectraTypes = new ReadOnlyObservableCollection<ExportspectraType>(model.SpectraTypes);
             Formats = new ReadOnlyObservableCollection<AlignmentSpectraExportFormat>(model.Formats);
+            ExportIndividually = model.ToReactivePropertySlimAsSynchronized(m => m.ExportIndividually).AddTo(Disposables);
         }
 
         public bool IsExpanded {
@@ -41,5 +44,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
         public ReadOnlyObservableCollection<ExportspectraType> SpectraTypes { get; }
 
         public ReadOnlyObservableCollection<AlignmentSpectraExportFormat> Formats { get; }
+
+        public ReactivePropertySlim<bool> ExportIndividually { get; }
     }
 }

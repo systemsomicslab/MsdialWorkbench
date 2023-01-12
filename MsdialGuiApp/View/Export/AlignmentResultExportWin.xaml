@@ -151,6 +151,7 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <ItemsControl ItemsSource="{Binding Formats}"
                                           Margin="8">
@@ -183,6 +184,8 @@
                                           VerticalContentAlignment="Center"
                                           Width="100" Margin="8,0,0,0"/>
                             </StackPanel>
+                            <CheckBox Content="Export peaks individually" IsChecked="{Binding ExportIndividually.Value}"
+                                      Margin="16,8,8,8" Height="30" Grid.Row="2"/>
                         </Grid>
                     </Expander>
                 </DataTemplate>

@@ -29,6 +29,12 @@ namespace CompMs.App.Msdial.Model.Export
 
         public ObservableCollection<AlignmentSpectraExportFormat> Formats { get; }
 
+        public bool ExportIndividually {
+            get => _exportIndividually;
+            set => SetProperty(ref _exportIndividually, value);
+        }
+        private bool _exportIndividually = false;
+
         public int CountExportFiles() {
             return Formats.Count(f => f.IsSelected);
         }
@@ -38,10 +44,23 @@ namespace CompMs.App.Msdial.Model.Export
             var cts = new CancellationTokenSource();
             var spots = _peakSpotSupplyer.Supply(alignmentFile, cts.Token);
             var msdecResults = MsdecResultsReader.ReadMSDecResults(alignmentFile.SpectraFilePath, out _, out _);
-            var outNameTemplate = $"{{0}}_{alignmentFile.FileID}_{dt:yyyy_MM_dd_HH_mm_ss}.{{1}}";
-            foreach (var format in Formats) {
-                if (format.IsSelected) {
-                    format.Export(spots, msdecResults, outNameTemplate, exportDirectory, notification);
+            if (ExportIndividually) {
+                foreach (var format in Formats) {
+                    notification?.Invoke($"Exporting {alignmentFile.FileName}");
+                    foreach (var spot in spots) {
+                        var outNameTemplate = $"{{0}}_AlignmentID {spot.MasterAlignmentID}_{spot.TimesCenter.Value:f2}_{spot.MassCenter:f4}_{dt:yyyy_MM_dd_HH_mm_ss}_{alignmentFile.FileName}.{{1}}";
+                        if (format.IsSelected) {
+                            format.Export(new[] { spot }, new[] { msdecResults[spot.MasterAlignmentID] }, outNameTemplate, exportDirectory, notification: null);
+                        }
+                    }
+                }
+            }
+            else {
+                var outNameTemplate = $"{{0}}_{dt:yyyy_MM_dd_HH_mm_ss}_{alignmentFile.FileName}.{{1}}";
+                foreach (var format in Formats) {
+                    if (format.IsSelected) {
+                        format.Export(spots, msdecResults, outNameTemplate, exportDirectory, notification);
+                    }
                 }
             }
             cts.Cancel();
