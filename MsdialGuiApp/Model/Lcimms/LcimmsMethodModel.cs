@@ -81,6 +81,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     new ExportType("CCS", new LegacyQuantValueAccessor("CCS", storage.Parameter), "CCS"),
                     new ExportType("S/N", new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
                     new ExportType("MS/MS included", new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded"),
+                    new ExportType("Identification method", new AnnotationMethodAccessor(), "IdentificationMethod"),
                 },
                 new[]
                 {
