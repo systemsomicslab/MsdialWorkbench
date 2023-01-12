@@ -7,7 +7,6 @@ using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace CompMs.MsdialCore.Export
 {
@@ -21,15 +20,15 @@ namespace CompMs.MsdialCore.Export
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
         }
 
-        public void Export(Stream stream, IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults) {
-            foreach (var (spot, result) in spots.Zip(msdecResults, (s, r) => (s, r))) {
-                SpectraExport.SaveSpectraTableAsNistFormat(stream, spot, result.Spectrum, _refer, _parameter);
+        void IAlignmentSpectraExporter.Export(Stream stream, IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults) {
+            foreach (var spot in spots) {
+                SpectraExport.SaveSpectraTableAsNistFormat(stream, spot, msdecResults[spot.MasterAlignmentID].Spectrum, _refer, _parameter);
             }
         }
 
         void IAlignmentExporter.Export(Stream stream, IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults, IReadOnlyList<AnalysisFileBean> files, IMetadataAccessor metaFormatter, IQuantValueAccessor quantAccessor, IReadOnlyList<StatsValue> stats) {
-            foreach (var (spot, result) in spots.Zip(msdecResults, (s, r) => (s, r))) {
-                SpectraExport.SaveSpectraTableAsNistFormat(stream, spot, result.Spectrum, _refer, _parameter);
+            foreach (var spot in spots) {
+                SpectraExport.SaveSpectraTableAsNistFormat(stream, spot, msdecResults[spot.MasterAlignmentID].Spectrum, _refer, _parameter);
             }
         }
     }
