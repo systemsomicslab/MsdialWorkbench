@@ -1,4 +1,5 @@
-﻿using CompMs.Common.MessagePack;
+﻿using Accord.Statistics.Kernels;
+using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parameter;
@@ -58,6 +59,7 @@ namespace CompMs.App.MsdialConsole.Export
                         return result;
                     },
                     null);
+                ((IStreamManager)streamManager).Complete();
                 
                 projectDataStorage.FixProjectFolder(projectDir);
                 return projectDataStorage.Storages.FirstOrDefault();
@@ -84,6 +86,7 @@ namespace CompMs.App.MsdialConsole.Export
             using (var streamManager = new DirectoryTreeStreamManager(Path.GetDirectoryName(projectfile))) {
                 storage = serializer.LoadAsync(streamManager, Path.GetFileName(projectfile), Path.GetDirectoryName(projectfile), string.Empty).Result;
                 storage.Parameter.ProjectFileName = Path.GetFileName(storage.Parameter.ProjectFileName);
+                ((IStreamManager)streamManager).Complete();
             }
             var previousFolder = storage.Parameter.ProjectFolderPath;
             if (projectFolder == previousFolder)

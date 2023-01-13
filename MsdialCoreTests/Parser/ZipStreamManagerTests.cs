@@ -42,6 +42,7 @@ namespace CompMs.MsdialCore.Parser.Tests
             manager.Release(s);
 
             subManager.Dispose();
+            manager.Complete();
             manager.Dispose();
 
             manager = ZipStreamManager.OpenGet(stream);
@@ -82,6 +83,7 @@ namespace CompMs.MsdialCore.Parser.Tests
             s.Close();
 
             subManager.Dispose();
+            manager.Complete();
             manager.Dispose();
         }
     }

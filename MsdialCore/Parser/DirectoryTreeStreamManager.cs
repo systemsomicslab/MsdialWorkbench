@@ -8,19 +8,16 @@ namespace CompMs.MsdialCore.Parser
     public sealed class DirectoryTreeStreamManager : IStreamManager
     {
         private readonly Dictionary<string, string> _pathToTempFile;
-        private readonly bool _moveBeforeDispose;
         private bool _disposedValue;
 
         public DirectoryTreeStreamManager(string rootDirectory = "") {
             RootDirectory = rootDirectory;
             _pathToTempFile = new Dictionary<string, string>();
-            _moveBeforeDispose = true;
         }
 
         private DirectoryTreeStreamManager(string rootDirectory, Dictionary<string, string> pathToTempFile) {
             RootDirectory = rootDirectory;
             _pathToTempFile = pathToTempFile;
-            _moveBeforeDispose = false;
         }
 
         public string RootDirectory { get; }
@@ -30,7 +27,7 @@ namespace CompMs.MsdialCore.Parser
             var file = Path.Combine(RootDirectory, key);
             _pathToTempFile.Add(file, tmpFile);
 
-            var stream = new TemporaryFileStream(tmpFile, moveBeforeDispose: true);
+            var stream = File.Open(tmpFile, FileMode.Create, FileAccess.ReadWrite);
             return Task.FromResult<Stream>(stream);
         }
 
@@ -42,7 +39,7 @@ namespace CompMs.MsdialCore.Parser
             if (!File.Exists(file)) {
                 throw new FileNotFoundException(file);
             }
-            var stream = File.Open(file, FileMode.Open);
+            var stream = File.Open(file, FileMode.Open, FileAccess.Read);
             return Task.FromResult<Stream>(stream);
         }
 
@@ -52,6 +49,10 @@ namespace CompMs.MsdialCore.Parser
 
         IStreamManager IStreamManager.Join(string relativePath) {
             return new DirectoryTreeStreamManager(Path.Combine(RootDirectory, relativePath), _pathToTempFile);
+        }
+
+        void IStreamManager.Complete() {
+            MoveFiles();
         }
 
         public void MoveFiles() {
@@ -77,10 +78,6 @@ namespace CompMs.MsdialCore.Parser
             if (!_disposedValue) {
                 if (disposing) {
 
-                }
-
-                if (_moveBeforeDispose) {
-                    MoveFiles();
                 }
                 _disposedValue = true;
             }

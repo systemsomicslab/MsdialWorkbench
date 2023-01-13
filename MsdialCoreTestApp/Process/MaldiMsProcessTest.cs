@@ -100,6 +100,7 @@ namespace CompMs.App.MsdialConsole.Process
                     serializer,
                     path => new DirectoryTreeStreamManager(path),
                     parameter => { }).Wait();
+                ((IStreamManager)streamManager).Complete();
             }
 
             var features = MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);

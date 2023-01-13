@@ -66,13 +66,14 @@ namespace CompMs.App.Msdial.Model.Core
                 await CurrentDataset.SaveAsync();
             }
             using (var fs = new TemporaryFileStream(Storage.ProjectParameter.FilePath))
-            using (var streamManager = ZipStreamManager.OpenCreate(fs)) {
+            using (IStreamManager streamManager = ZipStreamManager.OpenCreate(fs)) {
                 var serializer = new MsdialIntegrateSerializer();
                 await Storage.Save(
                     streamManager,
                     serializer,
                     path => new DirectoryTreeStreamManager(path),
                     parameter => Application.Current.Dispatcher.Invoke(() => MessageBox.Show($"Save {parameter.ProjectFilePath} failed.")));
+                streamManager.Complete();
             }
         }
 
@@ -81,13 +82,14 @@ namespace CompMs.App.Msdial.Model.Core
                 await CurrentDataset.SaveAsAsync();
             }
             using (var fs = new TemporaryFileStream(Storage.ProjectParameter.FilePath))
-            using (var streamManager = ZipStreamManager.OpenCreate(fs)) {
+            using (IStreamManager streamManager = ZipStreamManager.OpenCreate(fs)) {
                 var serializer = new MsdialIntegrateSerializer();
                 await Storage.Save(
                     streamManager,
                     serializer,
                     path => new DirectoryTreeStreamManager(path),
                     parameter => Application.Current.Dispatcher.Invoke(() => MessageBox.Show($"Save {parameter.ProjectFilePath} failed.")));
+                streamManager.Complete();
             }
         }
 
