@@ -65,7 +65,7 @@ namespace CompMs.App.Msdial.Model.Core
             if (!(CurrentDataset is null)) {
                 await CurrentDataset.SaveAsync();
             }
-            using (var fs = File.Open(Storage.ProjectParameter.FilePath, FileMode.Create))
+            using (var fs = new TemporaryFileStream(Storage.ProjectParameter.FilePath))
             using (var streamManager = ZipStreamManager.OpenCreate(fs)) {
                 var serializer = new MsdialIntegrateSerializer();
                 await Storage.Save(
@@ -80,7 +80,7 @@ namespace CompMs.App.Msdial.Model.Core
             if (!(CurrentDataset is null)) {
                 await CurrentDataset.SaveAsAsync();
             }
-            using (var fs = File.Open(Storage.ProjectParameter.FilePath, FileMode.Create))
+            using (var fs = new TemporaryFileStream(Storage.ProjectParameter.FilePath))
             using (var streamManager = ZipStreamManager.OpenCreate(fs)) {
                 var serializer = new MsdialIntegrateSerializer();
                 await Storage.Save(

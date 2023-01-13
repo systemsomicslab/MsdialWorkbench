@@ -80,10 +80,11 @@ namespace CompMs.App.MsdialConsole.Export
             var projectFolder = Path.GetDirectoryName(projectfile);
 
             var serializer = new MsdialIntegrateSerializer();
-            var streamManager = new DirectoryTreeStreamManager(Path.GetDirectoryName(projectfile));
-            var storage = serializer.LoadAsync(streamManager, Path.GetFileName(projectfile), Path.GetDirectoryName(projectfile), string.Empty).Result;
-            storage.Parameter.ProjectFileName = Path.GetFileName(storage.Parameter.ProjectFileName);
-
+            IMsdialDataStorage<ParameterBase> storage;
+            using (var streamManager = new DirectoryTreeStreamManager(Path.GetDirectoryName(projectfile))) {
+                storage = serializer.LoadAsync(streamManager, Path.GetFileName(projectfile), Path.GetDirectoryName(projectfile), string.Empty).Result;
+                storage.Parameter.ProjectFileName = Path.GetFileName(storage.Parameter.ProjectFileName);
+            }
             var previousFolder = storage.Parameter.ProjectFolderPath;
             if (projectFolder == previousFolder)
                 return storage;

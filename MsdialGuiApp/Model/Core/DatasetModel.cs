@@ -85,12 +85,13 @@ namespace CompMs.App.Msdial.Model.Core
 
         public Task SaveAsync() {
             // TODO: implement process when project save failed.
-            var streamManager = new DirectoryTreeStreamManager(Storage.Parameter.ProjectFolderPath);
-            return Task.WhenAll(new[]
-            {
-                Storage?.SaveAsync(streamManager, Storage.Parameter.ProjectFileName, string.Empty) ?? Task.CompletedTask,
-                Method?.SaveAsync() ?? Task.CompletedTask,
-            });
+            using (var streamManager = new DirectoryTreeStreamManager(Storage.Parameter.ProjectFolderPath)) {
+                return Task.WhenAll(new[]
+                {
+                    Storage?.SaveAsync(streamManager, Storage.Parameter.ProjectFileName, string.Empty) ?? Task.CompletedTask,
+                    Method?.SaveAsync() ?? Task.CompletedTask,
+                });
+            }
         }
 
         public async Task SaveAsAsync() {
@@ -175,10 +176,11 @@ namespace CompMs.App.Msdial.Model.Core
             var projectFolder = Path.GetDirectoryName(projectfile);
             var projectFileName = Path.GetFileName(projectfile);
             var serializer = new MsdialIntegrateSerializer();
-            var streamManager = new DirectoryTreeStreamManager(projectFolder);
-            var storage = await serializer.LoadAsync(streamManager, projectFileName, projectFolder, string.Empty);
-            storage.FixDatasetFolder(projectFolder);
-            return storage;
+            using (var streamManager = new DirectoryTreeStreamManager(projectFolder)) {
+                var storage = await serializer.LoadAsync(streamManager, projectFileName, projectFolder, string.Empty);
+                storage.FixDatasetFolder(projectFolder);
+                return storage;
+            }
         }
     }
 }
