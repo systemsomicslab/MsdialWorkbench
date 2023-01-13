@@ -95,32 +95,33 @@ namespace CompMs.App.Msdial.Model.Core
         }
 
         public async Task SaveAsAsync() {
-            // TODO: Move these dialogs to the view.
-            var sfd = new SaveFileDialog
+            string fileName = string.Empty;
+            var request = new SaveFileNameRequest(file => fileName = file)
             {
                 Filter = "Dataset file(*.mddata)|*.mddata",
                 Title = "Save project dialog",
-                InitialDirectory = Storage.Parameter.ProjectFolderPath,
             };
+            _broker.Publish(request);
+            // TODO: Move these dialogs to the view.
 
-            if (sfd.ShowDialog() == true) {
-                if (Path.GetDirectoryName(sfd.FileName) != Storage.Parameter.ProjectFolderPath) {
-                    MessageBox.Show("Save folder should be the same folder as analysis files.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-
-                var message = new ShortMessageWindow()
-                {
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                    Text = "Saving the project as...",
-                };
-
-                message.Show();
-                Storage.Parameter.ProjectFileName = Path.GetFileName(sfd.FileName);
-                Storage.FixDatasetFolder(Path.GetDirectoryName(sfd.FileName));
-                await SaveAsync(); // Shouldn't use ConfigureAwait(true) 
-                message.Close();
+            if (request.Result != true) {
+                return;
             }
+            if (Path.GetDirectoryName(fileName) != Storage.Parameter.ProjectFolderPath) {
+                MessageBox.Show("Save folder should be the same folder as analysis files.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var message = new ShortMessageWindow()
+            {
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Text = "Saving the project as...",
+            };
+            message.Show();
+            Storage.Parameter.ProjectFileName = Path.GetFileName(fileName);
+            Storage.FixDatasetFolder(Path.GetDirectoryName(fileName));
+            await SaveAsync(); // Shouldn't use ConfigureAwait(true) 
+            message.Close();
         }
 
         public async Task LoadAsync() {
