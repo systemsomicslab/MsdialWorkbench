@@ -20,7 +20,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -166,7 +165,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             FocusNavigatorViewModel = new FocusNavigatorViewModel(model.FocusNavigatorModel).AddTo(Disposables);
 
             SaveMs2RawSpectrumCommand = model.CanSaveRawSpectra
-                .ToAsyncReactiveCommand<Window>()
+                .ToAsyncReactiveCommand()
                 .WithSubscribe(SaveRawSpectraAsync)
                 .AddTo(Disposables);
 
@@ -223,10 +222,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
         }
 
-        public DelegateCommand<Window> SaveMs2SpectrumCommand => saveMs2SpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));
-        private DelegateCommand<Window> saveMs2SpectrumCommand;
+        public DelegateCommand SaveMs2SpectrumCommand => _saveMs2SpectrumCommand ?? (_saveMs2SpectrumCommand = new DelegateCommand(SaveSpectra, _model.CanSaveSpectra));
+        private DelegateCommand _saveMs2SpectrumCommand;
 
-        public AsyncReactiveCommand<Window> SaveMs2RawSpectrumCommand { get; }
+        public AsyncReactiveCommand SaveMs2RawSpectrumCommand { get; }
         public PeakInformationViewModel PeakInformationViewModel { get; }
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
         public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
@@ -234,7 +233,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public ViewModelBase[] PeakDetailViewModels { get; }
         public IObservable<ProteinResultContainerModel> ProteinResultContainerAsObservable { get; }
 
-        private void SaveSpectra(Window owner) {
+        private void SaveSpectra() {
             var filename = string.Empty;
             var request = new SaveFileNameRequest(file => filename = file)
             {
@@ -250,11 +249,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
         }
 
-        private bool CanSaveSpectra(Window owner) {
-            return this._model.CanSaveSpectra();
-        }
-
-        private async Task SaveRawSpectraAsync(Window owner) {
+        private async Task SaveRawSpectraAsync() {
             var filename = string.Empty;
             var request = new SaveFileNameRequest(file => filename = file)
             {
@@ -268,10 +263,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             if (request.Result == true) {
                 await _model.SaveRawSpectra(filename).ConfigureAwait(false);
             }
-        }
-
-        private bool CanSaveRawSpectra(Window owner) {
-            return _model.CanSaveRawSpectra.Value;
         }
 
         // IResultViewModel
