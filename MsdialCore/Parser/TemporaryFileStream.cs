@@ -5,13 +5,15 @@ namespace CompMs.MsdialCore.Parser
     public sealed class TemporaryFileStream : Stream
     {
         private readonly string _filePath;
+        private readonly bool _moveBeforeDispose;
         private readonly string _tempFile;
         private Stream _tempStream;
 
-        public TemporaryFileStream(string filePath) {
+        public TemporaryFileStream(string filePath, bool moveBeforeDispose = false) {
             _tempFile = Path.GetTempFileName();
             _tempStream = File.Open(_tempFile, FileMode.Create, FileAccess.Write, FileShare.None);
             _filePath = filePath;
+            _moveBeforeDispose = moveBeforeDispose;
         }
 
         public override bool CanRead => _tempStream.CanRead;
@@ -63,7 +65,12 @@ namespace CompMs.MsdialCore.Parser
 
         protected override void Dispose(bool disposing) {
             base.Dispose(disposing);
-            CloseTempStream();
+            if (_moveBeforeDispose) {
+                Move();
+            }
+            else {
+                CloseTempStream();
+            }
         }
     }
 }
