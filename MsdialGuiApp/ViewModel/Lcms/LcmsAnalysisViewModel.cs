@@ -12,9 +12,9 @@ using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.DataObj;
-using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,12 +32,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
         private readonly IWindowService<PeakSpotTableViewModelBase> _proteomicsTableService;
+        private readonly IMessageBroker _broker;
 
         public LcmsAnalysisViewModel(
             LcmsAnalysisModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
+            IMessageBroker broker,
             FocusControlManager focusControlManager) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
@@ -63,7 +65,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             this._compoundSearchService = compoundSearchService;
             this._peakSpotTableService = peakSpotTableService;
             this._proteomicsTableService = proteomicsTableService;
-
+            _broker = broker;
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
 
             var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
@@ -233,16 +235,18 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public IObservable<ProteinResultContainerModel> ProteinResultContainerAsObservable { get; }
 
         private void SaveSpectra(Window owner) {
-            var sfd = new SaveFileDialog {
+            var filename = string.Empty;
+            var request = new SaveFileNameRequest(file => filename = file)
+            {
                 Title = "Save spectra",
                 Filter = "NIST format(*.msp)|*.msp", // MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf;
                 RestoreDirectory = true,
                 AddExtension = true,
             };
+            _broker.Publish(request);
 
-            if (sfd.ShowDialog(owner) == true) {
-                var filename = sfd.FileName;
-                this._model.SaveSpectra(filename);
+            if (request.Result == true) {
+                _model.SaveSpectra(filename);
             }
         }
 
@@ -251,15 +255,17 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         private async Task SaveRawSpectraAsync(Window owner) {
-            var sfd = new SaveFileDialog {
+            var filename = string.Empty;
+            var request = new SaveFileNameRequest(file => filename = file)
+            {
                 Title = "Save raw spectra",
                 Filter = "NIST format(*.msp)|*.msp", // MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf;
                 RestoreDirectory = true,
                 AddExtension = true,
             };
+            _broker.Publish(request);
 
-            if (sfd.ShowDialog(owner) == true) {
-                var filename = sfd.FileName;
+            if (request.Result == true) {
                 await _model.SaveRawSpectra(filename).ConfigureAwait(false);
             }
         }
