@@ -257,7 +257,8 @@ namespace CompMs.App.Msdial.View.Core
                 AddExtension = request.AddExtension,
             };
 
-            if (sfd.ShowDialog(this) == true) {
+            request.Result = sfd.ShowDialog(this);
+            if (request.Result == true) {
                 request.Run(sfd.FileName);
             }
         }

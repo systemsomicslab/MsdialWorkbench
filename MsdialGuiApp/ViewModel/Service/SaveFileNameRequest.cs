@@ -18,5 +18,7 @@ namespace CompMs.App.Msdial.ViewModel.Service
         public string Filter { get; set; }
         public bool RestoreDirectory { get; set; } = true;
         public bool AddExtension { get; set; } = true;
+
+        public bool? Result { get; set; } = null;
     }
 }
