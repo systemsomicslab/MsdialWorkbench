@@ -74,6 +74,7 @@ namespace CompMs.MsdialImmsCore.Process
             var resultsTask = Task.WhenAll(MSDecResultCollection.DeserializeAsync(file));
 
             var chromPeakFeatures = await peakTask.ConfigureAwait(false);
+            chromPeakFeatures.ClearMatchResultProperties();
             var mSDecResultCollections = await resultsTask.ConfigureAwait(false);
             // annotations
             Console.WriteLine("Annotation started");

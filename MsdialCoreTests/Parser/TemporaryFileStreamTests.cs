@@ -47,6 +47,15 @@ namespace CompMs.MsdialCore.Parser.Tests
             }
         }
 
+        [TestMethod()]
+        public void FileAccessTest() {
+            using (var stream = new TemporaryFileStream(filePath)) {
+                Assert.IsTrue(stream.CanRead);
+                Assert.IsTrue(stream.CanWrite);
+                Assert.IsTrue(stream.CanSeek);
+            }
+        }
+
         [TestInitialize()]
         public void TestInitialize() {
             filePath = Path.GetTempFileName();

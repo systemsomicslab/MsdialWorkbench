@@ -474,6 +474,11 @@ namespace CompMs.MsdialCore.DataObj
             SetMatchResultProperty(refer.Refer(representative), representative, evaluator);
         }
 
+        public void ClearMatchResultProperty() {
+            DataAccess.ClearMoleculePropertyInfomation(this);
+            MatchResults.ClearResults();
+        }
+
         public void SetMs2SpectrumId(PeakMs2Spectra spectra) {
             if (spectra.IsEmpty) {
                 return;

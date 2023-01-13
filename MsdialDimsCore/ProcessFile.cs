@@ -87,6 +87,7 @@ namespace CompMs.MsdialDimsCore
 
             Console.WriteLine("Annotation started");
             var peakFeatures = await peakFeaturesTask.ConfigureAwait(false);
+            peakFeatures.ClearMatchResultProperties();
             var targetCE = Math.Round(provider.GetMinimumCollisionEnergy(), 2);
             var msdecResultss = await Task.WhenAll(msdecResultssTask).ConfigureAwait(false);
             var msdecResults = msdecResultss.FirstOrDefault(results => results.CollisionEnergy == targetCE) ?? msdecResultss.First();

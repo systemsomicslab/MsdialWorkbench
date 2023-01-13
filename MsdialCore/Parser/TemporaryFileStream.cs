@@ -11,7 +11,7 @@ namespace CompMs.MsdialCore.Parser
 
         public TemporaryFileStream(string filePath, bool moveBeforeDispose = false) {
             _tempFile = Path.GetTempFileName();
-            _tempStream = File.Open(_tempFile, FileMode.Create, FileAccess.Write, FileShare.None);
+            _tempStream = File.Open(_tempFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
             _filePath = filePath;
             _moveBeforeDispose = moveBeforeDispose;
         }

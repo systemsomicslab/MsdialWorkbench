@@ -75,6 +75,7 @@ namespace CompMs.MsdialLcMsApi.Process
             token.ThrowIfCancellationRequested();
             Console.WriteLine("Annotation started");
             var chromPeakFeatures = await peakTask.ConfigureAwait(false);
+            chromPeakFeatures.ClearMatchResultProperties();
             var mSDecResultCollections = await resultsTask.ConfigureAwait(false);
             _peakAnnotationProcess.Annotate(mSDecResultCollections, chromPeakFeatures.Items, provider, token, reportAction);
 

@@ -20,6 +20,12 @@ namespace CompMs.MsdialCore.DataObj
 
         public ReadOnlyCollection<ChromatogramPeakFeature> Items { get; }
 
+        public void ClearMatchResultProperties() {
+            foreach (var item in _items) {
+                item.ClearMatchResultProperty();
+            }
+        }
+
         public void SetRawMs1Id(Chromatogram_temp2 chromatogram) {
             foreach (var item in _items) {
                 var peakFeature = item.PeakFeature;
