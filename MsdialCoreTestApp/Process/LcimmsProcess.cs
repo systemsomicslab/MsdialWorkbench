@@ -54,22 +54,23 @@ namespace CompMs.App.MsdialConsole.Process {
                 },
                 evaluator,
                 annotator);
-            var streamManager = new DirectoryTreeStreamManager(outputFolder);
             var exporter = new AnalysisCSVExporter("\t");
             var metadata = new LcmsAnalysisMetadataAccessor(annotator, container.MsdialLcImMsParameter);
-            foreach (var file in files) {
-                FileProcess.Run(file, spectrumProviderFactory, accProviderFactory, annotationProcess, annotator, container);
-                var features = MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);
-                var msdecs = MsdecResultsReader.ReadMSDecResults(file.DeconvolutionFilePath, out _, out _);
-                using (var stream = streamManager.Create(file.AnalysisFileName + ".txt").Result) {
-                    exporter.Export(stream, features, msdecs, spectrumProviderFactory.Create(file), metadata);
+            using (var streamManager = new DirectoryTreeStreamManager(outputFolder)) {
+                foreach (var file in files) {
+                    FileProcess.Run(file, spectrumProviderFactory, accProviderFactory, annotationProcess, annotator, container);
+                    var features = MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);
+                    var msdecs = MsdecResultsReader.ReadMSDecResults(file.DeconvolutionFilePath, out _, out _);
+                    using (var stream = streamManager.Create(file.AnalysisFileName + ".txt").Result) {
+                        exporter.Export(stream, features, msdecs, spectrumProviderFactory.Create(file), metadata);
+                    }
+    #if DEBUG
+                    Console.WriteLine($"Test: {features.SelectMany(feature => feature.DriftChromFeatures, (feature, drift) => (feature.Mass, feature.PeakHeightTop, drift.Mass, drift.PeakHeightTop).GetHashCode()).Aggregate((a, b) => a ^ b)}");
+    #endif
                 }
-#if DEBUG
-                Console.WriteLine($"Test: {features.SelectMany(feature => feature.DriftChromFeatures, (feature, drift) => (feature.Mass, feature.PeakHeightTop, drift.Mass, drift.PeakHeightTop).GetHashCode()).Aggregate((a, b) => a ^ b)}");
-#endif
-            }
-            if (isProjectSaved) {
-                container.SaveAsync(streamManager, container.MsdialLcImMsParameter.ProjectFileName, string.Empty).Wait();
+                if (isProjectSaved) {
+                    container.SaveAsync(streamManager, container.MsdialLcImMsParameter.ProjectFileName, string.Empty).Wait();
+                }
             }
             return 0;
         }
