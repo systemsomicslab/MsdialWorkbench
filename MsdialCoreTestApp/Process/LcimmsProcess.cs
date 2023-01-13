@@ -71,6 +71,7 @@ namespace CompMs.App.MsdialConsole.Process {
                 if (isProjectSaved) {
                     container.SaveAsync(streamManager, container.MsdialLcImMsParameter.ProjectFileName, string.Empty).Wait();
                 }
+                ((IStreamManager)streamManager).Complete();
             }
             return 0;
         }

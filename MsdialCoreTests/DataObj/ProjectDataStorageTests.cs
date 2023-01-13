@@ -27,8 +27,9 @@ namespace CompMs.MsdialCore.DataObj.Tests
 
             var serializer = new MockSerializer();
             var stream = new MemoryStream();
-            using (var streamManager = ZipStreamManager.OpenCreate(stream)) {
+            using (IStreamManager streamManager = ZipStreamManager.OpenCreate(stream)) {
                 await proj.Save(streamManager, serializer, _ => streamManager, null);
+                streamManager.Complete();
             }
 
             using (var streamManager = ZipStreamManager.OpenGet(stream)) {
@@ -63,8 +64,9 @@ namespace CompMs.MsdialCore.DataObj.Tests
 
             var serializer = new FaultSerializer();
             var stream = new MemoryStream();
-            using (var streamManager = ZipStreamManager.OpenCreate(stream)) {
+            using (IStreamManager streamManager = ZipStreamManager.OpenCreate(stream)) {
                 await proj.Save(streamManager, serializer, null, null);
+                streamManager.Complete();
             }
 
             var parameters = new List<ProjectBaseParameter>();
@@ -107,8 +109,9 @@ namespace CompMs.MsdialCore.DataObj.Tests
 
             var serializer = new FaultIfDifferentDirectorySerializer("Folder");
             var stream = new MemoryStream();
-            using (var streamManager = ZipStreamManager.OpenCreate(stream)) {
+            using (IStreamManager streamManager = ZipStreamManager.OpenCreate(stream)) {
                 await proj.Save(streamManager, serializer, _ => streamManager, null);
+                streamManager.Complete();
             }
 
             // project moved

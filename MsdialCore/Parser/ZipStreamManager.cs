@@ -53,6 +53,10 @@ namespace CompMs.MsdialCore.Parser
             return new ZipStreamManager(zipArchive, semaphore, compressionLevel, Path.Combine(_rootPath, relativePath));
         }
 
+        void IStreamManager.Complete() {
+
+        }
+
         public static ZipStreamManager OpenCreate(Stream stream, CompressionLevel compressionLevel = CompressionLevel.NoCompression, bool leaveOpen = true) {
             return new ZipStreamManager(stream, ZipArchiveMode.Update, compressionLevel, leaveOpen);
         }

@@ -111,6 +111,7 @@ namespace CompMs.MsdialCore.DataObj
             try {
                 using (var streamManager = datasetStreamManagerFactory(dir)) {
                     await serializer.SaveAsync(storage, streamManager, Path.GetFileNameWithoutExtension(file), dir);
+                    streamManager.Complete();
                 }
             }
             catch (Exception ex) {
@@ -134,6 +135,7 @@ namespace CompMs.MsdialCore.DataObj
                 try {
                     using (var streamManager = datasetStreamManagerFactory(projectDir)) {
                         var storage = await LoadDataStorageCore(streamManager, serializer, projectDir, projectFile);
+                        streamManager.Complete();
                         return storage;
                     }
                 }
@@ -145,6 +147,7 @@ namespace CompMs.MsdialCore.DataObj
             try {
                 using (var streamManager = datasetStreamManagerFactory(newProjectDir)) {
                     var storage = await LoadDataStorageCore(streamManager, serializer, newProjectDir, projectFile);
+                    streamManager.Complete();
                     storage.FixDatasetFolder(newProjectDir);
                     return storage;
                 }
@@ -168,6 +171,7 @@ namespace CompMs.MsdialCore.DataObj
             try {
                 using (var streamManager = datasetStreamManagerFactory(projectDir)) {
                     var storage = await LoadDataStorageCore(streamManager, serializer, projectDir, projectFile);
+                    streamManager.Complete();
                     storage.FixDatasetFolder(projectDir);
                     return storage;
                 }

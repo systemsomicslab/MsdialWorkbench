@@ -83,14 +83,15 @@ namespace CompMs.App.Msdial.Model.Core
         public AnalysisFilePropertyResetModel AnalysisFilePropertyResetModel { get; }
         public FileClassSetModel FileClassSetModel { get; }
 
-        public Task SaveAsync() {
+        public async Task SaveAsync() {
             // TODO: implement process when project save failed.
             using (var streamManager = new DirectoryTreeStreamManager(Storage.Parameter.ProjectFolderPath)) {
-                return Task.WhenAll(new[]
+                await Task.WhenAll(new[]
                 {
                     Storage?.SaveAsync(streamManager, Storage.Parameter.ProjectFileName, string.Empty) ?? Task.CompletedTask,
                     Method?.SaveAsync() ?? Task.CompletedTask,
-                });
+                }).ConfigureAwait(false);
+                ((IStreamManager)streamManager).Complete();
             }
         }
 
@@ -177,8 +178,9 @@ namespace CompMs.App.Msdial.Model.Core
             var projectFolder = Path.GetDirectoryName(projectfile);
             var projectFileName = Path.GetFileName(projectfile);
             var serializer = new MsdialIntegrateSerializer();
-            using (var streamManager = new DirectoryTreeStreamManager(projectFolder)) {
+            using (IStreamManager streamManager = new DirectoryTreeStreamManager(projectFolder)) {
                 var storage = await serializer.LoadAsync(streamManager, projectFileName, projectFolder, string.Empty);
+                streamManager.Complete();
                 storage.FixDatasetFolder(projectFolder);
                 return storage;
             }

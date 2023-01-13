@@ -13,5 +13,7 @@ namespace CompMs.MsdialCore.Parser
         void Release(Stream stream);
 
         IStreamManager Join(string relativePath);
+
+        void Complete();
     }
 }

@@ -60,8 +60,9 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
 
             var memory = new MemoryStream();
             var serializer = new MsdialIntegrateSerializer();
-            using (var manager = ZipStreamManager.OpenCreate(memory)) {
+            using (IStreamManager manager = ZipStreamManager.OpenCreate(memory)) {
                 await serializer.SaveAsync(storage, manager, "Test", "TestFolder");
+                manager.Complete();
             }
 
             using (var manager = ZipStreamManager.OpenGet(memory)) {
@@ -116,8 +117,9 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
 
             var memory = new MemoryStream();
             var serializer = new MsdialIntegrateSerializer();
-            using (var manager = ZipStreamManager.OpenCreate(memory)) {
+            using (IStreamManager manager = ZipStreamManager.OpenCreate(memory)) {
                 await serializer.SaveAsync(storage, manager, "Test", "TestFolder");
+                manager.Complete();
             }
 
             using (var manager = ZipStreamManager.OpenGet(memory)) {
@@ -166,8 +168,9 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
 
             var memory = new MemoryStream();
             var serializer = new MsdialIntegrateSerializer();
-            using (var manager = ZipStreamManager.OpenCreate(memory)) {
+            using (IStreamManager manager = ZipStreamManager.OpenCreate(memory)) {
                 await serializer.SaveAsync(storage, manager, "Test", "TestFolder");
+                manager.Complete();
             }
 
             using (var manager = ZipStreamManager.OpenGet(memory)) {
@@ -220,8 +223,9 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
 
             var memory = new MemoryStream();
             var serializer = new MsdialIntegrateSerializer();
-            using (var manager = ZipStreamManager.OpenCreate(memory)) {
+            using (IStreamManager manager = ZipStreamManager.OpenCreate(memory)) {
                 await serializer.SaveAsync(storage, manager, "Test", "TestFolder");
+                manager.Complete();
             }
 
             using (var manager = ZipStreamManager.OpenGet(memory)) {
@@ -272,8 +276,9 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
 
             var memory = new MemoryStream();
             var serializer = new MsdialIntegrateSerializer();
-            using (var manager = ZipStreamManager.OpenCreate(memory)) {
+            using (IStreamManager manager = ZipStreamManager.OpenCreate(memory)) {
                 await serializer.SaveAsync(storage, manager, "Test", "TestFolder");
+                manager.Complete();
             }
 
             using (var manager = ZipStreamManager.OpenGet(memory)) {

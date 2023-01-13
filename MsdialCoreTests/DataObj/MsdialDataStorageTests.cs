@@ -44,8 +44,9 @@ namespace CompMs.MsdialCore.DataObj.Tests
             storage.DataBaseMapper.Add(dbs.MetabolomicsDataBases[0].Pairs[0].AnnotatorID, dbs.MetabolomicsDataBases[0].DataBase);
 
             var memory = new MemoryStream();
-            using (var manager = ZipStreamManager.OpenCreate(memory)) {
+            using (IStreamManager manager = ZipStreamManager.OpenCreate(memory)) {
                 await storage.SaveAsync(manager, "Test", "TestFolder");
+                manager.Complete();
             }
 
             using (var manager = ZipStreamManager.OpenGet(memory)) {
