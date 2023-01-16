@@ -159,6 +159,13 @@ namespace CompMs.App.MsdialConsole {
             //MspCurator.Batch_ExtractMSPsByCEField(@"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Curated",
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Analysis");
 
+            // step 2': separate files by the collision information, then, merge them into one msp file with the filter of alkaloids
+            //MspCurator.Batch_ExtractMSPsByCEField(@"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Curated",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis_Alkaloids", "Superclass_Alkaloids");
+
+            //MspCurator.Batch_ExtractMSPsByCEField(@"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Curated",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Analysis_Alkaloids", "Superclass_Alkaloids");
+
 
             // step 3: calculate spectrum entropy statistics
             //EadSpectraAnalysis.EadSpectraAnalysis.GenerateSpectralEntropyList(
@@ -169,32 +176,46 @@ namespace CompMs.App.MsdialConsole {
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis",
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis\Entropy");
 
+            EadSpectraAnalysis.EadSpectraAnalysis.GenerateSpectralEntropyListAsSeparateFormat(
+                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis",
+                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\all_compounds_list.txt",
+                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\all_compounds_entropies.txt");
+
+            // step 4: generate molecular networking file
+            //EadSpectraAnalysis.EadSpectraAnalysis.GenerateMoleculerSpectrumNetforkFilesByModifiedDotProductFunction(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis\Network");
+            //EadSpectraAnalysis.EadSpectraAnalysis.GenerateMoleculerSpectrumNetforkFilesByModifiedDotProductFunction(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Analysis",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Analysis\Network");
+
+            //// step 4': generate molecular networking file for alkalod network
+            //EadSpectraAnalysis.EadSpectraAnalysis.GenerateMoleculerSpectrumNetforkFilesByModifiedDotProductFunction(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis_Alkaloids",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis_Alkaloids\Network");
+            //EadSpectraAnalysis.EadSpectraAnalysis.GenerateMoleculerSpectrumNetforkFilesByModifiedDotProductFunction(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Analysis_Alkaloids",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Analysis_Alkaloids\Network");
+
+            // step 5': export true false count
+            //EadSpectraAnalysis.EadSpectraAnalysis.CountTrueFalse(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Analysis_Alkaloids\Network",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Analysis_Alkaloids\TrueFalseCount.csv");
+            //EadSpectraAnalysis.EadSpectraAnalysis.CountTrueFalse(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis_Alkaloids\Network",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis_Alkaloids\TrueFalseCount.csv");
+
+            //EadSpectraAnalysis.EadSpectraAnalysis.CountTrueFalse(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Analysis\Network",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\NEG_MSP\Analysis\TrueFalseCount.csv");
+            //EadSpectraAnalysis.EadSpectraAnalysis.CountTrueFalse(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis\Network",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis\TrueFalseCount.csv");
 
 
-            //var test = LipidNameConverterTest.Convert2SummedLipidNameTest("TG 18:1_18:1_18:3", "TG");
-            //Console.WriteLine(test);
-            //Console.ReadLine();
-
-
-            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\NEG\20230105_agc_neg.mdproject",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\agc_compounds.txt",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\NEG_MSP");
-
-            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS\20230105_agc_pos.mdproject",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\agc_compounds.txt",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS_MSP");
-
-            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS\2022_11_09_01_52_59.mdproject",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\riken_compounds.txt",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP");
-
-            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\NEG\20230105_riken_neg_stds.mdproject",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\riken_compounds.txt",
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\NEG_MSP");
+            //EadSpectraAnalysis.EadSpectraAnalysis.TestMolecularNetworkingFunctions(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\test\two_isorhamnetin_test.msp",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\test\result");
 
             //MspCurator.MergeMSPs(
             //    @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\POS",

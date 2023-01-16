@@ -656,7 +656,7 @@ namespace CompMs.Common.Algorithm.Scoring {
         }
 
         public static double[] GetModifiedDotProductScore(
-            IMSScanProperty prop1, 
+            IMSScanProperty prop1,
             IMSScanProperty prop2,
             double massTolerance = 0.05,
             MassToleranceType massToleranceType = MassToleranceType.Da
@@ -674,9 +674,9 @@ namespace CompMs.Common.Algorithm.Scoring {
             }
 
             var product = matchedPeaks.Sum(n => n.Intensity * n.MatchedIntensity);
-            var scaler1 = matchedPeaks.Sum(n => Math.Sqrt(n.Intensity));
-            var scaler2 = matchedPeaks.Sum(n => Math.Sqrt(n.MatchedIntensity));
-            return new double[] { product / (scaler1 * scaler2), matchedPeaks.Count };
+            var scaler1 = matchedPeaks.Sum(n => n.Intensity * n.Intensity);
+            var scaler2 = matchedPeaks.Sum(n => n.MatchedIntensity * n.MatchedIntensity);
+            return new double[] { product / (Math.Sqrt(scaler1) * Math.Sqrt(scaler2)), matchedPeaks.Count };
         }
 
         public static double[] GetBonanzaScore(
@@ -701,7 +701,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             var scaler2 = prop2.Spectrum.Where(n => n.IsMatched == false).Sum(n => Math.Pow(n.Intensity, 2));
             return new double[] { product / (product + scaler1 + scaler2), matchedPeaks.Count };
         }
- 
+
         public static void SearchMatchedPeaks(
             List<SpectrumPeak> ePeaks,
             double ePrecursor, // small precursor
@@ -711,6 +711,8 @@ namespace CompMs.Common.Algorithm.Scoring {
             MassToleranceType massTolType,
             out List<MatchedPeak> matchedPeaks) {
             matchedPeaks = new List<MatchedPeak>();
+            foreach (var e in ePeaks) e.IsMatched = false;
+            foreach (var e in rPeaks) e.IsMatched = false;
 
             //match definition: if product ion or neutral loss are within the mass tolerance, it will be recognized as MATCH.
             //The smallest intensity difference will be recognized as highest match.
@@ -771,18 +773,38 @@ namespace CompMs.Common.Algorithm.Scoring {
             double massDelta = 1,
             int maxPeakNumInDelta = 12,
             MassToleranceType massToleranceType = MassToleranceType.Da,
-            bool isRemoveIsotopes = true,
-            bool isRemoveAfterPrecursor = true) {
-            peaks = SpectrumHandler.GetRefinedPeaklist(peaks, relativeAbundanceCutOff, absoluteAbundanceCutOff, minMz, maxMz, peakPrecursorMz, massTolerance, massToleranceType, 10000, isRemoveIsotopes, isRemoveAfterPrecursor);
+            bool isBrClConsideredForIsotopes = false,
+            bool isRemoveIsotopes = false,
+            bool removeAfterPrecursor = true) {
+            //Console.WriteLine("Original peaks");
+            //foreach (var peak in peaks) {
+            //    Console.WriteLine(peak.Mass + "\t" + peak.Intensity);
+            //}
+
+            peaks = SpectrumHandler.GetRefinedPeaklist(peaks, relativeAbundanceCutOff, absoluteAbundanceCutOff, minMz, maxMz, peakPrecursorMz, massTolerance, massToleranceType, 1, isBrClConsideredForIsotopes, isRemoveIsotopes, removeAfterPrecursor);
+            //Console.WriteLine("Refined peaks");
+            //foreach (var peak in peaks) {
+            //    Console.WriteLine(peak.Mass + "\t" + peak.Intensity);
+            //}
+
+
             peaks = SpectrumHandler.GetBinnedSpectrum(peaks, massBinningValue);
+            //Console.WriteLine("Binned peaks");
+            //foreach (var peak in peaks) {
+            //    Console.WriteLine(peak.Mass + "\t" + peak.Intensity);
+            //}
+
             if (massDelta > 1) { // meaning the peaks are selected by ordering the intensity values
                 peaks = SpectrumHandler.GetBinnedSpectrum(peaks, massDelta, maxPeakNumInDelta);
             }
             peaks = SpectrumHandler.GetNormalizedPeaks(peaks, intensityScaleFactor, scaledMaxValue);
+            //Console.WriteLine("Normalized peaks");
+            //foreach (var peak in peaks) {
+            //    Console.WriteLine(peak.Mass + "\t" + peak.Intensity);
+            //}
+
             return peaks;
         }
-        
-
 
         /// <summary>
         /// please set the 'mached spectral peaks' list obtained from the method of GetMachedSpectralPeaks where isMatched property is set to each spectrum peak obj

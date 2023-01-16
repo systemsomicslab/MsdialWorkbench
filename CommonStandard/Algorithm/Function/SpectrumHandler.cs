@@ -24,10 +24,10 @@ namespace CompMs.Common.Algorithm.Function {
     public sealed class SpectrumHandler {
 
         public static List<SpectrumPeak> GetCombinedSpectrum(
-            List<SpectrumPeak> peaks1, 
-            List<SpectrumPeak> peaks2, 
-            double bin) {
-            
+             List<SpectrumPeak> peaks1,
+             List<SpectrumPeak> peaks2,
+             double bin) {
+
             var peaks = new List<SpectrumPeak>();
             var range2Peaks = new Dictionary<int, List<SpectrumPeak>>();
 
@@ -59,6 +59,7 @@ namespace CompMs.Common.Algorithm.Function {
         }
 
         public static List<SpectrumPeak> GetNormalizedPeaks(List<SpectrumPeak> spectrum, double powFactor, double maxValue) {
+            if (spectrum.Count == 0) return new List<SpectrumPeak>();
             var maxIntensity = Math.Pow(spectrum.Max(n => n.Intensity), powFactor);
             return spectrum.Select(n => new SpectrumPeak { Mass = n.Mass, Intensity = Math.Pow(n.Intensity, powFactor) / maxIntensity * maxValue }).ToList();
         }

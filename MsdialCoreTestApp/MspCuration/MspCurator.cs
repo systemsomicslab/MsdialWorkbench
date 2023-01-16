@@ -30,12 +30,13 @@ namespace CompMs.App.MsdialConsole.MspCuration {
             }
         }
 
-        public static void Batch_ExtractMSPsByCEField(string inputdir, string outputdir) {
+        public static void Batch_ExtractMSPsByCEField(string inputdir, string outputdir, string termfilter = "") {
             var files = Directory.GetFiles(inputdir);
             var records = new List<MoleculeMsReference>();
             foreach (var file in files) {
                 var mspRecords = MspFileParser.MspFileReader(file);
                 foreach (var mspRecord in mspRecords) {
+                    mspRecord.Comment = Path.GetFileNameWithoutExtension(file);
                     records.Add(mspRecord);
                 }
             }
@@ -61,10 +62,13 @@ namespace CompMs.App.MsdialConsole.MspCuration {
             var dir_list = Directory.GetDirectories(outputdir, "*", SearchOption.TopDirectoryOnly);
             foreach (var dir in dir_list) {
                 var dirname = Path.GetFileNameWithoutExtension(dir);
+                if (!dirname.Contains("Curated")) continue;
                 var path = Path.Combine(dir, dirname + ".msp");
+
 
                 using (var sw = new StreamWriter(path)) {
                     foreach (var record in records) {
+                        if (termfilter != "" && !record.Ontology.Contains(termfilter)) continue;
                         if (record.FragmentationCondition == dict[dirname]) {
                             MspFileParser.WriteSpectrumAsMsp(record, sw);
                         }
