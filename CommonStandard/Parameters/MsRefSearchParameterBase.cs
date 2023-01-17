@@ -24,13 +24,13 @@ namespace CompMs.Common.Parameter {
         
         // by [0-1]
         [Key(9)]
-        public float WeightedDotProductCutOff { get; set; } = 0.5F;
+        public float WeightedDotProductCutOff { get; set; } = 0.6F;
         [Key(10)]
-        public float SimpleDotProductCutOff { get; set; } = 0.5F;
+        public float SimpleDotProductCutOff { get; set; } = 0.6F;
         [Key(11)]
-        public float ReverseDotProductCutOff { get; set; } = 0.5F;
+        public float ReverseDotProductCutOff { get; set; } = 0.8F;
         [Key(12)]
-        public float MatchedPeaksPercentageCutOff { get; set; } = 0.5F;
+        public float MatchedPeaksPercentageCutOff { get; set; } = 0.25F;
         [Key(19)]
         public float AndromedaScoreCutOff { get; set; } = 0.1F;
         [Key(13)]

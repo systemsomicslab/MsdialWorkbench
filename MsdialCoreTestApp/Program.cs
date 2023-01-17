@@ -176,10 +176,15 @@ namespace CompMs.App.MsdialConsole {
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis",
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis\Entropy");
 
-            EadSpectraAnalysis.EadSpectraAnalysis.GenerateSpectralEntropyListAsSeparateFormat(
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis",
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\all_compounds_list.txt",
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\all_compounds_entropies.txt");
+            //EadSpectraAnalysis.EadSpectraAnalysis.GenerateSpectralEntropyListAsSeparateFormat(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\all_compounds_list.txt",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\all_compounds_entropies.txt");
+
+            //EadSpectraAnalysis.EadSpectraAnalysis.Check144ExistenceInMspFiles(
+            //   @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\POS_MSP\Analysis",
+            //   @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\all_compounds_list.txt",
+            //   @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\all\all_compounds_144Exists.txt");
 
             // step 4: generate molecular networking file
             //EadSpectraAnalysis.EadSpectraAnalysis.GenerateMoleculerSpectrumNetforkFilesByModifiedDotProductFunction(
@@ -308,10 +313,10 @@ namespace CompMs.App.MsdialConsole {
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\20220818_EIEIO_checked_MT\result.txt");
 
 
-            //// swai-kun for 13C plant table curation
-            //LabelDataHandler.LabelDataHandler.ExtractCorrectPeakList(
-            //    @"E:\6_Projects\PROJECT_GlycyrrhizaMetabolomics\glabra leaf\pos\pos_table_vs1.txt",
-            //    @"E:\6_Projects\PROJECT_GlycyrrhizaMetabolomics\glabra leaf\pos\pos_table_vs1_extracted.txt");
+            // swai-kun for 13C plant table curation
+            LabelDataHandler.LabelDataHandler.ExtractCorrectPeakList(
+                @"E:\6_Projects\PROJECT_GlycyrrhizaMetabolomics\glabra leaf\pos\pos_table_vs1.txt",
+                @"E:\6_Projects\PROJECT_GlycyrrhizaMetabolomics\glabra leaf\pos\pos_table_vs1_extracted.txt");
         }
 
         private static void DumpN(string file, int n) {

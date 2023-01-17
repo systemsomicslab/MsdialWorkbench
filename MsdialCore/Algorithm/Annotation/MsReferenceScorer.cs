@@ -151,11 +151,23 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         private void ValidateBase(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
-            result.IsSpectrumMatch = result.WeightedDotProduct >= parameter.WeightedDotProductCutOff
+           
+            if (omics == TargetOmics.Lipidomics) {
+                result.IsSpectrumMatch = result.WeightedDotProduct >= parameter.WeightedDotProductCutOff
+                || result.SimpleDotProduct >= parameter.SimpleDotProductCutOff
+                || result.ReverseDotProduct >= parameter.ReverseDotProductCutOff
+                || result.MatchedPeaksPercentage >= parameter.MatchedPeaksPercentageCutOff;
+                if ((reference.CompoundClass == "EtherTG" || reference.CompoundClass == "EtherDG") && result.SimpleDotProduct < parameter.SimpleDotProductCutOff) {
+                    result.IsSpectrumMatch = false;
+                }
+            }
+            else {
+                result.IsSpectrumMatch = result.WeightedDotProduct >= parameter.WeightedDotProductCutOff
                 && result.SimpleDotProduct >= parameter.SimpleDotProductCutOff
                 && result.ReverseDotProduct >= parameter.ReverseDotProductCutOff
                 && result.MatchedPeaksPercentage >= parameter.MatchedPeaksPercentageCutOff
                 && result.MatchedPeaksCount >= parameter.MinimumSpectrumMatch;
+            }
 
             var ms1Tol = MolecularFormulaUtility.FixMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;

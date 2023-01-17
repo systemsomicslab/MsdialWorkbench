@@ -106,6 +106,53 @@ namespace CompMs.App.MsdialConsole.EadSpectraAnalysis {
             //}
         }
 
+        public static void Check144ExistenceInMspFiles(string inputdir, string mspfilelist, string output) {
+            var folders = Directory.GetDirectories(inputdir, "Curated_*", SearchOption.TopDirectoryOnly);
+            var foldernames = folders.Select(n => Path.GetFileNameWithoutExtension(n)).ToList();
+
+            var mspfiles = new List<string>();
+            using (var sr = new StreamReader(mspfilelist)) {
+                while (sr.Peek() > -1) {
+                    mspfiles.Add(sr.ReadLine());
+                }
+            }
+
+            var recordnames = new List<string>();
+            var entropiesList = new List<List<string>>();
+            for (int j = 0; j < folders.Length; j++) {
+                var mspfile = Directory.GetFiles(folders[j], "*.msp", SearchOption.TopDirectoryOnly)[0];
+                var records = MspFileParser.MspFileReader(mspfile);
+                var entroies = new List<string>();
+                for (int i = 0; i < records.Count; i++) {
+                    var record = records[i];
+                    var flg = false;
+                    foreach (var spec in record.Spectrum) {
+                        if (Math.Abs(spec.Mass - 144.0807) < 0.01) {
+                            flg = true;
+                            break;
+                        }
+                    }
+                    if (j == 0) {
+                        recordnames.Add(record.Comment.Replace("_Curated", ""));
+                    }
+                    entroies.Add(flg.ToString());
+                }
+                entropiesList.Add(entroies);
+            }
+
+            using (var sw = new StreamWriter(output)) {
+                sw.WriteLine("Name" + String.Join("\t", foldernames));
+                for (int i = 0; i < recordnames.Count; i++) {
+                    var exports = new List<string>();
+                    for (int j = 0; j < entropiesList.Count; j++) {
+                        exports.Add(entropiesList[j][i].ToString());
+                    }
+                    sw.WriteLine(recordnames[i] + "\t" + String.Join("\t", exports));
+                }
+            }
+        }
+
+
         public static void TestMolecularNetworkingFunctions(string inputfile, string outputdir) {
             var minimumPeakMatch = 4;
             var matchThreshold = 0.9;

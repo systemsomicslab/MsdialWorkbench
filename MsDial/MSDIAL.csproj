@@ -87,8 +87,7 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="RawDataHandler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="RawDataHandler">
       <HintPath>..\Assemblies\RawDataHandler.dll</HintPath>
     </Reference>
     <Reference Include="Splash">

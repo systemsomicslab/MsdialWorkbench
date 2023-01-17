@@ -20,7 +20,7 @@ namespace StructureFinderConsoleApp
         static void Main(string[] args)
         {
 
-            Code4NPR2020.CalculatePrecursorMzVS2("", "");
+            //Code4NPR2020.CalculatePrecursorMzVS2("", "");
             //Derivatization.Test();
             /// code for Natural Product Reports 2020
             //Code4NPR2020.GenerateStructureTableFromMSPs();
@@ -36,7 +36,7 @@ namespace StructureFinderConsoleApp
             //Code4NPR2020.GenerateEdgesByTanimotoIndex(@"D:\Paper of Natural Product Reports\Statistics\alkaloids_descriptors.txt", @"D:\Paper of Natural Product Reports\Statistics\edge-2015-structure.txt");
             //Code4NPR2020.ExtractCCSValues(@"D:\Paper of Natural Product Reports\Statistics\node-2105.txt",
             //    @"D:\3_Project for ion mobility\20201214_zhiwei_ccs_library\MSDIAL_pred_ccs_201013.txt", @"D:\Paper of Natural Product Reports\Statistics\node-2105-ccs.txt");
-            //Code4NPR2020.Check144Existence(@"D:\Paper of Natural Product Reports\Statistics\node-2105.txt", @"D:\Paper of Natural Product Reports\Statistics\node-2105-144.txt");
+            Code4NPR2020.Check144Existence(@"D:\Paper of Natural Product Reports\Statistics\node-2105.txt", @"D:\Paper of Natural Product Reports\Statistics\node-2105-144.txt");
 
             //Code4NPR2020.ExtractSubstructureContainingStructureQueries();
             //Code4NPR2020.CalculatePrecursorMz(@"E:\6_Projects\PROJECT_ImagingMS\Lipid reference library\temp.txt", @"E:\6_Projects\PROJECT_ImagingMS\Lipid reference library\temp_premz.txt");

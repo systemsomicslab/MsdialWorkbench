@@ -968,7 +968,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 var result = GetLipidMoleculeAnnotationResult(msScanProp, molecule, bin);
                 if (result != null) {
                     if (result.AnnotationLevel == 1) {
-                        if (compClass == "SM" && molecule.LipidName.Contains("3O")) {
+                        if (compClass == "SM" && (molecule.LipidName.Contains("3O") || molecule.LipidName.Contains("O3"))) {
                             resultArray[0] += 1.0;
                             return resultArray; // add bonus
                         }
