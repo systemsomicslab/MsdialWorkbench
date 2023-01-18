@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NCDK.IO.Iterator;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -99,6 +100,9 @@ namespace CompMs.Common.Extension {
 
         public static IEnumerable<List<T>> Sequence<T>(this IEnumerable<IEnumerable<T>> xss) {
             var enumerators = xss.Select(xs => xs.GetEnumerator()).ToList();
+            if (enumerators.Count == 0) {
+                yield break;
+            }
             var remain = true;
             while (remain) {
                 var result = new List<T>();
@@ -117,6 +121,9 @@ namespace CompMs.Common.Extension {
 
         public static IEnumerable<List<T>> Sequence<T>(this IReadOnlyCollection<IEnumerable<T>> xss) {
             var n = xss.Count;
+            if (n == 0) {
+                yield break; 
+            }
             var enumerators = xss.Select(xs => xs.GetEnumerator()).ToList();
             var remain = true;
             while (remain) {
