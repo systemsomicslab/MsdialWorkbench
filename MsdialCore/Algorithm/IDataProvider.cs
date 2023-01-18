@@ -93,6 +93,9 @@ namespace CompMs.MsdialCore.Algorithm
                 if (spectrumList[i].HighestObservedMz > maxMz)
                     maxMz = (float)spectrumList[i].HighestObservedMz;
             }
+            if (minMz > maxMz) {
+                return (0f, 0f);
+            }
             return (minMz, maxMz);
         }
     }
