@@ -104,7 +104,7 @@
     <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Assemblies\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\packages\Expression.Blend.Sdk.1.0.2\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -1087,12 +1087,8 @@
 </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>copy "$(SolutionDir)\Assemblies\timsdata.dll" "$(TargetDir)"
-copy "$(SolutionDir)\Assemblies\SQLite.Interop.dll" "$(TargetDir)"
-copy "$(SolutionDir)\Assemblies\System.Data.SQLite.dll" "$(TargetDir)"
-copy "$(SolutionDir)\Assemblies\MassLynxRaw.dll" "$(TargetDir)"
-copy "$(SolutionDir)\Assemblies\baf2sql_c.dll" "$(TargetDir)"
-xcopy "$(SolutionDir)\Assemblies\shimadzu" "$(TargetDir)" /D/E/C/I/H/Y</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
