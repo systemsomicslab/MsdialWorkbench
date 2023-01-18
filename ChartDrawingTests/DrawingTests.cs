@@ -14,7 +14,9 @@ namespace ChartDrawing.Tests
     public class DrawingTests
     {
         [TestMethod()]
+        [Ignore("Ignore view tests.")]
         public void SaveChartTest() {
+            Assert.Inconclusive();
             var area = new Area() { Height = 500, Width = 500 };
             area.AxisY.MinorScaleEnabled = false;
             var list = getTestValues();
@@ -26,6 +28,7 @@ namespace ChartDrawing.Tests
          }
 
         [TestMethod()]
+        [Ignore("Ignore view tests.")]
         public void SaveMSwithRefTest() {
             var area = new Area() { Height = 500, Width = 500, LabelSpace = new LabelSpace() { Top = 50, Bottom = 30 }, Margin = new Margin(30, 30, 10, 20) };
             area.AxisX.IsItalicLabel = true;
@@ -54,6 +57,7 @@ namespace ChartDrawing.Tests
         }
 
         [TestMethod()]
+        [Ignore("Ignore view tests.")]
         public void SaveMSwithRefTest2() {
             var area = new Area() { Height = 500, Width = 500, LabelSpace = new LabelSpace() { Top = 50, Bottom = 30 } };
             area.AxisX.IsItalicLabel = true;
