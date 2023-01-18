@@ -105,7 +105,7 @@
     </Reference>
     <Reference Include="Splash, Version=1.0.6022.17289, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Assemblies\Splash.dll</HintPath>
+      <HintPath>..\spectra-hash\splash\bin\x86\Debug\Splash.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">

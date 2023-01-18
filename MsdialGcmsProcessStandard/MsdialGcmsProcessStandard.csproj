@@ -12,6 +12,7 @@
     <ProjectReference Include="..\MathematicsStandard\MathematicsStandard.csproj" />
     <ProjectReference Include="..\MolecularFormulaFinderStandard\MolecularFormulaFinderStandard.csproj" />
     <ProjectReference Include="..\MsdialLcmsProcessStandard\MsdialLcmsProcessStandard.csproj" />
+    <ProjectReference Include="..\spectra-hash\splash\Splash.csproj" />
   </ItemGroup>
 
   <ItemGroup>

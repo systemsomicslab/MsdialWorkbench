@@ -91,7 +91,7 @@
       <HintPath>..\Assemblies\RawDataHandler.dll</HintPath>
     </Reference>
     <Reference Include="Splash">
-      <HintPath>..\Assemblies\Splash.dll</HintPath>
+      <HintPath>..\spectra-hash\splash\bin\x86\Debug\Splash.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />

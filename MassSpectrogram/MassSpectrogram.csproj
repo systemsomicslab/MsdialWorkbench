@@ -37,7 +37,7 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="Splash">
-      <HintPath>..\assemblies\Splash.dll</HintPath>
+      <HintPath>..\spectra-hash\splash\bin\x86\Debug\Splash.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
