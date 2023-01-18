@@ -19,4 +19,13 @@
     <ProjectReference Include="..\CommonStandard\CommonStandard.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\packages\NCDK.1.5.6\runtimes\win-x64\native\libinchi.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\packages\NCDK.1.5.6\runtimes\win-x64\native\libinchi.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

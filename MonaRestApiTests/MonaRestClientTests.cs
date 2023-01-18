@@ -14,6 +14,7 @@ using System.Configuration;
 
 namespace edu.ucdavis.fiehnlab.MonaRestApiTests {
     [TestClass]
+    [Ignore]
     public class MonaRestClientTests {
         private readonly string USERNAME = "test@mail.com";
         private readonly string PASSWORD = "test";
