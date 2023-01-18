@@ -12,14 +12,12 @@
     <ProjectReference Include="..\MathematicsStandard\MathematicsStandard.csproj" />
     <ProjectReference Include="..\MolecularFormulaFinderStandard\MolecularFormulaFinderStandard.csproj" />
     <ProjectReference Include="..\MsdialLcmsProcessStandard\MsdialLcmsProcessStandard.csproj" />
+    <ProjectReference Include="..\spectra-hash\splash\Splash.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="RawDataHandler">
       <HintPath>..\Assemblies\RawDataHandler.dll</HintPath>
-    </Reference>
-    <Reference Include="Splash">
-      <HintPath>..\Assemblies\Splash.dll</HintPath>
     </Reference>
   </ItemGroup>
 
