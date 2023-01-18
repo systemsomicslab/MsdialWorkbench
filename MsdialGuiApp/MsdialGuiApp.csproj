@@ -103,10 +103,6 @@
     <Reference Include="ReactiveProperty.WPF, Version=8.2.0.0, Culture=neutral, PublicKeyToken=0239185f5eb3b356, processorArchitecture=MSIL">
       <HintPath>..\packages\ReactiveProperty.WPF.8.2.0\lib\net472\ReactiveProperty.WPF.dll</HintPath>
     </Reference>
-    <Reference Include="Splash, Version=1.0.6022.17289, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\spectra-hash\splash\bin\x86\Debug\Splash.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ComponentModel.Annotations.5.0.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
@@ -1401,6 +1397,10 @@
     <ProjectReference Include="..\NCDK\NCDK.csproj">
       <Project>{7976AEFC-8382-47D3-BA50-55FA18BABADF}</Project>
       <Name>NCDK</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\spectra-hash\splash\Splash.csproj">
+      <Project>{8f90089f-df30-4353-833f-220ecac7c1cf}</Project>
+      <Name>Splash</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

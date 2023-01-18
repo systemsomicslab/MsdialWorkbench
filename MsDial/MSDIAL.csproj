@@ -90,9 +90,6 @@
     <Reference Include="RawDataHandler">
       <HintPath>..\Assemblies\RawDataHandler.dll</HintPath>
     </Reference>
-    <Reference Include="Splash">
-      <HintPath>..\spectra-hash\splash\bin\x86\Debug\Splash.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -959,6 +956,10 @@
     <ProjectReference Include="..\PathwayMap\PathwayMap.csproj">
       <Project>{7c8bf853-6f34-4cbd-bec9-6d1aea199947}</Project>
       <Name>PathwayMap</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\spectra-hash\splash\Splash.csproj">
+      <Project>{8f90089f-df30-4353-833f-220ecac7c1cf}</Project>
+      <Name>Splash</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

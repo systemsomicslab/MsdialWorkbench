@@ -19,9 +19,6 @@
     <Reference Include="RawDataHandler">
       <HintPath>..\Assemblies\RawDataHandler.dll</HintPath>
     </Reference>
-    <Reference Include="Splash">
-      <HintPath>..\Assemblies\Splash.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>
