@@ -55,9 +55,6 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
-    <Reference Include="XamlToys">
-      <HintPath>..\Assemblies\XamlToys.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Adorner\ContentAdorner.cs" />
@@ -182,6 +179,7 @@
     <Compile Include="IO\SaveImageAsDialogViewModel.cs" />
     <Compile Include="IO\SaveImageAsWithDialogCommand.cs" />
     <Compile Include="IO\StyleFormatter.cs" />
+    <Compile Include="IO\XamlToys.cs" />
     <Compile Include="Legacy\ChromatogramBean.cs" />
     <Compile Include="Legacy\ChromatogramXicViewModel.cs" />
     <Compile Include="Legacy\PlainChromatogramXicForTableViewerLegacy.cs" />
