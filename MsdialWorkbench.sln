@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialWorkbench", "MsdialWorkbench\MsdialWorkbench.csproj", "{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BarChart", "BarChart\BarChart.csproj", "{A3AC4D50-9249-478D-BE03-0465FD00EF2F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chromatogram", "ChromatogramUI\Chromatogram.csproj", "{6DCED6BB-4107-40C9-A9EF-D60658C385C0}"
@@ -167,18 +165,6 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Debug with args|Any CPU.ActiveCfg = Debug|Any CPU
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Debug with args|Any CPU.Build.0 = Debug|Any CPU
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Debug with args|x64.ActiveCfg = Debug|Any CPU
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Debug with args|x64.Build.0 = Debug|Any CPU
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Debug|x64.Build.0 = Debug|Any CPU
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Release|x64.ActiveCfg = Release|Any CPU
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Release|x64.Build.0 = Release|Any CPU
 		{A3AC4D50-9249-478D-BE03-0465FD00EF2F}.Debug with args|Any CPU.ActiveCfg = Debug|Any CPU
 		{A3AC4D50-9249-478D-BE03-0465FD00EF2F}.Debug with args|Any CPU.Build.0 = Debug|Any CPU
 		{A3AC4D50-9249-478D-BE03-0465FD00EF2F}.Debug with args|x64.ActiveCfg = Debug|Any CPU
@@ -1096,7 +1082,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
 		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
+		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
 	EndGlobalSection
 EndGlobal
