@@ -64,6 +64,16 @@ namespace BCDev.XamlToys {
 				   bounds.ToGdiPlus(), di.MetafileFrameUnit.Pixel, di.EmfType.EmfPlusDual));
 		}
 
+        public static d.Graphics CreateEmf(Stream wmfStream, Rect bounds)
+        {
+            if (bounds.Width == 0 || bounds.Height == 0) bounds = new Rect(0, 0, 1, 1);
+            using (d.Graphics refDC = d.Graphics.FromImage(new d.Bitmap(1, 1)))
+            {
+                d.Graphics graphics = d.Graphics.FromImage(new di.Metafile(wmfStream, refDC.GetHdc(), bounds.ToGdiPlus(), di.MetafileFrameUnit.Pixel, di.EmfType.EmfPlusDual));
+                return graphics;
+            }
+        }
+
 		public static void SetGraphicsQuality(d.Graphics graphics) {
 			graphics.SmoothingMode = d2.SmoothingMode.AntiAlias;
 			graphics.InterpolationMode = d2.InterpolationMode.HighQualityBicubic;

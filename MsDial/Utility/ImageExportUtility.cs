@@ -12,7 +12,7 @@ using System.Windows.Input;
 using System.Runtime.Serialization;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using BCDev.XamlToys;
+using BCDev.XamlToys; // This comes from http://xamltoys.codeplex.com/. Unfortunately the repo no longer exists. We gratefully use+modify it here.
 using System.Drawing;
 using System.Windows.Interop;
 using System.Windows.Controls;

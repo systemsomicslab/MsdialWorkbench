@@ -1,4 +1,4 @@
-﻿using BCDev.XamlToys;
+﻿using BCDev.XamlToys; // This comes from http://xamltoys.codeplex.com/. Unfortunately the repo no longer exists. We gratefully use+modify it here.
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows;

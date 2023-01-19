@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
-using BCDev.XamlToys;
+using BCDev.XamlToys; // This comes from http://xamltoys.codeplex.com/. Unfortunately the repo no longer exists. We gratefully use+modify it here.
 using Microsoft.Win32;
 using edu.ucdavis.fiehnlab.MonaExport.Windows;
 using edu.ucdavis.fiehnlab.MonaExport.DataObjects;

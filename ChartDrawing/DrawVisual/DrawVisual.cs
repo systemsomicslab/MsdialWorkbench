@@ -1,11 +1,11 @@
-﻿using System;
+﻿using BCDev.XamlToys; // This comes from http://xamltoys.codeplex.com/. Unfortunately the repo no longer exists. We gratefully use+modify it here.
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using BCDev.XamlToys;
 using System.IO;
 using Rfx.Riken.OsakaUniv;
 
