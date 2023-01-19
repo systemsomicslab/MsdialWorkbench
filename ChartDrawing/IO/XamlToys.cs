@@ -38,7 +38,7 @@ namespace BCDev.XamlToys {
 
 			var fe = xaml as FrameworkElement;
 			if (fe != null) {
-				RealizeFrameworkElement(fe);
+				// RealizeFrameworkElement(fe);
 				drawing = WalkVisual(fe);
 			}
 
@@ -59,7 +59,7 @@ namespace BCDev.XamlToys {
 		public static d.Graphics CreateEmf(string fileName, Rect bounds) {
 			if (bounds.Width == 0 || bounds.Height == 0) bounds = new Rect(0, 0, 1, 1);
 			if (File.Exists(fileName)) File.Delete(fileName);
-			using (d.Graphics refDC = d.Graphics.FromImage(new d.Bitmap(1, 1)))
+			using (d.Graphics refDC = d.Graphics.FromImage(new d.Bitmap((int)Math.Ceiling(bounds.Width), (int)Math.Ceiling(bounds.Height))))
 				return d.Graphics.FromImage(new di.Metafile(File.Create(fileName), refDC.GetHdc(), 
 				   bounds.ToGdiPlus(), di.MetafileFrameUnit.Pixel, di.EmfType.EmfPlusDual));
 		}
@@ -67,7 +67,7 @@ namespace BCDev.XamlToys {
         public static d.Graphics CreateEmf(Stream wmfStream, Rect bounds)
         {
             if (bounds.Width == 0 || bounds.Height == 0) bounds = new Rect(0, 0, 1, 1);
-            using (d.Graphics refDC = d.Graphics.FromImage(new d.Bitmap(1, 1)))
+            using (d.Graphics refDC = d.Graphics.FromImage(new d.Bitmap((int)Math.Ceiling(bounds.Width), (int)Math.Ceiling(bounds.Height))))
             {
                 d.Graphics graphics = d.Graphics.FromImage(new di.Metafile(wmfStream, refDC.GetHdc(), bounds.ToGdiPlus(), di.MetafileFrameUnit.Pixel, di.EmfType.EmfPlusDual));
                 return graphics;
