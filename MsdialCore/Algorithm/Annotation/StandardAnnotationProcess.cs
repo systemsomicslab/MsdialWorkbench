@@ -191,6 +191,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         private void SetAnnotationResult(ChromatogramPeakFeature chromPeakFeature, IAnnotationQuery<MsScanMatchResult> query) {
+            
+            //if (Math.Abs(chromPeakFeature.ChromXsTop.RT.Value - 2.707) < 0.01 &&
+            //    Math.Abs(chromPeakFeature.Mass - 467.29955) < 0.01) {
+            //    Console.WriteLine();
+            //}
             var candidates = query.FindCandidates();
             var results = _evaluator.FilterByThreshold(candidates);
             var matches = _evaluator.SelectReferenceMatchResults(results);

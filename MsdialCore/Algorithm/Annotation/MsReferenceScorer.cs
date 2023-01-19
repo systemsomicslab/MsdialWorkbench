@@ -3,6 +3,7 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Lipidomics;
@@ -108,17 +109,20 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             }
 
-            if (result.AcurateMassSimilarity >= 0)
+            if (result.AcurateMassSimilarity >= 0 && massFactor > 0)
                 scores.Add(result.AcurateMassSimilarity * massFactor);
             if (result.WeightedDotProduct >= 0 && result.SimpleDotProduct >= 0 && result.ReverseDotProduct >= 0)
                 scores.Add((result.WeightedDotProduct * dotProductFactor + result.SimpleDotProduct * dotProductFactor + result.ReverseDotProduct * revesrseDotProdFactor + result.MatchedPeaksPercentage * presensePercentageFactor) / 4);
-            if (parameter.IsUseTimeForAnnotationScoring && result.RtSimilarity >= 0)
+            if (parameter.IsUseTimeForAnnotationScoring && result.RtSimilarity >= 0 && rtFactor > 0)
                 scores.Add(result.RtSimilarity * rtFactor);
-            if (parameter.IsUseCcsForAnnotationScoring && result.CcsSimilarity >= 0)
+            if (parameter.IsUseCcsForAnnotationScoring && result.CcsSimilarity >= 0 && ccsFactor > 0)
                 scores.Add(result.CcsSimilarity * ccsFactor);
-            if (result.IsotopeSimilarity >= 0)
+            if (result.IsotopeSimilarity >= 0 && isotopeFactor > 0)
                 scores.Add(result.IsotopeSimilarity * isotopeFactor);
             result.TotalScore = (float)scores.DefaultIfEmpty().Average();
+            if (result.InChIKey.IsEmptyOrNull()) {
+                result.TotalScore = result.TotalScore * 0.9F;
+            }
 
             Validate(result, property, scan, reference, parameter);
 
@@ -155,8 +159,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             if (omics == TargetOmics.Lipidomics) {
                 result.IsSpectrumMatch = result.WeightedDotProduct >= parameter.WeightedDotProductCutOff
                 || result.SimpleDotProduct >= parameter.SimpleDotProductCutOff
-                || result.ReverseDotProduct >= parameter.ReverseDotProductCutOff
-                || result.MatchedPeaksPercentage >= parameter.MatchedPeaksPercentageCutOff;
+                || result.ReverseDotProduct >= parameter.ReverseDotProductCutOff;
                 if ((reference.CompoundClass == "EtherTG" || reference.CompoundClass == "EtherDG") && result.SimpleDotProduct < parameter.SimpleDotProductCutOff) {
                     result.IsSpectrumMatch = false;
                 }
@@ -178,6 +181,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             if (parameter.IsUseCcsForAnnotationScoring) {
                 result.IsCcsMatch = Math.Abs(property.CollisionCrossSection - reference.CollisionCrossSection) <= parameter.CcsTolerance;
+            }
+            if (result.Name == "ST 24:1;O5") {
+                Console.WriteLine();
             }
         }
 
