@@ -428,10 +428,11 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 Ms2Tolerance = 0.05f,
                 RtTolerance = 0.5f,
                 CcsTolerance = 5f,
+                ReverseDotProductCutOff = .7f,
                 IsUseTimeForAnnotationScoring = true,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
 
             var target = BuildPeak(810.604, 2, 102);
             target.Spectrum = new List<SpectrumPeak>
@@ -467,7 +468,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             Assert.IsTrue(result.WeightedDotProduct > 0);
             Assert.IsTrue(result.SimpleDotProduct > 0);
             Assert.IsTrue(result.ReverseDotProduct > 0);
-            Assert.AreEqual(3d/6 + 0.5, result.MatchedPeaksPercentage);
+            Assert.AreEqual(3d/6, result.MatchedPeaksPercentage);
             Assert.AreEqual(6, result.MatchedPeaksCount);
             var expected = new[]
             {
@@ -487,7 +488,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             Assert.IsTrue(result.IsRtMatch);
             Assert.IsTrue(result.IsCcsMatch);
             Assert.IsTrue(result.IsSpectrumMatch);
-            Assert.IsTrue(result.IsLipidClassMatch);
+            Assert.IsFalse(result.IsLipidClassMatch);
             Assert.IsFalse(result.IsLipidChainsMatch);
             Assert.IsFalse(result.IsLipidPositionMatch);
             Assert.IsFalse(result.IsOtherLipidMatch);
@@ -515,10 +516,12 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 Ms2Tolerance = 0.05f,
                 RtTolerance = 0.5f,
                 CcsTolerance = 5f,
+                ReverseDotProductCutOff = .7f,
+                TotalScoreCutoff = .7f,
                 IsUseTimeForAnnotationScoring = false,
                 IsUseCcsForAnnotationScoring = false,
             };
-            var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Metabolomics, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min), CollisionCrossSection = 102,
@@ -574,7 +577,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             Assert.IsTrue(result.IsRtMatch);
             Assert.IsTrue(result.IsCcsMatch);
             Assert.IsTrue(result.IsSpectrumMatch);
-            Assert.IsTrue(result.IsLipidClassMatch);
+            Assert.IsFalse(result.IsLipidClassMatch);
             Assert.IsFalse(result.IsLipidChainsMatch);
             Assert.IsFalse(result.IsLipidPositionMatch);
             Assert.IsFalse(result.IsOtherLipidMatch);

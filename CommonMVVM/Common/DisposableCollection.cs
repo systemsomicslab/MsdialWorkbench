@@ -27,12 +27,19 @@ namespace CompMs.CommonMVVM.Common
         protected virtual void Dispose(bool disposing) {
             if (!disposedValue) {
                 if (disposing) {
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
+                    if (Application.Current?.Dispatcher is null) {
                         foreach (var disposable in this) {
                             disposable?.Dispose();
                         }
-                    });
+                    }
+                    else {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            foreach (var disposable in this) {
+                                disposable?.Dispose();
+                            }
+                        });
+                    }
                 }
 
                 disposedValue = true;

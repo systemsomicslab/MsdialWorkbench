@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace CompMs.Common.Extension.Tests
 {
@@ -214,6 +215,12 @@ namespace CompMs.Common.Extension.Tests
             foreach ((var expect, var actual) in expects.Zip(actuals)) {
                 CollectionAssert.AreEqual(expect, actual);
             }
+        }
+
+        [TestMethod()]
+        public void SequenceEmptyTest() {
+            var actuals = new List<int>[0].Sequence();
+            Assert.IsFalse(actuals.Any());
         }
     }
 }

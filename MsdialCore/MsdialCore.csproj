@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CommonStandard\CommonStandard.csproj" />
+    <ProjectReference Include="..\spectra-hash\splash\Splash.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,9 +40,6 @@
   <ItemGroup>
     <Reference Include="RawDataHandler">
       <HintPath>..\Assemblies\RawDataHandler.dll</HintPath>
-    </Reference>
-    <Reference Include="Splash">
-      <HintPath>..\Assemblies\Splash.dll</HintPath>
     </Reference>
   </ItemGroup>
 

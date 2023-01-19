@@ -27,13 +27,13 @@ namespace CompMs.MsdialDimsCore.Export.Tests
 
         [TestMethod()]
         public void GetHeadersTest() {
-            var accessor = new DimsMetadataAccessor(null, null);
+            var accessor = new DimsMetadataAccessor(null, null, trimSpectrumToExcelLimit: false);
             CollectionAssert.AreEqual(diHeaders, accessor.GetHeaders());
         }
 
         [TestMethod()]
         public void GetContentTest() {
-            var accessor = new DimsMetadataAccessor(new MockRefer(), new MsdialCore.Parameter.ParameterBase { MachineCategory = MachineCategory.IFMS });
+            var accessor = new DimsMetadataAccessor(new MockRefer(), new MsdialCore.Parameter.ParameterBase { MachineCategory = MachineCategory.IFMS }, trimSpectrumToExcelLimit: false);
             var spot = new AlignmentSpotProperty
             {
                 TimesCenter = new ChromXs(700d, ChromXType.Mz, ChromXUnit.Mz),

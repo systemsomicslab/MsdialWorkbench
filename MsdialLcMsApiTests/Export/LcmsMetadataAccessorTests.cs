@@ -26,13 +26,13 @@ namespace CompMs.MsdialLcMsApi.Export.Tests
 
         [TestMethod()]
         public void GetHeadersTest() {
-            var accessor = new LcmsMetadataAccessor(null, null);
+            var accessor = new LcmsMetadataAccessor(null, null, trimSpectrumToExcelLimit: false);
             CollectionAssert.AreEqual(lcHeaders, accessor.GetHeaders());
         }
 
         [TestMethod()]
         public void GetContentTest() {
-            var accessor = new LcmsMetadataAccessor(new MockRefer(), new MsdialCore.Parameter.ParameterBase { MachineCategory = Common.Enum.MachineCategory.LCMS });
+            var accessor = new LcmsMetadataAccessor(new MockRefer(), new MsdialCore.Parameter.ParameterBase { MachineCategory = Common.Enum.MachineCategory.LCMS }, trimSpectrumToExcelLimit: false);
             var spot = new AlignmentSpotProperty
             {
                 TimesCenter = new ChromXs(3d, ChromXType.RT, ChromXUnit.Min),

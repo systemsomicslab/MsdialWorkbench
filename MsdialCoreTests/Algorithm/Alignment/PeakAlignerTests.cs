@@ -13,6 +13,9 @@ using System.Linq;
 using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.Common.DataObj.Database;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
 {
@@ -63,6 +66,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
             };
 
             var aligner = CreateAligner(accessor, parameter);
+            aligner.ProviderFactory = new FakeDataProviderFactory();
 
             var container = aligner.Alignment(analysisFiles, alignmentFile, null);
 
@@ -127,6 +131,40 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
 
         public override IPeakJoiner CreatePeakJoiner() {
             return _joiner;
+        }
+    }
+
+    class FakeDataProviderFactory : IDataProviderFactory<AnalysisFileBean>
+    {
+        public IDataProvider Create(AnalysisFileBean source) {
+            return new FakeDataProvider();
+        }
+
+        class FakeDataProvider : IDataProvider
+        {
+            public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
+                return new List<RawSpectrum>().AsReadOnly();
+            }
+
+            public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token) {
+                throw new NotImplementedException();
+            }
+
+            public ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
+                throw new NotImplementedException();
+            }
+
+            public Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token) {
+                throw new NotImplementedException();
+            }
+
+            public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
+                throw new NotImplementedException();
+            }
+
+            public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) {
+                throw new NotImplementedException();
+            }
         }
     }
 

@@ -90,9 +90,6 @@
     <Reference Include="RawDataHandler">
       <HintPath>..\Assemblies\RawDataHandler.dll</HintPath>
     </Reference>
-    <Reference Include="Splash">
-      <HintPath>..\Assemblies\Splash.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -104,7 +101,7 @@
     <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Assemblies\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\packages\Expression.Blend.Sdk.1.0.2\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -960,6 +957,10 @@
       <Project>{7c8bf853-6f34-4cbd-bec9-6d1aea199947}</Project>
       <Name>PathwayMap</Name>
     </ProjectReference>
+    <ProjectReference Include="..\spectra-hash\splash\Splash.csproj">
+      <Project>{8f90089f-df30-4353-833f-220ecac7c1cf}</Project>
+      <Name>Splash</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\MS1Reset.ico" />
@@ -1087,12 +1088,8 @@
 </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>copy "$(SolutionDir)\Assemblies\timsdata.dll" "$(TargetDir)"
-copy "$(SolutionDir)\Assemblies\SQLite.Interop.dll" "$(TargetDir)"
-copy "$(SolutionDir)\Assemblies\System.Data.SQLite.dll" "$(TargetDir)"
-copy "$(SolutionDir)\Assemblies\MassLynxRaw.dll" "$(TargetDir)"
-copy "$(SolutionDir)\Assemblies\baf2sql_c.dll" "$(TargetDir)"
-xcopy "$(SolutionDir)\Assemblies\shimadzu" "$(TargetDir)" /D/E/C/I/H/Y</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
