@@ -114,10 +114,6 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="XamlToys">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Assemblies\XamlToys.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
