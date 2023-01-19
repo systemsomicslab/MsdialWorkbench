@@ -131,8 +131,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialGcMsApiTests", "Msdia
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialGuiApp", "MsdialGuiApp\MsdialGuiApp.csproj", "{276317C3-B877-445B-A950-1DE2B5414ACF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialGuiApi", "MsdialGuiApi\MsdialGuiApi.csproj", "{1276D3C2-39A4-471F-AAAC-3777F2040F0F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialImmsCore", "MsdialImmsCore\MsdialImmsCore.csproj", "{D024BB64-3CCD-49C2-B6EE-A11900817DAF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonMVVMTests", "CommonMVVMTests\CommonMVVMTests.csproj", "{24FC9BAA-C80A-4FEF-8295-4C58C888EA9F}"
@@ -933,18 +931,6 @@ Global
 		{276317C3-B877-445B-A950-1DE2B5414ACF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{276317C3-B877-445B-A950-1DE2B5414ACF}.Release|x64.ActiveCfg = Release|x64
 		{276317C3-B877-445B-A950-1DE2B5414ACF}.Release|x64.Build.0 = Release|x64
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Debug with args|Any CPU.ActiveCfg = Debug|Any CPU
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Debug with args|Any CPU.Build.0 = Debug|Any CPU
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Debug with args|x64.ActiveCfg = Debug|Any CPU
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Debug with args|x64.Build.0 = Debug|Any CPU
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Debug|x64.Build.0 = Debug|Any CPU
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Release|x64.ActiveCfg = Release|Any CPU
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Release|x64.Build.0 = Release|Any CPU
 		{D024BB64-3CCD-49C2-B6EE-A11900817DAF}.Debug with args|Any CPU.ActiveCfg = Debug|Any CPU
 		{D024BB64-3CCD-49C2-B6EE-A11900817DAF}.Debug with args|Any CPU.Build.0 = Debug|Any CPU
 		{D024BB64-3CCD-49C2-B6EE-A11900817DAF}.Debug with args|x64.ActiveCfg = Debug|Any CPU
