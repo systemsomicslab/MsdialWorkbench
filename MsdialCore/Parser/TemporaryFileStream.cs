@@ -56,6 +56,13 @@ namespace CompMs.MsdialCore.Parser
             }
         }
 
+        public void Discard() {
+            CloseTempStream();
+           if (File.Exists(_tempFile)) {
+                File.Delete(_tempFile);
+            }
+        }
+
         private void CloseTempStream() {
             if (_tempStream != Null) {
                 _tempStream.Dispose();
@@ -69,7 +76,7 @@ namespace CompMs.MsdialCore.Parser
                 Move();
             }
             else {
-                CloseTempStream();
+                Discard();
             }
         }
     }
