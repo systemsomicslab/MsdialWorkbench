@@ -74,6 +74,7 @@ namespace CompMs.App.Msdial.Model.Core
                     path => new DirectoryTreeStreamManager(path),
                     parameter => Application.Current.Dispatcher.Invoke(() => MessageBox.Show($"Save {parameter.ProjectFilePath} failed.")));
                 streamManager.Complete();
+                fs.Move();
             }
         }
 
@@ -90,6 +91,7 @@ namespace CompMs.App.Msdial.Model.Core
                     path => new DirectoryTreeStreamManager(path),
                     parameter => Application.Current.Dispatcher.Invoke(() => MessageBox.Show($"Save {parameter.ProjectFilePath} failed.")));
                 streamManager.Complete();
+                fs.Move();
             }
         }
 
