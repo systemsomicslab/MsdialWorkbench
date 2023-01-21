@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialWorkbench", "MsdialWorkbench\MsdialWorkbench.csproj", "{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BarChart", "BarChart\BarChart.csproj", "{A3AC4D50-9249-478D-BE03-0465FD00EF2F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chromatogram", "ChromatogramUI\Chromatogram.csproj", "{6DCED6BB-4107-40C9-A9EF-D60658C385C0}"
@@ -133,8 +131,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialGcMsApiTests", "Msdia
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialGuiApp", "MsdialGuiApp\MsdialGuiApp.csproj", "{276317C3-B877-445B-A950-1DE2B5414ACF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialGuiApi", "MsdialGuiApi\MsdialGuiApi.csproj", "{1276D3C2-39A4-471F-AAAC-3777F2040F0F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialImmsCore", "MsdialImmsCore\MsdialImmsCore.csproj", "{D024BB64-3CCD-49C2-B6EE-A11900817DAF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonMVVMTests", "CommonMVVMTests\CommonMVVMTests.csproj", "{24FC9BAA-C80A-4FEF-8295-4C58C888EA9F}"
@@ -167,18 +163,6 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Debug with args|Any CPU.ActiveCfg = Debug|Any CPU
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Debug with args|Any CPU.Build.0 = Debug|Any CPU
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Debug with args|x64.ActiveCfg = Debug|Any CPU
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Debug with args|x64.Build.0 = Debug|Any CPU
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Debug|x64.Build.0 = Debug|Any CPU
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Release|x64.ActiveCfg = Release|Any CPU
-		{4876E2C7-0EB3-40E0-B48A-DC21A3A0D3A6}.Release|x64.Build.0 = Release|Any CPU
 		{A3AC4D50-9249-478D-BE03-0465FD00EF2F}.Debug with args|Any CPU.ActiveCfg = Debug|Any CPU
 		{A3AC4D50-9249-478D-BE03-0465FD00EF2F}.Debug with args|Any CPU.Build.0 = Debug|Any CPU
 		{A3AC4D50-9249-478D-BE03-0465FD00EF2F}.Debug with args|x64.ActiveCfg = Debug|Any CPU
@@ -947,18 +931,6 @@ Global
 		{276317C3-B877-445B-A950-1DE2B5414ACF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{276317C3-B877-445B-A950-1DE2B5414ACF}.Release|x64.ActiveCfg = Release|x64
 		{276317C3-B877-445B-A950-1DE2B5414ACF}.Release|x64.Build.0 = Release|x64
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Debug with args|Any CPU.ActiveCfg = Debug|Any CPU
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Debug with args|Any CPU.Build.0 = Debug|Any CPU
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Debug with args|x64.ActiveCfg = Debug|Any CPU
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Debug with args|x64.Build.0 = Debug|Any CPU
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Debug|x64.Build.0 = Debug|Any CPU
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Release|x64.ActiveCfg = Release|Any CPU
-		{1276D3C2-39A4-471F-AAAC-3777F2040F0F}.Release|x64.Build.0 = Release|Any CPU
 		{D024BB64-3CCD-49C2-B6EE-A11900817DAF}.Debug with args|Any CPU.ActiveCfg = Debug|Any CPU
 		{D024BB64-3CCD-49C2-B6EE-A11900817DAF}.Debug with args|Any CPU.Build.0 = Debug|Any CPU
 		{D024BB64-3CCD-49C2-B6EE-A11900817DAF}.Debug with args|x64.ActiveCfg = Debug|Any CPU
@@ -1096,7 +1068,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
 		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
+		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
 	EndGlobalSection
 EndGlobal
