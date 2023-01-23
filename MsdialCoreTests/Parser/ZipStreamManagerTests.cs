@@ -86,5 +86,14 @@ namespace CompMs.MsdialCore.Parser.Tests
             manager.Complete();
             manager.Dispose();
         }
+
+        [TestMethod]
+        public void FreeFileHandleAfterCompleteTest() {
+            var stream = new MemoryStream();
+            using (IStreamManager manager = ZipStreamManager.OpenCreate(stream)) {
+                manager.Complete();
+                stream.Close();
+            }
+        }
     }
 }

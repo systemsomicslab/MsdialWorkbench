@@ -8,8 +8,8 @@ namespace CompMs.MsdialCore.Parser
 {
     public sealed class ZipStreamManager : IStreamManager, IDisposable
     {
-        private readonly ZipArchive zipArchive;
-        private readonly SemaphoreSlim semaphore;
+        private ZipArchive zipArchive;
+        private SemaphoreSlim semaphore;
         private readonly CompressionLevel compressionLevel;
         private readonly string _rootPath;
         private Stream cacheStream;
@@ -54,7 +54,7 @@ namespace CompMs.MsdialCore.Parser
         }
 
         void IStreamManager.Complete() {
-
+            Dispose();
         }
 
         public static ZipStreamManager OpenCreate(Stream stream, CompressionLevel compressionLevel = CompressionLevel.NoCompression, bool leaveOpen = true) {
@@ -70,8 +70,12 @@ namespace CompMs.MsdialCore.Parser
             if (!disposedValue) {
                 if (disposing) {
                     cacheStream?.Dispose();
+                    cacheStream = Stream.Null;
                     if (_hasArchive) {
                         zipArchive.Dispose();
+                        zipArchive = null;
+                        semaphore.Dispose();
+                        semaphore = null;
                     }
                 }
 
