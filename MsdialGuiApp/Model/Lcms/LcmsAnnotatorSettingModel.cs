@@ -162,9 +162,9 @@ namespace CompMs.App.Msdial.Model.Lcms
             DataBaseSettingModel = dataBaseSettingModel;
             AnnotatorID = annotatorID;
             SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
-                SimpleDotProductCutOff = 0.1F,
-                WeightedDotProductCutOff = 0.1F,
-                ReverseDotProductCutOff = 0.1F,
+                SimpleDotProductCutOff = 0.15F,
+                WeightedDotProductCutOff = 0.15F,
+                ReverseDotProductCutOff = 0.5F,
                 MatchedPeaksPercentageCutOff = 0.0F,
                 MinimumSpectrumMatch = 1
             };

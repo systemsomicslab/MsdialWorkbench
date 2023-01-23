@@ -316,7 +316,7 @@ namespace CompMs.App.MsdialConsole {
             // swai-kun for 13C plant table curation
             LabelDataHandler.LabelDataHandler.ExtractCorrectPeakList(
                 @"E:\6_Projects\PROJECT_GlycyrrhizaMetabolomics\glabra leaf\pos\pos_table_vs1.txt",
-                @"E:\6_Projects\PROJECT_GlycyrrhizaMetabolomics\glabra leaf\pos\pos_table_vs1_extracted.txt");
+                @"E:\6_Projects\PROJECT_GlycyrrhizaMetabolomics\glabra leaf\pos");
         }
 
         private static void DumpN(string file, int n) {

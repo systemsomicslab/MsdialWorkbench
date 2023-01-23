@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using CompMs.Common.Extension;
 
 namespace CompMs.App.MsdialConsole.LabelDataHandler {
 
@@ -55,15 +56,27 @@ namespace CompMs.App.MsdialConsole.LabelDataHandler {
 
         }
 
-        public static void ExtractCorrectPeakList(string input, string output) {
+        public static void ExtractCorrectPeakList(string input, string outputdir) {
 
             var header = GetHeader(input);
             var peaks = GetPeaks(input);
-            var logfile = Path.Combine(Path.GetDirectoryName(output), Path.GetFileNameWithoutExtension(output) + "_log.txt");
+            
+            var outputfilename = Path.GetFileNameWithoutExtension(input) + "_extracted";
+            var output = Path.Combine(outputdir, outputfilename + ".txt");
+            var logfile = Path.Combine(outputdir, outputfilename + "_log.txt");
             var logerror = string.Empty;
 
-            var msp12cfile = Path.Combine(Path.GetDirectoryName(output), Path.GetFileNameWithoutExtension(output) + "_12C.msp");
-            var msp13cfile = Path.Combine(Path.GetDirectoryName(output), Path.GetFileNameWithoutExtension(output) + "_13C.msp");
+            var msp12cfile = Path.Combine(outputdir, outputfilename + "_12C.msp");
+            var msp13cfile = Path.Combine(outputdir, outputfilename + "_13C.msp");
+
+            var output_ms2 = Path.Combine(outputdir, outputfilename + "_ms2contained.txt");
+            var msp12cfile_ms2 = Path.Combine(outputdir, outputfilename + "_12C_ms2contained.msp");
+            var msp13cfile_ms2 = Path.Combine(outputdir, outputfilename + "_13C_ms2contained.msp");
+
+            var separatedmatfilesexportfolder = Path.Combine(outputdir, "msfinder_cid");
+            if (!Directory.Exists(separatedmatfilesexportfolder)) {
+                Directory.CreateDirectory(separatedmatfilesexportfolder);
+            }
 
             var dict = new Dictionary<int, PeakInfo>();
             foreach (var peak in peaks) { dict[peak.AlignmentID] = peak; }
@@ -127,9 +140,58 @@ namespace CompMs.App.MsdialConsole.LabelDataHandler {
             }
 
             using (var sw = new StreamWriter(msp12cfile)) {
-                sw.WriteLine(String.Join("\t", header));
                 foreach (var peak in okPeaks) {
                     writeMspField(sw, peak);
+                }
+            }
+
+            using (var sw = new StreamWriter(msp13cfile)) {
+                foreach (var peak in okPeaks) {
+                    writeMspFor13CField(sw, peak);
+                }
+            }
+
+            
+            using (var sw = new StreamWriter(output_ms2)) {
+                sw.WriteLine(String.Join("\t", header));
+                foreach (var peak in okPeaks) {
+                    if (int.TryParse(peak.Item2.Memo, out int convertedNum)) continue;
+                    if (peak.Item1.MSMSAsigned == "FALSE") continue;
+                    writePeakInfo(sw, peak);
+                }
+            }
+
+            using (var sw = new StreamWriter(msp12cfile_ms2)) {
+                foreach (var peak in okPeaks) {
+                    if (int.TryParse(peak.Item2.Memo, out int convertedNum)) continue;
+                    if (peak.Item1.MSMSAsigned == "FALSE") continue;
+                    writeMspField(sw, peak);
+                }
+            }
+
+            var counter = 0;
+            foreach (var peak in okPeaks) {
+                if (int.TryParse(peak.Item2.Memo, out int convertedNum)) continue;
+                if (peak.Item1.MSMSAsigned == "FALSE") continue;
+
+                var name = peak.Item1.MetaboliteName.Contains("w/o") ||
+                    peak.Item1.MetaboliteName.Contains("Unknown") ? "Unknown" : peak.Item1.MetaboliteName;
+                var propertysummary = counter + "_" + peak.Item1.AlignmentID + "_" + Math.Round(double.Parse(peak.Item1.AverageMz), 4).ToString() + "_" + Math.Round(double.Parse(peak.Item1.AverageRt), 2).ToString();
+                var summaryname = propertysummary + "_" + name;
+                var validname = MakeValidFileName(summaryname);
+
+                var exportfile = Path.Combine(separatedmatfilesexportfolder, validname + ".mat");
+                using (var sw = new StreamWriter(exportfile)) {
+                    writeMspField(sw, peak);
+                }
+                counter++;
+            }
+
+            using (var sw = new StreamWriter(msp13cfile_ms2)) {
+                foreach (var peak in okPeaks) {
+                    if (int.TryParse(peak.Item2.Memo, out int convertedNum)) continue;
+                    if (peak.Item1.MSMSAsigned == "FALSE") continue;
+                    writeMspFor13CField(sw, peak);
                 }
             }
 
@@ -138,6 +200,18 @@ namespace CompMs.App.MsdialConsole.LabelDataHandler {
             }
         }
 
+        private static string MakeValidFileName(string name) {
+            string invalidChars = System.Text.RegularExpressions.Regex.Escape(new string(System.IO.Path.GetInvalidFileNameChars()));
+            string invalidRegStr = string.Format(@"([{0}]*\.+$)|([{0}]+)", invalidChars);
+
+            return System.Text.RegularExpressions.Regex.Replace(name, invalidRegStr, "_");
+        }
+
+        private static void writeMspFor13CField(StreamWriter sw, (PeakInfo, PeakInfo) peak) {
+            writeMspFor13CField(sw, peak.Item1, peak.Item2);
+        }
+
+       
         private static void writeMspField(StreamWriter sw, (PeakInfo, PeakInfo) peak) {
             writeMspField(sw, peak.Item1, peak.Item2);
         }
@@ -146,24 +220,37 @@ namespace CompMs.App.MsdialConsole.LabelDataHandler {
 
             var name = item1.MetaboliteName.Contains("w/o") ||
                  item1.MetaboliteName.Contains("Unknown") ? "Unknown" : item1.MetaboliteName;
-            var propertysummary = item1.AlignmentID + "_" + Math.Round(double.Parse(item1.AverageMz), 4).ToString() + "_" + Math.Round(double.Parse(item1.ReferenceRT), 2).ToString();
+            var propertysummary = item1.AlignmentID + "_" + Math.Round(double.Parse(item1.AverageMz), 4).ToString() + "_" + Math.Round(double.Parse(item1.AverageRt), 2).ToString();
             var summaryname = propertysummary + "_" + name;
 
             sw.WriteLine("NAME: " + summaryname);
             sw.WriteLine("SCANNUMBER: " + item1.AlignmentID);
-            sw.WriteLine("RETENTIONTIME: " + item1.ReferenceRT);
+            sw.WriteLine("RETENTIONTIME: " + item1.AverageRt);
             sw.WriteLine("PRECURSORMZ: " + item1.AverageMz);
-            sw.WriteLine("PRECURSORTYPE: " + item1.Adduct);
+            var adduct = item1.Adduct;
+            if (adduct == "[Cat]+") adduct = "[M]+";
 
-            var adductObj = AdductIonParser.GetAdductIonBean(item1.Adduct);
+
+            sw.WriteLine("PRECURSORTYPE: " + adduct);
+
+            var adductObj = AdductIonParser.GetAdductIonBean(adduct);
 
             sw.WriteLine("IONMODE: " + adductObj.IonMode.ToString());
             sw.WriteLine("SPECTRUMTYPE: Centroid");
             sw.WriteLine("INTENSITY: " + item1.Abundance12C);
-            sw.WriteLine("INCHIKEY: " + name == "Unknown" ? "null" : item1.InChIKey);
-            sw.WriteLine("SMILES: " + name == "Unknown" ? "null" : item1.SMILES);
-            sw.WriteLine("ONTOLOGY: " + name == "Unknown" ? "null" : item1.Ontology);
-            sw.WriteLine("FORMULA: " + name == "Unknown" ? "null" : item1.Formula);
+            if (name == "Unknown") {
+                sw.WriteLine("INCHIKEY: null");
+                sw.WriteLine("SMILES: null");
+                sw.WriteLine("ONTOLOGY: null");
+                sw.WriteLine("FORMULA: null");
+            }
+            else {
+                sw.WriteLine("INCHIKEY: " + item1.InChIKey);
+                sw.WriteLine("SMILES: " + item1.SMILES);
+                sw.WriteLine("ONTOLOGY: " + item1.Ontology);
+                sw.WriteLine("FORMULA: " + item1.Formula);
+            }
+            
             sw.WriteLine("#Specific field for labeled experiment");
             sw.WriteLine("CarbonCount: " + item2.IsotopeTrackingWeightNumber);
             sw.Write("MSTYPE: ");
@@ -177,25 +264,100 @@ namespace CompMs.App.MsdialConsole.LabelDataHandler {
                 sw.WriteLine(peak.Mass + "\t" + peak.Intensity);
             }
 
-            var ms2spec = item1.MSMSSpectrum.Split(' ').ToList().Select(s => new SpectrumPeak() { Mass = double.Parse(s.Split(':')[0]), Intensity = double.Parse(s.Split(':')[1]) }).ToList();
-            sw.Write("MSTYPE: ");
-            sw.WriteLine("MS2");
-            sw.Write("Num Peaks: ");
-            sw.WriteLine(ms2spec.Count);
+            if (item1.MSMSSpectrum.IsEmptyOrNull()) {
+                sw.WriteLine("MSTYPE: MS2");
+                sw.WriteLine("Num Peaks: 0");
+            }
+            else {
+                var ms2spec = item1.MSMSSpectrum.Split(' ').ToList().Select(s => new SpectrumPeak() { Mass = double.Parse(s.Split(':')[0]), Intensity = double.Parse(s.Split(':')[1]) }).ToList();
+                sw.WriteLine("MSTYPE: MS2");
+                sw.WriteLine("Num Peaks: " + ms2spec.Count);
 
-            foreach (var peak in ms2spec) {
+                foreach (var peak in ms2spec) {
+                    sw.WriteLine(peak.Mass + "\t" + peak.Intensity);
+                }
+            }
+            sw.WriteLine();
+        }
+
+        private static void writeMspFor13CField(StreamWriter sw, PeakInfo item1, PeakInfo item2) {
+            var name = item1.MetaboliteName.Contains("w/o") ||
+                 item1.MetaboliteName.Contains("Unknown") ? "Unknown_13C" : item1.MetaboliteName + "_13C";
+            var propertysummary = item2.AlignmentID + "_" + Math.Round(double.Parse(item2.AverageMz), 4).ToString() + "_" + Math.Round(double.Parse(item2.AverageRt), 2).ToString();
+            var summaryname = propertysummary + "_" + name;
+
+            sw.WriteLine("NAME: " + summaryname);
+            sw.WriteLine("SCANNUMBER: " + item2.AlignmentID);
+            sw.WriteLine("RETENTIONTIME: " + item2.AverageRt);
+            sw.WriteLine("PRECURSORMZ: " + item2.AverageMz);
+
+            var adduct = item1.Adduct;
+            if (adduct == "[Cat]+") adduct = "[M]+";
+
+            sw.WriteLine("PRECURSORTYPE: " + adduct);
+
+
+            var adductObj = AdductIonParser.GetAdductIonBean(adduct);
+
+            sw.WriteLine("IONMODE: " + adductObj.IonMode.ToString());
+            sw.WriteLine("SPECTRUMTYPE: Centroid");
+            sw.WriteLine("INTENSITY: " + item2.Abundance13C);
+            if (name == "Unknown_13C") {
+                sw.WriteLine("INCHIKEY: null");
+                sw.WriteLine("SMILES: null");
+                sw.WriteLine("ONTOLOGY: null");
+                sw.WriteLine("FORMULA: null");
+            }
+            else {
+                sw.WriteLine("INCHIKEY: " + item1.InChIKey);
+                sw.WriteLine("SMILES: " + item1.SMILES);
+                sw.WriteLine("ONTOLOGY: " + item1.Ontology);
+                sw.WriteLine("FORMULA: " + item1.Formula);
+            }
+
+            sw.WriteLine("#Specific field for labeled experiment");
+            sw.WriteLine("CarbonCount: " + item2.IsotopeTrackingWeightNumber);
+            sw.WriteLine("COMMENT: IsotopeParent_{0}", item1.AlignmentID);
+            sw.Write("MSTYPE: ");
+            sw.WriteLine("MS1");
+
+            sw.WriteLine("Num Peaks: 3");
+
+            // 61.07436:520 62.07771:107 63.08107:1156
+            var ms1spec = item2.MS1IsotopicSpectrum.Split(' ').ToList().Select(s => new SpectrumPeak() { Mass = double.Parse(s.Split(':')[0]), Intensity = double.Parse(s.Split(':')[1]) });
+            foreach (var peak in ms1spec) {
                 sw.WriteLine(peak.Mass + "\t" + peak.Intensity);
             }
+
+            if (item2.MSMSSpectrum.IsEmptyOrNull()) {
+                sw.WriteLine("MSTYPE: MS2");
+                sw.WriteLine("Num Peaks: 0");
+            }
+            else {
+                var ms2spec = item2.MSMSSpectrum.Split(' ').ToList().Select(s => new SpectrumPeak() { Mass = double.Parse(s.Split(':')[0]), Intensity = double.Parse(s.Split(':')[1]) }).ToList();
+                sw.WriteLine("MSTYPE: MS2");
+                sw.WriteLine("Num Peaks: " + ms2spec.Count);
+
+                foreach (var peak in ms2spec) {
+                    sw.WriteLine(peak.Mass + "\t" + peak.Intensity);
+                }
+            }
+            sw.WriteLine();
         }
+
 
         private static void writePeakInfo(StreamWriter sw, (PeakInfo, PeakInfo) peak) {
             var beginPeak = peak.Item1;
             var endPeak = peak.Item2;
+            if (int.TryParse(endPeak.Memo,out int convertedNum)) {
+                beginPeak.Memo = "Should be in source fragment ion";
+            }
             writePeakInfo(sw, beginPeak);
             writePeakInfo(sw, endPeak);
         }
 
         private static void writePeakInfo(StreamWriter sw, PeakInfo peak) {
+            if (peak.Adduct == "[Cat]+") peak.Adduct = "[M]+";
             var info = new List<string>() {
                 peak.Memo, peak.AlignmentID.ToString(), peak.AverageRt, peak.AverageMz, peak.MetaboliteName,
                 peak.Adduct, peak.PostCurationResult, peak.Fill, peak.MSMSAsigned, peak.ReferenceRT,
