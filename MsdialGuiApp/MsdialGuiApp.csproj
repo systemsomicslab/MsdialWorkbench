@@ -14,6 +14,7 @@
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -26,7 +27,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>1</ApplicationRevision>
     <ApplicationVersion>0.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -1444,8 +1444,12 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PreBuildEvent>copy "$(SolutionDir)\Assemblies\timsdata.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Assemblies\SQLite.Interop.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Assemblies\System.Data.SQLite.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Assemblies\MassLynxRaw.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Assemblies\baf2sql_c.dll" "$(TargetDir)"
+xcopy "$(SolutionDir)\Assemblies\shimadzu" "$(TargetDir)" /D/E/C/I/H/Y</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>
