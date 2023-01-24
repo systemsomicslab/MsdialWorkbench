@@ -96,6 +96,10 @@ namespace CompMs.App.Msdial.Model.Core
         }
 
         public static async Task<ProjectModel> LoadAsync(string projectPath, IMessageBroker broker) {
+            if (projectPath.EndsWith(".mddata")) {
+                return await LoadMddatasetAsync(projectPath, broker).ConfigureAwait(false);
+            }
+
             var projectDir = Path.GetDirectoryName(projectPath);
             using (var fs = File.Open(projectPath, FileMode.Open))
             using (var streamManager = ZipStreamManager.OpenGet(fs)) {
@@ -152,6 +156,42 @@ namespace CompMs.App.Msdial.Model.Core
 
                 return model;
             }
+        }
+
+        private static async Task<ProjectModel> LoadMddatasetAsync(string  mddata, IMessageBroker broker) {
+            var folder = Path.GetDirectoryName(mddata);
+            var title = Path.GetFileNameWithoutExtension(mddata);
+            var storage = new ProjectDataStorage(new ProjectParameter(DateTime.Now, folder, title + ".mdproject"));
+            var deserializer = new MsdialIntegrateSerializer();
+
+            using (IStreamManager manager = new DirectoryTreeStreamManager(folder)) {
+                var data = await deserializer.LoadAsync(manager, title, folder, string.Empty).ConfigureAwait(false);
+                manager.Complete();
+                storage.AddStorage(data);
+            }
+
+            using (var fs = new TemporaryFileStream(storage.ProjectParameter.FilePath))
+            using (IStreamManager streamManager = ZipStreamManager.OpenCreate(fs)) {
+                var serializer = new MsdialIgnoreSavingSerializer();
+                await storage.Save(
+                    streamManager,
+                    serializer,
+                    path => null,
+                    parameter => Application.Current.Dispatcher.Invoke(() => MessageBox.Show($"Save {parameter.ProjectFilePath} failed.")));
+                streamManager.Complete();
+                fs.Move();
+            }
+
+            var model = new ProjectModel(storage, broker);
+            model.Datasets.Clear();
+            foreach (var dataset in storage.Storages.Select(data => new DatasetModel(data, broker))){
+                model.Datasets.Add(dataset);
+            }
+            model.CurrentDataset = model.Datasets.LastOrDefault();
+            if (!(model.CurrentDataset is null)) {
+                await model.CurrentDataset.LoadAsync();
+            }
+            return model;
         }
     }
 }

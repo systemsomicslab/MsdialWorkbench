@@ -109,7 +109,7 @@ namespace CompMs.MsdialCore.DataObj
             var dir = storage.Parameter.ProjectFolderPath;
             var file = storage.Parameter.ProjectFileName;
             try {
-                using (var streamManager = datasetStreamManagerFactory(dir)) {
+                using (var streamManager = datasetStreamManagerFactory?.Invoke(dir)) {
                     await serializer.SaveAsync(storage, streamManager, Path.GetFileNameWithoutExtension(file), dir);
                     streamManager?.Complete();
                 }
@@ -133,7 +133,7 @@ namespace CompMs.MsdialCore.DataObj
 
             if (projectDir != newProjectDir) {
                 try {
-                    using (var streamManager = datasetStreamManagerFactory(projectDir)) {
+                    using (var streamManager = datasetStreamManagerFactory?.Invoke(projectDir)) {
                         var storage = await LoadDataStorageCore(streamManager, serializer, projectDir, projectFile);
                         streamManager?.Complete();
                         return storage;
@@ -145,7 +145,7 @@ namespace CompMs.MsdialCore.DataObj
             }
 
             try {
-                using (var streamManager = datasetStreamManagerFactory(newProjectDir)) {
+                using (var streamManager = datasetStreamManagerFactory?.Invoke(newProjectDir)) {
                     var storage = await LoadDataStorageCore(streamManager, serializer, newProjectDir, projectFile);
                     streamManager?.Complete();
                     storage.FixDatasetFolder(newProjectDir);
