@@ -99,7 +99,10 @@ namespace CompMs.App.Msdial.Model.Core
                     string projectPath = string.Empty;
                     var request = new OpenFileRequest(path => projectPath = path)
                     {
-                        Filter = "MS project file(.mdproject)|*.mdproject", //|MTD3 file(.mtd3)|*.mtd3|All(*)|*",
+                        Filter = string.Join("|", new[]{
+                            "MS project file(.mdproject)|*.mdproject",
+                            "MS dataset file(.mddata)|*.mddata",
+                        }),
                         Title = "Import a project file",
                         RestoreDirectory = true,
                     };
