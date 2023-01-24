@@ -170,6 +170,18 @@ namespace CompMs.App.Msdial.Model.Core
                 storage.AddStorage(data);
             }
 
+            using (var fs = new TemporaryFileStream(storage.ProjectParameter.FilePath))
+            using (IStreamManager streamManager = ZipStreamManager.OpenCreate(fs)) {
+                var serializer = new MsdialIgnoreSavingSerializer();
+                await storage.Save(
+                    streamManager,
+                    serializer,
+                    path => null,
+                    parameter => Application.Current.Dispatcher.Invoke(() => MessageBox.Show($"Save {parameter.ProjectFilePath} failed.")));
+                streamManager.Complete();
+                fs.Move();
+            }
+
             var model = new ProjectModel(storage, broker);
             model.Datasets.Clear();
             foreach (var dataset in storage.Storages.Select(data => new DatasetModel(data, broker))){
