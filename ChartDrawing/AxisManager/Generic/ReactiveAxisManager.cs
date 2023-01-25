@@ -147,13 +147,13 @@ namespace CompMs.Graphics.AxisManager.Generic
             return new ReactiveAxisManager<T>(new LogScaleAxisManager<T>(new Range(0, 1), lowBound, highBound), self);
         }
 
-        public static ReactiveAxisManager<T> ToReactiveLogScaleAxisManager<T> (this IObservable<(T, T)> self, IChartMargin margin, T lowBound, T highBound)
+        public static ReactiveAxisManager<T> ToReactiveLogScaleAxisManager<T> (this IObservable<(T, T)> self, IChartMargin margin, T lowBound, T highBound, LabelType labelType = LabelType.Standard)
             where T : IConvertible {
-            return new ReactiveAxisManager<T>(new LogScaleAxisManager<T>(new Range(0, 1), margin, lowBound, highBound), self);
+            return new ReactiveAxisManager<T>(new LogScaleAxisManager<T>(new Range(0, 1), margin, lowBound, highBound) { LabelType = labelType, }, self);
         }
 
-        public static ReactiveAxisManager<double> ToReactiveSqrtAxisManager(this IObservable<(double, double)> self, IChartMargin margin, double lowBound, double highBound) {
-            return new ReactiveAxisManager<double>(new SqrtAxisManager(new Range(0, 1), margin, lowBound, highBound), self);
+        public static ReactiveAxisManager<double> ToReactiveSqrtAxisManager(this IObservable<(double, double)> self, IChartMargin margin, double lowBound, double highBound, LabelType labelType = LabelType.Standard) {
+            return new ReactiveAxisManager<double>(new SqrtAxisManager(new Range(0, 1), margin, lowBound, highBound) { LabelType = labelType, }, self);
         }
 
         public static ReactiveAxisManager<T> ToReactiveContinuousAxisManager<T> (this IObservable<Range> self, Range bounds = null, LabelType labelType = LabelType.Standard)

@@ -8,27 +8,27 @@ namespace CompMs.Graphics.AxisManager.Generic
     public class LogScaleAxisManager<T> : BaseAxisManager<T> where T : IConvertible
     {
         internal LogScaleAxisManager(Range range) : base(range) {
-            labelGenerator = new LogScaleLabelGenerator();
+            _labelGenerator = new LogScaleLabelGenerator();
             Base = 10;
         }
 
         internal LogScaleAxisManager(Range range, Range bounds) : base(range, bounds) {
-            labelGenerator = new LogScaleLabelGenerator();
+            _labelGenerator = new LogScaleLabelGenerator();
             Base = 10;
         }
 
         internal LogScaleAxisManager(Range range, IChartMargin margin) : base(range, margin) {
-            labelGenerator = new LogScaleLabelGenerator();
+            _labelGenerator = new LogScaleLabelGenerator();
             Base = 10;
         }
 
         internal LogScaleAxisManager(Range range, IChartMargin margin, int base_) : base(range, margin) {
-            labelGenerator = new BaseSelectableLogScaleLabelGenerator(base_);
+            _labelGenerator = new BaseSelectableLogScaleLabelGenerator(base_);
             Base = base_;
         }
 
         internal LogScaleAxisManager(Range range, IChartMargin margin, Range bounds) : base(range, margin, bounds) {
-            labelGenerator = new LogScaleLabelGenerator();
+            _labelGenerator = new LogScaleLabelGenerator();
             Base = 10;
         }
 
@@ -90,6 +90,12 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         public int Base { get; }
 
+        public LabelType LabelType {
+            get => _labelType;
+            set => SetProperty(ref _labelType, value);
+        }
+        private LabelType _labelType = LabelType.Standard;
+
         public void UpdateInitialRange(T low, T high) {
             UpdateInitialRange(new Range(ConvertToAxisValue(low, Base), ConvertToAxisValue(high, Base)));
         }
@@ -103,11 +109,26 @@ namespace CompMs.Graphics.AxisManager.Generic
             base.OnRangeChanged();
         }
 
-        private readonly ILabelGenerator labelGenerator = new LogScaleLabelGenerator();
+        private ILabelGenerator LabelGenerator {
+            get {
+                switch (LabelType) {
+                    case LabelType.Relative:
+                        return _labelGenerator is RelativeLabelGenerator ? _labelGenerator : _labelGenerator = new RelativeLabelGenerator();
+                    case LabelType.Percent:
+                        return _labelGenerator is PercentLabelGenerator ? _labelGenerator : _labelGenerator = new PercentLabelGenerator();
+                    case LabelType.Standard:
+                    case LabelType.Order:
+                    default:
+                        return _labelGenerator is LogScaleLabelGenerator ? _labelGenerator : _labelGenerator = new LogScaleLabelGenerator();
+                }
+            }
+        }
+        private ILabelGenerator _labelGenerator = new LogScaleLabelGenerator();
+
         public override List<LabelTickData> GetLabelTicks() {
             var initialRangeCore = CoerceRange(InitialRangeCore, Bounds);
             List<LabelTickData> ticks;
-            (ticks, UnitLabel) = labelGenerator.Generate(Range.Minimum.Value, Range.Maximum.Value, initialRangeCore.Minimum.Value, initialRangeCore.Maximum.Value);
+            (ticks, UnitLabel) = LabelGenerator.Generate(Range.Minimum.Value, Range.Maximum.Value, initialRangeCore.Minimum.Value, initialRangeCore.Maximum.Value);
             return ticks;
         }
 

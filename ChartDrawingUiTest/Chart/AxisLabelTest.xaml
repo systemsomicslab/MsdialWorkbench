@@ -26,8 +26,10 @@
                                     VerticalPropertyName="Y"/>
         </chart:SimpleChartControl>
         <GroupBox Grid.Row="1">
-            <ComboBox ItemsSource="{Binding LabelTypes}"
-                      SelectedItem="{Binding AxisY.LabelType, Mode=TwoWay}"/>
+            <ComboBox ItemsSource="{Binding AxisTypes}"
+                      DisplayMemberPath="Label"
+                      SelectedValuePath="Item"
+                      SelectedValue="{Binding AxisY, Mode=TwoWay}"/>
         </GroupBox>
     </Grid>
 </Page>

@@ -65,11 +65,11 @@ namespace CompMs.App.Msdial.Model.Chart
                 .AddTo(Disposables);
             var upperLogVerticalAxis = upperVerticalRangeProperty
                 .Select(range => (range.Minimum.Value, range.Maximum.Value))
-                .ToReactiveLogScaleAxisManager(new ConstantMargin(0, 30), 1d, 1d)
+                .ToReactiveLogScaleAxisManager(new ConstantMargin(0, 30), 1d, 1d, labelType: LabelType.Percent)
                 .AddTo(Disposables);
             var upperSqrtVerticalAxis = upperVerticalRangeProperty
                 .Select(range => (range.Minimum.Value, range.Maximum.Value))
-                .ToReactiveSqrtAxisManager(new ConstantMargin(0, 30), 0, 0)
+                .ToReactiveSqrtAxisManager(new ConstantMargin(0, 30), 0, 0, labelType: LabelType.Percent)
                 .AddTo(Disposables);
             Disposables.Add(upperVerticalRangeProperty.Connect());
             UpperVerticalAxisItemCollection = new ObservableCollection<AxisItemModel>(new[]
@@ -89,11 +89,11 @@ namespace CompMs.App.Msdial.Model.Chart
                 .AddTo(Disposables);
             var lowerLogVerticalAxis = lowerVerticalRangeProperty
                 .Select(range => (range.Minimum.Value, range.Maximum.Value))
-                .ToReactiveLogScaleAxisManager(new ConstantMargin(0, 30), 1d, 1d)
+                .ToReactiveLogScaleAxisManager(new ConstantMargin(0, 30), 1d, 1d, labelType: LabelType.Percent)
                 .AddTo(Disposables);
             var lowerSqrtVerticalAxis = lowerVerticalRangeProperty
                 .Select(range => (range.Minimum.Value, range.Maximum.Value))
-                .ToReactiveSqrtAxisManager(new ConstantMargin(0, 30), 0, 0)
+                .ToReactiveSqrtAxisManager(new ConstantMargin(0, 30), 0, 0, labelType: LabelType.Percent)
                 .AddTo(Disposables);
             Disposables.Add(lowerVerticalRangeProperty.Connect());
             LowerVerticalAxisItemCollection = new ObservableCollection<AxisItemModel>(new[]
