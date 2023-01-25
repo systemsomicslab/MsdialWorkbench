@@ -1,5 +1,4 @@
-﻿using NCDK.IO.Iterator;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,8 +19,8 @@ namespace CompMs.Common.Extension {
             yield return value;
         }
 
-        public static IEnumerable<System.Tuple<T1, T2>> Zip<T1, T2>(this IEnumerable<T1> xs, IEnumerable<T2> ys) {
-            return xs.Zip(ys, Tuple.Create);
+        public static IEnumerable<(T1, T2)> Zip<T1, T2>(this IEnumerable<T1> xs, IEnumerable<T2> ys) {
+            return xs.Zip(ys, (x, y) => (x, y));
         }
 
         public static IEnumerable<T4> Zip<T1, T2, T3, T4>(this IEnumerable<T1> xs, IEnumerable<T2> ys, IEnumerable<T3> zs, Func<T1, T2, T3, T4> func) {
@@ -29,8 +28,8 @@ namespace CompMs.Common.Extension {
             return xys.Zip(zs, (xy, z) => func(xy.Item1, xy.Item2, z));
         }
 
-        public static IEnumerable<System.Tuple<T1, T2, T3>> Zip<T1, T2, T3>(this IEnumerable<T1> xs, IEnumerable<T2> ys, IEnumerable<T3> zs) {
-            return xs.Zip(ys, zs, Tuple.Create);
+        public static IEnumerable<(T1, T2, T3)> Zip<T1, T2, T3>(this IEnumerable<T1> xs, IEnumerable<T2> ys, IEnumerable<T3> zs) {
+            return xs.Zip(ys, zs, (x, y, z) => (x, y, z));
         }
 
         public static IEnumerable<T5> Zip<T1, T2, T3, T4, T5>(this IEnumerable<T1> xs, IEnumerable<T2> ys, IEnumerable<T3> zs, IEnumerable<T4> ws, Func<T1, T2, T3, T4, T5> func) {
