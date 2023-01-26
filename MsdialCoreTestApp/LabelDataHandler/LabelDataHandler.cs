@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using CompMs.Common.Extension;
+using CompMs.Common.Algorithm.Scoring;
 
 namespace CompMs.App.MsdialConsole.LabelDataHandler {
 
@@ -51,10 +52,193 @@ namespace CompMs.App.MsdialConsole.LabelDataHandler {
 
     }
 
+    public class LinkNode {
+        public double[] Score { get; set; }
+        public MoleculeMsReference Node { get; set; }
+    }
+
     public sealed class LabelDataHandler {
         private LabelDataHandler() {
 
         }
+
+        public static void GenerateMoleculerSpectrumNetforkFilesByModifiedDotProductFunction(string inputfile_plant, string inputfile_mslib, string outputdir) {
+
+            if (!Directory.Exists(outputdir)) {
+                Directory.CreateDirectory(outputdir);
+            }
+
+            var minimumPeakMatch = 6;
+            var matchThreshold = 0.8;
+            var maxEdgeNumPerNode = 10;
+            var maxPrecursorDiff = 400.0;
+            var maxPrecursorDiff_Percent = 100;
+
+            var inputfilename = Path.GetFileNameWithoutExtension(inputfile_plant);
+            var output_node_file = Path.Combine(outputdir, inputfilename + "_node.txt");
+            var output_edge_file = Path.Combine(outputdir, inputfilename + "_edge.txt");
+
+            var plantSpectra = MspFileParser.MspFileReader(inputfile_plant);
+            var mslibSpectra = MspFileParser.MspFileReader(inputfile_mslib);
+
+            Console.WriteLine("Converting to normalized spectra");
+            foreach (var record in plantSpectra) {
+                record.Spectrum = MsScanMatching.GetProcessedSpectrum(record.Spectrum, record.PrecursorMz);
+            }
+
+            foreach (var record in mslibSpectra) {
+                record.Spectrum = MsScanMatching.GetProcessedSpectrum(record.Spectrum, record.PrecursorMz);
+            }
+
+            Console.WriteLine("Creating molecular networking in plant spectra");
+            var node2links = new Dictionary<int, List<LinkNode>>();
+            var counter = 0;
+            var max = plantSpectra.Count * plantSpectra.Count;
+            for (int i = 0; i < plantSpectra.Count; i++) {
+                for (int j = i + 1; j < plantSpectra.Count; j++) {
+                    counter++;
+                    Console.Write("{0} / {1}", counter, max);
+                    Console.SetCursorPosition(0, Console.CursorTop);
+
+                    var prop1 = plantSpectra[i];
+                    var prop2 = plantSpectra[j];
+                    var massDiff = Math.Abs(prop1.PrecursorMz - prop2.PrecursorMz);
+                    if (massDiff > maxPrecursorDiff) continue;
+                    if (Math.Max(prop1.PrecursorMz, prop2.PrecursorMz) * maxPrecursorDiff_Percent * 0.01 - Math.Min(prop1.PrecursorMz, prop2.PrecursorMz) < 0) continue;
+
+                    var scoreitem = MsScanMatching.GetModifiedDotProductScore(prop1, prop2);
+                    if (scoreitem[1] < minimumPeakMatch) continue;
+                    if (scoreitem[0] < matchThreshold) continue;
+
+                    if (node2links.ContainsKey(i)) {
+                        node2links[i].Add(new LinkNode() { Score = scoreitem, Node = plantSpectra[j] });
+                    }
+                    else {
+                        node2links[i] = new List<LinkNode>() { new LinkNode() { Score = scoreitem, Node = plantSpectra[j] } };
+                    }
+                }
+            }
+            Console.WriteLine();
+            Console.WriteLine("Compare to reference database started");
+            var node2links_with_reffile = new Dictionary<int, List<LinkNode>>();
+            counter = 0;
+            max = plantSpectra.Count * mslibSpectra.Count;
+            for (int i = 0; i < plantSpectra.Count; i++) {
+                for (int j = 0; j < mslibSpectra.Count; j++) {
+                    counter++;
+                    Console.Write("{0} / {1}", counter, max);
+                    Console.SetCursorPosition(0, Console.CursorTop);
+
+                    var prop1 = plantSpectra[i];
+                    var prop2 = mslibSpectra[j];
+                    var massDiff = Math.Abs(prop1.PrecursorMz - prop2.PrecursorMz);
+                   
+                    if (massDiff > maxPrecursorDiff) continue;
+                    if (Math.Max(prop1.PrecursorMz, prop2.PrecursorMz) * maxPrecursorDiff_Percent * 0.01 - Math.Min(prop1.PrecursorMz, prop2.PrecursorMz) < 0) continue;
+
+                    var scoreitem = MsScanMatching.GetModifiedDotProductScore(prop1, prop2);
+                    if (scoreitem[1] < minimumPeakMatch) continue;
+                    if (scoreitem[0] < matchThreshold) continue;
+
+                    if (node2links_with_reffile.ContainsKey(i)) {
+                        node2links_with_reffile[i].Add(new LinkNode() { Score = scoreitem, Node = mslibSpectra[j] });
+                    }
+                    else {
+                        node2links_with_reffile[i] = new List<LinkNode>() { new LinkNode() { Score = scoreitem, Node = mslibSpectra[j] } };
+                    }
+                   
+                }
+            }
+
+            var cNode2Links = new Dictionary<int, List<LinkNode>>();
+            foreach (var item in node2links) {
+                var nitem = item.Value.OrderByDescending(n => n.Score[1]).ToList();
+                cNode2Links[item.Key] = new List<LinkNode>();
+                for (int i = 0; i < nitem.Count; i++) {
+                    if (i > maxEdgeNumPerNode - 1) break;
+                    cNode2Links[item.Key].Add(nitem[i]);
+                }
+            }
+
+            var cNode2Links_with_reffile = new Dictionary<int, List<LinkNode>>();
+            foreach (var item in node2links_with_reffile) {
+                var nitem = item.Value.OrderByDescending(n => n.Score[1]).ToList();
+                cNode2Links_with_reffile[item.Key] = new List<LinkNode>();
+                for (int i = 0; i < nitem.Count; i++) {
+                    if (i > maxEdgeNumPerNode - 1) break;
+                    cNode2Links_with_reffile[item.Key].Add(nitem[i]);
+                }
+            }
+
+            var nodeDict = new Dictionary<string, MoleculeMsReference>();
+
+            using (var sw = new StreamWriter(output_edge_file)) {
+                sw.WriteLine("Source\tTarget\tSimilarity\tMatchNumber");
+                foreach (var item in cNode2Links) {
+                    foreach (var link in item.Value) {
+
+                        var source_node_id = "Plant_" + plantSpectra[item.Key].Name.Split('_')[0];
+                        var target_node_id = "Plant_" + link.Node.Name.Split('_')[0];
+
+                        sw.WriteLine(source_node_id + "\t" + target_node_id + "\t" + link.Score[0] + "\t" + link.Score[1]);
+
+                        if (!nodeDict.ContainsKey(source_node_id)) {
+                            nodeDict[source_node_id] = plantSpectra[item.Key];
+                        }
+                        if (!nodeDict.ContainsKey(target_node_id)) {
+                            nodeDict[target_node_id] = link.Node;
+                        }
+                    }
+                }
+
+                foreach (var item in cNode2Links_with_reffile) {
+                    foreach (var link in item.Value) {
+                        var source_node_id = "Plant_" + plantSpectra[item.Key].Name.Split('_')[0];
+                        var target_node_id = "Reference_" + link.Node.ScanID;
+
+                        sw.WriteLine(source_node_id + "\t" + target_node_id + "\t" + link.Score[0] + "\t" + link.Score[1]);
+
+                        if (!nodeDict.ContainsKey(source_node_id)) {
+                            nodeDict[source_node_id] = plantSpectra[item.Key];
+                        }
+                        if (!nodeDict.ContainsKey(target_node_id)) {
+                            nodeDict[target_node_id] = link.Node;
+                        }
+                    }
+                }
+            }
+
+            using (var sw = new StreamWriter(output_node_file)) {
+                sw.WriteLine("ID\tMz\tRt\tName\tAdduct\tIntensity\tInChIKey\tSMILES\tOntoloty\tFormula\tCarbonCount");
+                foreach (var item in nodeDict) {
+                    var key = item.Key;
+                    var record = item.Value;
+                    if (key.StartsWith("Plant")) {
+
+                        var comment = record.Comment;
+                        var intensity = comment.Split(';')[1].Split('=')[1];
+                        var carbon = comment.Split(';')[2].Split('=')[1];
+
+                        var lines = new List<string>() {
+                            key, record.PrecursorMz.ToString(), record.ChromXs.Value.ToString(),
+                            record.AdductType.ToString(), intensity, record.InChIKey, record.SMILES,
+                            record.Ontology, record.Formula == null ? "null" : record.Formula.ToString(), carbon
+                        };
+                        sw.WriteLine(String.Join("\t", lines));
+                    }
+                    else {
+                        var lines = new List<string>() {
+                            key, record.PrecursorMz.ToString(), record.Comment.Contains("PlaSMA") ? record.ChromXs.Value.ToString() : "null",
+                            record.AdductType.ToString(), "100", record.InChIKey, record.SMILES,
+                            record.Ontology, record.Formula == null ? "null" : record.Formula.ToString(), record.Formula == null ? "null" : record.Formula.Cnum.ToString()
+                        };
+                        sw.WriteLine(String.Join("\t", lines));
+                    }
+                }
+            }
+        }
+
+
 
         public static void ExtractCorrectPeakList(string input, string outputdir) {
 

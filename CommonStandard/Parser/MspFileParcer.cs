@@ -32,6 +32,7 @@ namespace CompMs.Common.Parser
                 while (sr.Peek() > -1)
                 {
                     var wkstr = sr.ReadLine();
+                    if (wkstr.StartsWith("#")) continue;
                     var isRecordStarted = wkstr.StartsWith("NAME:");
                     if (isRecordStarted) {
                         
@@ -42,6 +43,7 @@ namespace CompMs.Common.Parser
 
                         while (sr.Peek() > -1) {
                             wkstr = sr.ReadLine();
+                            if (wkstr.StartsWith("#")) continue;
                             ReadMspField(wkstr, out string fieldName, out string fieldValue);
                             var isSpecRetrieved = SetMspField(mspField, fieldName, fieldValue, sr);
                             if (isSpecRetrieved) break;
@@ -131,6 +133,7 @@ namespace CompMs.Common.Parser
             using (StreamReader sr = new StreamReader(file, Encoding.ASCII)) {
                 while (sr.Peek() > -1) {
                     var wkstr = sr.ReadLine();
+                    if (wkstr.StartsWith("#")) continue;
                     var isRecordStarted = wkstr.StartsWith("NAME:");
                     if (isRecordStarted) {
 
@@ -141,6 +144,7 @@ namespace CompMs.Common.Parser
 
                         while (sr.Peek() > -1) {
                             wkstr = sr.ReadLine();
+                            if (wkstr.StartsWith("#")) continue;
                             ReadMspField(wkstr, out string fieldName, out string fieldValue);
                             var isSpecRetrieved = SetMspField(mspField, fieldName, fieldValue, sr);
                             if (isSpecRetrieved) break;
@@ -324,6 +328,10 @@ namespace CompMs.Common.Parser
                 case "links": mspObj.Links = fieldValue;  return false;
                 case "instrument": mspObj.InstrumentModel = fieldValue;  return false;
                 case "instrumenttype": mspObj.InstrumentType = fieldValue;  return false;
+                case "intensity":
+                    if (mspObj.Comment == string.Empty) mspObj.Comment = "intensity=" + fieldValue;
+                    else mspObj.Comment += "; intensity=" + fieldValue;
+                    return false;
 
                 case "scannumber":
                     if (mspObj.Comment == string.Empty) mspObj.Comment = "scannumber=" + fieldValue;
@@ -333,6 +341,52 @@ namespace CompMs.Common.Parser
                 case "numpeaks":
                 case "num_peaks":
                     mspObj.Spectrum = ReadSpectrum(sr, fieldValue);
+                    return true;
+                case "carboncount":
+                    if (mspObj.Comment == string.Empty) mspObj.Comment = "carboncount=" + fieldValue;
+                    else mspObj.Comment += "; carboncount=" + fieldValue;
+                    return false;
+                case "mstype":
+                    if (fieldValue.ToLower() == "ms1") {
+                        var wkstr = sr.ReadLine();
+                        ReadMspField(wkstr, out string titleName, out string titleValue);
+                        if (titleName.ToLower() == "num peaks") {
+                            var isotopeSpec = ReadSpectrum(sr, titleValue);
+                            mspObj.IsotopicPeaks = new List<DataObj.Property.IsotopicPeak>();
+                            foreach (var isotope in isotopeSpec) {
+                                mspObj.IsotopicPeaks.Add(new DataObj.Property.IsotopicPeak() { Mass = isotope.Mass, AbsoluteAbundance = isotope.Intensity });
+                            }
+                        }
+                        else {
+                            return false;
+                        }
+                        
+                        wkstr = sr.ReadLine();
+                        ReadMspField(wkstr, out titleName, out titleValue);
+                        if (titleName.ToLower() == "mstype" && titleValue.ToLower() == "ms2") {
+                            wkstr = sr.ReadLine();
+                            ReadMspField(wkstr, out titleName, out titleValue);
+                            if (titleName.ToLower() == "num peaks") {
+                                mspObj.Spectrum = ReadSpectrum(sr, titleValue);
+                                return true;
+                            }
+                            else {
+                                return false;
+                            }
+                        }
+                        return false;
+                    }
+                    else if (fieldValue.ToLower() == "ms2") {
+                        var wkstr = sr.ReadLine();
+                        ReadMspField(wkstr, out string titleName, out string titleValue);
+                        if (titleName.ToLower() == "num peaks") {
+                            mspObj.Spectrum = ReadSpectrum(sr, titleValue);
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    }
                     return true;
             }
             return false;

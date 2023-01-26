@@ -392,6 +392,7 @@ namespace CompMs.Common.DataObj.Property
         }
 
         public override string ToString() {
+            
             return FormulaString;
         }
     }

@@ -314,9 +314,14 @@ namespace CompMs.App.MsdialConsole {
 
 
             // swai-kun for 13C plant table curation
-            LabelDataHandler.LabelDataHandler.ExtractCorrectPeakList(
-                @"E:\6_Projects\PROJECT_GlycyrrhizaMetabolomics\glabra leaf\pos\pos_table_vs1.txt",
-                @"E:\6_Projects\PROJECT_GlycyrrhizaMetabolomics\glabra leaf\pos");
+            //LabelDataHandler.LabelDataHandler.ExtractCorrectPeakList(
+            //    @"E:\6_Projects\PROJECT_GlycyrrhizaMetabolomics\glabra leaf\pos\pos_table_vs1.txt",
+            //    @"E:\6_Projects\PROJECT_GlycyrrhizaMetabolomics\glabra leaf\pos");
+
+            LabelDataHandler.LabelDataHandler.GenerateMoleculerSpectrumNetforkFilesByModifiedDotProductFunction(
+               @"E:\6_Projects\PROJECT_GlycyrrhizaMetabolomics\glabra leaf\pos\pos_table_vs1_extracted_12C_ms2contained.msp",
+               @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp_ht\POS\MSMS-Pos-RIKEN_PlaSMA_Bio.msp",
+               @"E:\6_Projects\PROJECT_GlycyrrhizaMetabolomics\glabra leaf\pos\cytoscape");
         }
 
         private static void DumpN(string file, int n) {
