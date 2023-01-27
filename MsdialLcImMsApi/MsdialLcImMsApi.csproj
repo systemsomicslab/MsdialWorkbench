@@ -22,10 +22,4 @@
     <Folder Include="Algorithm\Alignment\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="RawDataHandler">
-      <HintPath>..\Assemblies\RawDataHandler.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -14,12 +14,6 @@
   <ItemGroup>
     <Folder Include="Algorithm\Alignment\" />
     <Folder Include="Parser\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="RawDataHandler">
-      <HintPath>..\Assemblies\RawDataHandler.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

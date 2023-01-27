@@ -37,7 +37,6 @@
 	  <PackageReference Include="MessagePack" Version="1.7.3.7" />
 	  <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-	  <PackageReference Include="RawDataHandler" Version="1.0.0" />
 	  <PackageReference Include="ReactiveProperty.WPF" Version="8.2.0" />
 	</ItemGroup>
 	<ItemGroup>

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -9,12 +9,6 @@
   <ItemGroup>
     <ProjectReference Include="..\CommonStandard\CommonStandard.csproj" />
     <ProjectReference Include="..\MsdialCore\MsdialCore.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="RawDataHandler">
-      <HintPath>..\Assemblies\RawDataHandler.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>
