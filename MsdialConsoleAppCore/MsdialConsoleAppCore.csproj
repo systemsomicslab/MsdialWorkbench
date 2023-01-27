@@ -5,9 +5,14 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <ApplicationIcon>msdial_icon.ico</ApplicationIcon>
     <AssemblyName>MsdialConsoleApp</AssemblyName>
+    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug vendor unsupported|AnyCPU'">
     <OutputPath>bin\Debug\</OutputPath>
   </PropertyGroup>
   
@@ -17,6 +22,11 @@
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\MsDial\bin\Release\</OutputPath>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release vendor unsupported|AnyCPU'">
     <OutputPath>..\MsDial\bin\Release\</OutputPath>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>

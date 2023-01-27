@@ -5,6 +5,7 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <ApplicationIcon>msfinder_icon.ico</ApplicationIcon>
     <AssemblyName>MsfinderConsoleApp</AssemblyName>
+    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

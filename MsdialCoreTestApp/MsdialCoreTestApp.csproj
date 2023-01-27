@@ -5,6 +5,7 @@
     <TargetFrameworks>netcoreapp3.0;net472</TargetFrameworks>
     <RootNamespace>CompMs.App.MsdialConsole</RootNamespace>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
   </PropertyGroup>
   <PropertyGroup>
     <HighEntropyVA>false</HighEntropyVA>

@@ -26,9 +26,15 @@
     <PackageProjectUrl>https://github.com/kazuyaujihara/NCDK</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/kazuyaujihara/NCDK/blob/master/LICENSE</PackageLicenseUrl>
     <Platforms>AnyCPU</Platforms>
+    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>1701;1702;0162,0164,0219,0612,0618,0672,0809,1591,3021,1573</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release vendor unsupported|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <NoWarn>1701;1702;0162,0164,0219,0612,0618,0672,0809,1591,3021,1573</NoWarn>
   </PropertyGroup>
@@ -38,7 +44,17 @@
     <NoWarn>1701;1702;0162,0164,0219,0612,0618,0672,0809,1591,3021,1573</NoWarn>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release vendor unsupported|x64'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>1701;1702;0162,0164,0219,0612,0618,0672,0809,1591,3021,1573</NoWarn>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>1701;1702;0162,0164,0219,0612,0618,0672,0809,1591,3021,1573</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug vendor unsupported|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <NoWarn>1701;1702;0162,0164,0219,0612,0618,0672,0809,1591,3021,1573</NoWarn>
   </PropertyGroup>
@@ -48,7 +64,16 @@
     <NoWarn>1701;1702;0162,0164,0219,0612,0618,0672,0809,1591,3021,1573</NoWarn>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug vendor unsupported|x64'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>1701;1702;0162,0164,0219,0612,0618,0672,0809,1591,3021,1573</NoWarn>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net461|AnyCPU'">
+    <DocumentationFile>bin\Release\net461\NCDK.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release vendor unsupported|net461|AnyCPU'">
     <DocumentationFile>bin\Release\net461\NCDK.xml</DocumentationFile>
   </PropertyGroup>
   
@@ -57,7 +82,16 @@
     <DefineConstants>$(DefineConstants)TRACE</DefineConstants>
   </PropertyGroup>
   
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release vendor unsupported|netstandard2.0|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.0\NCDK.xml</DocumentationFile>
+    <DefineConstants>$(DefineConstants)TRACE</DefineConstants>
+  </PropertyGroup>
+  
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net461|AnyCPU'">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug vendor unsupported|net461|AnyCPU'">
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   
@@ -65,11 +99,23 @@
     <DefineConstants>$(DefineConstants)TRACE</DefineConstants>
   </PropertyGroup>
   
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug vendor unsupported|netstandard2.0|AnyCPU'">
+    <DefineConstants>$(DefineConstants)TRACE</DefineConstants>
+  </PropertyGroup>
+  
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net472|AnyCPU'">
     <DefineConstants>$(DefineConstants)TRACE</DefineConstants>
   </PropertyGroup>
   
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug vendor unsupported|net472|AnyCPU'">
+    <DefineConstants>$(DefineConstants)TRACE</DefineConstants>
+  </PropertyGroup>
+  
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net472|AnyCPU'">
+    <DefineConstants>$(DefineConstants)TRACE</DefineConstants>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release vendor unsupported|net472|AnyCPU'">
     <DefineConstants>$(DefineConstants)TRACE</DefineConstants>
   </PropertyGroup>
   

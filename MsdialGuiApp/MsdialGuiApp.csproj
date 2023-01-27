@@ -8,6 +8,7 @@
 		<RootNamespace>CompMs.App.Msdial</RootNamespace>
 		<ApplicationIcon>Resources\msdial_icon.ico</ApplicationIcon>
 		<PlatformTarget>AnyCPU</PlatformTarget>
+		<Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
 	</PropertyGroup>
 	<PropertyGroup>
 		<HighEntropyVA>false</HighEntropyVA>
