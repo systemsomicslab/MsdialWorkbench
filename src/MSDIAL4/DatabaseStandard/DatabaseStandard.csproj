@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Database</AssemblyName>
+    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\AdductIonResource_Negative.txt" />
+    <None Remove="Resources\AdductIonResource_Positive.txt" />
+    <None Remove="Resources\IUPAC.txt" />
+    <None Remove="Resources\LbmQueries.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\AdductIonResource_Positive.txt" />
+    <EmbeddedResource Include="Resources\LbmQueries.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj" />
+    <ProjectReference Include="..\MathematicsStandard\MathematicsStandard.csproj" />
+    <ProjectReference Include="..\MolecularFormulaFinderStandard\MolecularFormulaFinderStandard.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\AdductIonResource_Negative.txt" />
+    <EmbeddedResource Include="Resources\IUPAC.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MessagePackAnalyzer" Version="1.6.0" />
+  </ItemGroup>
+
+</Project>

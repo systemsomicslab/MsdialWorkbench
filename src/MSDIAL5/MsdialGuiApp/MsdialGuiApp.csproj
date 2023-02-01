@@ -41,9 +41,10 @@
 	  <PackageReference Include="ReactiveProperty.WPF" Version="8.2.0" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\..\..\ChartDrawing\ChartDrawing.csproj" />
-	  <ProjectReference Include="..\..\..\MsdialIntegrate\MsdialIntegrate.csproj" />
-	  <ProjectReference Include="..\..\..\NCDK.Display\NCDK.Display.csproj" />
+	  <ProjectReference Include="..\..\Common\ChartDrawing\ChartDrawing.csproj" />
+	  <ProjectReference Include="..\..\Common\CommonMVVM\CommonMVVM.csproj" />
+	  <ProjectReference Include="..\MsdialIntegrate\MsdialIntegrate.csproj" />
+	  <ProjectReference Include="..\..\Common\NCDK.Display\NCDK.Display.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Resource Include="Resources\BinVestigate.ico">
