@@ -197,7 +197,7 @@
       <Project>{b39eb5f8-713a-49cc-b0e9-b4040687cb81}</Project>
       <Name>MsdialCore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MsdialGuiApp\MsdialGuiApp.csproj">
+    <ProjectReference Include="..\src\MSDIAL5\MsdialGuiApp\MsdialGuiApp.csproj">
       <Project>{276317c3-b877-445b-a950-1de2b5414acf}</Project>
       <Name>MsdialGuiApp</Name>
     </ProjectReference>

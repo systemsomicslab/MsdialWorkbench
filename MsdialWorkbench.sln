@@ -137,7 +137,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonMVVMTests", "CommonMV
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialImmsCoreTests", "MsdialImmsCoreTests\MsdialImmsCoreTests.csproj", "{87341028-41D3-4090-A9EA-99014FFB7B9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialGuiAppTests", "MsdialGuiAppTests\MsdialGuiAppTests.csproj", "{B8DA58FB-1A95-40CF-9F2D-FC980FC8A5C5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialGuiAppTests", "tests\MSDIAL5\MsdialGuiAppTests\MsdialGuiAppTests.csproj", "{B8DA58FB-1A95-40CF-9F2D-FC980FC8A5C5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialLcImMsApiTests", "MsdialLcImMsApiTests\MsdialLcImMsApiTests.csproj", "{4187672A-07AB-4D45-BFE4-845C5323D0D2}"
 EndProject
