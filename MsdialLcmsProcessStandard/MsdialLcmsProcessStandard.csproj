@@ -7,18 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="RawDataHandler" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CommonStandard\CommonStandard.csproj" />
     <ProjectReference Include="..\DatabaseStandard\DatabaseStandard.csproj" />
     <ProjectReference Include="..\DataProcessingStandard\DataProcessingStandard.csproj" />
     <ProjectReference Include="..\IsotopeRatioCalculatorStandard\IsotopeRatioCalculatorStandard.csproj" />
     <ProjectReference Include="..\MathematicsStandard\MathematicsStandard.csproj" />
     <ProjectReference Include="..\MolecularFormulaFinderStandard\MolecularFormulaFinderStandard.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="RawDataHandler">
-      <HintPath>..\Assemblies\RawDataHandler.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

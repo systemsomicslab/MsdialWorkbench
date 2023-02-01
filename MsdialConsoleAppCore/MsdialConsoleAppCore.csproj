@@ -30,6 +30,10 @@
     <OutputPath>..\MsDial\bin\Release\</OutputPath>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="RawDataHandler" Version="1.0.0" />
+  </ItemGroup>
 
 
   <ItemGroup>
@@ -41,13 +45,6 @@
     <ProjectReference Include="..\MsdialCommonStandard\MsdialCommonStandard.csproj" />
     <ProjectReference Include="..\MsdialGcmsProcessStandard\MsdialGcmsProcessStandard.csproj" />
     <ProjectReference Include="..\MsdialLcmsProcessStandard\MsdialLcmsProcessStandard.csproj" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <Reference Include="RawDataHandler">
-      <HintPath>..\Assemblies\RawDataHandler.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>

@@ -12,6 +12,7 @@
 	</PropertyGroup>
 	<PropertyGroup>
 		<HighEntropyVA>false</HighEntropyVA>
+		<SignAssembly>False</SignAssembly>
 	</PropertyGroup>
 	<ItemGroup>
 		<Resource Include="Resources\msdial_icon.ico" />

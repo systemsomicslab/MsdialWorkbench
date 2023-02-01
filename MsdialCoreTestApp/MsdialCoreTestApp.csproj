@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="RawDataHandler" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,12 +25,6 @@
     <ProjectReference Include="..\MsdialIntegrate\MsdialIntegrate.csproj" />
     <ProjectReference Include="..\MsdialLcImMsApi\MsdialLcImMsApi.csproj" />
     <ProjectReference Include="..\MsdialLcMsApi\MsdialLcMsApi.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="RawDataHandler">
-      <HintPath>..\Assemblies\RawDataHandler.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>
