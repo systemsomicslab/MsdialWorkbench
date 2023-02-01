@@ -1,12 +1,21 @@
 # MsdialWorkbench contents
 
-# MS-DIAL - software for untargeted metabolomics and lipidomics
+## MS-DIAL - software for untargeted metabolomics and lipidomics
 The program supports data processings for any type of chromatography / scan type mass spectrometry data, and the assembly is licensed under the CC-BY 4.0.
 Please contact Hiroshi Tsugawa (hiroshi.tsugawa@riken.jp) for feedback, bug reports, and questions.
 
-# MS-FINDER - software for structure elucidation of unknown spectra with hydrogen rearrangement (HR) rules
+## MS-FINDER - software for structure elucidation of unknown spectra with hydrogen rearrangement (HR) rules
 The program supports molecular formula prediction, metabolie class prediction, and structure elucidation for EI-MS and MS/MS spectra, and the assembly is licensed under the CC-BY 4.0.
 Please contact Hiroshi Tsugawa (hiroshi.tsugawa@riken.jp) for feedback, bug reports, and questions.
+
+# How to build MS-DIAL5 Desktop Application (for Windows)
+
+1. Download and install [Visual Studio Community 2022](https://visualstudio.microsoft.com/).
+2. Clone this repo.
+3. Double click `MsdialWorkbench.sln` in the cloned repo.
+4. FILLME
+5. FILLME
+6. FILLME
 
 # Developers
 Lead developer: Hiroshi Tsugawa (RIKEN) 
