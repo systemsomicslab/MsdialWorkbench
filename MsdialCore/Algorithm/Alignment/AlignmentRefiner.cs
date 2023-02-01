@@ -6,7 +6,6 @@ using CompMs.Common.Parser;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,7 +13,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 {
     public interface IAlignmentRefiner
     {
-        Tuple<List<AlignmentSpotProperty>, List<int>> Refine(IList<AlignmentSpotProperty> alignments);
+        (List<AlignmentSpotProperty>, List<int>) Refine(IList<AlignmentSpotProperty> alignments);
     }
 
     public abstract class AlignmentRefiner : IAlignmentRefiner
@@ -32,7 +31,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             this.evaluator = evaluator;
         }
 
-        public Tuple<List<AlignmentSpotProperty>, List<int>> Refine(IList<AlignmentSpotProperty> alignments) {
+        public (List<AlignmentSpotProperty>, List<int>) Refine(IList<AlignmentSpotProperty> alignments) {
             var spots = alignments.ToList();
 
             Deduplicate(spots);
@@ -44,7 +43,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             SetStatProperty(filtered);
             PostProcess(filtered);
 
-            return Tuple.Create(filtered, ids);
+            return (filtered, ids);
         }
 
         protected virtual void Deduplicate(List<AlignmentSpotProperty> alignments) { // TODO: change deduplicate process (msp, textdb, metabolite name...)

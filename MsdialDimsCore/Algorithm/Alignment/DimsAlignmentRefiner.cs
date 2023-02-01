@@ -27,7 +27,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
             this.evaluator = evaluator;
         }
 
-        public Tuple<List<AlignmentSpotProperty>, List<int>> Refine(IList<AlignmentSpotProperty> alignments) {
+        public (List<AlignmentSpotProperty>, List<int>) Refine(IList<AlignmentSpotProperty> alignments) {
 
             //foreach (var spot in alignments.Where(n => n.IsReferenceMatched)) {
             //    Console.WriteLine(spot.MspBasedMatchResult.Name + "\t" + spot.AdductType.AdductIonName);
@@ -42,7 +42,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
             SetLinks(filtered);
             SetAdducts(filtered.Where(spot => !spot.AdductType.HasAdduct));
 
-            return Tuple.Create(filtered, ids);
+            return (filtered, ids);
         }
 
         private void Deduplicate(IList<AlignmentSpotProperty> alignments) { // TODO: change deduplicate process (msp, textdb, metabolite name...)

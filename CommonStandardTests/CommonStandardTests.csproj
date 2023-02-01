@@ -6,6 +6,8 @@
     <IsPackable>false</IsPackable>
 
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+
+    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
