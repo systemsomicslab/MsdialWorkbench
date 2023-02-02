@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{049645F4-4EA5-41A2-B369-22D23FB09040}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Msdial.Common</RootNamespace>
+    <AssemblyName>MsdialCommon</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug vendor unsupported|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug vendor unsupported\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release vendor unsupported|AnyCPU'">
+    <OutputPath>bin\Release vendor unsupported\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="System" />
+    <Reference Include="System.Windows" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\CommonMVVM\CommonMVVM.csproj">
+      <Project>{d7bc52de-cdf0-4f78-b23e-ef2434d14029}</Project>
+      <Name>CommonMVVM</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\ChartDrawing\ChartDrawing.csproj">
+      <Project>{6131640b-30e6-4606-a394-be953590f3e9}</Project>
+      <Name>ChartDrawing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj">
+      <Project>{eb161441-a663-485f-8cd6-d1d5794f7ad9}</Project>
+      <Name>CommonStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DatabaseStandard\DatabaseStandard.csproj">
+      <Project>{ba6683c6-0cd8-4b04-b7dc-1a9eb5aa0b31}</Project>
+      <Name>DatabaseStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataProcessingStandard\DataProcessingStandard.csproj">
+      <Project>{3c1f2344-609f-4939-a6be-2ae4327c26a0}</Project>
+      <Name>DataProcessingStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MathematicsStandard\MathematicsStandard.csproj">
+      <Project>{6edc27b3-4a32-4a20-99f9-035cddf9104f}</Project>
+      <Name>MathematicsStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsdialGcmsProcessStandard\MsdialGcmsProcessStandard.csproj">
+      <Project>{ed56a430-b975-4073-b8a2-7115b4fd8fcc}</Project>
+      <Name>MsdialGcmsProcessStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsdialLcmsProcessStandard\MsdialLcmsProcessStandard.csproj">
+      <Project>{f4b299d9-6dc4-4535-88c6-302c299a1aac}</Project>
+      <Name>MsdialLcmsProcessStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PdfExporter\PdfExporter.csproj">
+      <Project>{227e13a4-6c2f-4bfd-8597-0da0f77ab642}</Project>
+      <Name>PdfExporter</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DrawVisual\RtCorrection.cs" />
+    <Compile Include="Export\DataExportAsPdf.cs" />
+    <Compile Include="DrawVisual\VariousDrawVisual.cs" />
+    <Compile Include="Export\ExportMassSpectrum.cs" />
+    <Compile Include="Export\PrivateMethodTargetCompoundExport.cs" />
+    <Compile Include="Utility\BasicUtility.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

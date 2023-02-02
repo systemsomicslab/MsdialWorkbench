@@ -1,0 +1,169 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6DCED6BB-4107-40C9-A9EF-D60658C385C0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Rfx.Riken.OsakaUniv</RootNamespace>
+    <AssemblyName>Chromatogram</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug vendor unsupported|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug vendor unsupported\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release vendor unsupported|AnyCPU'">
+    <OutputPath>bin\Release vendor unsupported\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ChromatogramAlignedEic\ChromatogramAlignedEicFE.cs" />
+    <Compile Include="ChromatogramAlignedEic\ChromatogramAlignedEicUI.xaml.cs">
+      <DependentUpon>ChromatogramAlignedEicUI.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ChromatogramBean.cs" />
+    <Compile Include="ChromatogramDifferencialAnalysis\ChromatogramDifferencialAnalysisFE.cs" />
+    <Compile Include="ChromatogramDifferencialAnalysis\ChromatogramDifferencialAnalysisUI.xaml.cs">
+      <DependentUpon>ChromatogramDifferencialAnalysisUI.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ChromatogramDifferencialAnalysis\ChromatogramDifferencialAnalysisViewModel.cs" />
+    <Compile Include="ChromatogramManualMod\AlignedPeakCorrectionVM.cs" />
+    <Compile Include="ChromatogramManualMod\PeakModFE.cs" />
+    <Compile Include="ChromatogramManualMod\PeakModUC.xaml.cs">
+      <DependentUpon>PeakModUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ChromatogramMrm\ChromatogramMrmViewModel.cs" />
+    <Compile Include="ChromatogramMrm\ChromatogramMrmFE.cs" />
+    <Compile Include="ChromatogramMrm\ChromatogramMrmUI.xaml.cs">
+      <DependentUpon>ChromatogramMrmUI.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ChromatogramTicEic\ChromatogramTicEicFE.cs" />
+    <Compile Include="ChromatogramTicEic\ChromatogramTicEicUI.xaml.cs">
+      <DependentUpon>ChromatogramTicEicUI.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ChromatogramTicEic\ChromatogramTicEicViewModel.cs" />
+    <Compile Include="ChromatogramXic\ChromatogramXicFE.cs" />
+    <Compile Include="ChromatogramXic\ChromatogramXicUI.xaml.cs">
+      <DependentUpon>ChromatogramXicUI.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ChromatogramXic\ChromatogramXicViewModel.cs" />
+    <Compile Include="PeakLabelBean.cs" />
+    <Compile Include="ChromatogramXic\PlainChromatogramXicForTableViewer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="ChromatogramAlignedEic\ChromatogramAlignedEicUI.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ChromatogramDifferencialAnalysis\ChromatogramDifferencialAnalysisUI.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ChromatogramManualMod\PeakModUC.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ChromatogramMrm\ChromatogramMrmUI.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ChromatogramTicEic\ChromatogramTicEicUI.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ChromatogramXic\ChromatogramXicUI.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\ChartDrawing\ChartDrawing.csproj">
+      <Project>{6131640b-30e6-4606-a394-be953590f3e9}</Project>
+      <Name>ChartDrawing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\CommonMVVM\CommonMVVM.csproj">
+      <Project>{d7bc52de-cdf0-4f78-b23e-ef2434d14029}</Project>
+      <Name>CommonMVVM</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj">
+      <Project>{eb161441-a663-485f-8cd6-d1d5794f7ad9}</Project>
+      <Name>CommonStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataProcessingStandard\DataProcessingStandard.csproj">
+      <Project>{3c1f2344-609f-4939-a6be-2ae4327c26a0}</Project>
+      <Name>DataProcessingStandard</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="RawDataHandler">
+      <Version>1.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Data.SQLite.Core">
+      <Version>1.0.115.5</Version>
+    </PackageReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
