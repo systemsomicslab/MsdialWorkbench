@@ -16,63 +16,6 @@ namespace CompMs.Common.Components
         ChromXUnit Unit { get; set; }
     }
 
-    [Union(0, typeof(ChromXs))]
-    [Union(1, typeof(RetentionTime))]
-    [Union(2, typeof(RetentionIndex))]
-    [Union(3, typeof(MzValue))]
-    [Union(4, typeof(DriftTime))]
-    [MessagePackObject]
-    public abstract class ChromX : IChromX
-    {
-        [Key(0)]
-        public double Value { get; set; } = -1;
-        [Key(1)]
-        public ChromXType Type { get; set; }
-        [Key(2)]
-        public ChromXUnit Unit { get; set; }
-
-        public ChromX() { }
-        public ChromX(double val)
-        {
-            Value = val;
-        }
-
-        public override string ToString()
-        {
-            switch (Type)
-            {
-                case ChromXType.RT:
-                    return $"RT: {Value:F3} {GetUnitString()}";
-                case ChromXType.RI:
-                    return $"RI: {Value:F3} {GetUnitString()}";
-                case ChromXType.Drift:
-                    return $"Drift: {Value:F3} {GetUnitString()}";
-                case ChromXType.Mz:
-                    return $"Mz: {Value:F3} {GetUnitString()}";
-                default:
-                    return "";
-            }
-        }
-        public string GetUnitString()
-        {
-            switch (Unit)
-            {
-                case ChromXUnit.Min:
-                    return "min";
-                case ChromXUnit.Sec:
-                    return "sec";
-                case ChromXUnit.None:
-                    return "";
-                case ChromXUnit.Mz:
-                    return "m/z";
-                case ChromXUnit.Msec:
-                    return "msec";
-                default:
-                    return "";
-            }
-        }
-    }
-
     [MessagePackObject]
     public sealed class RetentionTime : IChromX
     {
