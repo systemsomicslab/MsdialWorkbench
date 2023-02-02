@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -80,6 +81,8 @@ namespace CompMs.MsdialCore.Export
             MoleculeMsReference reference,
             MsScanMatchResult matchResult){
 
+            var comment = string.IsNullOrEmpty(spot.Comment) ? string.Empty : (spot.Comment + "; ");
+            comment += $"Normalized unit {spot.IonAbundanceUnit}";
             return new Dictionary<string, string>
             {
                 { "Alignment ID" ,spot.MasterAlignmentID.ToString() },
@@ -94,7 +97,7 @@ namespace CompMs.MsdialCore.Export
                 { "INCHIKEY", ValueOrNull(reference?.InChIKey) },
                 { "SMILES", ValueOrNull(reference?.SMILES) },
                 { "Annotation tag (VS1.0)" , DataAccess.GetAnnotationCode(matchResult, _parameter).ToString() },
-                { "Comment", spot.Comment },
+                { "Comment", comment },
                 { "Manually modified for quantification", spot.IsManuallyModifiedForQuant.ToString() },
                 { "Manually modified for annotation", spot.IsManuallyModifiedForAnnotation.ToString() },
                 { "Isotope tracking parent ID", spot.PeakCharacter.IsotopeParentPeakID.ToString() },
