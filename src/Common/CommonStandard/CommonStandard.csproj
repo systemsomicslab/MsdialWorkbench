@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net472</TargetFrameworks>
+    <AssemblyName>Common</AssemblyName>
+    <RootNamespace>CompMs.Common</RootNamespace>
+    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Proteomics\Resources\enzymes.xml" />
+    <None Remove="Proteomics\Resources\modifications.xml" />
+    <None Remove="Resources\AdductIonResource_Negative.txt" />
+    <None Remove="Resources\AdductIonResource_Positive.txt" />
+    <None Remove="Resources\IUPAC.txt" />
+    <None Remove="Resources\LbmQueries.txt" />
+    <None Remove="Resources\LipidClassProperties.csv" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Proteomics\Resources\enzymes.xml" />
+    <Resource Include="Proteomics\Resources\modifications.xml" />
+    <EmbeddedResource Include="Proteomics\Resources\enzymes.xml" />
+    <EmbeddedResource Include="Proteomics\Resources\modifications.xml" />
+    <EmbeddedResource Include="Resources\AdductIonResource_Negative.txt" />
+    <EmbeddedResource Include="Resources\AdductIonResource_Positive.txt" />
+    <EmbeddedResource Include="Resources\IUPAC.txt" />
+    <EmbeddedResource Include="Resources\LbmQueries.txt" />
+    <EmbeddedResource Include="Resources\LipidClassProperties.csv" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Accord.Statistics" Version="3.8.0" />
+    <PackageReference Include="MessagePack" Version="1.7.3.7" />
+    <PackageReference Include="MessagePackAnalyzer" Version="1.6.0" />
+    <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
+    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
+    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NCDK\NCDK.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<InternalsVisibleTo Include="CommonStandardTests" />
+  </ItemGroup>
+
+</Project>

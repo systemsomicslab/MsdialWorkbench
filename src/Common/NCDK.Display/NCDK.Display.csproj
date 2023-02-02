@@ -1,0 +1,92 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net472</TargetFramework>
+
+    <AssemblyVersion>1.5.6.0</AssemblyVersion>
+    <FileVersion>1.5.6.0</FileVersion>
+    <Version>1.5.6</Version>
+    <Copyright>Copyright © 2016-2019 Kazuya Ujihara</Copyright>
+
+    <PackageId>NCDK.Display</PackageId>
+    <Product>NCDK.Display: Depiction module of NCDK</Product>
+    <Description>NCDK.Display: Depiction module of NCDK</Description>
+
+    <PackageTags>cdk cheminformatics chemistry toolkit</PackageTags>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    
+    <Authors>Kazuya Ujihara</Authors>
+    <Company>Kazuya Ujihara</Company>
+    <RepositoryUrl>https://github.com/kazuyaujihara/NCDK</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>ncdk.snk</AssemblyOriginatorKeyFile>
+    <RootNamespace>NCDK</RootNamespace>
+    <PackageProjectUrl>https://github.com/kazuyaujihara/NCDK</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/kazuyaujihara/NCDK/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageReleaseNotes>This release is based on [cdk 2019-11-27](https://github.com/cdk/cdk/tree/c76443e0a69a4110c6a0fe65704abccce8a435ff) snapshot.</PackageReleaseNotes>
+    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;0212;0219;0612;0618;1573;1591</NoWarn>
+    <DocumentationFile>bin\Release\net461\NCDK.Display.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release vendor unsupported|AnyCPU'">
+    <NoWarn>1701;1702;0212;0219;0612;0618;1573;1591</NoWarn>
+    <DocumentationFile>bin\Release\net461\NCDK.Display.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;0212;0219;0612;0618;1573;1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug vendor unsupported|AnyCPU'">
+    <NoWarn>1701;1702;0212;0219;0612;0618;1573;1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\NCDK\Properties\InternalVisibles..cs" Link="Properties\InternalVisibles..cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Depict\obabel_superatoms.smi" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NCDK\NCDK.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="IncludeExamples.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IncludeExamples.xml</LastGenOutput>
+    </None>
+    <None Update="IncludeExamples.xml">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>IncludeExamples.tt</DependentUpon>
+    </None>
+    <None Update="Renderers\RendererModelTools.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>RendererModelTools.tt.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Renderers\RendererModelTools.tt.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>RendererModelTools.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+</Project>
