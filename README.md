@@ -13,8 +13,8 @@ Please contact Hiroshi Tsugawa (hiroshi.tsugawa@riken.jp) for feedback, bug repo
 1. Download and install [Visual Studio Community 2022](https://visualstudio.microsoft.com/). (In the `Workloads` selection, choose `.NET desktop development`. )
 2. Clone this repo.
 3. Double click `MsdialWorkbench.sln` in the cloned repo.
-4. Right-click on `MsdialWorkbench in the Solution Explorer.
-5. Click `Manage NuGet Packages for Solution...`
+4. Right-click on `MsdialWorkbench` in the Solution Explorer.
+5. Click `Manage NuGet Packages for Solution...`.
 6. Add the `Assemblies` folder in this repo to the **Package source:**.
 7. Select `Debug vendor unsupported` from the `Solution Configurations` pull-down menu.
 8. Select `MsdialGuiApp` from the `Startup Projects` pull-down menu.
