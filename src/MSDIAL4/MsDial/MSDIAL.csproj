@@ -37,7 +37,7 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <Lbm2Url>https://raw.githubusercontent.com/mtbinfo-team/msdial5tutorial/main/README.md</Lbm2Url>
+    <Lbm2Url>http://prime.psc.riken.jp/compms/msdial/download/lipidblast/LipidMsmsBinaryDB-VS68-AritaM.lbm2</Lbm2Url>
   </PropertyGroup>
   <Target Name="DownloadContentFiles" BeforeTargets="Build">
 		<DownloadFile
