@@ -40,9 +40,20 @@ namespace CompMs.Common.Lipidomics {
             float tolerance, float mzBegin, float mzEnd) {
 
             var defaultResult = EieioMsCharacterizationUtility.GetDefaultScore(
-                    scan, reference, tolerance, mzBegin, mzEnd, 1, 0, 1, 0.5);
+                    scan, reference, tolerance, mzBegin, mzEnd, 1, 0, 0, 0.5);
             return StandardMsCharacterizationUtility.GetDefaultCharacterizationResultForSingleAcylChainLipid(molecule, defaultResult);
         }
+
+        public static (ILipid, double[]) Characterize4SingleAcylChain(
+            IMSScanProperty scan, ILipid molecule, MoleculeMsReference reference,
+            float tolerance, float mzBegin, float mzEnd)
+        {
+
+            var defaultResult = EieioMsCharacterizationUtility.GetDefaultScore(
+                    scan, reference, tolerance, mzBegin, mzEnd, 1, 0, 0, 0.5);
+            return StandardMsCharacterizationUtility.GetDefaultCharacterizationResultForSingleAcylChainLipid(molecule, defaultResult);
+        }
+
 
         public static (ILipid, double[]) Characterize4TriacylGlycerols(
             IMSScanProperty scan, ILipid molecule, MoleculeMsReference reference,
