@@ -29,7 +29,7 @@ namespace CompMs.MsdialCore.Algorithm
 
     public class PeakCharacterEstimator {
         private PeakCharacterEstimator() { }
-        private static float rtMargin = 0.0177F;
+        //private static float rtMargin = 0.0177F;
         public double InitialProgress { get; set; } = 60.0;
         public double ProgressMax { get; set; } = 30.0;
 
@@ -39,8 +39,16 @@ namespace CompMs.MsdialCore.Algorithm
         }
         public List<AdductIon> SearchedAdducts { get; set; } = new List<AdductIon>();
 
-        public void Process(IDataProvider provider, IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
-            IReadOnlyList<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase parameter, Action<int> reportAction) {
+        public void Process(
+            IDataProvider provider, 
+            IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
+            IReadOnlyList<MSDecResult> msdecResults, 
+            IMatchResultEvaluator<MsScanMatchResult> evaluator, 
+            ParameterBase parameter, 
+            Action<int> reportAction,
+            bool isDriftAxis = false) {
+
+            var rtMargin = isDriftAxis ? 0.01F : 0.0177F;
             // some adduct features are automatically insearted even if users did not select any type of adduct
             SearchedAdductInitialize(parameter);
 
@@ -53,14 +61,14 @@ namespace CompMs.MsdialCore.Algorithm
             if (chromPeakFeatures.Count < 10000) {
                 for (int i = 0; i < chromPeakFeatures.Count; i++) {
                     var feature = chromPeakFeatures[i];
-                    var peakRt = feature.ChromXs.RT.Value > 0 ? feature.ChromXs.RT.Value : 0;
+                    var peakRt = isDriftAxis ? feature.ChromXs.Drift.Value : feature.ChromXs.RT.Value > 0 ? feature.ChromXs.RT.Value : 0;
                     var peakMz = feature.Mass;
                     var startScanIndex = SearchCollection.LowerBound(chromPeakFeatures, peakMz - parameter.CentroidMs1Tolerance, (a, b) => a.Mass.CompareTo(b));
                     var searchedPeakSpots = new List<ChromatogramPeakFeature>() { feature };
 
                     for (int j = startScanIndex; j < chromPeakFeatures.Count; j++) {
                         var sPeakCandidate = chromPeakFeatures[j];
-                        var sPeakRt = sPeakCandidate.ChromXs.RT.Value > 0 ? sPeakCandidate.ChromXs.RT.Value : 0;
+                        var sPeakRt = isDriftAxis ? sPeakCandidate.ChromXs.Drift.Value : sPeakCandidate.ChromXs.RT.Value > 0 ? sPeakCandidate.ChromXs.RT.Value : 0;
                         if (feature.PeakID == sPeakCandidate.PeakID) continue;
                         if (Math.Abs(sPeakRt - peakRt) <= rtMargin) {
                             searchedPeakSpots.Add(sPeakCandidate);

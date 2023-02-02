@@ -105,10 +105,10 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             var maxDT = (float)(dtChromPeak.ChromXsTop.Value + peakWidth * 1.5F);
 
             var ms2ChromPeaksList = DataAccess.GetAccumulatedMs2PeakListList(provider, rtChromPeak, curatedSpectra, minDT, maxDT, param.IonMode);
-            var smoothedMs2ChromPeaksList = new List<List<ChromatogramPeak>>();
+            var smoothedMs2ChromPeaksList = new List<Chromatogram_temp2>();
 
             foreach (var chromPeaks in ms2ChromPeaksList) {
-                var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.Drift, ChromXUnit.Msec).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+                var sChromPeaks = new Chromatogram_temp2(chromPeaks, ChromXType.Drift, ChromXUnit.Msec).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
                 smoothedMs2ChromPeaksList.Add(sChromPeaks);
             }
 
@@ -118,13 +118,22 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                 var topScanNum = 0;
                 var minDiff = 1000.0;
                 var minID = 0;
-                foreach (var tmpPeaklist in smoothedMs2ChromPeaksList[0]) {
-                    var diff = Math.Abs(tmpPeaklist.ChromXs.Value - dtChromPeak.ChromXs.Value);
+                var chromatogram = smoothedMs2ChromPeaksList[0];
+                for (int i = 0; i < chromatogram.Length; i++) {
+                    var diff = Math.Abs(chromatogram.Time(i) - dtChromPeak.ChromXs.Value);
                     if (diff < minDiff) {
                         minDiff = diff;
-                        minID = tmpPeaklist.ID;
+                        minID = chromatogram.Id(i);
                     }
                 }
+
+                //foreach (var tmpPeaklist in smoothedMs2ChromPeaksList[0]) {
+                //    var diff = Math.Abs(tmpPeaklist.ChromXs.Value - dtChromPeak.ChromXs.Value);
+                //    if (diff < minDiff) {
+                //        minDiff = diff;
+                //        minID = tmpPeaklist.ID;
+                //    }
+                //}
                 topScanNum = minID;
 
                 var msdecResult = MSDecHandler.GetMSDecResult(smoothedMs2ChromPeaksList, param, topScanNum);

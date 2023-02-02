@@ -198,7 +198,6 @@
         </GroupBox>
 
         <GroupBox Header="Collision type"
-                  Visibility="{Binding IsChecked, ElementName=RadioButton_DataDependentMSMS, Converter={StaticResource BooleanToVisibility}}"
                   IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}">
             <UniformGrid Columns="6">
                 <UniformGrid.Resources>

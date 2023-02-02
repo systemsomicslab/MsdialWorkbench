@@ -85,7 +85,7 @@ namespace CompMs.MsdialImmsCore.Process
 
             new PeakCharacterEstimator(90, 10).Process(provider, chromPeakFeatures, mSDecResultCollections.Any() ? mSDecResultCollections.Argmin(kvp => kvp.CollisionEnergy).MSDecResults : null,
                 evaluator,
-                parameter, reportAction);
+                parameter, reportAction, true);
         }
     }
 }
