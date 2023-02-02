@@ -256,9 +256,17 @@ namespace CompMs.Common.Lipidomics
             ILipid molecule, LipidMsCharacterizationResult result)
         {
             var chains = molecule.Chains;
+            var deepChains = (SeparatedChains)chains;
+            var acyl1 = deepChains.Chains[0];
             var score = result.TotalScore;
             var counter = result.TotalMatchedIonCount;
-            var obj = new Lipid(molecule.LipidClass, molecule.Mass, new TotalChain(chains.CarbonCount, chains.DoubleBondCount, chains.OxidizedCount, 1, 0, 0));
+            if (chains.OxidizedCount > 0) //TBC
+            {
+                acyl1 = new AcylChain(deepChains.Chains[0].CarbonCount,
+                        new DoubleBond(deepChains.Chains[0].DoubleBondCount),
+                        new Oxidized(deepChains.Chains[0].OxidizedCount));
+            }
+            var obj = new Lipid(molecule.LipidClass, molecule.Mass, new MolecularSpeciesLevelChains(acyl1));
             return (obj, new double[2] { score, counter });
         }
 

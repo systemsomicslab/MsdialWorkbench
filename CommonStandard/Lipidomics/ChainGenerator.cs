@@ -79,7 +79,7 @@ namespace CompMs.Common.Lipidomics
                     yield return Oxidized.CreateFromPosition(oxidized.Oxidises.Concat(infos).OrderBy(p => p).ToArray());
                     yield break;
                 }
-                for (var j = i; j < carbon; j++){
+                for (var j = i; j < carbon + 1; j++){
                     if (oxidized.Oxidises.Contains(j)) {
                         continue;
                     }

@@ -159,8 +159,11 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.DMEDFAHFA:
                     return EidDefaultCharacterization.Characterize4DiacylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.MG:
-                case LbmClass.CAR:
                     return EidDefaultCharacterization.Characterize4MonoacylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.CAR:
+                case LbmClass.DMEDFA:
+                case LbmClass.DMEDOxFA:
+                    return EidDefaultCharacterization.Characterize4SingleAcylChain(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.SM:
                 case LbmClass.Cer_NS:
                 case LbmClass.Cer_NDS:
@@ -214,6 +217,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.DGTS:
                 case LbmClass.LDGTA:
                 case LbmClass.LDGTS:
+                case LbmClass.DMEDFAHFA:
                     return OadDefaultCharacterization.Characterize4DiacylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.SM:
                 case LbmClass.Cer_NS:
@@ -243,9 +247,11 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return OadDefaultCharacterization.Characterize4Ceramides(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
 
                 case LbmClass.MG:
-                    return OadDefaultCharacterization.Characterize4DiacylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                    return OadDefaultCharacterization.Characterize4SingleAcylChainLiipid(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.CAR:
-                    return OadDefaultCharacterization.Characterize4DiacylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.DMEDFA:
+                case LbmClass.DMEDOxFA:
+                    return OadDefaultCharacterization.Characterize4SingleAcylChainLiipid(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
 
                 default: return (null, new double[2] { 0.0, 0.0 });
             }
