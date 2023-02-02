@@ -21,6 +21,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 Name = "PC 18:0_20:4",
                 CompoundClass = "PC",
                 PrecursorMz = 810.601,
+                InChIKey = "DUMMYINCHIKEY",
                 ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min),
                 Spectrum = new List<SpectrumPeak>
                 {
@@ -90,6 +91,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 Name = "PC 18:0_20:4",
                 CompoundClass = "PC",
                 PrecursorMz = 810.601,
+                InChIKey = "DUMMYINCHIKEY",
                 CollisionCrossSection = 10d,
                 Spectrum = new List<SpectrumPeak>
                 {
@@ -158,6 +160,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             {
                 Name = "PC 18:0_20:4",
                 CompoundClass = "PC",
+                InChIKey = "DUMMYINCHIKEY",
                 PrecursorMz = 810.601,
                 ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min),
                 Spectrum = new List<SpectrumPeak>

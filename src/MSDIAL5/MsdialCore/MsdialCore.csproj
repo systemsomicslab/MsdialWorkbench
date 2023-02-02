@@ -10,10 +10,14 @@
     <PackageReference Include="Accord" Version="3.8.0" />
     <PackageReference Include="Accord.Math" Version="3.8.0" />
     <PackageReference Include="Accord.Statistics" Version="3.8.0" />
+<<<<<<< HEAD:MsdialCore/MsdialCore.csproj
+=======
 	<PackageReference Include="RawDataHandler" Version="1.0.0" Condition="'$(Configuration)'=='Debug' OR '$(Configuration)'=='Release'" />
 	<PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.0.*" Condition="'$(Configuration)'=='Debug vendor unsupported' OR '$(Configuration)'=='Release vendor unsupported'" />
 	<PackageReference Include="System.Data.SQLite.Core" Version="1.0.112.2" />
+>>>>>>> 88d1c23c246e09dc4879959d4303ae6f2c36fd6d:src/MSDIAL5/MsdialCore/MsdialCore.csproj
     <PackageReference Include="System.IO.Compression" Version="4.3.0" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.112.2" />
   </ItemGroup>
 
   <ItemGroup>

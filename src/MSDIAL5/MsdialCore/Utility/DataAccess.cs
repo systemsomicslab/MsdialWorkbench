@@ -697,9 +697,10 @@ namespace CompMs.MsdialCore.Utility {
             return peaks;
         }
 
-        public static List<List<ChromatogramPeak>> GetAccumulatedMs2PeakListList(IDataProvider provider,
+        public static List<ValuePeak[]> GetAccumulatedMs2PeakListList(IDataProvider provider,
              ChromatogramPeakFeature rtChromPeakFeature, List<SpectrumPeak> curatedSpectrum, double minDriftTime, double maxDriftTime, IonMode ionMode) {
-            var ms2peaklistlist = new List<List<ChromatogramPeak>>();
+            // var ms2peaklistlist = new List<List<ChromatogramPeak>>();
+            var ms2peaklistlist = new List<ValuePeak[]>();
             var scanPolarity = ionMode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
 
             var rt = rtChromPeakFeature.ChromXsTop.Value;
@@ -833,12 +834,16 @@ namespace CompMs.MsdialCore.Utility {
                     peaklist.Add(new double[] { 0, driftTime, targetMz, 0 });
                 }
                 var sortedPeaklist = peaklist.OrderBy(n => n[1]).ToList();
-                var ms2peaklist = new List<ChromatogramPeak>();
-                foreach (var peaks in sortedPeaklist) {
-                    ms2peaklist.Add(new ChromatogramPeak(counter, peaks[2], peaks[3], new ChromXs(peaks[1], ChromXType.Drift, ChromXUnit.Msec)));
-                    counter++;
+                var ms2peaklist = new ValuePeak[sortedPeaklist.Count];
+                for (int i = 0; i < sortedPeaklist.Count; i++) {
+                    ms2peaklist[i] = new ValuePeak(i, sortedPeaklist[i][1], sortedPeaklist[i][2], sortedPeaklist[i][3]);
                 }
                 ms2peaklistlist.Add(ms2peaklist);
+
+                //foreach (var peaks in sortedPeaklist) {
+                //    ms2peaklist.Add(new ChromatogramPeak(counter, peaks[2], peaks[3], new ChromXs(peaks[1], ChromXType.Drift, ChromXUnit.Msec)));
+                //    counter++;
+                //}
             }
             return ms2peaklistlist;
         }
