@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net472</TargetFramework>
@@ -9,7 +9,16 @@
 		<ApplicationIcon>Resources\msdial_icon.ico</ApplicationIcon>
 		<PlatformTarget>AnyCPU</PlatformTarget>
 		<Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+		<Lbm2Url>https://raw.githubusercontent.com/mtbinfo-team/msdial5tutorial/main/README.md</Lbm2Url>
 	</PropertyGroup>
+	<Target Name="DownloadContentFiles" BeforeTargets="Build">
+		<DownloadFile
+            SourceUrl="$(Lbm2Url)"
+            DestinationFolder="$(OutputPath)">
+			<Output TaskParameter="DownloadedFile" ItemName="Content"
+			Condition="Exists('$(OutputPath)\README.md')" />
+		</DownloadFile>
+	</Target>
 	<PropertyGroup>
 		<HighEntropyVA>false</HighEntropyVA>
 		<SignAssembly>False</SignAssembly>
