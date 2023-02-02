@@ -12,7 +12,7 @@ Please contact Hiroshi Tsugawa (hiroshi.tsugawa@riken.jp) for feedback, bug repo
 
 ## Installing Visual Studio and cloning MsdialWorkbench source code
 1. Download and install [Visual Studio Community 2022](https://visualstudio.microsoft.com/). (In the `Workloads` selection, choose `.NET desktop development`. )
-2. Git clone this repo.
+2. Git clone this repo with `git clone https://github.com/mtbinfo-team/MsdialWorkbench`.
 
 ## Building MsdialWorkbench with Visual Studio
 3. Double click `MsdialWorkbench.sln` in the cloned repo.
