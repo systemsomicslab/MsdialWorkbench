@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.Common.Parser;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -88,6 +89,7 @@ namespace CompMs.MsdialCore.Export.Tests
                 },
                 SignalToNoiseAve = 12.34f,
                 IsotopicPeaks = new List<IsotopicPeak> { new IsotopicPeak { Mass = 701.12345, AbsoluteAbundance = 345, }, new IsotopicPeak { Mass = 702.12345, AbsoluteAbundance = 12, } },
+                IonAbundanceUnit = IonAbundanceUnit.nmol_per_mg_tissue,
             };
             spot.PeakCharacter.IsotopeParentPeakID = 200;
             spot.PeakCharacter.IsotopeWeightNumber = 1;
@@ -115,7 +117,7 @@ namespace CompMs.MsdialCore.Export.Tests
             Assert.AreEqual("DDD", dict["INCHIKEY"]);
             Assert.AreEqual("EEE", dict["SMILES"]);
             Assert.AreEqual(DataAccess.GetAnnotationCode(spot.MatchResults.Representative, parameter).ToString(), dict["Annotation tag (VS1.0)"]);
-            Assert.AreEqual("FFF", dict["Comment"]);
+            Assert.AreEqual($"FFF; Normalized unit {spot.IonAbundanceUnit.ToLabel()}", dict["Comment"]);
             Assert.AreEqual("True", dict["Manually modified for quantification"]);
             Assert.AreEqual("True", dict["Manually modified for annotation"]);
             Assert.AreEqual("200", dict["Isotope tracking parent ID"]);
@@ -130,6 +132,15 @@ namespace CompMs.MsdialCore.Export.Tests
             Assert.AreEqual("GGG", dict["Spectrum reference file name"]);
             Assert.AreEqual("701.12345:345 702.12345:12", dict["MS1 isotopic spectrum"]);
             Assert.AreEqual("700.12345:999 600.12345:164 400.12345:190 300.12345:587", dict["MS/MS spectrum"]);
+        }
+
+        [TestMethod()]
+        public void GetContentWhenCommentEmptyTest() {
+            var refer = new MockRefer();
+            var accessor = new TestMetadataAccessor(refer, new ParameterBase { MachineCategory = Common.Enum.MachineCategory.LCMS });
+            var spot = new AlignmentSpotProperty { Comment = string.Empty, IonAbundanceUnit = IonAbundanceUnit.pmol_per_mg_tissue, };
+            var dict = accessor.GetContent(spot, null);
+            Assert.AreEqual($"Normalized unit {spot.IonAbundanceUnit.ToLabel()}", dict["Comment"]);
         }
 
         [TestMethod()]
