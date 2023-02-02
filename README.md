@@ -10,7 +10,7 @@ Please contact Hiroshi Tsugawa (hiroshi.tsugawa@riken.jp) for feedback, bug repo
 
 # How to build MS-DIAL5 Desktop Application (for Windows)
 
-1. Download and install [Visual Studio Community 2022](https://visualstudio.microsoft.com/).
+1. Download and install [Visual Studio Community 2022](https://visualstudio.microsoft.com/). (In the `Workloads` selection, choose `.NET desktop development`. )
 2. Clone this repo.
 3. Double click `MsdialWorkbench.sln` in the cloned repo.
 4. Right-click on `MsdialWorkbench in the Solution Explorer.
