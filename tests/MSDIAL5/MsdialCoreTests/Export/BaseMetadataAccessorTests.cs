@@ -117,7 +117,7 @@ namespace CompMs.MsdialCore.Export.Tests
             Assert.AreEqual("DDD", dict["INCHIKEY"]);
             Assert.AreEqual("EEE", dict["SMILES"]);
             Assert.AreEqual(DataAccess.GetAnnotationCode(spot.MatchResults.Representative, parameter).ToString(), dict["Annotation tag (VS1.0)"]);
-            Assert.AreEqual($"FFF; Normalized unit {spot.IonAbundanceUnit.ToLabel()}", dict["Comment"]);
+            Assert.AreEqual($"FFF; Normalized unit {spot.IonAbundanceUnit}", dict["Comment"]);
             Assert.AreEqual("True", dict["Manually modified for quantification"]);
             Assert.AreEqual("True", dict["Manually modified for annotation"]);
             Assert.AreEqual("200", dict["Isotope tracking parent ID"]);
@@ -140,7 +140,7 @@ namespace CompMs.MsdialCore.Export.Tests
             var accessor = new TestMetadataAccessor(refer, new ParameterBase { MachineCategory = Common.Enum.MachineCategory.LCMS });
             var spot = new AlignmentSpotProperty { Comment = string.Empty, IonAbundanceUnit = IonAbundanceUnit.pmol_per_mg_tissue, };
             var dict = accessor.GetContent(spot, null);
-            Assert.AreEqual($"Normalized unit {spot.IonAbundanceUnit.ToLabel()}", dict["Comment"]);
+            Assert.AreEqual($"Normalized unit {spot.IonAbundanceUnit}", dict["Comment"]);
         }
 
         [TestMethod()]

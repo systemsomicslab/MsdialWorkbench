@@ -82,7 +82,7 @@ namespace CompMs.MsdialCore.Export
             MsScanMatchResult matchResult){
 
             var comment = string.IsNullOrEmpty(spot.Comment) ? string.Empty : (spot.Comment + "; ");
-            comment += $"Normalized unit {spot.IonAbundanceUnit.ToLabel()}";
+            comment += $"Normalized unit {spot.IonAbundanceUnit}";
             return new Dictionary<string, string>
             {
                 { "Alignment ID" ,spot.MasterAlignmentID.ToString() },
