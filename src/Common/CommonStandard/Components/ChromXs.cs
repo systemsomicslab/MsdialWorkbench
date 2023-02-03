@@ -55,7 +55,7 @@ namespace CompMs.Common.Components
 
         public ChromXs () {
             RT = RetentionTime.Default;
-            RI = new RetentionIndex(-1);
+            RI = RetentionIndex.Default;
             Drift = new DriftTime(-1);
             Mz = new MzValue(-1);
             MainType = ChromXType.RT;
@@ -63,7 +63,7 @@ namespace CompMs.Common.Components
 
         public ChromXs(double value, ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) {
             RT = RetentionTime.Default;
-            RI = new RetentionIndex(-1);
+            RI = RetentionIndex.Default;
             Drift = new DriftTime(-1);
             Mz = new MzValue(-1);
             switch (type) {
@@ -88,7 +88,7 @@ namespace CompMs.Common.Components
         public ChromXs(IChromX chromX)
         {
             RT = RetentionTime.Default;
-            RI = new RetentionIndex(-1);
+            RI = RetentionIndex.Default;
             Drift = new DriftTime(-1);
             Mz = new MzValue(-1);
             switch (chromX) {
@@ -118,7 +118,7 @@ namespace CompMs.Common.Components
             MainType = type;
         }
    
-        public ChromXs(RetentionTime retentionTime) : this(retentionTime, new RetentionIndex(-1), new DriftTime(-1), new MzValue(-1), retentionTime.Type) {
+        public ChromXs(RetentionTime retentionTime) : this(retentionTime, RetentionIndex.Default, new DriftTime(-1), new MzValue(-1), retentionTime.Type) {
 
         }
    
@@ -126,11 +126,11 @@ namespace CompMs.Common.Components
 
         }
    
-        public ChromXs(DriftTime driftTime) : this(RetentionTime.Default, new RetentionIndex(-1), driftTime, new MzValue(-1), driftTime.Type) {
+        public ChromXs(DriftTime driftTime) : this(RetentionTime.Default, RetentionIndex.Default, driftTime, new MzValue(-1), driftTime.Type) {
 
         }
    
-        public ChromXs(MzValue mz) : this(RetentionTime.Default, new RetentionIndex(-1), new DriftTime(-1), mz, mz.Type) {
+        public ChromXs(MzValue mz) : this(RetentionTime.Default, RetentionIndex.Default, new DriftTime(-1), mz, mz.Type) {
 
         }
    

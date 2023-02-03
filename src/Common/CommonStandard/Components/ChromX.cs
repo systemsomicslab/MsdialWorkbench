@@ -151,6 +151,8 @@ namespace CompMs.Common.Components
                     return "";
             }
         }
+
+        internal static RetentionIndex Default { get; } = new RetentionIndex(-1, ChromXUnit.None);
     }
 
     [MessagePackObject]
