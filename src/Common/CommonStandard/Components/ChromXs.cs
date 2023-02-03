@@ -57,7 +57,7 @@ namespace CompMs.Common.Components
             RT = RetentionTime.Default;
             RI = RetentionIndex.Default;
             Drift = DriftTime.Default;
-            Mz = new MzValue(-1);
+            Mz = MzValue.Default;
             MainType = ChromXType.RT;
         }
 
@@ -65,7 +65,7 @@ namespace CompMs.Common.Components
             RT = RetentionTime.Default;
             RI = RetentionIndex.Default;
             Drift = DriftTime.Default;
-            Mz = new MzValue(-1);
+            Mz = MzValue.Default;
             switch (type) {
                 case ChromXType.RT:
                     RT = new RetentionTime(value, unit);
@@ -90,7 +90,7 @@ namespace CompMs.Common.Components
             RT = RetentionTime.Default;
             RI = RetentionIndex.Default;
             Drift = DriftTime.Default;
-            Mz = new MzValue(-1);
+            Mz = MzValue.Default;
             switch (chromX) {
                 case RetentionTime rt:
                     RT = rt;
@@ -118,15 +118,15 @@ namespace CompMs.Common.Components
             MainType = type;
         }
    
-        public ChromXs(RetentionTime retentionTime) : this(retentionTime, RetentionIndex.Default, DriftTime.Default, new MzValue(-1), retentionTime.Type) {
+        public ChromXs(RetentionTime retentionTime) : this(retentionTime, RetentionIndex.Default, DriftTime.Default, MzValue.Default, retentionTime.Type) {
 
         }
    
-        public ChromXs(RetentionIndex retentionIndex) : this(RetentionTime.Default, retentionIndex, DriftTime.Default, new MzValue(-1), retentionIndex.Type) {
+        public ChromXs(RetentionIndex retentionIndex) : this(RetentionTime.Default, retentionIndex, DriftTime.Default, MzValue.Default, retentionIndex.Type) {
 
         }
    
-        public ChromXs(DriftTime driftTime) : this(RetentionTime.Default, RetentionIndex.Default, driftTime, new MzValue(-1), driftTime.Type) {
+        public ChromXs(DriftTime driftTime) : this(RetentionTime.Default, RetentionIndex.Default, driftTime, MzValue.Default, driftTime.Type) {
 
         }
    

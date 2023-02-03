@@ -287,5 +287,7 @@ namespace CompMs.Common.Components
                     return "";
             }
         }
+
+        internal static MzValue Default { get; } = new MzValue(-1, ChromXUnit.Mz);
     }
 }
