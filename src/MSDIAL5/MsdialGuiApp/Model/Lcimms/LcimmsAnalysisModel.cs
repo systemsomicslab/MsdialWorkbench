@@ -407,13 +407,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public IReactiveProperty<ChromatogramPeakFeatureModel> Target { get; }
         public LcimmsAnalysisPeakTableModel PeakTableModel { get; }
 
-        public string DisplayLabel {
-            get => _displayLabel;
-            set => SetProperty(ref _displayLabel, value);
-        }
-
-        private string _displayLabel = string.Empty;
-
         public void SearchFragment() {
             FragmentSearcher.Search(Ms1Peaks.Select(n => n.InnerModel).ToList(), _decLoader, _parameter);
         }

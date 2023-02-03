@@ -59,11 +59,6 @@ namespace CompMs.App.Msdial.Model.Core {
         IReactiveProperty<ChromatogramPeakFeatureModel> IAnalysisModel.Target => Target;
 
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
-        public string DisplayLabel {
-            get => displayLabel;
-            set => SetProperty(ref displayLabel, value);
-        }
-        private string displayLabel = string.Empty;
 
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
 

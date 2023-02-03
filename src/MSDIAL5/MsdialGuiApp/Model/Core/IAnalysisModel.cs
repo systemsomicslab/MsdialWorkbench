@@ -13,8 +13,6 @@ namespace CompMs.App.Msdial.Model.Core
 
         IReactiveProperty<ChromatogramPeakFeatureModel> Target { get; }
 
-        string DisplayLabel { get; set; }
-
         Task SaveAsync(CancellationToken token);
     }
 }

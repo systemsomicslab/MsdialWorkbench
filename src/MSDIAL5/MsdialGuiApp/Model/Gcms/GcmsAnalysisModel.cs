@@ -18,8 +18,6 @@ namespace CompMs.App.Msdial.Model.Gcms
 
         IReactiveProperty<ChromatogramPeakFeatureModel> IAnalysisModel.Target => throw new NotImplementedException();
 
-        string IAnalysisModel.DisplayLabel { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
         event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged {
             add {
                 throw new NotImplementedException();
