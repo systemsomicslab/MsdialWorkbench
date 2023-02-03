@@ -82,6 +82,8 @@ namespace CompMs.Common.Components
                     return "";
             }
         }
+
+        internal static RetentionTime Default { get; } = new RetentionTime(-1, ChromXUnit.Min);
     }
 
     [MessagePackObject]

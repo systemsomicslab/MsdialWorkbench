@@ -54,7 +54,7 @@ namespace CompMs.Common.Components
         }
 
         public ChromXs () {
-            RT = new RetentionTime(-1);
+            RT = RetentionTime.Default;
             RI = new RetentionIndex(-1);
             Drift = new DriftTime(-1);
             Mz = new MzValue(-1);
@@ -62,7 +62,7 @@ namespace CompMs.Common.Components
         }
 
         public ChromXs(double value, ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) {
-            RT = new RetentionTime(-1);
+            RT = RetentionTime.Default;
             RI = new RetentionIndex(-1);
             Drift = new DriftTime(-1);
             Mz = new MzValue(-1);
@@ -87,7 +87,7 @@ namespace CompMs.Common.Components
 
         public ChromXs(IChromX chromX)
         {
-            RT = new RetentionTime(-1);
+            RT = RetentionTime.Default;
             RI = new RetentionIndex(-1);
             Drift = new DriftTime(-1);
             Mz = new MzValue(-1);
@@ -122,15 +122,15 @@ namespace CompMs.Common.Components
 
         }
    
-        public ChromXs(RetentionIndex retentionIndex) : this(new RetentionTime(-1), retentionIndex, new DriftTime(-1), new MzValue(-1), retentionIndex.Type) {
+        public ChromXs(RetentionIndex retentionIndex) : this(RetentionTime.Default, retentionIndex, new DriftTime(-1), new MzValue(-1), retentionIndex.Type) {
 
         }
    
-        public ChromXs(DriftTime driftTime) : this(new RetentionTime(-1), new RetentionIndex(-1), driftTime, new MzValue(-1), driftTime.Type) {
+        public ChromXs(DriftTime driftTime) : this(RetentionTime.Default, new RetentionIndex(-1), driftTime, new MzValue(-1), driftTime.Type) {
 
         }
    
-        public ChromXs(MzValue mz) : this(new RetentionTime(-1), new RetentionIndex(-1), new DriftTime(-1), mz, mz.Type) {
+        public ChromXs(MzValue mz) : this(RetentionTime.Default, new RetentionIndex(-1), new DriftTime(-1), mz, mz.Type) {
 
         }
    
