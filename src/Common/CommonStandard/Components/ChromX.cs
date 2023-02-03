@@ -1,4 +1,5 @@
 ﻿using MessagePack;
+using System.ComponentModel;
 
 namespace CompMs.Common.Components
 {
@@ -20,16 +21,29 @@ namespace CompMs.Common.Components
     public sealed class RetentionTime : IChromX
     {
         [Key(0)]
-        public double Value { get; set; } = -1;
+        public double Value { get; } = -1;
         [Key(1)]
-        public ChromXType Type { get; set; }
+        public ChromXType Type { get; }
         [Key(2)]
-        public ChromXUnit Unit { get; set; }
+        public ChromXUnit Unit { get; }
 
-        public RetentionTime() { }
         public RetentionTime(double retentionTime, ChromXUnit unit = ChromXUnit.Min)
         {
             Value = retentionTime;
+            Type = ChromXType.RT;
+            Unit = unit;
+        }
+
+        /// <summary>
+        /// Only MessagePack for C# use this constructor. Use ctor(double, ChromXUnit) instead.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="_type"></param>
+        /// <param name="unit"></param>
+        [SerializationConstructor]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public RetentionTime(double value, ChromXType _type, ChromXUnit unit) {
+            Value = value;
             Type = ChromXType.RT;
             Unit = unit;
         }
