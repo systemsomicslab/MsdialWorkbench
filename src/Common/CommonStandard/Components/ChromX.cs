@@ -13,7 +13,7 @@ namespace CompMs.Common.Components
     public interface IChromX {
         double Value { get; }
         ChromXType Type { get; } 
-        ChromXUnit Unit { get; set; }
+        ChromXUnit Unit { get; }
     }
 
     [MessagePackObject]
