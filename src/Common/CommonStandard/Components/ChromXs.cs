@@ -56,7 +56,7 @@ namespace CompMs.Common.Components
         public ChromXs () {
             RT = RetentionTime.Default;
             RI = RetentionIndex.Default;
-            Drift = new DriftTime(-1);
+            Drift = DriftTime.Default;
             Mz = new MzValue(-1);
             MainType = ChromXType.RT;
         }
@@ -64,7 +64,7 @@ namespace CompMs.Common.Components
         public ChromXs(double value, ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) {
             RT = RetentionTime.Default;
             RI = RetentionIndex.Default;
-            Drift = new DriftTime(-1);
+            Drift = DriftTime.Default;
             Mz = new MzValue(-1);
             switch (type) {
                 case ChromXType.RT:
@@ -89,7 +89,7 @@ namespace CompMs.Common.Components
         {
             RT = RetentionTime.Default;
             RI = RetentionIndex.Default;
-            Drift = new DriftTime(-1);
+            Drift = DriftTime.Default;
             Mz = new MzValue(-1);
             switch (chromX) {
                 case RetentionTime rt:
@@ -118,11 +118,11 @@ namespace CompMs.Common.Components
             MainType = type;
         }
    
-        public ChromXs(RetentionTime retentionTime) : this(retentionTime, RetentionIndex.Default, new DriftTime(-1), new MzValue(-1), retentionTime.Type) {
+        public ChromXs(RetentionTime retentionTime) : this(retentionTime, RetentionIndex.Default, DriftTime.Default, new MzValue(-1), retentionTime.Type) {
 
         }
    
-        public ChromXs(RetentionIndex retentionIndex) : this(RetentionTime.Default, retentionIndex, new DriftTime(-1), new MzValue(-1), retentionIndex.Type) {
+        public ChromXs(RetentionIndex retentionIndex) : this(RetentionTime.Default, retentionIndex, DriftTime.Default, new MzValue(-1), retentionIndex.Type) {
 
         }
    
@@ -130,7 +130,7 @@ namespace CompMs.Common.Components
 
         }
    
-        public ChromXs(MzValue mz) : this(RetentionTime.Default, RetentionIndex.Default, new DriftTime(-1), mz, mz.Type) {
+        public ChromXs(MzValue mz) : this(RetentionTime.Default, RetentionIndex.Default, DriftTime.Default, mz, mz.Type) {
 
         }
    

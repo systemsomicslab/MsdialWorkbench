@@ -221,6 +221,7 @@ namespace CompMs.Common.Components
             }
         }
 
+        internal static DriftTime Default { get; } = new DriftTime(-1, ChromXUnit.Msec);
     }
 
     [MessagePackObject]
