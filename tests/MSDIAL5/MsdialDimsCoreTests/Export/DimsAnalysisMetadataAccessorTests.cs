@@ -69,18 +69,16 @@ namespace CompMs.MsdialDimsCore.Export.Tests
             };
             var feature = new ChromatogramPeakFeature(basePeak)
             {
-                MatchResults = new MsScanMatchResultContainer
-                {
-                    MatchResults = new List<MsScanMatchResult>
-                    {
-                        new MsScanMatchResult
-                        {
-                            IsPrecursorMzMatch = true,
-                            AcurateMassSimilarity = 0.921f,
-                        },
-                    },
-                },
+                MatchResults = new MsScanMatchResultContainer(),
             };
+            feature.MatchResults.AddResults(
+                new List<MsScanMatchResult> {
+                    new MsScanMatchResult {
+                        Priority = 1,
+                        IsPrecursorMzMatch = true,
+                        AcurateMassSimilarity = 0.921f,
+                    },
+                });
             var msdec = new MSDecResult();
             var provider = new MockDataProvider();
             var content = accessor.GetContent(feature, msdec, provider);

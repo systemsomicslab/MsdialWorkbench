@@ -76,20 +76,18 @@ namespace CompMs.MsdialImmsCore.Export.Tests
             var feature = new ChromatogramPeakFeature(basePeak)
             {
                 CollisionCrossSection = 12.001f,
-                MatchResults = new MsScanMatchResultContainer
-                {
-                    MatchResults = new List<MsScanMatchResult>
-                    {
-                        new MsScanMatchResult
-                        {
-                            IsPrecursorMzMatch = true,
-                            IsCcsMatch = true,
-                            AcurateMassSimilarity = 0.811f,
-                            CcsSimilarity = 0.679f,
-                        },
-                    },
-                },
+                MatchResults = new MsScanMatchResultContainer(),
             };
+            feature.MatchResults.AddResults(
+                new List<MsScanMatchResult> {
+                    new MsScanMatchResult {
+                        Priority = 1,
+                        IsPrecursorMzMatch = true,
+                        IsCcsMatch = true,
+                        AcurateMassSimilarity = 0.811f,
+                        CcsSimilarity = 0.679f,
+                    },
+                });
             var msdec = new MSDecResult();
             var provider = new MockDataProvider();
             var content = accessor.GetContent(feature, msdec, provider);

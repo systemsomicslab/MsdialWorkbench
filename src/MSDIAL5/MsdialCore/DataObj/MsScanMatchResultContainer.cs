@@ -29,9 +29,16 @@ namespace CompMs.MsdialCore.DataObj
             };
         }
 
+        [SerializationConstructor]
+        public MsScanMatchResultContainer(List<MsScanMatchResult> matchResults, Dictionary<int, MsScanMatchResult> mSRawID2MspBasedMatchResult, List<MsScanMatchResult> textDbBasedMatchResults) {
+            MatchResults = matchResults;
+            MSRawID2MspBasedMatchResult = mSRawID2MspBasedMatchResult;
+            TextDbBasedMatchResults = textDbBasedMatchResults;
+        }
+
         // general match results
         [Key(0)]
-        public List<MsScanMatchResult> MatchResults { get; set; }
+        public List<MsScanMatchResult> MatchResults { get; }
 
         [IgnoreMember]
         public MsScanMatchResult Representative {
@@ -214,7 +221,7 @@ namespace CompMs.MsdialCore.DataObj
         // Msp based match results
         // MS raw id corresponds to ms2 raw ID (in MS/MS) and ms1 raw id (in EI-MS).
         [Key(1)]
-        public Dictionary<int, MsScanMatchResult> MSRawID2MspBasedMatchResult { get; set; } = new Dictionary<int, MsScanMatchResult>();
+        public Dictionary<int, MsScanMatchResult> MSRawID2MspBasedMatchResult { get; } = new Dictionary<int, MsScanMatchResult>();
 
         [IgnoreMember]
         // get result having max score
@@ -247,7 +254,7 @@ namespace CompMs.MsdialCore.DataObj
 
         // TextDB based matched results
         [Key(2)]
-        public List<MsScanMatchResult> TextDbBasedMatchResults { get; set; } = new List<MsScanMatchResult>();
+        public List<MsScanMatchResult> TextDbBasedMatchResults { get; } = new List<MsScanMatchResult>();
 
         [IgnoreMember]
         public int TextDbID => TextDbBasedMatchResults.IsEmptyOrNull() ? -1 : TextDbBasedMatchResults.Argmax(result => result.TotalScore).LibraryID;

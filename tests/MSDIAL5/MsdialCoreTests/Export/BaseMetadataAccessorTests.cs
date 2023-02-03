@@ -74,9 +74,14 @@ namespace CompMs.MsdialCore.Export.Tests
                 },
                 Comment = "FFF",
                 IsManuallyModifiedForQuant = true,
-                MatchResults = new MsScanMatchResultContainer {
-                    MatchResults = new List<MsScanMatchResult> {
-                        new MsScanMatchResult {
+                MatchResults = new MsScanMatchResultContainer(),
+                SignalToNoiseAve = 12.34f,
+                IsotopicPeaks = new List<IsotopicPeak> { new IsotopicPeak { Mass = 701.12345, AbsoluteAbundance = 345, }, new IsotopicPeak { Mass = 702.12345, AbsoluteAbundance = 12, } },
+                IonAbundanceUnit = IonAbundanceUnit.nmol_per_mg_tissue,
+            };
+            spot.MatchResults.AddResults(
+                new List<MsScanMatchResult> {
+                    new MsScanMatchResult {
                             Source = SourceType.Manual,
                             SimpleDotProduct = 0.81f,
                             WeightedDotProduct = 0.82f,
@@ -84,13 +89,8 @@ namespace CompMs.MsdialCore.Export.Tests
                             MatchedPeaksCount = 10,
                             MatchedPeaksPercentage = 0.84f,
                             TotalScore = 0.83f,
-                        }
                     }
-                },
-                SignalToNoiseAve = 12.34f,
-                IsotopicPeaks = new List<IsotopicPeak> { new IsotopicPeak { Mass = 701.12345, AbsoluteAbundance = 345, }, new IsotopicPeak { Mass = 702.12345, AbsoluteAbundance = 12, } },
-                IonAbundanceUnit = IonAbundanceUnit.nmol_per_mg_tissue,
-            };
+                });
             spot.PeakCharacter.IsotopeParentPeakID = 200;
             spot.PeakCharacter.IsotopeWeightNumber = 1;
             var msdecResult = new MSDecResult

@@ -38,17 +38,7 @@ namespace CompMs.MsdialDimsCore.Export.Tests
             {
                 TimesCenter = new ChromXs(700d, ChromXType.Mz, ChromXUnit.Mz),
                 MassCenter = 700d,
-                MatchResults = new MsScanMatchResultContainer
-                {
-                    MatchResults = new List<MsScanMatchResult>
-                    {
-                        new MsScanMatchResult
-                        {
-                            IsPrecursorMzMatch = true,
-                            IsSpectrumMatch = true,
-                        }
-                    }
-                },
+                MatchResults = new MsScanMatchResultContainer(),
 
                 // to avoid errors
                 MasterAlignmentID = 100,
@@ -66,6 +56,14 @@ namespace CompMs.MsdialDimsCore.Export.Tests
                 IsManuallyModifiedForQuant = true,
                 SignalToNoiseAve = 12.34f,
             };
+            spot.MatchResults.AddResults(
+                new List<MsScanMatchResult> {
+                    new MsScanMatchResult {
+                        Priority = 1,
+                        IsPrecursorMzMatch = true,
+                        IsSpectrumMatch = true,
+                    }
+                });
 
             var dict = accessor.GetContent(spot, null);
 
