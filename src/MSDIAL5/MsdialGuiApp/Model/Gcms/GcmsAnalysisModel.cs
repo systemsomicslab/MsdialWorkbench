@@ -16,8 +16,6 @@ namespace CompMs.App.Msdial.Model.Gcms
     {
         ObservableCollection<ChromatogramPeakFeatureModel> IAnalysisModel.Ms1Peaks => throw new NotImplementedException();
 
-        IReadOnlyReactiveProperty<ChromatogramPeakFeatureModel> IAnalysisModel.Target => throw new NotImplementedException();
-
         event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged {
             add {
                 throw new NotImplementedException();

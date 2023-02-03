@@ -405,7 +405,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks { get; }
 
         public IReactiveProperty<ChromatogramPeakFeatureModel> Target { get; }
-        IReadOnlyReactiveProperty<ChromatogramPeakFeatureModel> IAnalysisModel.Target => Target;
 
         public LcimmsAnalysisPeakTableModel PeakTableModel { get; }
 
