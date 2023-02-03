@@ -11,7 +11,7 @@ namespace CompMs.App.Msdial.Model.Core
     {
         ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks { get; }
 
-        IReactiveProperty<ChromatogramPeakFeatureModel> Target { get; }
+        IReadOnlyReactiveProperty<ChromatogramPeakFeatureModel> Target { get; }
 
         Task SaveAsync(CancellationToken token);
     }
