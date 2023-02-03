@@ -309,7 +309,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 var l = new List<SampleListCellInfo>();
                 for (var j = 0; j < SampleListVMs[i].Values.Count; j++) {
                     l.Add(SampleListVMs[i].Values[j].SampleListCellInfo);
-                    this.AnalysisFiles[i].RetentionTimeCorrectionBean.StandardList[j].SamplePeakAreaBean.ChromXs.RT.Value = SampleListVMs[i].Values[j].Rt;
+                    this.AnalysisFiles[i].RetentionTimeCorrectionBean.StandardList[j].SamplePeakAreaBean.ChromXs.RT = new RetentionTime(SampleListVMs[i].Values[j].Rt, AnalysisFiles[i].RetentionTimeCorrectionBean.StandardList[j].SamplePeakAreaBean.ChromXs.RT.Unit);
                 }
                 RtCorrectionCommon.SampleCellInfoListList.Add(l);
             }
@@ -752,7 +752,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         public double RetentionTime {
             get { return TextFormatCompoundInformationBean.ChromXs.RT.Value; }
             set {
-                if (TextFormatCompoundInformationBean.ChromXs.RT.Value == value) return; TextFormatCompoundInformationBean.ChromXs.RT.Value = value;
+                if (TextFormatCompoundInformationBean.ChromXs.RT.Value == value) return;
+                TextFormatCompoundInformationBean.ChromXs.RT = new RetentionTime(value, TextFormatCompoundInformationBean.ChromXs.RT.Unit);
                 OnPropertyChanged("RetentionTime");
             }
         }
