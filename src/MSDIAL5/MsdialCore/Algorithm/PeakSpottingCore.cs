@@ -317,9 +317,9 @@ namespace CompMs.MsdialCore.Algorithm {
             driftFeature.PeakID = peakId;
             driftFeature.ParentPeakID = rtPeakFeature.PeakID;
             driftFeature.IonMode = rtPeakFeature.IonMode;
-            driftFeature.ChromXsLeft.RT.Value = rtPeakFeature.ChromXsTop.RT.Value - accumulatedRtRange * 0.5;
-            driftFeature.ChromXsTop.RT.Value = rtPeakFeature.ChromXsTop.RT.Value;
-            driftFeature.ChromXsRight.RT.Value = rtPeakFeature.ChromXsTop.RT.Value + accumulatedRtRange * 0.5;
+            driftFeature.ChromXsLeft.RT = new RetentionTime(rtPeakFeature.ChromXsTop.RT.Value - accumulatedRtRange * 0.5, unit: driftFeature.ChromXsLeft.RT.Unit);
+            driftFeature.ChromXsTop.RT = new RetentionTime(rtPeakFeature.ChromXsTop.RT.Value, unit: driftFeature.ChromXsTop.RT.Unit);
+            driftFeature.ChromXsRight.RT = new RetentionTime(rtPeakFeature.ChromXsTop.RT.Value + accumulatedRtRange * 0.5, unit: driftFeature.ChromXsRight.RT.Unit);
             var ms2Tol = MolecularFormulaUtility.FixMassTolerance(_parameter.CentroidMs2Tolerance, rtPeakFeature.Mass);
             var spectra = rawSpectra.GetPeakMs2Spectra(rtPeakFeature, ms2Tol, _parameter.AcquisitionType, driftFeature.ChromXs.Drift);
             driftFeature.SetMs2SpectrumId(spectra);

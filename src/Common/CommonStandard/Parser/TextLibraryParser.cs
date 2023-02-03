@@ -335,7 +335,7 @@ namespace CompMs.Common.Parser
 
                     if (lineArray.Length >= 2) {
                         if (float.TryParse(lineArray[1], out retentionTime)) {
-                            textQuery.ChromXs.RT.Value = retentionTime;
+                            textQuery.ChromXs.RT = new RetentionTime(retentionTime, textQuery.ChromXs.RT.Unit);
                         }
                         else {
                             errorMessage += "Error type 2: line " + counter + "includes non-numerical value for retention time information.\r\n";

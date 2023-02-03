@@ -89,15 +89,15 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
             var alignments = BatchBuildAlignmentSpotProperty(4, d_mass: param.CentroidMs1Tolerance, d_time: 0.025);
 
             alignments[1].QuantMass = alignments[0].QuantMass + param.CentroidMs1Tolerance * 0.99;
-            alignments[1].TimesCenter.RT.Value = alignments[0].TimesCenter.RT.Value + 0.025 * 0.99;
+            alignments[1].TimesCenter.RT = new RetentionTime(alignments[0].TimesCenter.RT.Value + 0.025 * 0.99, unit: alignments[1].TimesCenter.RT.Unit);
             alignments[3].QuantMass = alignments[2].QuantMass + param.CentroidMs1Tolerance * 0.99;
-            alignments[3].TimesCenter.RT.Value = alignments[2].TimesCenter.RT.Value + 0.025 * 0.99;
+            alignments[3].TimesCenter.RT = new RetentionTime(alignments[2].TimesCenter.RT.Value + 0.025 * 0.99, unit: alignments[3].TimesCenter.RT.Unit);
             alignments[3].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
             alignments[3].MatchResults.ClearMspResults();
 
             var expects = BatchBuildAlignmentSpotProperty(4, d_mass: param.CentroidMs1Tolerance, d_time: 0.025);
             expects[1].QuantMass = expects[0].QuantMass + param.CentroidMs1Tolerance * 0.99;
-            expects[1].TimesCenter.RT.Value = alignments[0].TimesCenter.RT.Value + 0.025 * 0.99;
+            expects[1].TimesCenter.RT = new RetentionTime(alignments[0].TimesCenter.RT.Value + 0.025 * 0.99, unit: expects[1].TimesCenter.RT.Unit);
             expects.RemoveAt(3);
             expects.Sort((a, b) => (a.TimesCenter.RT.Value, a.QuantMass).CompareTo((b.TimesCenter.RT.Value, b.QuantMass)));
             for (int i = 0; i < expects.Count; i++) {
@@ -144,16 +144,16 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
             var alignments = BatchBuildAlignmentSpotProperty(4, d_mass: param.CentroidMs1Tolerance, d_index: 2.5);
             for (int i = 0; i < alignments.Count; i++) alignments[i].TimesCenter.MainType = ChromXType.RI;
             alignments[1].QuantMass = alignments[0].QuantMass - param.CentroidMs1Tolerance * 0.99;
-            alignments[1].TimesCenter.RI.Value = alignments[0].TimesCenter.RI.Value + 2.5 * 0.99;
+            alignments[1].TimesCenter.RI = new RetentionIndex(alignments[0].TimesCenter.RI.Value + 2.5 * 0.99);
             alignments[3].QuantMass = alignments[2].QuantMass + param.CentroidMs1Tolerance * 0.99;
-            alignments[3].TimesCenter.RI.Value = alignments[2].TimesCenter.RI.Value + 2.5 * 0.99;
+            alignments[3].TimesCenter.RI = new RetentionIndex(alignments[2].TimesCenter.RI.Value + 2.5 * 0.99);
             alignments[3].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
             alignments[3].MatchResults.ClearMspResults();
 
             var expects = BatchBuildAlignmentSpotProperty(4, d_mass: param.CentroidMs1Tolerance, d_index: 2.5);
             for (int i = 0; i < expects.Count; i++) expects[i].TimesCenter.MainType = ChromXType.RI;
             expects[1].QuantMass = expects[0].QuantMass - param.CentroidMs1Tolerance * 0.99;
-            expects[1].TimesCenter.RI.Value = alignments[0].TimesCenter.RI.Value + 2.5 * 0.99;
+            expects[1].TimesCenter.RI = new RetentionIndex(alignments[0].TimesCenter.RI.Value + 2.5 * 0.99);
             expects.RemoveAt(3);
             expects.Sort((a, b) => (a.TimesCenter.RI.Value, a.QuantMass).CompareTo((b.TimesCenter.RI.Value, b.QuantMass)));
             for (int i = 0; i < expects.Count; i++) {
@@ -200,16 +200,16 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
             var alignments = BatchBuildAlignmentSpotProperty(4, d_mass: param.CentroidMs1Tolerance, d_index: 1000);
             for (int i = 0; i < alignments.Count; i++) alignments[i].TimesCenter.MainType = ChromXType.RI;
             alignments[1].QuantMass = alignments[0].QuantMass - param.CentroidMs1Tolerance * 0.99;
-            alignments[1].TimesCenter.RI.Value = alignments[0].TimesCenter.RI.Value - 1000 * 0.99;
+            alignments[1].TimesCenter.RI = new RetentionIndex(alignments[0].TimesCenter.RI.Value - 1000 * 0.99);
             alignments[3].QuantMass = alignments[2].QuantMass + param.CentroidMs1Tolerance * 0.99;
-            alignments[3].TimesCenter.RI.Value = alignments[2].TimesCenter.RI.Value + 1000 * 0.99;
+            alignments[3].TimesCenter.RI = new RetentionIndex(alignments[2].TimesCenter.RI.Value + 1000 * 0.99);
             alignments[3].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
             alignments[3].MatchResults.ClearMspResults();
 
             var expects = BatchBuildAlignmentSpotProperty(4, d_mass: param.CentroidMs1Tolerance, d_index: 1000);
             for (int i = 0; i < expects.Count; i++) expects[i].TimesCenter.MainType = ChromXType.RI;
             expects[1].QuantMass = expects[0].QuantMass - param.CentroidMs1Tolerance * 0.99;
-            expects[1].TimesCenter.RI.Value = alignments[0].TimesCenter.RI.Value - 1000 * 0.99;
+            expects[1].TimesCenter.RI = new RetentionIndex(alignments[0].TimesCenter.RI.Value - 1000 * 0.99);
             expects.RemoveAt(3);
             expects.Sort((a, b) => (a.TimesCenter.RI.Value, a.QuantMass).CompareTo((b.TimesCenter.RI.Value, b.QuantMass)));
             for (int i = 0; i < expects.Count; i++) {
