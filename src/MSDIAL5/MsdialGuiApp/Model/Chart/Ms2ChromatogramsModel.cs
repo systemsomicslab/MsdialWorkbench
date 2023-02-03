@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Utility;
+using CompMs.Common.Algorithm.ChromSmoothing;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
@@ -27,9 +28,11 @@ namespace CompMs.App.Msdial.Model.Chart
         public Ms2ChromatogramsModel(IObservable<ChromatogramPeakFeatureModel> peak, IObservable<MSDecResult> msScan, IMsSpectrumLoader<ChromatogramPeakFeatureModel> loader, IDataProvider provider, ParameterBase parameter) {
             NumberOfChromatograms = new ReactiveProperty<int>(NUMBER_OF_CHROMATOGRAMS).AddTo(Disposables);
 
+            var smoother = new Smoothing();
             var rawChromatograms = peak.SkipNull()
-                .SelectSwitch(t => loader.LoadSpectrumAsObservable(t).CombineLatest(NumberOfChromatograms, (spectrum, number) => (t, spectrum: spectrum.OrderByDescending(peak_ => peak_.Intensity).Take(number))))
+                .SelectSwitch(t => loader.LoadSpectrumAsObservable(t).CombineLatest(NumberOfChromatograms, (spectrum, number) => (t, spectrum: spectrum.OrderByDescending(peak_ => peak_.Intensity).Take(number).OrderBy(n => n.Mass))))
                 .Select(pair => DataAccess.GetMs2ValuePeaks(provider, pair.t.Mass, pair.t.MS1RawSpectrumIdLeft, pair.t.MS1RawSpectrumIdRight, pair.spectrum.Select(peak_ => (double)peak_.Mass).ToArray(), parameter))
+                .Select(chromatograms => chromatograms.Select(n => smoother.LinearWeightedMovingAverage(n, parameter.SmoothingLevel)))
                 .Select(chromatograms => new ChromatogramsModel(
                     "Raw MS/MS chromatogram",
                     chromatograms.Zip(RAW_PENS, (chromatogram, pen) => new DisplayChromatogram(chromatogram.Select(peak_ => peak_.ConvertToChromatogramPeak(ChromXType.RT, ChromXUnit.Min)).ToList(), linePen: pen, title: chromatogram.FirstOrDefault().Mz.ToString("F5"))).ToList(), // TODO: [magic number] ChromXType, ChromXUnit

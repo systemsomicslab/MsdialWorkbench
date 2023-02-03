@@ -617,52 +617,52 @@ namespace CompMs.MsdialCore.MSDec {
 
 
         #region MS/MS deconvolution in retention time or ion mobility axis
-        public static MSDecResult GetMSDecResult(List<List<ChromatogramPeak>> peaklistList, ParameterBase param, int targetScanNumber, 
-            ChromXType chromType = ChromXType.RT, ChromXUnit chromUnit = ChromXUnit.Min) {
-            if (peaklistList == null || peaklistList.Count == 0) return null;
-            //Peak detections in MS/MS chromatogras
-            var peakSpots = getPeakSpots(peaklistList, param, chromType, chromUnit); if (peakSpots.Count == 0) return null;
+        //public static MSDecResult GetMSDecResult(List<List<ChromatogramPeak>> peaklistList, ParameterBase param, int targetScanNumber, 
+        //    ChromXType chromType = ChromXType.RT, ChromXUnit chromUnit = ChromXUnit.Min) {
+        //    if (peaklistList == null || peaklistList.Count == 0) return null;
+        //    //Peak detections in MS/MS chromatogras
+        //    var peakSpots = getPeakSpots(peaklistList, param, chromType, chromUnit); if (peakSpots.Count == 0) return null;
 
-            //Maps the values of peak shape, symmetry, and qualiy of detected peaks into the array 
-            //where the length is equal to the scan number
-            var ms2decBinArray = getMsDecBinArray(peakSpots, peaklistList[0]);
+        //    //Maps the values of peak shape, symmetry, and qualiy of detected peaks into the array 
+        //    //where the length is equal to the scan number
+        //    var ms2decBinArray = getMsDecBinArray(peakSpots, peaklistList[0]);
 
-            //apply matched filter to extract 'metabolite components' 
-            //where peaks having slightly (1-2 scan point diff) different retention times are merged. 
-            var matchedFilterArray = getMatchedFileterArray(ms2decBinArray, param.SigmaWindowValue);
+        //    //apply matched filter to extract 'metabolite components' 
+        //    //where peaks having slightly (1-2 scan point diff) different retention times are merged. 
+        //    var matchedFilterArray = getMatchedFileterArray(ms2decBinArray, param.SigmaWindowValue);
 
-            //making model chromatograms by considering their peak qualities
-            var modelChromatograms = getModelChromatograms(peaklistList, peakSpots, ms2decBinArray, matchedFilterArray, param);
+        //    //making model chromatograms by considering their peak qualities
+        //    var modelChromatograms = getModelChromatograms(peaklistList, peakSpots, ms2decBinArray, matchedFilterArray, param);
 
-            //What we have to do in DIA-MS data is first to link the peak tops of MS1 chromatogram and of MS2 chromatogram.
-            //in the current program, if the peak top defference between MS1 and MS2 chromatograms is less than 1 scan point, they are recognized as the same metabolite.
-            var minimumID = 0;
-            var minimumDiff = double.MaxValue;
-            for (int i = 0; i < modelChromatograms.Count; i++) {
-                var modelChrom = modelChromatograms[i];
-                if (Math.Abs(targetScanNumber - modelChrom.ChromScanOfPeakTop) < minimumDiff) {
-                    minimumDiff = Math.Abs(targetScanNumber - modelChrom.ChromScanOfPeakTop);
-                    minimumID = i;
-                }
-            }
+        //    //What we have to do in DIA-MS data is first to link the peak tops of MS1 chromatogram and of MS2 chromatogram.
+        //    //in the current program, if the peak top defference between MS1 and MS2 chromatograms is less than 1 scan point, they are recognized as the same metabolite.
+        //    var minimumID = 0;
+        //    var minimumDiff = double.MaxValue;
+        //    for (int i = 0; i < modelChromatograms.Count; i++) {
+        //        var modelChrom = modelChromatograms[i];
+        //        if (Math.Abs(targetScanNumber - modelChrom.ChromScanOfPeakTop) < minimumDiff) {
+        //            minimumDiff = Math.Abs(targetScanNumber - modelChrom.ChromScanOfPeakTop);
+        //            minimumID = i;
+        //        }
+        //    }
 
-            //Run deconvolution program if the target feature related to MS1 precursor peak can be found in MS/MS chromatograms
-            if (minimumDiff <= 2) {
-                //considering adjacent model chromatograms to be considered as 'co-eluting' metabolites
-                var modelChromVector = getModelChromatogramVector(minimumID, modelChromatograms, ms2decBinArray);
+        //    //Run deconvolution program if the target feature related to MS1 precursor peak can be found in MS/MS chromatograms
+        //    if (minimumDiff <= 2) {
+        //        //considering adjacent model chromatograms to be considered as 'co-eluting' metabolites
+        //        var modelChromVector = getModelChromatogramVector(minimumID, modelChromatograms, ms2decBinArray);
 
-                //triming MS/MS chromatograms where the retention time range is equal to the range of model chromatogram vector
-                var chromatograms = getMs2Chromatograms(modelChromVector, peaklistList, param);
-                if (chromatograms.Count == 0) return null;
-                var result = MSDecProcess.GetMsDecResult(modelChromVector, chromatograms);
-                result.Spectrum = getRefinedMsDecSpectrum(result.Spectrum, param);
-                result.Splash = calculateSplash(result.Spectrum);
-                return result;
-            }
-            else {
-                return null;
-            }
-        }
+        //        //triming MS/MS chromatograms where the retention time range is equal to the range of model chromatogram vector
+        //        var chromatograms = getMs2Chromatograms(modelChromVector, peaklistList, param);
+        //        if (chromatograms.Count == 0) return null;
+        //        var result = MSDecProcess.GetMsDecResult(modelChromVector, chromatograms);
+        //        result.Spectrum = getRefinedMsDecSpectrum(result.Spectrum, param);
+        //        result.Splash = calculateSplash(result.Spectrum);
+        //        return result;
+        //    }
+        //    else {
+        //        return null;
+        //    }
+        //}
 
 
         public static MSDecResult GetMSDecResult(List<Chromatogram_temp2> chromatogramList, ParameterBase param, int targetScanNumber,

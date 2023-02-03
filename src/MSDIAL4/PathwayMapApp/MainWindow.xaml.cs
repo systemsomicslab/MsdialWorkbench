@@ -40,7 +40,7 @@ namespace Riken.Metabolomics.PathwayMapApp {
         }
 
         private PathwayMapUI readGpmlPathwayFile() {
-            var fileUri = new Uri("/TEST/GlobalMapForAnimal.gpml", UriKind.Relative);
+            var fileUri = new Uri("/TEST/LipidMapForAnimal.gpml", UriKind.Relative);
             var info = Application.GetResourceStream(fileUri);
             var wikipathwayReader = new WikipathwayFormatParser();
             wikipathwayReader.Read(info.Stream);
