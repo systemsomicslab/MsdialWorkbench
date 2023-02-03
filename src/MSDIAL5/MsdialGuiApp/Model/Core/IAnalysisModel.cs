@@ -8,7 +8,6 @@ namespace CompMs.App.Msdial.Model.Core
 {
     internal interface IAnalysisModel : IResultModel, INotifyPropertyChanged
     {
-        ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks { get; }
         Task SaveAsync(CancellationToken token);
     }
 }
