@@ -88,16 +88,29 @@ namespace CompMs.Common.Components
     public sealed class RetentionIndex : IChromX
     {
         [Key(0)]
-        public double Value { get; set; } = -1;
+        public double Value { get; } = -1;
         [Key(1)]
-        public ChromXType Type { get; set; }
+        public ChromXType Type { get; }
         [Key(2)]
-        public ChromXUnit Unit { get; set; }
+        public ChromXUnit Unit { get; }
 
-        public RetentionIndex() { }
         public RetentionIndex(double retentionIndex, ChromXUnit unit = ChromXUnit.None)
         {
             Value = retentionIndex;
+            Type = ChromXType.RI;
+            Unit = unit;
+        }
+
+        /// <summary>
+        /// Only MessagePack for C# use this constructor. Use ctor(double, ChromXUnit) instead.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="_type"></param>
+        /// <param name="unit"></param>
+        [SerializationConstructor]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public RetentionIndex(double value, ChromXType _type, ChromXUnit unit) {
+            Value = value;
             Type = ChromXType.RI;
             Unit = unit;
         }
