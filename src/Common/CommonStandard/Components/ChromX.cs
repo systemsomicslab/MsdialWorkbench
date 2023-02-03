@@ -21,7 +21,7 @@ namespace CompMs.Common.Components
     public sealed class RetentionTime : IChromX
     {
         [Key(0)]
-        public double Value { get; } = -1;
+        public double Value { get; }
         [Key(1)]
         public ChromXType Type { get; }
         [Key(2)]
@@ -90,7 +90,7 @@ namespace CompMs.Common.Components
     public sealed class RetentionIndex : IChromX
     {
         [Key(0)]
-        public double Value { get; } = -1;
+        public double Value { get; }
         [Key(1)]
         public ChromXType Type { get; }
         [Key(2)]
@@ -159,7 +159,7 @@ namespace CompMs.Common.Components
     public sealed class DriftTime : IChromX
     {
         [Key(0)]
-        public double Value { get; } = -1;
+        public double Value { get; }
         [Key(1)]
         public ChromXType Type { get; }
         [Key(2)]
@@ -227,7 +227,7 @@ namespace CompMs.Common.Components
     [MessagePackObject]
     public sealed class MzValue : IChromX {
         [Key(0)]
-        public double Value { get; } = -1;
+        public double Value { get; }
         [Key(1)]
         public ChromXType Type { get; }
         [Key(2)]
