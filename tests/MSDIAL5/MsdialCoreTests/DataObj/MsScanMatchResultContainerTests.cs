@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace CompMs.MsdialCore.DataObj.Tests
 {
@@ -87,16 +88,14 @@ namespace CompMs.MsdialCore.DataObj.Tests
             var result = new MsScanMatchResult { Source = SourceType.MspDB, TotalScore = 0.4f, };
             container.AddMspResult(1, result);
             CollectionAssert.Contains(container.MatchResults, result);
-            Assert.IsTrue(container.MSRawID2MspBasedMatchResult.ContainsKey(1));
-            Assert.AreEqual(result, container.MSRawID2MspBasedMatchResult[1]);
+            Assert.That.ExistsMspResultAndAreEqual(result, 1, container);
             Assert.AreEqual(result, container.MspBasedMatchResult);
             Assert.AreEqual(result, container.Representative);
 
             var result2 = new MsScanMatchResult { Source = SourceType.MspDB, TotalScore = 0.6f, };
             container.AddMspResult(2, result2);
             CollectionAssert.Contains(container.MatchResults, result2);
-            Assert.IsTrue(container.MSRawID2MspBasedMatchResult.ContainsKey(2));
-            Assert.AreEqual(result2, container.MSRawID2MspBasedMatchResult[2]);
+            Assert.That.ExistsMspResultAndAreEqual(result2, 2, container);
             Assert.AreEqual(result2, container.MspBasedMatchResult);
             Assert.AreEqual(result2, container.Representative);
         }
@@ -112,12 +111,9 @@ namespace CompMs.MsdialCore.DataObj.Tests
             };
             container.AddMspResults(results);
             CollectionAssert.IsSubsetOf(results.Values, container.MatchResults);
-            Assert.IsTrue(container.MSRawID2MspBasedMatchResult.ContainsKey(1));
-            Assert.AreEqual(results[1], container.MSRawID2MspBasedMatchResult[1]);
-            Assert.IsTrue(container.MSRawID2MspBasedMatchResult.ContainsKey(2));
-            Assert.AreEqual(results[2], container.MSRawID2MspBasedMatchResult[2]);
-            Assert.IsTrue(container.MSRawID2MspBasedMatchResult.ContainsKey(4));
-            Assert.AreEqual(results[4], container.MSRawID2MspBasedMatchResult[4]);
+            Assert.That.ExistsMspResultAndAreEqual(results[1], 1, container);
+            Assert.That.ExistsMspResultAndAreEqual(results[2], 2, container);
+            Assert.That.ExistsMspResultAndAreEqual(results[4], 4, container);
             Assert.AreEqual(results[2], container.MspBasedMatchResult);
             Assert.AreEqual(results[2], container.Representative);
 
@@ -127,8 +123,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             };
             container.AddMspResults(results2);
             CollectionAssert.IsSubsetOf(results2.Values, container.MatchResults);
-            Assert.IsTrue(container.MSRawID2MspBasedMatchResult.ContainsKey(3));
-            Assert.AreEqual(results2[3], container.MSRawID2MspBasedMatchResult[3]);
+            Assert.That.ExistsMspResultAndAreEqual(results2[3], 3, container);
             Assert.AreEqual(results2[3], container.MspBasedMatchResult);
             Assert.AreEqual(results2[3], container.Representative);
         }
@@ -254,6 +249,22 @@ namespace CompMs.MsdialCore.DataObj.Tests
 
             container1.MergeContainers(container2);
             Assert.AreEqual(results2[1], container1.Representative);
+        }
+
+        [TestMethod()]
+        public void SaveAndLoadTest() {
+            var container = new MsScanMatchResultContainer();
+            var results = new[]{
+                new MsScanMatchResult(),
+                new MsScanMatchResult { Source = SourceType.MspDB, TotalScore = 0.7f, },
+                new MsScanMatchResult(),
+            };
+            container.AddResults(results);
+            var memory = new MemoryStream();
+            Common.MessagePack.MessagePackDefaultHandler.SaveToStream(container, memory);
+            memory.Seek(0, SeekOrigin.Begin);
+            var actual = Common.MessagePack.MessagePackDefaultHandler.LoadFromStream<MsScanMatchResultContainer>(memory);
+            Assert.That.AreEqual(container, actual);
         }
     }
 }

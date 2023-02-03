@@ -217,9 +217,6 @@ namespace CompMs.MsdialCore.DataObj
         public Dictionary<int, MsScanMatchResult> MSRawID2MspBasedMatchResult { get; set; } = new Dictionary<int, MsScanMatchResult>();
 
         [IgnoreMember]
-        public Dictionary<int, int> MSRawID2MspIDs => MSRawID2MspBasedMatchResult.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.LibraryID);
-
-        [IgnoreMember]
         // get result having max score
         public MsScanMatchResult MspBasedMatchResult => MSRawID2MspBasedMatchResult.IsEmptyOrNull() ? null : MSRawID2MspBasedMatchResult.Values.Argmax(result => result.TotalScore);
 
@@ -251,10 +248,6 @@ namespace CompMs.MsdialCore.DataObj
         // TextDB based matched results
         [Key(2)]
         public List<MsScanMatchResult> TextDbBasedMatchResults { get; set; } = new List<MsScanMatchResult>();
-
-        // ID list having the metabolite candidates exceeding the threshold (optional)
-        [IgnoreMember]
-        public List<int> TextDbIDs => TextDbBasedMatchResults.Select(result => result.LibraryID).ToList();
 
         [IgnoreMember]
         public int TextDbID => TextDbBasedMatchResults.IsEmptyOrNull() ? -1 : TextDbBasedMatchResults.Argmax(result => result.TotalScore).LibraryID;
