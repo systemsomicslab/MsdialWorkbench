@@ -14,9 +14,7 @@ namespace CompMs.Common.Components.Tests
             stream.Seek(0, SeekOrigin.Begin);
             var actual = MessagePack.MessagePackDefaultHandler.LoadFromStream<IChromX>(stream);
             Assert.IsInstanceOfType(actual, typeof(RetentionTime));
-            Assert.AreEqual(rt.Value, actual.Value);
-            Assert.AreEqual(rt.Unit, actual.Unit);
-            Assert.AreEqual(rt.Type, actual.Type);
+            Assert.That.AreEqual(rt, actual);
         }
     }
 }

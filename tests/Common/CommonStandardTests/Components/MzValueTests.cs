@@ -4,17 +4,17 @@ using System.IO;
 namespace CompMs.Common.Components.Tests
 {
     [TestClass()]
-    public class RetentionIndexTests
+    public class MzValueTests
     {
         [TestMethod()]
-        public void RetentionIndexTest() {
+        public void MzValueTest() {
             var memory = new MemoryStream();
-            var ri = new RetentionIndex(10d, ChromXUnit.Min);
-            MessagePack.MessagePackDefaultHandler.SaveToStream<IChromX>(ri, memory);
+            var mz = new MzValue(10d, ChromXUnit.None);
+            MessagePack.MessagePackDefaultHandler.SaveToStream<IChromX>(mz, memory);
             memory.Seek(0, SeekOrigin.Begin);
             var actual = MessagePack.MessagePackDefaultHandler.LoadFromStream<IChromX>(memory);
-            Assert.IsInstanceOfType(actual, typeof(RetentionIndex));
-            Assert.That.AreEqual(ri, actual);
+            Assert.IsInstanceOfType(actual, typeof(MzValue));
+            Assert.That.AreEqual(mz, actual);
         }
     }
 }
