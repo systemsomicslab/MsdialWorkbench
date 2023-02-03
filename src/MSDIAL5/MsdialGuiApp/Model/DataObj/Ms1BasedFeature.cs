@@ -1,5 +1,4 @@
 ﻿using CompMs.CommonMVVM;
-using CompMs.MsdialCore.DataObj;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
@@ -7,6 +6,6 @@ namespace CompMs.App.Msdial.Model.DataObj
     {
         public MoleculeModel Molecule { get; }
         public ScanModel Scan { get; }
-        public MsScanMatchResultContainer MatchResults { get; }
+        public MsScanMatchResultContainerModel MatchResults { get; }
     }
 }
