@@ -11,7 +11,7 @@ namespace CompMs.Common.Components
     [Union(3, typeof(MzValue))]
     [Union(4, typeof(DriftTime))]
     public interface IChromX {
-        double Value { get; set; }
+        double Value { get; }
         ChromXType Type { get; set; } 
         ChromXUnit Unit { get; set; }
     }

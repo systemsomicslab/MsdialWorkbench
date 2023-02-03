@@ -614,10 +614,10 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             alignments[1].MassCenter = alignments[0].MassCenter + param.Ms1AlignmentTolerance * 0.99;
             alignments[1].TimesCenter = alignments[0].TimesCenter;
             alignments[3].MassCenter = alignments[2].MassCenter;
-            alignments[3].TimesCenter.RT.Value = alignments[2].TimesCenter.RT.Value + param.RetentionTimeAlignmentTolerance * 0.99;
+            alignments[3].TimesCenter.RT = new RetentionTime(alignments[2].TimesCenter.RT.Value + param.RetentionTimeAlignmentTolerance * 0.99, alignments[3].TimesCenter.RT.Unit);
             alignments[5].MassCenter = alignments[4].MassCenter;
-            alignments[5].TimesCenter.RT.Value = alignments[4].TimesCenter.RT.Value + param.RetentionTimeAlignmentTolerance * 0.5 * 0.99;
-            alignments[7].TimesCenter.RT.Value = alignments[6].TimesCenter.RT.Value + param.RetentionTimeAlignmentTolerance * 0.5 * 0.99;
+            alignments[5].TimesCenter.RT = new RetentionTime(alignments[4].TimesCenter.RT.Value + param.RetentionTimeAlignmentTolerance * 0.5 * 0.99, alignments[5].TimesCenter.RT.Unit);
+            alignments[7].TimesCenter.RT = new RetentionTime(alignments[6].TimesCenter.RT.Value + param.RetentionTimeAlignmentTolerance * 0.5 * 0.99, alignments[7].TimesCenter.RT.Unit);
             alignments[9].MassCenter = alignments[8].MassCenter + param.Ms1AlignmentTolerance * 0.99;
             
 
@@ -625,10 +625,10 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             expects[1].MassCenter = expects[0].MassCenter + param.Ms1AlignmentTolerance * 0.99;
             expects[1].TimesCenter = expects[0].TimesCenter;
             expects[3].MassCenter = expects[2].MassCenter;
-            expects[3].TimesCenter.RT.Value = expects[2].TimesCenter.RT.Value + param.RetentionTimeAlignmentTolerance * 0.99;
+            expects[3].TimesCenter.RT = new RetentionTime(expects[2].TimesCenter.RT.Value + param.RetentionTimeAlignmentTolerance * 0.99, expects[3].TimesCenter.RT.Unit);
             expects[5].MassCenter = expects[4].MassCenter;
-            expects[5].TimesCenter.RT.Value = expects[4].TimesCenter.RT.Value + param.RetentionTimeAlignmentTolerance * 0.5 * 0.99;
-            expects[7].TimesCenter.RT.Value = expects[6].TimesCenter.RT.Value + param.RetentionTimeAlignmentTolerance * 0.5 * 0.99;
+            expects[5].TimesCenter.RT = new RetentionTime(expects[4].TimesCenter.RT.Value + param.RetentionTimeAlignmentTolerance * 0.5 * 0.99, expects[5].TimesCenter.RT.Unit);
+            expects[7].TimesCenter.RT = new RetentionTime(expects[6].TimesCenter.RT.Value + param.RetentionTimeAlignmentTolerance * 0.5 * 0.99, expects[7].TimesCenter.RT.Unit);
             expects[9].MassCenter = expects[8].MassCenter + param.Ms1AlignmentTolerance * 0.99;
 
             expects.RemoveAt(5);
