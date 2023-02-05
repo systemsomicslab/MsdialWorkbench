@@ -28,6 +28,12 @@ namespace CompMs.Common.Lipidomics
         public double TotalScore { get; set; }
     }
 
+    public class DiagnosticIon {
+        public double Mz { get; set; }
+        public double MzTolerance { get; set; }
+        public double IonAbundanceCutOff { get; set; }
+    }
+
     public static class StandardMsCharacterizationUtility
     {
 
@@ -492,7 +498,8 @@ namespace CompMs.Common.Lipidomics
             result.ClassIonScore = isClassIonExisted ? 1.0 : 0.0;
             result.ChainIonScore = isChainIonExisted ? 1.0 : 0.0;
             result.PositionIonScore = isPositionIonExisted ? 1.0 : 0.0;
-            result.DoubleBondIonScore = matchedPercent + matchedCoefficient;
+            // result.DoubleBondIonScore = matchedPercent + matchedCoefficient;
+            result.DoubleBondIonScore = matchedCoefficient;
 
             var score = result.ClassIonScore + result.ChainIonScore + result.PositionIonScore + result.DoubleBondIonScore;
             var counter = classionsDetected + chainIonsDetected + positionIonsDetected + matchedCount;

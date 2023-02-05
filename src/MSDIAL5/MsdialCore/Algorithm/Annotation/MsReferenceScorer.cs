@@ -95,24 +95,32 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var dotProductFactor = 3.0;
             var revesrseDotProdFactor = 2.0;
             var presensePercentageFactor = 1.0;
+            var msmsFactor = 3.0;
             var rtFactor = 1.0;
             var ccsFactor = 1.0;
             var massFactor = 1.0;
             var isotopeFactor = 0.0;
             if (omics == TargetOmics.Lipidomics) {
-                dotProductFactor = 1.0; revesrseDotProdFactor = 2.0; presensePercentageFactor = 3.0; rtFactor = 0.5; ccsFactor = 0.5;
+                if (this.collisionType != CollisionType.CID) {
+                    dotProductFactor = 1.0; revesrseDotProdFactor = 2.0; presensePercentageFactor = 2.0; rtFactor = 0.5; ccsFactor = 0.5;
+                }
+                else {
+                    dotProductFactor = 1.0; revesrseDotProdFactor = 2.0; presensePercentageFactor = 3.0; rtFactor = 0.5; ccsFactor = 0.5;
+                }
             }
             if (omics == TargetOmics.Metabolomics && spectrumPenalty == true) {
                 dotProductFactor = 1.5;
                 revesrseDotProdFactor = 1.0;
                 presensePercentageFactor = 0.5;
-
             }
+
+            var msmsScore = (result.WeightedDotProduct * dotProductFactor + result.SimpleDotProduct * dotProductFactor + result.ReverseDotProduct * revesrseDotProdFactor + result.MatchedPeaksPercentage * presensePercentageFactor) /
+                (dotProductFactor + dotProductFactor + revesrseDotProdFactor + presensePercentageFactor);
 
             if (result.AcurateMassSimilarity >= 0 && massFactor > 0)
                 scores.Add(result.AcurateMassSimilarity * massFactor);
             if (result.WeightedDotProduct >= 0 && result.SimpleDotProduct >= 0 && result.ReverseDotProduct >= 0)
-                scores.Add((result.WeightedDotProduct * dotProductFactor + result.SimpleDotProduct * dotProductFactor + result.ReverseDotProduct * revesrseDotProdFactor + result.MatchedPeaksPercentage * presensePercentageFactor) / 4);
+                scores.Add(msmsScore * msmsFactor);
             if (parameter.IsUseTimeForAnnotationScoring && result.RtSimilarity >= 0 && rtFactor > 0)
                 scores.Add(result.RtSimilarity * rtFactor);
             if (parameter.IsUseCcsForAnnotationScoring && result.CcsSimilarity >= 0 && ccsFactor > 0)

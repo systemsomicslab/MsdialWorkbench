@@ -40,6 +40,7 @@ namespace CompMs.Common.Lipidomics
             var bondPositions = new List<int>();
             foreach (var bond in chain.DoubleBond.Bonds) // double bond 18:2(9,12) -> 9 is 9 and 12 is 12 
             {
+                //if (bond.Position > diffs.Length - 1) return Enumerable.Empty<SpectrumPeak>();
                 diffs[bond.Position - 1] -= MassDiffDictionary.HydrogenMass;
                 diffs[bond.Position] -= MassDiffDictionary.HydrogenMass;
                 bondPositions.Add(bond.Position);

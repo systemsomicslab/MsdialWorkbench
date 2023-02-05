@@ -12,13 +12,7 @@ using System.Text;
 namespace Riken.Metabolomics.MsfinderCommon.Utility {
     public sealed class FileStorageUtility {
         public static string GetResourcesPath(string file) {
-            //var sb = new StringBuilder();
-            //var currentDir = Directory.GetCurrentDirectory();
             var currentDir = System.AppDomain.CurrentDomain.BaseDirectory;
-            //sb.Append(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath));
-            //sb.Append(currentDir);
-            //sb.Append("Resources").Append("\\");
-
             var pather = Path.Combine(currentDir, "Resources");
 
             var filename = string.Empty;
@@ -42,9 +36,6 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
             }
             pather = Path.Combine(pather, filename);
             return pather;
-            //sb.Append(filename);
-            //sb.Append(Properties.Resources.ResourceManager.GetString(file));
-            //return sb.ToString();
         }
 
         public static ObservableCollection<MsfinderQueryFile> GetAnalysisFileBeanCollection(string importFolderPath) {

@@ -68,6 +68,10 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             ChromatogramPeaksDataSummary summary, IupacDatabase iupac,
             double targetCE = -1) { // targetCE is used in multiple CEs option
 
+            if (Math.Abs(chromPeakFeature.PeakFeature.ChromXsTop.RT.Value - 9.795) < 0.01 && Math.Abs(chromPeakFeature.Mass - 609.59631) < 0.01) {
+                Console.WriteLine();
+            }
+
             // check target CE ID
             var targetSpecID = DataAccess.GetTargetCEIndexForMS2RawSpectrum(chromPeakFeature, targetCE);
 
