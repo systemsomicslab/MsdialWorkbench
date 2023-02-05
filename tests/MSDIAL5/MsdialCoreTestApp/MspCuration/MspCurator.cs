@@ -127,21 +127,21 @@ namespace CompMs.App.MsdialConsole.MspCuration {
             // add retention time field to msp record
             foreach (var mRecord in mspRecords) {
                 if (mRecord.InChIKey.IsEmptyOrNull()) {
-                    mRecord.ChromXs.RT.Value = -1;
+                    mRecord.ChromXs.RT = new RetentionTime(-1, mRecord.ChromXs.RT.Unit);
                     continue;
                 }
                 var shortInChi = mRecord.InChIKey.Substring(0, 14);
                 if (inchi2RT.ContainsKey(shortInChi)) {
                     double d;
                     if (double.TryParse(inchi2RT[shortInChi], out d)) {
-                        mRecord.ChromXs.RT.Value = d;
+                        mRecord.ChromXs.RT = new RetentionTime(d, mRecord.ChromXs.RT.Unit);
                     }
                     else {
-                        mRecord.ChromXs.RT.Value = -1;
+                        mRecord.ChromXs.RT = new RetentionTime(-1, mRecord.ChromXs.RT.Unit);
                     }
                 }
                 else {
-                    mRecord.ChromXs.RT.Value = -1;
+                    mRecord.ChromXs.RT = new RetentionTime(-1, mRecord.ChromXs.RT.Unit);
                 }
             }
 

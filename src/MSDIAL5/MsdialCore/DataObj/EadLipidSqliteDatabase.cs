@@ -503,10 +503,10 @@ namespace CompMs.MsdialCore.DataObj
                     SpectrumIdFrom = reader.GetInt32(20),
                     SpectrumIdTo = reader.GetInt32(21),
                 };
-                reference.ChromXs.RT.Value = reader.GetDouble(2);
-                reference.ChromXs.RI.Value = reader.GetDouble(3);
-                reference.ChromXs.Drift.Value = reader.GetDouble(4);
-                reference.ChromXs.Mz.Value = reader.GetDouble(5);
+                reference.ChromXs.RT = new RetentionTime(reader.GetDouble(2), unit: ChromXUnit.Min);
+                reference.ChromXs.RI = new RetentionIndex(reader.GetDouble(3), unit: ChromXUnit.None);
+                reference.ChromXs.Drift = new DriftTime(reader.GetDouble(4), unit: ChromXUnit.Msec);
+                reference.ChromXs.Mz = new MzValue(reader.GetDouble(5), unit: ChromXUnit.Mz);
                 return reference;
             }
 

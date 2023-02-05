@@ -314,9 +314,9 @@ namespace CompMs.App.Msdial.View.PeakCuration {
                         rtRight = (float)RetentionIndexHandler.ConvertKovatsRiToRetentiontime(carbonRtDict, prop.RtRight);
                     }
 
-                    this.SelectedData.AlignedPeakProperty.ChromXsTop.RT.Value = rtTop;
-                    this.SelectedData.AlignedPeakProperty.ChromXsLeft.RT.Value = rtLeft;
-                    this.SelectedData.AlignedPeakProperty.ChromXsRight.RT.Value = rtRight;
+                    this.SelectedData.AlignedPeakProperty.ChromXsTop.RT = new RetentionTime(rtTop, unit: SelectedData.AlignedPeakProperty.ChromXsTop.RT.Unit);
+                    this.SelectedData.AlignedPeakProperty.ChromXsLeft.RT = new RetentionTime(rtLeft, unit: SelectedData.AlignedPeakProperty.ChromXsLeft.RT.Unit);
+                    this.SelectedData.AlignedPeakProperty.ChromXsRight.RT = new RetentionTime(rtRight, unit: SelectedData.AlignedPeakProperty.ChromXsRight.RT.Unit);
 
                 }
             }
