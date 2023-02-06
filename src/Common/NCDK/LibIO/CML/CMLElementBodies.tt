@@ -1,0 +1,194 @@
+﻿/*
+ * Copyright (C) 2017  Kazuya Ujihara <ujihara.kazuya@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ * All we ask is that proper credit is given for our work, which includes
+ * - but is not limited to - adding the above copyright notice to the beginning
+ * of your source code files, and to any copyright notice that you may distribute
+ * with programs based on this work.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT Any WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
+<#@ include file="ConfigCML.ttinclude" #>
+
+namespace NCDK.LibIO.CML
+{
+    public partial class CMLElement
+    {
+<#
+        MakeStrAtt("id");
+#>
+    }
+
+    public partial class CMLLabel
+    {
+<#
+        MakeStrAtt("dictRef");
+        MakeStrAtt("objectClass");
+#>
+    }
+
+    public partial class CMLAtom
+    {
+<#
+        MakeStrAtt("ref");
+        MakeDblAtt("count");
+        MakeStrAtt("elementType");
+        MakeIntAtt("formalCharge");
+        MakeIntAtt("hydrogenCount");
+        MakeIntAtt("isotopeNumber");
+        MakeIntAtt("spinMultiplicity");
+        MakeDblAtt("x2");
+        MakeDblAtt("y2");
+        MakeDblAtt("x3");
+        MakeDblAtt("y3");
+        MakeDblAtt("z3");
+        MakeDblAtt("xFract");
+        MakeDblAtt("yFract");
+        MakeDblAtt("zFract");
+#>
+    }
+
+    public partial class CMLBond
+    {
+<#
+        MakeStrAtt("ref");
+        MakeStrAtt("order");
+        MakeStrsAtt("atomRefs");
+        MakeStrsAtt("atomRefs2");
+#>
+    }
+
+    public partial class CMLAtomArray
+    {
+<#
+        MakeStrAtt("ref");
+#>
+    }
+    
+    public partial class CMLBondArray
+    {
+<#
+        MakeStrAtt("ref");
+#>
+    }
+
+    public partial class CMLFormula
+    {
+<#
+        MakeDblAtt("count");
+        MakeIntAtt("formalCharge");
+        //  customize version for concise
+        MakeStrAtt("inline");
+#>
+    }
+
+    public partial class CMLProperty
+    {
+<#
+        MakeStrAtt("ref");
+#>
+    }
+
+    public partial class CMLPropertyList
+    {
+<#
+        MakeStrAtt("ref");
+#>
+    }
+
+    public partial class CMLScalar
+    {
+<#
+        MakeStrAtt("dataType");
+        MakeDblAtt("errorValue");
+        MakeStrAtt("errorBasis");
+        MakeStrAtt("min");
+        MakeStrAtt("max");
+        MakeStrAtt("ref");
+        MakeStrAtt("units");
+        MakeStrAtt("unitType");
+        MakeDblAtt("constantToSI");
+        MakeDblAtt("multiplierToSI");
+#>
+    }
+
+
+    public partial class CMLReactant
+    {
+<#
+        MakeStrAtt("ref");
+        MakeStrAtt("role");
+        MakeDblAtt("count");
+        MakeDblAtt("state");
+#>
+    }
+    
+    public partial class CMLReactantList
+    {
+<#
+        MakeStrAtt("ref");
+        MakeStrAtt("role");
+        MakeDblAtt("count");
+        MakeStrAtt("state");
+#>
+    }
+
+    public partial class CMLProduct
+    {
+<#
+        MakeStrAtt("ref");
+        MakeStrAtt("role");
+        MakeDblAtt("count");
+        MakeDblAtt("state");
+#>
+    }
+    
+    public partial class CMLProductList
+    {
+<#
+        MakeStrAtt("ref");
+        MakeStrAtt("role");
+        MakeDblAtt("count");
+        MakeStrAtt("state");
+#>
+    }
+
+    public partial class CMLSubstance
+    {
+<#
+        MakeStrAtt("ref");
+        MakeStrAtt("role");
+        MakeStrAtt("type");
+        MakeDblAtt("count");
+        MakeDblAtt("state");
+#>
+    }
+    
+    public partial class CMLSubstanceList
+    {
+<#
+        MakeStrAtt("ref");
+        MakeStrAtt("role");
+        MakeStrAtt("type");
+#>
+    }
+
+    public partial class CMLCrystal
+    {
+<#
+        MakeIntAtt("z");
+#>
+    }
+}

@@ -1,0 +1,88 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Chart.RepRefView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Chart"
+             mc:Ignorable="d" 
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
+             Name="RepRefPlot"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:ImmsAlignmentViewModel}}"
+             d:DesignHeight="600" d:DesignWidth="370">
+    <d:DesingerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesingerProperties.DesignStyle>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="Button" x:Key="IconButton">
+                <Setter Property="Height" Value="30"/>
+                <Setter Property="Width" Value="30"/>
+                <Setter Property="Margin" Value="5,0,0,0"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="ContentTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <Image Source="{Binding Path=Content, RelativeSource={RelativeSource TemplatedParent}}"/>
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Opacity" Value="0.5"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Margin="10,5,0,5" Orientation="Horizontal"
+                    Grid.Row="0">
+
+            <Button Name="Button_CompoundSearchAlignmentViewer"
+                    Content="/Resources/CompoundSearchIcon.ico"
+                    Command="{Binding SearchCompoundCommand}"
+                    ToolTip="Compound search"
+                    HorizontalAlignment="Left"
+                    Style="{StaticResource IconButton}"/>
+
+            <Button Name="Button_MsFinderSearchAlignmentViewer"
+                    Content="/Resources/msfinder_icon.ico"
+                    ToolTip="MS-FINDER search"
+                    HorizontalAlignment="Left"
+                    Style="{StaticResource IconButton}"/>
+
+            <Button Name="Button_MolecularNetworkAlignmentViewer"
+                    Content="/Resources/MolecularNetworking.ico"
+                    ToolTip="Molecular-spectrum networking for selected alignment spot"
+                    HorizontalAlignment="Left"
+                    Style="{StaticResource IconButton}"/>
+
+            <Button Name="Button_BinVestigateSearchAlignmentViewer"
+                    Content="/Resources/BinVestigate.ico"
+                    ToolTip="BinVestigate search"
+                    HorizontalAlignment="Left"
+                    Style="{StaticResource IconButton}"/>
+
+            <Button Name="Button_LipoqualityDbSearchAlignmentViewer"
+                    Content="/Resources/Lipoquality.ico"
+                    ToolTip="Go to lipoquality database (developing, and the result of mouse experiments can be shown now.)"
+                    HorizontalAlignment="Left"
+                    Style="{StaticResource IconButton}"/>
+        </StackPanel>
+
+        <local:MsSpectrumView DataContext="{Binding Ms2SpectrumViewModel}"
+                              Margin="0,0,10,0"
+                              Grid.Row="1"/>
+    </Grid>
+</UserControl>

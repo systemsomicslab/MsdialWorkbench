@@ -1,0 +1,282 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Setting.DataCollectionSettingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             mc:Ignorable="d" 
+             d:Background="White"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:DataCollectionSettingViewModel}}"
+             d:DesignHeight="800" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource AlignedContent}">
+                <Setter Property="Height" Value="30"/>
+            </Style>
+            <Style TargetType="GroupBox">
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Margin" Value="8,0,0,0"/>
+            </Style>
+            <Style TargetType="RadioButton">
+                <Setter Property="Margin" Value="4"/>
+            </Style>
+            <Style TargetType="TextBox">
+                <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <StackPanel.Resources>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Margin" Value="8,0,0,0"/>
+                </Style>
+            </StackPanel.Resources>
+            <GroupBox>
+                <GroupBox.Header>
+                    <TextBlock Text="Mass accuracy (centroid parameter)" FontStyle="Italic"/>
+                </GroupBox.Header>
+                <StackPanel>
+                    <ui:LabeledContent PrependLabel="MS1 tolerance:"
+                                       AppendLabel="Da">
+                        <TextBox Text="{Binding Ms1Tolerance.Value}"
+                                 IsReadOnly="{Binding IsReadOnly, Mode=OneTime}">
+                            <ToolTipService.ToolTip>
+                                <ToolTip Content="This is one of parameters for peak detections. This software utilizes &quot;slice&quot; XIC chromatogram. At least for Q-TOF, 0.01-0.05 is better. The detail algorithm should be published soon." />
+                            </ToolTipService.ToolTip>
+                        </TextBox>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="MS2 tolerance:"
+                                       AppendLabel="Da">
+                        <TextBox Text="{Binding Ms2Tolerance.Value}"
+                                 IsReadOnly="{Binding IsReadOnly, Mode=OneTime}">
+                            <ToolTipService.ToolTip>
+                                <ToolTip Content="This is a parameter to draw MS^2 chromatograms. At least for Q-TOF, 0.05-0.1 is better. The detail algorithm should be published soon." />
+                            </ToolTipService.ToolTip>
+                        </TextBox>
+                    </ui:LabeledContent>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox>
+                <GroupBox.Header>
+                    <TextBlock Text="MS1 selection method" FontStyle="Italic"/>
+                </GroupBox.Header>
+                <StackPanel>
+                    <ContentControl Visibility="{Binding CanSetDimsDataCollectionSettingViewModel, Converter={StaticResource BooleanToVisibility}}">
+                        <StackPanel DataContext="{Binding DimsDataCollectionSettingViewModel}">
+                            <RadioButton Content="TIC(total ion current)" IsChecked="{Binding UseMs1WithHighestTic.Value}"/>
+                            <RadioButton Content="BPI(base peak intensity)" IsChecked="{Binding UseMs1WithHighestBpi.Value}"/>
+                            <RadioButton Content="Average(average all ms1 spectrums)" IsChecked="{Binding UseAverageMs1.Value}"/>
+
+                            <ui:LabeledContent PrependLabel="MS1 scan time range">
+                                <Grid >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Text="{Binding TimeBegin.Value}"
+                                             IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ContentControl}}"
+                                             Grid.Column="0"/>
+                                    <TextBlock Text="-" Grid.Column="1" Margin="8,0" VerticalAlignment="Center"/>
+                                    <TextBox Text="{Binding TimeEnd.Value}" Grid.Column="2"/>
+                                </Grid>
+                            </ui:LabeledContent>
+
+                            <ui:LabeledContent PrependLabel="Width of mz to average"
+                                               AppendLabel="Da"
+                                               IsEnabled="{Binding UseAverageMs1.Value, Mode=OneWay}">
+                                <TextBox Text="{Binding MassTolerance.Value}"
+                                         IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ContentControl}}"/>
+                            </ui:LabeledContent>
+                        </StackPanel>
+                    </ContentControl>
+
+                    <ContentControl x:Name="ImmsMs1SelectionMethod" Visibility="{Binding CanSetImmsDataCollectionSettingViewModel, Converter={StaticResource BooleanToVisibility}}">
+                        <StackPanel DataContext="{Binding ImmsDataCollectionSettingViewModel}">
+                            <RadioButton Content="Average(average all ms1 spectrums)" IsChecked="{Binding UseAverageMs1.Value}"/>
+                            <RadioButton Content="TIC(total ion current)" IsChecked="{Binding UseMs1WithHighestTic.Value}"/>
+
+                            <ui:LabeledContent PrependLabel="MS1 scan time range">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Text="{Binding TimeBegin.Value}" Grid.Column="0"
+                                             IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, ElementName=ImmsMs1SelectionMethod}"/>
+                                    <TextBlock Text="-" Margin="8,0" VerticalAlignment="Center" Grid.Column="1"/>
+                                    <TextBox Text="{Binding TimeEnd.Value}" Grid.Column="2"
+                                             IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, ElementName=ImmsMs1SelectionMethod}"/>
+                                </Grid>
+                            </ui:LabeledContent>
+
+                            <ui:LabeledContent PrependLabel="Width of m/z to average"
+                                               AppendLabel="Da"
+                                               IsEnabled="{Binding UseAverageMs1.Value, Mode=OneWay}">
+                                <TextBox Text="{Binding MassTolerance.Value}"
+                                         IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, ElementName=ImmsMs1SelectionMethod}"/>
+                            </ui:LabeledContent>
+
+                            <ui:LabeledContent PrependLabel="Width of drift time to average"
+                                               AppendLabel="msec"
+                                               IsEnabled="{Binding UseAverageMs1.Value, Mode=OneWay}">
+                                <TextBox Text="{Binding DriftTolerance.Value}"
+                                         IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, ElementName=ImmsMs1SelectionMethod}"/>
+                            </ui:LabeledContent>
+                        </StackPanel>
+                    </ContentControl>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+
+        <Expander Header="Advanced"
+                  HorizontalAlignment="Stretch" 
+                  VerticalAlignment="Top" 
+                  ExpandDirection="Down"
+                  d:IsExpanded="True"
+                  Grid.Row="1">
+            <StackPanel>
+                <StackPanel.Resources>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Margin" Value="8,0,0,0"/>
+                    </Style>
+                </StackPanel.Resources>
+                <GroupBox>
+                    <GroupBox.Header>
+                        <TextBlock Text="Data collection parameters" FontStyle="Italic"/>
+                    </GroupBox.Header>
+                    <StackPanel>
+                        <ItemsControl ItemsSource="{Binding DataCollectionRangeSettings}">
+                            <ItemsControl.Resources>
+                                <DataTemplate DataType="{x:Type vm:RetentionTimeDataCollectionRangeSettingViewModel}">
+                                    <StackPanel>
+                                        <ui:LabeledContent PrependLabel="Retention time begin:" AppendLabel="min">
+                                            <TextBox Text="{Binding Begin.Value}"
+                                                     IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                     ToolTip="You can remove un-wanted retention time range."/>
+                                        </ui:LabeledContent>
+                                        <ui:LabeledContent PrependLabel="Retention time range end:" AppendLabel="min">
+                                            <TextBox Text="{Binding End.Value}"
+                                                     IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                     ToolTip="You can remove un-wanted retention time range."/>
+                                        </ui:LabeledContent>
+                                        <ui:LabeledContent PrependLabel="Accumulation retention time range:" AppendLabel="min"
+                                                           Visibility="{Binding NeedAccumulation, Mode=OneTime, Converter={StaticResource BooleanToVisibility}}">
+                                            <TextBox Name="TextBox_AccumulatedRtRagne"
+                                                     Text="{Binding AccumulatedRange.Value}"
+                                                     IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                        </ui:LabeledContent>
+                                    </StackPanel>
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type vm:DriftTimeDataCollectionRangeSettingViewModel}">
+                                    <StackPanel>
+                                        <ui:LabeledContent PrependLabel="Drift time begin:" AppendLabel="1/k0">
+                                            <TextBox Text="{Binding Begin.Value}"
+                                                     IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                     ToolTip="You can remove un-wanted drift time range."/>
+                                        </ui:LabeledContent>
+                                        <ui:LabeledContent PrependLabel="Drift time end:" AppendLabel="1/k0">
+                                            <TextBox Text="{Binding End.Value}"
+                                                     IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                     ToolTip="You can remove un-wanted drift time range."/>
+                                        </ui:LabeledContent>
+                                    </StackPanel>
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type vm:Ms1DataCollectionRangeSettingViewModel}">
+                                    <StackPanel>
+                                        <ui:LabeledContent PrependLabel="MS1 mass range begin:" AppendLabel="Da">
+                                            <TextBox Text="{Binding Begin.Value}"
+                                                     IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                     ToolTip="You can remove un-wanted mass range."/>
+                                        </ui:LabeledContent>
+                                        <ui:LabeledContent PrependLabel="MS1 mass range end:" AppendLabel="Da">
+                                            <TextBox Text="{Binding End.Value}"
+                                                     IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                     ToolTip="You can remove un-wanted mass range."/>
+                                        </ui:LabeledContent>
+                                    </StackPanel>
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type vm:Ms2DataCollectionRangeSettingViewModel}">
+                                    <StackPanel>
+                                        <ui:LabeledContent PrependLabel="MS/MS mass range begin:" AppendLabel="Da">
+                                            <TextBox Text="{Binding Begin.Value}"
+                                                     IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                     ToolTip="You can remove un-wanted mass range."/>
+                                        </ui:LabeledContent>
+                                        <ui:LabeledContent PrependLabel="MS/MS mass range end:" AppendLabel="Da">
+                                            <TextBox Text="{Binding End.Value}"
+                                                     IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                     ToolTip="You can remove un-wanted mass range."/>
+                                        </ui:LabeledContent>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.Resources>
+                        </ItemsControl>
+                        <ui:LabeledContent PrependLabel="Execute retention time corrections:">
+                            <CheckBox HorizontalAlignment="Left" 
+                                      IsChecked="{Binding Path=ExcuteRtCorrection.Value}" 
+                                      IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}"
+                                      ToolTip="If checked, RT correction wizard is shown after the parameter setup."/>
+                        </ui:LabeledContent>
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox>
+                    <GroupBox.Header>
+                        <TextBlock Text="Isotope recognition" FontStyle="Italic"/>
+                    </GroupBox.Header>
+
+                    <StackPanel>
+                        <ui:LabeledContent PrependLabel="Maximum charged number:">
+                            <TextBox Text="{Binding MaxChargeNumber.Value}"
+                                     IsReadOnly="{Binding IsReadOnly, Mode=OneTime}">
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="For small molecule profiling, 2 is recommended. For proteome or siRNA researches, multiple charged state (8 or more) should be used." />
+                                </ToolTipService.ToolTip>
+                            </TextBox>
+                        </ui:LabeledContent>
+                        <ui:LabeledContent PrependLabel="Consider Cl and Br elements:">
+                            <CheckBox HorizontalAlignment="Left" 
+                                      IsChecked="{Binding IsBrClConsideredForIsotopes.Value}"
+                                      IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}">
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="If checked, the criterion of 'monotonically decreasing ions' is not used for isotope recognitions." />
+                                </ToolTipService.ToolTip>
+                            </CheckBox>
+                        </ui:LabeledContent>
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox>
+                    <GroupBox.Header>
+                        <TextBlock Text="Multithreading" FontStyle="Italic"/>
+                    </GroupBox.Header>
+                    <StackPanel>
+                        <ui:LabeledContent PrependLabel="Number of threads:">
+                            <TextBox Text="{Binding NumberOfThreads.Value}"
+                                     IsReadOnly="{Binding IsReadOnly, Mode=OneTime}">
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="This is one of parameters for peak detections. 1-2 is better for a laptop." />
+                                </ToolTipService.ToolTip>
+                            </TextBox>
+                        </ui:LabeledContent>
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+        </Expander>
+    </Grid>
+</UserControl>

@@ -1,0 +1,135 @@
+﻿<Window x:Class="Rfx.Riken.OsakaUniv.RetentionIndexDictionarySetWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv;assembly=CommonMVVM"
+        xmlns:vm ="clr-namespace:Rfx.Riken.OsakaUniv"
+        Name="RetentionIndexDictionarySetView"
+        Title="Retention index dictionary setting" Height="600" Width="800">
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction
+                    Command="{Binding WindowLoaded}"
+                    CommandParameter="{Binding ElementName=RetentionIndexDictionarySetView}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    
+    <i:Interaction.Behaviors>
+        <local:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
+    </i:Interaction.Behaviors>
+    
+    <Window.DataContext>
+        <vm:RetentionIndexDictionarySetVM />
+    </Window.DataContext>
+    
+    <Window.Resources>
+        <ControlTemplate x:Key="InputErrorTemplate">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+        <Style x:Key="ToolTipErrorStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Pink" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+
+        <DataGrid x:Name="Datagrid_AnalysisFiles" 
+                  ItemsSource="{Binding Path=AnalysisFileVMs, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                  Grid.Row="0" Grid.Column="1" 
+                  ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" 
+                  VerticalAlignment="Stretch" AutoGenerateColumns="False" SelectionMode="Extended" SelectionUnit="CellOrRowHeader" CanUserAddRows="False" 
+                  CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" ClipboardCopyMode="IncludeHeader" 
+                  PreviewKeyDown="datagrid_AnalysisFiles_PreviewKeyDown"
+                  Margin="5,5,5,5" >
+
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+
+            <DataGrid.Columns>
+
+                <DataGridTemplateColumn SortMemberPath="AnalysisFilePath" Width="*" Header="File path" IsReadOnly="False"  ClipboardContentBinding="{Binding Path=AnalysisFilePath}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}" Text="{Binding Path=AnalysisFilePath}" VerticalContentAlignment="Center" IsReadOnly="True" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn SortMemberPath="AnalysisFileName" Width="*" Header="File name" IsReadOnly="False" ClipboardContentBinding="{Binding Path=AnalysisFileName}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}" Text="{Binding Path=AnalysisFileName}" VerticalContentAlignment="Center" IsReadOnly="True" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn SortMemberPath="RiDictionaryFilePath" Width="2*" Header="Carbon-RT(min) dictionary file path" IsReadOnly="False" 
+                                        ClipboardContentBinding="{Binding Path=RiDictionaryFilePath}">
+              
+                    <DataGridTemplateColumn.CellTemplate>
+                    
+                        <DataTemplate>
+                         
+                            <Grid>
+                                
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="15" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBox Name="TextBox_RiFilePath" 
+                                         Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
+                                         Text="{Binding Path=RiDictionaryFilePath, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" 
+                                        Grid.Column="0" VerticalContentAlignment="Center" IsReadOnly="False" HorizontalAlignment="Stretch" Margin="0,0,0,0">
+                                    <TextBox.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Auto fill"
+                                                      Click="MenuItem_AutoFill_Click" />
+                                            <MenuItem Header="Copy"
+                                                      Click="MenuItem_CopyToClipboard" />
+                                            <MenuItem Header="Paste"
+                                                      Click="MenuItem_Paste" />
+                                        </ContextMenu>
+                                    </TextBox.ContextMenu>
+                                </TextBox>
+
+                                <Button Name="Button_Browse" Content=".." VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                                        Grid.Column="1" Command="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.OpenRiFileDialog}" CommandParameter="{Binding Path=AnalysisFilePropertyBean}" />
+
+                            </Grid>
+                               
+                        </DataTemplate>
+                        
+                    </DataGridTemplateColumn.CellTemplate>
+
+                </DataGridTemplateColumn>
+
+            </DataGrid.Columns>
+        </DataGrid>
+
+
+        <Button Name="Button_Cancel" Content="Cancel" Grid.Row="1" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5"
+                Command="{Binding CloseWindow}" CommandParameter="{Binding ElementName=RetentionIndexDictionarySetView}"/>
+        <Button Name="Button_Done" Content="Set" Grid.Row="1" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,85,5"
+                Command="{Binding DictionarySet}" CommandParameter="{Binding ElementName=RetentionIndexDictionarySetView}"/>
+
+    </Grid>
+</Window>

@@ -1,0 +1,107 @@
+﻿<Page x:Class="ChartDrawingUiTest.Behavior.AreaSelectBehaviorTest"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ChartDrawingUiTest.Behavior"
+      xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+      xmlns:ccore="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
+      xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      d:Background="White"
+      Title="AreaSelectBehaviorTest">
+    <Page.DataContext>
+        <local:AreaSelectBehaviorTestViewModel/>
+    </Page.DataContext>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="100"/>
+        </Grid.ColumnDefinitions>
+        <Grid>
+            <Grid.Resources>
+                <Style TargetType="TextBlock" x:Key="GraphTitle">
+                    <Setter Property="FontFamily" Value="Calibri"/>
+                    <Setter Property="FontSize" Value="18"/>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                </Style>
+                <Style TargetType="TextBlock" x:Key="AxisTitle">
+                    <Setter Property="FontFamily" Value="Calibri"/>
+                    <Setter Property="FontStyle" Value="Italic"/>
+                    <Setter Property="FontSize" Value="13"/>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                </Style>
+            </Grid.Resources>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition />
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="15"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="15"/>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Name="GraphTitle"
+                       Text="AreaSelectBehavior test"
+                       IsHitTestVisible="False"
+                       Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"/>
+
+            <Border BorderBrush="Black"
+                    BorderThickness="1,0,0,1"
+                    Grid.Row="1" Grid.Column="2">
+                <Border x:Name="PART_ChartArea"
+                        Background="Whitesmoke"
+                        ccore:ChartBaseControl.HorizontalAxis="{Binding HorizontalAxis}"
+                        ccore:ChartBaseControl.VerticalAxis="{Binding VerticalAxis}"
+                        behavior:ZoomByDragBehavior.IsEnabled="True"
+                        behavior:ZoomByWheelBehavior.IsEnabled="True"
+                        behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True"
+                        behavior:MoveByDragBehavior.IsEnabled="False"
+                        behavior:AreaSelectBehavior.ItemsSource="{Binding Datas}"
+                        behavior:AreaSelectBehavior.HorizontalProperty="X"
+                        behavior:AreaSelectBehavior.VerticalProperty="Y"
+                        behavior:AreaSelectBehavior.SelectedItems="{Binding SelectedItems, Mode=TwoWay}"
+                        ClipToBounds="True">
+                    <chart:LineChartControl ItemsSource="{Binding Datas}"
+                                            HorizontalPropertyName="X"
+                                            VerticalPropertyName="Y"/>
+                </Border>
+            </Border>
+
+            <chart:HorizontalAxisControl x:Name="PART_HorizontalAxis"
+                                        VerticalAxis="{x:Null}"
+                                        Margin="1,0,0,0"
+                                        Grid.Row="2" Grid.RowSpan="2" Grid.Column="2"/>
+            <chart:VerticalAxisControl x:Name="PART_VerticalAxis"
+                                      HorizontalAxis="{x:Null}"
+                                      Margin="0,0,0,1"
+                                      Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
+
+            <TextBlock Name="HorizontalTitle"
+                       IsHitTestVisible="False"
+                       Grid.Row="3" Grid.Column="2"/>
+            <TextBlock Name="VerticalTitle"
+                       IsHitTestVisible="False"
+                       Grid.Row="1" Grid.Column="0">
+                <TextBlock.LayoutTransform>
+                    <RotateTransform Angle="-90" CenterX="0.5" CenterY="0.5"/>
+                </TextBlock.LayoutTransform>
+            </TextBlock>
+        </Grid>
+        <UniformGrid Columns="1"
+                     Grid.Column="1">
+            <Button Content="Stop" Command="{Binding StopCommand}"/>
+            <ListBox ItemsSource="{Binding SelectedItems, Mode=OneWay}"
+                     IsSynchronizedWithCurrentItem="True"/>
+            <ListBox ItemsSource="{Binding SelectedItems/, Mode=OneWay}"
+                     DisplayMemberPath="X"/>
+        </UniformGrid>
+    </Grid>
+</Page>

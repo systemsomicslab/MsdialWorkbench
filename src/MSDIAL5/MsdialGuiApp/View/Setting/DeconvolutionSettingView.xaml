@@ -1,0 +1,80 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Setting.DeconvolutionSettingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             mc:Ignorable="d" 
+             d:Background="White"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:DeconvolutionSettingViewModel}}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="TextBox" BasedOn="{StaticResource ToolTipErrorStyle}">
+                <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <GroupBox BorderThickness="0" Grid.Row="0">
+            <GroupBox.Header>
+                <Label Content="Deconvolution parameters" FontStyle="Italic"/>
+            </GroupBox.Header>
+            <StackPanel Margin="8,0">
+                <ui:LabeledContent PrependLabel="Sigma window value:"
+                                   Style="{StaticResource AlignedContent}"
+                                   ToolTip="Recommend: 0.1-1.0">
+                    <TextBox Text="{Binding SigmaWindowValue.Value}"
+                             IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="MS/MS abundance cut off:"
+                                   AppendLabel="amplitude"
+                                   ToolTip="Recommend: 0-100"
+                                   Style="{StaticResource AlignedContent}">
+                    <TextBox Text="{Binding AmplitudeCutoff.Value}"
+                             IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                </ui:LabeledContent>
+            </StackPanel>
+        </GroupBox>
+
+        <Expander Header="Advanced"
+                  Grid.Row="1"
+                  d:IsExpanded="True">
+
+            <StackPanel Margin="8,0">
+                <ui:LabeledContent PrependLabel="Exclude after precursor ion:"
+                                   Style="{StaticResource AlignedContent}">
+                    <CheckBox IsChecked="{Binding Path=RemoveAfterPrecursor.Value}"
+                              IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
+                              ToolTip="If you want to remove the ions after precursor, please check."/>
+                </ui:LabeledContent>
+
+                <ui:LabeledContent PrependLabel="Keep the isotopic ions until:"
+                                   AppendLabel="Da"
+                                   Style="{StaticResource AlignedContent}">
+                    <TextBox Text="{Binding KeptIsotopeRange.Value}"
+                             IsEnabled="{Binding Path=RemoveAfterPrecursor.Value}"
+                             IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"
+                             ToolTip="Recommend: 0.5-3"/>
+                </ui:LabeledContent>
+
+                <ui:LabeledContent PrependLabel="Keep the isotopic ions w/o MS2Dec:"
+                                   Style="{StaticResource AlignedContent}">
+                    <CheckBox IsChecked="{Binding Path=KeepOriginalPrecurosrIsotopes.Value}"
+                              IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
+                              ToolTip="If you want to keep the original precursor's isotopic ions, please check."/>
+                </ui:LabeledContent>
+            </StackPanel>
+        </Expander>
+    </Grid>
+</UserControl>

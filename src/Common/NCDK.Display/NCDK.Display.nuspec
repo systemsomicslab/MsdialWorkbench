@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>NCDK.Display</id>
+    <version>1.5.6</version>
+    <title>NCDK.Display: Depiction module of NCDK</title>
+    <authors>Kazuya Ujihara</authors>
+    <owners>kazuya</owners>
+    <licenseUrl>https://github.com/kazuyaujihara/NCDK/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/kazuyaujihara/NCDK</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Depiction module of NCDK</description>
+    <releaseNotes>This release is based on https://github.com/cdk/cdk/tree/c76443e0a69a4110c6a0fe65704abccce8a435ff snapshot.</releaseNotes>
+    <copyright>Copyright © 2016-2019 Kazuya Ujihara</copyright>
+    <tags>cdk cheminformatics chemistry toolkit</tags>
+	<frameworkAssemblies>
+      <frameworkAssembly assemblyName="PresentationCore" />
+      <frameworkAssembly assemblyName="PresentationFramework" />
+      <frameworkAssembly assemblyName="System.Windows.Presentation" />
+      <frameworkAssembly assemblyName="WindowsBase" />
+    </frameworkAssemblies>
+    <dependencies>
+      <dependency id="NCDK" version="1.5.6" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin/Release/net461/NCDK.Display.dll" target="lib/net461" />
+    <file src="bin/Release/net461/NCDK.Display.xml" target="lib/net461" />
+  </files>
+</package>

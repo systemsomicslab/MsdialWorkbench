@@ -1,0 +1,8 @@
+﻿<Window x:Class="Rfx.Riken.OsakaUniv.ShortMessageWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Message" Height="100" Width="250">
+    <Grid>
+        <Label Name="Label_MessageTitle" Content="Loading library files..." VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0" />
+    </Grid>
+</Window>

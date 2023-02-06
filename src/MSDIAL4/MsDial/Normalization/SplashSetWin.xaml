@@ -1,0 +1,208 @@
+﻿<Window x:Class="Rfx.Riken.OsakaUniv.SplashSetWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv;assembly=CommonMVVM"
+        xmlns:common="clr-namespace:Riken.Metabolomics.Common.Query;assembly=Common"
+        Name="SplashMixSetView"
+        Title="SPLASH mixture setting window" Height="600" Width="800">
+
+    <!--interaction Behaviors-->
+    <i:Interaction.Behaviors>
+        <local:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
+    </i:Interaction.Behaviors>
+
+    <!--Window resources-->
+    <Window.Resources>
+        <ControlTemplate x:Key="InputErrorTemplate">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+
+        <Style x:Key="ToolTipErrorStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Pink" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <CollectionViewSource
+            x:Key="TargetClassSource"
+            Source="{Binding TargetClasses}" 
+            />
+       
+
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+
+        <Button x:Name="Button_Finish" Content="Finish" 
+                Command="{Binding Finish}" 
+                CommandParameter="{Binding ElementName=SplashMixSetView}"
+                Grid.Row="2" 
+                HorizontalAlignment="Right" VerticalAlignment="Center" Height="25" Width="70" Margin="5,5,80,5" />
+        <Button x:Name="Button_Cancel" Content="Cancel" Click="Button_Cancel_Click" Grid.Row="2" 
+                HorizontalAlignment="Right" VerticalAlignment="Center" Height="25" Width="70" Margin="5,5,5,5" />
+
+        <Label Content="SPLASH products: " Grid.Row="0" Margin="5,7,5,5" />
+        <ComboBox Name="ComboBox_SplashProducts" 
+                  ItemsSource="{Binding SplashProducts}" 
+                  SelectedIndex="{Binding SplashProductID}"
+                  SelectionChanged="ComboBox_SplashProducts_SelectionChanged" 
+                  VerticalContentAlignment="Center"
+                  HorizontalContentAlignment="Left" HorizontalAlignment="Left" 
+                  Width="140"
+                  Height="30" Margin="110,4,5,2.5">
+            <!--<ToolTipService.ToolTip>
+                <ToolTip Content="Linear weighted moving average is recommended." />
+            </ToolTipService.ToolTip>-->
+        </ComboBox>
+
+
+        <Label Content="Concentration unit: " Grid.Row="0" Margin="275,7,5,5" />
+        <ComboBox Name="ComboBox_OutputUnit" 
+                  ItemsSource="{Binding OutputUnits}" 
+                  SelectedIndex="{Binding OutputUnitID}"
+                  SelectionChanged="ComboBox_OutputUnit_SelectionChanged" 
+                  VerticalContentAlignment="Center"
+                  HorizontalContentAlignment="Left" HorizontalAlignment="Left" 
+                  Width="140"
+                  Height="30" Margin="390,4,5,2.5">
+            <!--<ToolTipService.ToolTip>
+                <ToolTip Content="Linear weighted moving average is recommended." />
+            </ToolTipService.ToolTip>-->
+        </ComboBox>
+
+        <Button x:Name="Button_Find" Content="Find" 
+                Command="{Binding Find}" 
+                CommandParameter="{Binding ElementName=SplashMixSetView}"
+                Grid.Row="0" 
+                HorizontalAlignment="Right" VerticalAlignment="Center" Height="25" Width="70" Margin="5,5,5,5" />
+
+
+        <DataGrid x:Name="Datagrid_SplashProperty" 
+                  ItemsSource="{Binding Path=StandardCompounds}" Grid.Row="1" Grid.Column="1"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" 
+                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                  AutoGenerateColumns="False" SelectionMode="Extended" SelectionUnit="CellOrRowHeader" CanUserAddRows="False" CanUserDeleteRows="False" 
+                  CanUserReorderColumns="False" CanUserSortColumns="True" ClipboardCopyMode="ExcludeHeader" 
+                  PreviewKeyDown="Datagrid_SplashProperty_PreviewKeyDown" 
+                  CurrentCellChanged="Datagrid_SplashProperty_CurrentCellChanged" 
+                  Margin="5,5,5,5" >
+
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+
+            <DataGrid.Columns>
+
+                <DataGridTemplateColumn SortMemberPath="StandardName" Width="*" Header="Metabolite name" IsReadOnly="False" ClipboardContentBinding="{Binding Path=StandardName}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
+                                     Text="{Binding Path=StandardName, ValidatesOnDataErrors=True, 
+                                     UpdateSourceTrigger=LostFocus, NotifyOnValidationError=True}"
+                                     IsReadOnly="False" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <!--<DataGridTemplateColumn SortMemberPath="MolecularWeight" Width="*" Header="Molecular weight" IsReadOnly="False">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
+                                     Text="{Binding Path=MolecularWeight}" 
+                                     VerticalContentAlignment="Center"
+                                     IsReadOnly="False" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>-->
+
+                <DataGridTemplateColumn SortMemberPath="Concentration" Width="*" Header="Concentration" IsReadOnly="False" ClipboardContentBinding="{Binding Path=Concentration}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
+                                     Text="{Binding Path=Concentration}" 
+                                     VerticalContentAlignment="Center"
+                                     IsReadOnly="False" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridComboBoxColumn Width="*" Header="Target class" 
+                                        ItemsSource="{Binding Source={StaticResource TargetClassSource}}" 
+                                        SelectedValueBinding="{Binding Path=TargetClass}" 
+                                        IsReadOnly="False" />
+
+                <!--<DataGridTemplateColumn SortMemberPath="DilutionRate" Width="*" Header="x fold" IsReadOnly="False">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+
+                            <TextBox Name="TextBox_DilutionRate" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
+                                     VerticalContentAlignment="Center" IsReadOnly="False">
+
+                                <TextBox.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Auto fill"
+                                                      Click="MenuItem_AutoFill_Click" />
+                                        <MenuItem Header="Copy"
+                                                      Click="MenuItem_CopyToClipboard" />
+                                        <MenuItem Header="Paste"
+                                                      Click="MenuItem_Paste" />
+                                    </ContextMenu>
+                                </TextBox.ContextMenu>
+
+                                <TextBox.Text>
+                                    <Binding Path="DilutionRate" 
+                                             ValidatesOnDataErrors="True" 
+                                             UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveDoubleNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>-->
+
+
+                <DataGridTemplateColumn SortMemberPath="PeakID" Width="*" Header="Alignment ID" IsReadOnly="False" ClipboardContentBinding="{Binding Path=PeakID}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+
+                            <TextBox Name="TextBox_IsId" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
+                                     VerticalContentAlignment="Center" IsReadOnly="False">
+
+                                <TextBox.Text>
+                                    <Binding Path="PeakID" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus"
+                                             NotifyOnValidationError="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveIntNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+    </Grid>
+</Window>

@@ -1,0 +1,53 @@
+﻿<Application x:Class="CompMs.App.Msdial.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+             xmlns:behaviors="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             StartupUri="View/Core/MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Icons.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style TargetType="DataGrid">
+                <Setter Property="behaviors:DataGridCommitBehavior.Enable" Value="True"/>
+                <Setter Property="behaviors:DataGridPasteBehavior.Enable" Value="True"/>
+                <Setter Property="behaviors:DataGridIsEdittingBehavior.Enabled" Value="True"/>
+            </Style>
+
+            <ControlTemplate x:Key="InputErrorTemplate">
+                <DockPanel>
+                    <TextBlock Text="{Binding AdornedElement.(Validation.Errors)/ErrorContent, ElementName=adornedElem}" Foreground="Red" FontSize="9" DockPanel.Dock="Bottom"/>
+                    <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
+                    <AdornedElementPlaceholder x:Name="adornedElem"/>
+                </DockPanel>
+            </ControlTemplate>
+            <Style x:Key="ToolTipErrorStyle" TargetType="{x:Type TextBox}">
+                <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+                <Style.Triggers>
+                    <Trigger Property="Validation.HasError" Value="True">
+                        <Setter Property="ToolTip" Value="{Binding (Validation.Errors)/ErrorContent, RelativeSource={RelativeSource Self}}" />
+                        <Setter Property="BorderBrush" Value="Pink" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="TextBox" BasedOn="{StaticResource ToolTipErrorStyle}"/>
+            
+            <Style x:Key="GeneralToolTipErrorStyle" TargetType="{x:Type ContentControl}">
+                <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+                <Style.Triggers>
+                    <Trigger Property="Validation.HasError" Value="True">
+                        <Setter Property="ToolTip" Value="{Binding (Validation.Errors)/ErrorContent, RelativeSource={RelativeSource Self}}"/>
+                        <Setter Property="BorderBrush" Value="Pink"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="ContentControl" BasedOn="{StaticResource GeneralToolTipErrorStyle}"/>
+           
+            <SolidColorBrush x:Key="MainThemeColor" Color="LightBlue" PresentationOptions:Freeze="True"/>
+            <SolidColorBrush x:Key="SubThemeColor" Color="DarkGreen" PresentationOptions:Freeze="True"/>
+            <SolidColorBrush x:Key="AccentColor" Color="DeepPink" PresentationOptions:Freeze="True"/>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

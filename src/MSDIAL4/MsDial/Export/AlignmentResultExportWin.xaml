@@ -1,0 +1,187 @@
+﻿<Window x:Class="Rfx.Riken.OsakaUniv.AlignmentResultExportWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv;assembly=CommonMVVM"
+        Title="Alignment result export" Height="610" Width="450" Loaded="Window_Loaded">
+    <i:Interaction.Behaviors>
+        <local:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
+    </i:Interaction.Behaviors>
+    <Window.Resources>
+        <ControlTemplate x:Key="InputErrorTemplate">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+        <Style x:Key="ToolTipErrorStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Pink" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="260"/>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+
+        <Label Content="Directory: " VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0" />
+        <TextBox Name="TextBox_ExportFolderPath" Text="{Binding Path=ExportFolderPath}" 
+                 Grid.Row="0" HorizontalAlignment="Stretch" 
+                 VerticalAlignment="Stretch"
+                 VerticalContentAlignment="Center"
+                 Margin="70,5,80,5" />
+        <Button Name="Button_ExportFolderPath" Content="Browse" Click="Button_ExportFolderPath_Click" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="70" Height="25" Margin="5,5,5,5" />
+
+        <Label Content="Export option" Grid.Row="1" FontStyle="Italic" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,0,0" />
+
+        <Grid Grid.Row="1" Margin="0, 25, 0, 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Label Content="File:" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,5" />
+            <ComboBox Name="ComboBox_AlignmentFileName" Height="25" ItemsSource="{Binding Path=AlignmentFiles}" 
+                      SelectedIndex="{Binding Path=SelectedAlignmentFileID}" SelectionChanged="ComboBox_AlignmentFileName_SelectionChanged" 
+                      DisplayMemberPath="FileName" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="40,5,10,0" />
+
+            <!--<CheckBox Name="Checbox_RawDatamatrix" Content="Raw data matrix (Height)" Grid.Column="0" Checked="Checbox_RawDatamatrix_Checked" Unchecked="Checbox_RawDatamatrix_Unchecked" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,35,0,5" IsChecked="{Binding RawDatamatrix}" />
+            <CheckBox Name="Checbox_NormalizedDatamatrix" Content="Normalized data matrix" Grid.Column="0"  Checked="Checbox_NormalizedDatamatrix_Checked" Unchecked="Checbox_NormalizedDatamatrix_Unchecked" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,60,0,5"  IsChecked="{Binding NormalizedDatamatrix}" />
+            <CheckBox Name="Checbox_PeakAreaMatrix" Content="Raw data matrix (Area)" Grid.Column="0"  Checked="Checbox_PeakAreaMatrix_Checked" Unchecked="Checbox_PeakAreaMatrix_Unchecked" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,85,0,5" />
+            <CheckBox Name="Checbox_ExportAsMzTabM" Content="*Export as mztab-M" Grid.Column="0"  Checked="Checbox_ExportAsMzTabM_Checked" Unchecked="Checbox_ExportAsMzTabM_Unchecked" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,110,0,5" IsChecked="False" />
+             --><!--<CheckBox Name="Checbox_MolecularNetworkingEdges" Content="Edges for molecular networking" Grid.Column="0"  Checked="Checbox_MolecularNetworkingEdges_Checked" Unchecked="Checbox_MolecularNetworkingEdges_Unchecked" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,160,0,5" IsChecked="False" />--><!--
+
+            <CheckBox Name="Checbox_PeakIDmatrix" Content="Peak ID matrix" Grid.Column="1" Checked="Checbox_PeakIDmatrix_Checked" Unchecked="Checbox_PeakIDmatrix_Unchecked" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,35,0,5" IsChecked="False" />
+            <CheckBox Name="Checbox_RetentionTimematrix" Content="Retention time matrix" Grid.Column="1"  Checked="Checbox_RetentionTimematrix_Checked" Unchecked="Checbox_RetentionTimematrix_Unchecked" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,60,0,5"  IsChecked="False" />
+            <CheckBox Name="Checbox_MassMatrix" Content="m/z matrix" Grid.Column="1"  Checked="Checbox_MassMatrix_Checked" Unchecked="Checbox_MassMatrix_Unchecked" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,85,0,5" IsChecked="False" />
+            <CheckBox Name="Checbox_MsmsIncludedMatrix" Content="MS/MS included matrix" Grid.Column="1"  Checked="Checbox_MsmsIncluded_Checked" Unchecked="Checbox_MsmsIncluded_Unchecked" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,110,0,5" IsChecked="False" />
+            <CheckBox Name="Checbox_GnpsExport" Content="GNPS export" Grid.Column="1"  Checked="Checbox_GnpsExport_Checked" Unchecked="Checbox_GnpsExport_Unchecked" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,135,0,5" IsChecked="False" />
+            <CheckBox Name="Checbox_SnExport" Content="S/N matrix export" Grid.Column="1"  
+                      Checked="Checbox_SnExport_Checked" Unchecked="Checbox_SnExport_Unchecked" 
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,160,0,5" IsChecked="False" />
+            <CheckBox Name="Checbox_RepresentativeSpectra" Content="Representative spectra" Grid.Column="1"  
+                      Checked="Checbox_RepresentativeSpectra_Checked" Unchecked="Checbox_RepresentativeSpectra_Unchecked"
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,185,0,5" IsChecked="False" />
+            <CheckBox Name="Checbox_Parameter" Content="Parameter" Grid.Column="1"  
+                      Checked="Checbox_Parameter_Checked" Unchecked="Checbox_Parameter_Unchecked" 
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,210,0,5" IsChecked="False" />-->
+
+            <CheckBox Name="Checbox_RawDatamatrix" Content="Raw data matrix (Height)" Grid.Column="0" 
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,35,0,5" IsChecked="{Binding RawDatamatrix}" />
+            <CheckBox Name="Checbox_NormalizedDatamatrix" Content="Normalized data matrix" Grid.Column="0" 
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,60,0,5"  IsChecked="{Binding NormalizedDatamatrix}" />
+            <CheckBox Name="Checbox_PeakAreaMatrix" Content="Raw data matrix (Area)" Grid.Column="0" 
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,85,0,5" IsChecked="{Binding PeakareaMatrix}" />
+            <CheckBox Name="Checbox_ExportAsMzTabM" Content="*Export as mztab-M" Grid.Column="0" 
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,110,0,5" IsChecked="{Binding IsExportAsMzTabM}" />
+            <CheckBox Name="Checbox_PeakIDmatrix" Content="Peak ID matrix" Grid.Column="1" 
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,35,0,5" IsChecked="{Binding PeakIdMatrix}" />
+            <CheckBox Name="Checbox_RetentionTimematrix" Content="Retention time matrix" Grid.Column="1" 
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,60,0,5"  IsChecked="{Binding RetentionTimeMatrix}" />
+            <CheckBox Name="Checbox_MassMatrix" Content="m/z matrix" Grid.Column="1" 
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,85,0,5" IsChecked="{Binding MzMatrix}" />
+            <CheckBox Name="Checbox_MsmsIncludedMatrix" Content="MS/MS included matrix" Grid.Column="1" 
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,110,0,5" IsChecked="{Binding MsmsIncludedMatrix}" />
+            <CheckBox Name="Checbox_GnpsExport" Content="GNPS export" Grid.Column="1" 
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,135,0,5" IsChecked="{Binding GnpsExport}" />
+            <CheckBox Name="Checbox_SnExport" Content="S/N matrix export" Grid.Column="1"  
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,160,0,5" IsChecked="{Binding SnMatrixExport}" />
+            <CheckBox Name="Checbox_RepresentativeSpectra" Content="Representative spectra" Grid.Column="1"  
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,185,0,5" IsChecked="{Binding RepresentativeSpectra}" />
+            <CheckBox Name="Checbox_Parameter" Content="Parameter" Grid.Column="1"  
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,210,0,5" IsChecked="{Binding Parameter}" />
+
+        </Grid>
+
+        <!--<Grid Grid.Row="2">
+            <Label Content="Filtered by blank peaks (must be checked in alignment parameter setting)" 
+                   FontStyle="Italic" Grid.Column="0" 
+                   HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,5" />
+            <CheckBox Name="Checbox_BlankFilter"
+                      Content="Filtering by the ion abundances of blank samples" 
+                      Checked="Checbox_FilteringByBlank_Checked" 
+                      Unchecked="Checbox_FilteringByBlank_Unchecked" 
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,35,5,5" IsChecked="{Binding Parameter}" />
+        </Grid>
+
+        <Grid Grid.Row="3">
+            <Label Content="Missing value option" 
+                   FontStyle="Italic" Grid.Column="0" 
+                   HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,5" />
+            <CheckBox Name="Checbox_IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples"
+                      Content="Replace zero values with 1/10 of minimum peak height over all samples" 
+                      Checked="Checbox_ReplaceZeroToHalfValueOverSamples_Checked" 
+                      Unchecked="Checbox_ReplaceZeroToHalfValueOverSamples_Unchecked" 
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,35,5,5" IsChecked="{Binding Parameter}" />
+        </Grid>-->
+
+        <Grid Grid.Row="2">
+            <Label Content="Filtered by blank peaks (must be checked in alignment parameter setting)" 
+                   FontStyle="Italic" Grid.Column="0" 
+                   HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,5" />
+            <CheckBox Name="Checbox_BlankFilter"
+                      Content="Filtering by the ion abundances of blank samples" 
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,35,5,5" IsChecked="{Binding BlankFilter}" />
+        </Grid>
+
+        <Grid Grid.Row="3">
+            <Label Content="Missing value option" 
+                   FontStyle="Italic" Grid.Column="0" 
+                   HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,5" />
+            <CheckBox Name="Checbox_IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples"
+                      Content="Replace zero values with 1/10 of minimum peak height over all samples" 
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,35,5,5" IsChecked="{Binding IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples}" />
+        </Grid>
+
+
+        <Grid Grid.Row="4">
+            <Label Content="Isotope labeled tracking option" FontStyle="Italic" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,5" />
+            <Label Content="Target file" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="300,5,5,5" />
+            <!--<CheckBox Name="Checbox_FilteringForIsotopeTrackResult" Content="Filtering by the result of isotope labeled tracking" 
+                      Checked="Checbox_FilteringForIsotopeTrackResult_Checked" Unchecked="Checbox_FilteringForIsotopeTrackResult_Unchecked"
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,35,5,5"
+                      IsChecked="False" />-->
+            <CheckBox Name="Checbox_FilteringForIsotopeTrackResult" Content="Filtering by the result of isotope labeled tracking" 
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,35,5,5"
+                      IsChecked="{Binding IsFilteringOptionForIsotopeLabeledTracking}" />
+            <ComboBox Name="ComboBox_AnalysisFiles" Height="25"
+                      ItemsSource="{Binding Path=AnalysisFiles}" 
+                      SelectedIndex="{Binding Path=SelectedAnalysisFileID}"
+                      DisplayMemberPath="AnalysisFilePropertyBean.AnalysisFileName" 
+                      SelectionChanged="ComboBox_AnalysisFileName_SelectionChanged" 
+                      HorizontalAlignment="Right" VerticalAlignment="Top" Width="130" Margin="40,30,10,0" />
+        </Grid>
+      
+        <!--<Label Content="Sample axis deconvolution parameters" IsEnabled="False" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,0,0" />
+        <Label Content="Mass tol." Grid.Row="2" IsEnabled="False" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5,0,0,5" />-->
+
+        <!--<TextBox Name="Textbox_MassTolerance" IsEnabled="False" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="70" Height="25" Margin="70, 5, 5, 6">
+            <TextBox.Text>
+                <Binding Path="MassTolerance" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                    <Binding.ValidationRules>
+                        <local:PositiveDoubleNumericValidation />
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>-->
+
+        <Label Content="Export format:" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center" />
+        <ComboBox Name="ComboBox_ExportFormat" Grid.Row="5" ItemsSource="{Binding}" SelectionChanged="ComboBox_ExportFormat_SelectionChanged" HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Width="130" Margin="90, 0, 0, 0" />
+
+        <!--<Label Content="Spectra type:" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="200,0,0,0" />
+        <ComboBox Name = "ComboBox_MassSpecType" Grid.Row ="5" ItemsSource="{Binding}" SelectionChanged="ComboBox_MassSpecType_SelectionChanged" HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Width="90"  Margin="290,0,0,0" />-->
+
+        <Button Name="Button_Cancel" Content="Cancel" Click="Button_Cancel_Click" Grid.Row="6" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5" />
+        <Button Name="Button_Export" Content="Export" Command="{Binding Path=OkCommand}" Grid.Row="6" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,85,5" />
+    </Grid>
+</Window>

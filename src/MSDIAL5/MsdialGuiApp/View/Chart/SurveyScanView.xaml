@@ -1,0 +1,112 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Chart.SurveyScanView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
+             xmlns:design="clr-namespace:CompMs.Graphics.Design;assembly=ChartDrawing"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
+             d:DataContext="{d:DesignInstance Type=vm:SurveyScanViewModel}"
+             d:DesignHeight="400" d:DesignWidth="200">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="28"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Label Content="Survey scan (MS1) spectrum"
+               Foreground="Black" Background="{StaticResource MainThemeColor}"
+               HorizontalContentAlignment="Center" VerticalAlignment="Top"
+               Grid.Row="0"/>
+        <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis}"
+                          VerticalAxis="{Binding VerticalAxis}"
+                          GraphTitle="{Binding GraphTitle.Value}"
+                          HorizontalTitle="{Binding HorizontalTitle.Value}"
+                          Background="WhiteSmoke"
+                          BorderBrush="Black"
+                          Style="{StaticResource RotateLeftMulti}"
+                          Grid.Row="1">
+            <chart:MultiChart.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Save image using dialog"
+                              Command="{x:Static graphio:SaveImageAsWithDialogCommand.Instance}"
+                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    <MenuItem Header="Save image as...">
+                        <MenuItem Header="Save as emf"
+                                  Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Save as png"
+                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                    <MenuItem Header="Copy image using dialog"
+                              Command="{x:Static graphio:CopyImageAsWithDialogCommand.Instance}"
+                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    <MenuItem Header="Copy image as...">
+                        <MenuItem Header="Copy as emf"
+                                  Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Copy as png"
+                                  Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                </ContextMenu>
+            </chart:MultiChart.ContextMenu>
+            <chart:MultiChart.VerticalTitle>
+                <MultiBinding StringFormat="{}{0}({1})">
+                    <Binding Path="VerticalTitle.Value"/>
+                    <Binding Path="VerticalAxis.UnitLabel"/>
+                </MultiBinding>
+            </chart:MultiChart.VerticalTitle>
+            <!--
+            <StackPanel VerticalAlignment="Center">
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SurveyScanLoaded.Value, Mode=OneWay}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                <TextBlock Text="Loading ..." HorizontalAlignment="Center" FontSize="16" Margin="16"/>
+                <ProgressBar IsIndeterminate="True" HorizontalAlignment="Center" Width="160" Height="16"/>
+            </StackPanel>
+            -->
+            <chart:LineSpectrumControlSlim ItemsSource="{Binding Spectrum.Value, Mode=OneWay}"
+                                           DataType="{x:Type do:SpectrumPeakWrapper}"
+                                           HorizontalProperty="{Binding HorizontalProperty.Value}"
+                                           VerticalProperty="{Binding VerticalProperty.Value}"
+                                           LineThickness="1">
+                <chart:LineSpectrumControlSlim.LineBrush>
+                    <design:ConstantBrushMapper Brush="Blue"/>
+                </chart:LineSpectrumControlSlim.LineBrush>
+            </chart:LineSpectrumControlSlim>
+            <chart:Annotator ItemsSource="{Binding Spectrum.Value}"
+                             HorizontalPropertyName="{Binding HorizontalProperty.Value}"
+                             VerticalPropertyName="{Binding VerticalProperty.Value}"
+                             LabelPropertyName="Mass"
+                             OrderingPropertyName="Intensity"
+                             Brush="Black"
+                             Format="N4"
+                             Overlap="Horizontal,Direct"
+                             ClipToBounds="True"
+                             IsHitTestVisible="False"/>
+        </chart:MultiChart>
+    </Grid>
+</UserControl>

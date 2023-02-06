@@ -1,0 +1,114 @@
+﻿<Window x:Class="Rfx.Riken.OsakaUniv.QuantmassBrowser"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv;assembly=CommonMVVM"
+        xmlns:common="clr-namespace:Riken.Metabolomics.Common.Query;assembly=Common"
+        mc:Ignorable="d"
+        Name="QuantmassBrowserView"
+        Closing="Closing_Method"
+        Title="Quantmass browser" Height="680" Width="1074">
+
+    <!--interaction Behaviors-->
+    <i:Interaction.Behaviors>
+        <local:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
+    </i:Interaction.Behaviors>
+
+    <!--Window resources-->
+    <Window.Resources>
+        <ControlTemplate x:Key="InputErrorTemplate">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+
+        <Style x:Key="ToolTipErrorStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Pink" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+      
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+
+        <Button x:Name="Button_Update" Content="Update" 
+                Command="{Binding Update}" 
+                CommandParameter="{Binding ElementName=QuantmassBrowserView}"
+                Grid.Row="1" 
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Height="25" 
+                Width="70" Margin="5,5,80,5" />
+
+        <Button x:Name="Button_Cancel" 
+                Content="Cancel" 
+                Command="{Binding Cancel}" 
+                CommandParameter="{Binding ElementName=QuantmassBrowserView}"
+                Grid.Row="1"
+                HorizontalAlignment="Right" 
+                VerticalAlignment="Center" 
+                Height="25" Width="70"
+                Margin="5,5,5,5" />
+
+
+        <DataGrid x:Name="DataGrid_RawData" 
+                  ItemsSource="{Binding Path=Source}" 
+                  SelectedItem="{Binding Path=SelectedData}"
+                  Grid.Row="0" 
+                  ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                  ScrollViewer.HorizontalScrollBarVisibility="Auto" 
+                  HorizontalAlignment="Stretch" 
+                  VerticalAlignment="Stretch" 
+                  AutoGenerateColumns="False" 
+                  SelectionMode="Extended" 
+                  SelectionUnit="FullRow" 
+                  CanUserAddRows="False" 
+                  CanUserDeleteRows="False" 
+                  CanUserReorderColumns="False" 
+                  CanUserSortColumns="True" 
+                  ClipboardCopyMode="ExcludeHeader"
+                  Margin="5,5,5,5" >
+      
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+
+            <DataGrid.Columns>
+
+                <DataGridTextColumn Header="ID" Width="*" Binding="{Binding Path=AlignmentPropertyBean.AlignmentID}" IsReadOnly="True" />
+                <DataGridTextColumn Header="Retention index" Width="*" Binding="{Binding Path=AlignmentPropertyBean.CentralRetentionIndex, StringFormat=0.00}" IsReadOnly="True" />
+                <DataGridTextColumn Header="RT(min)" Width="*" Binding="{Binding Path=AlignmentPropertyBean.CentralRetentionTime, StringFormat=0.00}" IsReadOnly="True" />
+                <DataGridTextColumn Header="Metabolite name" Width="*" Binding="{Binding Path=AlignmentPropertyBean.MetaboliteName}" IsReadOnly="True" />
+              
+                <DataGridTemplateColumn SortMemberPath="QuantMass" Width="*" Header="Quant mass" IsReadOnly="False">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
+                                     Text="{Binding Path=AlignmentPropertyBean.QuantMass, ValidatesOnDataErrors=True, UpdateSourceTrigger=LostFocus, NotifyOnValidationError=True}"  
+                                     IsReadOnly="False" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTextColumn Header="MSP ID" Width="*" Binding="{Binding Path=AlignmentPropertyBean.LibraryID}" IsReadOnly="True" />
+
+            </DataGrid.Columns>
+        </DataGrid>
+
+    </Grid>
+</Window>

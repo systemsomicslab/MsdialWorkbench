@@ -1,0 +1,196 @@
+﻿<Window x:Class="CompMs.App.SpectrumViewer.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:rp="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
+        xmlns:local="clr-namespace:CompMs.App.SpectrumViewer.View"
+        xmlns:vm="clr-namespace:CompMs.App.SpectrumViewer.ViewModel"
+        xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
+        xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+        xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+        mc:Ignorable="d"
+        Background="Black"
+        AllowDrop="True"
+        behavior:SuppressContextMenuBehavior.IsEnabled="True"
+        d:DataContext="{d:DesignInstance Type={x:Type vm:MainViewModel}}"
+        x:Name="Root"
+        Title="MainWindow" Height="800" Width="1200">
+    <WindowChrome.WindowChrome>
+        <WindowChrome GlassFrameThickness="1" UseAeroCaptionButtons="False" CaptionHeight="24"/>
+    </WindowChrome.WindowChrome>
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/View/ViewTemplates.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <Pen x:Key="TickColor" Brush="White" Thickness="2" PresentationOptions:Freeze="True"/>
+            <DataTemplate x:Key="ContentTabHeader"
+                          DataType="{x:Type vm:SplitSpectrumsViewModel}">
+                <StackPanel Orientation="Horizontal">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Drop">
+                            <rp:EventToReactiveCommand Command="{Binding DropCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    <TextBlock Text="{Binding Name.Value}"/>
+                    <Button Content="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="12"
+                            Command="{Binding CloseCommand, Mode=OneTime}"/>
+                </StackPanel>
+            </DataTemplate>
+            <DataTemplate x:Key="ContentTabItem"
+                          DataType="{x:Type vm:SplitSpectrumsViewModel}">
+                <ContentControl Content="{Binding}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Drop">
+                            <rp:EventToReactiveCommand Command="{Binding DropCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ContentControl>
+            </DataTemplate>
+            <DataTemplate x:Key="NewItemTabHeader">
+                <Button Content="+"
+                        Command="{Binding DataContext.NewSpectrumCommand, ElementName=Root}"/>
+            </DataTemplate>
+            <DataTemplate x:Key="NewItemTabItem">
+                <Grid/>
+            </DataTemplate>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.ColumnSpan="2" Grid.Row="0" Grid.Column="0">
+            <Button Content="x" Command="Close"
+                    Width="24" Height="24"
+                    Background="Red" Foreground="White"
+                    BorderThickness="0"
+                    HorizontalAlignment="Right"
+                    WindowChrome.IsHitTestVisibleInChrome="True"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <TabControl ItemsSource="{Binding ScanCollections}"
+                        SelectedItem="{Binding ScanCollection.Value}"
+                        Grid.Column="0">
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Name.Value}"/>
+                            <Button Content="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="12"
+                                    Command="{Binding CloseCommand, Mode=OneTime}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+            </TabControl>
+
+            <GridSplitter Width="2" Grid.Column="0" VerticalAlignment="Stretch"/>
+
+            <TabControl ItemsSource="{Binding ViewModels}"
+                        SelectedItem="{Binding ViewModel.Value}"
+                        Background="Transparent"
+                        Grid.Column="2">
+                <TabControl.ItemTemplateSelector>
+                    <local:AddItemTemplateSelector ContentTemplate="{StaticResource ContentTabHeader}"
+                                                   NewItemTemplate="{StaticResource NewItemTabHeader}"/>
+                </TabControl.ItemTemplateSelector>
+                <TabControl.ContentTemplateSelector>
+                    <local:AddItemTemplateSelector ContentTemplate="{StaticResource ContentTabItem}"
+                                                   NewItemTemplate="{StaticResource NewItemTabItem}"/>
+                </TabControl.ContentTemplateSelector>
+            </TabControl>
+        </Grid>
+
+        <StackPanel x:Name="menu" Grid.Row="1" Grid.Column="0">
+            <StackPanel.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Width" Value="40"/>
+                    <Setter Property="Height" Value="40"/>
+                    <Setter Property="Margin" Value="0,4"/>
+                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Foreground" Value="Black"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+                <Style TargetType="ToggleButton">
+                    <Setter Property="Width" Value="40"/>
+                    <Setter Property="Height" Value="40"/>
+                    <Setter Property="Margin" Value="0,4"/>
+                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Foreground" Value="Black"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Resources>
+            <i:Interaction.Triggers>
+                <i:DataTrigger Binding="{Binding IsExpanded.Value}" Value="True">
+                    <i:DataTrigger.Actions>
+                        <i:ControlStoryboardAction ControlStoryboardOption="Play">
+                            <i:ControlStoryboardAction.Storyboard>
+                                <Storyboard>
+                                    <DoubleAnimation From="40" To="200" Duration="0:0:0.2"
+                                                     Storyboard.TargetName="menu"
+                                                     Storyboard.TargetProperty="Width">
+                                        <DoubleAnimation.EasingFunction>
+                                            <ExponentialEase Exponent="2" EasingMode="EaseInOut"/>
+                                        </DoubleAnimation.EasingFunction>
+                                    </DoubleAnimation>
+                                </Storyboard>
+                            </i:ControlStoryboardAction.Storyboard>
+                        </i:ControlStoryboardAction>
+                    </i:DataTrigger.Actions>
+                </i:DataTrigger>
+                <i:DataTrigger Binding="{Binding IsExpanded.Value}" Value="False">
+                    <i:DataTrigger.Actions>
+                        <i:ControlStoryboardAction ControlStoryboardOption="Play">
+                            <i:ControlStoryboardAction.Storyboard>
+                                <Storyboard>
+                                    <DoubleAnimation From="200" To="40" Duration="0:0:0.2"
+                                                     Storyboard.TargetName="menu"
+                                                     Storyboard.TargetProperty="Width">
+                                        <DoubleAnimation.EasingFunction>
+                                            <ExponentialEase Exponent="2" EasingMode="EaseInOut"/>
+                                        </DoubleAnimation.EasingFunction>
+                                    </DoubleAnimation>
+                                </Storyboard>
+                            </i:ControlStoryboardAction.Storyboard>
+                        </i:ControlStoryboardAction>
+                    </i:DataTrigger.Actions>
+                </i:DataTrigger>
+            </i:Interaction.Triggers>
+            <ToggleButton Content="&#xE700;" FontFamily="Segoe MDL2 Assets" FontSize="32"
+                          IsChecked="{Binding IsExpanded.Value}"/>
+            <Button Content="&#xE8E5; Load" FontFamily="Segoe MDL2 Assets" FontSize="32"
+                    Command="Open"/>
+            <Button Content="&#xEB42; Lipid parser" FontFamily="Segoe MDL2 Assets" FontSize="32"
+                    Command="{Binding AddLipidReferenceCollectionCommand, Mode=OneTime}"/>
+            <Button Content="&#xE70F; Edit spectrum generator" FontFamily="Segoe MDL2 Assets" FontSize="32"
+                    Command="{Binding NewGeneratorEditorCommand, Mode=OneTime}"/>
+        </StackPanel>
+    </Grid>
+</Window>

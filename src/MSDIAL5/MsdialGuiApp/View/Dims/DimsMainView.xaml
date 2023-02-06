@@ -1,0 +1,460 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Dims.DimsMainView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Dims"
+             xmlns:commonview="clr-namespace:CompMs.App.Msdial.View.Core"
+             xmlns:behavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
+             xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
+             xmlns:chartvm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+             xmlns:search="clr-namespace:CompMs.App.Msdial.View.Search"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
+             xmlns:info="clr-namespace:CompMs.App.Msdial.ViewModel.Information"
+             xmlns:infoview="clr-namespace:CompMs.App.Msdial.View.Information"
+             mc:Ignorable="d" 
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
+             Name="MainControl"
+             MouseRightButtonDown="MainControl_MouseRightButtonDown"
+             ContextMenuOpening="MainControl_ContextMenuOpening"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:DimsMethodViewModel}}"
+             d:DesignHeight="775" d:DesignWidth="1280">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <!--
+            <ContextMenu x:Key="menuReverseMassSpectrogram">
+                <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
+                <MenuItem Header="Copy image as.." Click="contextMenu_CopyImageAs_Click" />
+                <MenuItem Header="Save spectra table as.." Click="contextMenu_SaveSpectraTableAs_Click" />
+                <MenuItem Header="Copy spectra table as.." Click="contextMenu_CopySpectraTableAs_Click" />
+                <MenuItem Header="Save image as emf and png" Click="contextMenu_SaveSpectraAsUserSettingFormat_Click" />
+            </ContextMenu>
+
+            <ContextMenu x:Key="menuMs2Chromatogram">
+                <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
+                <MenuItem Header="Copy image as.." Click="contextMenu_CopyImageAs_Click" />
+                <MenuItem Header="Save data table as.." Click="contextMenu_SaveChromatogramTableAs_Click" />
+            </ContextMenu>
+
+            <ContextMenu x:Key="menuRawSpectrogram">
+                <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
+                <MenuItem Header="Copy image as.." Click="contextMenu_CopyImageAs_Click" />
+                <MenuItem Header="Save spectra table as.." Click="contextMenu_SaveSpectraTableAs_Click" />
+                <MenuItem Header="Copy spectra table as.." Click="contextMenu_CopySpectraTableAs_Click" />
+                <MenuItem Header="Save image as emf and png" Click="contextMenu_SaveSpectraAsUserSettingFormat_Click" />
+            </ContextMenu>
+
+            <ContextMenu x:Key="menuDeconvolutedSpectrogram">
+                <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
+                <MenuItem Header="Copy image as.." Click="contextMenu_CopyImageAs_Click" />
+                <MenuItem Header="Save spectra table as.." Click="contextMenu_SaveSpectraTableAs_Click" />
+                <MenuItem Header="Copy spectra table as.." Click="contextMenu_CopySpectraTableAs_Click" />
+                <MenuItem Header="Save image as emf and png" Click="contextMenu_SaveSpectraAsUserSettingFormat_Click" />
+            </ContextMenu>
+
+            <ContextMenu x:Key="menuRepresentativeSpectrogram">
+                <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
+                <MenuItem Header="Copy image as.." Click="contextMenu_CopyImageAs_Click" />
+                <MenuItem Header="Save spectra table as.." Click="contextMenu_SaveRepresentativeSpectraTableAs_Click" />
+                <MenuItem Header="Copy spectra table as.." Click="contextMenu_CopyRepresentativeSpectraTableAs_Click" />
+                <MenuItem Header="Save image as emf and png" Click="contextMenu_SaveSpectraAsUserSettingFormat_Alignment_Click" />
+            </ContextMenu>
+
+            <ContextMenu x:Key="menuEicChromatogram">
+                <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
+                <MenuItem Header="Copy image as.." Click="contextMenu_CopyImageAs_Click" />
+                <MenuItem Header="Save data table as.." Click="contextMenu_SaveChromatogramTableAs_Click" />
+                <MenuItem Header="Browse smoother and baseline correction result" Click="contextMenu_BrowseSmootherBaselineCorrectionResult_Click" />
+            </ContextMenu>
+
+            <ContextMenu x:Key="menuBarChart">
+                <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
+                <MenuItem Header="Copy image as.." Click="contextMenu_CopyImageAs_Click" />
+                <MenuItem Header="Save data table as.." Click="contextMenu_SaveChromatogramTableAs_Click" />
+                <MenuItem Header="Copy variables to clipboard.." Click="contextMenu_CopyVariablesToClipboard_Click" />
+                <MenuItem Header="Change data source to..">
+                    <MenuItem Header="Original peak height (OH)" Click="contextMenu_BarChartDisplayMode_OriginalHeight_Click" />
+                    <MenuItem Header="Normalized peak height (NH)" Click="contextMenu_BarChartDisplayMode_NormalizedHeight_Click" IsEnabled="{Binding Path=isNormalized}"/>
+                    <MenuItem Header="Original peak area (OA)" Click="contextMenu_BarChartDisplayMode_OriginalArea_Click" />
+                </MenuItem>
+                <MenuItem Header="Change chart type to..">
+                    <MenuItem Header="Box plot" Click="contextMenu_BarChartType_BoxPlot_Click" />
+                    <MenuItem Header="Bar chart" Click="contextMenu_BarChartType_BarChart_Click" />
+                </MenuItem>
+            </ContextMenu>
+
+            <ContextMenu x:Key="menuAlignedEicChromatogram">
+                <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
+                <MenuItem Header="Copy image as.." Click="contextMenu_CopyImageAs_Click" />
+                <MenuItem Header="Table viewer for curating each chromatogram" Click="MenuItem_ShowAlignmentSampleTable_Click" />
+                <MenuItem Header="Aligned chromatogram viewer for the simultaneous curations" Click="MenuItem_AlignedChromatogramModification_Click" />
+
+            </ContextMenu>
+
+            <ContextMenu x:Key="menuSurveyMsSpectrum">
+                <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
+                <MenuItem Header="Copy image as.." Click="contextMenu_CopyImageAs_Click" />
+            </ContextMenu>
+
+            <ContextMenu x:Key="menuPeakViewer" Name="ContextMenu_PeakViewer">
+                <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
+                <MenuItem Header="Copy image as.." Click="contextMenu_CopyImageAs_Click" />
+
+                <MenuItem Header="Search formula and structure" IsEnabled="True">
+                    <MenuItem Header="Add components to search list" Click="contextMenu_AddComponentToSearchList_Click" IsEnabled="True" />
+                    <MenuItem Header="Go to MS-FINDER program" IsEnabled="True">
+                        <MenuItem Header="Centroid" Click="contextMenu_GoToMsFinderAsCentroid_Click" />
+                        <MenuItem Header="Profile" Click="contextMenu_GoToMsFinderAsProfile_Click" />
+                        <MenuItem Header="Deconvoluted" Click="contextMenu_GoToMsFinderAsDeconvoluted_Click" />
+                    </MenuItem>
+                </MenuItem>
+
+                <MenuItem x:Name="MonaExport"  Header="Export to Mona" IsEnabled="True">
+                    <MenuItem Header="Mark for Export" InputGestureText="Ctrl+A" x:Name="MenuItem_Mona_MarkForExport" Click="contextMenu_MarkForExportMona_Click" IsEnabled="True" />
+                    <MenuItem Header="Export Marked Peaks.." InputGestureText="Ctrl+E" Name="MenuItem_Mona_ExportMarked" Click="contextMenu_exportToMonaMultiple_Click"  IsEnabled="True"/>
+                    <MenuItem Header="Export Selected Peak.." InputGestureText="Ctrl+S" Name="MenuItem_Mona_ExportSelected" Click="contextMenu_exportToMonaSingle_Click"  IsEnabled="True"/>
+                    <MenuItem Header="Clear Marked Peaks" Name="MenuItem_Mona_ClearMarked" Click="contextMenu_ClearMarkedPeaksMona_Click" />
+                </MenuItem>
+
+                <MenuItem x:Name="MrmprobsExport" Header="Export as MRMPROBS reference format" IsEnabled="True">
+                    <MenuItem Header="Save as MRMPROBS reference format" Click="contextMenu_MrmprobsRefExportSaveAs_Click" IsEnabled="True" />
+                    <MenuItem Header="Copy as MRMPROBS reference format" Click="contextMenu_MrmprobsRefExportCopyAs_Click" IsEnabled="True" />
+                </MenuItem>
+
+            </ContextMenu>
+
+            <ContextMenu x:Key="menuAlignmentViewer">
+                <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
+                <MenuItem Header="Copy image as.." Click="contextMenu_CopyImageAs_Click" />
+
+                <MenuItem Header="Search formula and structure" IsEnabled="True">
+                    <MenuItem Header="Add components to search list" Click="contextMenu_AddComponentToSearchListAtAlignmentViewer_Click" IsEnabled="True" />
+                    <MenuItem Header="Go to MS-FINDER program" Click="contextMenu_GoToMsFinderAsAlignmentResult_Click" IsEnabled="True" />
+                </MenuItem>
+
+                <MenuItem x:Name="MrmprobsExport_AlignmentView" Header="Export as MRMPROBS reference format" IsEnabled="True">
+                    <MenuItem Header="Save as MRMPROBS reference format" Click="contextMenu_MrmprobsRefExportSaveAs_Click" IsEnabled="True" />
+                    <MenuItem Header="Copy as MRMPROBS reference format" Click="contextMenu_MrmprobsRefExportCopyAs_Click" IsEnabled="True" />
+                </MenuItem>
+            </ContextMenu>
+            -->
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <UserControl.InputBindings>
+        <KeyBinding Gesture="Ctrl+D" Command="{Binding SelectedViewModel.Value.SetUnknownCommand, Mode=OneWay}"/>
+    </UserControl.InputBindings>
+
+    <Grid Name="Grid_MainWindow">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" MinWidth="150"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <local:DimsRibbon x:Name="RibbonMenu" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+        <commonview:Navigator Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"/>
+
+        <GridSplitter Margin="0, 0, 0, 0" Width="2"
+                      ResizeDirection="Columns"
+                      VerticalAlignment="Stretch" HorizontalAlignment="Right"
+                      Grid.Column="0" Grid.Row="1" Grid.RowSpan="2"/>
+
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid Name="Grid_DataViewer">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="370"/>
+                    <ColumnDefinition Width="370" MinWidth="370" />
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="15" />
+                        <RowDefinition Height="220"/>
+                        <RowDefinition Height="*" MinHeight="200" />
+                    </Grid.RowDefinitions>
+
+                    <TabControl Name="TabControl_PairwisePlotViewer"
+                                SelectedIndex="0"
+                                ItemsSource="{Binding ResultViewModels}"
+                                SelectedItem="{Binding SelectedViewModel}"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                SelectionChanged="TabControl_PairwisePlotViewer_SelectionChanged"
+                                ItemContainerStyle="{StaticResource MainWindowTabItemStyle}"
+                                Grid.Row="2">
+                        <TabControl.ItemTemplate>
+                            <DataTemplate>
+                                <DataTemplate.Resources>
+                                    <DataTemplate DataType="{x:Type vm:DimsAnalysisViewModel}">
+                                        <TextBlock x:Name="TabItem_RtMzPairwisePlotPeakView"
+                                                   Text="Peak spot viewer"
+                                                   VerticalAlignment="Stretch"
+                                                   DataContextChanged="TabItem_RtMzPairwisePlotPeakView_DataContextChanged"/>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type vm:DimsAlignmentViewModel}">
+                                        <TextBlock x:Name="TabItem_RtMzPairwisePlotAlignmentView"
+                                                   Text="Alignment spot viewer"
+                                                   VerticalAlignment="Stretch"
+                                                   DataContextChanged="TabItem_RtMzPairwisePlotAlignmentView_DataContextChanged"/>
+                                    </DataTemplate>
+                                </DataTemplate.Resources>
+                                <ContentPresenter Content="{Binding Value}"/>
+                            </DataTemplate>
+                        </TabControl.ItemTemplate>
+                        <TabControl.ContentTemplate>
+                            <DataTemplate>
+                                <DataTemplate.Resources>
+                                    <DataTemplate DataType="{x:Type vm:DimsAnalysisViewModel}">
+                                        <chart:PeakView DataContext="{Binding PlotViewModel}">
+                                            <chart:PeakView.LabelTemplate>
+                                                <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <StackPanel.Resources>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="FontSize" Value="9"/>
+                                                                <Setter Property="Foreground" Value="Gray"/>
+                                                            </Style>
+                                                        </StackPanel.Resources>
+                                                        <TextBlock Text="{Binding InnerModel.MasterPeakID, Mode=OneTime, StringFormat=Spot ID: {0}; }"/>
+                                                        <TextBlock Text="{Binding InnerModel.MS1RawSpectrumIdTop, Mode=OneTime, StringFormat=Scan #: {0}; }"/>
+                                                        <TextBlock Text="{Binding InnerModel.Mass, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </chart:PeakView.LabelTemplate>
+                                        </chart:PeakView>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type vm:DimsAlignmentViewModel}">
+                                        <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}"
+                                                                     Focusable="True"
+                                                                     behavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Focus, Mode=OneWay}"
+                                                                     d:DataContext="{d:DesignInstance Type={x:Type chartvm:AlignmentPeakPlotViewModel}}">
+                                            <chart:AlignmentPeakPlotView.LabelTemplate>
+                                                <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <StackPanel.Resources>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="FontSize" Value="9"/>
+                                                                <Setter Property="Foreground" Value="Gray"/>
+                                                            </Style>
+                                                        </StackPanel.Resources>
+                                                        <TextBlock Text="ID #: "/>
+                                                        <TextBlock Text="{Binding AlignmentID, Mode=OneTime}"/>
+                                                        <TextBlock Text="; "/>
+                                                        <TextBlock Text="Mass[Da]: "/>
+                                                        <TextBlock Text="{Binding MassCenter, StringFormat=N5, Mode=OneTime}"/>
+                                                        <TextBlock Text=";"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </chart:AlignmentPeakPlotView.LabelTemplate>
+                                        </chart:AlignmentPeakPlotView>
+                                    </DataTemplate>
+                                </DataTemplate.Resources>
+                                <ContentPresenter Content="{Binding Value}"/>
+                            </DataTemplate>
+                        </TabControl.ContentTemplate>
+                    </TabControl>
+
+                    <TabControl Name="TabControl_EicViewAndBarChart"
+                                Margin="0,-1,0,0"
+                                Grid.Row="0" Grid.RowSpan="2" >
+
+                        <TabItem Header="EIC of focused spot" 
+                                 Height="26"
+                                 Name="TabItem_EicViewer" Background="{StaticResource MainThemeColor}">
+                            <chart:EicView DataContext="{Binding AnalysisViewModel.Value.EicViewModel}"/>
+                        </TabItem>
+
+                        <TabItem Header="Bar chart of aligned spot" 
+                                 Name="TabItem_BarChartViewer" 
+                                 Height="26"
+                                 Background="{StaticResource MainThemeColor}">
+                            <chart:BarChartView DataContext="{Binding AlignmentViewModel.Value.BarChartViewModel}"/>
+                        </TabItem>
+
+
+                        <TabItem Header="EIC of aligned spot" Name="TabItem_AlignedEic" Background="{StaticResource MainThemeColor}">
+                            <chart:AlignmentEicView DataContext="{Binding AlignmentViewModel.Value.AlignmentEicViewModel}"/>
+                        </TabItem>
+
+                    </TabControl>
+
+                    <ContentControl DataContext="{Binding SelectedViewModel, Mode=OneWay}" Grid.Row="2">
+                        <Button Name="Button_TableViewer"
+                                DataContext="{Binding Value, Mode=OneWay}"
+                                Command="{Binding ShowIonTableCommand, Mode=OneWay}"
+                                HorizontalContentAlignment="Right"
+                                Background="AliceBlue"
+                                VerticalAlignment="Top" HorizontalAlignment="Right"
+                                Margin="0,2,0,0" 
+                                Height="25" Width="110">
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="/Resources/Table.png"/>
+                                    <TextBlock Text=" Show ion table " VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+                    </ContentControl>
+
+                    <GridSplitter Margin="0,0,0,-2" 
+                                  Height="2" ResizeDirection="Rows" ResizeBehavior="CurrentAndNext" 
+                                  Grid.ColumnSpan="2" 
+                                  VerticalAlignment="Bottom" 
+                                  HorizontalAlignment="Stretch" 
+                                  Grid.Row="1" />
+
+                </Grid>
+
+                <Grid Grid.Column="1">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" MinHeight="235" />
+                        <RowDefinition Height="*" MinHeight="300" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        <TabControl Name="TabControl_PeakCharacter"
+                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                    DataContext="{Binding SelectedViewModel.Value}"
+                                    ItemsSource="{Binding PeakDetailViewModels}"
+                                    SelectedIndex="0"
+                                    ItemContainerStyle="{StaticResource MainWindowTabItemStyle}"
+                                    Grid.Row="0">
+                            <TabControl.Style>
+                                <Style TargetType="TabControl">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding PeakDetailViewModels.Length}" Value="2">
+                                            <Setter Property="SelectedIndex" Value="0"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TabControl.Style>
+                            <TabControl.ContentTemplate>
+                                <DataTemplate>
+                                    <DataTemplate.Resources>
+                                        <DataTemplate DataType="{x:Type info:PeakInformationViewModel}">
+                                            <infoview:PeakInformationView/>
+                                        </DataTemplate>                              
+                                        <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
+                                            <infoview:CompoundDetailView/>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type info:MoleculeStructureViewModel}">
+                                            <infoview:MoleculeStructureView/>
+                                        </DataTemplate>
+                                    </DataTemplate.Resources>
+                                    <ContentPresenter Content="{Binding}"/>
+                                </DataTemplate>
+                            </TabControl.ContentTemplate>
+                            <TabControl.ItemTemplate>
+                                <DataTemplate>
+                                    <DataTemplate.Resources>
+                                        <DataTemplate DataType="{x:Type info:PeakInformationViewModel}">
+                                            <TextBlock Text="Basic peak property"
+                                                       VerticalAlignment="Stretch"/>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
+                                            <TextBlock Text="Compund detail"
+                                                       VerticalAlignment="Stretch"/>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type info:MoleculeStructureViewModel}">
+                                            <TextBlock Text="Structure"
+                                                       VerticalAlignment="Stretch"/>
+                                        </DataTemplate>
+                                    </DataTemplate.Resources>
+                                    <ContentPresenter Content="{Binding}"/>
+                                </DataTemplate>
+                            </TabControl.ItemTemplate>
+                        </TabControl>
+                    </Grid>
+
+                    <TabControl Name="TabControl_MS2Viewer"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                Grid.Row="1" >
+
+                        <TabItem Name="TabItem_MeasurementVsReference" 
+                                 Header="Exp. vs. Ref." 
+                                 DataContext="{Binding AnalysisViewModel.Value}"
+                                 Background="{StaticResource MainThemeColor}"
+                                 Height="25">
+                            <chart:ExpRefView>
+                                <chart:ExpRefView.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Copy spectra as.." Command="{Binding CopyMs2SpectrumCommand, Mode=OneTime}">
+                                            <MenuItem Header="Copy spectra as msp" Command="{Binding CopyMs2SpectrumCommand, Mode=OneTime}"/>
+                                        </MenuItem>
+                                        <MenuItem Header="Save spectra table as.." Command="{Binding SaveMs2SpectrumCommand}" />
+                                    </ContextMenu>
+                                </chart:ExpRefView.ContextMenu>
+                            </chart:ExpRefView>
+                        </TabItem>
+
+                        <TabItem Header="MS2 Chrom." 
+                                 Name="TabItem_MS2Chromatogram" 
+                                 Height="25"
+                                 Background="{StaticResource MainThemeColor}">
+                            <chart:Ms2ChromatogramsView DataContext="{Binding AnalysisViewModel.Value.Ms2ChromatogramsViewModel}"/>
+                        </TabItem>
+
+                        <TabItem Name="TabItem_RepresentativeVsReference"
+                                 Header="Rep. vs. Ref." 
+                                 DataContext="{Binding AlignmentViewModel.Value}"
+                                 Background="{StaticResource MainThemeColor}" 
+                                 Height="25">
+                            <chart:RepRefView xmlns:behavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
+                                              behavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Ms2SpectrumViewModel.FocusAction, Mode=OneWay}">
+                                <chart:RepRefView.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Copy spectra as.." Command="{Binding CopyMs2SpectrumCommand, Mode=OneTime}">
+                                            <MenuItem Header="Copy spectra as msp" Command="{Binding CopyMs2SpectrumCommand, Mode=OneTime}"/>
+                                        </MenuItem>
+                                        <MenuItem Header="Save spectra table as.." Command="{Binding SaveMs2SpectrumCommand}" />
+                                    </ContextMenu>
+                                </chart:RepRefView.ContextMenu>
+                            </chart:RepRefView>
+                        </TabItem>
+
+                    </TabControl>
+
+                    <GridSplitter Margin="0, 0, 0, -2" Height="2" 
+                                  ResizeDirection="Rows"
+                                  ResizeBehavior="CurrentAndNext" 
+                                  Grid.Row="0" VerticalAlignment="Bottom" 
+                                  HorizontalAlignment="Stretch" />
+
+                </Grid>
+
+                <GridSplitter Margin="0, 0, 0, 0" Width="2" 
+                              ResizeDirection="Columns" 
+                              Grid.Column="1" Grid.RowSpan="2" 
+                              VerticalAlignment="Stretch" 
+                              HorizontalAlignment="Left" />
+
+            </Grid>
+        </Grid>
+        <search:FocusNavigatorView DataContext="{Binding SelectedViewModel.Value.FocusNavigatorViewModel, Mode=OneWay}"
+                                   Grid.Row="2" Grid.Column="1"/>
+
+
+        <GridSplitter Margin="0,0,0,0" 
+                    Height="2" ResizeDirection="Rows" ResizeBehavior="CurrentAndNext" 
+                    VerticalAlignment="Bottom" 
+                    HorizontalAlignment="Stretch" 
+                    Grid.Row="1" Grid.Column="1"/>
+    </Grid>
+</UserControl>

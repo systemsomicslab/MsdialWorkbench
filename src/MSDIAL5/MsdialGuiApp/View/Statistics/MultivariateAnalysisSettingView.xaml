@@ -1,0 +1,138 @@
+﻿<Window x:Class="CompMs.App.Msdial.View.Statistics.MultivariateAnalysisSettingView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
+        xmlns:enum="clr-namespace:CompMs.Common.Enum;assembly=Common"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Statistics"
+        d:DataContext="{d:DesignInstance Type={x:Type vm:MultivariateAnalysisSettingViewModel}}"
+        mc:Ignorable="d"
+        Title="Multivariate analysis parameter setting" Height="478" Width="370">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <converter:RadioButtonEnumConverter x:Key="EnumConverter" />
+            <ObjectDataProvider x:Key="ScaleMethods" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="enum:ScaleMethod"/>
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+            <ObjectDataProvider x:Key="TransformMethods" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="enum:TransformMethod"/>
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="160"/>
+            <RowDefinition Height="85"/>
+            <RowDefinition Height="55"/>
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <GroupBox Name="GroupBox_VariableSetting"
+                  Header="Scale and Transform"
+                  Grid.Row="0" 
+                  HorizontalAlignment="Stretch" 
+                  VerticalAlignment="Stretch">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="3*" />
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Components number" FontStyle="Italic" Grid.Column="1" Margin="20, 0, 0,0" />
+
+                <StackPanel Grid.Column="0" Orientation="Vertical" Margin="5,18,0,0">
+                    <CheckBox Content="Auto fit" 
+                              IsChecked="{Binding IsAutoFit.Value, Mode=TwoWay}"
+                              IsEnabled="False"
+                              VerticalAlignment="Center" VerticalContentAlignment="Center"  Height="25" Margin="5,5,5,5"/>
+                    <Label Content="Scale method:" Height="25" Margin="0,5,5,5"/>
+                    <Label Content="Transform method:" Height="25" Margin="0,5,5,5"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Vertical" Margin="20,18,0,0">
+                    <TextBox Name="TextBox_ComponentNumber"  
+                             Text="{Binding MaxPcNumber.Value}"
+                             VerticalContentAlignment="Center"
+                             HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,5,5,5">
+                    </TextBox>
+
+                    <ComboBox Name="ComboBox_ScaleMethod" SelectedValuePath="DataContext"
+                              SelectedValue="{Binding ScaleMethod.Value}"
+                              Height="25" Margin="5,5,5,5">
+                        <ComboBox.Items>
+                            <ComboBoxItem Content="None" DataContext="{x:Static enum:ScaleMethod.None}"/>
+                            <ComboBoxItem Content="Mean center" DataContext="{x:Static enum:ScaleMethod.MeanCenter}"/>
+                            <ComboBoxItem Content="Pareto scale" DataContext="{x:Static enum:ScaleMethod.ParetoScale}"/>
+                            <ComboBoxItem Content="Auto scale" DataContext="{x:Static enum:ScaleMethod.AutoScale}"/>
+                        </ComboBox.Items>
+                    </ComboBox>
+
+                    <ComboBox Name="ComboBox_TransformMethod" SelectedValuePath="DataContext"
+                              SelectedValue="{Binding TransformMethod.Value}"
+                              Height="25" Margin="5,5,5,5">
+                        <ComboBox.Items>
+                            <ComboBoxItem Content="None" DataContext="{x:Static enum:TransformMethod.None}"/>
+                            <ComboBoxItem Content="Log10" DataContext="{x:Static enum:TransformMethod.Log10}"/>
+                            <ComboBoxItem Content="Quad root" DataContext="{x:Static enum:TransformMethod.QuadRoot}"/>
+                        </ComboBox.Items>
+                    </ComboBox>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+        <GroupBox
+            Header="Metabolite selection"
+            Grid.Row="2" 
+            HorizontalAlignment="Stretch" 
+            VerticalAlignment="Stretch">
+            <StackPanel Orientation="Horizontal" Margin="9,7,0,0">
+                <CheckBox Name="CheckBox_IsIdentifiedImportedInStatistics" 
+                          Content="Ref. matched" Width="100" 
+                          IsChecked="{Binding IsIdentifiedImportedInStatistics.Value}"/>
+                <CheckBox Name="CheckBox_Annotated" Content="Suggested" Width="100" 
+                          IsChecked="{Binding IsAnnotatedImportedInStatistics.Value}"/>
+                <CheckBox Content="Unknown" Width="90" 
+                          IsChecked="{Binding IsUnknownImportedInStatistics.Value}"/>
+            </StackPanel>
+        </GroupBox>
+        
+        <GroupBox Header="Statistics method" Grid.Row="1">
+            <UniformGrid Columns="4">
+                <UniformGrid.Resources>
+                    <Style TargetType="RadioButton">
+                        <Setter Property="Margin" Value="8"/>
+                    </Style>
+                </UniformGrid.Resources>
+                <RadioButton Content="PCA"
+                             IsChecked="{Binding MultivariateAnalysisOption.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Pca}"/>
+                <RadioButton Content="HCA"
+                             IsChecked="{Binding MultivariateAnalysisOption.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Hca}"/>
+                <RadioButton Content="PLSDA"
+                             IsChecked="{Binding MultivariateAnalysisOption.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Plsda}"/>
+                <RadioButton Content="OPLSDA"
+                             IsChecked="{Binding MultivariateAnalysisOption.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Oplsda}"/>
+                <RadioButton Content="PLSR"
+                             IsChecked="{Binding MultivariateAnalysisOption.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Plsr}"/>
+                <RadioButton Content="OPLSR"
+                             IsChecked="{Binding MultivariateAnalysisOption.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Oplsr}"/>
+            </UniformGrid>
+        </GroupBox>
+
+        <Label Grid.Row="3" 
+               xml:space="preserve" 
+               Margin="10,5,5,5"
+               Content="Below is the tips for PLS.&#10;(1) Set Y (response) variables at menu->option->file property.&#10;(2) For (O)PLS-DA, use a binary (0 or 1) value as the response. &#10;* Non-zero values are recognized as 1 in (O)PLS-DA testing.&#10;(3) For (O)PLS-R, set sequential values." />
+
+        <Button Name="Button_Finish" Content="Execute" Grid.Row="4" Command="{Binding ExecuteCommand}" Height="25" Width="70" HorizontalAlignment="Right" Margin="5,5,5,5" />
+    </Grid>
+</Window>

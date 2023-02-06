@@ -1,0 +1,298 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:localVM="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
+                    xmlns:DataObjVM="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
+                    xmlns:SearchVM="clr-namespace:CompMs.App.Msdial.ViewModel.Search"
+                    xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
+                    xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing">
+    <converter:BooleanToEnumConverter x:Key="BooleanToEnum"/>
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
+    <DataTemplate DataType="{x:Type DataObjVM:MsRefSearchParameterBaseViewModel}"
+                  x:Key="MassToleranceSetting">
+        <StackPanel>
+            <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS1):"
+                               AppendLabel="Da">
+                <TextBox Text="{Binding Ms1Tolerance.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS2):"
+                               AppendLabel="Da">
+                <TextBox Text="{Binding Ms2Tolerance.Value}"/>
+            </ui:LabeledContent>
+        </StackPanel>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type DataObjVM:MsRefSearchParameterBaseViewModel}"
+                  x:Key="MassToleranceSettingWithoutMs2">
+        <StackPanel>
+            <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS1):"
+                               AppendLabel="Da">
+                <TextBox Text="{Binding Ms1Tolerance.Value}"/>
+            </ui:LabeledContent>
+        </StackPanel>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type DataObjVM:MsRefSearchParameterBaseViewModel}"
+                  x:Key="Ms2Setting">
+        <StackPanel>
+            <ui:LabeledContent PrependLabel="Spectrum amplitude cutoff (relative):"
+                               AppendLabel="%">
+                <TextBox Text="{Binding RelativeAmpCutoff.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Spectrum amplitude cutoff (absolute):">
+                <TextBox Text="{Binding AbsoluteAmpCutoff.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Mass range begin:"
+                               AppendLabel="Da">
+                <TextBox Text="{Binding MassRangeBegin.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Mass range end:"
+                               AppendLabel="Da">
+                <TextBox Text="{Binding MassRangeEnd.Value}"/>
+            </ui:LabeledContent>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type DataObjVM:MsRefSearchParameterBaseViewModel}"
+                  x:Key="Ms2ScoreCutOffSetting">
+        <StackPanel>
+            <ui:LabeledContent PrependLabel="Dot product score:">
+                <TextBox Text="{Binding SimpleDotProductCutOff.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Weighted dot product score:">
+                <TextBox Text="{Binding WeightedDotProductCutOff.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Reverse dot product score:">
+                <TextBox Text="{Binding ReverseDotProductCutOff.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Matched spectrum percentage:"
+                               AppendLabel="%">
+                <TextBox Text="{Binding MatchedPeaksPercentageCutOff.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Minimum number of matched spectrum:">
+                <TextBox Text="{Binding MinimumSpectrumMatch.Value}"/>
+            </ui:LabeledContent>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type DataObjVM:MsRefSearchParameterBaseViewModel}"
+                  x:Key="RetentionTimeSetting">
+        <StackPanel>
+            <ui:LabeledContent PrependLabel="Use retention time for scoring">
+                <CheckBox IsChecked="{Binding IsUseTimeForAnnotationScoring.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Use retention time for filtering">
+                <CheckBox IsChecked="{Binding IsUseTimeForAnnotationFiltering.Value}"/>
+            </ui:LabeledContent>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type DataObjVM:MsRefSearchParameterBaseViewModel}"
+                  x:Key="CcsSetting">
+        <StackPanel>
+            <ui:LabeledContent PrependLabel="Use collision cross section for scoring">
+                <CheckBox IsChecked="{Binding IsUseCcsForAnnotationScoring.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Use collision cross section for filtering">
+                <CheckBox IsChecked="{Binding IsUseCcsForAnnotationFiltering.Value}"/>
+            </ui:LabeledContent>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type DataObjVM:ProteomicsParameterVM}"
+                  x:Key="ProteomicsParameterSetting">
+        <StackPanel>
+            <ui:LabeledContent PrependLabel="Andromeda delta:"
+                               AppendLabel="Da">
+                <TextBox Text="{Binding AndromedaDelta.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Andromeda max peaks:"
+                               AppendLabel="Num of peaks">
+                <TextBox Text="{Binding AndromedaMaxPeaks.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="False discovery rate for peptide:"
+                               AppendLabel="%">
+                <TextBox Text="{Binding FalseDiscoveryRateForPeptide.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="False discovery rate for protein:"
+                               AppendLabel="%">
+                <TextBox Text="{Binding FalseDiscoveryRateForProtein.Value}"/>
+            </ui:LabeledContent>
+
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type localVM:DataBaseSettingViewModel}">
+        <StackPanel>
+            <ui:LabeledContent PrependLabel="Database type">
+                <ComboBox ItemsSource="{Binding DBSources, Mode=OneTime}" SelectedItem="{Binding DBSource.Value}" IsEnabled="{Binding IsEditable.Value}"/>
+            </ui:LabeledContent>
+            <Grid Margin="8,0" Visibility="{Binding IsDataBasePathEnabled.Value, Converter={StaticResource BooleanToVisibility}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Database path:" VerticalAlignment="Center" Grid.Column="0"/>
+                <TextBox Text="{Binding DataBasePath.Value, UpdateSourceTrigger=PropertyChanged}"
+                         HorizontalContentAlignment="Left"
+                         Margin="8" Grid.Column="1"/>
+                <Button Content="Browse"
+                        Command="{Binding BrowseCommand, Mode=OneTime}"
+                        Width="64" Height="24" Grid.Column="2"/>
+            </Grid>
+            <ui:LabeledContent PrependLabel="Database name">
+                <TextBox Text="{Binding DataBaseID.Value, UpdateSourceTrigger=PropertyChanged}"
+                         HorizontalContentAlignment="Left"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Lipid database:" Visibility="{Binding IsLipidDataBase.Value, Converter={StaticResource BooleanToVisibility}}">
+                <Button Content="Set"
+                        Command="{Binding LipidDBSetCommand, Mode=OneTime}"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Width="64"/>
+            </ui:LabeledContent>
+            <GroupBox Header="Peptide database setting"
+                      BorderThickness="0"
+                      Visibility="{Binding IsProteomicsDataBase.Value, Converter={StaticResource BooleanToVisibility}}">
+                <StackPanel>
+                    
+                    <ui:LabeledContent PrependLabel="Minimum peptide mass:"
+                                       AppendLabel="Da"
+                                       DataContext="{Binding ProteomicsParameterVM}">
+                        <TextBox Text="{Binding MinPeptideMass.Value, UpdateSourceTrigger=PropertyChanged}"
+                                 HorizontalContentAlignment="Right"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Max peptide mass:"
+                                       AppendLabel="Da"
+                                       DataContext="{Binding ProteomicsParameterVM}">
+                        <TextBox Text="{Binding MaxPeptideMass.Value, UpdateSourceTrigger=PropertyChanged}"
+                                 HorizontalContentAlignment="Right"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Minimum peptide length:"
+                                       AppendLabel=""
+                                       DataContext="{Binding ProteomicsParameterVM}">
+                        <TextBox Text="{Binding MinimumPeptideLength.Value, UpdateSourceTrigger=PropertyChanged}"
+                                 HorizontalContentAlignment="Right"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="MS2 mass range begin:"
+                                       AppendLabel="Da"
+                                       DataContext="{Binding ProteomicsParameterVM}">
+                        <TextBox Text="{Binding MinMs2Mz.Value, UpdateSourceTrigger=PropertyChanged}"
+                                 HorizontalContentAlignment="Right"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="MS2 mass range end:"
+                                       AppendLabel="Da"
+                                       DataContext="{Binding ProteomicsParameterVM}">
+                        <TextBox Text="{Binding MaxMs2Mz.Value, UpdateSourceTrigger=PropertyChanged}"
+                                 HorizontalContentAlignment="Right"/>
+                    </ui:LabeledContent>
+
+                    <Grid Margin="5,5,0,5" DataContext="{Binding ProteomicsParameterVM}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Enzyme setting:" VerticalAlignment="Center" Grid.Column="0"/>
+                        <Button Content="Browse"
+                                Command="{Binding EnzymeSetCommand, Mode=OneTime}"
+                                Width="64" Height="24" Grid.Column="1" Margin="5,5,0,0"/>
+                        <!--<ItemsControl ItemsSource="{Binding Enzymes, Mode=OneWay}" DisplayMemberPath="Title" VerticalAlignment="Center" Grid.Column="2"/>-->
+
+                    </Grid>
+
+                    <Grid Margin="5,5,0,5" DataContext="{Binding ProteomicsParameterVM}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Modification setting:" VerticalAlignment="Center" Grid.Column="0"/>
+                        <Button Content="Browse"
+                                Command="{Binding ModificationSetCommand, Mode=OneTime}"
+                                Width="64" Height="24" Grid.Column="1" Margin="5,5,0,0"/>
+                        <!--<GroupBox Header="Fixed:" BorderThickness="0" VerticalAlignment="Center" Grid.Column="2">
+                            <ItemsControl ItemsSource="{Binding FixedModifications, Mode=OneWay}" DisplayMemberPath="Title" Margin="8,0,0,0"/>
+                        </GroupBox>
+                        <GroupBox Header="Variable:" BorderThickness="0" VerticalAlignment="Center" Grid.Column="3">
+                            <ItemsControl ItemsSource="{Binding VariableModifications, Mode=OneWay}" DisplayMemberPath="Title" Margin="8,0,0,0"/>
+                        </GroupBox>-->
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type localVM:LoadedDataBaseSettingViewModel}">
+        <StackPanel>
+            <ui:LabeledContent PrependLabel="Database name"
+                               Content="{Binding DataBaseID.Value}"/>
+            <ui:LabeledContent PrependLabel="Database type"
+                               Content="{Binding DBSource.Value}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type localVM:MassAnnotationSettingViewModel}">
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0">
+                    <StackPanel Margin="8">
+                        <Grid Margin="8,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Database path:" VerticalAlignment="Center" Grid.Column="0"/>
+                            <TextBox Text="{Binding DataBasePath.Value}"
+                                     Margin="8" Grid.Column="1"/>
+                            <Button Content="Browse"
+                                    Width="64" Height="24" Grid.Column="2"/>
+                        </Grid>
+                        <ui:LabeledContent PrependLabel="Database name">
+                            <TextBox Text="{Binding DataBaseID.Value}"/>
+                        </ui:LabeledContent>
+                    </StackPanel>
+
+                    <TextBlock Text="Mass tolerance"/>
+                    <ContentControl Content="{Binding ParameterVM}"
+                                    ContentTemplate="{StaticResource MassToleranceSetting}"
+                                    Margin="8"/>
+                </StackPanel>
+
+                <Expander Header="MS2 spectrum cut off" Margin="0,8"
+                          Grid.Row="1">
+                    <ContentControl Content="{Binding ParameterVM}"
+                                    ContentTemplate="{StaticResource ResourceKey=Ms2Setting}"
+                                    Margin="8"/>
+                </Expander>
+
+                <Expander Header="Annotaion cut off" Margin="0,8"
+                          Grid.Row="2">
+                    <ContentControl Content="{Binding ParameterVM}"
+                                    ContentTemplate="{StaticResource ResourceKey=Ms2ScoreCutOffSetting}"
+                                    Margin="8"/>
+                </Expander>
+            </Grid>
+        </ScrollViewer>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type SearchVM:CompoundSearchVM}"
+                  x:Key="MassAnnotatorSetting">
+        <ScrollViewer>
+            <StackPanel>
+                <TextBlock Text="Mass tolerance"/>
+                <ContentControl Content="{Binding ParameterVM.Value}"
+                                ContentTemplate="{StaticResource MassToleranceSetting}"/>
+                <TextBlock Text="MS2 spectrum cut off"/>
+                <ContentControl Content="{Binding ParameterVM.Value}"
+                                ContentTemplate="{StaticResource Ms2Setting}"/>
+            </StackPanel>
+        </ScrollViewer>
+    </DataTemplate>
+</ResourceDictionary>

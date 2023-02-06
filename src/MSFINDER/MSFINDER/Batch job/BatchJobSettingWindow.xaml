@@ -1,0 +1,61 @@
+﻿<Window x:Class="Rfx.Riken.OsakaUniv.BatchJobSettingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:mvvm="clr-namespace:Rfx.Riken.OsakaUniv;assembly=CommonMVVM"
+        Title="Batch job setting" Height="200" Width="500">
+
+    <i:Interaction.Behaviors>
+        <mvvm:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
+    </i:Interaction.Behaviors>
+    <Window.Resources>
+        <ControlTemplate x:Key="InputErrorTemplate">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+        <Style x:Key="ToolTipErrorStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Pink" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+
+        <CheckBox Content="Both processes (formula finder, and then structure finder)" Grid.Row="0" IsChecked="{Binding Path=IsAllProcess}" VerticalAlignment="Center" Margin="10,2,0,0" />
+
+        <StackPanel Orientation="Horizontal" Grid.Row="1">
+            <Label Content="Top N hits:"  FontStyle="Italic" VerticalAlignment="Center" Height="25" Margin="5,0,0,0"/>
+            <TextBox VerticalAlignment="Center" Width="90" Height="25" Margin="5,0,0,0">
+                <TextBox.Text>
+                    <Binding Path="TopN" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                        <Binding.ValidationRules>
+                            <mvvm:PositiveIntNumericValidation />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+            <Label Content="(automatically applied to structure finder program)" VerticalAlignment="Center" Height="25" Margin="0,0,0,0"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="2">
+            <CheckBox Content="Molecular formula finder" IsChecked="{Binding Path=IsFormulaFinder}" VerticalAlignment="Center" Margin="10,2,0,0" />
+            <CheckBox Content="Structure finder" IsChecked="{Binding Path=IsStructureFinder}" VerticalAlignment="Center" Margin="20,2,0,0" />
+        </StackPanel>
+
+        <Button x:Name="Cancel" Content="Cancel" Click="Click_Cancel" Grid.Row="3" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5" />
+        <Button x:Name="Set" Content="Finish" Command="{Binding OkCommand}" Grid.Row="3" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,80,5" />
+    </Grid>
+</Window>

@@ -1,0 +1,1145 @@
+﻿<Window x:Class="Rfx.Riken.OsakaUniv.AnalysisParamSetForGcWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv;assembly=CommonMVVM"
+        Loaded="Window_Loaded"
+        Title="Analysis parameter setting" Height="630" Width="600">
+    
+    <i:Interaction.Behaviors>
+        <local:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
+    </i:Interaction.Behaviors>
+    
+    <Window.Resources>
+        <ControlTemplate x:Key="InputErrorTemplate">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+        
+        <Style x:Key="ToolTipErrorStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Pink" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+      
+        <TabControl Grid.Row="0" Name="TabControl_ParameterSetting" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <TabItem Name="TabItem_DataCollection" Header="Data collection">
+                <Grid>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="90" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Label Content="Mass scan range" FontStyle="Italic" Margin="10,0,0,0" />
+
+                        <StackPanel Orientation="Vertical" Grid.Column="0" Margin="20, 25, 0,0">
+                            <Label Content="Mass range begin:" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="Mass range end:" Height="30" VerticalContentAlignment="Center"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Vertical" Grid.Column="1" Margin="0, 25, 0,0">
+
+                            <TextBox Name="TextBox_MassRangeBegin" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                                <TextBox.Text>
+                                    <Binding Path="MassRangeBegin" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnSourceUpdated="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveDoubleNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="You can remove un-wanted mass range." />
+                                </ToolTipService.ToolTip>
+                            </TextBox>
+                            
+                            <TextBox Name="TextBox_MassRangeEnd" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                                <TextBox.Text>
+                                    <Binding Path="MassRangeEnd" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnSourceUpdated="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveDoubleNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="You can remove un-wanted mass range." />
+                                </ToolTipService.ToolTip>
+                            </TextBox>
+                       
+                        </StackPanel>
+
+                        <StackPanel Orientation="Vertical" Grid.Column="2" Margin="0, 25, 0,0">
+                            <Label Content="Da" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="Da" Height="30" VerticalContentAlignment="Center"/>
+                        </StackPanel>
+
+
+                    </Grid>
+
+                    <Grid Grid.Row="1">
+                        <Expander Header="Advanced"
+                                  HorizontalAlignment="Stretch" 
+                                  VerticalAlignment="Stretch" 
+                                  ExpandDirection="Down">
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Orientation="Vertical" Grid.Column="0" Margin="20,0,0,0">
+                                    <Label Content="Retention time begin:" Height="30" VerticalContentAlignment="Center"/>
+                                    <Label Content="Retention time end:" Height="30" VerticalContentAlignment="Center"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Vertical" Grid.Column="1" Margin="0,0,0,0">
+                                 
+                                    <TextBox Name="TextBox_RetentionTimeBegin" Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                                        <TextBox.Text>
+                                            <Binding Path="RetentionTimeBegin" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                                <Binding.ValidationRules>
+                                                    <local:PositiveDoubleNumericValidation />
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="You can remove un-wanted retention time range." />
+                                        </ToolTipService.ToolTip>
+                                    </TextBox>
+                            
+                                    <TextBox Name="TextBox_RetentionTimeEnd" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                                        <TextBox.Text>
+                                            <Binding Path="RetentionTimeEnd" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                                <Binding.ValidationRules>
+                                                    <local:PositiveDoubleNumericValidation />
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="You can remove un-wanted retention time range." />
+                                        </ToolTipService.ToolTip>
+                                    </TextBox>
+                                
+                                </StackPanel>
+
+                                <StackPanel Orientation="Vertical" Grid.Column="2" Margin="0,0,0,0">
+                                    <Label Content="min" Height="30" VerticalAlignment="Center"/>
+                                    <Label Content="min" Height="30" VerticalContentAlignment="Center"/>
+                                </StackPanel>
+
+                                <Label Content="Multithreading" FontStyle="Italic" Margin="10,65,0,0" />
+
+                                <StackPanel Orientation="Vertical" Grid.Column="0" Margin="20,90,0,0">
+                                    <Label Content="Number of threads:" Height="30" VerticalContentAlignment="Center"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Vertical" Grid.Column="1" Margin="0, 90, 0,0">
+                                    <TextBox Name="TextBox_NumThreads" 
+                                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
+                                             HorizontalAlignment="Stretch" 
+                                             HorizontalContentAlignment="Right"
+                                             Height="25" Margin="5,2.5,5,2.5">  
+                                        <TextBox.Text>
+                                            <Binding Path="NumThreads" 
+                                         ValidatesOnDataErrors="True" 
+                                         UpdateSourceTrigger="LostFocus"
+                                         NotifyOnValidationError="True">
+                                                <Binding.ValidationRules>
+                                                    <local:PositiveIntNumericValidation />
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="This is one of parameters for peak detections. 1-2 is better for a laptop." />
+                                        </ToolTipService.ToolTip>
+                                    </TextBox>
+                                </StackPanel>
+
+                            </Grid>
+                        </Expander>
+                    </Grid>
+
+                </Grid>
+            </TabItem>
+
+            <TabItem Name="TabItem_PeakDetection" Header="Peak detection">
+                <Grid>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="185" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="60" />
+                            <RowDefinition Height="125" />
+                        </Grid.RowDefinitions>
+
+                        <Label Content="Peak detection parameters" Grid.Row="0" FontStyle="Italic" Margin="10,0,0,0" />
+
+                        <StackPanel Orientation="Vertical" Grid.Column="0"  Grid.Row="0" Margin="20, 25, 0,0">
+                            <Label Content="Minimum peak height:" Height="30" VerticalContentAlignment="Center"/>
+                        </StackPanel>
+                      
+                        <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="0" Margin="0, 25, 0,0">
+
+                            <TextBox Name="TextBox_MinimumAmplitude" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                                <TextBox.Text>
+                                    <Binding Path="MinimumAmplitude" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveDoubleNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Recommend: 2000-3000" />
+                                </ToolTipService.ToolTip>
+                            </TextBox>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Vertical" Grid.Column="2" Grid.Row="0" Margin="0, 25, 0,0">
+                            <Label Content="amplitude" Height="30" VerticalContentAlignment="Center"/>
+                        </StackPanel>
+
+                        <Label Content="Peak spotting parameters" FontStyle="Italic" Grid.Row="1" Margin="10,0,0,0" />
+
+                        <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="1" Margin="20, 25, 0,0">
+                            <Label Content="Accurate MS:" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="Mass slice width:" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="Mass accuracy for centroiding:" Height="30" VerticalContentAlignment="Center"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="1" Margin="0, 25, 0,0">
+
+                            <CheckBox Name="CheckBox_IsAccurate" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{Binding Path=IsAccurateMs}" Margin="5,7.5,0,0">
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Check this option if your instrument is a high resolution GC/MS." />
+                                </ToolTipService.ToolTip>
+                            </CheckBox>
+
+                            <TextBox Name="TextBox_MassSliceWidth" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" IsEnabled="{Binding Path=IsAccurateMs}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,11,5,2.5">
+                                <TextBox.Text>
+                                    <Binding Path="MassSliceWidth" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveDoubleNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Recommend: 0.05-0.1" />
+                                </ToolTipService.ToolTip>
+                            </TextBox>
+
+                            <TextBox Name="TextBox_MassAccuracy" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" IsEnabled="{Binding Path=IsAccurateMs}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,3.5,5,2.5">
+                                <TextBox.Text>
+                                    <Binding Path="MassAccuracy" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveDoubleNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Recommend: 0.05-0.1" />
+                                </ToolTipService.ToolTip>
+                            </TextBox>
+
+                        </StackPanel>
+
+                        <StackPanel Orientation="Vertical" Grid.Column="2" Grid.Row="1" Margin="0, 25, 0,0">
+                            <Label Content="" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="Da" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="Da" Height="30" VerticalContentAlignment="Center"/>
+                        </StackPanel>
+
+                    </Grid>
+
+                    <Grid Grid.Row="1">
+                        <Expander Header="Advanced"
+                                  HorizontalAlignment="Stretch" 
+                                  VerticalAlignment="Stretch" 
+                                  ExpandDirection="Down">
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Orientation="Vertical" Grid.Column="0"  Grid.Row="0" Margin="20,0,0,0">
+                                    <Label Content="Smoothing method:" Height="30" VerticalContentAlignment="Center"/>
+                                    <Label Content="Smoothing level:" Height="30" VerticalContentAlignment="Center"/>
+                                    <Label Content="Average peak width:" Height="30" VerticalContentAlignment="Center"/>
+                                </StackPanel>
+                               
+                                <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="0" Margin="0,0,0,0">
+
+                                    <ComboBox Name="ComboBox_SmoothingMethod" ItemsSource="{Binding}" SelectionChanged="ComboBox_SmoothingMethod_SelectionChanged" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Height="25" Margin="5,2.5,5,2.5">
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="Linear weighted moving average is recommended." />
+                                        </ToolTipService.ToolTip>
+                                    </ComboBox>
+
+                                    <TextBox Name="TextBox_SmoothingLevel" Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                                        <TextBox.Text>
+                                            <Binding Path="SmoothingLevel" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                                <Binding.ValidationRules>
+                                                    <local:PositiveIntNumericValidation />
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="Recommend: 2-4 (if a peak have just 5-10 data points)" />
+                                        </ToolTipService.ToolTip>
+                                    </TextBox>
+
+                                    <TextBox Name="TextBox_AveragePeakWidth" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                                        <TextBox.Text>
+                                            <Binding Path="AveragePeakWidth" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                                <Binding.ValidationRules>
+                                                    <local:PositiveDoubleNumericValidation />
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="Recommend: 10-20" />
+                                        </ToolTipService.ToolTip>
+                                    </TextBox>
+
+                                </StackPanel>
+
+                                <StackPanel Orientation="Vertical" Grid.Column="2" Grid.Row="0" Margin="0,0,0,0">
+                                    <Label Content="" Height="30" VerticalAlignment="Center"/>
+                                    <Label Content="scan" Height="30" VerticalContentAlignment="Center"/>
+                                    <Label Content="scan" Height="30" VerticalContentAlignment="Center"/>
+                                </StackPanel>
+
+                                <Label Content="Exclusion mass list:" Height="30" Grid.Column="0" Grid.Row="1" VerticalAlignment="Top" Margin="20,100,0,0" />
+
+                                <DataGrid Name="DataGrid_ExcludeMassSetting" 
+                                          ItemsSource="{Binding Path=ExcludedMassViewModelCollection}" 
+                                          Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" 
+                                          VerticalAlignment="Stretch"
+                                          Margin="5,100,5,0" CanUserAddRows="False" CanUserDeleteRows="False" 
+                                          CanUserReorderColumns="False" CanUserSortColumns="False"
+                                          SelectionUnit="Cell" IsReadOnly="False" HeadersVisibility="All" 
+                                          AutoGenerateColumns="False" 
+                                          CurrentCellChanged="DataGrid_ExcludeMassSetting_CurrentCellChanged" 
+                                          PreviewKeyDown="DataGrid_ExcludeMassSetting_PreviewKeyDown" >
+
+                                    <DataGrid.ColumnHeaderStyle>
+                                        <Style TargetType="DataGridColumnHeader" >
+                                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGrid.ColumnHeaderStyle>
+
+                                    <DataGrid.Columns>
+
+                                        <DataGridTemplateColumn Width="*" Header="Accurate mass [Da]" IsReadOnly="False">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBox Name="TextBox_ExcludedMass" 
+                                                 Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
+                                                 VerticalContentAlignment="Center">
+                                                        <TextBox.Text>
+                                                            <Binding Path="ExcludedMass" 
+                                                         ValidatesOnDataErrors="True" 
+                                                         UpdateSourceTrigger="LostFocus" 
+                                                         NotifyOnValidationError="True">
+                                                                <Binding.ValidationRules>
+                                                                    <local:PositiveDoubleNumericValidation />
+                                                                </Binding.ValidationRules>
+                                                            </Binding>
+                                                        </TextBox.Text>
+                                                    </TextBox>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+
+                                            <DataGridTemplateColumn.CellEditingTemplate>
+                                                <DataTemplate>
+                                                    <Grid  FocusManager.FocusedElement="{Binding ElementName= TextBox_ExcludedMass}">
+                                                        <TextBox Name="TextBox_ExcludedMass" 
+                                                     Text="{Binding ExcludedMass, UpdateSourceTrigger=LostFocus}" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellEditingTemplate>
+                                        </DataGridTemplateColumn>
+
+                                        <DataGridTemplateColumn Width="*" Header="Mass tolerance [Da]" IsReadOnly="False">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBox Name="TextBox_MassTolerance"
+                                                 Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
+                                                 VerticalContentAlignment="Center">
+                                                        <TextBox.Text>
+                                                            <Binding Path="MassTolerance" 
+                                                         ValidatesOnDataErrors="True" 
+                                                         UpdateSourceTrigger="LostFocus" 
+                                                         NotifyOnValidationError="True">
+                                                                <Binding.ValidationRules>
+                                                                    <local:PositiveDoubleNumericValidation />
+                                                                </Binding.ValidationRules>
+                                                            </Binding>
+                                                        </TextBox.Text>
+                                                    </TextBox>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+
+                                            <DataGridTemplateColumn.CellEditingTemplate>
+                                                <DataTemplate>
+                                                    <Grid  FocusManager.FocusedElement="{Binding ElementName= TextBox_MassTolerance}">
+                                                        <TextBox Name="TextBox_MassTolerance" 
+                                                     Text="{Binding MassTolerance, UpdateSourceTrigger=LostFocus}" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellEditingTemplate>
+
+                                        </DataGridTemplateColumn>
+
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+                            </Grid>
+
+
+                        </Expander>
+                    </Grid>
+
+
+
+                </Grid>
+            </TabItem>
+
+            <TabItem Name="TabItem_Deconvolution" Header="MS1Dec">
+                <Grid>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="143*" />
+                        <ColumnDefinition Width="65*"/>
+                        <ColumnDefinition Width="209*" />
+                        <ColumnDefinition Width="104*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="90" />
+                        <RowDefinition Height="90" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Label Content="Deconvolution parameters" Grid.Row="0" Grid.ColumnSpan="4" FontStyle="Italic" Margin="10,0,0,0" />
+
+                    <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="0" Margin="20, 25, 0,0" Grid.ColumnSpan="2">
+                        <Label Content="Sigma window value:" Height="30" VerticalContentAlignment="Center"/>
+                        <Label Content="EI spectra cut off:" Height="30" VerticalContentAlignment="Center"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="2" Margin="0, 25, 0,0">
+
+                        <TextBox Name="TextBox_SigmaWindowValue" Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                            <TextBox.Text>
+                                <Binding Path="SigmaWindowValue" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                    <Binding.ValidationRules>
+                                        <local:PositiveDoubleNumericValidation />
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                            <ToolTipService.ToolTip>
+                                <ToolTip Content="Recommend: 0.05-1.0" />
+                            </ToolTipService.ToolTip>
+                        </TextBox>
+
+                        <TextBox Name="TextBox_EiSpectraCutOff" Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                            <TextBox.Text>
+                                <Binding Path="AmplitudeCutoff" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                    <Binding.ValidationRules>
+                                        <local:PositiveIntNumericValidation />
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                            <ToolTipService.ToolTip>
+                                <ToolTip Content="Recommend: 1" />
+                            </ToolTipService.ToolTip>
+                        </TextBox>
+
+                    </StackPanel>
+
+                    <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="3" Margin="0, 25, 0,0">
+                        <Label Content="0.1-1" Height="30" VerticalAlignment="Center"/>
+                        <Label Content="amplitude" Height="30" VerticalContentAlignment="Center"/>
+                    </StackPanel>
+
+                </Grid>
+            </TabItem>
+
+            <TabItem Name="TabItem_Identification" Header="Identification">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="40" />
+                        <RowDefinition Height="40" />
+                        <RowDefinition Height="40" />
+                        <RowDefinition Height="40" />
+                        <RowDefinition Height="40" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Label Content="Retention time setting" FontStyle="Italic" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
+
+                    <Grid Name="Grid_RIorRT" Grid.Row="1">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,5,5,5">
+                            <Label Content="RI or RT: " />
+                            <RadioButton Name="RadioButton_UseRetentionIndex" Content="Use retention index (RI)" Checked="RadioButton_UseRetentionIndex_Checked" IsChecked="True" VerticalAlignment="Center" Margin="14,1,0,0" />
+                            <RadioButton Name="RadioButton_UseRetentionTime" Content="Use retention time (min)" Checked="RadioButton_UseRetentionTime_Checked" IsChecked="False" VerticalAlignment="Center" Margin="15,1,0,0" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Name="Grid_IndexFileSet" Grid.Row="2">
+                        <Label Content="Index file: " HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,5,5,5" />
+
+                        <Button Name="Button_RiDictionaryFilePath" Content="Set" Grid.Row="5" Click="Click_RiFile_Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Height="24" Width="60" Margin="90,0,5,0" >
+                            <ToolTipService.ToolTip>
+                                <ToolTip Content="Carbon number and retention time dictionaly for RI calculation" />
+                            </ToolTipService.ToolTip>
+                        </Button>
+
+                        <Label Name="Label_RiDictionaryFilePath" Content="Status: " HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Margin="160, 0, 0, 0" />
+
+                    </Grid>
+
+                    <Grid Name="Grid_IndexType" Grid.Row="3">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,5,5,5">
+                            <Label Content="Index type: " />
+                            <RadioButton Name="RadioButton_Alkanes" Content="Alkanes" Checked="RadioButton_Alkanes_Checked" IsChecked="True" VerticalAlignment="Center" Margin="0,1,0,0" />
+                            <RadioButton Name="RadioButton_Fame" Content="FAMEs" Checked="RadioButton_Fame_Checked" IsChecked="False" VerticalAlignment="Center" Margin="15,1,0,0" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Label Content="MSP file and identification setting" FontStyle="Italic" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
+
+                    <Label Content="MSP file: " Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,5,5,5" />
+
+                    <TextBox Name="TextBox_MspFilePath" Grid.Row="5" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" Text="{Binding Path=MspFilePath, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24" Margin="90, 0, 70, 0" />
+
+                    <Button Name="Button_MspFileBrowse" Content="Browse" Grid.Row="5" Click="Click_MspFileBrowse" HorizontalAlignment="Right" VerticalAlignment="Center" Height="24" Width="60" Margin="0,0,5,0" >
+                        <ToolTipService.ToolTip>
+                            <ToolTip>
+                                <TextBlock>
+                                  If you select FAMEs as RI, you do not have to select a msp since MS-DIAL has the Fiehn library internally.
+                                <LineBreak /> 
+                                  But of course, you can select your own MSP file from here.
+                                </TextBlock>
+                            </ToolTip>
+                        </ToolTipService.ToolTip>
+                    </Button>
+
+                    <Grid Grid.Row="6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*" />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Orientation="Vertical" Grid.Column="0" Margin="20, 0, 0,0">
+                            <Label Content="Retention index tolerance:" Height="27" VerticalContentAlignment="Center" />
+                            <Label Content="Retention time tolerance:" Height="27" VerticalContentAlignment="Center"/>
+                            <Label Content="m/z tolerance:" Height="27" VerticalContentAlignment="Center"/>
+                            <Label Content="EI similarity cut off:" Height="27" VerticalContentAlignment="Center"/>
+                            <Label Content="Identification score cut off:" Height="27" VerticalContentAlignment="Center"/>
+                            <Label Content="Use retention information for scoring:" Height="27" VerticalContentAlignment="Center"/>
+                            <Label Content="Use retention information for filtering:" Height="27" VerticalContentAlignment="Center"/>
+                            <Label Content="Use quant masses defined in MSP format file:" Height="27" VerticalContentAlignment="Center"/>
+                            <Label Content="Only report the top hit:" Height="27" VerticalContentAlignment="Center"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Vertical" Grid.Column="1" Margin="0, 0, 0,0">
+                            
+                            <TextBox Name="TextBox_RetentionIndexLibrarySearchTolerance" Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,1,5,1">
+                                <TextBox.Text>
+                                    <Binding Path="RetentionIndexLibrarySearchTolerance" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveDoubleNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                           
+                            <TextBox Name="TextBox_RetentionTimeLibrarySearchTolerance" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,1,5,1">
+                                <TextBox.Text>
+                                    <Binding Path="RetentionTimeLibrarySearchTolerance" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveDoubleNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+
+                            <TextBox Name="TextBox_MzLibrarySearchTolerance" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,1,5,1">
+                                <TextBox.Text>
+                                    <Binding Path="MzLibrarySearchTolerance" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveDoubleNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+
+                            <TextBox Name="TextBox_EiSimilarityLibrarySearchCutOff" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,1,5,1">
+                                <TextBox.Text>
+                                    <Binding Path="EiSimilarityLibrarySearchCutOff" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnSourceUpdated="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveDoubleNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            
+                            <TextBox Name="TextBox_IdentificationScoreCutOff" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,1,5,1">
+                                <TextBox.Text>
+                                    <Binding Path="IdentificationScoreCutOff" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnSourceUpdated="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveDoubleNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+
+                            <CheckBox Name="CheckBox_IsUseRetentionForIdentificationScoring" 
+                                      HorizontalAlignment="Left" 
+                                      VerticalAlignment="Center" 
+                                      IsChecked="{Binding Path=IsUseRetentionInfoForIdentificationScoring}" 
+                                      Margin="5,7.5,0,0">
+
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="If unchecked, RT similarity is not used in total score." />
+                                </ToolTipService.ToolTip>
+
+                            </CheckBox>
+
+                            <CheckBox Name="CheckBox_IsUseRetentionForIdentificationFiltering" 
+                                      HorizontalAlignment="Left" 
+                                      VerticalAlignment="Center" 
+                                      IsChecked="{Binding Path=IsUseRetentionInfoForIdentificationFiltering}" 
+                                      Margin="5,13,0,0">
+
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="If checked, RT is used for filtering candidates out." />
+                                </ToolTipService.ToolTip>
+
+                            </CheckBox>
+
+                            <CheckBox Name="CheckBox_IsReplaceQuantmassByUserDefinedValue" 
+                                      HorizontalAlignment="Left" 
+                                      VerticalAlignment="Center" 
+                                      IsChecked="{Binding Path=IsReplaceQuantmassByUserDefinedValue}" 
+                                      Margin="5,12,0,0">
+
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="If checked, the quant mass of identified metabolites was calculated by the information of 'QUANTMASS: ' field in MSP." />
+                                </ToolTipService.ToolTip>
+
+                            </CheckBox>
+
+                            <CheckBox Name="CheckBox_OnlyReportTopHitForPostAnnotation" 
+                                      HorizontalAlignment="Left" 
+                                      VerticalAlignment="Center" 
+                                      IsChecked="{Binding Path=IsOnlyTopHitReport}" 
+                                      Margin="5,11,0,0">
+
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="If checked, the quant mass of identified metabolites was calculated by the information of 'QUANTMASS: ' field in MSP." />
+                                </ToolTipService.ToolTip>
+
+                            </CheckBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical" Grid.Column="2" Margin="0, 0, 0,0">
+                            <Label Content="" Height="27" VerticalAlignment="Center"/>
+                            <Label Content="min" Height="27" VerticalContentAlignment="Center"/>
+                            <Label Content="Da" Height="27" VerticalContentAlignment="Center"/>
+                            <Label Content="%" Height="27" VerticalContentAlignment="Center"/>
+                            <Label Content="%" Height="27" VerticalContentAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+
+
+
+                </Grid>
+            </TabItem>
+
+            <TabItem Name="TabItem_Alignment" Header="Alignment">
+                <Grid>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="220" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*" />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <Label Content="Parameter setting" FontStyle="Italic" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,0,0" />
+
+                        <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="1" Margin="20,0,0,0" Grid.ColumnSpan="2">
+
+                            <Label Content="Result name:" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="Reference file:" Height="30" VerticalContentAlignment="Center"/>
+
+                            <StackPanel Orientation="Horizontal" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,0,0" Grid.ColumnSpan="3">
+                                <Label Content="RI or RT: " />
+                                <RadioButton Name="RadioButton_UseRetentionIndexForAlignment" Content="Use retention index (RI)" Checked="RadioButton_UseRetentionIndexForAlignment_Checked" IsChecked="True" VerticalAlignment="Center" Margin="14,1,0,0" />
+                                <RadioButton Name="RadioButton_UseRetentionTimeForAlignment" Content="Use retention time (min)" Checked="RadioButton_UseRetentionTimeForAlignment_Checked" IsChecked="False" VerticalAlignment="Center" Margin="15,1,0,0" />
+                            </StackPanel>
+
+                            <Label Content="Retention index tolerance:" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="Retention time tolerance:" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="EI similarity tolerance:" Height="30" VerticalContentAlignment="Center"/>
+
+                        </StackPanel>
+
+                        <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="1" Margin="0,0,0,0" >
+
+                            <TextBox Name="TextBox_AlignmentResultFileName" Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                                <TextBox.Text>
+                                    <Binding Path="AlignmentResultFileName" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True" />
+                                </TextBox.Text>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Decide an alignment file name" />
+                                </ToolTipService.ToolTip>
+                            </TextBox>
+
+                            <ComboBox Name="ComboBox_ReferenceFileID" SelectionChanged="ComboBox_ReferenceFileID_SelectionChanged" ItemsSource="{Binding}" Height="25" Margin="5,2.5,5,2.5" HorizontalAlignment="Stretch" />
+
+
+                            <TextBox Name="TextBox_RetentionIndexAlignmentTolerance" Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,32.5,5,2.5">
+                                <TextBox.Text>
+                                    <Binding Path="RetentionIndexAlignmentTolerance" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveDoubleNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="In Kovats, 10-20 is better. In Fiehn, 2000-3000 is better." />
+                                </ToolTipService.ToolTip>
+                            </TextBox>
+
+                            <TextBox Name="TextBox_RetentionTimeAlignmentTolerance" Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                                <TextBox.Text>
+                                    <Binding Path="RetentionTimeAlignmentTolerance" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveDoubleNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="At least for DB5 column, 0.05-0.1 is better." />
+                                </ToolTipService.ToolTip>
+                            </TextBox>
+
+                            <TextBox Name="TextBox_EiSimilarityAlignmentTolerance" Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                                <TextBox.Text>
+                                    <Binding Path="EiSimilarityAlignmentCutOff" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveDoubleNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="70-80 is better." />
+                                </ToolTipService.ToolTip>
+                            </TextBox>
+
+                        </StackPanel>
+
+                        <StackPanel Orientation="Vertical" Grid.Column="2" Grid.Row="1" Margin="0,0,0,0" Grid.ColumnSpan="2">
+
+                            <Label Content="" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="min" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="%" Height="30" VerticalContentAlignment="Center"/>
+
+                        </StackPanel>
+
+
+                    </Grid>
+
+                    <Grid Grid.Row="1">
+                        <Expander Header="Advanced"
+                                  HorizontalAlignment="Stretch" 
+                                  VerticalAlignment="Stretch" 
+                                  ExpandDirection="Down">
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="3*" />
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="3" Margin="20,0,0,0" Grid.ColumnSpan="2">
+
+                                    <Label Content="Retention time factor:" Height="30" VerticalContentAlignment="Center"/>
+                                    <Label Content="EI similarity factor:" Height="30" VerticalContentAlignment="Center"/>
+                                    <Label Content="Identification after alignment:" Grid.Row="2" Grid.ColumnSpan="3" Height="30" HorizontalAlignment="Left" VerticalContentAlignment="Center" />
+                                    <Label Content="Gap filling by compulsion:" Grid.Row="2" Grid.ColumnSpan="3" Height="30" HorizontalAlignment="Left" VerticalContentAlignment="Center" />
+                                    <Label Content="Choose base peak's m/z for rep. quant mass:" Grid.Row="2" Grid.ColumnSpan="3" Height="30" HorizontalAlignment="Left" VerticalContentAlignment="Center" />
+
+                                </StackPanel>
+
+                                <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="3" Margin="0,0,0,0" >
+
+                                    <TextBox Name="TextBox_RetentionTimeAlignmentFactor" Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                                        <TextBox.Text>
+                                            <Binding Path="RetentionTimeAlignmentFactor" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                                <Binding.ValidationRules>
+                                                    <local:PositiveDoubleNumericValidation />
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="0.5-0.7 is good." />
+                                        </ToolTipService.ToolTip>
+                                    </TextBox>
+                                    
+                                    <TextBox Name="TextBox_EiSimilarityAlignmentFactor" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                                        <TextBox.Text>
+                                            <Binding Path="EiSimilarityAlignmentFactor" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                                <Binding.ValidationRules>
+                                                    <local:PositiveDoubleNumericValidation />
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="0.3-0.5 is good." />
+                                        </ToolTipService.ToolTip>
+                                    </TextBox>
+                                    
+                                    <CheckBox Name="CheckBox_IsIdentificationOnlyPerformedForAlignmentFile" Grid.Row="2" 
+                                          HorizontalAlignment="Left" 
+                                          VerticalAlignment="Center" 
+                                          IsChecked="{Binding Path=IsIdentificationOnlyPerformedForAlignmentFile}" Margin="5,6,0,0">
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="Identification is not performed for each file. Instead, the process will be applied for the spectra assigned to each alignment spot." />
+                                        </ToolTipService.ToolTip>
+                                    </CheckBox>
+
+                                    <CheckBox Name="CheckBox_IsForceInsertForGapFilling" Grid.Row="2" 
+                                          HorizontalAlignment="Left" 
+                                          VerticalAlignment="Center" 
+                                          IsChecked="{Binding Path=IsForceInsertForGapFilling}" Margin="5,15,0,0">
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="Ad hoc peak area is forcibly detected within +- 5 data points even if there is no local maximum. " />
+                                        </ToolTipService.ToolTip>
+                                    </CheckBox>
+
+                                    <CheckBox Name="CheckBox_IsRepresentativeQuantMassBasedOnBasePeakMz" Grid.Row="2" 
+                                          HorizontalAlignment="Left" 
+                                          VerticalAlignment="Center" 
+                                          IsChecked="{Binding Path=IsRepresentativeQuantMassBasedOnBasePeakMz}" Margin="5,15,0,0">
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="The m/z value of base peak in EI-MS is used for the representative quant mass. " />
+                                        </ToolTipService.ToolTip>
+                                    </CheckBox>
+
+                                </StackPanel>
+
+                                <StackPanel Orientation="Vertical" Grid.Column="2" Grid.Row="3" Margin="0,0,0,0" Grid.ColumnSpan="2">
+
+                                    <Label Content="(0-1)" Height="30" VerticalContentAlignment="Center"/>
+                                    <Label Content="(0-1)" Height="30" VerticalContentAlignment="Center"/>
+                                    <Label Content="" Height="30" VerticalContentAlignment="Center"/>
+
+                                </StackPanel>
+
+
+                            </Grid>
+
+
+                        </Expander>
+                    </Grid>
+
+
+                </Grid>
+            </TabItem>
+
+            <TabItem Name="TabItem_AlignmentFiltering" Header="Filtering">
+                <Grid>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="400" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                    
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="4*" />
+                            <ColumnDefinition Width="3*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <Label Content="Filtering option for alignment result" FontStyle="Italic" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,0,0" />
+
+                        <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="3" Margin="20,0,0,0">
+
+                            <Label Content="Peak count filter:" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="N% detected in at least one group:" Height="30" VerticalContentAlignment="Center"/>
+                            <!--<Label Content="Detected in all QCs" Grid.Row="2" Grid.ColumnSpan="3" Height="30" HorizontalAlignment="Left" VerticalContentAlignment="Center" />-->
+                            <!--<Label Content="Replace zero with 1/2 of minimum peak height: " Height="30" HorizontalAlignment="Left" VerticalContentAlignment="Center" />-->
+                            <Label Content="Remove features based on blank information: " Height="30" HorizontalAlignment="Left" VerticalContentAlignment="Center" />
+                            <ComboBox Name="ComboBox_FilteringMethod" ItemsSource="{Binding}" 
+                                              SelectionChanged="ComboBox_FilteringMethod_SelectionChanged" 
+                                              HorizontalContentAlignment="Left" 
+                                              HorizontalAlignment="Stretch" 
+                                              Height="25" Margin="5,2.5,30,2.5">
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Select the filtering criterion." />
+                                </ToolTipService.ToolTip>
+                            </ComboBox>
+                            <!--<Label Content="Sample max / blank average: " Height="30" HorizontalAlignment="Left" VerticalContentAlignment="Center" />
+                                    <Label Content="Sample average / blank average: " Height="30" HorizontalAlignment="Left" VerticalContentAlignment="Center" />-->
+                            <Label Content="Keep 'reference matched' metabolite features: " Height="30" HorizontalAlignment="Left" VerticalContentAlignment="Center" />
+                            <!--<Label Content="Keep 'annotated (wo MS2)' metabolite features: " Height="30" HorizontalAlignment="Left" VerticalContentAlignment="Center" />-->
+                            <Label Content="Keep removable features and assign the tag: " Height="30" HorizontalAlignment="Left" VerticalContentAlignment="Center" />
+
+                        </StackPanel>
+
+                        <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="3" Margin="0,0,0,0" >
+
+
+                            <TextBox Name="TextBox_PeakCountFilter" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                                <TextBox.Text>
+                                    <Binding Path="PeakCountFilter" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnSourceUpdated="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveDoubleNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Aligned peaks which are less than this parameter will be removed from the final result." />
+                                </ToolTipService.ToolTip>
+                            </TextBox>
+
+                            <TextBox Name="TextBox_NpercentDetectedInOneGroup" 
+                                            Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
+                                            HorizontalAlignment="Stretch" 
+                                            HorizontalContentAlignment="Right" 
+                                            Height="25" 
+                                            Margin="5,2,5,2.5">
+                                <TextBox.Text>
+                                    <Binding Path="NPercentDetectedInOneGroup" 
+                                             ValidatesOnDataErrors="True" 
+                                             UpdateSourceTrigger="LostFocus" 
+                                             NotifyOnSourceUpdated="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveDoubleNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Present in at least n% of samples in at least one sample group." />
+                                </ToolTipService.ToolTip>
+                            </TextBox>
+
+                            <!--<CheckBox Name="CheckBox_QcAtLeastFilter" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                          IsChecked="{Binding Path=QcAtLeastFilter}" Margin="5,8,0,0">
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="If you have some or a lot of QC samples, this option is very powerful." />
+                                </ToolTipService.ToolTip>
+                            </CheckBox>-->
+
+                            <!--<CheckBox Name="CheckBox_IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples" 
+                                              Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                              IsChecked="{Binding Path=IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples}" Margin="5,16,0,0">
+                                    </CheckBox>-->
+
+                            <CheckBox Name="CheckBox_IsRemoveFeatureBasedOnPeakHeightFoldChange" 
+                                              Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                              IsChecked="{Binding Path=IsRemoveFeatureBasedOnPeakHeightFoldChange}" Margin="5,7,0,0">
+                            </CheckBox>
+
+                            <TextBox Name="TextBox_FoldChangeForBlankFiltering" 
+                                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
+                                             IsEnabled="{Binding Path=IsRemoveFeatureBasedOnPeakHeightFoldChange}"
+                                             HorizontalAlignment="Stretch" 
+                                             HorizontalContentAlignment="Right" 
+                                             Height="25" 
+                                             Margin="5,9,5,2.5">
+                                <TextBox.Text>
+                                    <Binding Path="FoldChangeForBlankFiltering" 
+                                             ValidatesOnDataErrors="True" 
+                                             UpdateSourceTrigger="LostFocus" 
+                                             NotifyOnSourceUpdated="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveDoubleNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip>
+                                        <TextBlock>
+                                                  1. For instance, if a fold-change of 10 is used: for an average peak height over all samples (or max. value in all samples) of 10,000 
+                                                <LineBreak /> 
+                                                     and an average peak height in blanks of 500, the fold-change 10,000/500 = 20 means that this feature stays in the data set.
+                                                <LineBreak /> 
+                                                  2. Users must specify in File property setting -> File type which files are blanks and actual samples.
+                                                <LineBreak /> 
+                                                     if more blanks are available, an average value would be used for calculation.
+                                                <LineBreak /> 
+                                                  3. If in blanks all values are zero (even after gap filling), 1/10 of minimal peak height over all samples is used.
+                                        </TextBlock>
+                                    </ToolTip>
+                                </ToolTipService.ToolTip>
+                            </TextBox>
+
+                            <!--<TextBox Name="TextBox_SampleAverageOverBlankAverage" 
+                                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
+                                             IsEnabled="{Binding Path=IsRemoveFeatureBasedOnPeakHeightFoldChange}"
+                                             HorizontalAlignment="Stretch" 
+                                             HorizontalContentAlignment="Right" 
+                                             Height="25" 
+                                             Margin="5,2,5,2.5">
+                                        <TextBox.Text>
+                                            <Binding Path="SampleAverageOverBlankAverage" 
+                                             ValidatesOnDataErrors="True" 
+                                             UpdateSourceTrigger="LostFocus" 
+                                             NotifyOnSourceUpdated="True">
+                                                <Binding.ValidationRules>
+                                                    <local:PositiveDoubleNumericValidation />
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                        <ToolTipService.ToolTip>
+                                            <TextBlock>
+                                                  1. for instance: if fold-change 10 would be used: average peak height over all samples (or max. value in all samples)
+                                                <LineBreak /> 
+                                                     is 10,000; average blank peak height is 500  => 10,000 / 500 = 20 => feature would stay in the dataset.
+                                                <LineBreak /> 
+                                                  2. users must specify in File property setting which samples are BLANKS and SAMPLES; 
+                                                <LineBreak /> 
+                                                     if more blanks are available, an average value would be used for calculation.
+                                                <LineBreak /> 
+                                                  3. if in blanks all values would be zero, a half of minimal peak heights over all samples would be used
+                                            </TextBlock>
+                                        </ToolTipService.ToolTip>
+                                    </TextBox>-->
+
+                            <CheckBox Name="CheckBox_IsKeepIdentifiedMetaboliteFeatures" 
+                                              Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                              IsEnabled="{Binding Path=IsRemoveFeatureBasedOnPeakHeightFoldChange}"
+                                              IsChecked="{Binding Path=IsKeepIdentifiedMetaboliteFeatures}" Margin="5,9,0,0">
+                                <ToolTipService.ToolTip>
+                                    <TextBlock>
+                                                  This would allow the user to retain their, for example, internal standards before removing all features 
+                                                <LineBreak /> 
+                                                  that are not at least x-fold greater intensity in the samples than in the blanks.
+                                    </TextBlock>
+                                </ToolTipService.ToolTip>
+
+                            </CheckBox>
+
+                            <!--<CheckBox Name="CheckBox_IsKeepAnnotatedMetaboliteFeatures" 
+                                              Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                              IsEnabled="{Binding Path=IsRemoveFeatureBasedOnPeakHeightFoldChange}"
+                                              IsChecked="{Binding Path=IsKeepAnnotatedMetaboliteFeatures}" Margin="5,16,0,0">
+                                <ToolTipService.ToolTip>
+                                    <TextBlock>
+                                                  This would allow the user to retain their, for example, internal standards before removing all features 
+                                                <LineBreak /> 
+                                                  that are not at least x-fold greater intensity in the samples than in the blanks.
+                                    </TextBlock>
+                                </ToolTipService.ToolTip>
+
+                            </CheckBox>-->
+
+                            <CheckBox Name="CheckBox_IsKeepRemovableFeaturesAndAssignedTagForChecking" 
+                                              Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                              IsEnabled="{Binding Path=IsRemoveFeatureBasedOnPeakHeightFoldChange}"
+                                              IsChecked="{Binding Path=IsKeepRemovableFeaturesAndAssignedTagForChecking}" Margin="5,15,0,0">
+                                <ToolTipService.ToolTip>
+                                    <TextBlock>
+                                                  All features are kept even if the filtering is applied, but users can check if the feature is satisfied with the blank checking or not.
+                                                <LineBreak /> 
+                                                  Moreover, users can export the alignment result by the filtering options.
+                                    </TextBlock>
+                                </ToolTipService.ToolTip>
+
+                            </CheckBox>
+
+
+
+                        </StackPanel>
+
+                        <StackPanel Orientation="Vertical" Grid.Column="2" Grid.Row="3" Margin="0,0,0,0" Grid.ColumnSpan="2">
+
+                            <Label Content="%" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="%" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="fold change" Height="30" VerticalContentAlignment="Center"/>
+                        </StackPanel>
+
+                    </Grid>
+
+
+                </Grid>
+            </TabItem>
+
+
+        </TabControl>
+        <Button x:Name="Cancel" Content="Cancel" Click="Click_Cancel" Grid.Row="1" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5" />
+        <Button x:Name="Finish" Content="Finish" Command="{Binding OkCommand}" Grid.Row="1" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,80,5" />
+        <Button x:Name="Load" Content="Load" Click="Click_Load" Grid.Row="1" Height="25" Width="70" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,5,5,5">
+            <ToolTipService.ToolTip>
+                <ToolTip Content="Load your parameters" />
+            </ToolTipService.ToolTip>
+        </Button>
+        <CheckBox Name="CheckBox_WithAlignment" Content="Together with Alignment" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{Binding Path=TogetherWithAlignment}" Margin="90,0,0,0" />
+    </Grid>
+</Window>

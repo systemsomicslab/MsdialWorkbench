@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>MsdialCommonStandard</AssemblyName>
+    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj" />
+    <ProjectReference Include="..\DatabaseStandard\DatabaseStandard.csproj" />
+    <ProjectReference Include="..\DataProcessingStandard\DataProcessingStandard.csproj" />
+    <ProjectReference Include="..\MathematicsStandard\MathematicsStandard.csproj" />
+    <ProjectReference Include="..\MsdialGcmsProcessStandard\MsdialGcmsProcessStandard.csproj" />
+    <ProjectReference Include="..\MsdialLcmsProcessStandard\MsdialLcmsProcessStandard.csproj" />
+  </ItemGroup>
+
+</Project>

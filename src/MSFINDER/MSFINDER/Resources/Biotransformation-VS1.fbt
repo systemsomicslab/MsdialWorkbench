@@ -1,0 +1,55 @@
+ID	Name	Formula difference	Mass difference	Elution behavior
+1	Hydroxylation	+O	15.99491462	-
+2	Hydrogenation	+H2	2.015650064	+
+3	Hydration	+H2O	18.01056468	-
+4	Carboxylation (+CO2)	+CO2	43.98982924	n
+5	Formylation (+CO)	+CO	27.99491462	n
+6	Methylation	+CH2	14.01565006	n
+7	Acetylation	+C2H2O	42.01056468	n
+8	Deamination (-HN+O)	+O-HN	0.984015588	n
+9	Amination (+NH2)	+HN	15.01089903	n
+10	Methoxylation	+CH2O	30.01056468	n
+11	Nitrosation	+NO-H	28.99016359	n
+12	Amine oxidation	+O-H3N	-1.031634476	n
+13	Nitro reduction	+H2-O2	-29.97417918	n
+14	Nitroso reduction	+H2-O	-13.97926456	n
+15	Amide hydrolysis	-CHNO	-43.00581365	n
+16	Cyanohydrin cleavage	-CHN	-27.01089903	n
+17	Transamination (+NH3-O)	+NH3-O	1.031634476	n
+18	Sulfurization	+H2S	33.98772106	n
+19	Beta oxidation	+C2H4	28.03130013	+
+20	Myristoylation	+C14H26O	210.1983655	+
+21	Palmitoylation	+C16H30O	238.2296656	+
+22	ADP-ribosylation	+C15H21N5O13P2	541.061109	+
+23	Phosphorylation	+HPO3	79.96633052	+
+24	Quinate	+C7H10O5	174.0528234	-
+25	Shikimate	+C7H8O4	156.0422587	-
+26	Tartarate	+C4H4O5	132.0058732	-
+27	Coumaryl alcohol	+C9H8O	132.0575149	+
+28	Malate	+C4H4O4	116.0109586	-
+29	Deoxyhexose	+C6H10O4	146.0579088	-
+30	Coniferyl alcohol	+C10H10O2	162.0680796	+
+31	Catechol	+C6H4O	92.02621475	+
+32	Vanillate	+C8H6O3	150.0316941	+
+33	Syringate	+C9H8O4	180.0422587	+
+34	Hydroxybenzoate	+C7H4O2	120.0211294	+
+35	Caffeate	+C9H6O3	162.0316941	+
+36	Dimethoxyquinol	+C8H8O3	152.0473441	+
+37	Hydroxyquinol	+C6H4O2	108.0211294	+
+38	Coumarate	+C9H6O2	146.0367794	+
+39	Sinapyl alcohol	+C11H12O3	192.0786442	+
+40	Isoprenylation	+C5H8	68.06260026	+
+41	Vanillyl alcohol	+C8H8O2	136.0524295	+
+42	Ferulate	+C10H8O3	176.0473441	+
+43	Pentose	+C5H8O4	132.0422587	-
+44	Protocatechus alcohol	+C7H4O3	136.016044	+
+45	Hydroxybenzyl alcohol	+C7H6O	106.0418648	+
+46	Caffeyl alcohol	+C9H8O2	148.0524295	+
+47	Syringyl alcohol	+C9H10O3	166.0629942	+
+48	Sinapate	+C11H10O4	206.0579088	+
+49	Quinol	+C6H4O	92.02621475	+
+50	Syringyl	+C11H12O3	192.0786442	+
+51	Guaiacyl	+C10H10O2	162.0680796	+
+52	Glycerol	+C3H6O2	74.03677943	-
+53	Hexose	+C6H10O5	162.0528234	-
+54	Uronate	+C6H8O6	176.032088	-

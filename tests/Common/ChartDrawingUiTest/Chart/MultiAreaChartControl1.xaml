@@ -1,0 +1,28 @@
+﻿<Page x:Class="ChartDrawingUiTest.Chart.MultiAreaChartControl1"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ChartDrawingUiTest.Chart"
+      xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+      xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="MultiAreaChartControl1">
+    <Page.DataContext>
+        <local:MultiLineChartControlViewModel1/>
+    </Page.DataContext>
+    <Grid>
+        <chart:SimpleChartControl HorizontalAxis="{Binding HorizontalAxis}"
+                                  VerticalAxis="{Binding VerticalAxis}">
+            <chart:MultiAreaChartControl ItemsSources="{Binding Serieses}"
+                                         CollectionDataType="{x:Type local:Series}"
+                                         ItemsDataType="{x:Type core:DataPoint}"
+                                         ItemsProperty="Data"
+                                         HorizontalProperty="X"
+                                         VerticalProperty="Y"
+                                         AreaBrush="{Binding Brush}"
+                                         AreaOpacity="0.2"/>
+        </chart:SimpleChartControl>   
+    </Grid>
+</Page>

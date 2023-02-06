@@ -1,0 +1,122 @@
+﻿<Window x:Class="Rfx.Riken.OsakaUniv.PeakAssignerSettingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:common="clr-namespace:Rfx.Riken.OsakaUniv;assembly=Common"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv;assembly=CommonMVVM"
+        Loaded="Window_Loaded"
+        Title="Peak assignment setting" Height="465" Width="624">
+
+    <i:Interaction.Behaviors>
+        <local:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
+    </i:Interaction.Behaviors>
+
+    <Window.Resources>
+
+        <ObjectDataProvider x:Key="IonMode" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="common:IonMode" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <ObjectDataProvider x:Key="SpectrumType" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="common:DataType" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <ControlTemplate x:Key="InputErrorTemplate">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+
+        <Style x:Key="ToolTipErrorStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Pink" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ToolTipErrorStyleDataGrid" TargetType="{x:Type DataGrid}">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Pink" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="345" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+
+        <!--File selection-->
+        <Label Content="File name:" Grid.Row="0" Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
+        <ComboBox Name="ComboBox_FileName" ItemsSource="{Binding Path=AnalysisFiles}" DisplayMemberPath="RawDataFileName" SelectedIndex="{Binding Path=SelectedFileID}" Grid.Row="0" Margin="80,0,5,0" Height="30" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
+
+        <!--Meta data-->
+        <Label Content="Meta data" FontStyle="Italic" Grid.Row="1" Margin="5,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
+        <Grid Grid.Row="1" Margin="5,35,0,0">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.Resources>
+                <Style x:Key="ReadOnlyTextBox" TargetType="TextBox">
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Foreground" Value="Black" />
+                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                    <Setter Property="IsReadOnly" Value="True" />
+                </Style>
+            </Grid.Resources>
+
+            <StackPanel Grid.Column="0" Margin="5,0,0,0" Orientation="Vertical">
+                <Label Content="Name:" Height="30"/>
+                <Label Content="Scan number:" Height="30"/>
+                <Label Content="Retention time [min]:" Height="30"/>
+                <Label Content="Precursor m/z [Da]:" Height="30"/>
+                <Label Content="Precursor type:" Height="30"/>
+                <Label Content="Ion mode:" Height="30"/>
+                <Label Content="Spectrum type:" Height="30"/>
+                <Label Content="Collision energy:" Height="30"/>
+                <Label Content="Formula:" Height="30"/>
+                <Label Content="SMILES:" Height="30"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Margin="5,0,0,0" Orientation="Vertical">
+                <TextBox Name="TextBox_Name" Text="{Binding Path=RawDataVM.Name, Mode=OneWay}" Height="25" Margin="0,2.5,5,2.5" Style="{StaticResource ReadOnlyTextBox}" />
+                <TextBox Name="TextBox_ScanNumber" Text="{Binding Path=RawDataVM.ScanNumber, Mode=OneWay}" Height="25" Margin="0,2.5,5,2.5" Style="{StaticResource ReadOnlyTextBox}" />
+                <TextBox Name="TextBox_RetentionTime" Text="{Binding Path=RawDataVM.RetentionTime, StringFormat=0.00, Mode=OneWay}" Height="25" Margin="0,2.5,5,2.5" Style="{StaticResource ReadOnlyTextBox}" />
+                <TextBox Name="TextBox_PrecursorMz" Text="{Binding Path=RawDataVM.PrecursorMz, StringFormat=0.0000, Mode=OneWay}"  Style="{StaticResource ReadOnlyTextBox}" HorizontalAlignment="Stretch" Height="25" Margin="0,2.5,5,2.5" />
+                <TextBox Name="TextBox_PrecursorType" Text="{Binding Path=RawDataVM.PrecursorType, StringFormat=0.0000, Mode=OneWay}"  Style="{StaticResource ReadOnlyTextBox}" HorizontalAlignment="Stretch" Height="25" Margin="0,2.5,5,2.5" />
+                <TextBox Name="TextBox_IonMode" Text="{Binding Path=RawDataVM.IonMode, Mode=OneWay}"  Style="{StaticResource ReadOnlyTextBox}" HorizontalAlignment="Stretch" Height="25" Margin="0,2.5,5,2.5" />
+                <TextBox Name="TextBox_SpectrumType" Text="{Binding Path=RawDataVM.SpectrumType, Mode=OneWay}"  Style="{StaticResource ReadOnlyTextBox}" HorizontalAlignment="Stretch" Height="25" Margin="0,2.5,5,2.5" />
+                <TextBox Name="TextBox_CollisionEnergy" Text="{Binding Path=RawDataVM.CollisionEnergy, Mode=OneWay}" VerticalContentAlignment="Center" Height="25" Margin="0,2.5,5,2.5" Style="{StaticResource ReadOnlyTextBox}" />
+                <TextBox Name="TextBox_Formula" Text="{Binding Path=Formula, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True }" VerticalContentAlignment="Center" Height="25" Margin="0,2.5,5,2.5" />
+                <TextBox Name="TextBox_Smiles" Text="{Binding Path=Smiles, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True }" VerticalContentAlignment="Center" Height="25" Margin="0,2.5,5,2.5" />
+
+            </StackPanel>
+
+        </Grid>
+
+        <!--Finish buttons-->
+        <Button x:Name="Cancel" Content="Cancel" Click="Click_Cancel" Grid.Row="2" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5" />
+        <Button x:Name="Finish" Content="Finish" Command="{Binding OkCommand}" Grid.Row="2" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,80,5" />
+
+    </Grid>
+</Window>

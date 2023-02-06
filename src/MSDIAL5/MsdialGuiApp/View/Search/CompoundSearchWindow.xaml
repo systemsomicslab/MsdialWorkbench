@@ -1,0 +1,48 @@
+﻿<Window x:Class="CompMs.App.Msdial.View.Search.CompoundSearchWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Search"
+        xmlns:imv="clr-namespace:CompMs.App.Msdial.View.Imms"
+        xmlns:imvm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
+        xmlns:div="clr-namespace:CompMs.App.Msdial.View.Dims"
+        xmlns:divm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
+        xmlns:lcv="clr-namespace:CompMs.App.Msdial.View.Lcms"
+        xmlns:lcvm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
+        xmlns:lcimv="clr-namespace:CompMs.App.Msdial.View.Lcimms"
+        xmlns:lcimvm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcimms"
+        xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type={x:Type vm:CompoundSearchVM}}"
+        Name="CompoundSearch"
+        Title="Compound search" Height="720" Width="1280">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <ContentControl Content="{Binding}"
+                    behavior:SuppressContextMenuBehavior.IsEnabled="True">
+        <ContentControl.Resources>
+            <DataTemplate DataType="{x:Type vm:CompoundSearchVM}">
+                <div:DimsCompoundSearchView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type lcvm:LcmsCompoundSearchViewModel}">
+                <lcv:LcmsCompoundSearchView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type divm:DimsCompoundSearchViewModel}">
+                <div:DimsCompoundSearchView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type imvm:ImmsCompoundSearchVM}">
+                <imv:ImmsCompoundSearchView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type lcimvm:LcimmsCompoundSearchViewModel}">
+                <lcimv:LcimmsCompoundSearchView />
+            </DataTemplate>
+        </ContentControl.Resources>
+    </ContentControl>
+</Window>

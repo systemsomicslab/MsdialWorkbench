@@ -1,0 +1,185 @@
+﻿<Window x:Class="Rfx.Riken.OsakaUniv.ProjectPropertySetWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv;assembly=CommonMVVM"
+        Title="Project property setting" 
+        Name="ProjectPropertySetView"
+        Height="400" Width="400">
+
+    <!--interaction trigers-->
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction
+                    Command="{Binding WindowLoaded}"
+                    CommandParameter="{Binding ElementName=ProjectPropertySetView}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <!--interaction Behaviors-->
+    <i:Interaction.Behaviors>
+        <local:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
+    </i:Interaction.Behaviors>
+
+    <!--Window resources-->
+    <Window.Resources>
+        <ControlTemplate x:Key="InputErrorTemplate">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+        <Style x:Key="ToolTipErrorStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Pink" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Orientation="Vertical">
+
+                <Label Content="Instrument type: " Height="30" VerticalAlignment="Center" Margin="2,0,0,0" />
+                <Label Content="Instrument: " Height="30" VerticalAlignment="Center"  Margin="2,0,0,0" />
+                <Label Content="Authors: " Height="30" VerticalAlignment="Center" Margin="2,0,0,0" />
+                <Label Content="License: " Height="30" VerticalAlignment="Center"  Margin="2,0,0,0" />
+                <Label Content="Collision energy: " Height="30" VerticalAlignment="Center"  Margin="2,0,0,0" />
+                <Label Content="Comment: " Height="30" VerticalAlignment="Center"  Margin="2,0,0,0" />
+
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Vertical">
+
+                <TextBox Name="TextBox_InstrumentType" 
+                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  
+                             VerticalAlignment="Center"
+                             VerticalContentAlignment="Center"
+                             HorizontalAlignment="Stretch" 
+                             HorizontalContentAlignment="Left" 
+                             Height="25" Margin="5,2.5,5,2.5">
+
+                    <TextBox.Text>
+                        <Binding Path="InstrumentType" UpdateSourceTrigger="PropertyChanged" />
+                    </TextBox.Text>
+
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="GC-EI-TOF, LC-ESI-QTOF etc. See MassBank definition" />
+                    </ToolTipService.ToolTip>
+                </TextBox>
+
+                <TextBox Name="TextBox_Instrument" 
+                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  
+                             VerticalAlignment="Center"
+                             VerticalContentAlignment="Center"
+                             HorizontalAlignment="Stretch" 
+                             HorizontalContentAlignment="Left" 
+                             Height="25" Margin="5,2.5,5,2.5">
+
+                    <TextBox.Text>
+                        <Binding Path="Instrument" UpdateSourceTrigger="PropertyChanged" />
+                    </TextBox.Text>
+
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="ex. LTQ Orbitrap XL, Thermo Scientfic; HP-1100 HPLC, Agilent" />
+                    </ToolTipService.ToolTip>
+                </TextBox>
+
+                <TextBox Name="TextBox_Authors" 
+                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  
+                             VerticalAlignment="Center"
+                             VerticalContentAlignment="Center"
+                             HorizontalAlignment="Stretch" 
+                             HorizontalContentAlignment="Left" 
+                             Height="25" Margin="5,2.5,5,2.5">
+
+                    <TextBox.Text>
+                        <Binding Path="Authors" UpdateSourceTrigger="PropertyChanged" />
+                    </TextBox.Text>
+
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="ex. Hiroshi Tsugawa, Kazutaka Ikeda, and Makoto Arita" />
+                    </ToolTipService.ToolTip>
+
+                </TextBox>
+
+                <TextBox Name="TextBox_License" 
+                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  
+                             VerticalAlignment="Center"
+                             VerticalContentAlignment="Center"
+                             HorizontalAlignment="Stretch" 
+                             HorizontalContentAlignment="Left" 
+                             Height="25" Margin="5,2.5,5,2.5">
+
+                    <TextBox.Text>
+                        <Binding Path="License" UpdateSourceTrigger="PropertyChanged" />
+                    </TextBox.Text>
+
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="ex. CC-BY" />
+                    </ToolTipService.ToolTip>
+
+                </TextBox>
+
+                <TextBox Name="TextBox_CollisionEnergy" 
+                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  
+                             VerticalAlignment="Center"
+                             VerticalContentAlignment="Center"
+                             HorizontalAlignment="Stretch" 
+                             HorizontalContentAlignment="Left" 
+                             Height="25" Margin="5,2.5,5,2.5">
+
+                    <TextBox.Text>
+                        <Binding Path="CollisionEnergy" UpdateSourceTrigger="PropertyChanged" />
+                    </TextBox.Text>
+
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="ex. 70 eV (in GC-MS), 30 +/-15 V (in MS/MS)" />
+                    </ToolTipService.ToolTip>
+
+                </TextBox>
+
+            </StackPanel>
+
+            <TextBox Name="TextBox_Comment"
+                     Grid.Column="1"
+                     Text="{Binding Path=Comment, UpdateSourceTrigger=PropertyChanged}" 
+                     AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextWrapping="WrapWithOverflow" 
+                     Margin="5,153,5,2.5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+                <ToolTipService.ToolTip>
+
+                    <ToolTip>
+                        <TextBlock>
+                                Add comment.
+                        </TextBlock>
+                    </ToolTip>
+
+                </ToolTipService.ToolTip>
+
+            </TextBox>
+
+        </Grid>
+
+        <Button Name="Button_Cancel" Content="Cancel" Grid.Row="2" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5"
+                Command="{Binding CloseWindow}" CommandParameter="{Binding ElementName=ProjectPropertySetView}"/>
+        <Button Name="Button_Set" Content="Set" Grid.Row="2" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,85,5"
+                Command="{Binding SetProjectProperty}" CommandParameter="{Binding ElementName=ProjectPropertySetView}"/>
+        
+    </Grid>
+</Window>

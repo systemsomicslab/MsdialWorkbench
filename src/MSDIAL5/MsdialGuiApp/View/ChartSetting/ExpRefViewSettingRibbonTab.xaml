@@ -1,0 +1,40 @@
+﻿<RibbonTab x:Class="CompMs.App.Msdial.View.ChartSetting.ExpRefViewSettingRibbonTab"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+           xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+           mc:Ignorable="d" 
+           Header="MS/MS spectrum"
+           d:DataContext="{d:DesignInstance Type={x:Type vmchart:RawDecSpectrumsViewModel}}"
+           d:DesignHeight="450" d:DesignWidth="800" d:Background="White">
+    <RibbonGroup Header="Raw MS/MS spectrum">
+        <RibbonComboBox Label="Spectrum id"
+                        VerticalAlignment="Center">
+            <RibbonGallery SelectedItem="{Binding SelectedMs2Id.Value}">
+                <RibbonGalleryCategory ItemsSource="{Binding Ms2IdList.Value, FallbackValue={x:Null}}"/>
+            </RibbonGallery>
+        </RibbonComboBox>
+    </RibbonGroup>
+    <RibbonGroup Header="Intensity axis type">
+        <RibbonComboBox Label="Deconvoluted"
+                        VerticalAlignment="Center">
+            <RibbonGallery SelectedItem="{Binding DecRefSpectrumViewModels.UpperVerticalAxisItem.Value}">
+                <RibbonGalleryCategory ItemsSource="{Binding DecRefSpectrumViewModels.UpperVerticalAxisItemCollection}" DisplayMemberPath="Label"/>
+            </RibbonGallery>
+        </RibbonComboBox>
+        <RibbonComboBox Label="Raw                "
+                        VerticalAlignment="Center">
+            <RibbonGallery SelectedItem="{Binding RawRefSpectrumViewModels.UpperVerticalAxisItem.Value}">
+                <RibbonGalleryCategory ItemsSource="{Binding RawRefSpectrumViewModels.UpperVerticalAxisItemCollection}" DisplayMemberPath="Label"/>
+            </RibbonGallery>
+        </RibbonComboBox>
+        <RibbonComboBox Label="Reference       "
+                        AlternationCount="10"
+                        VerticalAlignment="Center">
+            <RibbonGallery SelectedItem="{Binding DecRefSpectrumViewModels.LowerVerticalAxisItem.Value}">
+                <RibbonGalleryCategory ItemsSource="{Binding DecRefSpectrumViewModels.LowerVerticalAxisItemCollection}" DisplayMemberPath="Label"/>
+            </RibbonGallery>
+        </RibbonComboBox>
+    </RibbonGroup>
+</RibbonTab>

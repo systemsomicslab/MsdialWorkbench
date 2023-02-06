@@ -1,0 +1,67 @@
+﻿<Window x:Class="Rfx.Riken.OsakaUniv.ForAIF.MsFinderExporterSettingWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        ResizeMode="NoResize"
+        Title="MS-FINDER export setting" Height="520" Width="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" MinHeight="200"/>
+            <RowDefinition Height="50" MinHeight="50"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <TextBox Text="PeakID" Margin="10,10,5,5" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" IsReadOnly="True" BorderThickness="0"/>
+            <TextBox Text="start:" Margin="35,25,5,5" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" IsReadOnly="True" BorderThickness="0"/>
+            <TextBox Text="end:" Margin="160,25,5,5" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" IsReadOnly="True" BorderThickness="0"/>
+            <TextBox Text="{Binding Path=PeakIdStart, UpdateSourceTrigger=PropertyChanged}" Margin="65,25,0,0" Width="80" VerticalAlignment="Top" HorizontalAlignment="Left" TextAlignment="Right" />
+            <TextBox Text="{Binding Path=PeakIdEnd, UpdateSourceTrigger=PropertyChanged}" Margin="188,25,0,0" Width="80" VerticalAlignment="Top" HorizontalAlignment="Left" TextAlignment="Right"/>
+
+            <TextBox Text="Retention Time" Margin="10,60,5,5" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" IsReadOnly="True" BorderThickness="0"/>
+            <TextBox Text="min:" Margin="35,75,5,5" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" IsReadOnly="True" BorderThickness="0"/>
+            <TextBox Text="max:" Margin="160,75,5,5" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" IsReadOnly="True" BorderThickness="0"/>
+            <TextBox Text="{Binding Path=RtStart, StringFormat=0.00, UpdateSourceTrigger=PropertyChanged}" Margin="65,75,0,0" Width="80" VerticalAlignment="Top" HorizontalAlignment="Left" TextAlignment="Right"/>
+            <TextBox Text="{Binding Path=RtEnd, StringFormat=0.00, UpdateSourceTrigger=PropertyChanged}" Margin="188,75,0,0" Width="80" VerticalAlignment="Top" HorizontalAlignment="Left" TextAlignment="Right"/>
+
+            <TextBox Text="m/z" Margin="10,110,5,5" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" IsReadOnly="True" BorderThickness="0"/>
+            <TextBox Text="min:" Margin="35,125,5,5" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" IsReadOnly="True" BorderThickness="0"/>
+            <TextBox Text="max:" Margin="160,125,5,5" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" IsReadOnly="True" BorderThickness="0"/>
+            <TextBox Text="{Binding Path=MzStart, StringFormat=0.000, UpdateSourceTrigger=PropertyChanged}" Margin="65,125,0,0" Width="80" VerticalAlignment="Top" HorizontalAlignment="Left" TextAlignment="Right"/>
+            <TextBox Text="{Binding Path=MzEnd, StringFormat=0.000, UpdateSourceTrigger=PropertyChanged}" Margin="188,125,0,0" Width="80" VerticalAlignment="Top" HorizontalAlignment="Left" TextAlignment="Right"/>
+
+            <TextBox Name="TextBox_PeakArea" Text="Peak Area" Margin="10,160,5,5" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" IsReadOnly="True" BorderThickness="0"/>
+            <TextBox Text="min:" Margin="35,175,5,5" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" IsReadOnly="True" BorderThickness="0"/>
+            <TextBox Text="max:" Margin="160,175,5,5" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" IsReadOnly="True" BorderThickness="0"/>
+            <TextBox Text="{Binding Path=AreaStart, StringFormat=0, UpdateSourceTrigger=PropertyChanged}" Margin="65,175,0,0" Width="80" VerticalAlignment="Top" HorizontalAlignment="Left" TextAlignment="Right"/>
+            <TextBox Text="{Binding Path=AreaEnd, StringFormat=0, UpdateSourceTrigger=PropertyChanged}" Margin="188,175,0,0" Width="80" VerticalAlignment="Top" HorizontalAlignment="Left" TextAlignment="Right"/>
+
+            <TextBox Name="TextBoxForPeak1" Text="Peak Intensity" Margin="10,210,5,5" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" IsReadOnly="True" BorderThickness="0"/>
+            <TextBox Text="min:" Margin="35,225,5,5" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" IsReadOnly="True" BorderThickness="0"/>
+            <TextBox Text="max:" Margin="160,225,5,5" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" IsReadOnly="True" BorderThickness="0"/>
+            <TextBox Name="TextBoxForPeak2" Text="{Binding Path=IntStart, StringFormat=0, UpdateSourceTrigger=PropertyChanged}" Margin="65,225,0,0" Width="80" VerticalAlignment="Top" HorizontalAlignment="Left" TextAlignment="Right"/>
+            <TextBox Name="TextBoxForPeak3" Text="{Binding Path=IntEnd, StringFormat = 0, UpdateSourceTrigger=PropertyChanged}" Margin="188,225,0,0" Width="80" VerticalAlignment="Top" HorizontalAlignment="Left" TextAlignment="Right"/>
+
+            <TextBox Text="Identified filter: " Margin="10,260,5,5" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" IsReadOnly="True" BorderThickness="0"/>
+            <CheckBox IsChecked="{Binding Path=IdentifiedFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="240,262,0,0"/>
+            <TextBox Text="Annotated filter: " Margin="10,280,5,5" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" IsReadOnly="True" BorderThickness="0"/>
+            <CheckBox IsChecked="{Binding Path=AnnotatedFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="240,282,0,0"/>
+
+            <TextBox Text="MS/MS filter:" Margin="10,300,5,5" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" IsReadOnly="True" BorderThickness="0"/>
+            <CheckBox IsChecked="{Binding Path=Ms2Filter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="240,302,0,0"/>
+
+            <TextBox Text="Blank filter:" Margin="10,320,5,5" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" IsReadOnly="True" BorderThickness="0"/>
+            <CheckBox IsChecked="{Binding Path=BlankFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="240,322,0,0"/>
+
+            <TextBox Text="Unique ions filter:" Margin="10,340,5,5" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" IsReadOnly="True" BorderThickness="0"/>
+            <CheckBox IsChecked="{Binding Path=UniqueFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="240,342,0,0"/>
+
+            <TextBox Text="Number of target peaks: " Margin="10,380,5,5" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" IsReadOnly="True" BorderThickness="0"/>
+            <TextBox Text="{Binding Path=NumExportPeaks}" Width="80" Margin="170,381,5,5" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" IsReadOnly="True" BorderThickness="0"/>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Button x:Name="Button_Finish" Content="OK" Click="Button_Finish_Click" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="25" Width="70" Margin="5,5,80,5" />
+            <Button x:Name="Button_Cancel" Content="Cancel" Click="Button_Cancel_Click" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="25" Width="70" Margin="5,5,5,5" />
+        </Grid>
+    </Grid>
+</Window>

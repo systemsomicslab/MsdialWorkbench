@@ -1,0 +1,92 @@
+﻿<Window x:Class="Rfx.Riken.OsakaUniv.SelectAdductType"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Adduct type window" Height="490" Width="600">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        
+        <TabControl Name="TabControl_AdductType" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0">
+            <TabItem Name="TamItem_MS1_Positive" Header="MS1 positive">
+                <DataGrid Name="DataGrid_MS1_Positive" Grid.Row="1" ItemsSource="{Binding Path=Ms1Positive}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" IsReadOnly="False" HeadersVisibility="All" AutoGenerateColumns="False" Margin="5,0,5,5">
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader" >
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Width="2*" Binding="{Binding Path=Value.AdductIonName}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Mass" Width="*" Binding="{Binding Path=Value.AdductIonAccurateMass, StringFormat=0.0000}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Charge" Width="*" Binding="{Binding Path=Value.ChargeNumber, StringFormat=0}" IsReadOnly="True" />
+                        <DataGridCheckBoxColumn Header="Include" Width="*" Binding="{Binding Path=IsChecked}" IsReadOnly="False" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem Name="TamItem_MS1_Negative" Header="MS1 negative">
+                <DataGrid Name="DataGrid_MS1_Negative" Grid.Row="1" ItemsSource="{Binding Path=Ms1Negative}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" IsReadOnly="False" HeadersVisibility="All" AutoGenerateColumns="False" Margin="5,0,5,5">
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader" >
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Width="2*" Binding="{Binding Path=Value.AdductIonName}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Mass" Width="*" Binding="{Binding Path=Value.AdductIonAccurateMass, StringFormat=0.0000}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Charge" Width="*" Binding="{Binding Path=Value.ChargeNumber, StringFormat=0}" IsReadOnly="True" />
+                        <DataGridCheckBoxColumn Header="Include" Width="*" Binding="{Binding Path=IsChecked}" IsReadOnly="False" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Name="TamItem_MS2_Positive" Header="MS2 positive">
+                <DataGrid Name="DataGrid_MS2_Positive" Grid.Row="1" ItemsSource="{Binding Path=Ms2Positive}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" IsReadOnly="False" HeadersVisibility="All" AutoGenerateColumns="False" Margin="5,0,5,5">
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader" >
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Width="2*" Binding="{Binding Path=Value.AdductIonName}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Mass" Width="*" Binding="{Binding Path=Value.AdductIonAccurateMass, StringFormat=0.0000}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Charge" Width="*" Binding="{Binding Path=Value.ChargeNumber, StringFormat=0}" IsReadOnly="True" />
+                        <DataGridCheckBoxColumn Header="Include" Width="*" Binding="{Binding Path=IsChecked}" IsReadOnly="False" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Name="TamItem_MS2_Negative" Header="MS2 negative">
+                <DataGrid Name="DataGrid_MS2_Negative" Grid.Row="1" ItemsSource="{Binding Path=Ms2Negative}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" IsReadOnly="False" HeadersVisibility="All" AutoGenerateColumns="False" Margin="5,0,5,5">
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader" >
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Width="2*" Binding="{Binding Path=Value.AdductIonName}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Mass" Width="*" Binding="{Binding Path=Value.AdductIonAccurateMass, StringFormat=0.0000}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Charge" Width="*" Binding="{Binding Path=Value.ChargeNumber, StringFormat=0}" IsReadOnly="True" />
+                        <DataGridCheckBoxColumn Header="Include" Width="*" Binding="{Binding Path=IsChecked}" IsReadOnly="False" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+        </TabControl>
+        <Grid Grid.Row="1">
+            <Label Name="descriptions" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0">
+                <TextBlock>
+                    This is a setting window for different adduct search.
+                    <LineBreak />
+                    Annotation results are not shown in the GUI, but will be exported as FGT and MSP format.
+                    <LineBreak />
+                </TextBlock>
+            </Label>
+        </Grid>
+        <Grid Grid.Row="2">
+            <Button x:Name="Cancel" Content="Cancel" Command="{Binding CloseCommand}" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5" />
+            <Button x:Name="Set" Content="Finish" Command="{Binding OkCommand}" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,80,5" />
+        </Grid>
+    </Grid>
+</Window>

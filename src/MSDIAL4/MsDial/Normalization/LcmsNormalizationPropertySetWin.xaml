@@ -1,0 +1,135 @@
+﻿<Window x:Class="Rfx.Riken.OsakaUniv.LcmsNormalizationPropertySetWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv;assembly=CommonMVVM"
+        Closing="Window_Closing"
+        Title="Normalization property setting" Loaded="Window_Loaded" Height="600" Width="800">
+    <i:Interaction.Behaviors>
+        <local:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
+    </i:Interaction.Behaviors>
+    <Window.Resources>
+        <ControlTemplate x:Key="InputErrorTemplate">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+        <Style x:Key="ToolTipErrorStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Pink" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <Button x:Name="Button_Finish" Content="Finish" Command="{Binding OkCommand}" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="25" Width="70" Margin="5,5,80,5" />
+        <Button x:Name="Button_Cancel" Content="Cancel" Click="Button_Cancel_Click" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="25" Width="70" Margin="5,5,5,5" />
+
+        <DataGrid x:Name="Datagrid_AlignmentProperty" ItemsSource="{Binding Path=AlignmentPropertyBeanViewModelCollection}" Grid.Row="0" Grid.Column="1"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                  AutoGenerateColumns="False" SelectionMode="Extended" SelectionUnit="CellOrRowHeader" CanUserAddRows="False" CanUserDeleteRows="False" 
+                  CanUserReorderColumns="False" CanUserSortColumns="True" ClipboardCopyMode="ExcludeHeader" 
+                  PreviewKeyDown="Datagrid_AlignmentProperty_PreviewKeyDown" CurrentCellChanged="Datagrid_AlignmentProperty_CurrentCellChanged" Margin="5,5,5,5" >
+           
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+
+            <DataGrid.Columns>
+
+                <DataGridTemplateColumn SortMemberPath="ID" Width="85" Header="Alignment ID" IsReadOnly="False">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}" Text="{Binding Path=ID}" VerticalContentAlignment="Center" IsReadOnly="True" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn SortMemberPath="MZ" Width="1*" Header="Precursor m/z" IsReadOnly="False">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}" Text="{Binding Path=MZ}" VerticalContentAlignment="Center" IsReadOnly="True" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn SortMemberPath="RT" Width="1*" Header="Retention time" IsReadOnly="False">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}" Text="{Binding Path=RT, StringFormat=0.000}" VerticalContentAlignment="Center" IsReadOnly="True" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn SortMemberPath="Adduct" Width="1*" Header="Adduct ion name" IsReadOnly="False">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
+                                     Text="{Binding Path=Adduct, ValidatesOnDataErrors=True, UpdateSourceTrigger=LostFocus, NotifyOnValidationError=True}"  IsReadOnly="True" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn SortMemberPath="MetaboliteName" Width="2*" Header="Metabolite name" IsReadOnly="False">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
+                                     Text="{Binding Path=MetaboliteName, ValidatesOnDataErrors=True, UpdateSourceTrigger=LostFocus, NotifyOnValidationError=True}"  IsReadOnly="True" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+
+                <DataGridTemplateColumn SortMemberPath="InternalStandardID" Width="*" Header="Target ID" IsReadOnly="False">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+
+
+                            <TextBox Name="TextBox_IsId" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
+                                     VerticalContentAlignment="Center" IsReadOnly="False">
+                               
+                                <TextBox.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Auto fill"
+                                                      Click="MenuItem_AutoFill_Click" />
+                                        <MenuItem Header="Copy"
+                                                      Click="MenuItem_CopyToClipboard" />
+                                        <MenuItem Header="Paste"
+                                                      Click="MenuItem_Paste" />
+                                    </ContextMenu>
+                                </TextBox.ContextMenu>
+                                
+                                <TextBox.Text>
+                                    <Binding Path="InternalStandardID" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveIntNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+
+                    <!--<DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <Grid  FocusManager.FocusedElement="{Binding ElementName= TextBox_IsId}">
+                                <TextBox Name="TextBox_IsId" Text="{Binding InternalStandardAlignmentID, UpdateSourceTrigger=PropertyChanged}" />
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>-->
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+    </Grid>
+</Window>

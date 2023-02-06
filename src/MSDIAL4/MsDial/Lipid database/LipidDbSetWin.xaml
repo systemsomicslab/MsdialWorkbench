@@ -1,0 +1,148 @@
+﻿<Window x:Class="Rfx.Riken.OsakaUniv.LipidDbSetWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:common="clr-namespace:Rfx.Riken.OsakaUniv;assembly=Common"
+        xmlns:mvvm="clr-namespace:Rfx.Riken.OsakaUniv;assembly=CommonMVVM"
+        Title="Lipid database setting" Height="490" Width="535">
+
+    <i:Interaction.Behaviors>
+        <mvvm:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
+    </i:Interaction.Behaviors>
+    <Window.Resources>
+        
+        <ControlTemplate x:Key="InputErrorTemplate">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+        
+        <Style x:Key="ToolTipErrorStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Pink" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <ObjectDataProvider x:Key="SolventType" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="common:SolventType" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <ObjectDataProvider x:Key="CollisionType" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="common:CollisionType" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+    </Window.Resources>
+
+    <Grid>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+
+        <Label Content="Solvent type: " Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0" />
+        <ComboBox Name="ComboBox_SolventType" 
+                  ItemsSource="{Binding Source={StaticResource SolventType}}" 
+                  SelectedValue="{Binding Path=SolventType}" 
+                  Grid.Row="0" Width="120" Height="25" HorizontalAlignment="Left" 
+                  VerticalAlignment="Center" Margin="100,0,0,0" />
+
+        <Label Content="Collision type: " Grid.Row="0" HorizontalAlignment="Left" 
+               VerticalAlignment="Center" Margin="235,0,0,0" Visibility="Hidden" />
+        
+        <ComboBox Name="ComboBox_CollistionType" 
+                  ItemsSource="{Binding Source={StaticResource CollisionType}}" 
+                  SelectedValue="{Binding Path=CollisionType}" 
+                  Grid.Row="0" Width="120" Height="25" 
+                  Visibility="Hidden"
+                  HorizontalAlignment="Left" VerticalAlignment="Center" Margin="325,0,0,0" />
+
+        <Button Content="Check all" Click="Click_CheckAll" Grid.Row="1" 
+                Height="25" Width="70" 
+                HorizontalAlignment="Left" 
+                VerticalAlignment="Center" Margin="10,5,5,5" />
+        <Button Content="Remove all" Click="Click_RemoveAll" Grid.Row="1" 
+                Height="25" Width="70" 
+                HorizontalAlignment="Left" 
+                VerticalAlignment="Center" Margin="90,5,5,5" />
+
+        <TabControl Grid.Row="2" Name="TabControl" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <TabItem Name="TabItem_PositiveSet" Header="Positive ion mode">
+
+                <DataGrid Name="DataGrid_PositiveListSetting" ItemsSource="{Binding Path=PositiveQueryVMs}" 
+                          CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" 
+                          CanUserSortColumns="True" SelectionUnit="Cell" 
+                          IsReadOnly="False" 
+                          HeadersVisibility="All" AutoGenerateColumns="False" Margin="5,0,0,0">
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader" >
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+
+                    <DataGrid.Columns>
+                      
+                        <DataGridTextColumn Header="Lipid class" Width="*" Binding="{Binding LbmClass}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Adduct type" Width="*" Binding="{Binding AdductIon.AdductIonName}" IsReadOnly="True" />
+                        
+                        <DataGridTemplateColumn Width="*" Header="Select">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsChecked="{Binding Path=IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                   
+                    </DataGrid.Columns>
+                    
+                </DataGrid>
+
+            </TabItem>
+          
+            <TabItem Name="TabItem_NegativeSet" Header="Negative ion mode">
+
+                <DataGrid Name="DataGrid_NegativeListSetting" ItemsSource="{Binding Path=NegativeQueryVMs}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="Cell" IsReadOnly="False" HeadersVisibility="All" AutoGenerateColumns="False" Margin="5,0,0,0">
+                        
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader" >
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Lipid class" Width="*" Binding="{Binding LbmClass}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Adduct type" Width="*" Binding="{Binding AdductIon.AdductIonName}" IsReadOnly="True" />
+                        
+                        <DataGridTemplateColumn Width="*" Header="Select">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsChecked="{Binding Path=IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    
+                    </DataGrid.Columns>
+
+                </DataGrid>
+
+            </TabItem>
+        </TabControl>
+       
+        <Button x:Name="Cancel" Content="Cancel" Click="Click_Cancel" Grid.Row="3" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5" />
+        
+        <Button x:Name="Finish" Content="Finish" Command="{Binding OkCommand}" Grid.Row="3" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,80,5" />
+    
+    </Grid>
+</Window>

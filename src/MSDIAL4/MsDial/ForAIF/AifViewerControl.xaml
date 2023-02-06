@@ -1,0 +1,99 @@
+﻿<Window x:Class="Rfx.Riken.OsakaUniv.AifViewerControl"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv"
+        mc:Ignorable="d"
+        Closing="Window_Closing"
+        ResizeMode="NoResize"
+        Title="AIF Viewer Controller" Height="100" Width="460">
+    <Grid>
+        <TextBox Name="Label_Explanation_Peak" Text="Peak Viewers" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20"  Margin="55,0,0,0" Width="104" BorderThickness="0" IsReadOnly="True" RenderTransformOrigin="0.5,0.5"/>
+        <TextBox Name="Label_Explanation_Alignment" Text="Alignment Viewers" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20"  Margin="280,0,0,0" Width="130" BorderThickness="0" IsReadOnly="True"/>
+        <Button Name="Button_MsViewer" Width="40" Height="40" Click="Button_MsViewerWithRef_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,20,0,0">
+            <Button.Content>
+                <Image Source="../Resources/MS2Reset.ico" />
+            </Button.Content>
+            <ToolTipService.ToolTip>
+                <ToolTip Content="Show pairwise MS viewer, Dec vs Ref or Raw vs Dec" />
+            </ToolTipService.ToolTip>
+        </Button>
+        <Button Name="Button_Ms2ChromViewer" Width="40" Height="40" Click="Button_Ms2ChromViewer_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="50,20,0,0">
+            <Button.Content>
+                <Image Source="../Resources/Deconvoluted.ico" />
+            </Button.Content>
+            <ToolTipService.ToolTip>
+                <ToolTip Content="Show MS2 chromatograms " />
+            </ToolTipService.ToolTip>
+        </Button>
+        <Button Name="Button_PeakLibrarySearch" Width="40" Height="40" Click="Button_PeakLibrarySearch_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="95,20,0,0">
+            <Button.Content>
+                <Image Source="../Resources/CompoundSearchIcon.ico" />
+            </Button.Content>
+            <ToolTipService.ToolTip>
+                <ToolTip Content="Library search for peak spot " />
+            </ToolTipService.ToolTip>
+        </Button>
+        <Button Name="Button_MsFinder_Peak" Width="40" Height="40" Click="Button_MsFinder_Peak_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="140,20,0,0">
+            <Button.Content>
+                <Image Source="../Resources/msfinder_icon.ico" />
+            </Button.Content>
+            <ToolTipService.ToolTip>
+                <ToolTip Content="Bulk export to MS-FINDER from peak spot table" />
+            </ToolTipService.ToolTip>
+        </Button>
+
+        <Button Name="Button_AlignmentMsViewer" Width="40" Height="40" Click="Button_AlignmentMsViewer_Click" Background="Aqua" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="220,20,0,0">
+            <Button.Content>
+                <Image Source="../Resources/MS2Reset.ico" />
+            </Button.Content>
+            <ToolTipService.ToolTip>
+                <ToolTip Content="Show pairwise MS viewer (Dec vs Ref; default deconvolution)" />
+            </ToolTipService.ToolTip>
+        </Button>
+        <!--        <Button Name="Button_AlignmentMs1ChromViewer" Width="40" Height="40" Click="Button_AlignmentMs1ChromViewer_Click" Background="Aqua" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="205,20,0,0">
+            <Button.Content>
+                <Image Source="../Resources/Deconvoluted.ico" />
+            </Button.Content>
+            <ToolTipService.ToolTip>
+                <ToolTip Content="Show aligned Ms1 chromatogram" />
+            </ToolTipService.ToolTip>
+        </Button>
+     -->
+        <Button Name="Button_SampleViewer" Width="40" Height="40" Click="Button_SampleViewer_Click"  Background="Aqua" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="265,20,0,0">
+            <Button.Content>
+                <Image Source="../Resources/Table.png" />
+            </Button.Content>
+            <ToolTipService.ToolTip>
+                <ToolTip Content="Show aligned sample table viewer" />
+            </ToolTipService.ToolTip>
+        </Button>
+
+        <Button Name="Button_AlignmentLibrarySearch" Width="40" Height="40" Click="Button_AlignmentLibrarySearch_Click" Background="Aqua" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="310,20,0,0">
+            <Button.Content>
+                <Image Source="../Resources/CompoundSearchIcon.ico" />
+            </Button.Content>
+            <ToolTipService.ToolTip>
+                <ToolTip Content="Library search for alignment spot" />
+            </ToolTipService.ToolTip>
+        </Button>
+        <Button Name="Button_MsFinder_Alignment" Width="40" Height="40" Click="Button_MsFinder_Alignment_Click" Background="Aqua" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="355,20,0,0">
+            <Button.Content>
+                <Image Source="../Resources/msfinder_icon.ico" />
+            </Button.Content>
+            <ToolTipService.ToolTip>
+                <ToolTip Content="Bulk export to MS-FINDER from alignment spot table" />
+            </ToolTipService.ToolTip>
+        </Button>
+        <Button Name="Button_CorrelDecViewer"  Width="40" Height="40" Click="Button_CorrelDecViewer_Click" Background="Aqua" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="400,20,0,0">
+            <Button.Content>
+                <Image Source="../Resources/CorrDec.ico" />
+            </Button.Content>
+            <ToolTipService.ToolTip>
+                <ToolTip Content="Show pairwise MS viewer (Dec vs Ref; CorrDec)" />
+            </ToolTipService.ToolTip>
+        </Button>
+
+    </Grid>
+</Window>

@@ -1,0 +1,75 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>MsfinderCommon</AssemblyName>
+    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\AdductNegatives.anf" />
+    <None Remove="Resources\AdductPositives.apf" />
+    <None Remove="Resources\LipidQueryMaster.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\AdductNegatives.anf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\AdductPositives.apf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <Content Include="Resources\LipidQueryMaster.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj" />
+    <ProjectReference Include="..\..\MSDIAL4\DatabaseStandard\DatabaseStandard.csproj" />
+    <ProjectReference Include="..\..\MSDIAL4\MolecularFormulaFinderStandard\MolecularFormulaFinderStandard.csproj" />
+    <ProjectReference Include="..\..\MSDIAL4\MsdialLcmsProcessStandard\MsdialLcmsProcessStandard.csproj" />
+    <ProjectReference Include="..\..\MSDIAL4\PugRestApiStandard\PugRestApiStandard.csproj" />
+    <ProjectReference Include="..\..\MSDIAL4\StructureFinderStandard\StructureFinderStandard.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Resources\ChemOntologyDB_vs2.cho">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\EiFragmentDB_vs1.eif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\EIMS-DBs-vs1.egm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\InchikeyClassyfireDB-VS5.icd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\MINEs-StructureDB-vs1.msd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\MsfinderFormulaDB-VS13.efd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\MsfinderStructureDB-VS15.esd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\MSMS-DBs-vs1.etm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Msp20201228141756_converted.lbm2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\NeutralLossDB_vs2.ndb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\ProductIonLib_vs1.pid">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\UniqueFragmentLib_vs1.ufd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

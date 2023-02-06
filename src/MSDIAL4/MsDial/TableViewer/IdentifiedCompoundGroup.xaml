@@ -1,0 +1,73 @@
+﻿<Window x:Class="Rfx.Riken.OsakaUniv.TableViewer.IdentifiedCompoundGroup"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv"
+        mc:Ignorable="d"
+        Closing="Window_Closing"
+        Title="Annotated Compound Table" Height="300" Width="740">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50" MinHeight="50"/>
+            <RowDefinition Height="*" MinHeight="100"/>
+        </Grid.RowDefinitions>
+        <Grid Name="Header" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120" MinWidth="120"/>
+                <ColumnDefinition Width="*" MinWidth="160"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <Label Content="Num of rows: " Margin="5,0,5,5" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                <TextBox Name="NumRows" Text="{Binding Path=Settings.NumRows, Mode=OneWay}" Margin="85,5,5,5" Width="35" Height="16" BorderThickness="0" IsReadOnly="True" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+            </Grid>
+            <Grid Grid.Column="1">
+                <Label Content="Metabolite Name Filter" Margin="10,0,5,5" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                <TextBox Name="TextBox_MetaboliteFilter" Text="{Binding Path=MetaboliteName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="15,5,15,5" Height="20" VerticalAlignment="Bottom" TextAlignment="Right" BorderBrush="LightSteelBlue"/>
+            </Grid>
+        </Grid>
+        <Grid Name="Data" Grid.Row="1">
+            <DataGrid Name="DataGrid_RawData" ItemsSource="{Binding Source}" SelectedItem="{Binding Path=SelectedData}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" SelectionUnit="FullRow" HeadersVisibility="All" AutoGenerateColumns="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="0,0,0,0" >
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="DataGridColumnHeader" >
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+                <DataGrid.CellStyle>
+                    <Style TargetType="DataGridCell" >
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                    </Style>
+                </DataGrid.CellStyle>
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Width="50" Binding="{Binding Path=ID}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Num Spots" Width="80" Binding="{Binding Path=Counter}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Rank" Width="80" Binding="{Binding Path=IdentificationRank}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Short InChI Key" Width="150" Binding="{Binding Path=InchiKey}" IsReadOnly="True" >
+                        <DataGridTextColumn.CellStyle>
+                            <Style TargetType="{x:Type DataGridCell}">
+                                <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Header="Metabolite Name" Width="*" Binding="{Binding Path=MetaboliteName, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="False" >
+                        <DataGridTextColumn.CellStyle>
+                            <Style TargetType="{x:Type DataGridCell}">
+                                <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Names" Width="2*" Binding="{Binding Path=Names, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="False" >
+                        <DataGridTextColumn.CellStyle>
+                            <Style TargetType="{x:Type DataGridCell}">
+                                <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+    </Grid>
+</Window>

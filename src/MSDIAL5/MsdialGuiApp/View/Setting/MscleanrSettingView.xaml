@@ -1,0 +1,103 @@
+﻿<Window x:Class="CompMs.App.Msdial.View.Setting.MscleanrSettingView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CompMs.App.Msdial.View.Setting"
+        xmlns:viewmodel="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type={x:Type viewmodel:MscleanrSettingViewModel}}"
+        Title="MSCleanR generic filters setting window" Height="150" Width="550">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="TextBox" BasedOn="{StaticResource ToolTipErrorStyle}">
+                <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+            </Style>
+            <Style TargetType="TextBlock" x:Key="AlignedTextBlock">
+                <Setter Property="Width" Value="120"/>
+            </Style>
+            <Style TargetType="TextBox" x:Key="AlignedTextBox" BasedOn="{StaticResource ToolTipErrorStyle}">
+                <Setter Property="Width" Value="64"/>
+            </Style>
+            <Style TargetType="CheckBox" x:Key="AlignedCheckBox">
+                <Setter Property="Width" Value="188"/>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <CheckBox Content="Blank ratio" IsChecked="{Binding BlankRatioChecked}" d:IsChecked="True"/>
+                <WrapPanel Visibility="{Binding BlankRatioChecked, Converter={StaticResource BooleanToVisibility}}" Grid.Column="1">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Minimum blank ratio" Style="{StaticResource AlignedTextBlock}"/>
+                        <TextBox Text="{Binding BlankRatioMinimum}" Style="{StaticResource AlignedTextBox}"/>
+                    </StackPanel>
+                    <CheckBox Content="Delete ghost peaks?" IsChecked="{Binding DeleteGhostPeaksChecked}" d:IsChecked="True"
+                              Style="{StaticResource AlignedCheckBox}"/>
+                </WrapPanel>
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <CheckBox Content="Incorrect Mass" IsChecked="{Binding IncorrectMassChecked}" d:IsChecked="True"/>
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <CheckBox Content="Relative Standard Deviation" IsChecked="{Binding RSDChecked}" d:IsChecked="True"/>
+                <WrapPanel Visibility="{Binding RSDChecked, Converter={StaticResource BooleanToVisibility}}" Grid.Column="1">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Maximum RSD" Style="{StaticResource AlignedTextBlock}"/>
+                        <TextBox Text="{Binding RSDMaximum}" Style="{StaticResource AlignedTextBox}"/>
+                    </StackPanel>
+                </WrapPanel>
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <CheckBox Content="Relative Mass Defect" IsChecked="{Binding RMDChecked}" d:IsChecked="True"/>
+                <WrapPanel Visibility="{Binding RMDChecked, Converter={StaticResource BooleanToVisibility}}" Grid.Column="1">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Minimum RMD"/>
+                        <TextBox Text="{Binding RMDMinimum}" Width="64" Margin="8,0"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Maximum RMD"/>
+                        <TextBox Text="{Binding RMDMaximum}" Width="64" Margin="8,0"/>
+                    </StackPanel>
+                </WrapPanel>
+            </Grid>
+            <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Margin="8,4"
+                    Grid.Row="2">
+                <StackPanel.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Margin" Value="8,4"/>
+                        <Setter Property="Height" Value="24"/>
+                        <Setter Property="Width" Value="80"/>
+                    </Style>
+                </StackPanel.Resources>
+                <Button Content="Apply" Command="{Binding MscleanrFilterCommand}"/>
+                <Button Content="Cancel" Command="Close"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

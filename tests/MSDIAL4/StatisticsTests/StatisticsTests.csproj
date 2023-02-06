@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <OutputType>WinExe</OutputType>
+		<UseWPF>true</UseWPF>
+    <IsPackable>false</IsPackable>
+    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.1.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.1.0" />
+    <PackageReference Include="coverlet.collector" Version="1.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Common\CommonStandard\CommonStandard.csproj" />
+    <ProjectReference Include="..\..\..\src\MSDIAL4\MathematicsStandard\MathematicsStandard.csproj" />
+    <ProjectReference Include="..\..\..\src\MSDIAL4\PairwisePlotCommon\PairwisePlotCommon.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="data\testmatrix.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+</Project>
