@@ -177,14 +177,7 @@ namespace CompMs.Common.Lipidomics
                 var HfaDb = acylChain[1].DoubleBond;
                 foreach (var ox in hfaOx)
                 {
-                    if (ox == acylChain[1].CarbonCount)
-                    {
-                        HfaDb = HfaDb.Add(DoubleBondInfo.Create(ox - 1));
-                    }
-                    else
-                    {
-                        HfaDb = HfaDb.Add(DoubleBondInfo.Create(ox));
-                    }
+                    HfaDb = HfaDb.Add(DoubleBondInfo.Create(ox));
                 }
                 var HfaNoDBChain = new AcylChain(acylChain[1].CarbonCount, HfaDb, new Oxidized(0));
                 spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, HfaNoDBChain, adduct, nlMass, abundance));
