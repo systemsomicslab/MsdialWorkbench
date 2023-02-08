@@ -116,5 +116,15 @@ namespace CompMs.Common.Parser.Tests
 
             Assert.AreEqual(expected, Encoding.ASCII.GetString(memory.ToArray()));
         }
+
+        [TestMethod]
+        [DeploymentItem(@"Resources\Parser\msp_from_mzvault.msp")]
+        [DeploymentItem(@"Resources\Parser\msp_from_sciex.msp")]
+        [DataRow(@"Resources\Parser\msp_from_mzvault.msp", 1)]
+        [DataRow(@"Resources\Parser\msp_from_sciex.msp", 1)]
+        public void ReadMspFileTest(string testFile, int size) {
+            var datas = MspFileParser.MspFileReader(testFile);
+            Assert.AreEqual(size, datas.Count);
+        }
     }
 }

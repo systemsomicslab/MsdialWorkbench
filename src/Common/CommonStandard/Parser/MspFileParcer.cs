@@ -33,7 +33,7 @@ namespace CompMs.Common.Parser
                 {
                     var wkstr = sr.ReadLine();
                     if (wkstr.StartsWith("#")) continue;
-                    var isRecordStarted = wkstr.StartsWith("NAME:");
+                    var isRecordStarted = wkstr.StartsWith("NAME:", StringComparison.InvariantCultureIgnoreCase);
                     if (isRecordStarted) {
                         
                         var mspField = new MoleculeMsReference() { ScanID = counter };
