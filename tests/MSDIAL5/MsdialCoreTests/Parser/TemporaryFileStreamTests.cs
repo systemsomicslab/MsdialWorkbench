@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
+using System.Text;
 
 namespace CompMs.MsdialCore.Parser.Tests
 {
@@ -11,7 +12,7 @@ namespace CompMs.MsdialCore.Parser.Tests
         [TestMethod()]
         public void MoveTest() {
             using (var stream = new TemporaryFileStream(filePath)) {
-                using (var writer = new StreamWriter(stream, leaveOpen: true)) {
+                using (var writer = new StreamWriter(stream, Encoding.UTF8, bufferSize: 1024, leaveOpen: true)) {
                     writer.WriteLine("ABC");
                     writer.WriteLine("XYZ");
                 }
@@ -31,7 +32,7 @@ namespace CompMs.MsdialCore.Parser.Tests
         [DataRow(true, true)]
         public void DisposeTest(bool fileExists, bool moveBeforeDispose) {
             using (var stream = new TemporaryFileStream(filePath, moveBeforeDispose)) {
-                using (var writer = new StreamWriter(stream, leaveOpen: true)) {
+                using (var writer = new StreamWriter(stream, Encoding.UTF8, bufferSize: 1024, leaveOpen: true)) {
                     writer.WriteLine("ABC");
                     writer.WriteLine("XYZ");
                 }

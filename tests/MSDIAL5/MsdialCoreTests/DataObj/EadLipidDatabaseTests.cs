@@ -86,7 +86,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             Assert.AreEqual(actual1.Charge, actual3.Charge);
             Assert.AreEqual(actual1.MsLevel, actual3.MsLevel);
 
-            foreach ((var expect, var actual) in actual1.Spectrum.Zip(actual3.Spectrum)) {
+            foreach ((var expect, var actual) in actual1.Spectrum.Zip(actual3.Spectrum, (e, a) => (e, a))) {
                 Assert.AreEqual(expect.Mass, actual.Mass, 1e-7);
                 Assert.AreEqual(expect.Intensity, actual.Intensity, 1e-5);
                 Assert.AreEqual(expect.Comment, actual.Comment);
@@ -115,7 +115,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             Assert.AreEqual(actual2.Charge, actual4.Charge);
             Assert.AreEqual(actual2.MsLevel, actual4.MsLevel);
 
-            foreach ((var expect, var actual) in actual2.Spectrum.Zip(actual4.Spectrum)) {
+            foreach ((var expect, var actual) in actual2.Spectrum.Zip(actual4.Spectrum, (e, a) => (e, a))) {
                 Assert.AreEqual(expect.Mass, actual.Mass, 1e-7);
                 Assert.AreEqual(expect.Intensity, actual.Intensity, 1e-5);
                 Assert.AreEqual(expect.Comment, actual.Comment);
