@@ -4,6 +4,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Utility;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialGcMsApi.Parameter;
@@ -28,23 +29,34 @@ namespace CompMs.MsdialGcMsApi.Algorithm
         /// <param name="ms1DecResults"></param>
         /// <param name="carbon2RtDict"></param>
         /// <param name="reporter"></param>
-        public void MainProcess(List<MSDecResult> ms1DecResults, Dictionary<int, float> carbon2RtDict, ReportProgress reporter) {
+        public SpectrumFeature[] MainProcess(List<MSDecResult> ms1DecResults, Dictionary<int, float> carbon2RtDict, ReportProgress reporter) {
             Console.WriteLine("Annotation started");
             SetRetentionIndexForMS1DecResults(ms1DecResults, carbon2RtDict);
 
             if (_parameter.IsIdentificationOnlyPerformedForAlignmentFile)
-                return;
+                return Array.Empty<SpectrumFeature>();
 
             if (_mspDB != null && _mspDB.Count > 0) {
-                foreach (var (result, index) in ms1DecResults.WithIndex()) {
-                    MspBasedProccess(result);
+                var features = new SpectrumFeature[ms1DecResults.Count];
+                foreach (var (decResult, index) in ms1DecResults.WithIndex()) {
+                    var results = MspBasedProccess(decResult);
+                    if (results.FirstOrDefault() is MsScanMatchResult topHit) {
+                        features[index] = new SpectrumFeature(decResult.ModelPeakMz, decResult, _mspDB[topHit.LibraryID]);
+                        features[index].MatchResults.AddResults(results);
+                    }
+                    else {
+                        features[index] = new SpectrumFeature(decResult.ModelPeakMz, decResult);
+                    }
                     Console.WriteLine("Done {0}/{1}", index, ms1DecResults.Count);
                     reporter.Show(index, ms1DecResults.Count);
                 }
+                return features;
             }
+
+            return Array.Empty<SpectrumFeature>();
         }
 
-        public void MspBasedProccess(MSDecResult msdecResult) {
+        public List<MsScanMatchResult> MspBasedProccess(MSDecResult msdecResult) {
             var rType = _parameter.RetentionType;
             var rValue = rType == RetentionType.RT ? msdecResult.ChromXs.RT.Value : msdecResult.ChromXs.RI.Value;
             var rTolerance = rType == RetentionType.RT ? _parameter.MspSearchParam.RtTolerance : _parameter.MspSearchParam.RiTolerance;
@@ -76,6 +88,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                 }
                 msdecResult.MspIDs.Add(result.LibraryID);
             }
+            return matchedQueries;
         }
 
         private (int, int) RetrieveMspBounds(RetentionType rType, double rValue, float rTolerance) {
@@ -105,7 +118,9 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             }
 
             if (_parameter.RiCompoundType == RiCompoundType.Alkanes)
-                foreach (var result in ms1DecResults) result.ChromXs.RI = new RetentionIndex(RetentionIndexHandler.GetRetentionIndexByAlkanes(carbon2RtDict, (float)result.ChromXs.Value));
+                foreach (var result in ms1DecResults) {
+                    result.ChromXs.RI = new RetentionIndex(RetentionIndexHandler.GetRetentionIndexByAlkanes(carbon2RtDict, (float)result.ChromXs.Value));
+                }
             else {
                 var fiehnRiDict = RetentionIndexHandler.GetFiehnFamesDictionary();
                 Execute(fiehnRiDict, carbon2RtDict, ms1DecResults);
