@@ -4,6 +4,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Parameter;
+using CompMs.Common.Parser;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -12,6 +13,7 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore.DataObj;
 using CompMs.MsdialDimsCore.Parameter;
 using CompMs.MsdialImmsCore.Algorithm;
+using CompMs.MsdialImmsCore.Algorithm.Annotation;
 using CompMs.MsdialImmsCore.DataObj;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialIntegrate.Parser;
@@ -25,6 +27,93 @@ namespace CompMs.App.MsdialConsole.Process
 {
     public sealed class MaldiMsProcessTest {
         private MaldiMsProcessTest() { }
+
+        public static void Run() {
+            //var filepath = @"E:\6_Projects\PROJECT_AHexCer\spatial_lipidomics\sagital_pos\20221023_TIMS_Brain_DHAP_20um_Pos.d";
+            //var reffile = @"E:\6_Projects\PROJECT_ImagingMS\Lipid reference library\20220725_timsTOFpro_TextLibrary_Brain_Pos.txt";
+            //var outputfile = @"E:\6_Projects\PROJECT_AHexCer\spatial_lipidomics\sagital_pos\20221023_TIMS_Brain_DHAP_20um_Pos.mddata";
+            var filepath = @"E:\6_Projects\PROJECT_ImagingMS\20211005_Bruker_timsTOFfleX-selected\Eye_Neg\20211005_Eye_Acsl_HZ_KO_Neg\20211005_Eye_Acsl_HZ_KO_Neg.d";
+            var reffile = @"E:\6_Projects\PROJECT_ImagingMS\Lipid reference library\20220725_timsTOFpro_TextLibrary_Eye_Neg.txt";
+            var outputfile = @"E:\6_Projects\PROJECT_ImagingMS\20211005_Bruker_timsTOFfleX-selected\Eye_Neg\20211005_Eye_Acsl_HZ_KO_Neg\20211005_Eye_Acsl_HZ_KO_Neg.mddata";
+
+            var filename = Path.GetFileNameWithoutExtension(filepath);
+            var fileDir = Path.GetDirectoryName(filepath);
+            //var projectParameter = new ProjectParameter(DateTime.Now, @"E:\6_Projects\PROJECT_AHexCer\spatial_lipidomics\sagital_pos\", "20221023_TIMS_Brain_DHAP_20um_Pos.mdproject");
+            var projectParameter = new ProjectParameter(DateTime.Now, @"E:\6_Projects\PROJECT_ImagingMS\20211005_Bruker_timsTOFfleX-selected\Eye_Neg\20211005_Eye_Acsl_HZ_KO_Neg\", "20211005_Eye_Acsl_HZ_KO_Neg.mdproject");
+
+            var storage = new ProjectDataStorage(projectParameter);
+            var file = new AnalysisFileBean() {
+                AnalysisFileId = 0,
+                AnalysisFileIncluded = true,
+                AnalysisFileName = filename,
+                AnalysisFilePath = filepath,
+                AnalysisFileAnalyticalOrder = 1,
+                AnalysisFileClass = "0",
+                AnalysisFileType = AnalysisFileType.Sample,
+                DeconvolutionFilePath = Path.Combine(fileDir, filename + "_test230127" + ".dcl"),
+                PeakAreaBeanInformationFilePath = Path.Combine(fileDir, filename + "_test230127" + ".pai"),
+            };
+
+            var param = new MsdialImmsParameter(isImaging: true, isLabUseOnly: true) {
+                ProjectFolderPath = Path.GetDirectoryName(outputfile),
+                ProjectFileName = Path.GetFileName(outputfile),
+                MachineCategory = MachineCategory.IIMMS,
+                TextDBFilePath = reffile,
+
+                //IonMode = IonMode.Positive,
+                IonMode = IonMode.Negative,
+                MinimumAmplitude = 100000,
+                FileID2CcsCoefficients = new Dictionary<int, CoefficientsForCcsCalculation>() {
+                    { 0, new CoefficientsForCcsCalculation() { IsBrukerIM = true } }
+                }
+            };
+            param.TextDbSearchParam.CcsTolerance = 20.0F;
+            param.TextDbSearchParam.IsUseCcsForAnnotationFiltering = true;
+
+            RawMeasurement rawobj = null;
+            using (var access = new RawDataAccess(filepath, 0, getProfileData: false, isImagingMsData: true, isGuiProcess: false)) {
+                rawobj = access.GetMeasurement();
+            }
+            var provider = new StandardDataProviderFactory().Create(rawobj);
+
+            var db = DataBaseStorage.CreateEmpty();
+            var tdb = new MoleculeDataBase(TextLibraryParser.TextLibraryReader(param.TextDBFilePath, out string error), "TextDB", DataBaseSource.Text, SourceType.TextDB);
+            var textDBAnnotator = new ImmsTextDBAnnotator(tdb, param.TextDbSearchParam, "TextDB", -1);
+            db.AddMoleculeDataBase(
+                tdb,
+                new List<IAnnotatorParameterPair<MoleculeDataBase>> {
+                    new MetabolomicsAnnotatorParameterPair(textDBAnnotator.Save(), new AnnotationQueryFactory(textDBAnnotator, param.PeakPickBaseParam, param.TextDbSearchParam, ignoreIsotopicPeak: false))
+                });
+            //var evaluator = FacadeMatchResultEvaluator.FromDataBases(db);
+
+            var container = new MsdialImmsDataStorage {
+                AnalysisFiles = new List<AnalysisFileBean>() { file },
+                AlignmentFiles = new List<AlignmentFileBean>(),
+                MsdialImmsParameter = param,
+                IupacDatabase = IupacResourceParser.GetIUPACDatabase(),
+                DataBases = db,
+                DataBaseMapper = db.CreateDataBaseMapper()
+            };
+            storage.AddStorage(container);
+
+            var matchResultEvaluator = new MsScanMatchResultEvaluator(param.TextDbSearchParam);
+
+            var processor = new MsdialImmsCore.Process.FileProcess(container, null, null, matchResultEvaluator);
+            processor.RunAsyncTest(file, provider).Wait();
+
+            using (var fs = new TemporaryFileStream(storage.ProjectParameter.FilePath))
+            using (IStreamManager streamManager = ZipStreamManager.OpenCreate(fs)) {
+                var serializer = new MsdialIntegrateSerializer();
+                storage.Save(
+                streamManager,
+                serializer,
+                path => new DirectoryTreeStreamManager(path),
+                parameter => { }).Wait();
+                streamManager.Complete();
+                fs.Move();
+            }
+        }
+
         public static void TimsOnTest() {
             var filepath = @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\ImagingMS\ROI_20220208_Eye_Acsl6Hz_20um_DCTB_Pos\20220208_Eye_Acsl6Hz_20um_DCTB_Pos.d";
             var reffile = @"E:\6_Projects\PROJECT_ImagingMS\Lipid reference library\20220725_timsTOFpro_TextLibrary_Eye_Pos.txt";
