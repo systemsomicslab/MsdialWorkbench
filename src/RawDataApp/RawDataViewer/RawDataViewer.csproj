@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <UseWPF>true</UseWPF>
+    <TargetFramework>net472</TargetFramework>
+    <RootNamespace>CompMs.App.RawDataViewer</RootNamespace>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ApplicationIcon>msdial_icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="App.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="msdial_icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.31">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="RawDataHandler" Version="1.0.8438.348" />
+    <PackageReference Include="ReactiveProperty" Version="7.10.0.0" />
+    <PackageReference Include="ReactiveProperty.Core" Version="7.10.0.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="ReactiveProperty.WPF" Version="7.10.0.0" />
+
+    <PackageReference Include="System.Reactive" Version="5.0.0.0">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\ChartDrawing\ChartDrawing.csproj" />
+    <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj" />
+    <ProjectReference Include="..\..\MSDIAL5\MsdialCore\MsdialCore.csproj" />
+    <ProjectReference Include="..\..\MSDIAL5\MsdialDimsCore\MsdialDimsCore.csproj" />
+    <ProjectReference Include="..\..\MSDIAL5\MsdialGcMsApi\MsdialGcMsApi.csproj" />
+    <ProjectReference Include="..\..\MSDIAL5\MsdialImmsCore\MsdialImmsCore.csproj" />
+    <ProjectReference Include="..\..\MSDIAL5\MsdialLcImMsApi\MsdialLcImMsApi.csproj" />
+    <ProjectReference Include="..\..\MSDIAL5\MsdialLcMsApi\MsdialLcMsApi.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,70 @@
+﻿<UserControl x:Class="CompMs.App.RawDataViewer.View.RawMsSpectrumCheckView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:CompMs.App.RawDataViewer.ViewModel"
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:ccore="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type={x:Type vm:RawMsSpectrumCheckViewModel}}"
+             d:Background="White"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis}"
+                                  VerticalAxis="{Binding VerticalAxis}"
+                                  HorizontalTitle="m/z"
+                                  VerticalTitle="Intensity"
+                                  Background="WhiteSmoke"
+                                  BorderBrush="Black"
+                                  Grid.Row="0">
+            <chart:LineSpectrumControlSlim ItemsSource="{Binding Spectrum.Value}"
+                                           DataType="{x:Type ccore:DataPoint}"
+                                           HorizontalProperty="X"
+                                           VerticalProperty="Y">
+                <chart:LineSpectrumControlSlim.ToolTip>
+                    <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding FocusedItem.X, StringFormat=m/z: {0:F5}}"/>
+                            <TextBlock Text="{Binding FocusedItem.Y, StringFormat=Intensity: {0:F5}}" Margin="2,0"/>
+                        </StackPanel>
+                    </ToolTip>
+                </chart:LineSpectrumControlSlim.ToolTip>
+            </chart:LineSpectrumControlSlim>
+            <chart:Annotator ItemsSource="{Binding Spectrum.Value}"
+                             HorizontalPropertyName="X"
+                             VerticalPropertyName="Y"
+                             LabelPropertyName="X"
+                             OrderingPropertyName="Y"
+                             Overlap="Horizontal,Direct"
+                             TopN="20"/>
+        </chart:MultiChart>
+        <DataGrid ItemsSource="{Binding Spectra}"
+                  SelectedItem="{Binding SelectedSpectrum.Value}"
+                  IsReadOnly="True"
+                  AutoGenerateColumns="False"
+                  Grid.Row="1">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Index" Binding="{Binding OriginalIndex}"/>
+                <DataGridTextColumn Header="Experiment" Binding="{Binding ExperimentID}"/>
+                <DataGridTextColumn Header="Polarity" Binding="{Binding ScanPolarity}"/>
+                <DataGridTextColumn Header="Scan start time" Binding="{Binding ScanStartTime, StringFormat=F6}"/>
+                <DataGridTextColumn Header="MS level" Binding="{Binding MsLevel}"/>
+                <DataGridTextColumn Header="Base peak m/z" Binding="{Binding BasePeakMz, StringFormat=F6}"/>
+                <DataGridTextColumn Header="Base peak intensity" Binding="{Binding BasePeakIntensity}"/>
+                <DataGridTextColumn Header="Precursor m/z" Binding="{Binding Precursor.SelectedIonMz}"/>
+                <DataGridTextColumn Header="Drift time" Binding="{Binding DriftTime}"/>
+                <DataGridTextColumn Header="Collision energy" Binding="{Binding CollisionEnergy}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <GridSplitter Grid.Row="1"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Top"
+                      Height="2"/>
+    </Grid>
+</UserControl>
