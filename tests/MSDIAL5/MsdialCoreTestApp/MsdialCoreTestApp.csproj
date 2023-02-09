@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="RawDataHandler" Version="1.0.0" />
+    <PackageReference Include="RawDataHandler" Version="1.0.8438.348" />
   </ItemGroup>
 
   <ItemGroup>

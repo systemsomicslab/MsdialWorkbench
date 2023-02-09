@@ -43,31 +43,13 @@
     <None Update="Resources\EIMS-DBs-vs1.egm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\InchikeyClassyfireDB-VS3.icd">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\InchikeyClassyfireDB-VS4.icd">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="Resources\InchikeyClassyfireDB-VS5.icd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Resources\MINEs-StructureDB-vs1.msd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\MsfinderFormulaDB-VS11.efd">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\MsfinderFormulaDB-VS12.efd">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="Resources\MsfinderFormulaDB-VS13.efd">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\MsfinderStructureDB-VS13.esd">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\MsfinderStructureDB-VS14.esd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Resources\MsfinderStructureDB-VS15.esd">

@@ -1,0 +1,75 @@
+﻿<Window x:Class="CompMs.App.RawDataViewer.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:CompMs.App.RawDataViewer.ViewModel"
+        xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+        mc:Ignorable="d"
+        AllowDrop="True"
+        Title="Raw data viewer" Height="195" Width="800">
+    <Window.DataContext>
+        <vm:MainWindowViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <StackPanel VerticalAlignment="Top">
+            <ui:ExecutableBar Label="MS raw file:"
+                              LabelWidth="80"
+                              ButtonContent="Browse"
+                              ButtonHeight="30"
+                              ButtonWidth="80"
+                              Command="Open"
+                              HorizontalAlignment="Stretch"
+                              Margin="8">
+                <TextBox x:Name="FileNameInputBox"
+                         Text="{Binding FilePath.Value, UpdateSourceTrigger=PropertyChanged}"
+                         VerticalContentAlignment="Center"
+                         Margin="5,0,5,0"/>
+            </ui:ExecutableBar>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="8,0,0,0">
+                <StackPanel.Resources>
+                    <Style TargetType="RadioButton">
+                        <Setter Property="Margin" Value="8"/>
+                    </Style>
+                </StackPanel.Resources>
+                <Label Content="Method type: " />
+                <RadioButton Content="LC-MS/MS" IsChecked="{Binding IsLcms.Value}" d:IsChecked="True"/>
+                <RadioButton Content="LC-IM-MS/MS" IsChecked="{Binding IsLcimms.Value}"/>
+                <RadioButton Content="GC-MS" IsChecked="{Binding IsGcms.Value}"/>
+                <RadioButton Content="DI-MS/MS" IsChecked="{Binding IsDims.Value}"/>
+                <RadioButton Content="IM-MS/MS" IsChecked="{Binding IsImms.Value}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="8,0,0,0">
+                <StackPanel.Resources>
+                    <Style TargetType="RadioButton">
+                        <Setter Property="Margin" Value="8"/>
+                    </Style>
+                </StackPanel.Resources>
+                <Label Content="Ion mode:      " Margin="0.5,0,0,0" />
+                <RadioButton Content="Positive" IsChecked="{Binding IsPositive.Value}" d:IsChecked="True"/>
+                <RadioButton Content="Negative" IsChecked="{Binding IsNegative.Value}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="8">
+                <Label Width="80" HorizontalAlignment="Left" Content="Loaded files:" Margin="0,0,3,0" />
+                <ListBox ItemsSource="{Binding SummarizedDataViewModels}"
+                             SelectedItem="{Binding SelectedSummarizedDataViewModel.Value}"
+                             DisplayMemberPath="AnalysisDataModel.AnalysisFile.AnalysisFileName"
+                             VerticalAlignment="Stretch"
+                             HorizontalAlignment="Stretch"
+                         Width="430"
+                             IsSynchronizedWithCurrentItem="True"/>
+                <Button Content="Load" Width="80" Margin="5,0,0,0"
+                            Command="{Binding LoadAnalysisDataCommand, Mode=OneTime}"/>
+                <Button Content="Show" Width="80" Margin="5,0,0,0"
+                            Command="{Binding ShowSummarizedDataCommand, Mode=OneTime}"/>
+                <Button Content="Remove" Width="80" Margin="5,0,0,0"
+                            Command="{Binding RemoveSummarizedDataCommand, Mode=OneTime}"/>
+            </StackPanel>
+
+            
+        </StackPanel>
+    </Grid>
+</Window>

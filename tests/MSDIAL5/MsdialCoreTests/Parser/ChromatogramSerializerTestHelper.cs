@@ -16,7 +16,7 @@ namespace MsdialCoreTests.Parser
             Assert.AreEqual(expected.ChromXs.RI.Value, actual.ChromXs.RI.Value);
             Assert.AreEqual(expected.ChromXs.Mz.Value, actual.ChromXs.Mz.Value);
             Assert.AreEqual(expected.ChromXs.Drift.Value, actual.ChromXs.Drift.Value);
-            foreach ((var e, var a) in expected.PeakInfos.Zip(actual.PeakInfos)) {
+            foreach ((var e, var a) in expected.PeakInfos.Zip(actual.PeakInfos, (e, a) => (e, a))) {
                 AreEqual(e, a);
             }
         }
@@ -26,7 +26,7 @@ namespace MsdialCoreTests.Parser
             Assert.AreEqual(expected.ChromXsTop.Value, actual.ChromXsTop.Value);
             Assert.AreEqual(expected.ChromXsLeft.Value, actual.ChromXsLeft.Value);
             Assert.AreEqual(expected.ChromXsRight.Value, actual.ChromXsRight.Value);
-            foreach ((var aa, var bb) in expected.Chromatogram.Zip(actual.Chromatogram)) {
+            foreach ((var aa, var bb) in expected.Chromatogram.Zip(actual.Chromatogram, (e, a) => (e, a))) {
                 AreEqual(aa, bb);
             }
         }

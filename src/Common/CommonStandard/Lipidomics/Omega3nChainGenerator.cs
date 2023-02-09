@@ -19,7 +19,7 @@ namespace CompMs.Common.Lipidomics
         private static readonly int eariestPositionOfOx = 2;
         public IEnumerable<IChain> Generate(AcylChain chain) {
             var bs = EnumerateDoubleBond(chain.CarbonCount, chain.DoubleBond);
-            var os = EnumerateOxidized(chain.CarbonCount, chain.Oxidized, eariestPositionOfOx).ToArray();
+            var os = EnumerateOxidized(chain.CarbonCount, chain.Oxidized, eariestPositionOfOx, chain.CarbonCount - 1).ToArray();
             return bs.SelectMany(_ => os, (b, o) => new AcylChain(chain.CarbonCount, b, o));
         }
 
@@ -31,14 +31,14 @@ namespace CompMs.Common.Lipidomics
             else {
                 bs = EnumerateDoubleBondInEther(chain.CarbonCount, chain.DoubleBond);
             }
-            var os = EnumerateOxidized(chain.CarbonCount, chain.Oxidized, eariestPositionOfOx).ToArray();
+            var os = EnumerateOxidized(chain.CarbonCount, chain.Oxidized, eariestPositionOfOx, chain.CarbonCount - 1).ToArray();
             return bs.SelectMany(_ => os, (b, o) => new AlkylChain(chain.CarbonCount, b, o));
         }
 
         private static readonly int eariestPositionOfOxInSphingosine = 4;
         public IEnumerable<IChain> Generate(SphingoChain chain) {
             var bs = EnumerateDoubleBondInSphingosine(chain.CarbonCount, chain.DoubleBond);
-            var os = EnumerateOxidized(chain.CarbonCount, chain.Oxidized, eariestPositionOfOxInSphingosine).ToArray();
+            var os = EnumerateOxidized(chain.CarbonCount, chain.Oxidized, eariestPositionOfOxInSphingosine, chain.CarbonCount - 1).ToArray();
             return bs.SelectMany(_ => os, (b, o) => new SphingoChain(chain.CarbonCount, b, o));
         }
 
@@ -207,7 +207,7 @@ namespace CompMs.Common.Lipidomics
             return new DoubleBond(bonds.Count, bonds);
         }
 
-        private IEnumerable<IOxidized> EnumerateOxidized(int carbon, IOxidized oxidized, int begin) {
+        private IEnumerable<IOxidized> EnumerateOxidized(int carbon, IOxidized oxidized, int begin, int end) {
             if (oxidized.UnDecidedCount == 0) {
                 return IEnumerableExtension.Return(oxidized);
             }
@@ -217,7 +217,7 @@ namespace CompMs.Common.Lipidomics
                     yield return Oxidized.CreateFromPosition(oxidized.Oxidises.Concat(infos).OrderBy(p => p).ToArray());
                     yield break;
                 }
-                for (var j = i; j < carbon + 1; j++){
+                for (var j = i; j < carbon + 1; j++){ 
                     if (oxidized.Oxidises.Contains(j)) {
                         continue;
                     }
