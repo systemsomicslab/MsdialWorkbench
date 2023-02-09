@@ -19,20 +19,21 @@ namespace CompMs.MsdialCore.Parser.Tests
                 var t = manager.Create("XYZ");
                 Assert.IsTrue(t.IsCompleted);
 
-                s.Write(Encoding.UTF8.GetBytes("abc"));
+                Write(s, "abc");
                 s.Close();
 
                 s = await t;
-                s.Write(Encoding.UTF8.GetBytes("xyz"));
+                Write(s, "xyz");
                 manager.Release(s);
 
-                using var subManager = manager.Join("DEF");
-                var u =  await subManager.Create("GHI");
-                u.Write(Encoding.UTF8.GetBytes("ghi"));
-                u.Close();
+                using (var subManager = manager.Join("DEF")) {
+                    var u = await subManager.Create("GHI");
+                    Write(u, "ghi");
+                    u.Close();
+                }
 
                 var v =  await manager.Create("JKL");
-                v.Write(Encoding.UTF8.GetBytes("jkl"));
+                Write(v, "jkl");
                 v.Close();
 
                 manager.Complete();
@@ -58,11 +59,12 @@ namespace CompMs.MsdialCore.Parser.Tests
                 Assert.AreEqual("xyz", Encoding.UTF8.GetString(buffer));
                 s.Close();
 
-                using var subManager = manager.Join("DEF");
-                var u = await subManager.Get("GHI");
-                u.Read(buffer, 0, buffer.Length);
-                Assert.AreEqual("ghi", Encoding.UTF8.GetString(buffer));
-                u.Close();
+                using (var subManager = manager.Join("DEF")) {
+                    var u = await subManager.Get("GHI");
+                    u.Read(buffer, 0, buffer.Length);
+                    Assert.AreEqual("ghi", Encoding.UTF8.GetString(buffer));
+                    u.Close();
+                }
 
                 var v = await manager.Get("JKL");
                 v.Read(buffer, 0, buffer.Length);
@@ -82,10 +84,10 @@ namespace CompMs.MsdialCore.Parser.Tests
         public async Task FailedTest() {
             var folder = Path.GetTempPath();
             using (var stream = File.Open(Path.Combine(folder, "ABC"), FileMode.Create)) {
-                stream.Write(Encoding.UTF8.GetBytes("abc"));
+                Write(stream, "abc");
             }
             using (var stream = File.Open(Path.Combine(folder, "XYZ"), FileMode.Create)) {
-                stream.Write(Encoding.UTF8.GetBytes("xyz"));
+                Write(stream, "xyz");
             }
             Assert.IsTrue(File.Exists(Path.Combine(folder, "ABC")));
             Assert.IsTrue(File.Exists(Path.Combine(folder, "XYZ")));
@@ -95,11 +97,11 @@ namespace CompMs.MsdialCore.Parser.Tests
                     var s = await manager.Create("ABC");
                     var t = manager.Create("XYZ");
 
-                    s.Write(Encoding.UTF8.GetBytes("Failed"));
+                    Write(s, "Failed");
                     manager.Release(s);
 
                     s = await t;
-                    s.Write(Encoding.UTF8.GetBytes("Failed"));
+                    Write(s, "Failed");
 
                     throw new Exception();
 
@@ -124,6 +126,11 @@ namespace CompMs.MsdialCore.Parser.Tests
                 stream.Read(buffer, 0, buffer.Length);
                 StringAssert.StartsWith( Encoding.UTF8.GetString(buffer), "xyz");
             }
+        }
+
+        private void Write(Stream s, string c) {
+            var b = Encoding.UTF8.GetBytes(c);
+            s.Write(b, 0, b.Length);
         }
     }
 }

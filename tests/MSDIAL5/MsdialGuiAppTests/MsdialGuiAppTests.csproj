@@ -55,6 +55,7 @@
       <Project>{a45c80bc-85bb-4953-aa7d-941633964f08}</Project>
       <Name>MsdialLcMsApi</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MsdialCoreTests\MsdialCoreTests.csproj" />
   </ItemGroup>
 
   <ItemGroup>

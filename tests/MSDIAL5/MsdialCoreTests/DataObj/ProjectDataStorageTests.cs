@@ -45,7 +45,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
                     proj.ProjectParameters.Select(parameter => parameter.ProjectFileName).ToArray(),
                     actual.ProjectParameters.Select(parameter => parameter.ProjectFileName).ToArray());
                 Assert.AreEqual(proj.Storages.Count, actual.Storages.Count);
-                foreach ((var exp, var act) in proj.Storages.Zip(actual.Storages)) {
+                foreach ((var exp, var act) in proj.Storages.Zip(actual.Storages, (e, a) => (e, a))) {
                     Assert.AreEqual(exp.Parameter.ProjectFileName, act.Parameter.ProjectFileName);
                 }
             }
@@ -83,7 +83,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
                 Assert.AreEqual(0, actual.ProjectParameters.Count);
                 foreach (var parameter in parameters) {
                     CollectionAssert.DoesNotContain(
-                        actual.ProjectParameters.Select(parameter => parameter.ProjectFileName).ToArray(),
+                        actual.ProjectParameters.Select(p => p.ProjectFileName).ToArray(),
                         parameter.ProjectFileName);
                 }
                 Assert.AreEqual(0, actual.Storages.Count);
@@ -131,7 +131,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
                     proj.ProjectParameters.Select(parameter => parameter.ProjectFileName).ToArray(),
                     actual.ProjectParameters.Select(parameter => parameter.ProjectFileName).ToArray());
                 Assert.AreEqual(proj.Storages.Count, actual.Storages.Count);
-                foreach ((var exp, var act) in proj.Storages.Zip(actual.Storages)) {
+                foreach ((var exp, var act) in proj.Storages.Zip(actual.Storages, (e, a) => (e, a))) {
                     Assert.AreEqual(exp.Parameter.ProjectFileName, act.Parameter.ProjectFileName);
                 }
             }
