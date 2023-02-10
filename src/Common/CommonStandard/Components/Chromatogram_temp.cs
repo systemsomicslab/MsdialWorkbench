@@ -1,5 +1,6 @@
 ﻿using Accord.Diagnostics;
 using Accord.Math.Distances;
+using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Mathematics.Basic;
@@ -72,6 +73,8 @@ namespace CompMs.Common.Components {
             }
             return peakTopId;
         }
+
+        
 
         public (int, int, int) ShrinkPeakRange(int start, int end, int averagePeakWidth) {
             var peakTopId = GetPeakTopId(start, end);
@@ -242,6 +245,25 @@ namespace CompMs.Common.Components {
                 default:
                     return new Chromatogram_temp2(_smoother.LinearWeightedMovingAverage(_peaks, level), _type, _unit, _smoother);
             }
+        }
+
+        public PeakDetectionResult GetPeakDetectionResultFromRange(int startID, int endID) {
+            var peakTopID = 0;
+            var datapoints = new List<double[]>();
+            var peaktopIntensity = double.MinValue;
+            for (int i = 0; i < _peaks.Count; i++) {
+                var peak = _peaks[i];
+                if (peak.Id >= startID && peak.Id <= endID) {
+                    datapoints.Add(new double[] { peak.Id, peak.Time, peak.Mz, peak.Intensity });
+                    if (peak.Intensity > peaktopIntensity) {
+                        peaktopIntensity = peak.Intensity;
+                        peakTopID = i;
+                    }
+                }
+            }
+
+            var result = PeakDetection.GetPeakDetectionResult(datapoints, peakTopID);
+            return result;
         }
 
         public ChromatogramGlobalProperty_temp2 GetProperty(int noiseEstimateBin, int minNoiseWindowSize, double minNoiseLevel, double noiseFactor) {
