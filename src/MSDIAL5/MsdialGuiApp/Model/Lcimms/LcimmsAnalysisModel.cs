@@ -345,7 +345,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             CompoundDetailModel = compoundDetailModel;
             var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
             MoleculeStructureModel = moleculeStructureModel;
-            Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
+            target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
 
             var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper);
             CompoundSearchModel = target
@@ -405,14 +405,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks { get; }
 
         public IReactiveProperty<ChromatogramPeakFeatureModel> Target { get; }
+
         public LcimmsAnalysisPeakTableModel PeakTableModel { get; }
-
-        public string DisplayLabel {
-            get => _displayLabel;
-            set => SetProperty(ref _displayLabel, value);
-        }
-
-        private string _displayLabel = string.Empty;
 
         public void SearchFragment() {
             FragmentSearcher.Search(Ms1Peaks.Select(n => n.InnerModel).ToList(), _decLoader, _parameter);

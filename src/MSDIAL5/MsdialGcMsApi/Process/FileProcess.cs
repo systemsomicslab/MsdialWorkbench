@@ -66,7 +66,7 @@ namespace CompMs.MsdialGcMsApi.Process
             Console.WriteLine("Annotation started");
             var reportAnnotation = ReportProgress.FromRange(_reportAction, ANNOTATION_START, ANNOTATION_END);
             var carbon2RtDict = analysisFileObject.GetRiDictionary(_riDictionaryInfo);
-            _annotation.MainProcess(msdecResults, carbon2RtDict, reportAnnotation);
+            var spectrumFeatures = _annotation.MainProcess(msdecResults, carbon2RtDict, reportAnnotation);
             token.ThrowIfCancellationRequested();
 
             // save

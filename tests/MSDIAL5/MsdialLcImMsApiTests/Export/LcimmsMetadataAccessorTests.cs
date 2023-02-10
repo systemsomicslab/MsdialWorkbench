@@ -41,21 +41,7 @@ namespace CompMs.MsdialLcImMsApi.Export.Tests
                 },
                 MassCenter = 700d,
                 CollisionCrossSection = 5.002,
-                MatchResults = new MsScanMatchResultContainer
-                {
-                    MatchResults = new List<MsScanMatchResult>
-                    {
-                        new MsScanMatchResult
-                        {
-                            IsPrecursorMzMatch = true,
-                            IsSpectrumMatch = true,
-                            IsCcsMatch = true,
-                            CcsSimilarity = 0.81f,
-                            IsRtMatch = true,
-                            RtSimilarity = 0.92f,
-                        }
-                    }
-                },
+                MatchResults = new MsScanMatchResultContainer(),
 
                 // to avoid errors
                 MasterAlignmentID = 100,
@@ -73,6 +59,18 @@ namespace CompMs.MsdialLcImMsApi.Export.Tests
                 IsManuallyModifiedForQuant = true,
                 SignalToNoiseAve = 12.34f,
             };
+            spot.MatchResults.AddResults(
+                new List<MsScanMatchResult> {
+                    new MsScanMatchResult {
+                        Priority = 1,
+                        IsPrecursorMzMatch = true,
+                        IsSpectrumMatch = true,
+                        IsCcsMatch = true,
+                        CcsSimilarity = 0.81f,
+                        IsRtMatch = true,
+                        RtSimilarity = 0.92f,
+                    }
+                });
 
             var dict = accessor.GetContent(spot, null);
 

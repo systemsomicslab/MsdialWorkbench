@@ -47,20 +47,18 @@ namespace CompMs.MsdialLcMsApi.Export.Tests
             };
             var feature = new ChromatogramPeakFeature(basePeak)
             {
-                MatchResults = new MsScanMatchResultContainer
-                {
-                    MatchResults = new List<MsScanMatchResult>
-                    {
-                        new MsScanMatchResult
-                        {
-                            IsPrecursorMzMatch = true,
-                            IsRtMatch = true,
-                            AcurateMassSimilarity = 0.811f,
-                            RtSimilarity = 0.679f,
-                        },
-                    },
-                },
+                MatchResults = new MsScanMatchResultContainer()
             };
+            feature.MatchResults.AddResults(
+                new List<MsScanMatchResult> {
+                    new MsScanMatchResult {
+                        Priority = 1,
+                        IsPrecursorMzMatch = true,
+                        IsRtMatch = true,
+                        AcurateMassSimilarity = 0.811f,
+                        RtSimilarity = 0.679f,
+                    },
+                });
             var msdec = new MSDecResult();
             var provider = new MockDataProvider();
             var content = accessor.GetContent(feature, msdec, provider);

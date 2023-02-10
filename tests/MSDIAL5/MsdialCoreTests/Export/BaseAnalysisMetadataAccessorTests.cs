@@ -71,23 +71,22 @@ namespace CompMs.MsdialCore.Export.Tests
                 MS1RawSpectrumIdTop = 2,
                 AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
                 Comment = "nice comment",
-                MatchResults = new MsScanMatchResultContainer
-                {
-                    MatchResults = new List<MsScanMatchResult>
-                    {
-                        new MsScanMatchResult
-                        {
-                            IsSpectrumMatch = true,
-                            SimpleDotProduct = 0.811f,
-                            WeightedDotProduct = 0.724f,
-                            ReverseDotProduct = 0.631f,
-                            MatchedPeaksCount = 4.00f,
-                            MatchedPeaksPercentage = 0.901f,
-                            TotalScore = 0.638f,
-                        },
-                    },
-                },
+                MatchResults = new MsScanMatchResultContainer(),
             };
+            feature.MatchResults.AddResults(
+                new List<MsScanMatchResult>
+                {
+                    new MsScanMatchResult
+                    {
+                        IsSpectrumMatch = true,
+                        SimpleDotProduct = 0.811f,
+                        WeightedDotProduct = 0.724f,
+                        ReverseDotProduct = 0.631f,
+                        MatchedPeaksCount = 4.00f,
+                        MatchedPeaksPercentage = 0.901f,
+                        TotalScore = 0.638f,
+                    },
+                });
             feature.PeakCharacter.IsotopeWeightNumber = 1;
             feature.PeakShape.SignalToNoise = 6.78f;
             var msdec = new MSDecResult

@@ -37,19 +37,7 @@ namespace CompMs.MsdialLcMsApi.Export.Tests
             {
                 TimesCenter = new ChromXs(3d, ChromXType.RT, ChromXUnit.Min),
                 MassCenter = 700d,
-                MatchResults = new MsScanMatchResultContainer
-                {
-                    MatchResults = new List<MsScanMatchResult>
-                    {
-                        new MsScanMatchResult
-                        {
-                            IsRtMatch = true,
-                            IsPrecursorMzMatch = true,
-                            IsSpectrumMatch = true,
-                            RtSimilarity = 0.92f,
-                        }
-                    }
-                },
+                MatchResults = new MsScanMatchResultContainer(),
 
                 // to avoid errors
                 MasterAlignmentID = 100,
@@ -67,7 +55,16 @@ namespace CompMs.MsdialLcMsApi.Export.Tests
                 IsManuallyModifiedForQuant = true,
                 SignalToNoiseAve = 12.34f,
             };
-
+            spot.MatchResults.AddResults(
+                new List<MsScanMatchResult> {
+                    new MsScanMatchResult {
+                        Priority = 1,
+                        IsRtMatch = true,
+                        IsPrecursorMzMatch = true,
+                        IsSpectrumMatch = true,
+                        RtSimilarity = 0.92f,
+                    }
+                });
             var dict = accessor.GetContent(spot, null);
 
             Assert.AreEqual("3.000", dict["Average Rt(min)"]);
