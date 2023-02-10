@@ -17,7 +17,10 @@ namespace CompMs.MsdialCore.DataObj
 
         [SerializationConstructor]
         public SpectrumFeature(double quantMass, IMSScanProperty scan, IMoleculeProperty molecule, MsScanMatchResultContainer matchResults) {
-            QuantMass = quantMass;
+            PeakFeature = new BaseChromatogramPeakFeature
+            {
+                Mass = quantMass,
+            };
             Scan = scan;
             _molecule = molecule;
             MatchResults = matchResults;
@@ -31,8 +34,8 @@ namespace CompMs.MsdialCore.DataObj
 
         }
 
-        [Key(0)]
-        public double QuantMass { get; }
+        [IgnoreMember]
+        public double QuantMass => PeakFeature.Mass;
         [Key(1)]
         public IMSScanProperty Scan { get; }
         [IgnoreMember]
@@ -54,16 +57,9 @@ namespace CompMs.MsdialCore.DataObj
         [IgnoreMember]
         public IonMode IonMode => Scan.IonMode;
 
-        public bool IsValidInChIKey() {
-            return !string.IsNullOrWhiteSpace(Molecule.InChIKey) && Molecule.InChIKey.Length == 27;
-        }
+        public bool IsValidInChIKey() => Molecule.IsValidInChIKey();
 
-        public bool IsReferenceMatched(IMatchResultEvaluator<MsScanMatchResult> evaluator) {
-            if (MatchResults.IsManuallyModifiedRepresentative) {
-                return !MatchResults.IsUnknown;
-            }
-            return MatchResults.IsReferenceMatched(evaluator);
-        }
+        public bool IsReferenceMatched(IMatchResultEvaluator<MsScanMatchResult> evaluator) => MatchResults.IsReferenceMatched(evaluator);
 
         [Key(8)]
         public string Comment { get; set; } = string.Empty;
