@@ -14,6 +14,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj" />
+    <ProjectReference Include="..\MsdialCore\MsdialCore.csproj" />
+    <ProjectReference Include="..\MsdialLcMsApi\MsdialLcMsApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>

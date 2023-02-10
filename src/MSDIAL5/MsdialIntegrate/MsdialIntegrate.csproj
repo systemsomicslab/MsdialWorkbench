@@ -8,6 +8,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj" />
+    <ProjectReference Include="..\MsdialDimsCore\MsdialDimsCore.csproj" />
+    <ProjectReference Include="..\MsdialGcMsApi\MsdialGcMsApi.csproj" />
+    <ProjectReference Include="..\MsdialImmsCore\MsdialImmsCore.csproj" />
+    <ProjectReference Include="..\MsdialImmsImagingCore\MsdialImmsImagingCore.csproj" />
+    <ProjectReference Include="..\MsdialLcImMsApi\MsdialLcImMsApi.csproj" />
+    <ProjectReference Include="..\MsdialLcMsApi\MsdialLcMsApi.csproj" />
   </ItemGroup>
 
 </Project>
