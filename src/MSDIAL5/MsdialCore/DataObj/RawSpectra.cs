@@ -34,6 +34,20 @@ namespace CompMs.MsdialCore.DataObj
             return impl.GetMs1ExtractedChromatogram(mz, tolerance, chromatogramRange.Begin, chromatogramRange.End);
         }
 
+        public double StartRt { 
+            get {
+                if (_spectra.IsEmptyOrNull()) return 0;
+                else return _spectra[0].ScanStartTime;
+            } 
+        }
+
+        public double EndRt {
+            get {
+                if (_spectra.IsEmptyOrNull()) return 0;
+                else return _spectra[_spectra.Count - 1].ScanStartTime;
+            }
+        }
+
         public Chromatogram_temp2 GetMs1ExtractedChromatogram_temp2(double mz, double tolerance, ChromatogramRange chromatogramRange) {
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
             return impl.GetMs1ExtractedChromatogram_temp2(mz, tolerance, chromatogramRange.Begin, chromatogramRange.End);
