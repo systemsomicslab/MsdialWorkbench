@@ -17,7 +17,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             : base(mspDB.Database, parameter, annotatorID, priority, SourceType.MspDB) {
             Id = annotatorID;
             ReferObject = mspDB;
-            scorer = new MsReferenceScorer(annotatorID, priority, omics, SourceType.MspDB, CollisionType.HCD, true);
+            scorer = new MsReferenceScorer(annotatorID, priority, omics, SourceType.MspDB, CollisionType.CID, true);
             evaluator = new MsScanMatchResultEvaluator(parameter);
         }
 
