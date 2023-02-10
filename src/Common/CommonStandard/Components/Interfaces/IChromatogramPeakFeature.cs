@@ -1,6 +1,8 @@
 ﻿using CompMs.Common.Components;
+using MessagePack;
 
 namespace CompMs.Common.Interfaces {
+    [Union(0, typeof(BaseChromatogramPeakFeature))]
     public interface IChromatogramPeakFeature {
 
         // basic property
