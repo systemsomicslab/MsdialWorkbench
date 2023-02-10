@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj" />
-    <ProjectReference Include="..\MsdialCore\MsdialCore.csproj" />
   </ItemGroup>
 
 </Project>

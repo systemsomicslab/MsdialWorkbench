@@ -1,6 +1,7 @@
 ﻿using CompMs.App.MsdialConsole.Casmi;
 using CompMs.App.MsdialConsole.DataObjTest;
 using CompMs.App.MsdialConsole.Export;
+using CompMs.App.MsdialConsole.MolecularNetwork;
 using CompMs.App.MsdialConsole.MspCuration;
 using CompMs.App.MsdialConsole.Parser;
 using CompMs.App.MsdialConsole.Process;
@@ -318,10 +319,18 @@ namespace CompMs.App.MsdialConsole {
             //    @"E:\6_Projects\PROJECT_GlycyrrhizaMetabolomics\glabra leaf\pos\pos_table_vs1.txt",
             //    @"E:\6_Projects\PROJECT_GlycyrrhizaMetabolomics\glabra leaf\pos");
 
-            LabelDataHandler.LabelDataHandler.GenerateMoleculerSpectrumNetforkFilesByModifiedDotProductFunction(
-               @"E:\6_Projects\PROJECT_GlycyrrhizaMetabolomics\glabra leaf\pos\pos_table_vs1_extracted_12C_ms2contained.msp",
-               @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp_ht\POS\MSMS-Pos-RIKEN_PlaSMA_Bio.msp",
-               @"E:\6_Projects\PROJECT_GlycyrrhizaMetabolomics\glabra leaf\pos\cytoscape");
+            //LabelDataHandler.LabelDataHandler.GenerateMoleculerSpectrumNetforkFilesByModifiedDotProductFunction(
+            //   @"E:\6_Projects\PROJECT_GlycyrrhizaMetabolomics\glabra leaf\pos\pos_table_vs1_extracted_12C_ms2contained.msp",
+            //   @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp_ht\POS\MSMS-Pos-RIKEN_PlaSMA_Bio.msp",
+            //   @"E:\6_Projects\PROJECT_GlycyrrhizaMetabolomics\glabra leaf\pos\cytoscape");
+
+            MoleculerSpectrumNetworkingTest.Run(
+                @"E:\0_SourceCode\BugReports\20230209_molecularnetwork\NEG\after_rt_correction\2023281539_spectra_0.msp",
+                @"E:\0_SourceCode\BugReports\20230209_molecularnetwork\NEG\after_rt_correction\", "4");
+
+            MoleculerSpectrumNetworkingTest.Run(
+                @"E:\0_SourceCode\BugReports\20230209_molecularnetwork\NEG\before_rt_correction\beforeRTcorrect.msp",
+                @"E:\0_SourceCode\BugReports\20230209_molecularnetwork\NEG\before_rt_correction\", "4");
         }
 
         private static void DumpN(string file, int n) {

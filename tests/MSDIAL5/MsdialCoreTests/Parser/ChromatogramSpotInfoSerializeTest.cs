@@ -44,7 +44,7 @@ namespace MsdialCoreTests.Parser
                 stream.Seek(0, SeekOrigin.Begin);
                 result = serializer.DeserializeAll(stream);
 
-                foreach ((var spot, var res) in spots.Zip(result))
+                foreach ((var spot, var res) in spots.Zip(result, (e, a) => (e, a)))
                     ChromatogramSerializerTestHelper.AreEqual(spot, res);
             }
         }
@@ -64,7 +64,7 @@ namespace MsdialCoreTests.Parser
                 stream.Seek(0, SeekOrigin.Begin);
                 result = serializer.DeserializeN(stream, 5);
 
-                foreach ((var spot, var res) in spots.Zip(result))
+                foreach ((var spot, var res) in spots.Zip(result, (e, a) => (e, a)))
                     ChromatogramSerializerTestHelper.AreEqual(spot, res);
             }
         }

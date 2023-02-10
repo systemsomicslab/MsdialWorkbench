@@ -17,14 +17,14 @@ namespace CompMs.MsdialCore.Parser.Tests
             var t = manager.Create("XYZ");
 
             Assert.IsFalse(t.IsCompleted);
-            s.Write(Encoding.UTF8.GetBytes("abc"));
+            Write(s, Encoding.UTF8.GetBytes("abc"));
             Assert.IsFalse(t.IsCompleted);
             s.Close();
             await Task.Delay(100);
             Assert.IsTrue(t.IsCompleted);
 
             s = await t;
-            s.Write(Encoding.UTF8.GetBytes("xyz"));
+            Write(s, Encoding.UTF8.GetBytes("xyz"));
             manager.Release(s);
 
             var subManager = manager.Join("DEF");
@@ -32,13 +32,13 @@ namespace CompMs.MsdialCore.Parser.Tests
             t = manager.Create("JKL");
 
             Assert.IsFalse(t.IsCompleted);
-            s.Write(Encoding.UTF8.GetBytes("ghi"));
+            Write(s, Encoding.UTF8.GetBytes("ghi"));
             Assert.IsFalse(t.IsCompleted);
             s.Close();
             await Task.Delay(100);
             Assert.IsTrue(t.IsCompleted);
             s = await t;
-            s.Write(Encoding.UTF8.GetBytes("jkl"));
+            Write(s, Encoding.UTF8.GetBytes("jkl"));
             manager.Release(s);
 
             subManager.Dispose();
@@ -94,6 +94,10 @@ namespace CompMs.MsdialCore.Parser.Tests
                 manager.Complete();
                 stream.Close();
             }
+        }
+
+        private void Write(Stream s, byte[] c) {
+            s.Write(c, 0, c.Length);
         }
     }
 }
