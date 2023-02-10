@@ -12,6 +12,7 @@ namespace CompMs.MsdialCore.DataObj
     {
         private static readonly IMoleculeProperty UNKNOWN_MOLECULE = new MoleculeProperty();
 
+        [Key(2)]
         private readonly IMoleculeProperty _molecule;
 
         [SerializationConstructor]
@@ -34,18 +35,24 @@ namespace CompMs.MsdialCore.DataObj
         public double QuantMass { get; }
         [Key(1)]
         public IMSScanProperty Scan { get; }
-        [Key(2)]
+        [IgnoreMember]
         public IMoleculeProperty Molecule => _molecule ?? UNKNOWN_MOLECULE;
         [Key(3)]
         public MsScanMatchResultContainer MatchResults { get; }
+        [Key(4)]
         public IChromatogramPeakFeature PeakFeature { get; }
 
+        [IgnoreMember]
         public int PeakID => Scan.ScanID;
+        [Key(5)]
         public int MS1RawSpectrumIdTop { get; set; }
+        [Key(6)]
         public int MS1RawSpectrumIdLeft { get; set; }
+        [Key(7)]
         public int MS1RawSpectrumIdRight { get; set; }
 
-        public IonMode IonMode { get; set; }
+        [IgnoreMember]
+        public IonMode IonMode => Scan.IonMode;
 
         public bool IsValidInChIKey() {
             return !string.IsNullOrWhiteSpace(Molecule.InChIKey) && Molecule.InChIKey.Length == 27;
@@ -58,9 +65,12 @@ namespace CompMs.MsdialCore.DataObj
             return MatchResults.IsReferenceMatched(evaluator);
         }
 
+        [Key(8)]
         public string Comment { get; set; } = string.Empty;
-        public ChromatogramPeakShape PeakShape { get; set; } = new ChromatogramPeakShape();
-        public FeatureFilterStatus FeatureFilterStatus { get; set; } = new FeatureFilterStatus();
+        [Key(9)]
+        public ChromatogramPeakShape PeakShape { get; } = new ChromatogramPeakShape();
+        [Key(10)]
+        public FeatureFilterStatus FeatureFilterStatus { get; } = new FeatureFilterStatus();
         [IgnoreMember]
         public bool IsUnknown => _molecule is null;
     }
