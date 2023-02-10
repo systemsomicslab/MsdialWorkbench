@@ -19,11 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj" />
-    <ProjectReference Include="..\..\Common\spectra-hash\splash\Splash.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -40,6 +35,11 @@
 
   <ItemGroup>
 	<InternalsVisibleTo Include="MsdialCoreTests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj" />
+    <ProjectReference Include="..\..\Common\spectra-hash\splash\Splash.csproj" />
   </ItemGroup>
 
 </Project>
