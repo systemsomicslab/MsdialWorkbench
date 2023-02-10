@@ -43,6 +43,7 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\..\Common\ChartDrawing\ChartDrawing.csproj" />
 	  <ProjectReference Include="..\..\Common\CommonMVVM\CommonMVVM.csproj" />
+	  <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj" />
 	  <ProjectReference Include="..\MsdialIntegrate\MsdialIntegrate.csproj" />
 	  <ProjectReference Include="..\..\Common\NCDK.Display\NCDK.Display.csproj" />
 	</ItemGroup>
