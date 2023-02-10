@@ -220,7 +220,7 @@ namespace CompMs.App.MsdialConsole.LabelDataHandler {
                         var carbon = comment.Split(';')[2].Split('=')[1];
 
                         var lines = new List<string>() {
-                            key, record.PrecursorMz.ToString(), record.ChromXs.Value.ToString(),
+                            key, record.PrecursorMz.ToString(), record.ChromXs.Value.ToString(), record.Name,
                             record.AdductType.ToString(), intensity, record.InChIKey, record.SMILES,
                             record.Ontology, record.Formula == null ? "null" : record.Formula.ToString(), carbon
                         };
@@ -229,6 +229,7 @@ namespace CompMs.App.MsdialConsole.LabelDataHandler {
                     else {
                         var lines = new List<string>() {
                             key, record.PrecursorMz.ToString(), record.Comment.Contains("PlaSMA") ? record.ChromXs.Value.ToString() : "null",
+                            record.Name,
                             record.AdductType.ToString(), "100", record.InChIKey, record.SMILES,
                             record.Ontology, record.Formula == null ? "null" : record.Formula.ToString(), record.Formula == null ? "null" : record.Formula.Cnum.ToString()
                         };
