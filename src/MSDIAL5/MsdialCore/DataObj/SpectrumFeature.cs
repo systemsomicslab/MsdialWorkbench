@@ -48,7 +48,6 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         public string Comment { get; set; } = string.Empty;
-        public IonFeatureCharacter PeakCharacter { get; set; } = new IonFeatureCharacter();
         public ChromatogramPeakShape PeakShape { get; set; } = new ChromatogramPeakShape();
         public FeatureFilterStatus FeatureFilterStatus { get; set; } = new FeatureFilterStatus();
     }
