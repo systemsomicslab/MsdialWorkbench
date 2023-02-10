@@ -1,7 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CompMs.Common.Enum;
-using System.Linq;
+﻿using CompMs.Common.Enum;
+#if NETSTANDARD
+using CompMs.Common.Extension;
+#endif
 using CompMs.Common.Parser;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
 
 namespace CompMs.Common.Lipidomics.Tests
 {

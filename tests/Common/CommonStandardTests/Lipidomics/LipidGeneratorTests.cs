@@ -120,11 +120,11 @@ namespace CompMs.Common.Lipidomics.Tests
         }
 
         public IEnumerable<ITotalChain> Permutate(MolecularSpeciesLevelChains chains) {
-            return SearchCollection.Permutations(chains.Chains).Select(chains => new PositionLevelChains(chains));
+            return SearchCollection.Permutations(chains.Chains).Select(cs => new PositionLevelChains(cs));
         }
 
         public IEnumerable<ITotalChain> Product(PositionLevelChains chains) {
-            return SearchCollection.CartesianProduct(chains.Chains.Select(c => c.GetCandidates(this).ToArray()).ToArray()).Select(chains => new PositionLevelChains(chains));
+            return SearchCollection.CartesianProduct(chains.Chains.Select(c => c.GetCandidates(this).ToArray()).ToArray()).Select(cs => new PositionLevelChains(cs));
         }
 
         public IEnumerable<IChain> Generate(SphingoChain chain) {

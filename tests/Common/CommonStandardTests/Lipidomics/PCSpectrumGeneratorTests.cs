@@ -1,4 +1,7 @@
 ﻿using CompMs.Common.Enum;
+#if NETSTANDARD
+using CompMs.Common.Extension;
+#endif
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

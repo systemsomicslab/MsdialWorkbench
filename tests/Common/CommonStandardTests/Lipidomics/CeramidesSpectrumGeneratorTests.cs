@@ -1,9 +1,10 @@
 ﻿using CompMs.Common.Enum;
-using CompMs.Common.FormulaGenerator.DataObj;
+#if NETSTANDARD
+using CompMs.Common.Extension;
+#endif
 using CompMs.Common.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics.Tests

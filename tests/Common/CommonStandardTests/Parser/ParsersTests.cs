@@ -206,7 +206,7 @@ namespace CompMs.Common.Parser.Tests
             Console.WriteLine("DB={0},UniqueIdentifier={1},EntryName={2},ProteinName={3},OrganismName={4},OrganismIdentifier={5},GeneName={6},ProteinExistence={7},SequenceVersion={8}",
                 query.DB, query.UniqueIdentifier, query.EntryName, query.ProteinName, query.OrganismName, query.OrganismIdentifier, query.GeneName, query.ProteinExistence, query.SequenceVersion);
 
-            var xs =
+            var xs_ =
                 from db_ in start.Right(db)
                 from identifier_ in separator.Right(identifier).Or(Parsers.Return(string.Empty))
                 from description_ in separator.Right(Parsers.Line.Back()).Or(Parsers.Return(string.Empty))
@@ -224,7 +224,7 @@ namespace CompMs.Common.Parser.Tests
                     ProteinExistence = descriptors[5],
                     SequenceVersion = descriptors[6],
                 };
-            var x = xs.Parse(s);
+            var x = xs_.Parse(s);
             Console.WriteLine(x.Description);
             Console.WriteLine("DB={0},UniqueIdentifier={1},EntryName={2},ProteinName={3},OrganismName={4},OrganismIdentifier={5},GeneName={6},ProteinExistence={7},SequenceVersion={8}",
                 x.DB, x.UniqueIdentifier, x.EntryName, x.ProteinName, x.OrganismName, x.OrganismIdentifier, x.GeneName, x.ProteinExistence, x.SequenceVersion);
