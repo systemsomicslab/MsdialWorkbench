@@ -118,8 +118,8 @@ namespace CompMs.Common.Parser.Tests
         }
 
         [TestMethod]
-        [DeploymentItem(@"Resources\Parser\msp_from_mzvault.msp")]
-        [DeploymentItem(@"Resources\Parser\msp_from_sciex.msp")]
+        [DeploymentItem(@"Resources\Parser\msp_from_mzvault.msp", @"Resources\Parser\")]
+        [DeploymentItem(@"Resources\Parser\msp_from_sciex.msp", @"Resources\Parser\")]
         [DataRow(@"Resources\Parser\msp_from_mzvault.msp", 1)]
         [DataRow(@"Resources\Parser\msp_from_sciex.msp", 1)]
         public void ReadMspFileTest(string testFile, int size) {
