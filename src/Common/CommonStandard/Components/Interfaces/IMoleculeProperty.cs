@@ -28,5 +28,9 @@ namespace CompMs.Common.Interfaces
             }
             return container;
         }
+
+        public static bool IsValidInChIKey(this IMoleculeProperty molecule) {
+            return !string.IsNullOrWhiteSpace(molecule.InChIKey) && molecule.InChIKey.Length == 27;
+        }
     }
 }
