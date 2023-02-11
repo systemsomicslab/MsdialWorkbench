@@ -2,7 +2,7 @@
 
 ## MS-DIAL - software for untargeted metabolomics and lipidomics
 The program supports data processings for any type of chromatography / scan type mass spectrometry data, and the assembly is licensed under the CC-BY 4.0.
-Please contact Hiroshi Tsugawa (hiroshi.tsugawa@riken.jp) for feedback, bug reports, and questions.
+Please contact Hiroshi Tsugawa (htsugawa@go.tuat.ac.jp) for feedback, bug reports, and questions.
 
 ## MS-FINDER - software for structure elucidation of unknown spectra with hydrogen rearrangement (HR) rules
 The program supports molecular formula prediction, metabolie class prediction, and structure elucidation for EI-MS and MS/MS spectra, and the assembly is licensed under the CC-BY 4.0.
