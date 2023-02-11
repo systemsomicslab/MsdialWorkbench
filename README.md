@@ -6,7 +6,7 @@ Please contact Hiroshi Tsugawa (hiroshi.tsugawa@riken.jp) for feedback, bug repo
 
 ## MS-FINDER - software for structure elucidation of unknown spectra with hydrogen rearrangement (HR) rules
 The program supports molecular formula prediction, metabolie class prediction, and structure elucidation for EI-MS and MS/MS spectra, and the assembly is licensed under the CC-BY 4.0.
-Please contact Hiroshi Tsugawa (hiroshi.tsugawa@riken.jp) for feedback, bug reports, and questions.
+Please contact Hiroshi Tsugawa (htsugawa@go.tuat.ac.jp) for feedback, bug reports, and questions.
 
 # How to build MS-DIAL5 Desktop Application (for Windows)
 
