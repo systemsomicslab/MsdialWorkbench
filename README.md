@@ -24,7 +24,7 @@ Please contact Hiroshi Tsugawa (hiroshi.tsugawa@riken.jp) for feedback, bug repo
 9. Click `▶ MsdialGuiApp` button on the right side of 8.
 
 # Developers
-Lead developer: Hiroshi Tsugawa (RIKEN) 
+Lead developer: Hiroshi Tsugawa (TUAT/RIKEN) 
 Current main developers: Hiroshi Tsugawa (RIKEN), Ipputa Tada (SOKENDAI), and Yuki Matsuzawa (RIKEN)
 Past developers: Diego Pedrosa (UC Davis)
 
