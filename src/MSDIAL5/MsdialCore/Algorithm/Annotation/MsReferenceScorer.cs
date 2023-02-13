@@ -101,11 +101,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var massFactor = 1.0;
             var isotopeFactor = 0.0;
             if (omics == TargetOmics.Lipidomics) {
-                if (this.collisionType != CollisionType.CID) {
-                    dotProductFactor = 1.0; revesrseDotProdFactor = 2.0; presensePercentageFactor = 2.0; rtFactor = 0.5; ccsFactor = 0.5;
-                }
-                else {
-                    dotProductFactor = 1.0; revesrseDotProdFactor = 2.0; presensePercentageFactor = 3.0; rtFactor = 0.5; ccsFactor = 0.5;
+                switch (collisionType) {
+                    case CollisionType.CID:
+                    case CollisionType.HCD:
+                        dotProductFactor = 1.0; revesrseDotProdFactor = 2.0; presensePercentageFactor = 3.0; rtFactor = 0.5; ccsFactor = 0.5;
+                        break;
+                    default:
+                        dotProductFactor = 1.0; revesrseDotProdFactor = 2.0; presensePercentageFactor = 2.0; rtFactor = 0.5; ccsFactor = 0.5;
+                        break;
                 }
             }
             if (omics == TargetOmics.Metabolomics && spectrumPenalty == true) {
