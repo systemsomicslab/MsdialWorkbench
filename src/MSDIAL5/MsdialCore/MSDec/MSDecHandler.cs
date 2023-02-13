@@ -3,6 +3,7 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Common.Interfaces;
 using CompMs.Common.Query;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
@@ -257,6 +258,32 @@ namespace CompMs.MsdialCore.MSDec {
 
             }
             return msdecResults;
+        }
+
+        
+
+        public static PeakDetectionResult GetChromatogramQuantInformation(
+            RawSpectra spectra, MSDecResult result, double targetMz, ParameterBase param) {
+            var model = result.ModelPeakChromatogram;
+            if (model.IsEmptyOrNull()) return new PeakDetectionResult();
+            var startID = model[0].ID;
+            var endID = model[model.Count - 1].ID;
+            var startRt = model[0].ChromXs.RT.Value;
+            var endRt = model[model.Count - 1].ChromXs.RT.Value;
+            var offset = 0.1;
+
+            return GetChromatogramQuantInformation(spectra, targetMz, startID, endID, startRt, endRt, offset, param);
+        }
+
+        public static PeakDetectionResult GetChromatogramQuantInformation(
+            RawSpectra spectra, double targetMz, int startID, int endID, double startRt, double endRt, double offset, ParameterBase param) {
+            var chromatogramRange = new ChromatogramRange(
+                startRt - offset < spectra.StartRt ? spectra.StartRt : startRt - offset,
+                endRt + offset > spectra.EndRt ? spectra.EndRt : endRt + offset,
+                ChromXType.RT, ChromXUnit.Min);
+            var chrom = spectra.GetMs1ExtractedChromatogram_temp2(targetMz, param.MassSliceWidth, chromatogramRange).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
+            var peakResult = chrom.GetPeakDetectionResultFromRange(startID, endID);
+            return peakResult;
         }
 
         private static MsDecBin[] getMsdecBinArray(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, Dictionary<int, int> rdamScanDict, IonMode ionMode) {

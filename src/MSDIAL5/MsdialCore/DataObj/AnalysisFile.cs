@@ -1,9 +1,11 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
+using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.Utility;
 using CompMs.RawDataHandler.Core;
 using MessagePack;
 using System.Collections.Generic;
+using System.IO;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
@@ -53,6 +55,12 @@ namespace CompMs.MsdialCore.DataObj {
         int IFileBean.FileID => AnalysisFileId;
         string IFileBean.FileName => AnalysisFileName;
         string IFileBean.FilePath => AnalysisFilePath;
+
+        public void SaveSpectrumFeatures(List<SpectrumFeature> spectrumFeatures) {
+            var name = Path.GetFileNameWithoutExtension(PeakAreaBeanInformationFilePath);
+            var path = Path.Combine(Path.GetDirectoryName(PeakAreaBeanInformationFilePath), name + ".sfi"); // *.sfi
+            MessagePackDefaultHandler.SaveLargeListToFile(spectrumFeatures, path);
+        }
 
         public RawMeasurement LoadRawMeasurement(bool isImagingMsData, bool isGuiProcess, int retry, int sleepMilliSeconds) {
             return DataAccess.LoadMeasurement(this, isImagingMsData, isGuiProcess, retry, sleepMilliSeconds);

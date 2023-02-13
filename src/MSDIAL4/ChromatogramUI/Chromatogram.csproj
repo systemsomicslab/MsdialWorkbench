@@ -152,7 +152,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="RawDataHandler">
-      <Version>1.0.8438.348</Version>
+      <Version>1.0.8441.438</Version>
     </PackageReference>
     <PackageReference Include="System.Data.SQLite.Core">
       <Version>1.0.115.5</Version>

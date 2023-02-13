@@ -40,19 +40,7 @@ namespace CompMs.MsdialImmsCore.Export.Tests
                 TimesCenter = new ChromXs(20.001, ChromXType.Drift, ChromXUnit.Msec),
                 MassCenter = 700d,
                 CollisionCrossSection = 5.002,
-                MatchResults = new MsScanMatchResultContainer
-                {
-                    MatchResults = new List<MsScanMatchResult>
-                    {
-                        new MsScanMatchResult
-                        {
-                            IsPrecursorMzMatch = true,
-                            IsSpectrumMatch = true,
-                            IsCcsMatch = true,
-                            CcsSimilarity = 0.81f,
-                        }
-                    }
-                },
+                MatchResults = new MsScanMatchResultContainer(),
 
                 // to avoid errors
                 MasterAlignmentID = 100,
@@ -70,6 +58,16 @@ namespace CompMs.MsdialImmsCore.Export.Tests
                 IsManuallyModifiedForQuant = true,
                 SignalToNoiseAve = 12.34f,
             };
+            spot.MatchResults.AddResults(
+                new List<MsScanMatchResult> {
+                    new MsScanMatchResult {
+                        Priority = 1,
+                        IsPrecursorMzMatch = true,
+                        IsSpectrumMatch = true,
+                        IsCcsMatch = true,
+                        CcsSimilarity = 0.81f,
+                    }
+                });
 
             var dict = accessor.GetContent(spot, null);
 

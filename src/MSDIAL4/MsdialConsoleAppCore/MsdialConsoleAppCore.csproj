@@ -32,7 +32,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="RawDataHandler" Version="1.0.8438.348" />
+    <PackageReference Include="RawDataHandler" Version="1.0.8441.438" />
   </ItemGroup>
 
 

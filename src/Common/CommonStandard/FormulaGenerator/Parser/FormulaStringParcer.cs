@@ -257,7 +257,7 @@ namespace CompMs.Common.FormulaGenerator.Parser
             return new Formula(dict);
         }
 
-        public static Formula Convert2FormulaObjV3(string formulaString) {
+        internal static Formula Convert2FormulaObjV3(string formulaString) {
             return ToFormula(TokenizeFormula(formulaString));
         }
 

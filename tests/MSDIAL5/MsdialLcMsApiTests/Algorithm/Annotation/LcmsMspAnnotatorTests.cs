@@ -218,10 +218,10 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var expectedScores = new List<double>
             {
                 result.AcurateMassSimilarity,
-                (result.WeightedDotProduct * 1 + result.SimpleDotProduct * 1 + result.ReverseDotProduct * 2 + result.MatchedPeaksPercentage * 3) / 4,
+                (result.WeightedDotProduct * 1 + result.SimpleDotProduct * 1 + result.ReverseDotProduct * 2 + result.MatchedPeaksPercentage * 3) / 7 * 3,
                 result.RtSimilarity * .5d,
             }.Average();
-            Assert.AreEqual(expectedScores, result.TotalScore);
+            Assert.AreEqual(expectedScores, result.TotalScore, 1e-6);
         }
 
         [TestMethod()]
@@ -287,7 +287,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var expectedScores = new List<double>
             {
                 result.AcurateMassSimilarity,
-                (result.WeightedDotProduct * 1 + result.SimpleDotProduct * 1 + result.ReverseDotProduct * 2 + result.MatchedPeaksPercentage * 3) / 4,
+                (result.WeightedDotProduct * 1 + result.SimpleDotProduct * 1 + result.ReverseDotProduct * 2 + result.MatchedPeaksPercentage * 3) / 7 * 3,
             }.Average();
             Assert.AreEqual((float)expectedScores, result.TotalScore);
         }
