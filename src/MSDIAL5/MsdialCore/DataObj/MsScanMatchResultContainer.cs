@@ -166,8 +166,8 @@ namespace CompMs.MsdialCore.DataObj
 
         public bool IsReferenceMatched(IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             var representative = Representative;
-            if (representative.IsManuallyModified && !representative.IsUnknown) {
-                return true; // confidense or unsettled
+            if (representative.IsManuallyModified) {
+                return !representative.IsUnknown; // confidense or unsettled
             }
             return evaluator?.IsReferenceMatched(representative) ?? false;
         }

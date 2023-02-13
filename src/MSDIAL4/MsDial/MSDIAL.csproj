@@ -1093,7 +1093,7 @@
       <Version>12.0.3</Version>
     </PackageReference>
     <PackageReference Include="RawDataHandler">
-      <Version>1.0.8438.348</Version>
+      <Version>1.0.8441.438</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
