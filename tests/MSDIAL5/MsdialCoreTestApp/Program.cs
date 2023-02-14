@@ -301,9 +301,9 @@ namespace CompMs.App.MsdialConsole {
             //    @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\ImagingMS\POS_result\lipidome_pos.csv",
             //    @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\ImagingMS\POS_result\lipidome_pos_violin.csv");
 
-            RnaSeqProcess.Convert2Csv4ViolinPlot(
-                @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\ImagingMS\Result\table.csv",
-                @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\ImagingMS\Result\table_violin.csv");
+            //RnaSeqProcess.Convert2Csv4ViolinPlot(
+            //    @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\ImagingMS\Result\table.csv",
+            //    @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\ImagingMS\Result\table_violin.csv");
 
             //RnaSeqProcess.Convert2Csv4ViolinPlot(
             //    @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\pic_transcriptome\pic_table.csv",
