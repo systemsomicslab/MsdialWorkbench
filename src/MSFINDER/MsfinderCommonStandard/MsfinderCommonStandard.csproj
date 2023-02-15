@@ -9,15 +9,14 @@
 	<EsdUrl>http://prime.psc.riken.jp/compms/code/MsfinderStructureDB-VS15.esd</EsdUrl>	  
   </PropertyGroup>
   <Target Name="DownloadContentFiles" BeforeTargets="Build">
-		<DownloadFile SourceUrl="$(IcdUrl)" DestinationFolder="$(OutputPath)\Resources">
-			<Output TaskParameter="DownloadedFile" ItemName="Content" Condition="!Exists('$(OutputPath)\Resources\*.icd')" />
-		</DownloadFile>
-	    <DownloadFile SourceUrl="$(MsdUrl)" DestinationFolder="$(OutputPath)\Resources">
-		    <Output TaskParameter="DownloadedFile" ItemName="Content" Condition="!Exists('$(OutputPath)\Resources\*.msd')" />
-	    </DownloadFile>
-	    <DownloadFile SourceUrl="$(EsdUrl)" DestinationFolder="$(OutputPath)\Resources">
-		    <Output TaskParameter="DownloadedFile" ItemName="Content" Condition="!Exists('$(OutputPath)\Resources\*.esd')" />
-	    </DownloadFile>
+	  <ItemGroup>
+		  <_DeployToItemIcd Include="$(OutputPath)\Resources\*.icd" />
+		  <_DeployToItemMsd Include="$(OutputPath)\Resources\*.msd" />
+		  <_DeployToItemEsd Include="$(OutputPath)\Resources\*.esd" />
+	  </ItemGroup>
+	  <DownloadFile SourceUrl="$(IcdUrl)" DestinationFolder="$(OutputPath)\Resources" Condition="!Exists('%(_DeployToItemIcd.FullPath)')"></DownloadFile>
+	  <DownloadFile SourceUrl="$(MsdUrl)" DestinationFolder="$(OutputPath)\Resources" Condition="!Exists('%(_DeployToItemMsd.FullPath)')"></DownloadFile>
+	  <DownloadFile SourceUrl="$(EsdUrl)" DestinationFolder="$(OutputPath)\Resources" Condition="!Exists('%(_DeployToItemEsd.FullPath)')"></DownloadFile>
   </Target>
 
   <ItemGroup>
