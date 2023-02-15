@@ -452,12 +452,17 @@
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
-                                <ItemsControl ItemsSource="{Binding LowerSpectrumsViewModel.DisplayScans}"
-                                              VerticalAlignment="Center"
-                                              AlternationCount="8"
-                                              ItemTemplate="{StaticResource LegendItem}"
-                                              Grid.Row="1"
-                                              Grid.Column="3"/>
+                                <StackPanel Grid.Column="3" Grid.Row="1">
+                                    <ItemsControl ItemsSource="{Binding LowerSpectrumsViewModel.DisplayScans}"
+                                                  VerticalAlignment="Center"
+                                                  AlternationCount="8"
+                                                  ItemTemplate="{StaticResource LegendItem}"/>
+                                    <ui:ExecutableBar Label="Shift bottom spectra"
+                                                      Command="{Binding ShiftBottomSpectra, Mode=OneTime}"
+                                                      ButtonContent="Shift">
+                                        <ui:NumericUpDown Value="{Binding ShiftBottomMz.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Interval="1"/>
+                                    </ui:ExecutableBar>
+                                </StackPanel>
 
                                 <TextBlock Text="Abundance"
                                            HorizontalAlignment="Center" VerticalAlignment="Center"

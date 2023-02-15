@@ -103,7 +103,7 @@ namespace CompMs.App.SpectrumViewer.Model
             if (ShiftBottomMz == 0) {
                 return;
             }
-            var shiftTargets = new List<DisplayScan>();
+            var shiftedScans = new List<DisplayScan>();
             foreach (var scan in LowerSpectrumModel.DisplayScans) {
                 if (scan.IsSelected) {
                     var newScan = new MSScanProperty(scan.ScanID, scan.PrecursorMz, scan.ChromXs.GetRepresentativeXAxis(), scan.IonMode);
@@ -111,12 +111,15 @@ namespace CompMs.App.SpectrumViewer.Model
                         newScan.Spectrum.Add(new SpectrumPeak(peak.Mass + ShiftBottomMz, peak.Intensity));
                     }
                     if (ShiftBottomMz > 0) {
-                        shiftTargets.Add(DisplayScan.WrapScan(newScan, $"{scan.Name} + {ShiftBottomMz:F5}"));
+                        shiftedScans.Add(DisplayScan.WrapScan(newScan, $"{scan.Name} + {ShiftBottomMz:F5}"));
                     }
                     else if (ShiftBottomMz < 0) {
-                        shiftTargets.Add(DisplayScan.WrapScan(newScan, $"{scan.Name} - {Math.Abs(ShiftBottomMz):F5}"));
+                        shiftedScans.Add(DisplayScan.WrapScan(newScan, $"{scan.Name} - {Math.Abs(ShiftBottomMz):F5}"));
                     }
                 }
+            }
+            foreach (var scan in shiftedScans) {
+                LowerSpectrumModel.AddScan(scan);
             }
         }
     }
