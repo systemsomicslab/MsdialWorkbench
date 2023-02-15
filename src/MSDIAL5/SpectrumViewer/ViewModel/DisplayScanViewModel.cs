@@ -26,11 +26,14 @@ namespace CompMs.App.SpectrumViewer.ViewModel
             ConstantBrush = new ConstantBrushMapper(Brush);
             IntensityAxis = new RelativeAxisManager(scan.Spectrum.Select(p => p.Intensity).DefaultIfEmpty().Min(), scan.Spectrum.Select(p => p.Intensity).DefaultIfEmpty().Max(), shareIntensityAxis).AddTo(Disposables);
             Visible = scan.ToReactivePropertyAsSynchronized(s => s.Visible).AddTo(Disposables);
+            IsSelected = scan.ToReactivePropertySlimAsSynchronized(s => s.IsSelected).AddTo(Disposables);
         }
 
         public string Name => _scan.Name;
 
         public ReactiveProperty<bool> Visible { get; }
+
+        public ReactivePropertySlim<bool> IsSelected { get; }
 
         public ReadOnlyCollection<SpectrumPeak> Spectrum => _scan.Spectrum.AsReadOnly();
 

@@ -247,9 +247,10 @@
                 <design:ConstantBrushMapper Brush="Yellow"/>
             </AlternationConverter>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
-            <DataTemplate x:Key="LegendItem">
+            <DataTemplate x:Key="LegendItem" DataType="{x:Type model:DisplayScan}">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"
                             Margin="0,4">
+                    <CheckBox IsChecked="{Binding IsSelected}"/>
                     <ToggleButton IsChecked="{Binding Visible}">
                         <Image Width="24">
                             <Image.Source>
@@ -267,7 +268,7 @@
                     <TextBlock Text="{Binding Name}" Margin="8,0" Foreground="Black"/>
                 </StackPanel>
             </DataTemplate>
-            <DataTemplate x:Key="LegendViewModelItem">
+            <DataTemplate x:Key="LegendViewModelItem" DataType="{x:Type vm:DisplayScanViewModel}">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"
                             Margin="0,4">
                     <ToggleButton IsChecked="{Binding Visible.Value}">
