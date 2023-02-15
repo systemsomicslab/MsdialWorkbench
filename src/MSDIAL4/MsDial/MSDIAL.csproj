@@ -44,7 +44,7 @@
             SourceUrl="$(Lbm2Url)"
             DestinationFolder="$(OutputPath)">
 			<Output TaskParameter="DownloadedFile" ItemName="Content"
-			Condition="Exists('$(OutputPath)\README.md')" />
+			Condition="Exists('$(OutputPath)\*.lbm*')" />
 		</DownloadFile>
 	</Target>
   <PropertyGroup>
