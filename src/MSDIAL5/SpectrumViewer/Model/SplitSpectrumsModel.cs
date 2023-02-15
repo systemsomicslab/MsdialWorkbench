@@ -121,14 +121,17 @@ namespace CompMs.App.SpectrumViewer.Model
             foreach (var scan in spectrumModel.DisplayScans) {
                 if (scan.IsSelected) {
                     var newScan = new MSScanProperty(scan.ScanID, scan.PrecursorMz, scan.ChromXs.GetRepresentativeXAxis(), scan.IonMode);
-                    foreach (var peak in scan.Spectrum) {
-                        newScan.Spectrum.Add(new SpectrumPeak(peak.Mass + ShiftMz, peak.Intensity));
-                    }
                     if (ShiftMz > 0) {
-                        shiftedScans.Add(DisplayScan.WrapScan(newScan, $"{scan.Name} + {ShiftMz:F5}"));
+                        foreach (var peak in scan.Spectrum) {
+                            newScan.Spectrum.Add(new SpectrumPeak(peak.Mass + ShiftMz, peak.Intensity, comment: $"{peak.Comment}; m/z +{ShiftMz}"));
+                        }
+                        shiftedScans.Add(DisplayScan.WrapScan(newScan, $"{scan.Name} +{ShiftMz:F5}"));
                     }
                     else if (ShiftMz < 0) {
-                        shiftedScans.Add(DisplayScan.WrapScan(newScan, $"{scan.Name} - {Math.Abs(ShiftMz):F5}"));
+                        foreach (var peak in scan.Spectrum) {
+                            newScan.Spectrum.Add(new SpectrumPeak(peak.Mass + ShiftMz, peak.Intensity, comment: $"{peak.Comment}; m/z {ShiftMz}"));
+                        }
+                        shiftedScans.Add(DisplayScan.WrapScan(newScan, $"{scan.Name} {ShiftMz:F5}"));
                     }
                 }
             }
