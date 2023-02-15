@@ -9,19 +9,9 @@ namespace CompMs.App.SpectrumViewer.Model
 {
     public class DisplayScan : BindableBase, IMSScanProperty
     {
-        private DisplayScan(IMSScanProperty scan) {
+        private DisplayScan(IMSScanProperty scan, string name) {
             Scan = scan ?? throw new ArgumentNullException(nameof(scan));
-            switch (scan) {
-                case MoleculeMsReference reference:
-                    Name = $"{reference.Name} {reference.AdductType}";
-                    break;
-                case IMoleculeProperty property:
-                    Name = property.Name;
-                    break;
-                default:
-                    Name = $"Precursor m/z: {scan.PrecursorMz}";
-                    break;
-            }
+            Name = name;
         }
 
         public IMSScanProperty Scan { get; }
@@ -34,6 +24,12 @@ namespace CompMs.App.SpectrumViewer.Model
         }
         private bool visible = true;
 
+        public bool IsSelected {
+            get => _isSelected;
+            set => SetProperty(ref _isSelected, value);
+        }
+        private bool _isSelected = false;
+
         public int ScanID { get => Scan.ScanID; set => Scan.ScanID = value; }
         public List<SpectrumPeak> Spectrum { get => Scan.Spectrum; set => Scan.Spectrum = value; }
         public ChromXs ChromXs { get => Scan.ChromXs; set => Scan.ChromXs = value; }
@@ -45,7 +41,24 @@ namespace CompMs.App.SpectrumViewer.Model
         }
 
         public static DisplayScan WrapScan(IMSScanProperty scan) {
-            return scan as DisplayScan ?? new DisplayScan(scan);
+            if (scan is DisplayScan ds) {
+                return ds;
+            }
+            switch (scan) {
+                case MoleculeMsReference reference:
+                    return new DisplayScan(scan, $"{reference.Name} {reference.AdductType}");
+                case IMoleculeProperty property:
+                    return new DisplayScan(scan, property.Name);
+                default:
+                    return new DisplayScan(scan, $"Precursor m/z: {scan.PrecursorMz}");
+            }
+        }
+
+        public static DisplayScan WrapScan(IMSScanProperty scan, string name) {
+            if (scan is DisplayScan ds) {
+                return new DisplayScan(ds.Scan, name);
+            }
+            return new DisplayScan(scan, name);
         }
     }
 }
