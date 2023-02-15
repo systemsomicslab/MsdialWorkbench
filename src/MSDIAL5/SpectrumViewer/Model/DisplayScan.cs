@@ -34,6 +34,12 @@ namespace CompMs.App.SpectrumViewer.Model
         }
         private bool visible = true;
 
+        public bool IsSelected {
+            get => _isSelected;
+            set => SetProperty(ref _isSelected, value);
+        }
+        private bool _isSelected = false;
+
         public int ScanID { get => Scan.ScanID; set => Scan.ScanID = value; }
         public List<SpectrumPeak> Spectrum { get => Scan.Spectrum; set => Scan.Spectrum = value; }
         public ChromXs ChromXs { get => Scan.ChromXs; set => Scan.ChromXs = value; }
