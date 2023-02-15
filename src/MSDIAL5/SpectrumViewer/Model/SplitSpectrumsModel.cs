@@ -1,7 +1,9 @@
-﻿using CompMs.Common.Interfaces;
+﻿using CompMs.Common.Components;
+using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 
@@ -43,6 +45,12 @@ namespace CompMs.App.SpectrumViewer.Model
 
         public SpectrumModel UpperSpectrumModel { get; }
         public SpectrumModel LowerSpectrumModel { get; }
+
+        public double ShiftBottomMz {
+            get => _shiftBottomMz;
+            set => SetProperty(ref _shiftBottomMz, value);
+        }
+        private double _shiftBottomMz = 0d;
 
         public ReadOnlyObservableCollection<DisplayScan> DisplayScans { get; }
         private ObservableCollection<DisplayScan> displayScans;
@@ -89,6 +97,27 @@ namespace CompMs.App.SpectrumViewer.Model
         public void RemoveScan(IMSScanProperty scan) {
             UpperSpectrumModel.RemoveScan(scan);
             LowerSpectrumModel.RemoveScan(scan);
+        }
+
+        public void ShiftBottomSpectrum() {
+            if (ShiftBottomMz == 0) {
+                return;
+            }
+            var shiftTargets = new List<DisplayScan>();
+            foreach (var scan in LowerSpectrumModel.DisplayScans) {
+                if (scan.IsSelected) {
+                    var newScan = new MSScanProperty(scan.ScanID, scan.PrecursorMz, scan.ChromXs.GetRepresentativeXAxis(), scan.IonMode);
+                    foreach (var peak in scan.Spectrum) {
+                        newScan.Spectrum.Add(new SpectrumPeak(peak.Mass + ShiftBottomMz, peak.Intensity));
+                    }
+                    if (ShiftBottomMz > 0) {
+                        shiftTargets.Add(DisplayScan.WrapScan(newScan, $"{scan.Name} + {ShiftBottomMz:F5}"));
+                    }
+                    else if (ShiftBottomMz < 0) {
+                        shiftTargets.Add(DisplayScan.WrapScan(newScan, $"{scan.Name} - {Math.Abs(ShiftBottomMz):F5}"));
+                    }
+                }
+            }
         }
     }
 }
