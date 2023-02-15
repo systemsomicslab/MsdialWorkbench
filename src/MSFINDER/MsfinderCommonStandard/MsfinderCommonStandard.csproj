@@ -4,7 +4,21 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>MsfinderCommon</AssemblyName>
     <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+	<IcdUrl>http://prime.psc.riken.jp/compms/code/InchikeyClassyfireDB-VS5.icd</IcdUrl>
+	<MsdUrl>http://prime.psc.riken.jp/compms/code/MINEs-StructureDB-vs1.msd</MsdUrl>
+	<EsdUrl>http://prime.psc.riken.jp/compms/code/MsfinderStructureDB-VS15.esd</EsdUrl>	  
   </PropertyGroup>
+  <Target Name="DownloadContentFiles" BeforeTargets="Build">
+		<DownloadFile SourceUrl="$(IcdUrl)" DestinationFolder="$(OutputPath)\Resources">
+			<Output TaskParameter="DownloadedFile" ItemName="Content" Condition="!Exists('$(OutputPath)\Resources\*.icd')" />
+		</DownloadFile>
+	    <DownloadFile SourceUrl="$(MsdUrl)" DestinationFolder="$(OutputPath)\Resources">
+		    <Output TaskParameter="DownloadedFile" ItemName="Content" Condition="!Exists('$(OutputPath)\Resources\*.msd')" />
+	    </DownloadFile>
+	    <DownloadFile SourceUrl="$(EsdUrl)" DestinationFolder="$(OutputPath)\Resources">
+		    <Output TaskParameter="DownloadedFile" ItemName="Content" Condition="!Exists('$(OutputPath)\Resources\*.esd')" />
+	    </DownloadFile>
+  </Target>
 
   <ItemGroup>
     <None Remove="Resources\AdductNegatives.anf" />
