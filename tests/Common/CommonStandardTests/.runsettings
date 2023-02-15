@@ -4,6 +4,6 @@
     <TargetFrameworkVersion>net6.0</TargetFrameworkVersion>
   </RunConfiguration>
   <MSTest>
-    <DeploymentItem>false</DeploymentItem>
+    <DeploymentItem>true</DeploymentItem>
   </MSTest>
 </RunSettings>

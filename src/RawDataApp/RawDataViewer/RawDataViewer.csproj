@@ -19,7 +19,7 @@
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.31">
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
-    <PackageReference Include="RawDataHandler" Version="1.0.8438.348" />
+    <PackageReference Include="RawDataHandler" Version="1.0.8441.438" />
     <PackageReference Include="ReactiveProperty" Version="7.10.0.0" />
     <PackageReference Include="ReactiveProperty.Core" Version="7.10.0.0">
       <TreatAsUsed>true</TreatAsUsed>
