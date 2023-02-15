@@ -75,6 +75,7 @@ namespace CompMs.MsdialCore.Export.Tests
             };
             MsScanMatchResult matchResult = new MsScanMatchResult
             {
+                Source = SourceType.MspDB,
                 IsSpectrumMatch = true,
                 SimpleDotProduct = 0.811f,
                 WeightedDotProduct = 0.724f,
