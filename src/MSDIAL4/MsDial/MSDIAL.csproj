@@ -40,9 +40,14 @@
     <Lbm2Url>http://prime.psc.riken.jp/compms/msdial/download/lipidblast/LipidMsmsBinaryDB-VS68-AritaM.lbm2</Lbm2Url>
   </PropertyGroup>
   <Target Name="DownloadContentFiles" BeforeTargets="Build">
-    <DownloadFile SourceUrl="$(Lbm2Url)" DestinationFolder="$(OutputPath)">
-      <Output TaskParameter="DownloadedFile" ItemName="Content" Condition="!Exists('$(OutputPath)\*.lbm*')" />
-    </DownloadFile>
+		<ItemGroup>
+			<_DeployToItem Include="$(OutputPath)\*.lbm*"/>
+		</ItemGroup>
+		<DownloadFile
+            SourceUrl="$(Lbm2Url)"
+            DestinationFolder="$(OutputPath)"
+			Condition="!Exists('%(_DeployToItem.FullPath)')">
+		</DownloadFile>
   </Target>
   <PropertyGroup>
     <HighEntropyVA>false</HighEntropyVA>
