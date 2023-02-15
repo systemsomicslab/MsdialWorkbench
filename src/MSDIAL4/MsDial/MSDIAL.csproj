@@ -37,7 +37,13 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <Lbm2Url>http://prime.psc.riken.jp/compms/msdial/download/lipidblast/LipidMsmsBinaryDB-VS68-AritaM.lbm2</Lbm2Url>
   </PropertyGroup>
+  <Target Name="DownloadContentFiles" BeforeTargets="Build">
+    <DownloadFile SourceUrl="$(Lbm2Url)" DestinationFolder="$(OutputPath)">
+      <Output TaskParameter="DownloadedFile" ItemName="Content" Condition="!Exists('$(OutputPath)\*.lbm*')" />
+    </DownloadFile>
+  </Target>
   <PropertyGroup>
     <HighEntropyVA>false</HighEntropyVA>
   </PropertyGroup>
