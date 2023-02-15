@@ -73,20 +73,18 @@ namespace CompMs.MsdialCore.Export.Tests
                 Comment = "nice comment",
                 MatchResults = new MsScanMatchResultContainer(),
             };
-            feature.MatchResults.AddResults(
-                new List<MsScanMatchResult>
-                {
-                    new MsScanMatchResult
-                    {
-                        IsSpectrumMatch = true,
-                        SimpleDotProduct = 0.811f,
-                        WeightedDotProduct = 0.724f,
-                        ReverseDotProduct = 0.631f,
-                        MatchedPeaksCount = 4.00f,
-                        MatchedPeaksPercentage = 0.901f,
-                        TotalScore = 0.638f,
-                    },
-                });
+            MsScanMatchResult matchResult = new MsScanMatchResult
+            {
+                IsSpectrumMatch = true,
+                SimpleDotProduct = 0.811f,
+                WeightedDotProduct = 0.724f,
+                ReverseDotProduct = 0.631f,
+                MatchedPeaksCount = 4.00f,
+                MatchedPeaksPercentage = 0.901f,
+                TotalScore = 0.638f,
+                AnnotatorID = "Annotation method",
+            };
+            feature.MatchResults.AddResults(new List<MsScanMatchResult> { matchResult, });
             feature.PeakCharacter.IsotopeWeightNumber = 1;
             feature.PeakShape.SignalToNoise = 6.78f;
             var msdec = new MSDecResult
@@ -111,7 +109,7 @@ namespace CompMs.MsdialCore.Export.Tests
             Assert.AreEqual("700.001 600.2 100.00001", content["Model masses"]);
             Assert.AreEqual("[M+H]+", content["Adduct"]);
             Assert.AreEqual("1", content["Isotope"]);
-            Assert.AreEqual("nice comment", content["Comment"]);
+            Assert.AreEqual($"nice comment; Annotation method: {matchResult.AnnotatorID}", content["Comment"]);
             Assert.AreEqual("C600H12000O", content["Formula"]);
             Assert.AreEqual("ontology", content["Ontology"]);
             Assert.AreEqual("inchikey", content["InChIKey"]);
