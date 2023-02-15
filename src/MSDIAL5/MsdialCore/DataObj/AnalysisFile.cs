@@ -56,10 +56,10 @@ namespace CompMs.MsdialCore.DataObj {
         string IFileBean.FileName => AnalysisFileName;
         string IFileBean.FilePath => AnalysisFilePath;
 
-        public void SaveSpectrumFeatures(List<SpectrumFeature> spectrumFeatures) {
+        public void SaveSpectrumFeatures(List<QuantifiedMSDecResult> quantifiedMSDecResults) {
             var name = Path.GetFileNameWithoutExtension(PeakAreaBeanInformationFilePath);
-            var path = Path.Combine(Path.GetDirectoryName(PeakAreaBeanInformationFilePath), name + ".sfi"); // *.sfi
-            MessagePackDefaultHandler.SaveLargeListToFile(spectrumFeatures, path);
+            var path = Path.Combine(Path.GetDirectoryName(PeakAreaBeanInformationFilePath), name + ".qmd"); // *.qmd
+            MessagePackDefaultHandler.SaveLargeListToFile(quantifiedMSDecResults, path);
         }
 
         public RawMeasurement LoadRawMeasurement(bool isImagingMsData, bool isGuiProcess, int retry, int sleepMilliSeconds) {

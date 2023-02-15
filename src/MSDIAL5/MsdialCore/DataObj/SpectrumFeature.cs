@@ -1,73 +1,70 @@
-﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
-using CompMs.Common.Enum;
+﻿using CompMs.Common.DataObj.Result;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm.Annotation;
-using MessagePack;
+using CompMs.MsdialCore.MSDec;
 
 namespace CompMs.MsdialCore.DataObj
 {
-    [MessagePackObject]
-    public sealed class SpectrumFeature
-    {
-        private static readonly IMoleculeProperty UNKNOWN_MOLECULE = new MoleculeProperty();
-
-        [Key(2)]
-        private readonly IMoleculeProperty _molecule;
-
-        [SerializationConstructor]
-        public SpectrumFeature(double quantMass, IMSScanProperty scan, IMoleculeProperty molecule, MsScanMatchResultContainer matchResults) {
-            PeakFeature = new BaseChromatogramPeakFeature
-            {
-                Mass = quantMass,
-            };
-            Scan = scan;
-            _molecule = molecule;
+    public sealed class AnnotatedMSDecResult {
+        public AnnotatedMSDecResult(MSDecResult mSDecResult, MsScanMatchResultContainer matchResults, IMoleculeProperty molecule, double quantMass) {
+            MSDecResult = mSDecResult;
             MatchResults = matchResults;
+            QuantMass = quantMass;
+            Molecule = molecule;
         }
 
-        public SpectrumFeature(double quantMass, IMSScanProperty scan, IMoleculeProperty molecule) : this(quantMass, scan, molecule, new MsScanMatchResultContainer()) {
-
+        public AnnotatedMSDecResult(MSDecResult mSDecResult, MsScanMatchResultContainer matchResults, double quantMass) {
+            MSDecResult = mSDecResult;
+            MatchResults = matchResults;
+            QuantMass = quantMass; 
+            Molecule = null;
         }
 
-        public SpectrumFeature(double quantMass, IMSScanProperty scan) : this(quantMass, scan, null) {
-
-        }
-
-        [IgnoreMember]
-        public double QuantMass => PeakFeature.Mass;
-        [Key(1)]
-        public IMSScanProperty Scan { get; }
-        [IgnoreMember]
-        public IMoleculeProperty Molecule => _molecule ?? UNKNOWN_MOLECULE;
-        [Key(3)]
+        public IMoleculeProperty Molecule { get; }
+        public double QuantMass { get; }
+        public MSDecResult MSDecResult { get; }
         public MsScanMatchResultContainer MatchResults { get; }
-        [Key(4)]
-        public IChromatogramPeakFeature PeakFeature { get; }
-
-        [IgnoreMember]
-        public int PeakID => Scan.ScanID;
-        [Key(5)]
-        public int MS1RawSpectrumIdTop { get; set; }
-        [Key(6)]
-        public int MS1RawSpectrumIdLeft { get; set; }
-        [Key(7)]
-        public int MS1RawSpectrumIdRight { get; set; }
-
-        [IgnoreMember]
-        public IonMode IonMode => Scan.IonMode;
-
-        public bool IsValidInChIKey() => Molecule.IsValidInChIKey();
-
         public bool IsReferenceMatched(IMatchResultEvaluator<MsScanMatchResult> evaluator) => MatchResults.IsReferenceMatched(evaluator);
-
-        [Key(8)]
-        public string Comment { get; set; } = string.Empty;
-        [Key(9)]
-        public ChromatogramPeakShape PeakShape { get; } = new ChromatogramPeakShape();
-        [Key(10)]
-        public FeatureFilterStatus FeatureFilterStatus { get; } = new FeatureFilterStatus();
-        [IgnoreMember]
-        public bool IsUnknown => _molecule is null;
     }
+
+    public sealed class QuantifiedChromatogramPeak {
+        public QuantifiedChromatogramPeak(IChromatogramPeakFeature peakFeature, int mS1RawSpectrumIdTop, int mS1RawSpectrumIdLeft, int mS1RawSpectrumIdRight, ChromatogramPeakShape peakShape) {
+            PeakFeature = peakFeature;
+            MS1RawSpectrumIdTop = mS1RawSpectrumIdTop;
+            MS1RawSpectrumIdLeft = mS1RawSpectrumIdLeft;
+            MS1RawSpectrumIdRight = mS1RawSpectrumIdRight;
+            PeakShape = peakShape;
+        }
+
+        public IChromatogramPeakFeature PeakFeature { get; }
+        public int MS1RawSpectrumIdTop { get; set; }
+        public int MS1RawSpectrumIdLeft { get; set; }
+        public int MS1RawSpectrumIdRight { get; set; }
+        public ChromatogramPeakShape PeakShape { get; }
+    }
+
+    public sealed class QuantifiedMSDecResult {
+        public QuantifiedMSDecResult(AnnotatedMSDecResult annotatedResult, QuantifiedChromatogramPeak quantifiedChromatogramPeak) {
+            AnnotatedMSDecResult = annotatedResult;
+            QuantifiedChromatogramPeak = quantifiedChromatogramPeak;
+        }
+
+        public AnnotatedMSDecResult AnnotatedMSDecResult { get; }
+        public double QuantMass => AnnotatedMSDecResult.QuantMass;
+        public MSDecResult MSDecResult => AnnotatedMSDecResult.MSDecResult;
+        public MsScanMatchResultContainer MatchResults => AnnotatedMSDecResult.MatchResults;
+        public IMoleculeProperty Molecule => AnnotatedMSDecResult.Molecule;
+
+        public QuantifiedChromatogramPeak QuantifiedChromatogramPeak { get; }
+        public IChromatogramPeakFeature PeakFeature => QuantifiedChromatogramPeak.PeakFeature;
+        public int MS1RawSpectrumIdTop => QuantifiedChromatogramPeak.MS1RawSpectrumIdTop;
+        public int MS1RawSpectrumIdLeft => QuantifiedChromatogramPeak.MS1RawSpectrumIdLeft;
+        public int MS1RawSpectrumIdRight => QuantifiedChromatogramPeak.MS1RawSpectrumIdRight;
+        public ChromatogramPeakShape PeakShape => QuantifiedChromatogramPeak.PeakShape;
+
+        public FeatureFilterStatus FeatureFilterStatus { get; } = new FeatureFilterStatus();
+        public string Comment { get; set; } = string.Empty;
+    }
+
+
 }

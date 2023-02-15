@@ -29,23 +29,25 @@ namespace CompMs.MsdialGcMsApi.Algorithm
         /// <param name="ms1DecResults"></param>
         /// <param name="carbon2RtDict"></param>
         /// <param name="reporter"></param>
-        public SpectrumFeature[] MainProcess(List<MSDecResult> ms1DecResults, Dictionary<int, float> carbon2RtDict, ReportProgress reporter) {
+        public AnnotatedMSDecResult[] MainProcess(List<MSDecResult> ms1DecResults, Dictionary<int, float> carbon2RtDict, ReportProgress reporter) {
             Console.WriteLine("Annotation started");
             SetRetentionIndexForMS1DecResults(ms1DecResults, carbon2RtDict);
 
             if (_parameter.IsIdentificationOnlyPerformedForAlignmentFile)
-                return Array.Empty<SpectrumFeature>();
+                return Array.Empty<AnnotatedMSDecResult>();
 
             if (_mspDB != null && _mspDB.Count > 0) {
-                var features = new SpectrumFeature[ms1DecResults.Count];
+                var features = new AnnotatedMSDecResult[ms1DecResults.Count];
                 foreach (var (decResult, index) in ms1DecResults.WithIndex()) {
-                    var results = MspBasedProccess(decResult);
-                    if (results.FirstOrDefault() is MsScanMatchResult topHit) {
-                        features[index] = new SpectrumFeature(decResult.ModelPeakMz, decResult, _mspDB[topHit.LibraryID]);
-                        features[index].MatchResults.AddResults(results);
+                    var results = new MsScanMatchResultContainer();
+                    results.AddResults(MspBasedProccess(decResult));
+                    if (results.Representative is MsScanMatchResult topHit) {
+                        var molecule = _mspDB[topHit.LibraryID];
+                        var quantMass = molecule.QuantMass == 0 ? decResult.ModelPeakMz : molecule.QuantMass;
+                        features[index] = new AnnotatedMSDecResult(decResult, results, molecule, quantMass);
                     }
                     else {
-                        features[index] = new SpectrumFeature(decResult.ModelPeakMz, decResult);
+                        features[index] = new AnnotatedMSDecResult(decResult, results, null, decResult.ModelPeakMz);
                     }
                     Console.WriteLine("Done {0}/{1}", index, ms1DecResults.Count);
                     reporter.Show(index, ms1DecResults.Count);
@@ -53,7 +55,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                 return features;
             }
 
-            return Array.Empty<SpectrumFeature>();
+            return Array.Empty<AnnotatedMSDecResult>();
         }
 
         public List<MsScanMatchResult> MspBasedProccess(MSDecResult msdecResult) {

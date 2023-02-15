@@ -19,7 +19,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm {
         }
 
         public List<PeakDetectionResult> GetPeakDetectionResultsByQuantMassInformation(
-            IReadOnlyList<RawSpectrum> spectra, IReadOnlyList<SpectrumFeature> features, IReadOnlyList<MSDecResult> msdecResults) {
+            IReadOnlyList<RawSpectrum> spectra, IReadOnlyList<AnnotatedMSDecResult> features, IReadOnlyList<MSDecResult> msdecResults) {
             var rawSpectra = new RawSpectra(spectra, _parameter.IonMode, _parameter.AcquisitionType);
 
             var results = new List<PeakDetectionResult>();
