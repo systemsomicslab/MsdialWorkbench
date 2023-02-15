@@ -46,11 +46,11 @@ namespace CompMs.App.SpectrumViewer.Model
         public SpectrumModel UpperSpectrumModel { get; }
         public SpectrumModel LowerSpectrumModel { get; }
 
-        public double ShiftBottomMz {
-            get => _shiftBottomMz;
-            set => SetProperty(ref _shiftBottomMz, value);
+        public double ShiftMz {
+            get => _shiftMz;
+            set => SetProperty(ref _shiftMz, value);
         }
-        private double _shiftBottomMz = 0d;
+        private double _shiftMz = 0d;
 
         public ReadOnlyObservableCollection<DisplayScan> DisplayScans { get; }
         private ObservableCollection<DisplayScan> displayScans;
@@ -99,27 +99,32 @@ namespace CompMs.App.SpectrumViewer.Model
             LowerSpectrumModel.RemoveScan(scan);
         }
 
-        public void ShiftBottomSpectra() {
-            if (ShiftBottomMz == 0) {
+        public void ShifSpectra() {
+            if (ShiftMz == 0) {
                 return;
             }
+            ShiftSpectraCore(UpperSpectrumModel);
+            ShiftSpectraCore(LowerSpectrumModel);
+        }
+
+        private void ShiftSpectraCore(SpectrumModel spectrumModel) {
             var shiftedScans = new List<DisplayScan>();
-            foreach (var scan in LowerSpectrumModel.DisplayScans) {
+            foreach (var scan in spectrumModel.DisplayScans) {
                 if (scan.IsSelected) {
                     var newScan = new MSScanProperty(scan.ScanID, scan.PrecursorMz, scan.ChromXs.GetRepresentativeXAxis(), scan.IonMode);
                     foreach (var peak in scan.Spectrum) {
-                        newScan.Spectrum.Add(new SpectrumPeak(peak.Mass + ShiftBottomMz, peak.Intensity));
+                        newScan.Spectrum.Add(new SpectrumPeak(peak.Mass + ShiftMz, peak.Intensity));
                     }
-                    if (ShiftBottomMz > 0) {
-                        shiftedScans.Add(DisplayScan.WrapScan(newScan, $"{scan.Name} + {ShiftBottomMz:F5}"));
+                    if (ShiftMz > 0) {
+                        shiftedScans.Add(DisplayScan.WrapScan(newScan, $"{scan.Name} + {ShiftMz:F5}"));
                     }
-                    else if (ShiftBottomMz < 0) {
-                        shiftedScans.Add(DisplayScan.WrapScan(newScan, $"{scan.Name} - {Math.Abs(ShiftBottomMz):F5}"));
+                    else if (ShiftMz < 0) {
+                        shiftedScans.Add(DisplayScan.WrapScan(newScan, $"{scan.Name} - {Math.Abs(ShiftMz):F5}"));
                     }
                 }
             }
             foreach (var scan in shiftedScans) {
-                LowerSpectrumModel.AddScan(scan);
+                spectrumModel.AddScan(scan);
             }
         }
     }

@@ -458,9 +458,9 @@
                                                   AlternationCount="8"
                                                   ItemTemplate="{StaticResource LegendItem}"/>
                                     <ui:ExecutableBar Label="Shift bottom spectra"
-                                                      Command="{Binding ShiftBottomSpectra, Mode=OneTime}"
+                                                      Command="{Binding ShiftSpectra, Mode=OneTime}"
                                                       ButtonContent="Shift">
-                                        <ui:NumericUpDown Value="{Binding ShiftBottomMz.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Interval="1"/>
+                                        <ui:NumericUpDown Value="{Binding ShiftMz.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Interval="1"/>
                                     </ui:ExecutableBar>
                                 </StackPanel>
 
