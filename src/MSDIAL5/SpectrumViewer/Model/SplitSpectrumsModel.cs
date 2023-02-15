@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
+using System.Linq;
 
 namespace CompMs.App.SpectrumViewer.Model
 {
@@ -99,15 +100,23 @@ namespace CompMs.App.SpectrumViewer.Model
             LowerSpectrumModel.RemoveScan(scan);
         }
 
-        public void ShifSpectra() {
+        public void RemoveScan() {
+            var targetScans = UpperSpectrumModel.DisplayScans.Concat(LowerSpectrumModel.DisplayScans).Where(scan => scan.IsSelected).Distinct().ToArray();
+            foreach (var scan in targetScans) {
+                UpperSpectrumModel.RemoveScan(scan);
+                LowerSpectrumModel.RemoveScan(scan);
+            }
+        }
+
+        public void ShifScan() {
             if (ShiftMz == 0) {
                 return;
             }
-            ShiftSpectraCore(UpperSpectrumModel);
-            ShiftSpectraCore(LowerSpectrumModel);
+            ShiftScanCore(UpperSpectrumModel);
+            ShiftScanCore(LowerSpectrumModel);
         }
 
-        private void ShiftSpectraCore(SpectrumModel spectrumModel) {
+        private void ShiftScanCore(SpectrumModel spectrumModel) {
             var shiftedScans = new List<DisplayScan>();
             foreach (var scan in spectrumModel.DisplayScans) {
                 if (scan.IsSelected) {

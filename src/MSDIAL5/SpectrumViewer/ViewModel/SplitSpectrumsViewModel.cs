@@ -96,9 +96,13 @@ namespace CompMs.App.SpectrumViewer.ViewModel
             CloseCommand = new ReactiveCommand().AddTo(Disposables);
 
             ShiftMz = model.ToReactivePropertyAsSynchronized(m => m.ShiftMz).AddTo(Disposables);
-            ShiftSpectra = ShiftMz.Select(mz => mz != 0d)
+            ShiftScanCommand = ShiftMz.Select(mz => mz != 0d)
                 .ToReactiveCommand()
-                .WithSubscribe(model.ShifSpectra)
+                .WithSubscribe(model.ShifScan)
+                .AddTo(Disposables);
+
+            RemoveScanCommand = new ReactiveCommand()
+                .WithSubscribe(model.RemoveScan)
                 .AddTo(Disposables);
         }
 
@@ -124,6 +128,8 @@ namespace CompMs.App.SpectrumViewer.ViewModel
 
         [RegularExpression(@"[-+]?\d*\.?\d+")]
         public ReactiveProperty<double> ShiftMz { get; }
-        public ReactiveCommand ShiftSpectra { get; }
+        public ReactiveCommand ShiftScanCommand { get; }
+
+        public ReactiveCommand RemoveScanCommand { get; }
     }
 }

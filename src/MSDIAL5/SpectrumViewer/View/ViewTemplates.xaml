@@ -457,11 +457,12 @@
                                                   VerticalAlignment="Center"
                                                   AlternationCount="8"
                                                   ItemTemplate="{StaticResource LegendItem}"/>
-                                    <ui:ExecutableBar Label="Shift bottom spectra"
-                                                      Command="{Binding ShiftSpectra, Mode=OneTime}"
+                                    <ui:ExecutableBar Label="Shift scan"
+                                                      Command="{Binding ShiftScanCommand, Mode=OneTime}"
                                                       ButtonContent="Shift">
                                         <ui:NumericUpDown Value="{Binding ShiftMz.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Interval="1"/>
                                     </ui:ExecutableBar>
+                                    <Button Content="Remove scan" Command="{Binding RemoveScanCommand, Mode=OneTime}"/>
                                 </StackPanel>
 
                                 <TextBlock Text="Abundance"
