@@ -99,7 +99,7 @@ namespace CompMs.App.SpectrumViewer.Model
             LowerSpectrumModel.RemoveScan(scan);
         }
 
-        public void ShiftBottomSpectrum() {
+        public void ShiftBottomSpectra() {
             if (ShiftBottomMz == 0) {
                 return;
             }

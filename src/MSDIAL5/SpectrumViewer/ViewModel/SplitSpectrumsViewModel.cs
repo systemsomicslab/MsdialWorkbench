@@ -11,6 +11,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
@@ -93,6 +94,12 @@ namespace CompMs.App.SpectrumViewer.ViewModel
                 .Subscribe(AddScan)
                 .AddTo(Disposables);
             CloseCommand = new ReactiveCommand().AddTo(Disposables);
+
+            ShiftBottomMz = model.ToReactivePropertyAsSynchronized(m => m.ShiftBottomMz).AddTo(Disposables);
+            ShiftBottomSpectra = ShiftBottomMz.Select(mz => mz != 0d)
+                .ToReactiveCommand()
+                .WithSubscribe(model.ShiftBottomSpectra)
+                .AddTo(Disposables);
         }
 
         public SplitSpectrumsModel Model { get; }
@@ -114,5 +121,9 @@ namespace CompMs.App.SpectrumViewer.ViewModel
         public void AddScan(IMSScanProperty scan) {
             Model.AddScan(scan);
         }
+
+        [RegularExpression(@"[-+]?\d*\.?\d+")]
+        public ReactiveProperty<double> ShiftBottomMz { get; }
+        public ReactiveCommand ShiftBottomSpectra { get; }
     }
 }
