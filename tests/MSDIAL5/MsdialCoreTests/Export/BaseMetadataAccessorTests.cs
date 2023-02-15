@@ -58,7 +58,8 @@ namespace CompMs.MsdialCore.Export.Tests
         [TestMethod()]
         public void GetContentTest() {
             var parameter = new ParameterBase { MachineCategory = Common.Enum.MachineCategory.LCMS };
-            var accessor = new TestMetadataAccessor(new MockRefer(), parameter);
+            var refer = new MockRefer();
+            var accessor = new TestMetadataAccessor(refer, parameter);
             var spot = new AlignmentSpotProperty
             {
                 MasterAlignmentID = 100,
@@ -79,18 +80,18 @@ namespace CompMs.MsdialCore.Export.Tests
                 IsotopicPeaks = new List<IsotopicPeak> { new IsotopicPeak { Mass = 701.12345, AbsoluteAbundance = 345, }, new IsotopicPeak { Mass = 702.12345, AbsoluteAbundance = 12, } },
                 IonAbundanceUnit = IonAbundanceUnit.nmol_per_mg_tissue,
             };
-            spot.MatchResults.AddResults(
-                new List<MsScanMatchResult> {
-                    new MsScanMatchResult {
-                            Source = SourceType.Manual,
-                            SimpleDotProduct = 0.81f,
-                            WeightedDotProduct = 0.82f,
-                            ReverseDotProduct = 0.83f,
-                            MatchedPeaksCount = 10,
-                            MatchedPeaksPercentage = 0.84f,
-                            TotalScore = 0.83f,
-                    }
-                });
+            var matchResult = new MsScanMatchResult
+            {
+                Source = SourceType.Manual | SourceType.MspDB,
+                SimpleDotProduct = 0.81f,
+                WeightedDotProduct = 0.82f,
+                ReverseDotProduct = 0.83f,
+                MatchedPeaksCount = 10,
+                MatchedPeaksPercentage = 0.84f,
+                TotalScore = 0.83f,
+                AnnotatorID = "Annotation method1",
+            };
+            spot.MatchResults.AddResults(new List<MsScanMatchResult> { matchResult, });
             spot.PeakCharacter.IsotopeParentPeakID = 200;
             spot.PeakCharacter.IsotopeWeightNumber = 1;
             var msdecResult = new MSDecResult
@@ -117,7 +118,7 @@ namespace CompMs.MsdialCore.Export.Tests
             Assert.AreEqual("DDD", dict["INCHIKEY"]);
             Assert.AreEqual("EEE", dict["SMILES"]);
             Assert.AreEqual(DataAccess.GetAnnotationCode(spot.MatchResults.Representative, parameter).ToString(), dict["Annotation tag (VS1.0)"]);
-            Assert.AreEqual($"FFF; Normalized unit {spot.IonAbundanceUnit}", dict["Comment"]);
+            Assert.AreEqual($"{spot.Comment}; Normalized unit: {spot.IonAbundanceUnit}; Annotation method: {matchResult.AnnotatorID}", dict["Comment"]);
             Assert.AreEqual("True", dict["Manually modified for quantification"]);
             Assert.AreEqual("True", dict["Manually modified for annotation"]);
             Assert.AreEqual("200", dict["Isotope tracking parent ID"]);
@@ -137,10 +138,10 @@ namespace CompMs.MsdialCore.Export.Tests
         [TestMethod()]
         public void GetContentWhenCommentEmptyTest() {
             var refer = new MockRefer();
-            var accessor = new TestMetadataAccessor(refer, new ParameterBase { MachineCategory = Common.Enum.MachineCategory.LCMS });
+            var accessor = new TestMetadataAccessor(refer, new ParameterBase { MachineCategory = MachineCategory.LCMS });
             var spot = new AlignmentSpotProperty { Comment = string.Empty, IonAbundanceUnit = IonAbundanceUnit.pmol_per_mg_tissue, };
             var dict = accessor.GetContent(spot, null);
-            Assert.AreEqual($"Normalized unit {spot.IonAbundanceUnit}", dict["Comment"]);
+            Assert.AreEqual($"Normalized unit: {spot.IonAbundanceUnit}", dict["Comment"]);
         }
 
         [TestMethod()]

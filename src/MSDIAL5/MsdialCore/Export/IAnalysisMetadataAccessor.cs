@@ -79,6 +79,13 @@ namespace CompMs.MsdialCore.Export
             MsScanMatchResult matchResult,
             IReadOnlyList<RawSpectrum> spectrumList) {
 
+            var comment = feature.Comment;
+            if (matchResult.AnyMatched) {
+                if (!string.IsNullOrEmpty(comment)) {
+                    comment += "; ";
+                }
+                comment += $"Annotation method: {matchResult.AnnotatorID}";
+            }
             return new Dictionary<string, string> {
                 { "Peak ID", feature.MasterPeakID.ToString() },
                 { "Name", UnknownIfEmpty(feature.Name) },
@@ -89,7 +96,7 @@ namespace CompMs.MsdialCore.Export
                 { "Model masses", string.Join(" ", msdec.ModelMasses) },
                 { "Adduct",  feature.AdductType?.AdductIonName ?? "null" },
                 { "Isotope",  feature.PeakCharacter.IsotopeWeightNumber.ToString() },
-                { "Comment",  feature.Comment},
+                { "Comment",  comment},
                 { "Formula", reference?.Formula?.FormulaString ?? "null" },
                 { "Ontology", !string.IsNullOrEmpty(reference?.CompoundClass)  ? reference.CompoundClass
                                                                                : ValueOrNull(reference?.Ontology) },
