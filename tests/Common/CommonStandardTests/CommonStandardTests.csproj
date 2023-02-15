@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\CommonStandardTestHelper\CommonStandardTestHelper.csproj" />
     <ProjectReference Include="..\..\..\src\Common\CommonStandard\CommonStandard.csproj" />
   </ItemGroup>
 

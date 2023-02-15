@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
 
@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\MsdialCoreTestHelper\MsdialCoreTestHelper.csproj" />
     <ProjectReference Include="..\..\..\src\Common\CommonStandard\CommonStandard.csproj" />
     <ProjectReference Include="..\..\..\src\MSDIAL5\MsdialCore\MsdialCore.csproj" />
   </ItemGroup>

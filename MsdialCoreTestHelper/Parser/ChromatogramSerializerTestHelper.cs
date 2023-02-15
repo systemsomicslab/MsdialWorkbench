@@ -9,7 +9,7 @@ using CompMs.MsdialCore.DataObj;
 
 namespace MsdialCoreTests.Parser
 {
-    class ChromatogramSerializerTestHelper
+    public sealed class ChromatogramSerializerTestHelper
     {
         public static void AreEqual(ChromatogramSpotInfo expected, ChromatogramSpotInfo actual) {
             Assert.AreEqual(expected.ChromXs.RT.Value, actual.ChromXs.RT.Value);
