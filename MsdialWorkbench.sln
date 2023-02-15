@@ -161,9 +161,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{765ED28C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "helper", "helper", "{B1471530-7779-4A57-9664-1E3A06F1A449}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialCoreTestHelper", "MsdialCoreTestHelper\MsdialCoreTestHelper.csproj", "{73B3153A-3DC9-4F83-A419-ABA0BCBF37E1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialCoreTestHelper", "tests\MSDIAL5\MsdialCoreTestHelper\MsdialCoreTestHelper.csproj", "{73B3153A-3DC9-4F83-A419-ABA0BCBF37E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonStandardTestHelper", "CommonStandardTestHelper\CommonStandardTestHelper.csproj", "{D8B8B716-2710-41F3-9C0F-A6709420C96F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonStandardTestHelper", "tests\Common\CommonStandardTestHelper\CommonStandardTestHelper.csproj", "{D8B8B716-2710-41F3-9C0F-A6709420C96F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
