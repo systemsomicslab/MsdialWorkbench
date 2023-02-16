@@ -1,8 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace CommonStandardTestHelper.Utility
+namespace CompMs.Common.Tests.Utility
 {
     public static class TestHelper
     {
@@ -24,6 +25,14 @@ namespace CommonStandardTestHelper.Utility
             Assert.AreEqual(expected.Count, actual.Count);
             for (int i = 0; i < expected.Count; i++) {
                 assertAction(expected[i], actual[i]);
+            }
+        }
+
+        public static void AreEquivalent<TKey, TValue>(this CollectionAssert assert, IDictionary<TKey, TValue> expected, IDictionary<TKey, TValue> actual) {
+            Assert.AreEqual(expected.Count, actual.Count);
+            CollectionAssert.AreEquivalent(expected.Keys.ToArray(), actual.Keys.ToArray());
+            foreach (var key in expected.Keys) {
+                Assert.AreEqual(expected[key], actual[key]);
             }
         }
     }
