@@ -1,30 +1,57 @@
-﻿using CompMs.Common.DataObj.Result;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Interfaces;
+using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.MSDec;
+using MessagePack;
+using System.IO;
 
 namespace CompMs.MsdialCore.DataObj
 {
+    [MessagePackObject]
     public sealed class AnnotatedMSDecResult {
-        public AnnotatedMSDecResult(MSDecResult mSDecResult, MsScanMatchResultContainer matchResults, IMoleculeProperty molecule, double quantMass) {
+        public AnnotatedMSDecResult(MSDecResult mSDecResult, MsScanMatchResultContainer matchResults, MoleculeMsReference reference) {
             MSDecResult = mSDecResult;
             MatchResults = matchResults;
-            QuantMass = quantMass;
-            Molecule = molecule;
+            Molecule = reference;
+            QuantMass = reference.QuantMass != 0 ? reference.QuantMass : mSDecResult.ModelPeakMz;
         }
 
-        public AnnotatedMSDecResult(MSDecResult mSDecResult, MsScanMatchResultContainer matchResults, double quantMass) {
+        public AnnotatedMSDecResult(MSDecResult mSDecResult, MsScanMatchResultContainer matchResults) {
             MSDecResult = mSDecResult;
             MatchResults = matchResults;
-            QuantMass = quantMass; 
+            QuantMass = mSDecResult.ModelPeakMz;
             Molecule = null;
         }
 
-        public IMoleculeProperty Molecule { get; }
-        public double QuantMass { get; }
+        [SerializationConstructor]
+        public AnnotatedMSDecResult(MSDecResult mSDecResult, MsScanMatchResultContainer matchResults, IMoleculeProperty molecule, double quantMass) {
+            MSDecResult = mSDecResult;
+            MatchResults = matchResults;
+            Molecule = molecule;
+            QuantMass = quantMass;
+        }
+
+        [Key("MSDecResult")]
         public MSDecResult MSDecResult { get; }
+        [Key("MatchResults")]
         public MsScanMatchResultContainer MatchResults { get; }
+        [Key("Molecule")]
+        public IMoleculeProperty Molecule { get; }
+        [Key("QuantMass")]
+        public double QuantMass { get; }
+        [IgnoreMember]
+        public bool IsUnknown => Molecule is null;
         public bool IsReferenceMatched(IMatchResultEvaluator<MsScanMatchResult> evaluator) => MatchResults.IsReferenceMatched(evaluator);
+
+        public void Save(Stream stream) {
+            MessagePackDefaultHandler.SaveToStream(this, stream);
+        }
+
+        public static AnnotatedMSDecResult Load(Stream stream) {
+            return MessagePackDefaultHandler.LoadFromStream<AnnotatedMSDecResult>(stream);
+        }
     }
 
     public sealed class QuantifiedChromatogramPeak {
@@ -37,9 +64,9 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         public IChromatogramPeakFeature PeakFeature { get; }
-        public int MS1RawSpectrumIdTop { get; set; }
-        public int MS1RawSpectrumIdLeft { get; set; }
-        public int MS1RawSpectrumIdRight { get; set; }
+        public int MS1RawSpectrumIdTop { get; }
+        public int MS1RawSpectrumIdLeft { get; }
+        public int MS1RawSpectrumIdRight { get; }
         public ChromatogramPeakShape PeakShape { get; }
     }
 

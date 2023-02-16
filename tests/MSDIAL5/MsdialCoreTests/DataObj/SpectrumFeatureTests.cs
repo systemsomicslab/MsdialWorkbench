@@ -18,13 +18,13 @@ namespace CompMs.MsdialCore.DataObj.Tests
                 new MsScanMatchResult { Name = "Result1", TotalScore = .8f, IsReferenceMatched = true, },
                 new MsScanMatchResult { Name = "Result2", TotalScore = .9f, IsReferenceMatched = false, },
             };
-            var molecule = new MoleculeProperty
+            var molecule = new MoleculeMsReference
             {
                 Name = annotationResults[0].Name,
             };
             var resultContainer = new MsScanMatchResultContainer();
             resultContainer.AddResults(annotationResults);
-            var annotatedMSDecResult = new AnnotatedMSDecResult(scan, resultContainer, molecule, 1);
+            var annotatedMSDecResult = new AnnotatedMSDecResult(scan, resultContainer, molecule);
             var peak = new BaseChromatogramPeakFeature();
             var quantifiedChromatogramPeak = new QuantifiedChromatogramPeak(peak, 100, 50, 150, new ChromatogramPeakShape());
             var feature = new QuantifiedMSDecResult(annotatedMSDecResult, quantifiedChromatogramPeak);

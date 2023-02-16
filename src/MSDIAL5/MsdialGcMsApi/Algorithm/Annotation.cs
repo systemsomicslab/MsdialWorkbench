@@ -42,12 +42,10 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                     var results = new MsScanMatchResultContainer();
                     results.AddResults(MspBasedProccess(decResult));
                     if (results.Representative is MsScanMatchResult topHit) {
-                        var molecule = _mspDB[topHit.LibraryID];
-                        var quantMass = molecule.QuantMass == 0 ? decResult.ModelPeakMz : molecule.QuantMass;
-                        features[index] = new AnnotatedMSDecResult(decResult, results, molecule, quantMass);
+                        features[index] = new AnnotatedMSDecResult(decResult, results, _mspDB[topHit.LibraryID]);
                     }
                     else {
-                        features[index] = new AnnotatedMSDecResult(decResult, results, null, decResult.ModelPeakMz);
+                        features[index] = new AnnotatedMSDecResult(decResult, results);
                     }
                     Console.WriteLine("Done {0}/{1}", index, ms1DecResults.Count);
                     reporter.Show(index, ms1DecResults.Count);
