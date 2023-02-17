@@ -8,10 +8,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
     {
         [TestMethod()]
         public void SaveAndLoadTest() {
-            var peak = new QuantifiedChromatogramPeak(
-                new ChromatogramPeakFeature { MasterPeakID = 1, Mass = 100d, },
-                new ChromatogramPeakShape { AmplitudeOrderValue = 1, AmplitudeScoreValue = 1, },
-                100, 50, 150);
+            var peak = QuantifiedChromatogramPeakTestHelper.CreateSample();
             var memory = new MemoryStream();
             peak.Save(memory);
             memory.Seek(0, SeekOrigin.Begin);

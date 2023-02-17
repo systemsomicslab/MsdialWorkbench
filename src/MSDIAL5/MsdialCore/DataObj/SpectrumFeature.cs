@@ -11,6 +11,7 @@ namespace CompMs.MsdialCore.DataObj
             QuantifiedChromatogramPeak = quantifiedChromatogramPeak;
         }
 
+        [SerializationConstructor]
         public SpectrumFeature(AnnotatedMSDecResult annotatedMSDecResult, QuantifiedChromatogramPeak quantifiedChromatogramPeak, FeatureFilterStatus featureFilterStatus) {
             AnnotatedMSDecResult = annotatedMSDecResult;
             QuantifiedChromatogramPeak = quantifiedChromatogramPeak;

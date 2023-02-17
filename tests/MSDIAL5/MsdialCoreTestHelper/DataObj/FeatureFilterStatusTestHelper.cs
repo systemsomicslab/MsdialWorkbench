@@ -3,6 +3,20 @@
 namespace CompMs.MsdialCore.DataObj.Tests
 {
     public static class FeatureFilterStatusTestHelper {
+        public static FeatureFilterStatus CreateSample() {
+            return new FeatureFilterStatus
+            {
+                IsAbundanceFiltered = true, 
+                IsRefMatchedFiltered = false,
+                IsSuggestedFiltered = true,
+                IsUnknownFiltered = false,
+                IsBlankFiltered = true,
+                IsMsmsContainedFiltered = false,
+                IsFragmentExistFiltered = false,
+                IsCommentFiltered = false,
+            };
+        }
+
         public static void AreEqual(this Assert assert, FeatureFilterStatus expected, FeatureFilterStatus actual) {
             Assert.AreEqual(expected.IsAbundanceFiltered, actual.IsAbundanceFiltered);
             Assert.AreEqual(expected.IsRefMatchedFiltered, actual.IsRefMatchedFiltered);

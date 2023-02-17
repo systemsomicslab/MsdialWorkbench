@@ -1,6 +1,4 @@
-﻿using CompMs.Common.Components;
-using CompMs.MsdialCore.MSDec;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 
 namespace CompMs.MsdialCore.DataObj.Tests
@@ -10,17 +8,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
     {
         [TestMethod()]
         public void SaveAndLoadTest() {
-            var matchResultContainer = new MsScanMatchResultContainer();
-            matchResultContainer.AddResult(new Common.DataObj.Result.MsScanMatchResult { LibraryID = 1, });
-            var msdecResult = new MSDecResult
-            {
-                ScanID = 1,
-            };
-            var reference = new MoleculeMsReference
-            {
-                ScanID = 1,
-            };
-            var obj = new AnnotatedMSDecResult(msdecResult, matchResultContainer, reference);
+            var obj = AnnotatedMSDecResultTestHelper.CreateSample();
 
             var memory = new MemoryStream();
             obj.Save(memory);
