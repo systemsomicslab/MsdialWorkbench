@@ -26,7 +26,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             resultContainer.AddResults(annotationResults);
             var annotatedMSDecResult = new AnnotatedMSDecResult(scan, resultContainer, molecule);
             var peak = new BaseChromatogramPeakFeature();
-            var quantifiedChromatogramPeak = new QuantifiedChromatogramPeak(peak, 100, 50, 150, new ChromatogramPeakShape());
+            var quantifiedChromatogramPeak = new QuantifiedChromatogramPeak(peak, new ChromatogramPeakShape(), 100, 50, 150);
             var feature = new QuantifiedMSDecResult(annotatedMSDecResult, quantifiedChromatogramPeak);
 
             var memory = new MemoryStream();

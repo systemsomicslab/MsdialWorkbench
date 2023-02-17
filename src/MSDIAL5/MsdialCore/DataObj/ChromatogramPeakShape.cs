@@ -1,9 +1,7 @@
 ﻿using MessagePack;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace CompMs.MsdialCore.DataObj {
+namespace CompMs.MsdialCore.DataObj
+{
     [MessagePackObject]
     public class ChromatogramPeakShape {
         [Key(0)]

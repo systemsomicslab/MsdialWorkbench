@@ -3,22 +3,6 @@ using CompMs.MsdialCore.MSDec;
 
 namespace CompMs.MsdialCore.DataObj
 {
-    public sealed class QuantifiedChromatogramPeak {
-        public QuantifiedChromatogramPeak(IChromatogramPeakFeature peakFeature, int mS1RawSpectrumIdTop, int mS1RawSpectrumIdLeft, int mS1RawSpectrumIdRight, ChromatogramPeakShape peakShape) {
-            PeakFeature = peakFeature;
-            MS1RawSpectrumIdTop = mS1RawSpectrumIdTop;
-            MS1RawSpectrumIdLeft = mS1RawSpectrumIdLeft;
-            MS1RawSpectrumIdRight = mS1RawSpectrumIdRight;
-            PeakShape = peakShape;
-        }
-
-        public IChromatogramPeakFeature PeakFeature { get; }
-        public int MS1RawSpectrumIdTop { get; }
-        public int MS1RawSpectrumIdLeft { get; }
-        public int MS1RawSpectrumIdRight { get; }
-        public ChromatogramPeakShape PeakShape { get; }
-    }
-
     public sealed class QuantifiedMSDecResult {
         public QuantifiedMSDecResult(AnnotatedMSDecResult annotatedResult, QuantifiedChromatogramPeak quantifiedChromatogramPeak) {
             AnnotatedMSDecResult = annotatedResult;
