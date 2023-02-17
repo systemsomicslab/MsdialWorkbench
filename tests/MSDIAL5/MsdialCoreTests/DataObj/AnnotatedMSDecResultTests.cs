@@ -13,8 +13,15 @@ namespace CompMs.MsdialCore.DataObj.Tests
         [TestMethod()]
         public void SaveAndLoadTest() {
             var matchResultContainer = new MsScanMatchResultContainer();
-            var msdecResult = new MSDecResult();
-            var reference = new MoleculeMsReference();
+            matchResultContainer.AddResult(new Common.DataObj.Result.MsScanMatchResult { LibraryID = 1, });
+            var msdecResult = new MSDecResult
+            {
+                ScanID = 1,
+            };
+            var reference = new MoleculeMsReference
+            {
+                ScanID = 1,
+            };
             var obj = new AnnotatedMSDecResult(msdecResult, matchResultContainer, reference);
 
             var memory = new MemoryStream();
@@ -22,7 +29,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             memory.Seek(0, SeekOrigin.Begin);
             var actual = AnnotatedMSDecResult.Load(memory);
 
-            Assert.AreEqual(obj, actual);
+            Assert.That.AreEqual(obj, actual);
         }
     }
 
