@@ -1,13 +1,12 @@
-﻿using CompMs.Common.Algorithm.PeakPick;
-using CompMs.Common.Components;
-using CompMs.Common.DataObj;
+﻿using CompMs.Common.DataObj;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialGcMsApi.Parameter;
 using System.Collections.Generic;
 
-namespace CompMs.MsdialGcMsApi.Algorithm {
+namespace CompMs.MsdialGcMsApi.Algorithm
+{
     public sealed class Ms1Dec {
         private readonly MsdialGcmsParameter _parameter;
 
@@ -23,9 +22,9 @@ namespace CompMs.MsdialGcMsApi.Algorithm {
             var rawSpectra = new RawSpectra(spectra, _parameter.IonMode, _parameter.AcquisitionType);
 
             var spectrumFeatures = new List<SpectrumFeature>(msdecResults.Count);
-            for (int i = 0; i < msdecResults.Count; i++) {
-                var quantifiedChromatogramPeak = MSDecHandler.GetChromatogramQuantInformation(rawSpectra, msdecResults[i].MSDecResult, msdecResults[i].QuantMass, _parameter);
-                spectrumFeatures.Add(new SpectrumFeature(msdecResults[i], quantifiedChromatogramPeak));
+            foreach (var annotatedMSDecResult in msdecResults) {
+                var quantifiedChromatogramPeak = MSDecHandler.GetChromatogramQuantInformation(rawSpectra, annotatedMSDecResult.MSDecResult, annotatedMSDecResult.QuantMass, _parameter);
+                spectrumFeatures.Add(new SpectrumFeature(annotatedMSDecResult, quantifiedChromatogramPeak));
             }
             return new SpectrumFeatureCollection(spectrumFeatures);
         }
