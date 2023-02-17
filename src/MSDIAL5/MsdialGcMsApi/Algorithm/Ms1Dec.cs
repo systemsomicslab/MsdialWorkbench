@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Algorithm.PeakPick;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
@@ -18,16 +19,15 @@ namespace CompMs.MsdialGcMsApi.Algorithm {
             return MSDecHandler.GetMSDecResults(spectrumList, chromPeakFeatures, _parameter, reporter.ReportAction, reporter.InitialProgress, reporter.ProgressMax);
         }
 
-        public List<PeakDetectionResult> GetPeakDetectionResultsByQuantMassInformation(
-            IReadOnlyList<RawSpectrum> spectra, IReadOnlyList<AnnotatedMSDecResult> features, IReadOnlyList<MSDecResult> msdecResults) {
+        public SpectrumFeatureCollection GetSpectrumFeaturesByQuantMassInformation(IReadOnlyList<RawSpectrum> spectra, IReadOnlyList<AnnotatedMSDecResult> msdecResults) {
             var rawSpectra = new RawSpectra(spectra, _parameter.IonMode, _parameter.AcquisitionType);
 
-            var results = new List<PeakDetectionResult>();
+            var spectrumFeatures = new List<SpectrumFeature>(msdecResults.Count);
             for (int i = 0; i < msdecResults.Count; i++) {
-                var result = MSDecHandler.GetChromatogramQuantInformation(rawSpectra, msdecResults[i], features[i].QuantMass, _parameter);
-                results.Add(result);
+                var quantifiedChromatogramPeak = MSDecHandler.GetChromatogramQuantInformation(rawSpectra, msdecResults[i].MSDecResult, msdecResults[i].QuantMass, _parameter);
+                spectrumFeatures.Add(new SpectrumFeature(msdecResults[i], quantifiedChromatogramPeak));
             }
-            return results;
+            return new SpectrumFeatureCollection(spectrumFeatures);
         }
     }
 }
