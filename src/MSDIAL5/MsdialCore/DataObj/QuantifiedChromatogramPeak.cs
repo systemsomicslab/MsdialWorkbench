@@ -1,4 +1,6 @@
-﻿using CompMs.Common.Interfaces;
+﻿using CompMs.Common.Algorithm.PeakPick;
+using CompMs.Common.Components;
+using CompMs.Common.Interfaces;
 using CompMs.Common.MessagePack;
 using MessagePack;
 using System.IO;
@@ -7,12 +9,18 @@ namespace CompMs.MsdialCore.DataObj
 {
     [MessagePackObject]
     public sealed class QuantifiedChromatogramPeak {
+        [SerializationConstructor]
         public QuantifiedChromatogramPeak(IChromatogramPeakFeature peakFeature, ChromatogramPeakShape peakShape, int mS1RawSpectrumIdTop, int mS1RawSpectrumIdLeft, int mS1RawSpectrumIdRight) {
             PeakFeature = peakFeature;
             MS1RawSpectrumIdTop = mS1RawSpectrumIdTop;
             MS1RawSpectrumIdLeft = mS1RawSpectrumIdLeft;
             MS1RawSpectrumIdRight = mS1RawSpectrumIdRight;
             PeakShape = peakShape;
+        }
+
+        public QuantifiedChromatogramPeak(IChromatogramPeakFeature peakFeature, ChromatogramPeakShape peakShape, PeakDetectionResult peakDetectionResult, Chromatogram_temp2 chromatogram)
+            : this(peakFeature, peakShape, chromatogram.Id(peakDetectionResult.ScanNumAtPeakTop), chromatogram.Id(peakDetectionResult.ScanNumAtLeftPeakEdge), chromatogram.Id(peakDetectionResult.ScanNumAtRightPeakEdge)) {
+            
         }
 
         [Key("PeakFeature")]
