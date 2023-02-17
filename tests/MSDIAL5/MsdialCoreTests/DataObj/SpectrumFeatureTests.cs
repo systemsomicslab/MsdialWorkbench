@@ -1,6 +1,5 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.MSDec;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
@@ -12,7 +11,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
     {
         [TestMethod()]
         public void SerializationAndDeserializationTest() {
-            var scan = new MSDecResult();
+            var scan = new MSDecResult { ScanID = 1, };
             var annotationResults = new[]
             {
                 new MsScanMatchResult { Name = "Result1", TotalScore = .8f, IsReferenceMatched = true, },
@@ -25,14 +24,14 @@ namespace CompMs.MsdialCore.DataObj.Tests
             var resultContainer = new MsScanMatchResultContainer();
             resultContainer.AddResults(annotationResults);
             var annotatedMSDecResult = new AnnotatedMSDecResult(scan, resultContainer, molecule);
-            var peak = new BaseChromatogramPeakFeature();
+            var peak = new BaseChromatogramPeakFeature { Mass = 100d, ChromScanIdLeft = 100, ChromScanIdTop = 150, ChromScanIdRight = 200, };
             var quantifiedChromatogramPeak = new QuantifiedChromatogramPeak(peak, new ChromatogramPeakShape(), 100, 50, 150);
-            var feature = new QuantifiedMSDecResult(annotatedMSDecResult, quantifiedChromatogramPeak);
+            var feature = new SpectrumFeature(annotatedMSDecResult, quantifiedChromatogramPeak);
 
             var memory = new MemoryStream();
-            MessagePackDefaultHandler.SaveToStream(feature, memory);
-            memory.Position = 0;
-            var actual = MessagePackDefaultHandler.LoadFromStream<QuantifiedMSDecResult>(memory);
+            feature.Save(memory);
+            memory.Seek(0, SeekOrigin.Begin);
+            var actual = SpectrumFeature.Load(memory);
             Assert.That.AreEqual(feature, actual);
         }
     }

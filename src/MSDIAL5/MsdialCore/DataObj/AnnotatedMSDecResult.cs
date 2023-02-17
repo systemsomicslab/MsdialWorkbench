@@ -7,11 +7,11 @@ using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using MessagePack;
 using MessagePack.Formatters;
-using System;
 using System.IO;
 
 namespace CompMs.MsdialCore.DataObj
 {
+    [MessagePackObject]
     [MessagePackFormatter(typeof(AnnotatedMSDecResultFormatter))]
     public sealed class AnnotatedMSDecResult {
         public AnnotatedMSDecResult(MSDecResult mSDecResult, MsScanMatchResultContainer matchResults, MoleculeMsReference reference) {
@@ -35,11 +35,16 @@ namespace CompMs.MsdialCore.DataObj
             QuantMass = quantMass;
         }
 
+        [IgnoreMember]
         public MSDecResult MSDecResult { get; }
+        [IgnoreMember]
         public MsScanMatchResultContainer MatchResults { get; }
+        [IgnoreMember]
         public IMoleculeProperty Molecule { get; }
+        [IgnoreMember]
         public double QuantMass { get; }
 
+        [IgnoreMember]
         public bool IsUnknown => Molecule is null;
         public bool IsReferenceMatched(IMatchResultEvaluator<MsScanMatchResult> evaluator) => MatchResults.IsReferenceMatched(evaluator);
 
@@ -51,7 +56,7 @@ namespace CompMs.MsdialCore.DataObj
             return MessagePackDefaultHandler.LoadFromStream<AnnotatedMSDecResult>(stream);
         }
 
-        class AnnotatedMSDecResultFormatter : IMessagePackFormatter<AnnotatedMSDecResult>
+        internal class AnnotatedMSDecResultFormatter : IMessagePackFormatter<AnnotatedMSDecResult>
         {
             public AnnotatedMSDecResult Deserialize(byte[] bytes, int offset, IFormatterResolver formatterResolver, out int readSize) {
                 var currentOffset = offset;

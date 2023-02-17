@@ -1,30 +1,39 @@
-﻿using CompMs.Common.Interfaces;
-using CompMs.MsdialCore.MSDec;
+﻿using CompMs.Common.MessagePack;
+using MessagePack;
+using System.IO;
 
 namespace CompMs.MsdialCore.DataObj
 {
-    public sealed class QuantifiedMSDecResult {
-        public QuantifiedMSDecResult(AnnotatedMSDecResult annotatedResult, QuantifiedChromatogramPeak quantifiedChromatogramPeak) {
-            AnnotatedMSDecResult = annotatedResult;
+    [MessagePackObject]
+    public sealed class SpectrumFeature {
+        public SpectrumFeature(AnnotatedMSDecResult annotatedMSDecResult, QuantifiedChromatogramPeak quantifiedChromatogramPeak) {
+            AnnotatedMSDecResult = annotatedMSDecResult;
             QuantifiedChromatogramPeak = quantifiedChromatogramPeak;
         }
 
+        public SpectrumFeature(AnnotatedMSDecResult annotatedMSDecResult, QuantifiedChromatogramPeak quantifiedChromatogramPeak, FeatureFilterStatus featureFilterStatus) {
+            AnnotatedMSDecResult = annotatedMSDecResult;
+            QuantifiedChromatogramPeak = quantifiedChromatogramPeak;
+            FeatureFilterStatus = featureFilterStatus;
+        }
+
+        [Key("AnnotatedMSDecResult")]
         public AnnotatedMSDecResult AnnotatedMSDecResult { get; }
-        public double QuantMass => AnnotatedMSDecResult.QuantMass;
-        public MSDecResult MSDecResult => AnnotatedMSDecResult.MSDecResult;
-        public MsScanMatchResultContainer MatchResults => AnnotatedMSDecResult.MatchResults;
-        public IMoleculeProperty Molecule => AnnotatedMSDecResult.Molecule;
 
+        [Key("QuantifiedChromatogramPeak")]
         public QuantifiedChromatogramPeak QuantifiedChromatogramPeak { get; }
-        public IChromatogramPeakFeature PeakFeature => QuantifiedChromatogramPeak.PeakFeature;
-        public int MS1RawSpectrumIdTop => QuantifiedChromatogramPeak.MS1RawSpectrumIdTop;
-        public int MS1RawSpectrumIdLeft => QuantifiedChromatogramPeak.MS1RawSpectrumIdLeft;
-        public int MS1RawSpectrumIdRight => QuantifiedChromatogramPeak.MS1RawSpectrumIdRight;
-        public ChromatogramPeakShape PeakShape => QuantifiedChromatogramPeak.PeakShape;
 
+        [Key("FeatureFilterStatus")]
         public FeatureFilterStatus FeatureFilterStatus { get; } = new FeatureFilterStatus();
+        [Key("Comment")]
         public string Comment { get; set; } = string.Empty;
+
+        public void Save(Stream stream) {
+            MessagePackDefaultHandler.SaveToStream(this, stream);
+        }
+
+        public static SpectrumFeature Load(Stream stream) {
+            return MessagePackDefaultHandler.LoadFromStream<SpectrumFeature>(stream);
+        }
     }
-
-
 }

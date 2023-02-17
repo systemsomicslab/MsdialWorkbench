@@ -56,7 +56,7 @@ namespace CompMs.MsdialCore.DataObj {
         string IFileBean.FileName => AnalysisFileName;
         string IFileBean.FilePath => AnalysisFilePath;
 
-        public void SaveSpectrumFeatures(List<QuantifiedMSDecResult> quantifiedMSDecResults) {
+        public void SaveSpectrumFeatures(List<SpectrumFeature> quantifiedMSDecResults) {
             var name = Path.GetFileNameWithoutExtension(PeakAreaBeanInformationFilePath);
             var path = Path.Combine(Path.GetDirectoryName(PeakAreaBeanInformationFilePath), name + ".qmd"); // *.qmd
             MessagePackDefaultHandler.SaveLargeListToFile(quantifiedMSDecResults, path);
