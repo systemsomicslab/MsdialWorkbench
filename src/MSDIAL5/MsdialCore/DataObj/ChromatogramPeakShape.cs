@@ -1,9 +1,28 @@
-﻿using MessagePack;
+﻿using CompMs.Common.Algorithm.PeakPick;
+using MessagePack;
 
 namespace CompMs.MsdialCore.DataObj
 {
     [MessagePackObject]
-    public class ChromatogramPeakShape {
+    public sealed class ChromatogramPeakShape {
+        [SerializationConstructor]
+        public ChromatogramPeakShape() {
+
+        }
+
+        public ChromatogramPeakShape(PeakDetectionResult peakDetectionResult) {
+            EstimatedNoise = peakDetectionResult.EstimatedNoise;
+            SignalToNoise = peakDetectionResult.SignalToNoise;
+            PeakPureValue = peakDetectionResult.PeakPureValue;
+            ShapenessValue = peakDetectionResult.ShapnessValue;
+            GaussianSimilarityValue = peakDetectionResult.GaussianSimilarityValue;
+            IdealSlopeValue = peakDetectionResult.IdealSlopeValue;
+            BasePeakValue = peakDetectionResult.BasePeakValue;
+            SymmetryValue = peakDetectionResult.SymmetryValue;
+            AmplitudeOrderValue = peakDetectionResult.AmplitudeOrderValue;
+            AmplitudeScoreValue = peakDetectionResult.AmplitudeScoreValue;
+        }
+
         [Key(0)]
         public float EstimatedNoise { get; set; }
         [Key(1)]
