@@ -2,7 +2,7 @@
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    internal sealed class Ms1BasedFeature : BindableBase
+    internal sealed class Ms1BasedSpectrumFeature : BindableBase
     {
         public MoleculeModel Molecule { get; }
         public ScanModel Scan { get; }
