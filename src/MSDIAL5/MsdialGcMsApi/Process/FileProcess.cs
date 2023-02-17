@@ -1,4 +1,6 @@
-﻿using CompMs.MsdialCore.Algorithm;
+﻿using Accord.Math;
+using CompMs.Common.Components;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
@@ -66,14 +68,15 @@ namespace CompMs.MsdialGcMsApi.Process
             Console.WriteLine("Annotation started");
             var reportAnnotation = ReportProgress.FromRange(_reportAction, ANNOTATION_START, ANNOTATION_END);
             var carbon2RtDict = analysisFileObject.GetRiDictionary(_riDictionaryInfo);
-            var spectrumFeatures = _annotation.MainProcess(msdecResults, carbon2RtDict, reportAnnotation);
+            var annotatedMSDecResults = _annotation.MainProcess(msdecResults, carbon2RtDict, reportAnnotation);
             token.ThrowIfCancellationRequested();
 
-            var peakdetectionResults = _ms1Deconvolution.GetPeakDetectionResultsByQuantMassInformation(spectra, spectrumFeatures, msdecResults);
+            var spectrumFeatureCollection = _ms1Deconvolution.GetSpectrumFeaturesByQuantMassInformation(spectra, annotatedMSDecResults);
 
             // save
             analysisFileObject.SaveChromatogramPeakFeatures(chromPeakFeatures);
             analysisFileObject.SaveMsdecResultWithAnnotationInfo(msdecResults);
+            analysisFileObject.Instance.SaveSpectrumFeatures(spectrumFeatureCollection);
 
             _reportAction?.Invoke((int)PROCESS_END);
         }

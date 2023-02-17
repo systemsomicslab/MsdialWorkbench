@@ -17,6 +17,8 @@ namespace CompMs.MsdialCore.DataObj
             _instance = instance ?? throw new ArgumentNullException(nameof(instance));
         }
 
+        public AnalysisFileBean Instance => _instance;
+
         public IDataProvider ParseData(IDataProviderFactory<AnalysisFileBean> providerFactory) {
             return providerFactory.Create(_instance);
         }
