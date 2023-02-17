@@ -5,7 +5,7 @@ using CompMs.CommonMVVM;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    internal sealed class MoleculeModel : BindableBase
+    public sealed class MoleculeModel : BindableBase
     {
         private readonly IMoleculeProperty _molecule;
 

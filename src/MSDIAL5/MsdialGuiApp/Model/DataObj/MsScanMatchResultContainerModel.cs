@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    internal sealed class MsScanMatchResultContainerModel : BindableBase
+    public sealed class MsScanMatchResultContainerModel : BindableBase
     {
         private readonly MsScanMatchResultContainer _container;
         private readonly ObservableCollection<MsScanMatchResult> _matchResults;

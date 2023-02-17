@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    internal sealed class ScanModel : BindableBase
+    public sealed class ScanModel : BindableBase
     {
         private readonly IMSScanProperty _scan;
 

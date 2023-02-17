@@ -1,11 +1,46 @@
 ﻿using CompMs.CommonMVVM;
+using CompMs.MsdialCore.DataObj;
+using System.ComponentModel;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    internal sealed class Ms1BasedSpectrumFeature : BindableBase
+    public sealed class Ms1BasedSpectrumFeature : BindableBase
     {
+        private SpectrumFeature _spectrumFeature;
+
+        public Ms1BasedSpectrumFeature(SpectrumFeature spectrumFeature) {
+            _spectrumFeature = spectrumFeature;
+        }
+
         public MoleculeModel Molecule { get; }
         public ScanModel Scan { get; }
         public MsScanMatchResultContainerModel MatchResults { get; }
+
+        public QuantifiedChromatogramPeak QuantifiedChromatogramPeak {
+            get => _quantifiedChromatogramPeak;
+            set => SetProperty(ref _quantifiedChromatogramPeak, value);
+        }
+        private QuantifiedChromatogramPeak _quantifiedChromatogramPeak;
+
+        public string Comment {
+            get => _comment;
+            set => SetProperty(ref _comment, value);
+        }
+        private string _comment;
+
+        public SpectrumFeature GetCurrentSpectrumFeature() => _spectrumFeature;
+
+        protected override void OnPropertyChanged(PropertyChangedEventArgs args) {
+            base.OnPropertyChanged(args);
+            if (args.PropertyName == nameof(QuantifiedChromatogramPeak)) {
+                _spectrumFeature = new SpectrumFeature(_spectrumFeature.AnnotatedMSDecResult, QuantifiedChromatogramPeak, _spectrumFeature.FeatureFilterStatus)
+                {
+                    Comment = Comment,
+                };
+            }
+            if (args.PropertyName == nameof(Comment)) {
+                _spectrumFeature.Comment = Comment;
+            }
+        }
     }
 }
