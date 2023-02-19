@@ -10,6 +10,7 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Interfaces;
+using CompMs.Common.Lipidomics;
 using CompMs.Common.Parameter;
 using CompMs.Common.Parser;
 using CompMs.Common.Proteomics.DataObj;
@@ -1185,7 +1186,13 @@ namespace CompMs.MsdialCore.Utility {
             where T: IMoleculeProperty, IIonProperty {
             SetMoleculePropertyCore(feature, reference);
             feature.SetAdductType(reference.AdductType);
-            feature.Name = reference.Name;
+
+            if (!reference.CompoundClass.IsEmptyOrNull()) { // meaning lipidomics
+                feature.Name = MsScanMatching.GetLipidNameFromReference(reference);
+            }
+            else {
+                feature.Name = reference.Name;
+            }
         }
 
         public static void SetMoleculeMsPropertyAsUnsettled<T>(T feature, MoleculeMsReference reference)
