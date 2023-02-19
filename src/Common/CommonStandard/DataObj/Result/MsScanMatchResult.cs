@@ -12,6 +12,7 @@ namespace CompMs.Common.DataObj.Result {
         TextDB = 1 << 4,
         GeneratedLipid = 1 << 5,
         Manual = 1 << 6,
+        DataBases = FastaDB | MspDB | TextDB | GeneratedLipid,
     }
     public enum DataBaseSource {
         None, Msp, Lbm, Text, Fasta, EieioLipid, OadLipid, EidLipid
@@ -87,6 +88,8 @@ namespace CompMs.Common.DataObj.Result {
         public bool IsOtherLipidMatch { get; set; }
         [IgnoreMember]
         public bool IsUnknown => Source.HasFlag(SourceType.Unknown);
+        [IgnoreMember]
+        public bool AnyMatched => (Source & SourceType.DataBases) != SourceType.None;
 
         // Support for multiple annotation method
         [IgnoreMember]

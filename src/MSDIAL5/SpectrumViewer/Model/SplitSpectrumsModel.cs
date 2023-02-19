@@ -1,9 +1,12 @@
-﻿using CompMs.Common.Interfaces;
+﻿using CompMs.Common.Components;
+using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
+using System.Linq;
 
 namespace CompMs.App.SpectrumViewer.Model
 {
@@ -43,6 +46,12 @@ namespace CompMs.App.SpectrumViewer.Model
 
         public SpectrumModel UpperSpectrumModel { get; }
         public SpectrumModel LowerSpectrumModel { get; }
+
+        public double ShiftMz {
+            get => _shiftMz;
+            set => SetProperty(ref _shiftMz, value);
+        }
+        private double _shiftMz = 0d;
 
         public ReadOnlyObservableCollection<DisplayScan> DisplayScans { get; }
         private ObservableCollection<DisplayScan> displayScans;
@@ -89,6 +98,46 @@ namespace CompMs.App.SpectrumViewer.Model
         public void RemoveScan(IMSScanProperty scan) {
             UpperSpectrumModel.RemoveScan(scan);
             LowerSpectrumModel.RemoveScan(scan);
+        }
+
+        public void RemoveScan() {
+            var targetScans = UpperSpectrumModel.DisplayScans.Concat(LowerSpectrumModel.DisplayScans).Where(scan => scan.IsSelected).Distinct().ToArray();
+            foreach (var scan in targetScans) {
+                UpperSpectrumModel.RemoveScan(scan);
+                LowerSpectrumModel.RemoveScan(scan);
+            }
+        }
+
+        public void ShifScan() {
+            if (ShiftMz == 0) {
+                return;
+            }
+            ShiftScanCore(UpperSpectrumModel);
+            ShiftScanCore(LowerSpectrumModel);
+        }
+
+        private void ShiftScanCore(SpectrumModel spectrumModel) {
+            var shiftedScans = new List<DisplayScan>();
+            foreach (var scan in spectrumModel.DisplayScans) {
+                if (scan.IsSelected) {
+                    var newScan = new MSScanProperty(scan.ScanID, scan.PrecursorMz, scan.ChromXs.GetRepresentativeXAxis(), scan.IonMode);
+                    if (ShiftMz > 0) {
+                        foreach (var peak in scan.Spectrum) {
+                            newScan.Spectrum.Add(new SpectrumPeak(peak.Mass + ShiftMz, peak.Intensity, comment: $"{peak.Comment}; m/z +{ShiftMz}"));
+                        }
+                        shiftedScans.Add(DisplayScan.WrapScan(newScan, $"{scan.Name} +{ShiftMz:F5}"));
+                    }
+                    else if (ShiftMz < 0) {
+                        foreach (var peak in scan.Spectrum) {
+                            newScan.Spectrum.Add(new SpectrumPeak(peak.Mass + ShiftMz, peak.Intensity, comment: $"{peak.Comment}; m/z {ShiftMz}"));
+                        }
+                        shiftedScans.Add(DisplayScan.WrapScan(newScan, $"{scan.Name} {ShiftMz:F5}"));
+                    }
+                }
+            }
+            foreach (var scan in shiftedScans) {
+                spectrumModel.AddScan(scan);
+            }
         }
     }
 }
