@@ -234,3 +234,7 @@ _Pvt_Extensions
 .fake/
 
 Assemblies/*.dll
+
+/src/MSFINDER/MsfinderCommonStandard/Resources/InchikeyClassyfireDB-VS*.icd
+/src/MSFINDER/MsfinderCommonStandard/Resources/MINEs-StructureDB-vs*.msd
+/src/MSFINDER/MsfinderCommonStandard/Resources/MsfinderStructureDB-VS*.esd
