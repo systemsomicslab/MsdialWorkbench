@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Properties;
+using CompMs.App.Msdial.Utility;
 using System;
 using System.IO;
 using System.Net;
@@ -50,7 +51,7 @@ namespace CompMs.App.Msdial.Model.Notification
 
         private static void ShowUpdatePopup(VersionDescriptionDocument vdd)
         {
-            if (Resources.VERSION != vdd.LatestVersion)
+            if (GlobalResources.Instance.Version != vdd.LatestVersion)
             {
                 var result = MessageBox.Show(
                     $"A new MS-DIAL is available: {vdd.LatestVersion}\r\nClick 'Yes' if you want to go MS-DIAL website.",
