@@ -12,7 +12,7 @@ namespace CompMs.MsdialCore.Parser {
         public const int DCL_VERSION = 1;
 
         #region Writer
-        public static void Write(string file, List<MSDecResult> results, bool isAnnotationInfoIncluded = false) {
+        public static void Write(string file, IReadOnlyList<MSDecResult> results, bool isAnnotationInfoIncluded = false) {
             using (var fs = File.Open(file, FileMode.Create, FileAccess.ReadWrite)) {
                 var totalPeakNumber = results.Count;
                 var seekPointer = new List<long>();

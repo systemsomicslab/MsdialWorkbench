@@ -29,7 +29,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
         /// <param name="ms1DecResults"></param>
         /// <param name="carbon2RtDict"></param>
         /// <param name="reporter"></param>
-        public AnnotatedMSDecResult[] MainProcess(List<MSDecResult> ms1DecResults, Dictionary<int, float> carbon2RtDict, ReportProgress reporter) {
+        public AnnotatedMSDecResult[] MainProcess(IReadOnlyList<MSDecResult> ms1DecResults, Dictionary<int, float> carbon2RtDict, ReportProgress reporter) {
             Console.WriteLine("Annotation started");
             SetRetentionIndexForMS1DecResults(ms1DecResults, carbon2RtDict);
 
@@ -112,7 +112,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             }
         }
 
-        public void SetRetentionIndexForMS1DecResults(List<MSDecResult> ms1DecResults, Dictionary<int, float> carbon2RtDict) {
+        public void SetRetentionIndexForMS1DecResults(IReadOnlyList<MSDecResult> ms1DecResults, Dictionary<int, float> carbon2RtDict) {
             if (carbon2RtDict.IsEmptyOrNull()) {
                 return;
             }
@@ -127,7 +127,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             }
         }
 
-        public void Execute(Dictionary<int, float> fiehnRiDict, Dictionary<int, float> famesRtDict, List<MSDecResult> ms1DecResults) {
+        public void Execute(Dictionary<int, float> fiehnRiDict, Dictionary<int, float> famesRtDict, IReadOnlyList<MSDecResult> ms1DecResults) {
             var fiehnRiCoeff = RetentionIndexHandler.GetFiehnRiCoefficient(fiehnRiDict, famesRtDict);
 
             foreach (var result in ms1DecResults) {

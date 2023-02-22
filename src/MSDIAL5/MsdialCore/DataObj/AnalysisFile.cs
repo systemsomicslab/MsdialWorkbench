@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
+using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.RawDataHandler.Core;
@@ -63,6 +64,14 @@ namespace CompMs.MsdialCore.DataObj {
                 spectrumFeatures.Save(stream);
                 stream.Move();
             }
+        }
+
+        public void SaveMsdecResultWithAnnotationInfo(IReadOnlyList<MSDecResult> msdecResults) {
+            MsdecResultsWriter.Write(DeconvolutionFilePath, msdecResults, isAnnotationInfoIncluded: true);
+        }
+
+        public List<MSDecResult> LoadMsdecResultWithAnnotationInfo() {
+            return MsdecResultsReader.ReadMSDecResults(DeconvolutionFilePath, out var _, out var _);
         }
 
         public RawMeasurement LoadRawMeasurement(bool isImagingMsData, bool isGuiProcess, int retry, int sleepMilliSeconds) {
