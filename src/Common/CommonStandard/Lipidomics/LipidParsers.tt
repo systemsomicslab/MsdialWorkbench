@@ -20,8 +20,8 @@ using System.Text.RegularExpressions;
 
 namespace CompMs.Common.Lipidomics
 {
-
 <# foreach (XmlNode lipidNode in root.ChildNodes) { #>
+
     public class <#= lipidNode["Name"].InnerText #>LipidParser : ILipidParser {
         public string Target { get; } = "<#= lipidNode["Abbreviation"].InnerText #>";
 
