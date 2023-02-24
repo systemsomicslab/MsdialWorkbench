@@ -192,4 +192,20 @@
             <LbmClass>LPS</LbmClass>
         </LbmClasses>
     </Lipid>
+    <Lipid>
+        <Name>TG</Name>
+        <Abbreviation>TG</Abbreviation>
+        <Chains>
+            <Total>3</Total>
+        </Chains>
+        <Skelton>
+            <Carbon>3</Carbon>
+            <Hydrogen>5</Hydrogen>
+            <Oxygen>3</Oxygen>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>TG</LbmClass>
+            <LbmClass Oxidized="True">OxTG</LbmClass>
+        </LbmClasses>
+    </Lipid>
 </Lipids>
