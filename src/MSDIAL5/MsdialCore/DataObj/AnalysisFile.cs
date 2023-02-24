@@ -1,17 +1,25 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.RawDataHandler.Core;
 using MessagePack;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
     public class AnalysisFileBean : IFileBean
     {
+        public AnalysisFileBean() {
+
+        }
+
         [Key(0)]
         public string AnalysisFilePath { get; set; } = string.Empty;
         [Key(1)]
@@ -49,13 +57,9 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(17)]
         public string ProteinAssembledResultFilePath { get; set; } // *.prf
 
-        public AnalysisFileBean() {
-
+        public void SaveChromatogramPeakFeatures(List<ChromatogramPeakFeature> chromPeakFeatures) {
+            MsdialPeakSerializer.SaveChromatogramPeakFeatures(PeakAreaBeanInformationFilePath, chromPeakFeatures);
         }
-
-        int IFileBean.FileID => AnalysisFileId;
-        string IFileBean.FileName => AnalysisFileName;
-        string IFileBean.FilePath => AnalysisFilePath;
 
         private string SpectrumFeatureFilePath {
             get {
@@ -96,5 +100,18 @@ namespace CompMs.MsdialCore.DataObj {
         public List<MaldiFrameInfo> GetMaldiFrames() {
             return new RawDataAccess(AnalysisFilePath, 0, false, true, true).GetMaldiFrames();
         }
+
+        public async Task SetChromatogramPeakFeaturesSummaryAsync(IDataProvider provider, List<ChromatogramPeakFeature> chromPeakFeatures, CancellationToken token) {
+            var spectra = await provider.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
+            ChromPeakFeaturesSummary = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, chromPeakFeatures);
+        }
+
+        public Dictionary<int, float> GetRiDictionary(Dictionary<int, RiDictionaryInfo> riDictionaries) {
+            return riDictionaries?.TryGetValue(AnalysisFileId, out var dictionary) == true ? dictionary.RiDictionary : null;
+        }
+
+        int IFileBean.FileID => AnalysisFileId;
+        string IFileBean.FileName => AnalysisFileName;
+        string IFileBean.FilePath => AnalysisFilePath;
     }
 }

@@ -39,18 +39,18 @@ namespace CompMs.MsdialGcMsApi.Process
             _annotation = new Annotation(storage.MspDB, storage.Parameter);
         }
 
-        public async Task RunAsync(AnalysisFileObject analysisFileObject, Action<int> reportAction, CancellationToken token = default) {
+        public async Task RunAsync(AnalysisFileBean analysisFile, Action<int> reportAction, CancellationToken token = default) {
             reportAction?.Invoke((int)PROCESS_START);
 
             Console.WriteLine("Loading spectral information");
-            var provider = analysisFileObject.ParseData(_providerFactory);
+            var provider = _providerFactory.Create(analysisFile);
             token.ThrowIfCancellationRequested();
 
             // feature detections
             Console.WriteLine("Peak picking started");
             var reportSpotting = ReportProgress.FromRange(reportAction, PEAKSPOTTING_START, PEAKSPOTTING_END);
             var chromPeakFeatures = _peakSpotting.Run(provider, reportSpotting, token);
-            await analysisFileObject.SetChromatogramPeakFeaturesSummaryAsync(provider, chromPeakFeatures, token).ConfigureAwait(false);
+            await analysisFile.SetChromatogramPeakFeaturesSummaryAsync(provider, chromPeakFeatures, token).ConfigureAwait(false);
             token.ThrowIfCancellationRequested();
 
             // chrom deconvolutions
@@ -63,54 +63,46 @@ namespace CompMs.MsdialGcMsApi.Process
             // annotations
             Console.WriteLine("Annotation started");
             var reportAnnotation = ReportProgress.FromRange(reportAction, ANNOTATION_START, ANNOTATION_END);
-            var carbon2RtDict = analysisFileObject.GetRiDictionary(_riDictionaryInfo);
+            var carbon2RtDict = analysisFile.GetRiDictionary(_riDictionaryInfo);
             var annotatedMSDecResults = _annotation.MainProcess(msdecResults, carbon2RtDict, reportAnnotation);
             token.ThrowIfCancellationRequested();
 
             var spectrumFeatureCollection = _ms1Deconvolution.GetSpectrumFeaturesByQuantMassInformation(spectra, annotatedMSDecResults);
 
             // save
-            analysisFileObject.SaveChromatogramPeakFeatures(chromPeakFeatures);
-            analysisFileObject.Instance.SaveMsdecResultWithAnnotationInfo(msdecResults);
-            analysisFileObject.Instance.SaveSpectrumFeatures(spectrumFeatureCollection);
+            analysisFile.SaveChromatogramPeakFeatures(chromPeakFeatures);
+            analysisFile.SaveMsdecResultWithAnnotationInfo(msdecResults);
+            analysisFile.SaveSpectrumFeatures(spectrumFeatureCollection);
 
             reportAction?.Invoke((int)PROCESS_END);
         }
 
-        public async Task AnnotateAsync(AnalysisFileObject analysisFileObject, Action<int> reportAction, CancellationToken token = default) {
+        public async Task AnnotateAsync(AnalysisFileBean analysisFile, Action<int> reportAction, CancellationToken token = default) {
             reportAction?.Invoke((int)PROCESS_START);
             Console.WriteLine("Loading spectral information");
-            var provider = analysisFileObject.ParseData(_providerFactory);
+            var provider = _providerFactory.Create(analysisFile);
             token.ThrowIfCancellationRequested();
             var spectra = await provider.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
-            var mSDecResults = analysisFileObject.Instance.LoadMsdecResultWithAnnotationInfo();
+            var mSDecResults = analysisFile.LoadMsdecResultWithAnnotationInfo();
 
             // annotations
             Console.WriteLine("Annotation started");
             var reportAnnotation = ReportProgress.FromRange(reportAction, ANNOTATION_START, ANNOTATION_END);
-            var carbon2RtDict = analysisFileObject.GetRiDictionary(_riDictionaryInfo);
+            var carbon2RtDict = analysisFile.GetRiDictionary(_riDictionaryInfo);
             var annotatedMSDecResults = _annotation.MainProcess(mSDecResults, carbon2RtDict, reportAnnotation);
             token.ThrowIfCancellationRequested();
 
             var spectrumFeatureCollection = _ms1Deconvolution.GetSpectrumFeaturesByQuantMassInformation(spectra, annotatedMSDecResults);
 
             // save
-            analysisFileObject.Instance.SaveMsdecResultWithAnnotationInfo(mSDecResults);
-            analysisFileObject.Instance.SaveSpectrumFeatures(spectrumFeatureCollection);
+            analysisFile.SaveMsdecResultWithAnnotationInfo(mSDecResults);
+            analysisFile.SaveSpectrumFeatures(spectrumFeatureCollection);
             reportAction?.Invoke((int)PROCESS_END);
         }
 
         public static void Run(AnalysisFileBean file, IMsdialDataStorage<MsdialGcmsParameter> container, bool isGuiProcess = false, Action<int> reportAction = null, CancellationToken token = default) {
             var providerFactory = new StandardDataProviderFactory(isGuiProcess: isGuiProcess);
-            new FileProcess(providerFactory, container).RunAsync(new AnalysisFileObject(file), reportAction, token).Wait();
-        }
-
-        Task IFileProcessor.RunAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token) {
-            return RunAsync(new AnalysisFileObject(file), reportAction, token);
-        }
-
-        Task IFileProcessor.AnnotateAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token) {
-            return AnnotateAsync(new AnalysisFileObject(file), reportAction, token);
+            new FileProcess(providerFactory, container).RunAsync(file, reportAction, token).Wait();
         }
     }
 }
