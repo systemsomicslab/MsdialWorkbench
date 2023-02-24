@@ -140,4 +140,21 @@
             <LbmClass>LPE</LbmClass>
         </LbmClasses>
     </Lipid>
+    <Lipid>
+        <Name>LPG</Name>
+        <Abbreviation>LPG</Abbreviation>
+        <Chains>
+            <Total>1</Total>
+            <Capacity>2</Capacity>
+        </Chains>
+        <Skelton>
+            <Carbon>6</Carbon>
+            <Hydrogen>13</Hydrogen>
+            <Oxygen>8</Oxygen>
+            <Phosphorus/>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>LPG</LbmClass>
+        </LbmClasses>
+    </Lipid>
 </Lipids>
