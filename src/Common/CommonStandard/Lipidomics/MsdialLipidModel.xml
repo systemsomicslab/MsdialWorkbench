@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Lipids>
+    <Lipid>
+        <Name>PC</Name>
+        <Abbreviation>PC</Abbreviation>
+        <Chains>
+            <Total>2</Total>
+        </Chains>
+        <Skelton>
+            <Carbon>8</Carbon>
+            <Hydrogen>18</Hydrogen>
+            <Oxygen>6</Oxygen>
+            <Nitrogen/>
+            <Phosphorus/>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>PC</LbmClass>
+            <LbmClass Oxidized="True">OxPC</LbmClass>
+        </LbmClasses>
+    </Lipid>
+</Lipids>
