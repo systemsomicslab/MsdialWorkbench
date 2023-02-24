@@ -1,6 +1,9 @@
 ﻿using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parser;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
@@ -117,6 +120,13 @@ namespace CompMs.App.Msdial.Model.DataObj
         public Ms1BasedSpectrumFeatureCollection LoadMs1BasedSpectrumFeatureCollection() {
             var collection = _file.LoadSpectrumFeatures();
             return new Ms1BasedSpectrumFeatureCollection(collection);
+        }
+
+        public ObservableCollection<ChromatogramPeakFeatureModel> LoadChromatogramPeakFeatureModels() {
+            var peaks = _file.LoadChromatogramPeakFeatureCollectionAsync().Result;
+            return new ObservableCollection<ChromatogramPeakFeatureModel>(
+                peaks.Items.Select(peak => new ChromatogramPeakFeatureModel(peak))
+            );
         }
 
         int IFileBean.FileID => AnalysisFileId;

@@ -25,7 +25,7 @@ namespace CompMs.App.Msdial.Model.Imaging
 
         public WholeImageResultModel(AnalysisFileBeanModel file, MaldiFrames maldiFrames, RoiModel wholeRoi) {
             File = file ?? throw new ArgumentNullException(nameof(file));
-            _peaks = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath, default).Result;
+            _peaks = file.File.LoadChromatogramPeakFeatureCollectionAsync().Result;
             Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(_peaks.Items.Select(item => new ChromatogramPeakFeatureModel(item)));
             var intensityBrush = new BrushMapData<ChromatogramPeakFeatureModel>(
                     new DelegateBrushMapper<ChromatogramPeakFeatureModel>(

@@ -61,6 +61,10 @@ namespace CompMs.MsdialCore.DataObj {
             MsdialPeakSerializer.SaveChromatogramPeakFeatures(PeakAreaBeanInformationFilePath, chromPeakFeatures);
         }
 
+        public Task<ChromatogramPeakFeatureCollection> LoadChromatogramPeakFeatureCollectionAsync(CancellationToken token = default) {
+            return ChromatogramPeakFeatureCollection.LoadAsync(PeakAreaBeanInformationFilePath, token);
+        }
+
         private string SpectrumFeatureFilePath {
             get {
                 var name = Path.GetFileNameWithoutExtension(PeakAreaBeanInformationFilePath);

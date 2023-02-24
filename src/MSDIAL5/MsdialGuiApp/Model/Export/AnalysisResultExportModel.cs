@@ -57,7 +57,7 @@ namespace CompMs.App.Msdial.Model.Export
                 var provider = _providerFactory.Create(file);
                 var filename = Path.Combine(DestinationFolder, file.AnalysisFileName + "." + SelectedFileFormat.Format);
                 using (var stream = File.Open(filename, FileMode.Create, FileAccess.Write)) {
-                    var features = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath).Result;
+                    var features = file.File.LoadChromatogramPeakFeatureCollectionAsync().Result;
                     SelectedFileFormat.Export(stream, features.Items, provider, SelectedSpectraType, file);
                 }
             }

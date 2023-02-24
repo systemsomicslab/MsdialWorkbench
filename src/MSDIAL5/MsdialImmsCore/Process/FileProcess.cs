@@ -111,7 +111,7 @@ namespace CompMs.MsdialImmsCore.Process
         }
 
         public async Task AnnotateAsync(AnalysisFileBean file, IDataProvider provider, Action<int> reportAction = null, CancellationToken token = default) {
-            var peakTask = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath);
+            var peakTask = file.LoadChromatogramPeakFeatureCollectionAsync();
             var resultsTask = Task.WhenAll(MSDecResultCollection.DeserializeAsync(file));
 
             var chromPeakFeatures = await peakTask.ConfigureAwait(false);

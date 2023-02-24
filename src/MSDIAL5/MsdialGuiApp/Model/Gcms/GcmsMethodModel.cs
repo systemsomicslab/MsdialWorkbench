@@ -24,16 +24,28 @@ namespace CompMs.App.Msdial.Model.Gcms
             _broker = broker;
         }
 
+        public GcmsAnalysisModel SelectedAnalysisModel {
+            get => _selectedAnalysisModel;
+            set => SetProperty(ref _selectedAnalysisModel, value);
+        }
+        private GcmsAnalysisModel _selectedAnalysisModel;
+
         public override Task RunAsync(ProcessOption option, CancellationToken token) {
             if (option.HasFlag(ProcessOption.PeakSpotting | ProcessOption.Identification)) {
-                RunFromPeakSpotting();
+                if (!RunFromPeakSpotting()) {
+                    return Task.CompletedTask;
+                }
             }
             else if (option.HasFlag(ProcessOption.Identification)) {
-                RunFromIdentification();
+                if (!RunFromIdentification()) {
+                    return Task.CompletedTask;
+                }
             }
 
             if (option.HasFlag(ProcessOption.Alignment)) {
-                RunAlignment();
+                if (!RunAlignment()) {
+                    return Task.CompletedTask;
+                }
             }
             return Task.CompletedTask;
         }
@@ -83,7 +95,11 @@ namespace CompMs.App.Msdial.Model.Gcms
         }
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
-            throw new NotImplementedException();
+            if (SelectedAnalysisModel != null) {
+                ((IDisposable)SelectedAnalysisModel).Dispose();
+                Disposables.Remove(SelectedAnalysisModel);
+            }
+            return SelectedAnalysisModel = new GcmsAnalysisModel(analysisFile);
         }
     }
 }

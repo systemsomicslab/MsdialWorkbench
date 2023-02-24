@@ -67,7 +67,7 @@ namespace CompMs.MsdialLcMsApi.Process
         }
 
         public async Task AnnotateAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token = default) {
-            var peakTask = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath, token);
+            var peakTask = file.LoadChromatogramPeakFeatureCollectionAsync(token);
             var resultsTask = Task.WhenAll(MSDecResultCollection.DeserializeAsync(file, token));
             var provider = _factory.Create(file);
 

@@ -82,7 +82,7 @@ namespace CompMs.MsdialDimsCore
             Console.WriteLine("Loading spectral information");
             var provider = _providerFactory.Create(file);
 
-            var peakFeaturesTask = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath, token);
+            var peakFeaturesTask = file.LoadChromatogramPeakFeatureCollectionAsync(token);
             var msdecResultssTask = MSDecResultCollection.DeserializeAsync(file, token);
 
             Console.WriteLine("Annotation started");
