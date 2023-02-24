@@ -69,4 +69,21 @@
             <LbmClass Oxidized="True">OxPG</LbmClass>
         </LbmClasses>
     </Lipid>
+    <Lipid>
+        <Name>PI</Name>
+        <Abbreviation>PI</Abbreviation>
+        <Chains>
+            <Total>2</Total>
+        </Chains>
+        <Skelton>
+            <Carbon>9</Carbon>
+            <Hydrogen>17</Hydrogen>
+            <Oxygen>11</Oxygen>
+            <Phosphorus/>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>PI</LbmClass>
+            <LbmClass Oxidized="True">OxPI</LbmClass>
+        </LbmClasses>
+    </Lipid>
 </Lipids>
