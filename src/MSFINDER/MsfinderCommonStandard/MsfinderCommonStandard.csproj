@@ -10,13 +10,13 @@
   </PropertyGroup>
   <Target Name="DownloadContentFiles" BeforeTargets="Build">
 	  <ItemGroup>
-		  <_DeployToItemIcd Include="$(OutputPath)\Resources\*.icd" />
-		  <_DeployToItemMsd Include="$(OutputPath)\Resources\*.msd" />
-		  <_DeployToItemEsd Include="$(OutputPath)\Resources\*.esd" />
+		  <_DeployToItemIcd Include="$(ProjectDir)\Resources\*.icd" />
+		  <_DeployToItemMsd Include="$(ProjectDir)\Resources\*.msd" />
+		  <_DeployToItemEsd Include="$(ProjectDir)\Resources\*.esd" />
 	  </ItemGroup>
-	  <DownloadFile SourceUrl="$(IcdUrl)" DestinationFolder="$(OutputPath)\Resources" Condition="!Exists('%(_DeployToItemIcd.FullPath)')"></DownloadFile>
-	  <DownloadFile SourceUrl="$(MsdUrl)" DestinationFolder="$(OutputPath)\Resources" Condition="!Exists('%(_DeployToItemMsd.FullPath)')"></DownloadFile>
-	  <DownloadFile SourceUrl="$(EsdUrl)" DestinationFolder="$(OutputPath)\Resources" Condition="!Exists('%(_DeployToItemEsd.FullPath)')"></DownloadFile>
+	  <DownloadFile SourceUrl="$(IcdUrl)" DestinationFolder="$(ProjectDir)\Resources" Condition="!Exists('%(_DeployToItemIcd.FullPath)')"></DownloadFile>
+	  <DownloadFile SourceUrl="$(MsdUrl)" DestinationFolder="$(ProjectDir)\Resources" Condition="!Exists('%(_DeployToItemMsd.FullPath)')"></DownloadFile>
+	  <DownloadFile SourceUrl="$(EsdUrl)" DestinationFolder="$(ProjectDir)\Resources" Condition="!Exists('%(_DeployToItemEsd.FullPath)')"></DownloadFile>
   </Target>
 
   <ItemGroup>

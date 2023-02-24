@@ -161,9 +161,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{765ED28C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "helper", "helper", "{B1471530-7779-4A57-9664-1E3A06F1A449}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialCoreTestHelper", "tests\MSDIAL5\MsdialCoreTestHelper\MsdialCoreTestHelper.csproj", "{73B3153A-3DC9-4F83-A419-ABA0BCBF37E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialCoreTestHelper", "tests\MSDIAL5\MsdialCoreTestHelper\MsdialCoreTestHelper.csproj", "{73B3153A-3DC9-4F83-A419-ABA0BCBF37E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonStandardTestHelper", "tests\Common\CommonStandardTestHelper\CommonStandardTestHelper.csproj", "{D8B8B716-2710-41F3-9C0F-A6709420C96F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonStandardTestHelper", "tests\Common\CommonStandardTestHelper\CommonStandardTestHelper.csproj", "{D8B8B716-2710-41F3-9C0F-A6709420C96F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "items", "items", "{8F2A6ADB-FAED-4EE3-994E-3B1724CD5800}"
+	ProjectSection(SolutionItems) = preProject
+		build.ps1 = build.ps1
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1782,7 +1787,7 @@ Global
 		{D8B8B716-2710-41F3-9C0F-A6709420C96F} = {B1471530-7779-4A57-9664-1E3A06F1A449}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
 		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
+		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
 	EndGlobalSection
 EndGlobal

@@ -999,6 +999,27 @@ namespace CompMs.Common.Algorithm.Scoring {
             }
         }
 
+        public static string GetLipidNameFromReference(MoleculeMsReference reference) {
+            var compClass = reference.CompoundClass;
+            var comment = reference.Comment;
+            if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
+                var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(reference);
+                if (molecule == null || molecule.Adduct == null) {
+                    return reference.Name;
+                }
+                var refinedName = string.Empty;
+                if (molecule.SublevelLipidName == molecule.LipidName) {
+                    return molecule.SublevelLipidName;
+                }
+                else {
+                    return molecule.SublevelLipidName + "|" + molecule.LipidName;
+                }
+            }
+            else {
+                return reference.Name;
+            }
+        }
+
         public static string GetRefinedLipidAnnotationLevel(IMSScanProperty msScanProp, MoleculeMsReference molMsRef, double bin,
             out bool isLipidClassMatched, out bool isLipidChainMatched, out bool isLipidPositionMatched, out bool isOthers) {
 
