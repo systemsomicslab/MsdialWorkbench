@@ -1,4 +1,12 @@
-﻿using CompMs.Common.Enum;
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+/* THIS (.cs) FILE IS GENERATED. DO NOT CHANGE IT.
+ * CHANGE THE .tt FILE INSTEAD. */
+
+using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.DataObj;
 using System.Linq;
 using System.Text.RegularExpressions;
