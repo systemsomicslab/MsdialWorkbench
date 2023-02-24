@@ -104,4 +104,22 @@
             <LbmClass Oxidized="True">OxPS</LbmClass>
         </LbmClasses>
     </Lipid>
+    <Lipid>
+        <Name>LPC</Name>
+        <Abbreviation>LPC</Abbreviation>
+        <Chains>
+            <Total>1</Total>
+            <Capacity>2</Capacity>
+        </Chains>
+        <Skelton>
+            <Carbon>8</Carbon>
+            <Hydrogen>18</Hydrogen>
+            <Oxygen>6</Oxygen>
+            <Nitrogen/>
+            <Phosphorus/>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>LPC</LbmClass>
+        </LbmClasses>
+    </Lipid>
 </Lipids>

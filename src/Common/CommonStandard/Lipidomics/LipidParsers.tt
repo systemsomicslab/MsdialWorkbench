@@ -25,7 +25,12 @@ namespace CompMs.Common.Lipidomics
     public class <#= lipidNode["Name"].InnerText #>LipidParser : ILipidParser {
         public string Target { get; } = "<#= lipidNode["Abbreviation"].InnerText #>";
 
+<#     if (lipidNode.SelectNodes("Chains/Capacity").Count > 0) { #>
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildSpeciesLevelParser(<#= lipidNode["Chains"]["Total"].InnerText #>, <#= lipidNode["Chains"]["Capacity"].InnerText #>);
+<#     } #>
+<#     else { #>
         private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(<#= lipidNode["Chains"]["Total"].InnerText #>);
+<#     } #>
         public static readonly string Pattern = $"^<#= lipidNode["Abbreviation"].InnerText #>\\s*(?<sn>{chainsParser.Pattern})$";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
 
