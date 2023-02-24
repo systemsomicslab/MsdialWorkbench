@@ -57,12 +57,23 @@ namespace CompMs.MsdialCore.DataObj {
         string IFileBean.FileName => AnalysisFileName;
         string IFileBean.FilePath => AnalysisFilePath;
 
+        private string SpectrumFeatureFilePath {
+            get {
+                var name = Path.GetFileNameWithoutExtension(PeakAreaBeanInformationFilePath);
+                return Path.Combine(Path.GetDirectoryName(PeakAreaBeanInformationFilePath), name + ".sfs"); // *.sfs
+            }
+        }
+
         public void SaveSpectrumFeatures(SpectrumFeatureCollection spectrumFeatures) {
-            var name = Path.GetFileNameWithoutExtension(PeakAreaBeanInformationFilePath);
-            var path = Path.Combine(Path.GetDirectoryName(PeakAreaBeanInformationFilePath), name + ".sfs"); // *.sfs
-            using (var stream = new TemporaryFileStream(path)) {
+            using (var stream = new TemporaryFileStream(SpectrumFeatureFilePath)) {
                 spectrumFeatures.Save(stream);
                 stream.Move();
+            }
+        }
+
+        public SpectrumFeatureCollection LoadSpectrumFeatures() {
+            using (var stream = File.Open(SpectrumFeatureFilePath, FileMode.Open)) {
+                return SpectrumFeatureCollection.Load(stream);
             }
         }
 
