@@ -86,4 +86,22 @@
             <LbmClass Oxidized="True">OxPI</LbmClass>
         </LbmClasses>
     </Lipid>
+    <Lipid>
+        <Name>PS</Name>
+        <Abbreviation>PS</Abbreviation>
+        <Chains>
+            <Total>2</Total>
+        </Chains>
+        <Skelton>
+            <Carbon>6</Carbon>
+            <Hydrogen>12</Hydrogen>
+            <Oxygen>8</Oxygen>
+            <Nitrogen/>
+            <Phosphorus/>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>PS</LbmClass>
+            <LbmClass Oxidized="True">OxPS</LbmClass>
+        </LbmClasses>
+    </Lipid>
 </Lipids>
