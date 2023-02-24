@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace CompMs.Common.Lipidomics
 {
+
     public class PCLipidParser : ILipidParser {
         public string Target { get; } = "PC";
 
@@ -37,5 +38,5 @@ namespace CompMs.Common.Lipidomics
             }
             return null;
         }
-    }
+	}
 }
