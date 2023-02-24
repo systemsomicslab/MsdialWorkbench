@@ -157,4 +157,21 @@
             <LbmClass>LPG</LbmClass>
         </LbmClasses>
     </Lipid>
+    <Lipid>
+        <Name>LPI</Name>
+        <Abbreviation>LPI</Abbreviation>
+        <Chains>
+            <Total>1</Total>
+            <Capacity>2</Capacity>
+        </Chains>
+        <Skelton>
+            <Carbon>9</Carbon>
+            <Hydrogen>17</Hydrogen>
+            <Oxygen>11</Oxygen>
+            <Phosphorus/>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>LPI</LbmClass>
+        </LbmClasses>
+    </Lipid>
 </Lipids>
