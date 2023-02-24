@@ -114,6 +114,11 @@ namespace CompMs.App.Msdial.Model.DataObj
         public string DeconvolutionFilePath => _file.DeconvolutionFilePath;
         public string ProteinAssembledResultFilePath => _file.ProteinAssembledResultFilePath;
 
+        public Ms1BasedSpectrumFeatureCollection LoadMs1BasedSpectrumFeatureCollection() {
+            var collection = _file.LoadSpectrumFeatures();
+            return new Ms1BasedSpectrumFeatureCollection(collection);
+        }
+
         int IFileBean.FileID => AnalysisFileId;
         string IFileBean.FileName => AnalysisFileName;
         string IFileBean.FilePath => AnalysisFilePath;
