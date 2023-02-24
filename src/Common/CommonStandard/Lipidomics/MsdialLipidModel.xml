@@ -52,4 +52,21 @@
             <LbmClass>PA</LbmClass>
         </LbmClasses>
     </Lipid>
+    <Lipid>
+        <Name>PG</Name>
+        <Abbreviation>PG</Abbreviation>
+        <Chains>
+            <Total>2</Total>
+        </Chains>
+        <Skelton>
+            <Carbon>6</Carbon>
+            <Hydrogen>13</Hydrogen>
+            <Oxygen>8</Oxygen>
+            <Phosphorus/>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>PG</LbmClass>
+            <LbmClass Oxidized="True">OxPG</LbmClass>
+        </LbmClasses>
+    </Lipid>
 </Lipids>
