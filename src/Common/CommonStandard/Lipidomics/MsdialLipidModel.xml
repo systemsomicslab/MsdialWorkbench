@@ -174,4 +174,22 @@
             <LbmClass>LPI</LbmClass>
         </LbmClasses>
     </Lipid>
+    <Lipid>
+        <Name>LPS</Name>
+        <Abbreviation>LPS</Abbreviation>
+        <Chains>
+            <Total>1</Total>
+            <Capacity>2</Capacity>
+        </Chains>
+        <Skelton>
+            <Carbon>6</Carbon>
+            <Hydrogen>12</Hydrogen>
+            <Oxygen>8</Oxygen>
+            <Nitrogen/>
+            <Phosphorus/>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>LPS</LbmClass>
+        </LbmClasses>
+    </Lipid>
 </Lipids>
