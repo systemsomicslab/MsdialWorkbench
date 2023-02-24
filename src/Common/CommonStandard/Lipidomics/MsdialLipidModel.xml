@@ -18,4 +18,22 @@
             <LbmClass Oxidized="True">OxPC</LbmClass>
         </LbmClasses>
     </Lipid>
+    <Lipid>
+        <Name>PE</Name>
+        <Abbreviation>PE</Abbreviation>
+        <Chains>
+            <Total>2</Total>
+        </Chains>
+        <Skelton>
+            <Carbon>5</Carbon>
+            <Hydrogen>12</Hydrogen>
+            <Oxygen>6</Oxygen>
+            <Nitrogen/>
+            <Phosphorus/>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>PE</LbmClass>
+            <LbmClass Oxidized="True">OxPE</LbmClass>
+        </LbmClasses>
+    </Lipid>
 </Lipids>

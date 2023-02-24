@@ -39,9 +39,7 @@ namespace CompMs.Common.Lipidomics
             return null;
         }
 	}
-
-    public class PELipidParser : ILipidParser
-    {
+    public class PELipidParser : ILipidParser {
         public string Target { get; } = "PE";
 
         private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(2);
@@ -57,11 +55,9 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.PhosphorusMass,
         }.Sum();
 
-        public ILipid Parse(string lipidStr)
-        {
+        public ILipid Parse(string lipidStr) {
             var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
+            if (match.Success) {
                 var group = match.Groups;
                 var chains = chainsParser.Parse(group["sn"].Value);
                 if (chains.OxidizedCount > 0)
@@ -72,5 +68,5 @@ namespace CompMs.Common.Lipidomics
             }
             return null;
         }
-    }
+	}
 }
