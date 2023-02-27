@@ -8,11 +8,14 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="NumericUpDownTest">
+    <Page.DataContext>
+        1
+    </Page.DataContext>
     <Grid>
         <StackPanel HorizontalAlignment="Center"
                     VerticalAlignment="Center">
-            <TextBlock Text="{Binding Value, ElementName=nud, StringFormat=Value: {0}}"/>
-            <ui:NumericUpDown x:Name="nud"/>
+            <TextBlock Text="{Binding StringFormat=Value: {0}}"/>
+            <ui:NumericUpDown x:Name="nud" Value="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=Page}}"/>
             <TextBlock Text="Step"/>
             <TextBox Text="{Binding Step, ElementName=nud}"/>
         </StackPanel>

@@ -56,7 +56,7 @@ namespace CompMs.Graphics.UI
         public static readonly DependencyProperty ValueProperty =
             DependencyProperty.Register(
                 nameof(Value), typeof(double), typeof(NumericUpDown),
-                new FrameworkPropertyMetadata(0d, OnValueChanged));
+                new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValueChanged));
 
         public double Value {
             get => (double)GetValue(ValueProperty);
