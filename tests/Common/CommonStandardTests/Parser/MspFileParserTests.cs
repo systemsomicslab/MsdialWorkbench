@@ -122,6 +122,8 @@ namespace CompMs.Common.Parser.Tests
         [DataRow(@"Resources\Parser\msp_name_check.msp", 12)]
         [DeploymentItem(@"Resources\Parser\msp_same_name.msp", @"Resources\Parser\")]
         [DataRow(@"Resources\Parser\msp_same_name.msp", 2)]
+        [DeploymentItem(@"Resources\Parser\msp_spectra_check.msp", @"Resources\Parser\")]
+        [DataRow(@"Resources\Parser\msp_spectra_check.msp", 2)]
         public void ReadMspFileTest(string testFile, int size) {
             var datas = MspFileParser.MspFileReader(testFile);
             Assert.AreEqual(size, datas.Count);

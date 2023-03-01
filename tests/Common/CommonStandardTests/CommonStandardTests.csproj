@@ -38,6 +38,9 @@
     <None Update="Resources\Parser\msp_name_check.msp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\Parser\msp_spectra_check.msp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
