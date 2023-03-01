@@ -32,10 +32,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Resources\Parser\msp_from_mzvault.msp">
+    <None Update="Resources\Parser\msp_same_name.msp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Parser\msp_from_sciex.msp">
+    <None Update="Resources\Parser\msp_name_check.msp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Parser\msp_spectra_check.msp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Parser\msp_test_data.msp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
