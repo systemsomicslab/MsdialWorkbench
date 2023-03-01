@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:common="clr-namespace:Rfx.Riken.OsakaUniv;assembly=Common"
-        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv;assembly=CommonMVVM"
         Loaded="Window_Loaded"
         Title="Create a query..." Height="832" Width="624">

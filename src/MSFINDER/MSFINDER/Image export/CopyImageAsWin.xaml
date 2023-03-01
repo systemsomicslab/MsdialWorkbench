@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Rfx.Riken.OsakaUniv.CopyImageAsWin"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv;assembly=CommonMVVM"
         Title="Copy image" Height="115" Width="600">
     <i:Interaction.Behaviors>
