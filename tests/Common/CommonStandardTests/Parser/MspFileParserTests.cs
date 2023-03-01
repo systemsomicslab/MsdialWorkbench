@@ -118,6 +118,8 @@ namespace CompMs.Common.Parser.Tests
         }
 
         [TestMethod]
+        [DeploymentItem(@"Resources\Parser\msp_test_data.msp", @"Resources\Parser\")]
+        [DataRow(@"Resources\Parser\msp_test_data.msp", 2)]
         [DeploymentItem(@"Resources\Parser\msp_name_check.msp", @"Resources\Parser\")]
         [DataRow(@"Resources\Parser\msp_name_check.msp", 12)]
         [DeploymentItem(@"Resources\Parser\msp_same_name.msp", @"Resources\Parser\")]
