@@ -506,8 +506,7 @@ namespace CompMs.Common.Lipidomics
         }
 	}
 
-    public class LDGTSLipidParser : ILipidParser
-    {
+    public class LDGTSLipidParser : ILipidParser {
         public string Target { get; } = "LDGTS";
 
         private static readonly TotalChainParser chainsParser = TotalChainParser.BuildSpeciesLevelParser(1, 2);
@@ -518,20 +517,18 @@ namespace CompMs.Common.Lipidomics
         {
             MassDiffDictionary.CarbonMass * 10,
             MassDiffDictionary.HydrogenMass * 19,
-            MassDiffDictionary.NitrogenMass * 1,
             MassDiffDictionary.OxygenMass * 5,
+            MassDiffDictionary.NitrogenMass * 1,
         }.Sum();
 
-        public ILipid Parse(string lipidStr)
-        {
+        public ILipid Parse(string lipidStr) {
             var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
+            if (match.Success) {
                 var group = match.Groups;
                 var chains = chainsParser.Parse(group["sn"].Value);
                 return new Lipid(LbmClass.LDGTS, Skelton + chains.Mass, chains);
             }
             return null;
         }
-    }
+	}
 }
