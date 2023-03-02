@@ -358,4 +358,23 @@
             <LbmClass>EtherPC</LbmClass>
         </LbmClasses>
     </Lipid>
+    <Lipid>
+        <Name>EtherLPE</Name>
+        <Abbreviation>LPE</Abbreviation>
+        <Chains>
+            <Ether/>
+            <Total>1</Total>
+            <Capacity>2</Capacity>
+        </Chains>
+        <Skelton>
+            <Carbon>5</Carbon>
+            <Hydrogen>12</Hydrogen>
+            <Oxygen>6</Oxygen>
+            <Nitrogen/>
+            <Phosphorus/>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>EtherLPE</LbmClass>
+        </LbmClasses>
+    </Lipid>
 </Lipids>
