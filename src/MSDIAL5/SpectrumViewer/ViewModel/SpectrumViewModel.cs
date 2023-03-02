@@ -66,6 +66,8 @@ namespace CompMs.App.SpectrumViewer.ViewModel
             };
             BrushMapper = new SequentialBrushMapper(ChartBrushes);
 
+            IsLabelVisible = model.ToReactivePropertySlimAsSynchronized(m => m.IsLabelVisible).AddTo(Disposables);
+
             DropCommand = new ReactiveCommand<DragEventArgs>().AddTo(Disposables);
             DropCommand
                 .Where(e => !e.Handled && e.Data.GetDataPresent(typeof(DisplayScan)))
@@ -100,6 +102,8 @@ namespace CompMs.App.SpectrumViewer.ViewModel
         private IAxisManager<double> _verticalAxis;
 
         public object[] VerticalAxes { get; }
+
+        public ReactivePropertySlim<bool> IsLabelVisible { get; }
 
         public IBrushMapper BrushMapper { get; }
 

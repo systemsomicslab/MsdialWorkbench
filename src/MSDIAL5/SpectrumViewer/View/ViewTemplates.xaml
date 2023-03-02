@@ -380,7 +380,10 @@
                                                                  TopN="10"
                                                                  Brush="{Binding Path=(ItemsControl.AlternationIndex),
                                                                                  RelativeSource={RelativeSource TemplatedParent},
-                                                                                 Converter={StaticResource BrushConverter}}"/>
+                                                                                 Converter={StaticResource BrushConverter}}"
+                                                                 Visibility="{Binding Path=DataContext.UpperSpectrumsViewModel.IsLabelVisible.Value,
+                                                                                      RelativeSource={RelativeSource AncestorType=ItemsControl},
+                                                                                      Converter={StaticResource BooleanToVisibility}}"/>
                                             </Grid>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
@@ -446,6 +449,9 @@
                                                                  Brush="{Binding Path=(ItemsControl.AlternationIndex),
                                                                                  RelativeSource={RelativeSource TemplatedParent},
                                                                                  Converter={StaticResource BrushConverter}}"
+                                                                 Visibility="{Binding Path=DataContext.LowerSpectrumsViewModel.IsLabelVisible.Value,
+                                                                                      RelativeSource={RelativeSource AncestorType=ItemsControl},
+                                                                                      Converter={StaticResource BooleanToVisibility}}"
                                                                  FlippedY="False"
                                                                  ContentAlignment="BottomCenter"/>
                                             </Grid>
@@ -719,7 +725,10 @@
                                                                  TopN="10"
                                                                  Brush="{Binding Path=(ItemsControl.AlternationIndex),
                                                                                  RelativeSource={RelativeSource TemplatedParent},
-                                                                                 Converter={StaticResource BrushConverter}}"/>
+                                                                                 Converter={StaticResource BrushConverter}}"
+                                                                 Visibility="{Binding Path=DataContext.UpperSpectrumsViewModel.IsLabelVisible.Value,
+                                                                                      RelativeSource={RelativeSource AncestorType=ItemsControl},
+                                                                                      Converter={StaticResource BooleanToVisibility}}"/>
                                             </Grid>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
@@ -768,6 +777,9 @@
                                                                  Brush="{Binding Path=(ItemsControl.AlternationIndex),
                                                                                  RelativeSource={RelativeSource TemplatedParent},
                                                                                  Converter={StaticResource BrushConverter}}"
+                                                                 Visibility="{Binding Path=DataContext.LowerSpectrumsViewModel.IsLabelVisible.Value,
+                                                                                      RelativeSource={RelativeSource AncestorType=ItemsControl},
+                                                                                      Converter={StaticResource BooleanToVisibility}}"
                                                                  FlippedY="False"
                                                                  ContentAlignment="BottomCenter"/>
                                             </Grid>
@@ -821,18 +833,26 @@
                     <RadioButton x:Name="EnableMassDefectView" Content="Mass defect" Foreground="White" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="8,0">
-                    <TextBlock Text="Upper spectrum:" Margin="0,0,4,0" Foreground="White" VerticalAlignment="Center"/>
+                    <TextBlock Text="Upper axis:" Margin="0,0,4,0" Foreground="White" VerticalAlignment="Center"/>
                     <ComboBox ItemsSource="{Binding UpperSpectrumsViewModel.VerticalAxes}"
                               SelectedValue="{Binding UpperSpectrumsViewModel.VerticalAxis}"
                               SelectedValuePath="Axis"
                               DisplayMemberPath="Label"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="8,0">
-                    <TextBlock Text="Lower spectrum:" Margin="0,0,4,0" Foreground="White" VerticalAlignment="Center"/>
+                    <TextBlock Text="Lower axis:" Margin="0,0,4,0" Foreground="White" VerticalAlignment="Center"/>
                     <ComboBox ItemsSource="{Binding LowerSpectrumsViewModel.VerticalAxes}"
                               SelectedValue="{Binding LowerSpectrumsViewModel.VerticalAxis}"
                               SelectedValuePath="Axis"
                               DisplayMemberPath="Label"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="8,0">
+                    <TextBlock Text="Upper label:" Margin="0,0,4,0" Foreground="White" VerticalAlignment="Center"/>
+                    <CheckBox IsChecked="{Binding UpperSpectrumsViewModel.IsLabelVisible.Value}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="8,0">
+                    <TextBlock Text="Lower label:" Margin="0,0,4,0" Foreground="White" VerticalAlignment="Center"/>
+                    <CheckBox IsChecked="{Binding LowerSpectrumsViewModel.IsLabelVisible.Value}" VerticalAlignment="Center"/>
                 </StackPanel>
             </StackPanel>
             <ContentControl Style="{StaticResource ViewChartStyle}"
