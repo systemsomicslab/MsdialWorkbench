@@ -325,7 +325,7 @@
         <Name>EtherLPC</Name>
         <Abbreviation>LPC</Abbreviation>
         <Chains>
-            <Lyso/>
+            <Ether/>
             <Total>1</Total>
             <Capacity>2</Capacity>
         </Chains>
@@ -338,6 +338,24 @@
         </Skelton>
         <LbmClasses>
             <LbmClass>EtherLPC</LbmClass>
+        </LbmClasses>
+    </Lipid>
+    <Lipid>
+        <Name>EtherPC</Name>
+        <Abbreviation>PC</Abbreviation>
+        <Chains>
+            <Ether/>
+            <Total>2</Total>
+        </Chains>
+        <Skelton>
+            <Carbon>8</Carbon>
+            <Hydrogen>18</Hydrogen>
+            <Oxygen>6</Oxygen>
+            <Nitrogen/>
+            <Phosphorus/>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>EtherPC</LbmClass>
         </LbmClasses>
     </Lipid>
 </Lipids>

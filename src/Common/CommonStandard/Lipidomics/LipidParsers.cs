@@ -559,12 +559,11 @@ namespace CompMs.Common.Lipidomics
         }
 	}
 
-    public class EtherPCLipidParser : ILipidParser
-    {
+    public class EtherPCLipidParser : ILipidParser {
         public string Target { get; } = "PC";
 
         private static readonly TotalChainParser chainsParser = TotalChainParser.BuildEtherParser(2);
-        public static readonly string Pattern = $"^PC\\s+(?<sn>{chainsParser.Pattern})$";
+        public static readonly string Pattern = $"^PC\\s*(?<sn>{chainsParser.Pattern})$";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
 
         private static readonly double Skelton = new[]
@@ -585,5 +584,5 @@ namespace CompMs.Common.Lipidomics
             }
             return null;
         }
-    }
+	}
 }
