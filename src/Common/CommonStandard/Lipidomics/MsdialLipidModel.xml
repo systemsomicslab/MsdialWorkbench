@@ -287,4 +287,21 @@
             <LbmClass>DGTS</LbmClass>
         </LbmClasses>
     </Lipid>
+    <Lipid>
+        <Name>LDGTA</Name>
+        <Abbreviation>LDGTA</Abbreviation>
+        <Chains>
+            <Total>1</Total>
+            <Capacity>2</Capacity>
+        </Chains>
+        <Skelton>
+            <Carbon>10</Carbon>
+            <Hydrogen>19</Hydrogen>
+            <Oxygen>5</Oxygen>
+            <Nitrogen>1</Nitrogen>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>LDGTA</LbmClass>
+        </LbmClasses>
+    </Lipid>
 </Lipids>
