@@ -428,4 +428,21 @@
             <LbmClass>GM3</LbmClass>
         </LbmClasses>
     </Lipid>
+    <Lipid>
+        <Name>SHexCer</Name>
+        <Abbreviation>SHexCer</Abbreviation>
+        <Chains>
+            <Ceramide/>
+            <Total>2</Total>
+        </Chains>
+        <Skelton>
+            <Carbon>6</Carbon>
+            <Hydrogen>10</Hydrogen>
+            <Oxygen>8</Oxygen>
+            <Sulfur>1</Sulfur>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>SHexCer</LbmClass>
+        </LbmClasses>
+    </Lipid>
 </Lipids>
