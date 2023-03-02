@@ -96,8 +96,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private DelegateCommand _exportAlignmentResultCommand;
 
         private void ExportAlignment() {
-            var vm = new AlignmentResultExportViewModel(_model.AlignmentResultExportModel, _broker);
-            _broker.Publish(vm);
+            using (var vm = new AlignmentResultExportViewModel(_model.AlignmentResultExportModel, _broker)) {
+                _broker.Publish(vm);
+            }
         }
 
         public DelegateCommand ShowTicCommand => _showTicCommand ?? (_showTicCommand = new DelegateCommand(ShowTIC));

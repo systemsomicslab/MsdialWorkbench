@@ -1,22 +1,24 @@
 ﻿using CompMs.App.Msdial.Model.Export;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Export
 {
     internal sealed class AlignmentExportGroupViewModel : ViewModelBase, IAlignmentResultExportViewModel {
         private readonly AlignmentExportGroupModel _model;
-        private readonly DelegateCommand _exportCommand;
 
-        public AlignmentExportGroupViewModel(AlignmentExportGroupModel model, DelegateCommand exportCommand) {
+        public AlignmentExportGroupViewModel(AlignmentExportGroupModel model) {
             _model = model ?? throw new System.ArgumentNullException(nameof(model));
-            _exportCommand = exportCommand;
             Format = model.ExportMethod.Format;
             SpectraType = model.SpectraType;
             IsLongFormat = model.ExportMethod.IsLongFormat;
             TrimContentToExcelLimit = model.ExportMethod.TrimToExcelLimit;
+            CanExport = this.ErrorsChangedAsObservable().Select(_ => !HasValidationErrors).ToReadOnlyReactivePropertySlim(!HasValidationErrors).AddTo(Disposables);
         }
 
         public string Label => _model.Label;
@@ -35,7 +37,6 @@ namespace CompMs.App.Msdial.ViewModel.Export
                     if (!ContainsError(nameof(Format))) {
                         _model.ExportMethod.Format = _format;
                     }
-                    _exportCommand?.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -50,7 +51,6 @@ namespace CompMs.App.Msdial.ViewModel.Export
                     if (!ContainsError(nameof(SpectraType))) {
                         _model.SpectraType = _spectraType;
                     }
-                    _exportCommand?.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -78,5 +78,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
             }
         }
         private bool _trimContentToExcelLimit;
+
+        public IReadOnlyReactiveProperty<bool> CanExport { get; }
     }
 }

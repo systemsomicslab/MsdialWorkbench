@@ -40,8 +40,8 @@
             <TextBlock Text="Directory:"
                        VerticalAlignment="Center"
                        Grid.Column="0"/>
-            <TextBox Text="{Binding ExportDirectory, Mode=TwoWay}"
-                     HorizontalAlignment="Stretch"
+            <TextBox Text="{Binding ExportDirectory, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                     HorizontalAlignment="Stretch" VerticalContentAlignment="Center"
                      Margin="5,0"
                      Grid.Column="1"/>
             <Button Content="Browse"
@@ -57,7 +57,7 @@
                 <ComboBox ItemsSource="{Binding AlignmentFiles}"
                           IsSynchronizedWithCurrentItem="True"
                           DisplayMemberPath="FileName"
-                          SelectedItem="{Binding AlignmentFile, Mode=OneWayToSource}"
+                          SelectedItem="{Binding AlignmentFile, Mode=OneWayToSource, UpdateSourceTrigger=LostFocus}"
                           HorizontalAlignment="Stretch"/>
             </StackPanel>
             <CheckBox Content="Filtering by current parameter"
@@ -197,8 +197,8 @@
                     Height="30" Margin="8, 16"
                     Grid.Row="6">
             <Button Content="Export"
-                    Command="{Binding ExportCommand, Mode=OneTime}"
                     Click="ExportButton_Click"
+                    Command="{Binding ExportCommand, Mode=OneTime}"
                     Width="64" Margin="8,0"/>
             <Button Content="Cancel"
                     Click="CancelButton_Click"

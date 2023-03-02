@@ -99,8 +99,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DelegateCommand _exportAlignmentResultCommand;
 
         private void ExportAlignment() {
-            var vm = new AlignmentResultExportViewModel(_model.AlignmentResultExportModel, _broker);
-            _broker.Publish(vm);
+            using (var vm = new AlignmentResultExportViewModel(_model.AlignmentResultExportModel, _broker)) {
+                _broker.Publish(vm);
+            }
         }
 
         private static IReadOnlyReactiveProperty<DimsAnalysisViewModel> ConvertToAnalysisViewModel(

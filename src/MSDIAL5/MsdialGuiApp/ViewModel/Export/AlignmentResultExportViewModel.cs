@@ -10,6 +10,8 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Export
@@ -23,17 +25,28 @@ namespace CompMs.App.Msdial.ViewModel.Export
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _broker = broker ?? MessageBroker.Default;
 
-            AlignmentFiles = CollectionViewSource.GetDefaultView(_model.AlignmentFiles);
-            if (_model.AlignmentFile != null) {
-                AlignmentFiles.MoveCurrentTo(_model.AlignmentFile);
+            AlignmentFiles = CollectionViewSource.GetDefaultView(model.AlignmentFiles);
+            if (model.AlignmentFile != null) {
+                AlignmentFiles.MoveCurrentTo(model.AlignmentFile);
             }
 
-            Groups = model.Groups.ToReadOnlyReactiveCollection(m => MapToViewModel(m, ExportCommand)).AddTo(Disposables);
+            Groups = model.Groups.ToReadOnlyReactiveCollection(MapToViewModel).AddTo(Disposables);
             if (Groups.Any()) {
                 Groups.First().IsExpanded = true;
             }
+
+            ExportCommand = Groups.Select(g => (IObservable<bool>)g.CanExport).Append(
+                this.ErrorsChangedAsObservable().Select(_ => !HasValidationErrors).Prepend(!HasValidationErrors)
+            ).CombineLatestValuesAreAllTrue()
+            .ToAsyncReactiveCommand()
+            .WithSubscribe(ExportAlignmentResultAsync)
+            .AddTo(Disposables);
+
+            AlignmentFile = model.AlignmentFile;
+            ExportDirectory = model.ExportDirectory;
         }
 
+        [Required(ErrorMessage = "Please enter the folder which the results will be exported.")]
         [PathExists(ErrorMessage = "This folder does not exist.", IsDirectory = true)]
         public string ExportDirectory {
             get => _exportDirectory;
@@ -42,11 +55,10 @@ namespace CompMs.App.Msdial.ViewModel.Export
                     if (!ContainsError(nameof(ExportDirectory))) {
                         _model.ExportDirectory = _exportDirectory;
                     }
-                    ExportCommand?.RaiseCanExecuteChanged();
                 }
             }
         }
-        private string _exportDirectory = string.Empty;
+        private string _exportDirectory;
 
         [Required(ErrorMessage = "Please select alignment file.")]
         public AlignmentFileBean AlignmentFile {
@@ -56,7 +68,6 @@ namespace CompMs.App.Msdial.ViewModel.Export
                     if (!ContainsError(nameof(AlignmentFile))) {
                         _model.AlignmentFile = _alignmentFile;
                     }
-                    ExportCommand?.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -88,28 +99,20 @@ namespace CompMs.App.Msdial.ViewModel.Export
             }
         }
 
-        public DelegateCommand ExportCommand => _exportCommand ?? (_exportCommand = new DelegateCommand(ExportAlignmentResult, CanExportAlignmentResult));
-        private DelegateCommand _exportCommand;
+        public AsyncReactiveCommand ExportCommand { get; }
 
-        private void ExportAlignmentResult() {
-            var task = TaskNotification.Start($"Exporting {AlignmentFile.FileName}");
-            _broker.Publish(task);
-            _model.ExportAlignmentResult((progress, label) => _broker.Publish(task.Progress(progress, label)));
-            _broker.Publish(task.End());
+        private Task ExportAlignmentResultAsync() {
+            return _model.ExportAlignmentResultAsync(_broker);
         }
 
-        private bool CanExportAlignmentResult() {
-            return !HasValidationErrors && !Groups.Any(g => g.HasValidationErrors) && _model.CanExportAlignmentResult();
-        }
-
-        private static IAlignmentResultExportViewModel MapToViewModel(IAlignmentResultExportModel model, DelegateCommand exportCommand) {
+        private static IAlignmentResultExportViewModel MapToViewModel(IAlignmentResultExportModel model) {
             switch (model) {
                 case AlignmentExportGroupModel m:
-                    return new AlignmentExportGroupViewModel(m, exportCommand);
+                    return new AlignmentExportGroupViewModel(m);
                 case ProteinGroupExportModel m:
                     return new ProteinGroupExportViewModel(m);
                 case AlignmentSpectraExportGroupModel m:
-                    return new AlignmentSpectraExportGroupViewModel(m, exportCommand);
+                    return new AlignmentSpectraExportGroupViewModel(m);
                 default:
                     throw new NotSupportedException(model.GetType().FullName);
             }

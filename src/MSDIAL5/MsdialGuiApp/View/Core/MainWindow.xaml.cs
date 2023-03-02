@@ -94,7 +94,7 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<AnalysisResultExportViewModel>()
                 .Subscribe(ShowChildDialog<AnalysisResultExportWin>);
             broker.ToObservable<AlignmentResultExportViewModel>()
-                .Subscribe(ShowChildViewWithDispose<AlignmentResultExportWin>);
+                .Subscribe(ShowChildDialog<AlignmentResultExportWin>);
 #if RELEASE
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
 #elif DEBUG
