@@ -666,8 +666,7 @@ namespace CompMs.Common.Lipidomics
         }
 	}
 
-    public class GM3LipidParser : ILipidParser
-    {
+    public class GM3LipidParser : ILipidParser {
         public string Target { get; } = "GM3";
 
         private static readonly TotalChainParser chainsParser = TotalChainParser.BuildCeramideParser(2);
@@ -682,16 +681,14 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.NitrogenMass * 1,
         }.Sum();
 
-        public ILipid Parse(string lipidStr)
-        {
+        public ILipid Parse(string lipidStr) {
             var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
+            if (match.Success) {
                 var group = match.Groups;
                 var chains = chainsParser.Parse(group["sn"].Value);
                 return new Lipid(LbmClass.GM3, Skelton + chains.Mass, chains);
             }
             return null;
         }
-    }
+	}
 }

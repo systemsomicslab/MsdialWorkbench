@@ -411,4 +411,21 @@
             <LbmClass>BMP</LbmClass>
         </LbmClasses>
     </Lipid>
+    <Lipid>
+        <Name>GM3</Name>
+        <Abbreviation>GM3</Abbreviation>
+        <Chains>
+            <Ceramide/>
+            <Total>2</Total>
+        </Chains>
+        <Skelton>
+            <Carbon>23</Carbon>
+            <Hydrogen>37</Hydrogen>
+            <Oxygen>18</Oxygen>
+            <Nitrogen>1</Nitrogen>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>GM3</LbmClass>
+        </LbmClasses>
+    </Lipid>
 </Lipids>
