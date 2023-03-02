@@ -208,4 +208,20 @@
             <LbmClass Oxidized="True">OxTG</LbmClass>
         </LbmClasses>
     </Lipid>
+    <Lipid>
+        <Name>MG</Name>
+        <Abbreviation>MG</Abbreviation>
+        <Chains>
+            <Total>1</Total>
+            <Capacity>2</Capacity>
+        </Chains>
+        <Skelton>
+            <Carbon>3</Carbon>
+            <Hydrogen>6</Hydrogen>
+            <Oxygen>3</Oxygen>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>MG</LbmClass>
+        </LbmClasses>
+    </Lipid>
 </Lipids>
