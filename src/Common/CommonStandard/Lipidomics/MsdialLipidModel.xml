@@ -255,4 +255,20 @@
             <LbmClass>CAR</LbmClass>
         </LbmClasses>
     </Lipid>
+    <Lipid>
+        <Name>DGTA</Name>
+        <Abbreviation>DGTA</Abbreviation>
+        <Chains>
+            <Total>2</Total>
+        </Chains>
+        <Skelton>
+            <Carbon>10</Carbon>
+            <Hydrogen>19</Hydrogen>
+            <Oxygen>5</Oxygen>
+            <Nitrogen>1</Nitrogen>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>DGTA</LbmClass>
+        </LbmClasses>
+    </Lipid>
 </Lipids>
