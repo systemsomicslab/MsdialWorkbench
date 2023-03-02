@@ -652,7 +652,6 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.CarbonMass * 6,
             MassDiffDictionary.HydrogenMass * 13,
             MassDiffDictionary.OxygenMass * 8,
-            //MassDiffDictionary.NitrogenMass,
             MassDiffDictionary.PhosphorusMass,
         }.Sum();
 
@@ -665,5 +664,5 @@ namespace CompMs.Common.Lipidomics
             }
             return null;
         }
-    }
+	}
 }

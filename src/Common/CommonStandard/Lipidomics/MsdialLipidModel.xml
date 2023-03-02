@@ -395,4 +395,20 @@
             <LbmClass>EtherPE</LbmClass>
         </LbmClasses>
     </Lipid>
+    <Lipid>
+        <Name>BMP</Name>
+        <Abbreviation>BMP</Abbreviation>
+        <Chains>
+            <Total>2</Total>
+        </Chains>
+        <Skelton>
+            <Carbon>6</Carbon>
+            <Hydrogen>13</Hydrogen>
+            <Oxygen>8</Oxygen>
+            <Phosphorus/>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>BMP</LbmClass>
+        </LbmClasses>
+    </Lipid>
 </Lipids>
