@@ -239,4 +239,20 @@
             <LbmClass>DG</LbmClass>
         </LbmClasses>
     </Lipid>
+    <Lipid>
+        <Name>CAR</Name>
+        <Abbreviation>CAR</Abbreviation>
+        <Chains>
+            <Total>1</Total>
+        </Chains>
+        <Skelton>
+            <Carbon>7</Carbon>
+            <Hydrogen>14</Hydrogen>
+            <Oxygen>3</Oxygen>
+            <Nitrogen>1</Nitrogen>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>CAR</LbmClass>
+        </LbmClasses>
+    </Lipid>
 </Lipids>
