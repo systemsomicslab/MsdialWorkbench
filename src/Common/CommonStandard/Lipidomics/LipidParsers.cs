@@ -718,8 +718,7 @@ namespace CompMs.Common.Lipidomics
         }
 	}
 
-    public class SMLipidParser : ILipidParser
-    {
+    public class SMLipidParser : ILipidParser {
         public string Target { get; } = "SM";
 
         private static readonly TotalChainParser chainsParser = TotalChainParser.BuildCeramideParser(2);
@@ -735,16 +734,14 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.PhosphorusMass,
         }.Sum();
 
-        public ILipid Parse(string lipidStr)
-        {
+        public ILipid Parse(string lipidStr) {
             var match = pattern.Match(lipidStr);
-            if (match.Success)
-            {
+            if (match.Success) {
                 var group = match.Groups;
                 var chains = chainsParser.Parse(group["sn"].Value);
                 return new Lipid(LbmClass.SM, Skelton + chains.Mass, chains);
             }
             return null;
         }
-    }
+	}
 }
