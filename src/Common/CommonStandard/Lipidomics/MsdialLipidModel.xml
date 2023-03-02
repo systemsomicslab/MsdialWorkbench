@@ -224,4 +224,19 @@
             <LbmClass>MG</LbmClass>
         </LbmClasses>
     </Lipid>
+    <Lipid>
+        <Name>DG</Name>
+        <Abbreviation>DG</Abbreviation>
+        <Chains>
+            <Total>2</Total>
+        </Chains>
+        <Skelton>
+            <Carbon>3</Carbon>
+            <Hydrogen>6</Hydrogen>
+            <Oxygen>3</Oxygen>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>DG</LbmClass>
+        </LbmClasses>
+    </Lipid>
 </Lipids>
