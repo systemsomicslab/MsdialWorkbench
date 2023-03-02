@@ -377,4 +377,22 @@
             <LbmClass>EtherLPE</LbmClass>
         </LbmClasses>
     </Lipid>
+    <Lipid>
+        <Name>EtherPE</Name>
+        <Abbreviation>PE</Abbreviation>
+        <Chains>
+            <Ether/>
+            <Total>2</Total>
+        </Chains>
+        <Skelton>
+            <Carbon>5</Carbon>
+            <Hydrogen>12</Hydrogen>
+            <Oxygen>6</Oxygen>
+            <Nitrogen/>
+            <Phosphorus/>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>EtherPE</LbmClass>
+        </LbmClasses>
+    </Lipid>
 </Lipids>
