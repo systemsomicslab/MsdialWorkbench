@@ -265,7 +265,7 @@
                             </Image.Source>
                         </Image>
                     </ToggleButton>
-                    <TextBlock Text="{Binding Name}" Margin="8,0" Foreground="Black"/>
+                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap" Margin="8,0" Foreground="Black"/>
                 </StackPanel>
             </DataTemplate>
             <DataTemplate x:Key="LegendViewModelItem" DataType="{x:Type vm:DisplayScanViewModel}">
@@ -482,6 +482,7 @@
                                 <GridSplitter HorizontalAlignment="Stretch" VerticalAlignment="Top" Grid.Row="1" Grid.Column="2" BorderBrush="Black" BorderThickness="1"/>
                                 <GridSplitter HorizontalAlignment="Stretch" VerticalAlignment="Top" Grid.Row="2" Grid.Column="2" BorderBrush="Black" BorderThickness="1"/>
                                 <GridSplitter HorizontalAlignment="Right" VerticalAlignment="Stretch" Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" BorderBrush="Black" BorderThickness="1"/>
+                                <GridSplitter HorizontalAlignment="Left" VerticalAlignment="Stretch" Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" BorderBrush="Gray" BorderThickness="1"/>
                             </Grid>
                         </DataTemplate>
                     </Setter.Value>
