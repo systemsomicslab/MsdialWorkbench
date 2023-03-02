@@ -447,7 +447,7 @@ namespace Rfx.Riken.OsakaUniv
             sw.Write("PRECURSORTYPE\t");
 
             for (int i = 1; i <= count; i++)
-                sw.Write("Structure rank " + i.ToString() + "\t" + "Total score" + "\t" + "Databases" + "\t" + "Formula" + "\t" + "Ontology" + "\t" + "InChIKey" + "\t" + "SMILES" + "\t");
+                sw.Write(string.Format("Structure rank {0}\tTotal score {0}\tDatabases {0}\tFormula {0}\tOntology {0}\tInChIKey {0}\tSMILES {0}\t", i));
 
             sw.WriteLine();
         }
