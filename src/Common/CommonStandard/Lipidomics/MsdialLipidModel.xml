@@ -271,4 +271,20 @@
             <LbmClass>DGTA</LbmClass>
         </LbmClasses>
     </Lipid>
+    <Lipid>
+        <Name>DGTS</Name>
+        <Abbreviation>DGTS</Abbreviation>
+        <Chains>
+            <Total>2</Total>
+        </Chains>
+        <Skelton>
+            <Carbon>10</Carbon>
+            <Hydrogen>19</Hydrogen>
+            <Oxygen>5</Oxygen>
+            <Nitrogen>1</Nitrogen>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>DGTS</LbmClass>
+        </LbmClasses>
+    </Lipid>
 </Lipids>
