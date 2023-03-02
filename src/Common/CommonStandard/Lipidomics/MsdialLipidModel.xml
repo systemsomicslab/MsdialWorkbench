@@ -321,4 +321,23 @@
             <LbmClass>LDGTS</LbmClass>
         </LbmClasses>
     </Lipid>
+    <Lipid>
+        <Name>EtherLPC</Name>
+        <Abbreviation>LPC</Abbreviation>
+        <Chains>
+            <Lyso/>
+            <Total>1</Total>
+            <Capacity>2</Capacity>
+        </Chains>
+        <Skelton>
+            <Carbon>8</Carbon>
+            <Hydrogen>18</Hydrogen>
+            <Oxygen>6</Oxygen>
+            <Nitrogen/>
+            <Phosphorus/>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>EtherLPC</LbmClass>
+        </LbmClasses>
+    </Lipid>
 </Lipids>

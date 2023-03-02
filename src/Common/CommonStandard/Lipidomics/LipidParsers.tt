@@ -27,7 +27,10 @@ namespace CompMs.Common.Lipidomics
     public class <#= lipidNode["Name"].InnerText #>LipidParser : ILipidParser {
         public string Target { get; } = "<#= lipidNode["Abbreviation"].InnerText #>";
 
-<#     if (lipidNode.SelectNodes("Chains/Capacity").Count > 0) { #>
+<#     if (lipidNode.SelectNodes("Chains/Capacity").Count > 0 && lipidNode.SelectNodes("Chains/Lyso").Count > 0) { #>
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildLysoEtherParser(<#= lipidNode["Chains"]["Total"].InnerText #>, <#= lipidNode["Chains"]["Capacity"].InnerText #>);
+<#     } #>
+<#     else if (lipidNode.SelectNodes("Chains/Capacity").Count > 0) { #>
         private static readonly TotalChainParser chainsParser = TotalChainParser.BuildSpeciesLevelParser(<#= lipidNode["Chains"]["Total"].InnerText #>, <#= lipidNode["Chains"]["Capacity"].InnerText #>);
 <#     } #>
 <#     else { #>
@@ -62,32 +65,4 @@ namespace CompMs.Common.Lipidomics
         }
 	}
 <# } #>
-
-    public class EtherLPCLipidParser : ILipidParser
-    {
-        public string Target { get; } = "LPC";
-
-        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildLysoEtherParser(1,2);
-        public static readonly string Pattern = $"^LPC\\s+(?<sn>{chainsParser.Pattern})$";
-        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-
-        private static readonly double Skelton = new[]
-        {
-            MassDiffDictionary.CarbonMass * 8,
-            MassDiffDictionary.HydrogenMass * 18,
-            MassDiffDictionary.OxygenMass * 6,
-            MassDiffDictionary.NitrogenMass,
-            MassDiffDictionary.PhosphorusMass,
-        }.Sum();
-
-        public ILipid Parse(string lipidStr) {
-            var match = pattern.Match(lipidStr);
-            if (match.Success) {
-                var group = match.Groups;
-                var chains = chainsParser.Parse(group["sn"].Value);
-                return new Lipid(LbmClass.EtherLPC, Skelton + chains.Mass, chains);
-            }
-            return null;
-        }
-    }
 }
