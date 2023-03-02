@@ -816,8 +816,24 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Row="0">
-                <RadioButton x:Name="EnableSpectrumView" Content="Spectrum" IsChecked="True" Foreground="White"/>
-                <RadioButton x:Name="EnableMassDefectView" Content="Mass defect" Foreground="White"/>
+                <StackPanel Orientation="Horizontal" Margin="8,0">
+                    <RadioButton x:Name="EnableSpectrumView" Content="Spectrum" IsChecked="True" Foreground="White" VerticalAlignment="Center"/>
+                    <RadioButton x:Name="EnableMassDefectView" Content="Mass defect" Foreground="White" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="8,0">
+                    <TextBlock Text="Upper spectrum:" Margin="0,0,4,0" Foreground="White" VerticalAlignment="Center"/>
+                    <ComboBox ItemsSource="{Binding UpperSpectrumsViewModel.VerticalAxes}"
+                              SelectedValue="{Binding UpperSpectrumsViewModel.VerticalAxis}"
+                              SelectedValuePath="Axis"
+                              DisplayMemberPath="Label"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="8,0">
+                    <TextBlock Text="Lower spectrum:" Margin="0,0,4,0" Foreground="White" VerticalAlignment="Center"/>
+                    <ComboBox ItemsSource="{Binding LowerSpectrumsViewModel.VerticalAxes}"
+                              SelectedValue="{Binding LowerSpectrumsViewModel.VerticalAxis}"
+                              SelectedValuePath="Axis"
+                              DisplayMemberPath="Label"/>
+                </StackPanel>
             </StackPanel>
             <ContentControl Style="{StaticResource ViewChartStyle}"
                             Content="{Binding}"

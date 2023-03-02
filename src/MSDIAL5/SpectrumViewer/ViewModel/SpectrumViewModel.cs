@@ -38,13 +38,20 @@ namespace CompMs.App.SpectrumViewer.ViewModel
                     .Aggregate((acc, range) => acc.Union(range)))
                 .ToReactiveContinuousAxisManager<double>(new ConstantMargin(30), labelType: LabelType.Standard)
                 .AddTo(Disposables);
-            VerticalAxis = collectionChanged
+            var verticalRange = collectionChanged
                 .Where(_ => DisplayScans.Any())
                 .Select(_ => DisplayScans
                     .Select(scan => new Range(scan.Spectrum.DefaultIfEmpty().Min(s => s?.Intensity) ?? 0d, scan.Spectrum.DefaultIfEmpty().Max(s => s?.Intensity) ?? 0d))
-                    .Aggregate((acc, range) => acc.Union(range)))
-                .ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0, 0), labelType: LabelType.Order)
-                .AddTo(Disposables);
+                    .Aggregate((acc, range) => acc.Union(range)));
+            var verticalAxis = verticalRange.ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0, 0), labelType: LabelType.Order).AddTo(Disposables);
+            var verticalAxes = new object[]
+            {
+                new { Label = "Normal", Axis = verticalAxis, },
+                new { Label = "Log", Axis = verticalRange.Select(r => (Math.Max(r.Minimum.Value, 1d), r.Maximum.Value)).ToReactiveLogScaleAxisManager(new ConstantMargin(0, 30), 1d, 1d).AddTo(Disposables), },
+                new { Label = "Sqrt", Axis = verticalRange.Select(r => (r.Minimum.Value, r.Maximum.Value)).ToReactiveSqrtAxisManager(new ConstantMargin(0, 30), 0d, 0d).AddTo(Disposables), },
+            };
+            VerticalAxes = verticalAxes;
+            VerticalAxis = verticalAxis;
 
             ChartBrushes = new[]
             {
@@ -86,7 +93,13 @@ namespace CompMs.App.SpectrumViewer.ViewModel
 
         public IAxisManager<double> HorizontalAxis { get; }
 
-        public IAxisManager<double> VerticalAxis { get; }
+        public IAxisManager<double> VerticalAxis {
+            get => _verticalAxis;
+            set => SetProperty(ref _verticalAxis, value);
+        }
+        private IAxisManager<double> _verticalAxis;
+
+        public object[] VerticalAxes { get; }
 
         public IBrushMapper BrushMapper { get; }
 
