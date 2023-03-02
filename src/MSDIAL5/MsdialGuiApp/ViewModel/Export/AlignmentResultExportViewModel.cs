@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Export;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Validator;
@@ -61,7 +62,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
         private string _exportDirectory;
 
         [Required(ErrorMessage = "Please select alignment file.")]
-        public AlignmentFileBean AlignmentFile {
+        public AlignmentFileBeanModel AlignmentFile {
             get => _alignmentFile;
             set {
                 if (SetProperty(ref _alignmentFile, value)) {
@@ -71,7 +72,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
                 }
             }
         }
-        private AlignmentFileBean _alignmentFile;
+        private AlignmentFileBeanModel _alignmentFile;
 
         public ICollectionView AlignmentFiles { get; }
 

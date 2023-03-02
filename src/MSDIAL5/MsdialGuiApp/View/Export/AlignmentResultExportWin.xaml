@@ -57,7 +57,7 @@
                 <ComboBox ItemsSource="{Binding AlignmentFiles}"
                           IsSynchronizedWithCurrentItem="True"
                           DisplayMemberPath="FileName"
-                          SelectedItem="{Binding AlignmentFile, Mode=OneWayToSource, UpdateSourceTrigger=LostFocus}"
+                          SelectedItem="{Binding AlignmentFile, Mode=OneWayToSource}"
                           HorizontalAlignment="Stretch"/>
             </StackPanel>
             <CheckBox Content="Filtering by current parameter"

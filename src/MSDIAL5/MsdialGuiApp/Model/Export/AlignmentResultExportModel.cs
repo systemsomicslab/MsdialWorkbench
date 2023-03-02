@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.ViewModel.Service;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -16,7 +17,7 @@ namespace CompMs.App.Msdial.Model.Export
     {
         private readonly DataExportBaseParameter _dataExportParameter;
 
-        public AlignmentResultExportModel(IEnumerable<IAlignmentResultExportModel> exportGroups, AlignmentFileBean alignmentFile, IReadOnlyList<AlignmentFileBean> alignmentFiles, AlignmentPeakSpotSupplyer peakSpotSupplyer, DataExportBaseParameter dataExportParameter) {
+        public AlignmentResultExportModel(IEnumerable<IAlignmentResultExportModel> exportGroups, AlignmentFileBeanModel alignmentFile, IReadOnlyList<AlignmentFileBeanModel> alignmentFiles, AlignmentPeakSpotSupplyer peakSpotSupplyer, DataExportBaseParameter dataExportParameter) {
             AlignmentFiles = alignmentFiles;
             PeakSpotSupplyer = peakSpotSupplyer ?? throw new ArgumentNullException(nameof(peakSpotSupplyer));
             _dataExportParameter = dataExportParameter;
@@ -32,19 +33,19 @@ namespace CompMs.App.Msdial.Model.Export
         }
         private string _exportDirectory;
 
-        public AlignmentFileBean AlignmentFile {
+        public AlignmentFileBeanModel AlignmentFile {
             get => _alignmentFile;
             set => SetProperty(ref _alignmentFile, value);
         }
-        private AlignmentFileBean _alignmentFile;
+        private AlignmentFileBeanModel _alignmentFile;
 
-        public IReadOnlyList<AlignmentFileBean> AlignmentFiles { get; }
+        public IReadOnlyList<AlignmentFileBeanModel> AlignmentFiles { get; }
         public AlignmentPeakSpotSupplyer PeakSpotSupplyer { get; }
         public ReadOnlyObservableCollection<IAlignmentResultExportModel> Groups { get; }
 
         public Task ExportAlignmentResultAsync(IMessageBroker broker) {
             return Task.Run(() => {
-                var task = TaskNotification.Start($"Exporting {AlignmentFile.FileName}");
+                var task = TaskNotification.Start($"Exporting {((IFileBean)AlignmentFile).FileName}");
                 broker.Publish(task);
 
                 var numExportFile = (double)Groups.Sum(group => group.CountExportFiles());

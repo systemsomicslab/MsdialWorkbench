@@ -1,4 +1,5 @@
-﻿using CompMs.Common.DataObj;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.DataObj;
@@ -53,7 +54,7 @@ namespace CompMs.App.Msdial.ExternalApp
         }
 
         public static void SendToMsFinderProgram(
-           AlignmentFileBean file,
+           AlignmentFileBeanModel file,
            AlignmentSpotProperty feature,
            IMSScanProperty scan,
            DataBaseMapper mapper,
@@ -61,7 +62,7 @@ namespace CompMs.App.Msdial.ExternalApp
             var msdialIni = MsDialIniParcer.Read();
             if (!checkFilePath(msdialIni)) return;
 
-            var msdialTempDir = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(msdialIni.MsfinderFilePath), "MSDIAL_TEMP");
+            var msdialTempDir = Path.Combine(Path.GetDirectoryName(msdialIni.MsfinderFilePath), "MSDIAL_TEMP");
             folderCheckInMsFinder(msdialTempDir);
 
             var dt = DateTime.Now;

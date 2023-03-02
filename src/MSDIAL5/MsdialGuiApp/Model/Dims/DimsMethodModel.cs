@@ -41,7 +41,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public DimsMethodModel(
             IMsdialDataStorage<MsdialDimsParameter> storage,
             AnalysisFileBeanModelCollection analysisFileBeanModelCollection,
-            List<AlignmentFileBean> alignmentFiles,
+            AlignmentFileBeanModelCollection alignmentFiles,
             ProjectBaseParameterModel projectBaseParameter,
             IMessageBroker broker)
             : base(analysisFileBeanModelCollection, alignmentFiles, projectBaseParameter) {
@@ -90,7 +90,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
-            AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, }, AlignmentFile, AlignmentFiles, peakSpotSupplyer, storage.Parameter.DataExportParam);
+            AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, }, AlignmentFile, alignmentFiles.Files, peakSpotSupplyer, storage.Parameter.DataExportParam);
             this.ObserveProperty(m => m.AlignmentFile)
                 .Subscribe(file => AlignmentResultExportModel.AlignmentFile = file)
                 .AddTo(Disposables);
@@ -246,13 +246,13 @@ namespace CompMs.App.Msdial.Model.Dims
                 PeakFilterModel).AddTo(Disposables);
         }
 
-        protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
+        protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBeanModel alignmentFileModel) {
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
             }
             return AlignmentModel = new DimsAlignmentModel(
-                alignmentFile,
+                alignmentFileModel,
                 Storage.DataBases,
                 _matchResultEvaluator,
                 Storage.DataBaseMapper,

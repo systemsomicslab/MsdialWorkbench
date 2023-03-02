@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Enum;
-using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Validator;
 using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
@@ -14,21 +13,6 @@ using System.Reactive.Subjects;
 
 namespace CompMs.App.Msdial.ViewModel.DataObj
 {
-    public abstract class FileBeanViewModel<T> : ViewModelBase where T : IFileBean
-    {
-        public FileBeanViewModel(T file) {
-            File = file;
-        }
-        public T File { get; }
-
-        public string FileName => File.FileName;
-
-        public bool IsSelected {
-            get => isSelected;
-            set => SetProperty(ref isSelected, value);
-        }
-        private bool isSelected;
-    }
 
     internal sealed class AnalysisFileBeanViewModel : FileBeanViewModel<AnalysisFileBeanModel>
     {
@@ -197,12 +181,6 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
 
         public void Commit() {
             CommitTrigger.OnNext(Unit.Default);
-        }
-    }
-
-    public class AlignmentFileBeanViewModel : FileBeanViewModel<AlignmentFileBean>
-    {
-        public AlignmentFileBeanViewModel(AlignmentFileBean file) : base(file) {
         }
     }
 }
