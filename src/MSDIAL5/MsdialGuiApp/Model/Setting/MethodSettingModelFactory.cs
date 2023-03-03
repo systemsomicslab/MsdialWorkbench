@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Dims;
+using CompMs.App.Msdial.Model.Gcms;
 using CompMs.App.Msdial.Model.ImagingImms;
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Lcimms;
@@ -12,6 +13,7 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialDimsCore.Parameter;
+using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
@@ -59,6 +61,9 @@ namespace CompMs.App.Msdial.Model.Setting
                     break;
                 case IMsdialDataStorage<MsdialDimsParameter> dimsStorage:
                     factoryImpl = new DimsMethodSettingModelFactory(analysisFileBeanModelCollection, alignmentFileModelCollection, dimsStorage, projectBaseParameter, process, messageBroker);
+                    break;
+                case IMsdialDataStorage<MsdialGcmsParameter> gcmsStorage:
+                    factoryImpl = new GcmsMethodSettingModelFactory(analysisFileBeanModelCollection, alignmentFileModelCollection, gcmsStorage, projectBaseParameter, process, messageBroker);
                     break;
                 default:
                     throw new ArgumentException(nameof(storage));
@@ -527,6 +532,106 @@ namespace CompMs.App.Msdial.Model.Setting
         public IMethodModel BuildMethod() {
             var method = new ImagingImmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, _projectBaseParameter);
             return method;
+        }
+    }
+
+    internal sealed class GcmsMethodSettingModelFactory : IMethodSettingModelFactory
+    {
+        private readonly AnalysisFileBeanModelCollection _analysisFileBeanModelCollection;
+        private readonly AlignmentFileBeanModelCollection _alignmentFileBeanModelCollection;
+        private readonly IMsdialDataStorage<MsdialGcmsParameter> storage;
+        private readonly ProjectBaseParameterModel _projectBaseParameter;
+        private readonly ProcessOption process;
+        private readonly IMessageBroker _broker;
+
+        public GcmsMethodSettingModelFactory(
+            AnalysisFileBeanModelCollection analysisFileBeanModelCollection,
+            AlignmentFileBeanModelCollection alignmentFileBeanModelCollection,
+            IMsdialDataStorage<MsdialGcmsParameter> storage,
+            ProjectBaseParameterModel projectBaseParameter,
+            ProcessOption process,
+            IMessageBroker broker) {
+            _analysisFileBeanModelCollection = analysisFileBeanModelCollection;
+            _alignmentFileBeanModelCollection = alignmentFileBeanModelCollection;
+            this.storage = storage;
+            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
+            this.process = process;
+            _broker = broker;
+            if (this.storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
+                this.storage.Parameter.MaxChargeNumber = 8;
+                this.storage.Parameter.RemoveAfterPrecursor = false;
+            }
+        }
+
+        public AdductIonSettingModel CreateAdductIonSetting() {
+            return new AdductIonSettingModel(storage.Parameter, process);
+        }
+
+        public AlignmentParameterSettingModel CreateAlignmentParameterSetting() {
+            return new AlignmentParameterSettingModel(storage.Parameter, DateTime.Now, storage.AnalysisFiles, _alignmentFileBeanModelCollection, process);
+        }
+
+        public DataCollectionSettingModel CreateDataCollectionSetting() {
+            return new DataCollectionSettingModel(storage.Parameter, storage.AnalysisFiles, process);
+        }
+
+        public DeconvolutionSettingModel CreateDeconvolutionSetting() {
+            return new DeconvolutionSettingModel(storage.Parameter.ChromDecBaseParam, process);
+        }
+
+        public IdentifySettingModel CreateIdentifySetting() {
+            var parameter = storage.Parameter;
+            // TODO: use lcms settings temporary.
+            var model = new IdentifySettingModel(storage.Parameter, new LcmsAnnotatorSettingFactory(parameter), process, _broker, storage.DataBases);
+
+            if (parameter.TargetOmics == TargetOmics.Lipidomics) {
+                if (model.DataBaseModels.Count == 0) {
+                    if (parameter.CollistionType == CollisionType.EIEIO
+                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EieioLipid)) {
+                        var databaseModel = model.AddDataBase();
+                        databaseModel.DBSource = DataBaseSource.EieioLipid;
+                    }
+
+                    if (parameter.CollistionType == CollisionType.OAD
+                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.OadLipid)) {
+                        var databaseModel = model.AddDataBase();
+                        databaseModel.DBSource = DataBaseSource.OadLipid;
+                    }
+
+                    if (parameter.CollistionType == CollisionType.EID
+                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EidLipid)) {
+                        var databaseModel = model.AddDataBase();
+                        databaseModel.DBSource = DataBaseSource.EidLipid;
+                    }
+
+                    string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    var lbmFiles = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
+                    var lbmFile = lbmFiles.FirstOrDefault();
+                    if (!(lbmFile is null)
+                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.Msp)) {
+                        var databaseModel = model.AddDataBase();
+                        databaseModel.DataBasePath = lbmFile;
+                    }
+                }
+            }
+            
+            return model;
+        }
+
+        public IsotopeTrackSettingModel CreateIsotopeTrackSetting() {
+            return new IsotopeTrackSettingModel(storage.Parameter, storage.AnalysisFiles, process);
+        }
+
+        public MobilitySettingModel CreateMobilitySetting() {
+            return null;
+        }
+
+        public PeakDetectionSettingModel CreatePeakDetectionSetting() {
+            return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
+        }
+
+        public IMethodModel BuildMethod() {
+            return new GcmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, _projectBaseParameter, _broker);
         }
     }
 }

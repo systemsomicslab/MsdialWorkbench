@@ -8,6 +8,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialDimsCore.DataObj;
 using CompMs.MsdialDimsCore.Parameter;
+using CompMs.MsdialGcMsApi.DataObj;
 using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialImmsCore.DataObj;
 using CompMs.MsdialImmsCore.Parameter;
@@ -234,6 +235,8 @@ namespace CompMs.App.Msdial.Model.Setting
                     return new MsdialImmsDataStorage() { MsdialImmsParameter = immsParameter };
                 case MsdialDimsParameter dimsParameter:
                     return new MsdialDimsDataStorage() { MsdialDimsParameter = dimsParameter };
+                case MsdialGcmsParameter gcmsParameter:
+                    return new MsdialGcmsDataStorage() { MsdialGcmsParameter = gcmsParameter };
             }
             throw new NotImplementedException("This method is not implemented");
         }

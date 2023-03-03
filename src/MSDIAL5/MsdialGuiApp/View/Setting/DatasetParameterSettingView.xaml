@@ -50,7 +50,6 @@
                 <RadioButton Name="RadioButton_EI"
                              Content="Hard ionization (GC/MS)"
                              IsChecked="{Binding Ionization.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=EI, Mode=TwoWay}"
-                             IsEnabled="False"
                              Margin="8,8,0,0"
                              ToolTip="Type 2: When you analyze an EI type data like GC/MS, select this option."/>
             </StackPanel>
