@@ -19,7 +19,7 @@ jobs:
       - name: Add package source
         run: dotnet nuget add source ${{ github.workspace }}/Assemblies
       - name: Restore packages
-        run: dotnet restore
+        run: dotnet restore /property:Configuration="Debug vendor unsupported"
       - name: Build
         run: dotnet build --no-restore --configuration "Debug vendor unsupported"
       - name: Test
