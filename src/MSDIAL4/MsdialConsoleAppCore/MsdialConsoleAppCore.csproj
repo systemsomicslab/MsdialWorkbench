@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug vendor unsupported|AnyCPU'">
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug vendor unsupported\</OutputPath>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -27,14 +27,9 @@
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release vendor unsupported|AnyCPU'">
-    <OutputPath>..\MsDial\bin\Release\</OutputPath>
+    <OutputPath>..\MsDial\bin\Release vendor unsupported\</OutputPath>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  
-  <ItemGroup>
-    <PackageReference Include="RawDataHandler" Version="1.0.8441.438" />
-  </ItemGroup>
-
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj" />
