@@ -5,7 +5,7 @@ name: MSTest
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "add-github-action" ]
   pull_request:
     branches: [ "master" ]
 
