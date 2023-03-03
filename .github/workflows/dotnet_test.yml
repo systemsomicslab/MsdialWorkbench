@@ -18,7 +18,9 @@ jobs:
       - uses: actions/checkout@v3
       - name: Add package source
         run: dotnet nuget add source ${{ github.workspace }}/Assemblies
+      - name: Restore packages
+        run: dotnet restore
       - name: Build
-        run: dotnet build --configuration "Debug vendor unsupported"
+        run: dotnet build --no-restore --configuration "Debug vendor unsupported"
       - name: Test
         run: dotnet test --no-build --verbosity normal
