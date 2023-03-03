@@ -21,7 +21,10 @@
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39">
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
-    <PackageReference Include="RawDataHandler" Version="1.0.*" />
+	  <PackageReference Include="RawDataHandler" Version="1.0.*" Condition="'$(Configuration)'=='Release'" />
+	  <PackageReference Include="RawDataHandler" Version="1.0.*-*" Condition="'$(Configuration)'=='Debug'" />
+	  <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.0.*-*" Condition="'$(Configuration)'=='Debug vendor unsupported'" />
+	  <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.0.*" Condition="'$(Configuration)'=='Release vendor unsupported'" />
     <PackageReference Include="ReactiveProperty.WPF" Version="8.2.0" />
   </ItemGroup>
 

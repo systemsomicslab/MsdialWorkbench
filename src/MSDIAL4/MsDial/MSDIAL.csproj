@@ -1103,9 +1103,10 @@
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.3</Version>
     </PackageReference>
-    <PackageReference Include="RawDataHandler">
-      <Version>1.0.8441.438</Version>
-    </PackageReference>
+	  <PackageReference Include="RawDataHandler" Version="1.0.*" Condition="'$(Configuration)'=='Release'" />
+	  <PackageReference Include="RawDataHandler" Version="1.0.*-*" Condition="'$(Configuration)'=='Debug'" />
+	  <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.0.*-*" Condition="'$(Configuration)'=='Debug vendor unsupported'" />
+	  <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.0.*" Condition="'$(Configuration)'=='Release vendor unsupported'" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

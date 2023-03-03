@@ -12,7 +12,10 @@
     <None Remove="App.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="RawDataHandler" Version="1.0.8441.438" />
+	  <PackageReference Include="RawDataHandler" Version="1.0.*" Condition="'$(Configuration)'=='Release'" />
+	  <PackageReference Include="RawDataHandler" Version="1.0.*-*" Condition="'$(Configuration)'=='Debug'" />
+	  <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.0.*-*" Condition="'$(Configuration)'=='Debug vendor unsupported'" />
+	  <PackageReference Include="RawDataHandler-Vendor-UnSupported" Version="1.0.*" Condition="'$(Configuration)'=='Release vendor unsupported'" />
   </ItemGroup>
 
   <ItemGroup>
