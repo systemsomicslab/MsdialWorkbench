@@ -23,6 +23,9 @@ using System.Text.RegularExpressions;
 namespace CompMs.Common.Lipidomics
 {
 <# foreach (XmlNode lipidNode in root.ChildNodes) { #>
+<#   if (lipidNode.SelectNodes("Parsers[@IsEnabled=\"False\"]").Count > 0) {
+         continue;
+     } #>
 
     public class <#= lipidNode["Name"].InnerText #>LipidParser : ILipidParser {
         public string Target { get; } = "<#= lipidNode["Abbreviation"].InnerText #>";

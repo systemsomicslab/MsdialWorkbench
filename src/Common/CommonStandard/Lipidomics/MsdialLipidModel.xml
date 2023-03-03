@@ -463,4 +463,21 @@
             <LbmClass>SM</LbmClass>
         </LbmClasses>
     </Lipid>
+    <Lipid>
+        <Name>HBMP</Name>
+        <Abbreviation>HBMP</Abbreviation>
+        <Chains>
+            <Total>3</Total>
+        </Chains>
+        <Skelton>
+            <Carbon>6</Carbon>
+            <Hydrogen>12</Hydrogen>
+            <Oxygen>8</Oxygen>
+            <Phosphorus/>
+        </Skelton>
+        <LbmClasses>
+            <LbmClass>HBMP</LbmClass>
+        </LbmClasses>
+        <Parsers IsEnabled="False"/>
+    </Lipid>
 </Lipids>
