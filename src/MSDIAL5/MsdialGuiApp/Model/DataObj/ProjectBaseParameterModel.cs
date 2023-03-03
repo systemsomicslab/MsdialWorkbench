@@ -14,7 +14,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    internal sealed class ProjectBaseParameterModel : DisposableModelBase
+    public sealed class ProjectBaseParameterModel : DisposableModelBase
     {
         private readonly ProjectBaseParameter _projectParameter;
 

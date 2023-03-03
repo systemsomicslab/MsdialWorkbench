@@ -1,4 +1,5 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parser;
@@ -28,10 +29,10 @@ namespace CompMs.App.Msdial.Model.Export
             return 1;
         }
 
-        public void Export(AlignmentFileBean alignmentFile, string exportDirectory, Action<string> notification) {
-            string outFile = $"Protein_{alignmentFile.FileID}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}.txt";
+        public void Export(AlignmentFileBeanModel alignmentFile, string exportDirectory, Action<string> notification) {
+            string outFile = $"Protein_{((IFileBean)alignmentFile).FileID}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}.txt";
             var outPath = Path.Combine(exportDirectory, outFile);
-            var resultContainer = MsdialProteomicsSerializer.LoadProteinResultContainer(alignmentFile.ProteinAssembledResultFilePath);
+            var resultContainer = alignmentFile.LoadProteinResult();
             notification?.Invoke(outFile);
             using (var outstream = File.Open(outPath, FileMode.Create, FileAccess.Write)) {
                 _exporter.Export(outstream, resultContainer, _analysisFiles);

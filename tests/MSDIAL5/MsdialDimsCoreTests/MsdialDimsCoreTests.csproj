@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -22,9 +22,5 @@
   <ItemGroup>
     <Folder Include="CompMs\MsdialDimsCore\Common\" />
   </ItemGroup>
-
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="copy &quot;$(SolutionDir)\Assemblies\baf2sql_c.dll&quot; &quot;$(TargetDir)&quot;" />
-  </Target>
 
 </Project>

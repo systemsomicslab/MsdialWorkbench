@@ -4,6 +4,7 @@ using CompMs.Common.Enum;
 using CompMs.Common.Parser;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Export;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
@@ -34,7 +35,7 @@ namespace CompMs.MsdialImmsCore.Export.Tests
 
         [TestMethod()]
         public void GetContentTest() {
-            var accessor = new ImmsMetadataAccessor(new MockRefer(), new MsdialCore.Parameter.ParameterBase { MachineCategory = MachineCategory.IMMS }, trimSpectrumToExcelLimit: false);
+            IMetadataAccessor accessor = new ImmsMetadataAccessor(new MockRefer(), new MsdialCore.Parameter.ParameterBase { MachineCategory = MachineCategory.IMMS }, trimSpectrumToExcelLimit: false);
             var spot = new AlignmentSpotProperty
             {
                 TimesCenter = new ChromXs(20.001, ChromXType.Drift, ChromXUnit.Msec),

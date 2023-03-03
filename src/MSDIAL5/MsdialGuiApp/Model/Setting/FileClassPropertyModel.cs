@@ -3,7 +3,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    internal sealed class FileClassPropertyModel : BindableBase {
+    public sealed class FileClassPropertyModel : BindableBase {
         public FileClassPropertyModel(string name, Color color, int order) {
             Name = name;
             Color = color;

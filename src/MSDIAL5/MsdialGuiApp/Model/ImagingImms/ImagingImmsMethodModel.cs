@@ -11,7 +11,6 @@ using CompMs.MsdialImmsCore.Export;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Process;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -25,8 +24,8 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         private readonly FacadeMatchResultEvaluator _evaluator;
         private readonly IDataProviderFactory<AnalysisFileBeanModel> _providerFactory;
 
-        public ImagingImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter)
-            : base(analysisFileBeanModelCollection, Enumerable.Empty<AlignmentFileBean>(), projectBaseParameter) {
+        public ImagingImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter)
+            : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, projectBaseParameter) {
             _storage = storage;
             _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             _providerFactory = storage.Parameter.ProviderFactoryParameter.Create().ContraMap((AnalysisFileBeanModel file) => file.File.LoadRawMeasurement(true, true, 5, 5000));
@@ -77,7 +76,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             return null;
         }
 
-        protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
+        protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBeanModel alignmentFileModel) {
             return null;
         }
 

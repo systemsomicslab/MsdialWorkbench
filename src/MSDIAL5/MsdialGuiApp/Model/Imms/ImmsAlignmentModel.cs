@@ -36,7 +36,7 @@ namespace CompMs.App.Msdial.Model.Imms
     {
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> CHROMATOGRAM_SPOT_SERIALIZER;
 
-        private readonly AlignmentFileBean _alignmentFile;
+        private readonly AlignmentFileBeanModel _alignmentFile;
         private readonly List<AnalysisFileBean> _files;
         private readonly ParameterBase _parameter;
         private readonly DataBaseMapper _dataBaseMapper;
@@ -44,7 +44,7 @@ namespace CompMs.App.Msdial.Model.Imms
         private readonly MSDecLoader _decLoader;
 
         public ImmsAlignmentModel(
-            AlignmentFileBean alignmentFileBean,
+            AlignmentFileBeanModel alignmentFileModel,
             AnalysisFileBeanModelCollection fileCollection,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseStorage databases,
@@ -53,9 +53,9 @@ namespace CompMs.App.Msdial.Model.Imms
             ProjectBaseParameterModel projectBaseParameter,
             ParameterBase parameter,
             List<AnalysisFileBean> files)
-            : base(alignmentFileBean, alignmentFileBean.FilePath) {
+            : base(alignmentFileModel) {
 
-            _alignmentFile = alignmentFileBean;
+            _alignmentFile = alignmentFileModel;
             _parameter = parameter;
             _files = files ?? throw new ArgumentNullException(nameof(files));
             _dataBaseMapper = mapper;
@@ -100,18 +100,17 @@ namespace CompMs.App.Msdial.Model.Imms
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator, status: ~FilterEnableStatus.Rt).AddTo(Disposables);
 
-            var fileName = alignmentFileBean.FileName;
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel);
             PlotModel = new AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, SelectedBrush, Brushes)
             {
-                GraphTitle = fileName,
+                GraphTitle = ((IFileBean)alignmentFileModel).FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
                 VerticalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
                 HorizontalTitle = "Mobility [1/k0]",
                 VerticalTitle = "m/z",
             }.AddTo(Disposables);
 
-            var loader = new MSDecLoader(alignmentFileBean.SpectraFilePath);
+            var loader = alignmentFileModel.CreateMSDecLoader().AddTo(Disposables);
             _decLoader = loader;
             var decLoader = new MsDecSpectrumLoader(loader, Ms1Spots);
             var refLoader = new MsRefSpectrumLoader(mapper);
@@ -167,11 +166,10 @@ namespace CompMs.App.Msdial.Model.Imms
             var barItemsLoaderDataProperty = new ReactiveProperty<BarItemsLoaderData>(barItemsLoaderData).AddTo(Disposables);
             BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush), projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
 
-            var eicFile = alignmentFileBean.EicFilePath;
             var classToColor = parameter.ClassnameToColorBytes
                 .ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
             var fileIdToFileName = files.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileName);
-            var eicLoader = new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, eicFile, fileCollection, projectBaseParameter).AddTo(Disposables);
+            var eicLoader = alignmentFileModel.CreateEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, fileCollection, projectBaseParameter).AddTo(Disposables);
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target, eicLoader, files, parameter,
                 peak => peak.Time,
@@ -296,7 +294,7 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public void SaveProject() {
-            MessagePackHandler.SaveToFile(Container, _alignmentFile.FilePath);
+            _alignmentFile.SaveAlignmentResultAsync(Container).Wait();
         }
     }
 }

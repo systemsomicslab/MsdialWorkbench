@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.ViewModel.Service;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
@@ -21,8 +22,9 @@ namespace CompMs.App.Msdial.Model.Setting
 {
     public class AlignmentParameterSettingModel : BindableBase
     {
-        public AlignmentParameterSettingModel(ParameterBase parameter, DateTime now, List<AnalysisFileBean> files, IList<AlignmentFileBean> alignmentFiles, ProcessOption process) {
+        public AlignmentParameterSettingModel(ParameterBase parameter, DateTime now, List<AnalysisFileBean> files, AlignmentFileBeanModelCollection alignmentFiles, ProcessOption process) {
             IsReadOnly = (process & ProcessOption.Alignment) == 0;
+            _alignmentFiles = alignmentFiles;
 
             AlignmentResultFileName = $"AlignmentResult_{now:yyyy_MM_dd_HH_mm_ss}";
             AnalysisFiles = files.AsReadOnly();
@@ -39,11 +41,10 @@ namespace CompMs.App.Msdial.Model.Setting
             IsForceInsertForGapFilling = parameter.PostProcessBaseParam.IsForceInsertForGapFilling;
             ShouldRunAlignment = AnalysisFiles.Count > 1 && !IsReadOnly;
             this.parameter = parameter;
-            this.alignmentFiles = alignmentFiles;
         }
 
         private readonly ParameterBase parameter;
-        private readonly IList<AlignmentFileBean> alignmentFiles;
+        private readonly AlignmentFileBeanModelCollection _alignmentFiles;
 
         public bool IsReadOnly { get; }
 
@@ -152,9 +153,9 @@ namespace CompMs.App.Msdial.Model.Setting
 
             parameter.ProcessBaseParam.ProcessOption |= ProcessOption.Alignment;
             var projectFolder = parameter.ProjectParam.ProjectFolderPath;
-            alignmentFiles.Add(new AlignmentFileBean
+            _alignmentFiles.Add(new AlignmentFileBean
             {
-                FileID = alignmentFiles.DefaultIfEmpty().Max(file => file?.FileID) ?? 0,
+                FileID = _alignmentFiles.Files.DefaultIfEmpty().Max(file => ((IFileBean)file)?.FileID) ?? 0,
                 FileName = alignmentResultFileName,
                 FilePath = Path.Combine(projectFolder, alignmentResultFileName + "." + MsdialDataStorageFormat.arf),
                 EicFilePath = Path.Combine(projectFolder, alignmentResultFileName + ".EIC.aef"),

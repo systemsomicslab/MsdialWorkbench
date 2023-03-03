@@ -26,8 +26,8 @@ namespace CompMs.App.Msdial.Model.Export
         }
         private bool _useFilter;
 
-        public IReadOnlyList<AlignmentSpotProperty> Supply(AlignmentFileBean file, CancellationToken token) {
-            var container = AlignmentResultContainer.LoadLazy(file);
+        public IReadOnlyList<AlignmentSpotProperty> Supply(AlignmentFileBeanModel file, CancellationToken token) {
+            var container = file.LoadAlignmentResultAsync().Result;
             if (UseFilter) {
                 return container.AlignmentSpotProperties.Where(spot => _peakFilterModel.PeakFilter(new AlignmentSpotPropertyModel(spot), _evaluator)).ToList();
             }

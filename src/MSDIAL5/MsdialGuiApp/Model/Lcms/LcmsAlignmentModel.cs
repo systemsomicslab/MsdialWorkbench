@@ -46,14 +46,14 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         private readonly MSDecLoader _decLoader;
-        private readonly AlignmentFileBean _alignmentFile;
+        private readonly AlignmentFileBeanModel _alignmentFile;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly List<AnalysisFileBean> _files;
         private readonly IReadOnlyList<CompoundSearcher> _compoundSearchers;
         private readonly ReadOnlyReactivePropertySlim<MSDecResult> _msdecResult;
 
         public LcmsAlignmentModel(
-            AlignmentFileBean alignmentFileBean,
+            AlignmentFileBeanModel alignmentFileBean,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseStorage databases,
             PeakFilterModel peakFilterModel,
@@ -63,7 +63,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             List<AnalysisFileBean> files,
             AnalysisFileBeanModelCollection fileCollection,
             IMessageBroker messageBroker)
-            : base(alignmentFileBean, alignmentFileBean.FilePath) {
+            : base(alignmentFileBean) {
             if (databases is null) {
                 throw new ArgumentNullException(nameof(databases));
             }
@@ -86,12 +86,12 @@ namespace CompMs.App.Msdial.Model.Lcms
             NormalizationSetModel = new NormalizationSetModel(Container, files, fileCollection, mapper, evaluator, InternalStandardSetModel, parameter, messageBroker).AddTo(Disposables);
 
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
-                var proteinResultContainer = MsdialProteomicsSerializer.LoadProteinResultContainer(alignmentFileBean.ProteinAssembledResultFilePath);
+                var proteinResultContainer = alignmentFileBean.LoadProteinResult();
                 var proteinResultContainerModel = new ProteinResultContainerModel(proteinResultContainer, Ms1Spots, Target);
                 ProteinResultContainerModel = proteinResultContainerModel;
             }
 
-            _decLoader = new MSDecLoader(_alignmentFile.SpectraFilePath).AddTo(Disposables);
+            _decLoader = _alignmentFile.CreateMSDecLoader().AddTo(Disposables);
             _msdecResult = Target.SkipNull()
                 .Select(t => _decLoader.LoadMSDecResult(t.MasterAlignmentID))
                 .ToReadOnlyReactivePropertySlim()
@@ -135,7 +135,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 .AddTo(Disposables);
             PlotModel = new AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, selectedBrush, brushes)
             {
-                GraphTitle = _alignmentFile.FileName,
+                GraphTitle = ((IFileBean)_alignmentFile).FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
                 VerticalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
                 HorizontalTitle = "Retention time [min]",
@@ -213,7 +213,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             var fileIdToFileName = files.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileName);
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target,
-                new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean.EicFilePath, fileCollection, projectBaseParameter).AddTo(Disposables),
+                alignmentFileBean.CreateEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, fileCollection, projectBaseParameter).AddTo(Disposables),
                 files, parameter,
                 peak => peak.Time,
                 peak => peak.Intensity).AddTo(Disposables);

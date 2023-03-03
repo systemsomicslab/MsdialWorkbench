@@ -40,14 +40,14 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> RT_CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT);
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> DRIFT_CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
 
-        private readonly AlignmentFileBean _alignmentFileBean;
+        private readonly AlignmentFileBeanModel _alignmentFileBean;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly MsdialLcImMsParameter _parameter;
         private readonly List<AnalysisFileBean> _files;
         private readonly MSDecLoader _decLoader;
 
         public LcimmsAlignmentModel(
-            AlignmentFileBean alignmentFileBean,
+            AlignmentFileBeanModel alignmentFileBean,
             AnalysisFileBeanModelCollection fileCollection,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseStorage databases,
@@ -57,7 +57,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             List<AnalysisFileBean> files,
             PeakFilterModel peakFilterModel,
             PeakFilterModel accumulatedPeakFilterModel)
-            : base(alignmentFileBean, alignmentFileBean.FilePath) {
+            : base(alignmentFileBean) {
             if (evaluator is null) {
                 throw new ArgumentNullException(nameof(evaluator));
             }
@@ -161,14 +161,14 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel);
             RtMzPlotModel = new AlignmentPeakPlotModel(accumulatedPropModels, spot => spot.TimesCenter, spot => spot.MassCenter, accumulatedTarget, labelSource, SelectedBrush, Brushes)
             {
-                GraphTitle = alignmentFileBean.FileName,
+                GraphTitle = ((IFileBean)alignmentFileBean).FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
                 VerticalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
                 HorizontalTitle = "Retention time [min]",
                 VerticalTitle = "m/z",
             }.AddTo(Disposables);
             accumulatedTarget.Select(
-                t => $"Alignment: {alignmentFileBean.FileName}" +
+                t => $"Alignment: {((IFileBean)alignmentFileBean).FileName}" +
                     (t is null
                         ? string.Empty
                         : $"Spot ID: {t.MasterAlignmentID} Mass m/z: {t.MassCenter:F5} RT: {t.innerModel.TimesCenter.RT.Value:F2} min"))
@@ -177,7 +177,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var classToColor = parameter.ClassnameToColorBytes
                 .ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
             var fileIdToFileName = files.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileName);
-            var eicLoader = new AlignmentEicLoader(RT_CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean.EicFilePath, fileCollection, projectBaseParameter).AddTo(Disposables);
+            var eicLoader = alignmentFileBean.CreateEicLoader(RT_CHROMATOGRAM_SPOT_SERIALIZER, fileCollection, projectBaseParameter).AddTo(Disposables);
             RtAlignmentEicModel = AlignmentEicModel.Create(
                 accumulatedTarget, eicLoader, files, parameter,
                 peak => peak.Time,
@@ -190,20 +190,20 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             DtMzPlotModel = new AlignmentPeakPlotModel(propModels, spot => spot.TimesCenter, spot => spot.MassCenter, target, labelSource, SelectedBrush, Brushes)
             {
-                GraphTitle = alignmentFileBean.FileName,
+                GraphTitle = ((IFileBean)alignmentFileBean).FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
                 VerticalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
                 HorizontalTitle = "Mobility [1/K0]",
                 VerticalTitle = "m/z",
             }.AddTo(Disposables);
             accumulatedTarget.Select(
-                t => $"{alignmentFileBean.FileName}" +
+                t => $"{((IFileBean)alignmentFileBean).FileName}" +
                     (t is null
                         ? string.Empty
                         : $"Spot ID: {t.MasterAlignmentID} Mass m/z: {t.MassCenter:F5} Mobility [1/K0]: {t.innerModel.TimesCenter.Drift.Value:F4}"))
                 .Subscribe(title => DtMzPlotModel.GraphTitle = title)
                 .AddTo(Disposables);
-            var dtEicLoader = new AlignmentEicLoader(DRIFT_CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean.EicFilePath, fileCollection, projectBaseParameter).AddTo(Disposables);
+            var dtEicLoader = alignmentFileBean.CreateEicLoader(DRIFT_CHROMATOGRAM_SPOT_SERIALIZER, fileCollection, projectBaseParameter).AddTo(Disposables);
             DtAlignmentEicModel = AlignmentEicModel.Create(
                 target, dtEicLoader, files, parameter,
                 peak => peak.Time,
@@ -214,7 +214,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             DtAlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             DtAlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            var loader = new MSDecLoader(alignmentFileBean.SpectraFilePath);
+            var loader = alignmentFileBean.CreateMSDecLoader().AddTo(Disposables);
             _decLoader = loader;
             var decLoader = new MsDecSpectrumLoader(loader, Ms1Spots);
             var refLoader = new MsRefSpectrumLoader(mapper);
@@ -370,7 +370,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         public void SaveProject() {
-            MessagePackHandler.SaveToFile(Container, _alignmentFileBean.FilePath);
+            _alignmentFileBean.SaveAlignmentResultAsync(Container).Wait();
         }
     }
 }

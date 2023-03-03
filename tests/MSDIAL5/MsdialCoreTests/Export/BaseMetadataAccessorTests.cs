@@ -59,7 +59,7 @@ namespace CompMs.MsdialCore.Export.Tests
         public void GetContentTest() {
             var parameter = new ParameterBase { MachineCategory = Common.Enum.MachineCategory.LCMS };
             var refer = new MockRefer();
-            var accessor = new TestMetadataAccessor(refer, parameter);
+            IMetadataAccessor accessor = new TestMetadataAccessor(refer, parameter);
             var spot = new AlignmentSpotProperty
             {
                 MasterAlignmentID = 100,
@@ -138,7 +138,7 @@ namespace CompMs.MsdialCore.Export.Tests
         [TestMethod()]
         public void GetContentWhenCommentEmptyTest() {
             var refer = new MockRefer();
-            var accessor = new TestMetadataAccessor(refer, new ParameterBase { MachineCategory = MachineCategory.LCMS });
+            IMetadataAccessor accessor = new TestMetadataAccessor(refer, new ParameterBase { MachineCategory = MachineCategory.LCMS });
             var spot = new AlignmentSpotProperty { Comment = string.Empty, IonAbundanceUnit = IonAbundanceUnit.pmol_per_mg_tissue, };
             var dict = accessor.GetContent(spot, null);
             Assert.AreEqual($"Normalized unit: {spot.IonAbundanceUnit}", dict["Comment"]);
@@ -149,7 +149,7 @@ namespace CompMs.MsdialCore.Export.Tests
             var refer = new MockRefer();
             refer.Reference.CompoundClass = "CCC";
             refer.Reference.Ontology = null;
-            var accessor = new TestMetadataAccessor(refer, new ParameterBase { MachineCategory = Common.Enum.MachineCategory.LCMS });
+            IMetadataAccessor accessor = new TestMetadataAccessor(refer, new ParameterBase { MachineCategory = Common.Enum.MachineCategory.LCMS });
             var spot = new AlignmentSpotProperty { };
 
             var dict = accessor.GetContent(spot, null);
@@ -160,7 +160,7 @@ namespace CompMs.MsdialCore.Export.Tests
         [TestMethod()]
         public void GetContentWhenIsotopesIsNullTest() {
             var parameter = new ParameterBase {};
-            var accessor = new TestMetadataAccessor(new MockRefer(), parameter);
+            IMetadataAccessor accessor = new TestMetadataAccessor(new MockRefer(), parameter);
             var spot = new AlignmentSpotProperty { };
 
             var dict = accessor.GetContent(spot, null);
@@ -171,7 +171,7 @@ namespace CompMs.MsdialCore.Export.Tests
         [TestMethod()]
         public void GetContentWhenMSDecIsNullTest() {
             var parameter = new ParameterBase {};
-            var accessor = new TestMetadataAccessor(new MockRefer(), parameter);
+            IMetadataAccessor accessor = new TestMetadataAccessor(new MockRefer(), parameter);
             var spot = new AlignmentSpotProperty { };
 
             var dict = accessor.GetContent(spot, null);

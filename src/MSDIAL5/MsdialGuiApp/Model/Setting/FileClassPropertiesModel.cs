@@ -9,7 +9,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    internal sealed class FileClassPropertiesModel : ReadOnlyObservableCollection<FileClassPropertyModel>, IDisposable
+    public sealed class FileClassPropertiesModel : ReadOnlyObservableCollection<FileClassPropertyModel>, IDisposable
     {
         private readonly ReactiveProperty<List<string>> _orderedClasses;
 

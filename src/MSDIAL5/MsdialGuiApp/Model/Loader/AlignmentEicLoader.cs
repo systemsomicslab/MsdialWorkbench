@@ -16,7 +16,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Loader
 {
-    internal sealed class AlignmentEicLoader : DisposableModelBase
+    public sealed class AlignmentEicLoader : DisposableModelBase
     {
         private readonly ChromatogramSerializer<ChromatogramSpotInfo> _chromatogramSpotSerializer;
         private readonly string _eicFile;

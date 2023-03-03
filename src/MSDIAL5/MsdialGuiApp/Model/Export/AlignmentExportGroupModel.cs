@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
@@ -45,9 +46,9 @@ namespace CompMs.App.Msdial.Model.Export
             return Types.Count(type => type.IsSelected);
         }
 
-        public void Export(AlignmentFileBean alignmentFile, string exportDirectory, Action<string> notification) {
-            var outNameTemplate = $"{{0}}_{alignmentFile.FileID}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}";
-            var msdecResults = MsdecResultsReader.ReadMSDecResults(alignmentFile.SpectraFilePath, out _, out _);
+        public void Export(AlignmentFileBeanModel alignmentFile, string exportDirectory, Action<string> notification) {
+            var outNameTemplate = $"{{0}}_{((IFileBean)alignmentFile).FileID}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}";
+            var msdecResults = alignmentFile.ReadMSDecResults();
             var peakSpot = _peakSpotSupplyer.Supply(alignmentFile, default);
             ExportMethod.Export(outNameTemplate, exportDirectory, peakSpot, msdecResults, notification, Types.Where(type => type.IsSelected));
         }

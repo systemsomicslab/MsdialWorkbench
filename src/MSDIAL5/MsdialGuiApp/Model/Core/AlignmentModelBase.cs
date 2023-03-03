@@ -1,6 +1,6 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
@@ -11,10 +11,11 @@ namespace CompMs.App.Msdial.Model.Core
 {
     public abstract class AlignmentModelBase : BindableBase, IAlignmentModel, IDisposable
     {
-        public AlignmentModelBase(AlignmentFileBean file, string resultFile) {
-            alignmentResultFile = resultFile;
-            //Container = AlignmentResultContainer.Load(file);
-            Container = AlignmentResultContainer.LoadLazy(file);
+        private readonly AlignmentFileBeanModel _alignmentFileModel;
+
+        public AlignmentModelBase(AlignmentFileBeanModel alignmentFileModel) {
+            _alignmentFileModel = alignmentFileModel ?? throw new ArgumentNullException(nameof(alignmentFileModel));
+            Container = alignmentFileModel.LoadAlignmentResultAsync().Result;
             if (Container == null) {
                 MessageBox.Show("No aligned spot information."); // TODO: Move to view.
                 Container = new AlignmentResultContainer
@@ -24,12 +25,6 @@ namespace CompMs.App.Msdial.Model.Core
             }
         }
 
-        public string AlignmentResultFile {
-            get => alignmentResultFile;
-            set => SetProperty(ref alignmentResultFile, value);
-        }
-        private string alignmentResultFile;
-
         public AlignmentResultContainer Container {
             get => container;
             private set => SetProperty(ref container, value);
@@ -37,8 +32,7 @@ namespace CompMs.App.Msdial.Model.Core
         private AlignmentResultContainer container;
 
         public virtual Task SaveAsync() {
-            // return Task.Run(() => MessagePackHandler.SaveToFile(Container, AlignmentResultFile));
-            return Task.Run(() => Container.Save(AlignmentResultFile));
+            return _alignmentFileModel.SaveAlignmentResultAsync(Container);
         }
 
         public string DisplayLabel {
@@ -51,7 +45,6 @@ namespace CompMs.App.Msdial.Model.Core
         public abstract void InvokeMsfinder();
 
         protected readonly CompositeDisposable Disposables = new CompositeDisposable();
-
         private bool disposedValue;
 
         protected virtual void Dispose(bool disposing) {

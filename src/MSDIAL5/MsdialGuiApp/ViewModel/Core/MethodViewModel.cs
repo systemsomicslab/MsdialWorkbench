@@ -24,7 +24,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
             Model = model;
             var analysisFilesView = model.AnalysisFileModelCollection.AnalysisFiles.ToReadOnlyReactiveCollection(file => new AnalysisFileBeanViewModel(file));
             AnalysisFilesView = CollectionViewSource.GetDefaultView(analysisFilesView);
-            var alignmentFilesView = model.AlignmentFiles.ToReadOnlyReactiveCollection(file => new AlignmentFileBeanViewModel(file));
+            var alignmentFilesView = model.AlignmentFiles.Files.ToReadOnlyReactiveCollection(file => new AlignmentFileBeanViewModel(file));
             AlignmentFilesView = CollectionViewSource.GetDefaultView(alignmentFilesView);
 
             AnalysisFilesView.MoveCurrentToFirst();

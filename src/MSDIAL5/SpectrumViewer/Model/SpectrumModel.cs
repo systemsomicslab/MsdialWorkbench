@@ -11,6 +11,7 @@ namespace CompMs.App.SpectrumViewer.Model
             Name = name;
             displayScans = new ObservableCollection<DisplayScan>();
             DisplayScans = new ReadOnlyObservableCollection<DisplayScan>(displayScans);
+            IsLabelVisible = true;
         }
 
         public SpectrumModel(int serialNumber) : this($"No. {serialNumber}") {
@@ -21,6 +22,12 @@ namespace CompMs.App.SpectrumViewer.Model
 
         public ReadOnlyObservableCollection<DisplayScan> DisplayScans { get; }
         private ObservableCollection<DisplayScan> displayScans;
+
+        public bool IsLabelVisible {
+            get => _isLabelVisible;
+            set => SetProperty(ref _isLabelVisible, value);
+        }
+        private bool _isLabelVisible;
 
         public bool Contains(DisplayScan scan) {
             return displayScans.Contains(scan);

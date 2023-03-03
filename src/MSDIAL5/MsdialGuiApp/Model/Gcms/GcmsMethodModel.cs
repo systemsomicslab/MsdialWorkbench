@@ -1,9 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Enum;
-using CompMs.MsdialCore.DataObj;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,7 +9,7 @@ namespace CompMs.App.Msdial.Model.Gcms
 {
     internal sealed class GcmsMethodModel : MethodModelBase
     {
-        public GcmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IEnumerable<AlignmentFileBean> alignmentFiles, ProjectBaseParameterModel projectBaseParameter) : base(analysisFileBeanModelCollection, alignmentFiles, projectBaseParameter) {
+        public GcmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFiles, ProjectBaseParameterModel projectBaseParameter) : base(analysisFileBeanModelCollection, alignmentFiles, projectBaseParameter) {
 
         }
 
@@ -42,7 +40,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             throw new NotImplementedException();
         }
 
-        protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
+        protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBeanModel alignmentFileModel) {
             throw new NotImplementedException();
         }
 

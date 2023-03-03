@@ -78,7 +78,7 @@ ID,Name,File 1,File 2,File 3,A,B
 
         class MockMetaAccessor : IMetadataAccessor
         {
-            public ReadOnlyDictionary<string, string> GetContent(AlignmentSpotProperty spot, IMSScanProperty msdec) {
+            public IReadOnlyDictionary<string, string> GetContent(AlignmentSpotProperty spot, IMSScanProperty msdec) {
                 return new ReadOnlyDictionary<string, string>(new Dictionary<string, string>
                 {
                     { "ID", spot.MasterAlignmentID.ToString() },
