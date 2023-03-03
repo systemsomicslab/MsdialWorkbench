@@ -1,22 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9AD54C44-CFE7-481B-9A55-A11A6A1D4A38}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFrameworks>net472</TargetFrameworks>
     <RootNamespace>Rfx.Riken.OsakaUniv</RootNamespace>
     <AssemblyName>MSDIAL</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
-    <TargetFrameworkProfile />
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <OutputType>WinExe</OutputType>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+    <HighEntropyVA>false</HighEntropyVA>
     <PublishUrl>..\publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -37,844 +30,31 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <Lbm2Url>http://prime.psc.riken.jp/compms/msdial/download/lipidblast/LipidMsmsBinaryDB-VS68-AritaM.lbm2</Lbm2Url>
-  </PropertyGroup>
-  <Target Name="DownloadContentFiles" BeforeTargets="Build">
-		<ItemGroup>
-			<_DeployToItem Include="$(OutputPath)\*.lbm*"/>
-		</ItemGroup>
-		<DownloadFile
-            SourceUrl="$(Lbm2Url)"
-            DestinationFolder="$(OutputPath)"
-			Condition="!Exists('%(_DeployToItem.FullPath)')">
-		</DownloadFile>
-  </Target>
-  <PropertyGroup>
-    <HighEntropyVA>false</HighEntropyVA>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup>
     <ApplicationIcon>Resources\msdial_icon.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestCertificateThumbprint>107DA0F0B707D08190FF287D2E54E0784B24176B</ManifestCertificateThumbprint>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestKeyFile>MSDIAL_TemporaryKey.pfx</ManifestKeyFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <GenerateManifests>false</GenerateManifests>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignManifests>false</SignManifests>
-  </PropertyGroup>
-  <PropertyGroup>
     <StartupObject>Rfx.Riken.OsakaUniv.App</StartupObject>
+    <AssemblyTitle>MSDIAL</AssemblyTitle>
+    <AssemblyDescription>Software for untargeted metabolomics</AssemblyDescription>
+    <AssemblyCompany>RIKEN</AssemblyCompany>
+    <AssemblyProduct>Rfx.Riken.OsakaUniv</AssemblyProduct>
+    <AssemblyCopyright>Copyright ©  2014-2018 Hiroshi Tsugawa. All rights reserved.</AssemblyCopyright>
   </PropertyGroup>
-  <PropertyGroup>
-    <TargetZone>LocalIntranet</TargetZone>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug vendor unsupported|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Debug vendor unsupported\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release vendor unsupported|AnyCPU'">
-    <OutputPath>bin\Release vendor unsupported\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Windows.Forms.DataVisualization" />
-    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Expression.Blend.Sdk.1.0.2\lib\net45\System.Windows.Interactivity.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
+    <Compile Remove="VersionUpdateNotificationService\**" />
+    <Compile Remove="VersionUpdateNotifierService\**" />
+    <EmbeddedResource Remove="VersionUpdateNotificationService\**" />
+    <EmbeddedResource Remove="VersionUpdateNotifierService\**" />
+    <None Remove="VersionUpdateNotificationService\**" />
+    <None Remove="VersionUpdateNotifierService\**" />
+    <Page Remove="VersionUpdateNotificationService\**" />
+    <Page Remove="VersionUpdateNotifierService\**" />
   </ItemGroup>
+
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Compile Include="ForAIF\CorrDec\AskDecMethodWindow.xaml.cs">
-      <DependentUpon>AskDecMethodWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Parameter for LC\AgilentCcsCalibrationSetWin.xaml.cs">
-      <DependentUpon>AgilentCcsCalibrationSetWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="BinVestigate\BinVestigateSpectrumSearchVM.cs" />
-    <Compile Include="BinVestigate\BinVestigateSpectrumSearchWin.xaml.cs">
-      <DependentUpon>BinVestigateSpectrumSearchWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="BinVestigate\BinVestigateStatisticsBrowserVM.cs" />
-    <Compile Include="BinVestigate\BinVestigateStatisticsBrowserWin.xaml.cs">
-      <DependentUpon>BinVestigateStatisticsBrowserWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Parameter for LC\CcsCalibrationSetVM.cs" />
-    <Compile Include="Developlment\BrowseSmootherAndBaselineCorrectionWin.xaml.cs">
-      <DependentUpon>BrowseSmootherAndBaselineCorrectionWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Export\MS2ExporterAsUserDefinedStyle.cs" />
-    <Compile Include="ForAIF\CorrDecIdentificationProcess.cs" />
-    <Compile Include="Process for LC\ProcessManagerLC.cs" />
-    <Compile Include="Property\FileClassSettingWin.xaml.cs">
-      <DependentUpon>FileClassSettingWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ForAIF\CorrDec\CorrDecSetting.xaml.cs">
-      <DependentUpon>CorrDecSetting.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ForAIF\Export\ParticularAlignmentSpotExporterWindow.xaml.cs">
-      <DependentUpon>ParticularAlignmentSpotExporterWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Lipid database\LipoqualitySpectrumSearchVM.cs" />
-    <Compile Include="Lipid database\LipoqualitySpectrumSearchWin.xaml.cs">
-      <DependentUpon>LipoqualitySpectrumSearchWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Lipid database\LipoqualityStatisticsBrowserVM.cs" />
-    <Compile Include="Lipid database\LipoqualityStatisticsBrowserWin.xaml.cs">
-      <DependentUpon>LipoqualityStatisticsBrowserWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pathway\MetabolicPathwaySetWin.xaml.cs">
-      <DependentUpon>MetabolicPathwaySetWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ManualPeakMod\ChromatogramManualPeakPickViewer.xaml.cs">
-      <DependentUpon>ChromatogramManualPeakPickViewer.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Export\AnalysisFileBeanComparer.cs" />
-    <Compile Include="ForAIF\AifViewerControl.xaml.cs">
-      <DependentUpon>AifViewerControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ForAIF\CorrDecProcess.cs" />
-    <Compile Include="ForAIF\ExperimentConfigViewer.xaml.cs">
-      <DependentUpon>ExperimentConfigViewer.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ForAIF\MSMS Search\MsmsSearchForAIF.xaml.cs">
-      <DependentUpon>MsmsSearchForAIF.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ForAIF\MSMS Search\MsmsSearchForAifVM.cs" />
-    <Compile Include="ForAIF\MsViewer\CorrelationDecResMsViewerForAif.xaml.cs">
-      <DependentUpon>CorrelationDecResMsViewerForAif.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ForAIF\MsViewer\MassSpectrogramAlignmentForAif.xaml.cs">
-      <DependentUpon>MassSpectrogramAlignmentForAif.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ForAIF\MsViewer\MassSpectrogramAlignmentUC.xaml.cs">
-      <DependentUpon>MassSpectrogramAlignmentUC.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ForAIF\MsViewer\MassSpectrogramRawVsDecUC.xaml.cs">
-      <DependentUpon>MassSpectrogramRawVsDecUC.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ForAIF\MsViewer\MassSpectrogramUserControl.xaml.cs">
-      <DependentUpon>MassSpectrogramUserControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ForAIF\MsViewer\Ms2ChromatogramForAIF.xaml.cs">
-      <DependentUpon>Ms2ChromatogramForAIF.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ForAIF\MsViewer\Ms2ChromatogramUC.xaml.cs">
-      <DependentUpon>Ms2ChromatogramUC.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ForAIF\MsViewer\MsFinderExporterSettingWin.xaml.cs">
-      <DependentUpon>MsFinderExporterSettingWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ForAIF\MsViewer\MsFinderMultipleExporter.cs" />
-    <Compile Include="ForAIF\MsViewer\MsViewerForAIF.xaml.cs">
-      <DependentUpon>MsViewerForAIF.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ForAIF\MsViewer\SampleTableViewerInAlignment.xaml.cs">
-      <DependentUpon>SampleTableViewerInAlignment.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ForAIF\MsViewer\ScrollMs1ChromatogramForAif.xaml.cs">
-      <DependentUpon>ScrollMs1ChromatogramForAif.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ForAIF\UtilityForAIF.cs" />
-    <Compile Include="Fragment searcher\FragmentQuerySetVM.cs" />
-    <Compile Include="Fragment searcher\FragmentQuerySetWin.xaml.cs">
-      <DependentUpon>FragmentQuerySetWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Help\HelpAboutWindowVM.cs" />
-    <Compile Include="Export\LipoqualityDatabaseFormatExportVM.cs" />
-    <Compile Include="Export\LipoqualityDatabaseFormatExportWin.xaml.cs">
-      <DependentUpon>LipoqualityDatabaseFormatExportWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ManualPeakMod\AlignedPeakCorrectionWin.xaml.cs">
-      <DependentUpon>AlignedPeakCorrectionWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pathway\PathwayMapWin.xaml.cs">
-      <DependentUpon>PathwayMapWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pathway\LipidProfileMapper.cs" />
-    <Compile Include="MainWindowDisplayVM.cs" />
-    <Compile Include="Export\MrmprobsExportVM.cs" />
-    <Compile Include="Export\MrmprobsExportWin.xaml.cs">
-      <DependentUpon>MrmprobsExportWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Molecular networking\MolecularNetworkExportWin.xaml.cs">
-      <DependentUpon>MolecularNetworkExportWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Molecular networking\MolecularNetworkSettingWin.xaml.cs">
-      <DependentUpon>MolecularNetworkSettingWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Parameter for GC\RetentionIndexDictionarySetVM.cs" />
-    <Compile Include="Parameter for GC\RetentionIndexDictionarySetWin.xaml.cs">
-      <DependentUpon>RetentionIndexDictionarySetWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pathway\MappingToPathways.cs" />
-    <Compile Include="Normalization\SplashSetWin.xaml.cs">
-      <DependentUpon>SplashSetWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Statistics\Hca\HcaHeatmap.xaml.cs">
-      <DependentUpon>HcaHeatmap.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Statistics\HcaResultWin.xaml.cs">
-      <DependentUpon>HcaResultWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Statistics\HcaSetWin.xaml.cs">
-      <DependentUpon>HcaSetWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Statistics\StatisticsBarchartWin.xaml.cs">
-      <DependentUpon>StatisticsBarchartWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Statistics\StatisticsPairwisePlotWin.xaml.cs">
-      <DependentUpon>StatisticsPairwisePlotWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Statistics\MultivariateAnalysisResultWin.xaml.cs">
-      <DependentUpon>MultivariateAnalysisResultWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Statistics\PlsSetWin.xaml.cs">
-      <DependentUpon>PlsSetWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PosNegAmalgamator\PosNegAmalgamatorSetVM.cs" />
-    <Compile Include="PosNegAmalgamator\PosNegAmalgamatorSetWin.xaml.cs">
-      <DependentUpon>PosNegAmalgamatorSetWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Process for GC\AnalysisFileProcessForGCMulti.cs" />
-    <Compile Include="Process for GC\QuantmassUpdateProcess.cs" />
-    <Compile Include="Process for LC\AnalysisFileProcessForLCMulti.cs" />
-    <Compile Include="Progress bar\ProgressBarEach.xaml.cs">
-      <DependentUpon>ProgressBarEach.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Progress bar\ProgressBarMultiContainerWin.xaml.cs">
-      <DependentUpon>ProgressBarMultiContainerWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Property\ProjectPropertySetVM.cs" />
-    <Compile Include="Property\ProjectPropertySetWin.xaml.cs">
-      <DependentUpon>ProjectPropertySetWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Quantmass browser\QuantmassBrowser.xaml.cs">
-      <DependentUpon>QuantmassBrowser.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="RetentionTimeCorrection\Process.cs" />
-    <Compile Include="RetentionTimeCorrection\RetentionTimeCorrectionModel.cs" />
-    <Compile Include="RetentionTimeCorrection\RetentionTimeCorrectionVM.cs" />
-    <Compile Include="RetentionTimeCorrection\RetentionTimeCorrectionWin.xaml.cs">
-      <DependentUpon>RetentionTimeCorrectionWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="RetentionTimeCorrection\Utility.cs" />
-    <Compile Include="ShortMessageWindow.xaml.cs">
-      <DependentUpon>ShortMessageWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="TableViewer\AdditionalFilteringSetting.xaml.cs">
-      <DependentUpon>AdditionalFilteringSetting.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="TableViewer\FilteredTableCollection.cs" />
-    <Compile Include="TableViewer\IdentifiedCompoundGroup.xaml.cs">
-      <DependentUpon>IdentifiedCompoundGroup.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="TableViewer\SpotRelationTable.xaml.cs">
-      <DependentUpon>SpotRelationTable.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="TableViewer\TableViewerTaskHandler.cs" />
-    <Compile Include="TableViewer\TableViewerUtility.cs" />
-    <Compile Include="Utility\DataExportGcUtility.cs" />
-    <Compile Include="EIMS search\EimsSearchMeasurmentVM.cs" />
-    <Compile Include="EIMS search\EimsSearchReferenceVM.cs" />
-    <Compile Include="EIMS search\EimsSearchVM.cs" />
-    <Compile Include="EIMS search\EimsSearchWin.xaml.cs">
-      <DependentUpon>EimsSearchWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Normalization\GcmsNormalizationPropertySetVM.cs" />
-    <Compile Include="Normalization\GcmsNormalizationPropertySetWin.xaml.cs">
-      <DependentUpon>GcmsNormalizationPropertySetWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Property\GcmsIdentificationPropertySettingVM.cs" />
-    <Compile Include="Property\GcmsIdentificationPropertySetWin.xaml.cs">
-      <DependentUpon>GcmsIdentificationPropertySetWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Process for GC\AlignedMS1DecStorageProcess.cs" />
-    <Compile Include="Process for GC\JointAlignerProcessGC.cs" />
-    <Compile Include="Process for GC\QuantAndGapFillingProcessForGC.cs" />
-    <Compile Include="Utility\DataStorageMsdialUtility.cs" />
-    <Compile Include="Process for GC\AnalysisFileProcessForGC.cs" />
-    <Compile Include="Parameter for GC\AnalysisParamSetForGcVM.cs" />
-    <Compile Include="Parameter for GC\AnalysisParamSetForGcWin.xaml.cs">
-      <DependentUpon>AnalysisParamSetForGcWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Process for LC\AlignmentFinalizeProcessLC.cs" />
-    <Compile Include="Process for LC\JointAlignerProcessLC.cs" />
-    <Compile Include="Process for LC\GapFillingProcessLC.cs" />
-    <Compile Include="Online database\MonaRecordDownloadProcess.cs" />
-    <Compile Include="Online database\DownloadOnlineMsMsRecordWin.xaml.cs">
-      <DependentUpon>DownloadOnlineMsMsRecordWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Lipid database\LbmQueryVM.cs" />
-    <Compile Include="Lipid database\LipidDbSetVM.cs" />
-    <Compile Include="Lipid database\LipidDbSetWin.xaml.cs">
-      <DependentUpon>LipidDbSetWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="External Applications\MsDialIniField.cs" />
-    <Compile Include="External Applications\MsDialIniParcer.cs" />
-    <Compile Include="External Applications\MsDialToExternalApps.cs" />
-    <Compile Include="TableViewer\TableViewerHandler.cs" />
-    <Compile Include="Utility\UiAccessGcUtility.cs" />
-    <Compile Include="Vesrion update\VersionDescriptionDocument.cs" />
-    <Compile Include="Vesrion update\VersionUpdateNotificationService.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TableViewer\AlignmentSpotTableViewer.xaml.cs">
-      <DependentUpon>AlignmentSpotTableViewer.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="TableViewer\PeakSpotTableViewer.xaml.cs">
-      <DependentUpon>PeakSpotTableViewer.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\RangeSlider.xaml.cs">
-      <DependentUpon>RangeSlider.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Normalization\LowessSpanSetVM.cs" />
-    <Compile Include="Normalization\LowessSpanSetWin.xaml.cs">
-      <DependentUpon>LowessSpanSetWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Normalization\NormalizationSetVM.cs" />
-    <Compile Include="Parameter for LC\UserDefinedAdductSetWin.xaml.cs">
-      <DependentUpon>UserDefinedAdductSetWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Parameter for LC\UserDefinedAdductVM.cs" />
-    <Compile Include="Export\StoreMsAnnotationTagsWin.xaml.cs">
-      <DependentUpon>StoreMsAnnotationTagsWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Parameter for LC\AdvancedLibraryOptionSettingVM.cs" />
-    <Compile Include="Parameter for LC\AdvancedLibrarySearchOptionWin.xaml.cs">
-      <DependentUpon>AdvancedLibrarySearchOptionWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Normalization\MsDialDataNormalization.cs" />
-    <Compile Include="Statistics\MsDialStatistics.cs" />
-    <Compile Include="Utility\TableExportUtility.cs" />
-    <Compile Include="Utility\DataExportLcUtility.cs" />
-    <Compile Include="Utility\UiAccessLcUtility.cs" />
-    <Compile Include="Parameter for LC\ExcludeMassVM.cs" />
-    <Compile Include="Utility\ImageExportUtility.cs" />
-    <Compile Include="Export\SaveDataTableAsTextWin.xaml.cs">
-      <DependentUpon>SaveDataTableAsTextWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Export\CopySpectraTableAsWin.xaml.cs">
-      <DependentUpon>CopySpectraTableAsWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Export\SaveSpectraTableAsWin.xaml.cs">
-      <DependentUpon>SaveSpectraTableAsWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Export\CopyImageAsWin.xaml.cs">
-      <DependentUpon>CopyImageAsWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\ExtractedIonChromatogramDisplayWin.xaml.cs">
-      <DependentUpon>ExtractedIonChromatogramDisplayWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\ExtractedIonChromatogramDisplaySetVM.cs" />
-    <Compile Include="View\ExtractedIonChromatogramDisplaySetWin.xaml.cs">
-      <DependentUpon>ExtractedIonChromatogramDisplaySetWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Export\SaveImageAsWin.xaml.cs">
-      <DependentUpon>SaveImageAsWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Help\HelpAboutWindow.xaml.cs">
-      <DependentUpon>HelpAboutWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MSMS search\MsmsSearchMeasurmentVM.cs" />
-    <Compile Include="MSMS search\MsmsSearchReferenceVM.cs" />
-    <Compile Include="MSMS search\MsmsSearchVM.cs" />
-    <Compile Include="MSMS search\MsmsSearchWin.xaml.cs">
-      <DependentUpon>MsmsSearchWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Statistics\StatisticalAnalysisSettingVM.cs" />
-    <Compile Include="Statistics\PcaSetWin.xaml.cs">
-      <DependentUpon>PcaSetWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Normalization\NormalizationSetWin.xaml.cs">
-      <DependentUpon>NormalizationSetWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Export\AlignmentResultExportVM.cs" />
-    <Compile Include="Export\AlignmentResultExportWin.xaml.cs">
-      <DependentUpon>AlignmentResultExportWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Export\PeaklistExportVM.cs" />
-    <Compile Include="Export\PeaklistExportWin.xaml.cs">
-      <DependentUpon>PeaklistExportWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Property\FilePropertySettingVM.cs" />
-    <Compile Include="Property\FilePropertySetWin.xaml.cs">
-      <DependentUpon>FilePropertySetWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Normalization\LcmsNormalizationPropertySetVM.cs" />
-    <Compile Include="Normalization\LcmsNormalizationPropertySetWin.xaml.cs">
-      <DependentUpon>LcmsNormalizationPropertySetWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Property\LcmsIdentificationPropertySettingVM.cs" />
-    <Compile Include="Property\LcmsIdentificationPropertySetWin.xaml.cs">
-      <DependentUpon>LcmsIdentificationPropertySetWin.xaml</DependentUpon>
-    </Compile>
-    <!--    <Compile Include="Storage\AlignmentFileBean.cs" />
-    <Compile Include="Storage\AlignmentResultBean.cs" />-->
-    <Compile Include="Parameter for LC\AdductIonInformationVM.cs" />
-    <Compile Include="Parameter for LC\AnalysisParamSetForLcVM.cs" />
-    <Compile Include="Parameter for LC\AnalysisParamSetForLcWin.xaml.cs">
-      <DependentUpon>AnalysisParamSetForLcWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="StartUp\StartUpProjectVM.cs" />
-    <Compile Include="StartUp\StartUpWindow.xaml.cs">
-      <DependentUpon>StartUpWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Progress bar\ProgressBarWin.xaml.cs">
-      <DependentUpon>ProgressBarWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Process for LC\AnalysisFileProcessForLC.cs" />
-    <Compile Include="Property\AnalysisFilePropertyVM.cs" />
-    <Compile Include="Parameter for LC\WatersCcsCalibrationSetWin.xaml.cs">
-      <DependentUpon>WatersCcsCalibrationSetWin.xaml</DependentUpon>
-    </Compile>
-    <Page Include="ForAIF\CorrDec\AskDecMethodWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Parameter for LC\AgilentCcsCalibrationSetWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <!--    <Compile Include="Storage\AnalysisFileBean.cs" />
-    <Compile Include="Storage\AnalysisFilePropertyBean.cs" />-->
-    <Page Include="BinVestigate\BinVestigateSpectrumSearchWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="BinVestigate\BinVestigateStatisticsBrowserWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Developlment\BrowseSmootherAndBaselineCorrectionWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Property\FileClassSettingWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ForAIF\CorrDec\CorrDecSetting.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ForAIF\Export\ParticularAlignmentSpotExporterWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Lipid database\LipoqualitySpectrumSearchWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Lipid database\LipoqualityStatisticsBrowserWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pathway\MetabolicPathwaySetWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ManualPeakMod\ChromatogramManualPeakPickViewer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="EIMS search\EimsSearchWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Export\MrmprobsExportWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Export\LipoqualityDatabaseFormatExportWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ForAIF\AifViewerControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ForAIF\ExperimentConfigViewer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ForAIF\MSMS Search\MsmsSearchForAIF.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ForAIF\MsViewer\CorrelationDecResMsViewerForAif.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ForAIF\MsViewer\MassSpectrogramAlignmentForAif.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ForAIF\MsViewer\MassSpectrogramAlignmentUC.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ForAIF\MsViewer\MassSpectrogramRawVsDecUC.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ForAIF\MsViewer\MassSpectrogramUserControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ForAIF\MsViewer\Ms2ChromatogramForAIF.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ForAIF\MsViewer\Ms2ChromatogramUC.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ForAIF\MsViewer\MsFinderExporterSettingWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ForAIF\MsViewer\MsViewerForAIF.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ForAIF\MsViewer\SampleTableViewerInAlignment.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ForAIF\MsViewer\ScrollMs1ChromatogramForAif.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Fragment searcher\FragmentQuerySetWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ManualPeakMod\AlignedPeakCorrectionWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Molecular networking\MolecularNetworkExportWin.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Molecular networking\MolecularNetworkSettingWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Normalization\GcmsNormalizationPropertySetWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pathway\PathwayMapWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Normalization\SplashSetWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Resource Include="Resources\msdial_icon.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Resource>
-    <Page Include="Statistics\Hca\HcaHeatmap.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Statistics\HcaResultWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Statistics\HcaSetWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Statistics\StatisticsBarchartWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Statistics\StatisticsPairwisePlotWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Statistics\MultivariateAnalysisResultWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Statistics\PlsSetWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PosNegAmalgamator\PosNegAmalgamatorSetWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Progress bar\ProgressBarEach.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Progress bar\ProgressBarMultiContainerWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Property\ProjectPropertySetWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Property\GcmsIdentificationPropertySetWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Parameter for GC\AnalysisParamSetForGcWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Online database\DownloadOnlineMsMsRecordWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Lipid database\LipidDbSetWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Parameter for GC\RetentionIndexDictionarySetWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Quantmass browser\QuantmassBrowser.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="RetentionTimeCorrection\RetentionTimeCorrectionWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ShortMessageWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="TableViewer\AdditionalFilteringSetting.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="TableViewer\AlignmentSpotTableViewer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="TableViewer\IdentifiedCompoundGroup.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="TableViewer\PeakSpotTableViewer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="TableViewer\SpotRelationTable.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\RangeSlider.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Normalization\LowessSpanSetWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Parameter for LC\UserDefinedAdductSetWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Export\StoreMsAnnotationTagsWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Parameter for LC\AdvancedLibrarySearchOptionWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Export\SaveDataTableAsTextWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Export\CopySpectraTableAsWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Export\SaveSpectraTableAsWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Export\CopyImageAsWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\ExtractedIonChromatogramDisplayWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\ExtractedIonChromatogramDisplaySetWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Export\SaveImageAsWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Help\HelpAboutWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MSMS search\MsmsSearchWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Statistics\PcaSetWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Normalization\NormalizationSetWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Export\AlignmentResultExportWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Export\PeaklistExportWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Property\FilePropertySetWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Normalization\LcmsNormalizationPropertySetWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Property\LcmsIdentificationPropertySetWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="Parameter for LC\AnalysisParamSetForLcWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="StartUp\StartUpWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Progress bar\ProgressBarWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Property\AnalysisFilePropertySetWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Parameter for LC\WatersCcsCalibrationSetWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
+    <Compile Remove="Parameter for LC\AnalysisParametersSettingVM.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="Property\AnalysisFilePropertySettingVM.cs" />
-    <Compile Include="Property\AnalysisFilePropertySetWin.xaml.cs">
-      <DependentUpon>AnalysisFilePropertySetWin.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <None Include="CytoscapeLocalBrowser\assembly\jquery-1.12.4.min.map" />
     <None Include="CytoscapeLocalBrowser\assembly\jquery-3.3.1.min.map" />
     <None Include="CytoscapeLocalBrowser\assembly\smiles-drawer.min.js.map" />
@@ -894,10 +74,76 @@
     <Resource Include="Resources\LipidMapForAnimal.gpml">
       <SubType>Designer</SubType>
     </Resource>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="App.config" />
+    <Resource Include="Resources\MS1Reset.ico" />
+    <Resource Include="Resources\MS2Reset.ico" />
+    <Resource Include="Resources\PairwiseplotReset.ico" />
+    <Resource Include="Resources\XicReset.ico" />
+    <Resource Include="Resources\Deconvoluted.ico" />
+    <Resource Include="Resources\RawAndDeconvo.ico" />
+    <Resource Include="Resources\RawChromatogram.ico" />
+    <Resource Include="Resources\CompoundSearchIcon.ico" />
+    <Resource Include="Resources\Fiehn GCMS MSP.txt" />
+    <Content Include="CytoscapeLocalBrowser\assembly\Chart.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\contextmenu.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\cytoscape.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\cytoscape.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\fakeLoader.css" />
+    <Content Include="CytoscapeLocalBrowser\assembly\fakeLoader.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\jquery-3.3.1.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\jquery-3.4.1.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.structure.min.css" />
+    <Content Include="CytoscapeLocalBrowser\assembly\pathwaycode.js" />
+    <Content Include="CytoscapeLocalBrowser\data\elements.js" />
+    <Content Include="CytoscapeLocalBrowser\data\style.js" />
+    <Resource Include="Resources\CompoundTable.ico" />
+    <Resource Include="Resources\SpotRelation.ico" />
+    <Resource Include="Resources\Refresh.ico" />
+    <Resource Include="Resources\CorrDec.ico" />
+    <Resource Include="Resources\msdial_icon.ico" />
+    <Resource Include="Resources\msdial_icon.png" />
+    <Resource Include="Resources\msfinder_icon.ico" />
+    <Content Include="Resources\SQLite.Interop.dll" />
+    <Resource Include="Resources\Lipoquality.ico" />
+    <Resource Include="Resources\MolecularNetworking.ico" />
+    <Resource Include="CytoscapeLocalBrowser\assembly\images\iconHelp.png" />
+    <Resource Include="CytoscapeLocalBrowser\assembly\images\iconLink.png" />
+    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_75_d0e5f5_1x400.png" />
+    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_85_dfeffc_1x400.png" />
+    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-bg_gloss-wave_55_5c9ccc_500x100.png" />
+    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-bg_inset-hard_100_f5f8f9_1x100.png" />
+    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-bg_inset-hard_100_fcfdfd_1x100.png" />
+    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-icons_217bc0_256x240.png" />
+    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-icons_2e83ff_256x240.png" />
+    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-icons_469bdd_256x240.png" />
+    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-icons_6da8d5_256x240.png" />
+    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-icons_cd0a0a_256x240.png" />
+    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-icons_d8e7f3_256x240.png" />
+    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-icons_f9bd01_256x240.png" />
+    <Content Include="CytoscapeLocalBrowser\assembly\jquery-1.12.4.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.min.css" />
+    <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.theme.css" />
+    <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.theme.min.css" />
+    <Content Include="CytoscapeLocalBrowser\assembly\jquery.jqplot.css" />
+    <Content Include="CytoscapeLocalBrowser\assembly\jquery.jqplot.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.barRenderer.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.canvasAxisLabelRenderer.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.canvasTextRenderer.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.cursor.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.enhancedLegendRenderer.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.highlighter.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.pointLabels.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\smiles-drawer.min.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\style.css" />
+    <Content Include="CytoscapeLocalBrowser\assembly\view.core.js" />
+    <Content Include="CytoscapeLocalBrowser\assembly\workingspace.js" />
+    <Content Include="CytoscapeLocalBrowser\MsdialCytoscapeViewer.html" />
+    <Resource Include="Resources\BinVestigate.ico" />
+    <Resource Include="Resources\Table.png" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\BarChart\BarChart.csproj">
       <Project>{a3ac4d50-9249-478d-be03-0465fd00ef2f}</Project>
@@ -984,110 +230,14 @@
       <Name>Splash</Name>
     </ProjectReference>
   </ItemGroup>
+
   <ItemGroup>
-    <Resource Include="Resources\MS1Reset.ico" />
-    <Resource Include="Resources\MS2Reset.ico" />
-    <Resource Include="Resources\PairwiseplotReset.ico" />
-    <Resource Include="Resources\XicReset.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Deconvoluted.ico" />
-    <Resource Include="Resources\RawAndDeconvo.ico" />
-    <Resource Include="Resources\RawChromatogram.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\CompoundSearchIcon.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.4.5">
-      <Visible>False</Visible>
-      <ProductName>Windows Installer 4.5</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Fiehn GCMS MSP.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="CytoscapeLocalBrowser\assembly\Chart.js" />
-    <Content Include="CytoscapeLocalBrowser\assembly\contextmenu.js" />
-    <Content Include="CytoscapeLocalBrowser\assembly\cytoscape.js" />
-    <Content Include="CytoscapeLocalBrowser\assembly\cytoscape.min.js" />
-    <Content Include="CytoscapeLocalBrowser\assembly\fakeLoader.css" />
-    <Content Include="CytoscapeLocalBrowser\assembly\fakeLoader.min.js" />
-    <Content Include="CytoscapeLocalBrowser\assembly\jquery-3.3.1.min.js" />
-    <Content Include="CytoscapeLocalBrowser\assembly\jquery-3.4.1.min.js" />
-    <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.structure.min.css" />
-    <Content Include="CytoscapeLocalBrowser\assembly\pathwaycode.js" />
-    <Content Include="CytoscapeLocalBrowser\data\elements.js" />
-    <Content Include="CytoscapeLocalBrowser\data\style.js" />
-    <Resource Include="Resources\CompoundTable.ico" />
-    <Resource Include="Resources\SpotRelation.ico" />
-    <Resource Include="Resources\Refresh.ico" />
-    <Resource Include="Resources\CorrDec.ico" />
-    <Resource Include="Resources\msdial_icon.ico" />
-    <Resource Include="Resources\msdial_icon.png" />
-    <Resource Include="Resources\msfinder_icon.ico" />
-    <Content Include="Resources\SQLite.Interop.dll" />
-    <Resource Include="Resources\Lipoquality.ico" />
-    <Resource Include="Resources\MolecularNetworking.ico" />
-    <Resource Include="CytoscapeLocalBrowser\assembly\images\iconHelp.png" />
-    <Resource Include="CytoscapeLocalBrowser\assembly\images\iconLink.png" />
-    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_75_d0e5f5_1x400.png" />
-    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_85_dfeffc_1x400.png" />
-    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_95_fef1ec_1x400.png" />
-    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-bg_gloss-wave_55_5c9ccc_500x100.png" />
-    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-bg_inset-hard_100_f5f8f9_1x100.png" />
-    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-bg_inset-hard_100_fcfdfd_1x100.png" />
-    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-icons_217bc0_256x240.png" />
-    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-icons_2e83ff_256x240.png" />
-    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-icons_469bdd_256x240.png" />
-    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-icons_6da8d5_256x240.png" />
-    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-icons_cd0a0a_256x240.png" />
-    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-icons_d8e7f3_256x240.png" />
-    <Resource Include="CytoscapeLocalBrowser\assembly\images\ui-icons_f9bd01_256x240.png" />
-    <Content Include="CytoscapeLocalBrowser\assembly\jquery-1.12.4.min.js" />
-    <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.min.css" />
-    <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.min.js" />
-    <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.theme.css" />
-    <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.theme.min.css" />
-    <Content Include="CytoscapeLocalBrowser\assembly\jquery.jqplot.css" />
-    <Content Include="CytoscapeLocalBrowser\assembly\jquery.jqplot.min.js" />
-    <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.barRenderer.min.js" />
-    <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.canvasAxisLabelRenderer.min.js" />
-    <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.canvasTextRenderer.min.js" />
-    <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.cursor.min.js" />
-    <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.enhancedLegendRenderer.min.js" />
-    <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.highlighter.min.js" />
-    <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.pointLabels.min.js" />
-    <Content Include="CytoscapeLocalBrowser\assembly\smiles-drawer.min.js" />
-    <Content Include="CytoscapeLocalBrowser\assembly\style.css" />
-    <Content Include="CytoscapeLocalBrowser\assembly\view.core.js" />
-    <Content Include="CytoscapeLocalBrowser\assembly\workingspace.js" />
-    <Content Include="CytoscapeLocalBrowser\MsdialCytoscapeViewer.html" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\BinVestigate.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Table.png" />
-  </ItemGroup>
-  <ItemGroup>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Expression.Blend.Sdk.1.0.2\lib\net45\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <PackageReference Include="Accord">
       <Version>3.8.0</Version>
     </PackageReference>
@@ -1103,24 +253,19 @@
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.3</Version>
     </PackageReference>
-    <PackageReference Include="RawDataHandler">
-      <Version>1.0.8441.438</Version>
-    </PackageReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>xcopy "$(ProjectDir)CytoscapeLocalBrowser" "$(TargetDir)CytoscapeLocalBrowser" /D/E/C/I/H/Y
-</PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
+
+  <Target Name="DownloadContentFiles" BeforeTargets="Build">
+    <PropertyGroup>
+      <Lbm2Url>http://prime.psc.riken.jp/compms/msdial/download/lipidblast/LipidMsmsBinaryDB-VS68-AritaM.lbm2</Lbm2Url>
+    </PropertyGroup>
+		<ItemGroup>
+			<_DeployToItem Include="$(OutputPath)\*.lbm*" />
+		</ItemGroup>
+		<DownloadFile SourceUrl="$(Lbm2Url)" DestinationFolder="$(OutputPath)" Condition="!Exists('%(_DeployToItem.FullPath)')" />
   </Target>
-  <Target Name="AfterBuild">
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;$(ProjectDir)CytoscapeLocalBrowser&quot; &quot;$(TargetDir)CytoscapeLocalBrowser&quot; /D/E/C/I/H/Y" />
   </Target>
-  -->
 </Project>

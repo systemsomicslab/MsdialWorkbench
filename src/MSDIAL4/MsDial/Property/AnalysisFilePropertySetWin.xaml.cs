@@ -14,7 +14,9 @@ using System.Windows.Shapes;
 using Microsoft.Win32;
 using System.IO;
 using System.Collections.ObjectModel;
+#if !DEBUG_VENDOR_UNSUPPORTED && !RELEASE_VENDOR_UNSUPPORTED
 using CompMs.RawDataHandler.Abf;
+#endif
 
 namespace Rfx.Riken.OsakaUniv
 {

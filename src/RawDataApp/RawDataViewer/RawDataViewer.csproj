@@ -7,6 +7,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ApplicationIcon>msdial_icon.ico</ApplicationIcon>
 		<HighEntropyVA>false</HighEntropyVA>
+    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="App.xaml" />
@@ -20,7 +21,6 @@
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39">
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
-    <PackageReference Include="RawDataHandler" Version="1.0.*" />
     <PackageReference Include="ReactiveProperty.WPF" Version="8.2.0" />
   </ItemGroup>
 
