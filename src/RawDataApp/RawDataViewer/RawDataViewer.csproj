@@ -7,6 +7,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ApplicationIcon>msdial_icon.ico</ApplicationIcon>
 		<HighEntropyVA>false</HighEntropyVA>
+    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="App.xaml" />
