@@ -238,7 +238,7 @@ namespace CompMs.Common.MessagePack {
                 var formatter = formatterResolver.GetFormatterWithVerify<T>();
                 var len = MessagePackBinary.ReadArrayHeader(bytes, offset, out readSize);
                 offset = 5;
-                var list = new List<T>();
+                var list = new List<T>(len);
                 for (int i = 0; i < len; i++)
                 {
                     list.Add(formatter.Deserialize(bytes, offset, formatterResolver, out readSize));

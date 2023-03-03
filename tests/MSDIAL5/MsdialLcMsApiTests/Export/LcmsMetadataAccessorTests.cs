@@ -3,6 +3,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parser;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Export;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
@@ -32,7 +33,7 @@ namespace CompMs.MsdialLcMsApi.Export.Tests
 
         [TestMethod()]
         public void GetContentTest() {
-            var accessor = new LcmsMetadataAccessor(new MockRefer(), new MsdialCore.Parameter.ParameterBase { MachineCategory = Common.Enum.MachineCategory.LCMS }, trimSpectrumToExcelLimit: false);
+            IMetadataAccessor accessor = new LcmsMetadataAccessor(new MockRefer(), new MsdialCore.Parameter.ParameterBase { MachineCategory = Common.Enum.MachineCategory.LCMS }, trimSpectrumToExcelLimit: false);
             var spot = new AlignmentSpotProperty
             {
                 TimesCenter = new ChromXs(3d, ChromXType.RT, ChromXUnit.Min),

@@ -41,8 +41,8 @@ namespace CompMs.App.Msdial.Model.Imms
         private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly FacadeMatchResultEvaluator _matchResultEvaluator;
 
-        public ImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker)
-            : base(analysisFileBeanModelCollection, storage.AlignmentFiles, projectBaseParameter) {
+        public ImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker)
+            : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, projectBaseParameter) {
             _storage = storage;
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             _broker = broker;
@@ -95,7 +95,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
-            AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, }, AlignmentFile, storage.AlignmentFiles, peakSpotSupplyer);
+            AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, }, AlignmentFile, alignmentFileBeanModelCollection.Files, peakSpotSupplyer, storage.Parameter.DataExportParam);
             this.ObserveProperty(m => m.AlignmentFile)
                 .Subscribe(file => AlignmentResultExportModel.AlignmentFile = file)
                 .AddTo(Disposables);
@@ -249,14 +249,14 @@ namespace CompMs.App.Msdial.Model.Imms
             return AnalysisModel;
         }
 
-        protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
+        protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBeanModel alignmentFileModel) {
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
             }
 
             return AlignmentModel = new ImmsAlignmentModel(
-                alignmentFile,
+                alignmentFileModel,
                 AnalysisFileModelCollection,
                 _matchResultEvaluator,
                 _storage.DataBases,
