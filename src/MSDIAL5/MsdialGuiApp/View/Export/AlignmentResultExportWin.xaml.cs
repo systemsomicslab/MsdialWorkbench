@@ -16,7 +16,6 @@ namespace CompMs.App.Msdial.View.Export
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e) {
-            DialogResult = false;
             Close();
         }
     }

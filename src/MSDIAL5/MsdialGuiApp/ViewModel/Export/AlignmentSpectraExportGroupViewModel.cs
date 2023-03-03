@@ -5,20 +5,20 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Export
 {
     internal sealed class AlignmentSpectraExportGroupViewModel : ViewModelBase, IAlignmentResultExportViewModel
     {
         private readonly AlignmentSpectraExportGroupModel _model;
-        private readonly DelegateCommand _exportCommand;
 
-        public AlignmentSpectraExportGroupViewModel(AlignmentSpectraExportGroupModel model, DelegateCommand exportCommand) {
+        public AlignmentSpectraExportGroupViewModel(AlignmentSpectraExportGroupModel model) {
             _model = model;
-            _exportCommand = exportCommand;
             SpectraTypes = new ReadOnlyObservableCollection<ExportspectraType>(model.SpectraTypes);
             Formats = new ReadOnlyObservableCollection<AlignmentSpectraExportFormat>(model.Formats);
             ExportIndividually = model.ToReactivePropertySlimAsSynchronized(m => m.ExportIndividually).AddTo(Disposables);
+            CanExport = this.ErrorsChangedAsObservable().Select(_ => !HasValidationErrors).ToReadOnlyReactivePropertySlim(!HasValidationErrors).AddTo(Disposables);
         }
 
         public bool IsExpanded {
@@ -35,7 +35,6 @@ namespace CompMs.App.Msdial.ViewModel.Export
                     if (!ContainsError(nameof(SpectraType))) {
                         _model.SpectraType = _spectraType;
                     }
-                    _exportCommand?.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -46,5 +45,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
         public ReadOnlyObservableCollection<AlignmentSpectraExportFormat> Formats { get; }
 
         public ReactivePropertySlim<bool> ExportIndividually { get; }
+
+        public IReadOnlyReactiveProperty<bool> CanExport { get; }
     }
 }

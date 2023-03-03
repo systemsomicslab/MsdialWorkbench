@@ -18,6 +18,7 @@ namespace CompMs.App.Msdial.Model.Gcms
     {
         private readonly IMsdialDataStorage<MsdialGcmsParameter> _storage;
         private readonly IMessageBroker _broker;
+        public GcmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFiles, ProjectBaseParameterModel projectBaseParameter) : base(analysisFileBeanModelCollection, alignmentFiles, projectBaseParameter) {
 
         public GcmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<MsdialGcmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker) : base(analysisFileBeanModelCollection, storage.AlignmentFiles, projectBaseParameter) {
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
@@ -90,7 +91,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             throw new NotImplementedException();
         }
 
-        protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
+        protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBeanModel alignmentFileModel) {
             throw new NotImplementedException();
         }
 
