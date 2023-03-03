@@ -14,11 +14,13 @@ jobs:
 
     runs-on: windows-latest
 
+    defaults:
+      run:
+        working-directory: ./
     steps:
       - uses: actions/checkout@v3
       - name: Add package source
         run: dotnet nuget add source ./Assemblies
-        working-directory: ./
       - name: Build
         run: dotnet build --configuration "Debug vendor unsupported"
       - name: Test
