@@ -16,6 +16,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - name: Add package source
+        run: dotnet nuget add source ./Assemblies
       - name: Build
         run: dotnet build --configuration "Debug vendor unsupported"
       - name: Test
