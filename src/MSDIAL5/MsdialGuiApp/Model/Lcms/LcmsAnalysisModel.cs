@@ -264,6 +264,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 MoleculeStructureModel = moleculeStructureModel;
                 Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
             }
+
+            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
         }
 
         private static readonly double RtTol = 0.5;
@@ -343,6 +345,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public CompoundDetailModel CompoundDetailModel { get; }
         public MoleculeStructureModel MoleculeStructureModel { get; }
         public ProteinResultContainerModel ProteinResultContainerModel { get; }
+        public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
         public override void InvokeMsfinder() {
             if (Target.Value is null || (MsdecResult.Value?.Spectrum).IsEmptyOrNull()) {
