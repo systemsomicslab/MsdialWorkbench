@@ -13,10 +13,12 @@ namespace CompMs.App.Msdial.ViewModel.Information
 
         public MatchResultCandidatesViewModel(MatchResultCandidatesModel model) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
+            Representative = model.Representative;
             SelectedCandidate = model.SelectedCandidate;
             Candidates = model.Candidates;
         }
 
+        public ReadOnlyReactivePropertySlim<MsScanMatchResult> Representative { get; }
         public ReactiveProperty<MsScanMatchResult> SelectedCandidate { get; }
         public ReadOnlyReactivePropertySlim<IList<MsScanMatchResult>> Candidates { get; }
     }

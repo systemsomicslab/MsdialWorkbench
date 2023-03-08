@@ -16,10 +16,12 @@ namespace CompMs.App.Msdial.Model.Information
 
         public MatchResultCandidatesModel(IObservable<MsScanMatchResultContainerModel> containerOx) {
             _containerOx = containerOx ?? throw new ArgumentNullException(nameof(containerOx));
-            Candidates = _containerOx.Select(ox => (IList<MsScanMatchResult>)ox.MatchResults).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            SelectedCandidate = _containerOx.Select(ox => ox.Representative).ToReactiveProperty().AddTo(Disposables);
+            Representative = _containerOx.Select(ox => ox?.Representative).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            Candidates = _containerOx.Select(ox => (IList<MsScanMatchResult>)ox?.MatchResults).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            SelectedCandidate = Representative.ToReactiveProperty().AddTo(Disposables);
         }
 
+        public ReadOnlyReactivePropertySlim<MsScanMatchResult> Representative { get; }
         public ReactiveProperty<MsScanMatchResult> SelectedCandidate { get; }
         public ReadOnlyReactivePropertySlim<IList<MsScanMatchResult>> Candidates { get; }
     }

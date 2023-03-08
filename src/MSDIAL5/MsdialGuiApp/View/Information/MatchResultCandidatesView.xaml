@@ -8,20 +8,46 @@
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type={x:Type vm:MatchResultCandidatesViewModel}}"
              d:DesignHeight="240" d:DesignWidth="360">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <ListBox ItemsSource="{Binding Candidates.Value}"
              SelectedItem="{Binding SelectedCandidate.Value, Mode=TwoWay}">
         <ListBox.ItemTemplate>
             <DataTemplate DataType="{x:Type result:MsScanMatchResult}">
+                <DataTemplate.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="TextBlock.FontWeight" Value="Normal"/>
+                        <Style.Triggers>
+                            <DataTrigger Value="True">
+                                <DataTrigger.Binding>
+                                    <MultiBinding Converter="{StaticResource AreEquals}">
+                                        <Binding/>
+                                        <Binding Path="DataContext.(vm:MatchResultCandidatesViewModel.Representative).Value"
+                                                 RelativeSource="{RelativeSource AncestorType=ListBox}"/>
+                                    </MultiBinding>
+                                </DataTrigger.Binding>
+                                <DataTrigger.Setters>
+                                    <Setter Property="TextBlock.FontWeight" Value="Bold"/>
+                                </DataTrigger.Setters>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataTemplate.Resources>
                 <StackPanel>
                     <TextBlock>
                         <TextBlock.Text>
-                            <MultiBinding StringFormat="{}{0}({1})">
-                                <Binding Path="Name" Mode="OneTime"/>
+                            <MultiBinding StringFormat="{}{0} ({1})">
+                                <Binding Path="Name" Mode="OneTime" TargetNullValue="Unknown"/>
                                 <Binding Path="TotalScore" StringFormat="F3" Mode="OneTime"/>
                             </MultiBinding> 
                         </TextBlock.Text>
                     </TextBlock>
-                    <TextBlock Text="{Binding AnnotatorID, StringFormat=Annotation method: {0}, Mode=OneTime}" />
+                    <TextBlock Text="{Binding AnnotatorID, StringFormat=Annotation method: {0}, Mode=OneTime, TargetNullValue=No information}"/>
                 </StackPanel>
             </DataTemplate>
         </ListBox.ItemTemplate>
