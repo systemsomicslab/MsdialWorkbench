@@ -131,7 +131,8 @@ namespace CompMs.App.Msdial.Model.DataObj
         public double FillPercentage => innerModel.FillParcentage;
         public double AnovaPvalue => innerModel.AnovaPvalue;
         public double FoldChange => innerModel.FoldChange;
-        public MsScanMatchResultContainer MatchResults => innerModel.MatchResults;
+        MsScanMatchResultContainer IAnnotatedObject.MatchResults => innerModel.MatchResults;
+        public MsScanMatchResultContainerModel MatchResultsModel { get; }
 
         public string Isotope => $"M + {innerModel.PeakCharacter.IsotopeWeightNumber}";
 
@@ -235,6 +236,7 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public AlignmentSpotPropertyModel(AlignmentSpotProperty innerModel) {
             this.innerModel = innerModel;
+            MatchResultsModel = new MsScanMatchResultContainerModel(innerModel.MatchResults);
             _alignedPeakPropertiesModelProperty = Observable.FromAsync(() => innerModel.AlignedPeakPropertiesTask)
                 .Select(peaks => peaks?.Select(peak => new AlignmentChromPeakFeatureModel(peak)).ToList().AsReadOnly())
                 .ToReactiveProperty(); // TODO: Dispose
@@ -250,22 +252,22 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public void SetConfidence(MoleculeMsReference reference, MsScanMatchResult result) {
             DataAccess.SetMoleculeMsPropertyAsConfidence(innerModel, reference);
-            MatchResults.RemoveManuallyResults();
-            MatchResults.AddResult(result);
+            MatchResultsModel.RemoveManuallyResults();
+            MatchResultsModel.AddResult(result);
             OnPropertyChanged(string.Empty);
         }
 
         public void SetUnsettled(MoleculeMsReference reference, MsScanMatchResult result) {
             DataAccess.SetMoleculeMsPropertyAsUnsettled(innerModel, reference);
-            MatchResults.RemoveManuallyResults();
-            MatchResults.AddResult(result);
+            MatchResultsModel.RemoveManuallyResults();
+            MatchResultsModel.AddResult(result);
             OnPropertyChanged(string.Empty);
         }
 
         public void SetUnknown() {
             DataAccess.ClearMoleculePropertyInfomation(this);
-            MatchResults.RemoveManuallyResults();
-            MatchResults.AddResult(new MsScanMatchResult { Source = SourceType.Manual | SourceType.Unknown });
+            MatchResultsModel.RemoveManuallyResults();
+            MatchResultsModel.AddResult(new MsScanMatchResult { Source = SourceType.Manual | SourceType.Unknown });
             OnPropertyChanged(string.Empty);
         }
 
