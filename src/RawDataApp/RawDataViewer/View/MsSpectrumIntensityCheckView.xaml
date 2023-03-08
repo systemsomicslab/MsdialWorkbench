@@ -20,12 +20,20 @@
             <ItemsControl.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Save images as..">
-                        <MenuItem Header="Save as emf" Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"/>
-                        <MenuItem Header="Save as png" Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"/>
+                        <MenuItem Header="Save as emf"
+                                  Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Save as png"
+                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     </MenuItem>
                     <MenuItem Header="Copy images as..">
-                        <MenuItem Header="Copy as emf" Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"/>
-                        <MenuItem Header="Copy as png" Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"/>
+                        <MenuItem Header="Copy as emf"
+                                  Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Copy as png"
+                                  Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     </MenuItem>
                 </ContextMenu>
             </ItemsControl.ContextMenu>
