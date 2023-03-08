@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace CompMs.App.Msdial.View.Information
 {
     /// <summary>
-    /// Interaction logic for MatchResultsCandidatesView.xaml
+    /// Interaction logic for MatchResultCandidatesView.xaml
     /// </summary>
-    public partial class MatchResultsCandidatesView : UserControl
+    public partial class MatchResultCandidatesView : UserControl
     {
-        public MatchResultsCandidatesView() {
+        public MatchResultCandidatesView() {
             InitializeComponent();
         }
     }

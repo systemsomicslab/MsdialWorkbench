@@ -7,11 +7,11 @@ using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.ViewModel.Information
 {
-    public sealed class MatchResultsCandidatesViewModel : ViewModelBase
+    public sealed class MatchResultCandidatesViewModel : ViewModelBase
     {
         private readonly MatchResultCandidatesModel _model;
 
-        public MatchResultsCandidatesViewModel(MatchResultCandidatesModel model) {
+        public MatchResultCandidatesViewModel(MatchResultCandidatesModel model) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             SelectedCandidate = model.SelectedCandidate;
             Candidates = model.Candidates;
