@@ -1,11 +1,12 @@
 ﻿using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    internal sealed class MsScanMatchResultContainerModel : BindableBase
+    public sealed class MsScanMatchResultContainerModel : BindableBase
     {
         private readonly MsScanMatchResultContainer _container;
         private readonly ObservableCollection<MsScanMatchResult> _matchResults;
@@ -17,5 +18,23 @@ namespace CompMs.App.Msdial.Model.DataObj
         }
 
         public ReadOnlyObservableCollection<MsScanMatchResult> MatchResults { get; }
+
+        public void RemoveManuallyResults() {
+            _container.RemoveManuallyResults();
+            var removedResults = new List<MsScanMatchResult>();
+            foreach (var result in _matchResults) {
+                if (!_container.MatchResults.Contains(result)) {
+                    removedResults.Add(result);
+                }
+            }
+            foreach (var result in removedResults) {
+                _matchResults.Remove(result);
+            }
+        }
+
+        public void AddResult(MsScanMatchResult result) {
+            _container.AddResult(result);
+            _matchResults.Add(result);
+        }
     }
 }
