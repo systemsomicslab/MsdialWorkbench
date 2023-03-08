@@ -170,15 +170,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(mapToColor, true);
             var spectraExporter = new NistSpectraExporter(Target.Select(t => t?.InnerModel), mapper, Parameter).AddTo(Disposables);
             MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
-            IConnectableObservable<List<SpectrumPeak>> refSpectrum;
-            if (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics) {
-                var refLoader = new ReferenceSpectrumLoader<PeptideMsReference>(mapper).Contramap((ChromatogramPeakFeatureModel p) => p.MatchResultsModel?.Representative);
-                refSpectrum = Target.SelectMany(refLoader.LoadSpectrumAsObservable).Publish();
-            }
-            else {
-                IMsSpectrumLoader<MsScanMatchResult> refLoader = new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
-                refSpectrum = MatchResultCandidatesModel.SelectedCandidate.SelectMany(refLoader.LoadSpectrumAsObservable).Publish();
-            }
+            var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
+                ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
+                : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
+            IConnectableObservable<List<SpectrumPeak>> refSpectrum = MatchResultCandidatesModel.LoadSpectrumObservable(refLoader).Publish();
             Disposables.Add(refSpectrum.Connect());
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 Target,

@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
@@ -46,7 +47,7 @@ namespace CompMs.App.Msdial.Model.Loader
             }
 
             public IObservable<List<SpectrumPeak>> LoadSpectrumAsObservable(U target) {
-                return _map(target).SelectMany(_loader.LoadSpectrumAsObservable);
+                return _map(target).SelectSwitch(_loader.LoadSpectrumAsObservable);
             }
         }
     }
