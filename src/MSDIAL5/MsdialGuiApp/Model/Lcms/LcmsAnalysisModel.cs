@@ -10,6 +10,7 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Common.Proteomics.DataObj;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
@@ -27,6 +28,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
@@ -167,11 +169,22 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
             var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(mapToColor, true);
             var spectraExporter = new NistSpectraExporter(Target.Select(t => t?.InnerModel), mapper, Parameter).AddTo(Disposables);
+            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
+            IConnectableObservable<List<SpectrumPeak>> refSpectrum;
+            if (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics) {
+                var refLoader = new ReferenceSpectrumLoader<PeptideMsReference>(mapper).Contramap((ChromatogramPeakFeatureModel p) => p.MatchResultsModel?.Representative);
+                refSpectrum = Target.SelectMany(refLoader.LoadSpectrumAsObservable).Publish();
+            }
+            else {
+                IMsSpectrumLoader<MsScanMatchResult> refLoader = new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
+                refSpectrum = MatchResultCandidatesModel.SelectedCandidate.SelectMany(refLoader.LoadSpectrumAsObservable).Publish();
+            }
+            Disposables.Add(refSpectrum.Connect());
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 Target,
                 rawSpectrumLoader,
                 decSpectrumLoader,
-                new MsRefSpectrumLoader(mapper),
+                refSpectrum,
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Mass),
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity),
                 new GraphLabels("Measure vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity)),
@@ -259,13 +272,11 @@ namespace CompMs.App.Msdial.Model.Lcms
                 r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d),
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
-            if (parameter.ProjectParam.TargetOmics != TargetOmics.Proteomics) {
+            if (parameter.ProjectParam.TargetOmics == TargetOmics.Metabolomics || parameter.ProjectParam.TargetOmics == TargetOmics.Lipidomics) {
                 var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
                 MoleculeStructureModel = moleculeStructureModel;
                 Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
             }
-
-            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
         }
 
         private static readonly double RtTol = 0.5;
