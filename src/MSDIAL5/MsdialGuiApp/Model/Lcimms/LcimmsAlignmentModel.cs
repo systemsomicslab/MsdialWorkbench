@@ -13,6 +13,7 @@ using CompMs.Common.DataStructure;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
+using CompMs.Common.Proteomics.DataObj;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -28,6 +29,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcimms
@@ -217,7 +219,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var loader = alignmentFileBean.CreateMSDecLoader().AddTo(Disposables);
             _decLoader = loader;
             var decLoader = new MsDecSpectrumLoader(loader, Ms1Spots);
-            var refLoader = new MsRefSpectrumLoader(mapper);
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
                 parameter.ProjectParam.SpectrumCommentToColorBytes
                .ToDictionary(
@@ -243,17 +244,23 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     }
                 },
                 true);
-            Ms2SpectrumModel = MsSpectrumModel.Create(
-                target, decLoader, refLoader,
-                peak => peak.Mass,
-                peak => peak.Intensity,
-                "Representation vs. Reference",
-                "m/z",
-                "Relative abundance",
-                nameof(SpectrumPeak.Mass),
-                nameof(SpectrumPeak.Intensity),
-                nameof(SpectrumPeak.Mass),
-                nameof(SpectrumPeak.Intensity),
+            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
+            var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
+                ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
+                : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
+            IConnectableObservable<List<SpectrumPeak>> refSpectrum = MatchResultCandidatesModel.LoadSpectrumObservable(refLoader).Publish();
+            Disposables.Add(refSpectrum.Connect());
+            Ms2SpectrumModel = new MsSpectrumModel(
+                Target.SelectSwitch(decLoader.LoadSpectrumAsObservable),
+                refSpectrum,
+                new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Mass), spot => spot.Mass),
+                new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Intensity), spot => spot.Intensity),
+                new GraphLabels(
+                    "Representation vs. Reference",
+                    "m/z",
+                    "Relative abundance",
+                    nameof(SpectrumPeak.Mass),
+                    nameof(SpectrumPeak.Intensity)),
                 nameof(SpectrumPeak.SpectrumComment),
                 Observable.Return(upperSpecBrush),
                 Observable.Return(lowerSpecBrush)).AddTo(Disposables);
@@ -335,6 +342,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public PeakInformationAlignmentModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
         public MoleculeStructureModel MoleculeStructureModel { get; }
+        public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
         public List<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 
