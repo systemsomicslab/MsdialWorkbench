@@ -9,7 +9,9 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using GongSolutions.Wpf.DragDrop;
+#if !DEBUG_VENDOR_UNSUPPORTED && !RELEASE_VENDOR_UNSUPPORTED
 using CompMs.RawDataHandler.Abf;
+#endif
 
 namespace Rfx.Riken.OsakaUniv
 {
@@ -182,6 +184,12 @@ namespace Rfx.Riken.OsakaUniv
                 var filename = System.IO.Path.GetFileNameWithoutExtension(filepath);
                 var fileExtension = System.IO.Path.GetExtension(filepath).ToLower();
 
+#if DEBUG_VENDOR_UNSUPPORTED || RELEASE_VENDOR_UNSUPPORTED
+                if (fileExtension != ".mzml") {
+                    errorMessage += "This program can just accept .mzml files.";
+                    break;
+                }
+#else
                 if (fileExtension != ".abf" && fileExtension != ".cdf" && 
                     fileExtension != ".mzml" && fileExtension != ".raw" &&
                     fileExtension != ".d" && fileExtension != ".iabf" && fileExtension != ".ibf"
@@ -189,6 +197,7 @@ namespace Rfx.Riken.OsakaUniv
                     errorMessage += "This program can just accept .abf, .mzml, .cdf, .d, .ibf, .wiff, .wiff2, .lcd, .qgd or .raw files.";
                     break;
                 }
+#endif
 
                 rdamProperty.RdamFilePath_RdamFileID[filepath] = i;
                 rdamProperty.RdamFileID_RdamFilePath[i] = filepath;
@@ -224,7 +233,9 @@ namespace Rfx.Riken.OsakaUniv
             var error = string.Empty;
             if (fileExtension == ".abf") {
                 try {
+#if !DEBUG_VENDOR_UNSUPPORTED && !RELEASE_VENDOR_UNSUPPORTED
                     RdamPropertySetting.SetAbfProperties(filepath, filename, fileExtension, i, analysisFiles.Count, rdamProperty, analysisFiles);
+#endif
                 }
                 catch (System.NotSupportedException ex) {
                     error += filename + "\r\n";

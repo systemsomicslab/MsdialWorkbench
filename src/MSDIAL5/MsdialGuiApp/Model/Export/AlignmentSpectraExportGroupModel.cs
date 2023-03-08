@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
@@ -39,16 +40,16 @@ namespace CompMs.App.Msdial.Model.Export
             return Formats.Count(f => f.IsSelected);
         }
 
-        public void Export(AlignmentFileBean alignmentFile, string exportDirectory, Action<string> notification) {
+        public void Export(AlignmentFileBeanModel alignmentFile, string exportDirectory, Action<string> notification) {
             var dt = DateTime.Now;
             var cts = new CancellationTokenSource();
             var spots = _peakSpotSupplyer.Supply(alignmentFile, cts.Token);
-            var msdecResults = MsdecResultsReader.ReadMSDecResults(alignmentFile.SpectraFilePath, out _, out _);
+            var msdecResults = alignmentFile.ReadMSDecResults();
             if (ExportIndividually) {
                 foreach (var format in Formats) {
-                    notification?.Invoke($"Exporting {alignmentFile.FileName}");
+                    notification?.Invoke($"Exporting {((IFileBean)alignmentFile).FileName}");
                     foreach (var spot in spots) {
-                        var outNameTemplate = $"{{0}}_AlignmentID {spot.MasterAlignmentID}_{spot.TimesCenter.Value:f2}_{spot.MassCenter:f4}_{dt:yyyy_MM_dd_HH_mm_ss}_{alignmentFile.FileName}.{{1}}";
+                        var outNameTemplate = $"{{0}}_AlignmentID {spot.MasterAlignmentID}_{spot.TimesCenter.Value:f2}_{spot.MassCenter:f4}_{dt:yyyy_MM_dd_HH_mm_ss}_{((IFileBean)alignmentFile).FileName}.{{1}}";
                         if (format.IsSelected) {
                             format.Export(new[] { spot }, new[] { msdecResults[spot.MasterAlignmentID] }, outNameTemplate, exportDirectory, notification: null);
                         }
@@ -56,7 +57,7 @@ namespace CompMs.App.Msdial.Model.Export
                 }
             }
             else {
-                var outNameTemplate = $"{{0}}_{dt:yyyy_MM_dd_HH_mm_ss}_{alignmentFile.FileName}.{{1}}";
+                var outNameTemplate = $"{{0}}_{dt:yyyy_MM_dd_HH_mm_ss}_{((IFileBean)alignmentFile).FileName}.{{1}}";
                 foreach (var format in Formats) {
                     if (format.IsSelected) {
                         format.Export(spots, msdecResults, outNameTemplate, exportDirectory, notification);

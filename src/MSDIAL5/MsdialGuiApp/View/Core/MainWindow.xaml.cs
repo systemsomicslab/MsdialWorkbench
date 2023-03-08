@@ -18,6 +18,7 @@ using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM.WindowService;
+using CompMs.Graphics.Behavior;
 using CompMs.Graphics.UI;
 using CompMs.Graphics.UI.Message;
 using CompMs.Graphics.UI.ProgressBar;
@@ -121,6 +122,17 @@ namespace CompMs.App.Msdial.View.Core
                 Owner = this,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
             };
+            view.Show();
+        }
+
+        private void ShowChildViewWithDispose<TView>(object viewmodel) where TView : Window, new() {
+            var view = new TView()
+            {
+                DataContext = viewmodel,
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            };
+            DataContextCleanupBehavior.SetIsEnabled(view, true);
             view.Show();
         }
 

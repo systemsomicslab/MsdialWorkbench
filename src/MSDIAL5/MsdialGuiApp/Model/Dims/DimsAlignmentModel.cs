@@ -42,7 +42,7 @@ namespace CompMs.App.Msdial.Model.Dims
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> CHROMATOGRAM_SPOT_SERIALIZER;
         private static readonly double MZ_TOLERANCE = 20d;
 
-        private readonly AlignmentFileBean _alignmentFile;
+        private readonly AlignmentFileBeanModel _alignmentFile;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _matchResultEvaluator;
         private readonly ReadOnlyReactivePropertySlim<MSDecResult> _msdecResult;
@@ -54,7 +54,7 @@ namespace CompMs.App.Msdial.Model.Dims
         private readonly MSDecLoader _decLoader;
 
         public DimsAlignmentModel(
-            AlignmentFileBean alignmentFileBean,
+            AlignmentFileBeanModel alignmentFileModel,
             DataBaseStorage databaseStorage,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseMapper mapper,
@@ -63,12 +63,12 @@ namespace CompMs.App.Msdial.Model.Dims
             List<AnalysisFileBean> files,
             AnalysisFileBeanModelCollection fileCollection,
             PeakFilterModel peakFilterModel, IMessageBroker broker)
-            : base(alignmentFileBean, alignmentFileBean.FilePath) {
+            : base(alignmentFileModel) {
             if (projectBaseParameter is null) {
                 throw new ArgumentNullException(nameof(projectBaseParameter));
             }
 
-            _alignmentFile = alignmentFileBean;
+            _alignmentFile = alignmentFileModel;
 
             _parameter = parameter;
             _files = files ?? throw new ArgumentNullException(nameof(files));
@@ -121,14 +121,14 @@ namespace CompMs.App.Msdial.Model.Dims
                 .AddTo(Disposables);
             PlotModel = new AlignmentPeakPlotModel(Ms1Spots, spot => spot.MassCenter, spot => spot.KMD, Target, labelSource, selectedBrush, brushes)
             {
-                GraphTitle = _alignmentFile.FileName,
+                GraphTitle = ((IFileBean)_alignmentFile).FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
                 VerticalProperty = nameof(AlignmentSpotPropertyModel.KMD),
                 HorizontalTitle = "m/z",
                 VerticalTitle = "Kendrick mass defect"
             }.AddTo(Disposables);
 
-            var decLoader = new MSDecLoader(alignmentFileBean.SpectraFilePath).AddTo(Disposables);
+            var decLoader = alignmentFileModel.CreateMSDecLoader().AddTo(Disposables);
             _decLoader = decLoader;
             var decSpecLoader = new MsDecSpectrumLoader(decLoader, Ms1Spots);
             var refLoader = new MsRefSpectrumLoader(mapper);
@@ -186,7 +186,7 @@ namespace CompMs.App.Msdial.Model.Dims
             var classToColor = parameter.ClassnameToColorBytes
                 .ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
             var fileIdToFileName = files.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileName);
-            var eicLoader = new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean.EicFilePath, fileCollection, projectBaseParameter).AddTo(Disposables);
+            var eicLoader = alignmentFileModel.CreateEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, fileCollection, projectBaseParameter).AddTo(Disposables);
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target, eicLoader,
                 files, parameter,

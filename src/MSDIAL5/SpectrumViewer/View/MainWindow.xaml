@@ -87,7 +87,18 @@
 
             <TabControl ItemsSource="{Binding ScanCollections}"
                         SelectedItem="{Binding ScanCollection.Value}"
+                        MinWidth="200"
                         Grid.Column="0">
+                <TabControl.Style>
+                    <Style TargetType="TabControl">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ScanCollection.Value}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TabControl.Style>
                 <TabControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
