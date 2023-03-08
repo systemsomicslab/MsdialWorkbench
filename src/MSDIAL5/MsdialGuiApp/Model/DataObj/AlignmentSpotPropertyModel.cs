@@ -102,7 +102,7 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public string AdductIonName => innerModel.AdductType.AdductIonName;
 
-        public string AnnotatorID => innerModel.MatchResults.Representative.AnnotatorID;
+        public string AnnotatorID => MatchResultsModel.Representative.AnnotatorID;
 
         public string Comment {
             get => innerModel.Comment;
@@ -138,7 +138,7 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public MsScanMatchResult MspBasedMatchResult => innerModel.MspBasedMatchResult;
         public MsScanMatchResult TextDbBasedMatchResult => innerModel.TextDbBasedMatchResult;
-        public MsScanMatchResult ScanMatchResult => innerModel.MatchResults?.Representative ?? innerModel.TextDbBasedMatchResult ?? innerModel.MspBasedMatchResult;
+        public MsScanMatchResult ScanMatchResult => MatchResultsModel.Representative ?? innerModel.TextDbBasedMatchResult ?? innerModel.MspBasedMatchResult;
 
         public bool IsRefMatched(IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             return innerModel.IsReferenceMatched(evaluator);
