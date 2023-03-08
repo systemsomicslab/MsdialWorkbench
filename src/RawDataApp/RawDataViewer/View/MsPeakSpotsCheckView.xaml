@@ -6,6 +6,7 @@
              xmlns:vm="clr-namespace:CompMs.App.RawDataViewer.ViewModel"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:converter="clr-namespace:CompMs.Graphics.Converter;assembly=ChartDrawing"
+             xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type={x:Type vm:MsPeakSpotsCheckViewModel}}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -20,6 +21,18 @@
                           GraphTitle="Histogram of peak height"
                           BorderBrush="Black"
                           Background="WhiteSmoke">
+            <chart:MultiChart.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Save image as..">
+                        <MenuItem Header="Save as emf" Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"/>
+                        <MenuItem Header="Save as png" Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"/>
+                    </MenuItem>
+                    <MenuItem Header="Copy image as..">
+                        <MenuItem Header="Copy as emf" Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"/>
+                        <MenuItem Header="Copy as png" Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"/>
+                    </MenuItem>
+                </ContextMenu>
+            </chart:MultiChart.ContextMenu>
             <chart:AreaChartControl ItemsSource="{Binding Summary.Value.AccumulatedHistogram}"
                                     HorizontalPropertyName="X"
                                     VerticalPropertyName="Y"
