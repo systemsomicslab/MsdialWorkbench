@@ -19,6 +19,8 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public ReadOnlyObservableCollection<MsScanMatchResult> MatchResults { get; }
 
+        public MsScanMatchResult Representative => _container.Representative;
+
         public void RemoveManuallyResults() {
             _container.RemoveManuallyResults();
             var removedResults = new List<MsScanMatchResult>();
