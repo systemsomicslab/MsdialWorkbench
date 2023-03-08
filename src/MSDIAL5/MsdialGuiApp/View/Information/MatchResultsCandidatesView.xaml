@@ -3,8 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Information"
              xmlns:result="clr-namespace:CompMs.Common.DataObj.Result;assembly=Common"
              mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type={x:Type vm:MatchResultsCandidatesViewModel}}"
              d:DesignHeight="240" d:DesignWidth="360">
     <ListBox ItemsSource="{Binding Candidates.Value}"
              SelectedItem="{Binding SelectedCandidate.Value, Mode=TwoWay}">
