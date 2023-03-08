@@ -48,12 +48,11 @@ namespace CompMs.App.Msdial.Model.DataObj
         public int MS1RawSpectrumIdLeft => innerModel.MS1RawSpectrumIdLeft;
         public int MS1RawSpectrumIdRight => innerModel.MS1RawSpectrumIdRight;
         public int MS2RawSpectrumId => innerModel.MS2RawSpectrumID;
-        public MsScanMatchResultContainer MatchResults => innerModel.MatchResults;
         MsScanMatchResultContainer IAnnotatedObject.MatchResults => innerModel.MatchResults;
         public MsScanMatchResultContainerModel MatchResultsModel { get; }
         public MsScanMatchResult MspBasedMatchResult => innerModel.MspBasedMatchResult;
         public MsScanMatchResult TextDbBasedMatchResult => innerModel.TextDbBasedMatchResult;
-        public MsScanMatchResult ScanMatchResult => innerModel.MatchResults?.Representative ?? innerModel.TextDbBasedMatchResult ?? innerModel.MspBasedMatchResult;
+        public MsScanMatchResult ScanMatchResult => MatchResultsModel.Representative ?? innerModel.TextDbBasedMatchResult ?? innerModel.MspBasedMatchResult;
         public string AdductIonName => innerModel.AdductType?.AdductIonName;
         public string Name {
             get => ((IMoleculeProperty)innerModel).Name;
@@ -108,7 +107,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             }
         }
 
-        public string AnnotatorID => innerModel.MatchResults.Representative.AnnotatorID;
+        public string AnnotatorID => MatchResultsModel.Representative.AnnotatorID;
 
         public string Comment {
             get => innerModel.Comment;
