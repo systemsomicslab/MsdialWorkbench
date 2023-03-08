@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Data;
@@ -13,7 +12,7 @@ namespace CompMs.Graphics.Converter
             if (values.Length < 2) return false;
             var rep = values[0];
             foreach (var item in values.Skip(1))
-                if (!rep.Equals(item))
+                if (!Equals(rep, item))
                     return false;
             return true;
         }
