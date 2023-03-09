@@ -264,6 +264,7 @@ namespace CompMs.MsdialCore.Export
             ParameterBase parameter) {
             using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true)) {
                 WriteChromPeakFeatureInfoAsMSP(sw, feature, refer);
+                sw.WriteLine("IONMODE: " + feature.IonMode);
                 WriteParameterInfoAsNist(sw, parameter);
                 var ms1Spectrum = spectrumList.FirstOrDefault(spec => spec.OriginalIndex == feature.MS1RawSpectrumIdTop);
                 if (ms1Spectrum != null) {
@@ -289,6 +290,7 @@ namespace CompMs.MsdialCore.Export
             AlignmentSpotProperty isotopeTrackedLastSpot) {
             using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true)) {
                 WriteChromPeakFeatureInfoAsMSP(sw, feature, refer);
+                sw.WriteLine("IONMODE: " + feature.IonMode);
                 if (isotopeTrackedLastSpot != null) {
                     WriteIsotopeTrackingFeature(sw, feature, parameter, isotopeTrackedLastSpot);
                 }
