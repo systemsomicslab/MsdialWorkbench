@@ -43,11 +43,11 @@ namespace CompMs.App.Msdial.Model.Service.Tests
             Assert.AreEqual(1, command3.RedoCount);
         }
 
-        class MockUndoCommand : IUndoCommand {
+        class MockUndoCommand : IDoCommand {
             public int UndoCount = 0;
             public int RedoCount = 0;
 
-            public void Redo() {
+            public void Do() {
                 RedoCount++;
             }
 

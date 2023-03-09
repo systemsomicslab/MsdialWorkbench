@@ -1,7 +1,7 @@
 ﻿namespace CompMs.App.Msdial.Model.Service
 {
-    public interface IUndoCommand {
+    public interface IDoCommand {
+        void Do();
         void Undo();
-        void Redo();
     }
 }

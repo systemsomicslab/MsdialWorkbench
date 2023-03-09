@@ -6,10 +6,10 @@ namespace CompMs.App.Msdial.Model.Service
     public sealed class UndoManager {
         private static readonly int UNDO_LIMIT = 10;
         private static readonly int REDO_LIMIT = 10;
-        private readonly LinkedList<IUndoCommand> _undos = new LinkedList<IUndoCommand>();
-        private readonly LinkedList<IUndoCommand> _redos = new LinkedList<IUndoCommand>();
+        private readonly LinkedList<IDoCommand> _undos = new LinkedList<IDoCommand>();
+        private readonly LinkedList<IDoCommand> _redos = new LinkedList<IDoCommand>();
 
-        public void Add(IUndoCommand command) {
+        public void Add(IDoCommand command) {
             _undos.AddFirst(command);
             Shrink(_undos, UNDO_LIMIT);
             _redos.Clear();
@@ -32,12 +32,12 @@ namespace CompMs.App.Msdial.Model.Service
             }
             var node = _redos.First;
             _redos.RemoveFirst();
-            node.Value.Redo();
+            node.Value.Do();
             _undos.AddFirst(node);
             Shrink(_undos, UNDO_LIMIT);
         }
 
-        private void Shrink(LinkedList<IUndoCommand> list, int limit) {
+        private void Shrink(LinkedList<IDoCommand> list, int limit) {
             while (list.Count > limit) {
                 list.RemoveLast();
             }
