@@ -45,7 +45,7 @@
                     <Label Content="Project parameters"/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:DatasetFileSettingViewModel}">
-                    <Label Content="Raw measrurement files" IsEnabled="{Binding IsEnabled.Value}"/>
+                    <Label Content="Raw measurement files" IsEnabled="{Binding IsEnabled.Value}"/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:DatasetParameterSettingViewModel}">
                     <Label Content="Measurement parameters" IsEnabled="{Binding IsEnabled.Value}"/>
