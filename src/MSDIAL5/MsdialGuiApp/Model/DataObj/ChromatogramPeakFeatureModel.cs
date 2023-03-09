@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
@@ -8,6 +9,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
 using System;
+using System.ComponentModel;
 using System.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
@@ -220,10 +222,8 @@ namespace CompMs.App.Msdial.Model.DataObj
 
 
         public void SetUnknown() {
-            DataAccess.ClearMoleculePropertyInfomation(this);
-            MatchResultsModel.RemoveManuallyResults();
-            MatchResultsModel.AddResult(new MsScanMatchResult { Source = SourceType.Manual | SourceType.Unknown });
-            OnPropertyChanged(string.Empty);
+            IDoCommand command = new SetUnknownDoCommand(this, MatchResultsModel);
+            command.Do();
         }
     }
 }

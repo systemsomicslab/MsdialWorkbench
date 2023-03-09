@@ -21,14 +21,21 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public MsScanMatchResult Representative => _container.Representative;
 
-        public void RemoveManuallyResults() {
-            _container.RemoveManuallyResults();
-            var removedResults = new List<MsScanMatchResult>();
-            foreach (var result in _matchResults) {
-                if (!_container.MatchResults.Contains(result)) {
-                    removedResults.Add(result);
-                }
+        public List<MsScanMatchResult> GetManuallyResults() {
+            return _container.GetManuallyResults();
+        }
+
+        public void RemoveResult(MsScanMatchResult result) {
+            if (!_container.MatchResults.Contains(result)) {
+                return;
             }
+            _container.RemoveResult(result);
+            _matchResults.Remove(result);
+        }
+
+        public void RemoveManuallyResults() {
+            var removedResults = _container.GetManuallyResults();
+            _container.RemoveManuallyResults();
             foreach (var result in removedResults) {
                 _matchResults.Remove(result);
             }
@@ -37,6 +44,13 @@ namespace CompMs.App.Msdial.Model.DataObj
         public void AddResult(MsScanMatchResult result) {
             _container.AddResult(result);
             _matchResults.Add(result);
+        }
+
+        public void AddResults(IReadOnlyList<MsScanMatchResult> results) {
+            _container.AddResults(results);
+            foreach (var result in results) {
+                _matchResults.Add(result);
+            }
         }
     }
 }
