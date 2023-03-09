@@ -83,11 +83,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var peaks = MsdialPeakSerializer.LoadChromatogramPeakFeatures(analysisFileModel.PeakAreaBeanInformationFilePath);
             _peakCollection = new ChromatogramPeakFeatureCollection(peaks);
 
-            var orderedPeaks = peaks.OrderBy(peak => peak.ChromXs.RT.Value).Select(peak => new ChromatogramPeakFeatureModel(peak)).ToArray();
+            var orderedPeaks = peaks.OrderBy(peak => peak.ChromXs.RT.Value).Select(peak => new ChromatogramPeakFeatureModel(peak).AddTo(Disposables)).ToArray();
             var peakTree = new SegmentTree<IEnumerable<ChromatogramPeakFeatureModel>>(peaks.Count, Enumerable.Empty<ChromatogramPeakFeatureModel>(), Enumerable.Concat);
             using (peakTree.LazyUpdate()) {
                 foreach (var (peak, index) in orderedPeaks.WithIndex()) {
-                    peakTree[index] = peak.InnerModel.DriftChromFeatures.Select(dpeak => new ChromatogramPeakFeatureModel(dpeak)).ToArray();
+                    peakTree[index] = peak.InnerModel.DriftChromFeatures.Select(dpeak => new ChromatogramPeakFeatureModel(dpeak).AddTo(Disposables)).ToArray();
                 }
             }
             var driftPeaks = new ObservableCollection<ChromatogramPeakFeatureModel>(peakTree.Query(0, orderedPeaks.Length));

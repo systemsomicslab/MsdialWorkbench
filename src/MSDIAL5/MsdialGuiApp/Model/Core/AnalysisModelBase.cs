@@ -26,7 +26,7 @@ namespace CompMs.App.Msdial.Model.Core {
             var peaks = MsdialPeakSerializer.LoadChromatogramPeakFeatures(analysisFileModel.PeakAreaBeanInformationFilePath);
             _peakCollection = new ChromatogramPeakFeatureCollection(peaks);
             Ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(
-                peaks.Select(peak => new ChromatogramPeakFeatureModel(peak))
+                peaks.Select(peak => new ChromatogramPeakFeatureModel(peak).AddTo(Disposables))
             );
             if (Ms1Peaks.IsEmptyOrNull()) {
                 MessageBox.Show("No peak information. Check your polarity setting.");

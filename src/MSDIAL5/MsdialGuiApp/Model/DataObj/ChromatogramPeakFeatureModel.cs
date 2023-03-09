@@ -14,7 +14,7 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class ChromatogramPeakFeatureModel : BindableBase, IPeakSpotModel, IFilterable, IChromatogramPeak, IAnnotatedObject
+    public sealed class ChromatogramPeakFeatureModel : DisposableModelBase, IPeakSpotModel, IFilterable, IChromatogramPeak, IAnnotatedObject
     {
         #region Property
         public int MasterPeakID => innerModel.MasterPeakID;
