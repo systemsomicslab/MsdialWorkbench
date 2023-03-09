@@ -1,20 +1,25 @@
 ﻿using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
+using Reactive.Bindings.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class MsScanMatchResultContainerModel : BindableBase
+    public sealed class MsScanMatchResultContainerModel : DisposableModelBase
     {
         private readonly MsScanMatchResultContainer _container;
         private readonly ObservableCollection<MsScanMatchResult> _matchResults;
 
         public MsScanMatchResultContainerModel(MsScanMatchResultContainer container) {
-            _container = container ?? throw new System.ArgumentNullException(nameof(container));
+            _container = container ?? throw new ArgumentNullException(nameof(container));
             _matchResults = new ObservableCollection<MsScanMatchResult>(container.MatchResults);
             MatchResults = new ReadOnlyObservableCollection<MsScanMatchResult>(_matchResults);
+            _matchResults.CollectionChangedAsObservable()
+                .Subscribe(_ => OnPropertyChanged(nameof(Representative)))
+                .AddTo(Disposables);
         }
 
         public ReadOnlyObservableCollection<MsScanMatchResult> MatchResults { get; }

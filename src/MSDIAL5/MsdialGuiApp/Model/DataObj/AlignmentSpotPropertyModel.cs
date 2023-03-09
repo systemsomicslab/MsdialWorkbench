@@ -238,7 +238,7 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public AlignmentSpotPropertyModel(AlignmentSpotProperty innerModel) {
             this.innerModel = innerModel;
-            MatchResultsModel = new MsScanMatchResultContainerModel(innerModel.MatchResults);
+            MatchResultsModel = new MsScanMatchResultContainerModel(innerModel.MatchResults).AddTo(Disposables);
             _alignedPeakPropertiesModelProperty = Observable.FromAsync(() => innerModel.AlignedPeakPropertiesTask)
                 .Select(peaks => peaks?.Select(peak => new AlignmentChromPeakFeatureModel(peak)).ToList().AsReadOnly())
                 .ToReactiveProperty()

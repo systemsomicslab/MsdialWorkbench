@@ -8,6 +8,7 @@ using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
+using Reactive.Bindings.Extensions;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -198,7 +199,7 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public ChromatogramPeakFeatureModel(ChromatogramPeakFeature feature) {
             innerModel = feature;
-            MatchResultsModel = new MsScanMatchResultContainerModel(feature.MatchResults);
+            MatchResultsModel = new MsScanMatchResultContainerModel(feature.MatchResults).AddTo(Disposables);
         }
 
 
