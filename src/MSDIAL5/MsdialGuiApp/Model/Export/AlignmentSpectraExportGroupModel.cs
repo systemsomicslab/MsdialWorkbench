@@ -51,7 +51,7 @@ namespace CompMs.App.Msdial.Model.Export
                     foreach (var spot in spots) {
                         var outNameTemplate = $"{{0}}_AlignmentID {spot.MasterAlignmentID}_{spot.TimesCenter.Value:f2}_{spot.MassCenter:f4}_{dt:yyyy_MM_dd_HH_mm_ss}_{((IFileBean)alignmentFile).FileName}.{{1}}";
                         if (format.IsSelected) {
-                            format.Export(new[] { spot }, new[] { msdecResults[spot.MasterAlignmentID] }, outNameTemplate, exportDirectory, notification: null);
+                            format.Export(new[] { spot }, msdecResults, outNameTemplate, exportDirectory, notification: null);
                         }
                     }
                 }
