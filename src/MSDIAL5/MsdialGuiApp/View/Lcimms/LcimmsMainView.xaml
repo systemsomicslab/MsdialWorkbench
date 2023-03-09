@@ -350,6 +350,9 @@
                                     <DataTemplate DataType="{x:Type info:MoleculeStructureViewModel}">
                                         <infoview:MoleculeStructureView/>
                                     </DataTemplate>
+                                    <DataTemplate DataType="{x:Type info:MatchResultCandidatesViewModel}">
+                                        <infoview:MatchResultCandidatesView/>
+                                    </DataTemplate>
                                 </DataTemplate.Resources>
                                 <ContentPresenter Content="{Binding}"/>
                             </DataTemplate>
@@ -367,6 +370,10 @@
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type info:MoleculeStructureViewModel}">
                                         <TextBlock Text="Structure"
+                                                   VerticalAlignment="Stretch"/>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type info:MatchResultCandidatesViewModel}">
+                                        <TextBlock Text="Candidates"
                                                    VerticalAlignment="Stretch"/>
                                     </DataTemplate>
                                 </DataTemplate.Resources>

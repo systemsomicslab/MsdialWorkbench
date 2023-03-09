@@ -79,19 +79,19 @@ namespace CompMs.App.Msdial.Model.Statistics {
                         Array.Copy(rgb, 0, rgba, 0, 3);
                     }
 
-                    if (isIdentified && evaluator.IsReferenceMatched(alignProp.MatchResults.Representative)) {
+                    if (isIdentified && evaluator.IsReferenceMatched(alignProp.MatchResultsModel.Representative)) {
                         metaboliteNames.Add("ID: " + spotID + "_" + metName);
                         metaboliteIDs.Add(spotID);
                         metaboliteBrushs.Add(rgba);
                         observableSpots.Add(alignProp);
                     }
-                    if (isAnnotated && evaluator.IsAnnotationSuggested(alignProp.MatchResults.Representative)) {
+                    if (isAnnotated && evaluator.IsAnnotationSuggested(alignProp.MatchResultsModel.Representative)) {
                         metaboliteNames.Add("ID: " + spotID + "_" + metName);
                         metaboliteIDs.Add(spotID);
                         metaboliteBrushs.Add(rgba);
                         observableSpots.Add(alignProp);
                     }
-                    if (isUnknown && !evaluator.IsReferenceMatched(alignProp.MatchResults.Representative) && !evaluator.IsAnnotationSuggested(alignProp.MatchResults.Representative)) {
+                    if (isUnknown && !evaluator.IsReferenceMatched(alignProp.MatchResultsModel.Representative) && !evaluator.IsAnnotationSuggested(alignProp.MatchResultsModel.Representative)) {
                         metaboliteNames.Add("ID: " + spotID + "_" + metName);
                         metaboliteIDs.Add(spotID);
                         metaboliteBrushs.Add(rgba);

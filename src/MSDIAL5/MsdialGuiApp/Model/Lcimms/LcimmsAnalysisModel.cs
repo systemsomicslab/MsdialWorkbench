@@ -11,6 +11,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.DataStructure;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Common.Proteomics.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Base;
@@ -31,6 +32,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -243,11 +245,17 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             var rawLoader = new MultiMsRawSpectrumLoader(spectrumProvider, parameter);
             var decSpecLoader = new MsDecSpectrumLoader(decLoader, Ms1Peaks);
+            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
+            var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
+                ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
+                : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
+            IConnectableObservable<List<SpectrumPeak>> refSpectrum = MatchResultCandidatesModel.LoadSpectrumObservable(refLoader).Publish();
+            Disposables.Add(refSpectrum.Connect());
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 target,
                 rawLoader,
                 decSpecLoader,
-                new MsRefSpectrumLoader(mapper),
+                refSpectrum,
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Mass),
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity),
                 new GraphLabels("Measure vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity)),
@@ -378,6 +386,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public PeakInformationAnalysisModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
         public MoleculeStructureModel MoleculeStructureModel { get; }
+        public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
         public ReadOnlyReactivePropertySlim<LcimmsCompoundSearchModel> CompoundSearchModel { get; }
         public IObservable<bool> CanSearchCompound { get; }
