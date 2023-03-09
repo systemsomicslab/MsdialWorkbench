@@ -5,6 +5,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
@@ -52,6 +53,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly List<AnalysisFileBean> _files;
         private readonly IReadOnlyList<CompoundSearcher> _compoundSearchers;
+        private readonly UndoManager _undoManager;
         private readonly ReadOnlyReactivePropertySlim<MSDecResult> _msdecResult;
 
         public LcmsAlignmentModel(
@@ -80,6 +82,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             _files = files ?? throw new ArgumentNullException(nameof(files));
             _dataBaseMapper = mapper;
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper).Items;
+            _undoManager = new UndoManager();
 
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
@@ -295,8 +298,11 @@ namespace CompMs.App.Msdial.Model.Lcms
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
         public ProteinResultContainerModel ProteinResultContainerModel { get; }
 
+        public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
+        public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
+
         public ICompoundSearchModel CreateCompoundSearchModel() {
-            return new LcmsCompoundSearchModel(_files[Target.Value.RepresentativeFileID], Target.Value, _msdecResult.Value, _compoundSearchers);
+            return new LcmsCompoundSearchModel(_files[Target.Value.RepresentativeFileID], Target.Value, _msdecResult.Value, _compoundSearchers, _undoManager);
         }
 
         public void SaveSpectra(string filename) {

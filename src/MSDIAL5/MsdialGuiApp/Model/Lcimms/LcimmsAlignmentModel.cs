@@ -5,6 +5,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
@@ -46,6 +47,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly MsdialLcImMsParameter _parameter;
         private readonly List<AnalysisFileBean> _files;
+        private readonly UndoManager _undoManager;
         private readonly MSDecLoader _decLoader;
 
         public LcimmsAlignmentModel(
@@ -67,6 +69,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             _dataBaseMapper = mapper;
             _parameter = parameter;
             _files = files ?? throw new ArgumentNullException(nameof(files));
+            _undoManager = new UndoManager();
 
             BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName, fileCollection);
             var observableBarItemsLoader = Observable.Return(BarItemsLoader);
@@ -314,7 +317,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper);
             CompoundSearchModel = target
-                .CombineLatest(MsdecResult, (t, r) => t is null || r is null ? null : new LcimmsCompoundSearchModel(_files[t.RepresentativeFileID], t, r, searcherCollection.Items))
+                .CombineLatest(MsdecResult, (t, r) => t is null || r is null ? null : new LcimmsCompoundSearchModel(_files[t.RepresentativeFileID], t, r, searcherCollection.Items, _undoManager))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -358,6 +361,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         private IBarItemsLoader barItemsLoader;
+
+        public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
+        public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
         public ReadOnlyReactivePropertySlim<LcimmsCompoundSearchModel> CompoundSearchModel { get; }
 

@@ -89,9 +89,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 PeakSpotNavigatorViewModel.IsEditting)
                 .AddTo(Disposables);
 
-            SetUnknownCommand = Target.Select(t => !(t is null)).ToReactiveCommand()
-                .WithSubscribe(() => Target.Value.SetUnknown())
-                .AddTo(Disposables);
+            SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
 
             SearchCompoundCommand = new[]{
                 model.Target.Select(t => t?.innerModel is null),

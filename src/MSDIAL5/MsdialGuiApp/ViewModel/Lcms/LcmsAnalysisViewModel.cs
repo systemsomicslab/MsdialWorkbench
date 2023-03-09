@@ -114,10 +114,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 this._model.SurveyScanModel,
                 horizontalAxis: PlotViewModel.VerticalAxis).AddTo(Disposables);
 
-            SetUnknownCommand = model.Target.Select(t => !(t is null))
-                .ToReactiveCommand()
-                .WithSubscribe(() => model.Target.Value.SetUnknown())
-                .AddTo(Disposables);
+            SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
 
             PeakTableViewModel = new LcmsAnalysisPeakTableViewModel(
                 this._model.PeakTableModel,

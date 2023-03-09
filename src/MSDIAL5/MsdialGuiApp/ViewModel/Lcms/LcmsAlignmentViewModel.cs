@@ -63,9 +63,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             BarChartViewModel = new BarChartViewModel(_model.BarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
             AlignmentEicViewModel = new AlignmentEicViewModel(_model.AlignmentEicModel).AddTo(Disposables);
 
-            SetUnknownCommand = Target.Select(t => !(t is null)).ToReactiveCommand()
-                .WithSubscribe(() => Target.Value.SetUnknown())
-                .AddTo(Disposables);
+            SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
             
             AlignmentSpotTableViewModel = new LcmsAlignmentSpotTableViewModel(
                 _model.AlignmentSpotTableModel,
