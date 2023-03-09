@@ -14,7 +14,6 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Input;
 
@@ -49,6 +48,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             _compoundSearchService = compoundSearchService;
             _peakSpotTableService = peakSpotTableService;
             _broker = broker;
+
+            UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
 
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
 
@@ -94,6 +95,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             broker.Publish(notification);
             model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => broker.Publish(TaskNotification.End(notification)));
         }
+
+        public UndoManagerViewModel UndoManagerViewModel { get; }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public AlignmentPeakPlotViewModel PlotViewModel { get; }
@@ -162,11 +165,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 view.ShowDialog();
             }
         }
-
-        public ICommand UndoCommand => _undoCommand ?? (_undoCommand = new DelegateCommand(_model.Undo));
-        private ICommand _undoCommand;
-        public ICommand RedoCommand => _redoCommand ?? (_redoCommand = new DelegateCommand(_model.Redo));
-        private ICommand _redoCommand;
 
         // IResultViewModel
         IResultModel IResultViewModel.Model => _model;

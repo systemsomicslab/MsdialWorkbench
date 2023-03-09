@@ -229,6 +229,8 @@ namespace CompMs.App.Msdial.Model.Imms
             CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
         }
 
+        public UndoManager UndoManager => _undoManager;
+
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
         public InternalStandardSetModel InternalStandardSetModel { get; }
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }

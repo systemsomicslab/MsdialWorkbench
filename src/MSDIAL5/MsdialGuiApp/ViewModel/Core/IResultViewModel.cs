@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using System;
 using System.Windows.Input;
@@ -14,7 +15,6 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         ICommand ShowIonTableCommand { get; }
         ICommand SetUnknownCommand { get; }
-        ICommand UndoCommand { get; }
-        ICommand RedoCommand { get; }
+        UndoManagerViewModel UndoManagerViewModel { get; }
     }
 }

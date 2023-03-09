@@ -248,6 +248,8 @@ namespace CompMs.App.Msdial.Model.Dims
             Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
         }
 
+        public UndoManager UndoManager => _undoManager;
+
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }

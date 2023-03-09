@@ -45,6 +45,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             _compoundSearchService = compoundSearchService;
             _peakSpotTableService = peakSpotTableService;
             _broker = broker;
+            UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
+
             var (focusAction, focused) = focusControlManager.Request();
             PlotViewModel = new AnalysisPeakPlotViewModel(_model.PlotModel, focusAction, focused).AddTo(Disposables);
             EicViewModel = new EicViewModel(_model.EicModel, horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
@@ -84,6 +86,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             var matchResultCandidateViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
             PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel, matchResultCandidateViewModel, };
         }
+
+        public UndoManagerViewModel UndoManagerViewModel { get; }
 
         public AnalysisPeakPlotViewModel PlotViewModel { get; }
         public EicViewModel EicViewModel { get; }
@@ -137,11 +141,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private bool CanSaveSpectra() {
             return _model.CanSaveSpectra();
         }
-
-        public ICommand UndoCommand => _undoCommand ?? (_undoCommand = new DelegateCommand(_model.Undo));
-        private ICommand _undoCommand;
-        public ICommand RedoCommand => _redoCommand ?? (_redoCommand = new DelegateCommand(_model.Redo));
-        private ICommand _redoCommand;
 
         // IResultViewModel
         IResultModel IResultViewModel.Model => _model;

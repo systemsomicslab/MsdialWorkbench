@@ -47,6 +47,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             _compoundSearchService = compoundSearchService;
             _peakSpotTableService = peakSpotTableService;
             _messageBroker = messageBroker;
+            UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
             Target = model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             Brushes = model.Brushes.AsReadOnly();
@@ -122,6 +123,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
         private ImmsAlignmentSpotTableViewModel _alignmentSpotTableViewModel;
 
+        public UndoManagerViewModel UndoManagerViewModel { get; }
+
         public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
 
         public ReactivePropertySlim<BrushMapData<AlignmentSpotPropertyModel>> SelectedBrush { get; }
@@ -178,11 +181,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public void SaveProject() {
             _model.SaveProject();
         }
-
-        public ICommand UndoCommand => _undoCommand ?? (_undoCommand = new DelegateCommand(_model.Undo));
-        private ICommand _undoCommand;
-        public ICommand RedoCommand => _redoCommand ?? (_redoCommand = new DelegateCommand(_model.Redo));
-        private ICommand _redoCommand;
 
         // IResultViewModel
         IResultModel IResultViewModel.Model => _model;

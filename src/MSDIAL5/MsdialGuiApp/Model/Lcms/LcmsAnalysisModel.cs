@@ -280,6 +280,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         private static readonly double MzTol = 20;
         private readonly UndoManager _undoManager;
 
+        public UndoManager UndoManager => _undoManager;
+
         public DataBaseMapper DataBaseMapper { get; }
         public ParameterBase Parameter { get; }
 

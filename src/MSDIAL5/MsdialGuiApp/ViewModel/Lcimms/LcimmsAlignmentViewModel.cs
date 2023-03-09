@@ -45,18 +45,20 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 throw new ArgumentNullException(nameof(focusControlManager));
             }
 
-            this._model = model;
-            this._compoundSearchService = compoundSearchService;
-            this._peakSpotTableService = peakSpotTableService;
+            _model = model;
+            _compoundSearchService = compoundSearchService;
+            _peakSpotTableService = peakSpotTableService;
 
-            Target = this._model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
 
-            Brushes = this._model.Brushes.AsReadOnly();
-            SelectedBrush = this._model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
+            Target = _model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            Brushes = _model.Brushes.AsReadOnly();
+            SelectedBrush = _model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
 
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
 
-            Ms1Spots = CollectionViewSource.GetDefaultView(this._model.Ms1Spots);
+            Ms1Spots = CollectionViewSource.GetDefaultView(_model.Ms1Spots);
 
             var (peakPlotFocusAction, peakPlotFocused) = focusControlManager.Request();
             RtMzPlotViewModel = new AlignmentPeakPlotViewModel(model.RtMzPlotModel, peakPlotFocusAction, peakPlotFocused).AddTo(Disposables);
@@ -120,6 +122,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => broker.Publish(TaskNotification.End(notification)));
         }
 
+        public UndoManagerViewModel UndoManagerViewModel { get; }
         public AlignmentPeakPlotViewModel RtMzPlotViewModel { get; }
         public AlignmentPeakPlotViewModel DtMzPlotViewModel { get; }
         public MsSpectrumViewModel Ms2SpectrumViewModel { get; }
@@ -163,11 +166,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public void SaveProject() {
             _model.SaveProject();
         }
-
-        public ICommand UndoCommand => _undoCommand ?? (_undoCommand = new DelegateCommand(_model.Undo));
-        private ICommand _undoCommand;
-        public ICommand RedoCommand => _redoCommand ?? (_redoCommand = new DelegateCommand(_model.Redo));
-        private ICommand _redoCommand;
 
         // IResultViewModel
         IResultModel IResultViewModel.Model => _model;

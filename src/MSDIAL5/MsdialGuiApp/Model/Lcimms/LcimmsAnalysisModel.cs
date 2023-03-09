@@ -373,6 +373,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             .AddTo(Disposables);
         }
 
+        public UndoManager UndoManager => _undoManager;
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
         public IBrushMapper<ChromatogramPeakFeatureModel> Brush { get; }
         public AnalysisPeakPlotModel RtMzPlotModel { get; }

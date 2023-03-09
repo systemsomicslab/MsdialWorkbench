@@ -60,21 +60,22 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 throw new ArgumentNullException(nameof(focusControlManager));
             }
 
-            this._model = model;
-            this._compoundSearchService = compoundSearchService;
-            this._peakSpotTableService = peakSpotTableService;
-            this._proteomicsTableService = proteomicsTableService;
+            _model = model;
+            _compoundSearchService = compoundSearchService;
+            _peakSpotTableService = peakSpotTableService;
+            _proteomicsTableService = proteomicsTableService;
             _broker = broker;
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
+            UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
 
             var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
-            PlotViewModel = new AnalysisPeakPlotViewModel(this._model.PlotModel, peakPlotAction, peakPlotFocused).AddTo(Disposables);
+            PlotViewModel = new AnalysisPeakPlotViewModel(_model.PlotModel, peakPlotAction, peakPlotFocused).AddTo(Disposables);
             EicViewModel = new EicViewModel(
-                this._model.EicModel,
+                _model.EicModel,
                 horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
 
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-                this._model.Parameter.ProjectParam.SpectrumCommentToColorBytes
+                _model.Parameter.ProjectParam.SpectrumCommentToColorBytes
                 .ToDictionary(
                     kvp => kvp.Key,
                     kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
@@ -82,7 +83,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 item => item.ToString(),
                 Colors.Blue);
 
-            var projectParameter = this._model.Parameter.ProjectParam;
+            var projectParameter = _model.Parameter.ProjectParam;
             var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(
                 comment =>
                 {
@@ -193,7 +194,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
-
+        public UndoManagerViewModel UndoManagerViewModel { get; }
         public ICommand SetUnknownCommand { get; }
         public ReactiveCommand SearchCompoundCommand { get; }
 
@@ -262,11 +263,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 await _model.SaveRawSpectra(filename).ConfigureAwait(false);
             }
         }
-
-        public ICommand UndoCommand => _undoCommand ?? (_undoCommand = new DelegateCommand(_model.Undo));
-        private ICommand _undoCommand;
-        public ICommand RedoCommand => _redoCommand ?? (_redoCommand = new DelegateCommand(_model.Redo));
-        private ICommand _redoCommand;
 
         // IResultViewModel
         IResultModel IResultViewModel.Model => _model;

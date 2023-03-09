@@ -211,6 +211,8 @@ namespace CompMs.App.Msdial.Model.Imms
             Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
         }
 
+        public UndoManager UndoManager => _undoManager;
+
         public AnalysisPeakPlotModel PlotModel { get; }
 
         public EicModel EicModel { get; }

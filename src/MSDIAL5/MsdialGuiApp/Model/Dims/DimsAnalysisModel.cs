@@ -199,6 +199,8 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
 
+        public UndoManager UndoManager => _undoManager;
+
         public AnalysisPeakPlotModel PlotModel { get; }
 
         public EicModel EicModel { get; }

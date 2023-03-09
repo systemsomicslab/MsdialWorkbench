@@ -323,6 +323,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 .AddTo(Disposables);
         }
 
+        public UndoManager UndoManager => _undoManager;
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
         public ReactiveProperty<AlignmentSpotPropertyModel> Target { get; }
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }

@@ -276,6 +276,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             MultivariateAnalysisSettingModel = new MultivariateAnalysisSettingModel(parameter, Ms1Spots, evaluator, files, classBrush);
         }
 
+        public UndoManager UndoManager => _undoManager;
+
         public ParameterBase Parameter { get; }
 
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
