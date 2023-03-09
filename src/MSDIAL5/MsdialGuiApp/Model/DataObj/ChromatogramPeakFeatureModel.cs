@@ -224,6 +224,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public void SetUnknown(UndoManager undoManager) {
             IDoCommand command = new SetUnknownDoCommand(this, MatchResultsModel);
             command.Do();
+            undoManager.Add(command);
         }
     }
 }
