@@ -5,6 +5,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
@@ -39,6 +40,7 @@ namespace CompMs.App.Msdial.Model.Imms
         private static readonly double DT_TOLELANCE = 0.01;
 
         private readonly MsdialImmsParameter _parameter;
+        private readonly UndoManager _undoManager;
         private readonly IDataProvider _provider;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly IReadOnlyList<CompoundSearcher> _compoundSearchers;
@@ -60,6 +62,7 @@ namespace CompMs.App.Msdial.Model.Imms
             _dataBaseMapper = mapper;
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper).Items;
             _parameter = parameter as MsdialImmsParameter;
+            _undoManager = new UndoManager().AddTo(Disposables);
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, status: ~FilterEnableStatus.Rt).AddTo(Disposables);
 
@@ -208,6 +211,8 @@ namespace CompMs.App.Msdial.Model.Imms
             Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
         }
 
+        public UndoManager UndoManager => _undoManager;
+
         public AnalysisPeakPlotModel PlotModel { get; }
 
         public EicModel EicModel { get; }
@@ -253,8 +258,12 @@ namespace CompMs.App.Msdial.Model.Imms
                 AnalysisFileModel,
                 Target.Value,
                 MsdecResult.Value,
-                _compoundSearchers);
+                _compoundSearchers,
+                _undoManager);
         }
+
+        public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
+        public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
         public override void SearchFragment() {
             FragmentSearcher.Search(Ms1Peaks.Select(n => n.InnerModel).ToList(), decLoader, _parameter);
@@ -287,5 +296,8 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;
+
+        public void Undo() => _undoManager.Undo();
+        public void Redo() => _undoManager.Redo();
     }
 }

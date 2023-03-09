@@ -5,6 +5,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
@@ -37,6 +38,7 @@ namespace CompMs.App.Msdial.Model.Dims
         private static readonly double MZ_TOLERANCE = 20;
 
         private readonly CompoundSearcherCollection _compoundSearchers;
+        private readonly UndoManager _undoManager;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly IDataProvider _provider;
         private readonly ParameterBase _parameter;
@@ -63,6 +65,8 @@ namespace CompMs.App.Msdial.Model.Dims
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
 
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databaseStorage, mapper);
+
+            _undoManager = new UndoManager().AddTo(Disposables);
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, status: ~(FilterEnableStatus.Rt | FilterEnableStatus.Dt)).AddTo(Disposables);
 
@@ -195,6 +199,8 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
 
+        public UndoManager UndoManager => _undoManager;
+
         public AnalysisPeakPlotModel PlotModel { get; }
 
         public EicModel EicModel { get; }
@@ -210,8 +216,11 @@ namespace CompMs.App.Msdial.Model.Dims
         public FocusNavigatorModel FocusNavigatorModel { get; }
 
         public ICompoundSearchModel BuildCompoundSearchModel() {
-            return new CompoundSearchModel(AnalysisFileModel, Target.Value, MsdecResult.Value, _compoundSearchers.Items);
+            return new CompoundSearchModel(AnalysisFileModel, Target.Value, MsdecResult.Value, _compoundSearchers.Items, _undoManager);
         }
+
+        public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
+        public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
         public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;
         public void SaveSpectra(Stream stream, ExportSpectraFileFormat format) {
@@ -254,5 +263,8 @@ namespace CompMs.App.Msdial.Model.Dims
             SaveSpectra(memory, ExportSpectraFileFormat.msp);
             Clipboard.SetText(System.Text.Encoding.UTF8.GetString(memory.ToArray()));
         }
+
+        public void Undo() => _undoManager.Undo();
+        public void Redo() => _undoManager.Redo();
     }
 }

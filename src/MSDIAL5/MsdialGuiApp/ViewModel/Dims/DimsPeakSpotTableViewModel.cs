@@ -2,11 +2,13 @@
 using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Graphics.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
@@ -16,9 +18,11 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             IDimsPeakSpotTableModel model,
             IReactiveProperty<double> massLower, IReactiveProperty<double> massUpper,
             IReactiveProperty<string> metaboliteFilterKeyword,
-            IReactiveProperty<string> commentFilterKeyword, 
+            IReactiveProperty<string> commentFilterKeyword,
             IReactiveProperty<string> ontologyFilterKeyword,
-            IReactiveProperty<string> adductFilterKeyword)
+            IReactiveProperty<string> adductFilterKeyword,
+            ICommand setUnknownCommand,
+            UndoManagerViewModel undoManagerViewModel)
             : base(model, metaboliteFilterKeyword, commentFilterKeyword, ontologyFilterKeyword, adductFilterKeyword) {
             if (massLower is null) {
                 throw new ArgumentNullException(nameof(massLower));
@@ -32,6 +36,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             MassMax = model.MassMax;
             MassLower = massLower;
             MassUpper = massUpper;
+            SetUnknownCommand = setUnknownCommand;
+            UndoManagerViewModel = undoManagerViewModel;
         }
 
         public double MassMin { get; }
@@ -41,6 +47,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public IReactiveProperty<double> MassLower { get; }
 
         public IReactiveProperty<double> MassUpper { get; }
+        public ICommand SetUnknownCommand { get; }
+        public UndoManagerViewModel UndoManagerViewModel { get; }
     }
 
     internal sealed class DimsAnalysisPeakTableViewModel : DimsPeakSpotTableViewModel
@@ -54,8 +62,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             IReactiveProperty<string> commentFilterKeyword,
             IReactiveProperty<string> ontologyFilterKeyword,
             IReactiveProperty<string> adductFilterKeyword,
-            IReactiveProperty<bool> isEditting)
-            : base(model, massLower, massUpper, metaboliteFilterKeyword, commentFilterKeyword, ontologyFilterKeyword, adductFilterKeyword) {
+            IReactiveProperty<bool> isEditting,
+            ICommand setUnknownCommand,
+            UndoManagerViewModel undoManagerViewModel)
+            : base(model, massLower, massUpper, metaboliteFilterKeyword, commentFilterKeyword, ontologyFilterKeyword, adductFilterKeyword, setUnknownCommand, undoManagerViewModel) {
             if (eicLoader is null) {
                 throw new ArgumentNullException(nameof(eicLoader));
             }
@@ -78,8 +88,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             IReactiveProperty<string> commentFilterKeyword,
             IReactiveProperty<string> ontologyFilterKeyword,
             IReactiveProperty<string> adductFilterKeyword,
-            IReactiveProperty isEdittng)
-            : base(model, massLower, massUpper, metaboliteFilterKeyword, commentFilterKeyword, ontologyFilterKeyword, adductFilterKeyword) {
+            IReactiveProperty isEdittng,
+            ICommand setUnknownCommand,
+            UndoManagerViewModel undoManagerViewModel)
+            : base(model, massLower, massUpper, metaboliteFilterKeyword, commentFilterKeyword, ontologyFilterKeyword, adductFilterKeyword, setUnknownCommand, undoManagerViewModel) {
             BarItemsLoader = model.BarItemsLoader;
             ClassBrush = model.ClassBrush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             IsEdittng = isEdittng ?? throw new ArgumentNullException(nameof(isEdittng));
