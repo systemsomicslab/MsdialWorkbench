@@ -77,7 +77,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 PeakSpotNavigatorViewModel.OntologyFilterKeyword,
                 PeakSpotNavigatorViewModel.AdductFilterKeyword,
                 SetUnknownCommand,
-                PeakSpotNavigatorViewModel.IsEditting)
+                PeakSpotNavigatorViewModel.IsEditting,
+                UndoManagerViewModel)
                 .AddTo(Disposables);
             ProteomicsAlignmentTableViewModel = new LcmsProteomicsAlignmentTableViewModel(
                 _model.AlignmentSpotTableModel,
@@ -91,7 +92,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 PeakSpotNavigatorViewModel.OntologyFilterKeyword,
                 PeakSpotNavigatorViewModel.AdductFilterKeyword,
                 SetUnknownCommand,
-                PeakSpotNavigatorViewModel.IsEditting)
+                PeakSpotNavigatorViewModel.IsEditting,
+                UndoManagerViewModel)
                 .AddTo(Disposables);
 
             SearchCompoundCommand = _model.CanSearchCompound

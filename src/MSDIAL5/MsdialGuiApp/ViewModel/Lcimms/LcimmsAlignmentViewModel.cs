@@ -50,6 +50,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             _peakSpotTableService = peakSpotTableService;
 
             UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
+            SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
 
             Target = _model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
@@ -88,10 +89,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 PeakSpotNavigatorViewModel.CommentFilterKeyword,
                 PeakSpotNavigatorViewModel.OntologyFilterKeyword,
                 PeakSpotNavigatorViewModel.AdductFilterKeyword,
-                PeakSpotNavigatorViewModel.IsEditting)
+                PeakSpotNavigatorViewModel.IsEditting,
+                SetUnknownCommand,
+                UndoManagerViewModel)
                 .AddTo(Disposables);
-
-            SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
 
             SearchCompoundCommand = new[]{
                 model.Target.Select(t => t?.innerModel is null),

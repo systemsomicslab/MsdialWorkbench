@@ -46,6 +46,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             _peakSpotTableService = peakSpotTableService;
             _broker = broker;
             UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
+            SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
 
             var (focusAction, focused) = focusControlManager.Request();
             PlotViewModel = new AnalysisPeakPlotViewModel(_model.PlotModel, focusAction, focused).AddTo(Disposables);
@@ -71,10 +72,11 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 PeakSpotNavigatorViewModel.CommentFilterKeyword,
                 PeakSpotNavigatorViewModel.OntologyFilterKeyword,
                 PeakSpotNavigatorViewModel.AdductFilterKeyword,
-                PeakSpotNavigatorViewModel.IsEditting)
+                PeakSpotNavigatorViewModel.IsEditting,
+                SetUnknownCommand,
+                UndoManagerViewModel)
                 .AddTo(Disposables);
 
-            SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
             SearchCompoundCommand = model.CanSearchCompound
                 .ToReactiveCommand()
                 .WithSubscribe(SearchCompound)

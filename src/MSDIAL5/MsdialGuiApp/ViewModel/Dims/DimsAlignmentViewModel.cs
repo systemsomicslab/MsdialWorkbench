@@ -52,6 +52,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
 
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
+            SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
 
             var (peakPlotViewFocusAction, peakPlotViewFocused) = focusControlManager.Request();
             PlotViewModel = new AlignmentPeakPlotViewModel(_model.PlotModel, focus: peakPlotViewFocusAction, isFocused: peakPlotViewFocused).AddTo(Disposables);
@@ -70,7 +71,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                     PeakSpotNavigatorViewModel.CommentFilterKeyword,
                     PeakSpotNavigatorViewModel.OntologyFilterKeyword,
                     PeakSpotNavigatorViewModel.AdductFilterKeyword,
-                    PeakSpotNavigatorViewModel.IsEditting)
+                    PeakSpotNavigatorViewModel.IsEditting,
+                    SetUnknownCommand,
+                    UndoManagerViewModel)
                 .AddTo(Disposables);
 
             SearchCompoundCommand = _model.CanSeachCompound
@@ -85,8 +88,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
             var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
             PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel, matchResultCandidatesViewModel, };
-
-            SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
 
             _internalStandardSetViewModel = new InternalStandardSetViewModel(model.InternalStandardSetModel).AddTo(Disposables);
             InternalStandardSetCommand = new ReactiveCommand().WithSubscribe(_ => broker.Publish(_internalStandardSetViewModel)).AddTo(Disposables);
