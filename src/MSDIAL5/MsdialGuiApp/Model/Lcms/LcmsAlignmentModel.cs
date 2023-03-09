@@ -84,7 +84,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper).Items;
             _undoManager = new UndoManager().AddTo(Disposables);
 
-            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
+            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop).AddTo(Disposables)));
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
 
             InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Lcms).AddTo(Disposables);

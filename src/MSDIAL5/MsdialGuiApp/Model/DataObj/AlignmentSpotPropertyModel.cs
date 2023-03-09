@@ -10,6 +10,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
 using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -17,7 +18,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class AlignmentSpotPropertyModel : BindableBase, IPeakSpotModel, IFilterable, IAnnotatedObject
+    public sealed class AlignmentSpotPropertyModel : DisposableModelBase, IPeakSpotModel, IFilterable, IAnnotatedObject
     {
         public int AlignmentID => innerModel.AlignmentID;
         public int MasterAlignmentID => innerModel.MasterAlignmentID;
@@ -240,7 +241,8 @@ namespace CompMs.App.Msdial.Model.DataObj
             MatchResultsModel = new MsScanMatchResultContainerModel(innerModel.MatchResults);
             _alignedPeakPropertiesModelProperty = Observable.FromAsync(() => innerModel.AlignedPeakPropertiesTask)
                 .Select(peaks => peaks?.Select(peak => new AlignmentChromPeakFeatureModel(peak)).ToList().AsReadOnly())
-                .ToReactiveProperty(); // TODO: Dispose
+                .ToReactiveProperty()
+                .AddTo(Disposables);
         }
 
         public void RaisePropertyChanged() {

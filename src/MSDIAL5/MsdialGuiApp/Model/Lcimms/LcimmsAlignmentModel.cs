@@ -75,11 +75,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var observableBarItemsLoader = Observable.Return(BarItemsLoader);
 
             var props = Container.AlignmentSpotProperties;
-            var orderedProps = props.OrderBy(prop => prop.TimesCenter.RT.Value).Select(prop => new AlignmentSpotPropertyModel(prop)).ToArray();
+            var orderedProps = props.OrderBy(prop => prop.TimesCenter.RT.Value).Select(prop => new AlignmentSpotPropertyModel(prop).AddTo(Disposables)).ToArray();
             var propTree = new SegmentTree<IEnumerable<AlignmentSpotPropertyModel>>(props.Count, Enumerable.Empty<AlignmentSpotPropertyModel>(), Enumerable.Concat);
             using (propTree.LazyUpdate()) {
                 foreach (var (prop, index) in orderedProps.WithIndex()) {
-                    propTree[index] = prop.innerModel.AlignmentDriftSpotFeatures.Select(dprop => new AlignmentSpotPropertyModel(dprop)).ToArray();
+                    propTree[index] = prop.innerModel.AlignmentDriftSpotFeatures.Select(dprop => new AlignmentSpotPropertyModel(dprop).AddTo(Disposables)).ToArray();
                 }
             }
             var driftProps = new ObservableCollection<AlignmentSpotPropertyModel>(propTree.Query(0, props.Count));
