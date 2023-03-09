@@ -79,7 +79,7 @@ namespace CompMs.App.Msdial.Model.Dims
             _files = files ?? throw new ArgumentNullException(nameof(files));
             _fileCollection = fileCollection ?? throw new ArgumentNullException(nameof(fileCollection));
             _broker = broker;
-            _undoManager = new UndoManager();
+            _undoManager = new UndoManager().AddTo(Disposables);
             _dataBaseMapper = mapper;
             _matchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
 

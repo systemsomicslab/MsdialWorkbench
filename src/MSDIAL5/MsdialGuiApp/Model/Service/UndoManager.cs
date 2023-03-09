@@ -1,13 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Service
 {
-    public sealed class UndoManager {
+    public sealed class UndoManager : IDisposable {
         private static readonly int UNDO_LIMIT = 10;
         private static readonly int REDO_LIMIT = 10;
         private readonly LinkedList<IDoCommand> _undos = new LinkedList<IDoCommand>();
         private readonly LinkedList<IDoCommand> _redos = new LinkedList<IDoCommand>();
+        private bool _disposedValue;
 
         public void Add(IDoCommand command) {
             _undos.AddFirst(command);
@@ -41,6 +43,23 @@ namespace CompMs.App.Msdial.Model.Service
             while (list.Count > limit) {
                 list.RemoveLast();
             }
+        }
+
+        private void Dispose(bool disposing) {
+            if (!_disposedValue) {
+                if (disposing) {
+                    _undos.Clear();
+                    _redos.Clear();
+                }
+
+                _disposedValue = true;
+            }
+        }
+
+        public void Dispose() {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

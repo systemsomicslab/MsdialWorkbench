@@ -78,7 +78,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _dataBaseMapper = mapper;
             _parameter = parameter;
-            _undoManager = new UndoManager();
+            _undoManager = new UndoManager().AddTo(Disposables);
 
             var peaks = MsdialPeakSerializer.LoadChromatogramPeakFeatures(analysisFileModel.PeakAreaBeanInformationFilePath);
             _peakCollection = new ChromatogramPeakFeatureCollection(peaks);

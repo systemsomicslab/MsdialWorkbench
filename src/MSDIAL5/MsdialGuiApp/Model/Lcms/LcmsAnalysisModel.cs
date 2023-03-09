@@ -67,7 +67,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             DataBaseMapper = mapper;
             Parameter = parameter;
             CompoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper).Items;
-            _undoManager = new UndoManager();
+            _undoManager = new UndoManager().AddTo(Disposables);
 
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
                 // These 3 lines must be moved to somewhere for swithcing/updating the alignment result

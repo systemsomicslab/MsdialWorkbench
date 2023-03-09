@@ -62,7 +62,7 @@ namespace CompMs.App.Msdial.Model.Imms
             _dataBaseMapper = mapper;
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper).Items;
             _parameter = parameter as MsdialImmsParameter;
-            _undoManager = new UndoManager();
+            _undoManager = new UndoManager().AddTo(Disposables);
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, status: ~FilterEnableStatus.Rt).AddTo(Disposables);
 

@@ -66,7 +66,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databaseStorage, mapper);
 
-            _undoManager = new UndoManager();
+            _undoManager = new UndoManager().AddTo(Disposables);
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, status: ~(FilterEnableStatus.Rt | FilterEnableStatus.Dt)).AddTo(Disposables);
 

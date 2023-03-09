@@ -82,7 +82,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             _files = files ?? throw new ArgumentNullException(nameof(files));
             _dataBaseMapper = mapper;
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper).Items;
-            _undoManager = new UndoManager();
+            _undoManager = new UndoManager().AddTo(Disposables);
 
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);

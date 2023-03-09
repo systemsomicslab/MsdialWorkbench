@@ -69,7 +69,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             _dataBaseMapper = mapper;
             _parameter = parameter;
             _files = files ?? throw new ArgumentNullException(nameof(files));
-            _undoManager = new UndoManager();
+            _undoManager = new UndoManager().AddTo(Disposables);
 
             BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName, fileCollection);
             var observableBarItemsLoader = Observable.Return(BarItemsLoader);

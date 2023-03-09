@@ -65,7 +65,7 @@ namespace CompMs.App.Msdial.Model.Imms
             _dataBaseMapper = mapper;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper).Items;
-            _undoManager = new UndoManager();
+            _undoManager = new UndoManager().AddTo(Disposables);
 
             var BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName, fileCollection);
             var observableBarItemsLoader = Observable.Return(BarItemsLoader);
