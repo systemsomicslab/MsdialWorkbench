@@ -10,6 +10,7 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Common.Proteomics.DataObj;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
@@ -22,9 +23,11 @@ using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Windows;
 using System.Windows.Media;
 
@@ -138,11 +141,17 @@ namespace CompMs.App.Msdial.Model.Dims
                 true);
             var spectraExporter = new NistSpectraExporter(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
             var rawLoader = new MultiMsRawSpectrumLoader(provider, parameter).AddTo(Disposables);
+            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
+            var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
+                ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
+                : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
+            IConnectableObservable<List<SpectrumPeak>> refSpectrum = MatchResultCandidatesModel.LoadSpectrumObservable(refLoader).Publish();
+            Disposables.Add(refSpectrum.Connect());
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 Target,
                 rawLoader,
                 new MsDecSpectrumLoader(decLoader, Ms1Peaks),
-                new MsRefSpectrumLoader(mapper),
+                refSpectrum,
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Mass),
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity),
                 new GraphLabels("Measure vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity)),
@@ -189,7 +198,6 @@ namespace CompMs.App.Msdial.Model.Dims
         public AnalysisPeakPlotModel PlotModel { get; }
 
         public EicModel EicModel { get; }
-
         public RawDecSpectrumsModel Ms2SpectrumModel { get; }
         public Ms2ChromatogramsModel Ms2ChromatogramsModel { get; }
         public DimsAnalysisPeakTableModel PeakTableModel { get; }
@@ -198,6 +206,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public PeakInformationAnalysisModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
         public MoleculeStructureModel MoleculeStructureModel { get; }
+        public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
         public FocusNavigatorModel FocusNavigatorModel { get; }
 
         public ICompoundSearchModel BuildCompoundSearchModel() {

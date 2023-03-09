@@ -10,6 +10,7 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Common.Proteomics.DataObj;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm;
@@ -26,6 +27,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -138,11 +140,17 @@ namespace CompMs.App.Msdial.Model.Imms
                 true);
             var spectraExporter = new NistSpectraExporter(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
             var rawLoader = new MultiMsRawSpectrumLoader(provider, parameter).AddTo(Disposables);
+            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
+            var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
+                ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
+                : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
+            IConnectableObservable<List<SpectrumPeak>> refSpectrum = MatchResultCandidatesModel.LoadSpectrumObservable(refLoader).Publish();
+            Disposables.Add(refSpectrum.Connect());
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 Target,
                 rawLoader,
                 new MsDecSpectrumLoader(decLoader, Ms1Peaks),
-                new MsRefSpectrumLoader(mapper),
+                refSpectrum,
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Mass),
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity),
                 new GraphLabels("Measure vs. Reference", "m/z", "Relative aubndance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity)),
@@ -219,6 +227,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public EicLoader EicLoader { get; }
         public MoleculeStructureModel MoleculeStructureModel { get; }
+        public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
         private Task<List<SpectrumPeakWrapper>> LoadMsSpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             if (target is null || target.MS1RawSpectrumIdTop < 0) {

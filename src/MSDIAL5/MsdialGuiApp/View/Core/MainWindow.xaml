@@ -63,6 +63,13 @@
                         <Setter Property="BorderThickness" Value="0"/>
                     </Style>
                 </StackPanel.Resources>
+                <TextBlock FontSize="24" VerticalAlignment="Center"
+                           Margin="16,0">
+                    <Hyperlink NavigateUri="https://github.com/systemsomicslab/MsdialWorkbench"
+                               RequestNavigate="Hyperlink_RequestNavigate">
+                        GitHub
+                    </Hyperlink>
+                </TextBlock>
                 <Button Command="{Binding ShowAboutCommand}"
                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                         Background="Transparent"

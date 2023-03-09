@@ -43,6 +43,30 @@ namespace CompMs.App.Msdial.Model.Chart
             GraphLabels graphLabels,
             string hueProperty,
             IObservable<IBrushMapper> upperSpectrumBrush,
+            IObservable<IBrushMapper> lowerSpectrumBrush)
+            : this(
+                upperSpectrum,
+                lowerSpectrum,
+                horizontalPropertySelector,
+                verticalPropertySelector,
+                graphLabels,
+                hueProperty,
+                upperSpectrumBrush,
+                lowerSpectrumBrush,
+                Observable.Return((ISpectraExporter)null),
+                Observable.Return((ISpectraExporter)null),
+                null) {
+
+        }
+
+        public MsSpectrumModel(
+            IObservable<List<SpectrumPeak>> upperSpectrum,
+            IObservable<List<SpectrumPeak>> lowerSpectrum,
+            PropertySelector<SpectrumPeak, double> horizontalPropertySelector,
+            PropertySelector<SpectrumPeak, double> verticalPropertySelector,
+            GraphLabels graphLabels,
+            string hueProperty,
+            IObservable<IBrushMapper> upperSpectrumBrush,
             IObservable<IBrushMapper> lowerSpectrumBrush,
             IObservable<ISpectraExporter> upperSpectraExporter,
             IObservable<ISpectraExporter> lowerSpectraExporter,
@@ -247,10 +271,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 new GraphLabels(graphTitle, horizontalTitle, verticalTitle, labelProperty, orderingProperty),
                 hueProperty,
                 upperBrush,
-                lowerBrush,
-                Observable.Return((ISpectraExporter)null),
-                Observable.Return((ISpectraExporter)null),
-                null);
+                lowerBrush);
         }
 
         public static IBrushMapper<SpectrumComment> GetBrush(Brush defaultBrush) {
