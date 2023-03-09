@@ -371,5 +371,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 DataBaseMapper,
                 Parameter);
         }
+
+        public void Undo() => _undoManager.Undo();
+        public void Redo() => _undoManager.Redo();
     }
 }

@@ -261,5 +261,8 @@ namespace CompMs.App.Msdial.Model.Dims
             SaveSpectra(memory, ExportSpectraFileFormat.msp);
             Clipboard.SetText(System.Text.Encoding.UTF8.GetString(memory.ToArray()));
         }
+
+        public void Undo() => _undoManager.Undo();
+        public void Redo() => _undoManager.Redo();
     }
 }

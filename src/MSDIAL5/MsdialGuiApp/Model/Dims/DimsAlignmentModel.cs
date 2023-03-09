@@ -322,5 +322,8 @@ namespace CompMs.App.Msdial.Model.Dims
                 _dataBaseMapper,
                 _parameter);
         }
+
+        public void Undo() => _undoManager.Undo();
+        public void Redo() => _undoManager.Redo();
     }
 }

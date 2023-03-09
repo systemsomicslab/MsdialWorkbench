@@ -34,6 +34,8 @@
     </UserControl.Resources>
     <UserControl.InputBindings>
         <KeyBinding Gesture="Ctrl+D" Command="{Binding SelectedViewModel.Value.SetUnknownCommand, Mode=OneWay}"/>
+        <KeyBinding Gesture="Ctrl+Z" Command="{Binding SelectedViewModel.Value.UndoCommand, Mode=OneWay}"/>
+        <KeyBinding Gesture="Ctrl+Y" Command="{Binding SelectedViewModel.Value.RedoCommand, Mode=OneWay}"/>
     </UserControl.InputBindings>
 
     <Grid Name="Grid_MainWindow">

@@ -14,5 +14,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         ICommand ShowIonTableCommand { get; }
         ICommand SetUnknownCommand { get; }
+        ICommand UndoCommand { get; }
+        ICommand RedoCommand { get; }
     }
 }

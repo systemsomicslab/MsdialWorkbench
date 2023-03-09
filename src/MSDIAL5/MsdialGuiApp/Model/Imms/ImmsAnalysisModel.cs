@@ -294,5 +294,8 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;
+
+        public void Undo() => _undoManager.Undo();
+        public void Redo() => _undoManager.Redo();
     }
 }

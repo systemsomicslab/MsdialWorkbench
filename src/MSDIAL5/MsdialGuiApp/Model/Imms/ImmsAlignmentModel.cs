@@ -311,5 +311,8 @@ namespace CompMs.App.Msdial.Model.Imms
         public void SaveProject() {
             _alignmentFile.SaveAlignmentResultAsync(Container).Wait();
         }
+
+        public void Undo() => _undoManager.Undo();
+        public void Redo() => _undoManager.Redo();
     }
 }

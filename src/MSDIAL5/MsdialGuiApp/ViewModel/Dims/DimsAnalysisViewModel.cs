@@ -140,6 +140,11 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public DelegateCommand CopyMs2SpectrumCommand => _copyMs2SpectrumCommand ?? (_copyMs2SpectrumCommand = new DelegateCommand(_model.CopySpectrum, _model.CanSaveSpectra));
         private DelegateCommand _copyMs2SpectrumCommand;
 
+        public ICommand UndoCommand => _undoCommand ?? (_undoCommand = new DelegateCommand(_model.Undo));
+        private ICommand _undoCommand;
+        public ICommand RedoCommand => _redoCommand ?? (_redoCommand = new DelegateCommand(_model.Redo));
+        private ICommand _redoCommand;
+
         // IResultViewModel
         IResultModel IResultViewModel.Model => _model;
     }

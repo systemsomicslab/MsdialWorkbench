@@ -443,5 +443,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public Task SaveAsync(CancellationToken token) {
             return _peakCollection.SerializeAsync(_analysisFileModel.File, token);
         }
+
+        public void Undo() => _undoManager.Undo();
+        public void Redo() => _undoManager.Redo();
     }
 }
