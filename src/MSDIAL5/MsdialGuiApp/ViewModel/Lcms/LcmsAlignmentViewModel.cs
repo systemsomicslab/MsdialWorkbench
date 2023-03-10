@@ -50,6 +50,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             Target = _model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
+            UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
 
             Ms1Spots = CollectionViewSource.GetDefaultView(_model.Ms1Spots);
 
@@ -63,9 +64,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             BarChartViewModel = new BarChartViewModel(_model.BarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
             AlignmentEicViewModel = new AlignmentEicViewModel(_model.AlignmentEicModel).AddTo(Disposables);
 
-            SetUnknownCommand = Target.Select(t => !(t is null)).ToReactiveCommand()
-                .WithSubscribe(() => Target.Value.SetUnknown())
-                .AddTo(Disposables);
+            SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
             
             AlignmentSpotTableViewModel = new LcmsAlignmentSpotTableViewModel(
                 _model.AlignmentSpotTableModel,
@@ -78,7 +77,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 PeakSpotNavigatorViewModel.OntologyFilterKeyword,
                 PeakSpotNavigatorViewModel.AdductFilterKeyword,
                 SetUnknownCommand,
-                PeakSpotNavigatorViewModel.IsEditting)
+                PeakSpotNavigatorViewModel.IsEditting,
+                UndoManagerViewModel)
                 .AddTo(Disposables);
             ProteomicsAlignmentTableViewModel = new LcmsProteomicsAlignmentTableViewModel(
                 _model.AlignmentSpotTableModel,
@@ -92,7 +92,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 PeakSpotNavigatorViewModel.OntologyFilterKeyword,
                 PeakSpotNavigatorViewModel.AdductFilterKeyword,
                 SetUnknownCommand,
-                PeakSpotNavigatorViewModel.IsEditting)
+                PeakSpotNavigatorViewModel.IsEditting,
+                UndoManagerViewModel)
                 .AddTo(Disposables);
 
             SearchCompoundCommand = _model.CanSearchCompound
@@ -139,6 +140,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
+        public UndoManagerViewModel UndoManagerViewModel { get; }
         public ICollectionView Ms1Spots { get; }
         public ICollectionView PeakSpotsView => Ms1Spots;
 

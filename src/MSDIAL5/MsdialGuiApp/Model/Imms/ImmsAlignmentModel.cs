@@ -5,6 +5,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
@@ -43,6 +44,7 @@ namespace CompMs.App.Msdial.Model.Imms
         private readonly ParameterBase _parameter;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly IReadOnlyList<CompoundSearcher> _compoundSearchers;
+        private readonly UndoManager _undoManager;
         private readonly MSDecLoader _decLoader;
 
         public ImmsAlignmentModel(
@@ -63,10 +65,11 @@ namespace CompMs.App.Msdial.Model.Imms
             _dataBaseMapper = mapper;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper).Items;
+            _undoManager = new UndoManager().AddTo(Disposables);
 
             var BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName, fileCollection);
             var observableBarItemsLoader = Observable.Return(BarItemsLoader);
-            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
+            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop).AddTo(Disposables)));
 
             InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Imms).AddTo(Disposables);
 
@@ -226,6 +229,8 @@ namespace CompMs.App.Msdial.Model.Imms
             CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
         }
 
+        public UndoManager UndoManager => _undoManager;
+
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
         public InternalStandardSetModel InternalStandardSetModel { get; }
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
@@ -256,7 +261,8 @@ namespace CompMs.App.Msdial.Model.Imms
                 _files[Target.Value.RepresentativeFileID],
                 Target.Value,
                 MsdecResult.Value,
-                _compoundSearchers);
+                _compoundSearchers,
+                _undoManager);
         }
 
         public List<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
@@ -285,6 +291,9 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public bool CanSaveSpectra() => Target.Value.innerModel != null && MsdecResult.Value != null;
 
+        public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
+        public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
+
         public override void SearchFragment() {
             MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), _decLoader, _parameter);
         }
@@ -304,5 +313,8 @@ namespace CompMs.App.Msdial.Model.Imms
         public void SaveProject() {
             _alignmentFile.SaveAlignmentResultAsync(Container).Wait();
         }
+
+        public void Undo() => _undoManager.Undo();
+        public void Redo() => _undoManager.Redo();
     }
 }

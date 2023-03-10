@@ -203,6 +203,16 @@ namespace CompMs.MsdialCore.DataObj
             cacheRepresentative = null;
         }
 
+        public void RemoveResult(MsScanMatchResult result) {
+            if (!MatchResults.Contains(result)) {
+                return;
+            }
+            MatchResults.Remove(result);
+            if (cacheRepresentative == result) {
+                cacheRepresentative = null;
+            }
+        }
+
         public void ClearResults() {
             ClearResultsCore();
         }
@@ -211,6 +221,10 @@ namespace CompMs.MsdialCore.DataObj
             MatchResults.Clear();
             MatchResults.Add(UnknownResult);
             cacheRepresentative = null;
+        }
+
+        public List<MsScanMatchResult> GetManuallyResults() {
+            return MatchResults.Where(result => (result.Source & SourceType.Manual) != SourceType.None).ToList();
         }
 
         public void RemoveManuallyResults() {

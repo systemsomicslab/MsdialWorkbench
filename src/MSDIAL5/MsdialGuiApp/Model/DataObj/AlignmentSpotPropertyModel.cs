@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
@@ -9,6 +10,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
 using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -16,7 +18,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class AlignmentSpotPropertyModel : BindableBase, IPeakSpotModel, IFilterable, IAnnotatedObject
+    public sealed class AlignmentSpotPropertyModel : DisposableModelBase, IPeakSpotModel, IFilterable, IAnnotatedObject
     {
         public int AlignmentID => innerModel.AlignmentID;
         public int MasterAlignmentID => innerModel.MasterAlignmentID;
@@ -236,10 +238,11 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public AlignmentSpotPropertyModel(AlignmentSpotProperty innerModel) {
             this.innerModel = innerModel;
-            MatchResultsModel = new MsScanMatchResultContainerModel(innerModel.MatchResults);
+            MatchResultsModel = new MsScanMatchResultContainerModel(innerModel.MatchResults).AddTo(Disposables);
             _alignedPeakPropertiesModelProperty = Observable.FromAsync(() => innerModel.AlignedPeakPropertiesTask)
                 .Select(peaks => peaks?.Select(peak => new AlignmentChromPeakFeatureModel(peak)).ToList().AsReadOnly())
-                .ToReactiveProperty(); // TODO: Dispose
+                .ToReactiveProperty()
+                .AddTo(Disposables);
         }
 
         public void RaisePropertyChanged() {
@@ -264,11 +267,10 @@ namespace CompMs.App.Msdial.Model.DataObj
             OnPropertyChanged(string.Empty);
         }
 
-        public void SetUnknown() {
-            DataAccess.ClearMoleculePropertyInfomation(this);
-            MatchResultsModel.RemoveManuallyResults();
-            MatchResultsModel.AddResult(new MsScanMatchResult { Source = SourceType.Manual | SourceType.Unknown });
-            OnPropertyChanged(string.Empty);
+        public void SetUnknown(UndoManager undoManager) {
+            IDoCommand command = new SetUnknownDoCommand(this, MatchResultsModel);
+            command.Do();
+            undoManager.Add(command);
         }
 
         // IChromatogramPeak

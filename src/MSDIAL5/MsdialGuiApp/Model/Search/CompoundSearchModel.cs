@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
@@ -46,12 +47,14 @@ namespace CompMs.App.Msdial.Model.Search
     internal class CompoundSearchModel : DisposableModelBase, ICompoundSearchModel
     {
         private readonly MSDecResult _msdecResult;
+        private readonly UndoManager _undoManager;
         private readonly IPeakSpotModel _peakSpot;
 
-        public CompoundSearchModel(IFileBean fileBean, IPeakSpotModel peakSpot, MSDecResult msdecResult, IReadOnlyList<CompoundSearcher> compoundSearchers) {
+        public CompoundSearchModel(IFileBean fileBean, IPeakSpotModel peakSpot, MSDecResult msdecResult, IReadOnlyList<CompoundSearcher> compoundSearchers, UndoManager undoManager) {
             File = fileBean ?? throw new ArgumentNullException(nameof(fileBean));
             _peakSpot = peakSpot ?? throw new ArgumentNullException(nameof(peakSpot));
             CompoundSearchers = compoundSearchers;
+            _undoManager = undoManager;
             SelectedCompoundSearcher = CompoundSearchers.FirstOrDefault();
             _msdecResult = msdecResult ?? throw new ArgumentNullException(nameof(msdecResult));
 
@@ -125,7 +128,7 @@ namespace CompMs.App.Msdial.Model.Search
         }
 
         public void SetUnknown() {
-            _peakSpot.SetUnknown();
+            _peakSpot.SetUnknown(_undoManager);
         }
     }
 }

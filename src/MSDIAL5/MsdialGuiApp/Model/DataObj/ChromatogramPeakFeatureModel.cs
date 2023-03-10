@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
@@ -7,12 +8,14 @@ using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
+using Reactive.Bindings.Extensions;
 using System;
+using System.ComponentModel;
 using System.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class ChromatogramPeakFeatureModel : BindableBase, IPeakSpotModel, IFilterable, IChromatogramPeak, IAnnotatedObject
+    public sealed class ChromatogramPeakFeatureModel : DisposableModelBase, IPeakSpotModel, IFilterable, IChromatogramPeak, IAnnotatedObject
     {
         #region Property
         public int MasterPeakID => innerModel.MasterPeakID;
@@ -196,7 +199,7 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public ChromatogramPeakFeatureModel(ChromatogramPeakFeature feature) {
             innerModel = feature;
-            MatchResultsModel = new MsScanMatchResultContainerModel(feature.MatchResults);
+            MatchResultsModel = new MsScanMatchResultContainerModel(feature.MatchResults).AddTo(Disposables);
         }
 
 
@@ -219,11 +222,10 @@ namespace CompMs.App.Msdial.Model.DataObj
         }
 
 
-        public void SetUnknown() {
-            DataAccess.ClearMoleculePropertyInfomation(this);
-            MatchResultsModel.RemoveManuallyResults();
-            MatchResultsModel.AddResult(new MsScanMatchResult { Source = SourceType.Manual | SourceType.Unknown });
-            OnPropertyChanged(string.Empty);
+        public void SetUnknown(UndoManager undoManager) {
+            IDoCommand command = new SetUnknownDoCommand(this, MatchResultsModel);
+            command.Do();
+            undoManager.Add(command);
         }
     }
 }

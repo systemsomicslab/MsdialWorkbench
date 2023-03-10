@@ -5,6 +5,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
@@ -53,6 +54,7 @@ namespace CompMs.App.Msdial.Model.Dims
         private readonly AnalysisFileBeanModelCollection _fileCollection;
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly IMessageBroker _broker;
+        private readonly UndoManager _undoManager;
         private readonly MSDecLoader _decLoader;
 
         public DimsAlignmentModel(
@@ -64,7 +66,8 @@ namespace CompMs.App.Msdial.Model.Dims
             ParameterBase parameter,
             List<AnalysisFileBean> files,
             AnalysisFileBeanModelCollection fileCollection,
-            PeakFilterModel peakFilterModel, IMessageBroker broker)
+            PeakFilterModel peakFilterModel,
+            IMessageBroker broker)
             : base(alignmentFileModel) {
             if (projectBaseParameter is null) {
                 throw new ArgumentNullException(nameof(projectBaseParameter));
@@ -76,6 +79,7 @@ namespace CompMs.App.Msdial.Model.Dims
             _files = files ?? throw new ArgumentNullException(nameof(files));
             _fileCollection = fileCollection ?? throw new ArgumentNullException(nameof(fileCollection));
             _broker = broker;
+            _undoManager = new UndoManager().AddTo(Disposables);
             _dataBaseMapper = mapper;
             _matchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
 
@@ -85,7 +89,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
             var barItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName, fileCollection);
             var observableBarItemsLoader = Observable.Return(barItemsLoader);
-            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
+            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop).AddTo(Disposables)));
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator, status: ~(FilterEnableStatus.Rt | FilterEnableStatus.Dt)).AddTo(Disposables);
 
@@ -244,6 +248,8 @@ namespace CompMs.App.Msdial.Model.Dims
             Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
         }
 
+        public UndoManager UndoManager => _undoManager;
+
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
@@ -266,7 +272,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
         public ICompoundSearchModel BuildCompoundSearchModel() {
-            return new CompoundSearchModel(_files[Target.Value.RepresentativeFileID], Target.Value, _msdecResult.Value, _compoundSearchers.Items);
+            return new CompoundSearchModel(_files[Target.Value.RepresentativeFileID], Target.Value, _msdecResult.Value, _compoundSearchers.Items, _undoManager);
         }
 
         public InternalStandardSetModel InternalStandardSetModel { get; }
@@ -274,6 +280,9 @@ namespace CompMs.App.Msdial.Model.Dims
         public NormalizationSetModel BuildNormalizeSetModel() {
             return new NormalizationSetModel(Container, _files, _fileCollection, _dataBaseMapper, _matchResultEvaluator, InternalStandardSetModel, _parameter, _broker);
         }
+
+        public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
+        public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
         public bool CanSaveSpectra() => Target.Value.innerModel != null && _msdecResult.Value != null;
 
@@ -315,5 +324,8 @@ namespace CompMs.App.Msdial.Model.Dims
                 _dataBaseMapper,
                 _parameter);
         }
+
+        public void Undo() => _undoManager.Undo();
+        public void Redo() => _undoManager.Redo();
     }
 }

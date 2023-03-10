@@ -5,6 +5,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
@@ -66,6 +67,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             DataBaseMapper = mapper;
             Parameter = parameter;
             CompoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper).Items;
+            _undoManager = new UndoManager().AddTo(Disposables);
 
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
                 // These 3 lines must be moved to somewhere for swithcing/updating the alignment result
@@ -276,6 +278,9 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         private static readonly double RtTol = 0.5;
         private static readonly double MzTol = 20;
+        private readonly UndoManager _undoManager;
+
+        public UndoManager UndoManager => _undoManager;
 
         public DataBaseMapper DataBaseMapper { get; }
         public ParameterBase Parameter { get; }
@@ -309,8 +314,11 @@ namespace CompMs.App.Msdial.Model.Lcms
                 return null;
             }
 
-            return new LcmsCompoundSearchModel(AnalysisFileModel, Target.Value, MsdecResult.Value, CompoundSearchers);
+            return new LcmsCompoundSearchModel(AnalysisFileModel, Target.Value, MsdecResult.Value, CompoundSearchers, _undoManager);
         }
+
+        public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
+        public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
         public override void SearchFragment() {
             MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Peaks.Select(n => n.InnerModel).ToList(), decLoader, Parameter);
@@ -365,5 +373,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 DataBaseMapper,
                 Parameter);
         }
+
+        public void Undo() => _undoManager.Undo();
+        public void Redo() => _undoManager.Redo();
     }
 }
