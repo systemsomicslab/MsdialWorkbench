@@ -44,7 +44,7 @@ namespace CompMs.App.Msdial.Model.Export
             var dt = DateTime.Now;
             var cts = new CancellationTokenSource();
             var spots = _peakSpotSupplyer.Supply(alignmentFile, cts.Token);
-            var msdecResults = alignmentFile.ReadMSDecResults();
+            var msdecResults = alignmentFile.LoadMSDecResults();
             if (ExportIndividually) {
                 foreach (var format in Formats) {
                     notification?.Invoke($"Exporting {((IFileBean)alignmentFile).FileName}");

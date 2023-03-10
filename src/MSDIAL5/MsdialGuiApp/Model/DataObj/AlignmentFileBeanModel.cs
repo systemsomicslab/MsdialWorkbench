@@ -1,9 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.Loader;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,13 +15,20 @@ namespace CompMs.App.Msdial.Model.DataObj
     {
         private readonly AlignmentFileBean _alignmentFile;
         private readonly SemaphoreSlim _alignmentResultSem;
+        private readonly SemaphoreSlim _alignmentMsdecSem;
 
         public AlignmentFileBeanModel(AlignmentFileBean alignmentFile) {
             _alignmentFile = alignmentFile;
             _alignmentResultSem = new SemaphoreSlim(1, 1);
+            _alignmentMsdecSem = new SemaphoreSlim(1, 1);
         }
 
         public string FileName => _alignmentFile.FileName;
+        public string ProteinAssembledResultFilePath => _alignmentFile.ProteinAssembledResultFilePath;
+
+        public AlignmentResultContainer RunAlignment(PeakAligner aligner, IReadOnlyList<AnalysisFileBean> analysisFiles, ChromatogramSerializer<ChromatogramSpotInfo> serializer) {
+            return aligner.Alignment(analysisFiles, _alignmentFile, serializer);
+        }
 
         public async Task<AlignmentResultContainer> LoadAlignmentResultAsync(CancellationToken token = default) {
             await _alignmentResultSem.WaitAsync(token).ConfigureAwait(false);
@@ -49,8 +58,31 @@ namespace CompMs.App.Msdial.Model.DataObj
             return new MSDecLoader(_alignmentFile.SpectraFilePath);
         }
 
-        public List<MSDecResult> ReadMSDecResults() {
-            return MsdecResultsReader.ReadMSDecResults(_alignmentFile.SpectraFilePath, out _, out _);
+        public async Task<List<MSDecResult>> LoadMSDecResultsAsync(CancellationToken token = default) {
+            await _alignmentMsdecSem.WaitAsync(token).ConfigureAwait(false);
+            token.ThrowIfCancellationRequested();
+            try {
+                return MsdecResultsReader.ReadMSDecResults(_alignmentFile.SpectraFilePath, out _, out _);
+            }
+            finally {
+                _alignmentMsdecSem.Release();
+            }
+
+        }
+
+        public List<MSDecResult> LoadMSDecResults() {
+            return LoadMSDecResultsAsync().Result;
+        }
+
+        public async Task SaveMSDecResultsAsync(IEnumerable<MSDecResult> results, CancellationToken token = default) {
+            await _alignmentMsdecSem.WaitAsync(token).ConfigureAwait(false);
+            try {
+                var list = (results as List<MSDecResult>) ?? results.ToList();
+                MsdecResultsWriter.Write(_alignmentFile.SpectraFilePath, list);
+            }
+            finally {
+                _alignmentMsdecSem.Release();
+            }
         }
 
         public AlignmentEicLoader CreateEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> deserializer, AnalysisFileBeanModelCollection analysisFiles, ProjectBaseParameterModel projectBaseParameter) {
