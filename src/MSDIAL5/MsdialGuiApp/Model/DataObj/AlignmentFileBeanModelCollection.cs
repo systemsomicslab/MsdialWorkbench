@@ -9,12 +9,13 @@ namespace CompMs.App.Msdial.Model.DataObj
     public sealed class AlignmentFileBeanModelCollection : BindableBase
     {
         private readonly IList<AlignmentFileBean> _originalFiles;
+        private readonly IReadOnlyList<AnalysisFileBean> _analysisFiles;
         private readonly ObservableCollection<AlignmentFileBeanModel> _files;
 
-        public AlignmentFileBeanModelCollection(IList<AlignmentFileBean> files)
-        {
+        public AlignmentFileBeanModelCollection(IList<AlignmentFileBean> files, IReadOnlyList<AnalysisFileBean> analysisFiles) {
             _originalFiles = files;
-            _files = new ObservableCollection<AlignmentFileBeanModel>(files.Select(f => new AlignmentFileBeanModel(f)));
+            _analysisFiles = analysisFiles;
+            _files = new ObservableCollection<AlignmentFileBeanModel>(files.Select(f => new AlignmentFileBeanModel(f, _analysisFiles)));
             Files = new ReadOnlyObservableCollection<AlignmentFileBeanModel>(_files);
         }
 
@@ -22,7 +23,7 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public void Add(AlignmentFileBean file) {
             _originalFiles.Add(file);
-            _files.Add(new AlignmentFileBeanModel(file));
+            _files.Add(new AlignmentFileBeanModel(file, _analysisFiles));
         }
     }
 }

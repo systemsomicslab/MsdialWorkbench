@@ -4,8 +4,11 @@ using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
+using Reactive.Bindings.Extensions;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,11 +17,13 @@ namespace CompMs.App.Msdial.Model.DataObj
     public sealed class AlignmentFileBeanModel : BindableBase, IFileBean
     {
         private readonly AlignmentFileBean _alignmentFile;
+        private readonly IReadOnlyList<AnalysisFileBean> _analysisFiles;
         private readonly SemaphoreSlim _alignmentResultSem;
         private readonly SemaphoreSlim _alignmentMsdecSem;
 
-        public AlignmentFileBeanModel(AlignmentFileBean alignmentFile) {
+        public AlignmentFileBeanModel(AlignmentFileBean alignmentFile, IReadOnlyList<AnalysisFileBean> analysisFiles) {
             _alignmentFile = alignmentFile;
+            _analysisFiles = analysisFiles;
             _alignmentResultSem = new SemaphoreSlim(1, 1);
             _alignmentMsdecSem = new SemaphoreSlim(1, 1);
         }
@@ -26,8 +31,8 @@ namespace CompMs.App.Msdial.Model.DataObj
         public string FileName => _alignmentFile.FileName;
         public string ProteinAssembledResultFilePath => _alignmentFile.ProteinAssembledResultFilePath;
 
-        public AlignmentResultContainer RunAlignment(PeakAligner aligner, IReadOnlyList<AnalysisFileBean> analysisFiles, ChromatogramSerializer<ChromatogramSpotInfo> serializer) {
-            return aligner.Alignment(analysisFiles, _alignmentFile, serializer);
+        public AlignmentResultContainer RunAlignment(PeakAligner aligner, ChromatogramSerializer<ChromatogramSpotInfo> serializer) {
+            return aligner.Alignment(_analysisFiles, _alignmentFile, serializer);
         }
 
         public async Task<AlignmentResultContainer> LoadAlignmentResultAsync(CancellationToken token = default) {
@@ -72,6 +77,31 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public List<MSDecResult> LoadMSDecResults() {
             return LoadMSDecResultsAsync().Result;
+        }
+
+        public IEnumerable<MSDecResult> LoadMSDecResultsFromEachFiles(IReadOnlyList<AlignmentSpotProperty> spots) {
+            if (spots is null) {
+                yield break;
+            }
+
+            var pointerss = new List<(int version, List<long> pointers, bool isAnnotationInfo)>();
+            foreach (var file in _analysisFiles) {
+                MsdecResultsReader.GetSeekPointers(file.DeconvolutionFilePath, out var version, out var pointers, out var isAnnotationInfo);
+                pointerss.Add((version, pointers, isAnnotationInfo));
+            }
+            using (var disposables = new CompositeDisposable()) {
+                var streams = _analysisFiles.Select(file => File.Open(file.DeconvolutionFilePath, FileMode.Open).AddTo(disposables)).ToList();
+                foreach (var spot in spots) {
+                    var repID = spot.RepresentativeFileID;
+                    var peakID = spot.AlignedPeakProperties[repID].GetMSDecResultID();
+                    yield return MsdecResultsReader.ReadMSDecResult(streams[repID], pointerss[repID].pointers[peakID], pointerss[repID].version, pointerss[repID].isAnnotationInfo);
+                    foreach (var dSpot in spot.AlignmentDriftSpotFeatures) {
+                        var dRepID = dSpot.RepresentativeFileID;
+                        var dPeakID = dSpot.AlignedPeakProperties[dRepID].GetMSDecResultID();
+                        yield return MsdecResultsReader.ReadMSDecResult(streams[dRepID], pointerss[dRepID].pointers[dPeakID], pointerss[dRepID].version, pointerss[dRepID].isAnnotationInfo);
+                    }
+                }
+            }
         }
 
         public async Task SaveMSDecResultsAsync(IEnumerable<MSDecResult> results, CancellationToken token = default) {
