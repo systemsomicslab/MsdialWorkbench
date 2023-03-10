@@ -6,6 +6,22 @@ using MessagePack;
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
     public class FeatureFilterStatus {
+        [SerializationConstructor]
+        public FeatureFilterStatus() {
+            
+        }
+
+        public FeatureFilterStatus(FeatureFilterStatus source) {
+            IsAbundanceFiltered = source.IsAbundanceFiltered;
+            IsRefMatchedFiltered = source.IsRefMatchedFiltered;
+            IsSuggestedFiltered = source.IsSuggestedFiltered;
+            IsUnknownFiltered = source.IsUnknownFiltered;
+            IsBlankFiltered = source.IsBlankFiltered;
+            IsMsmsContainedFiltered = source.IsMsmsContainedFiltered;
+            IsFragmentExistFiltered = source.IsFragmentExistFiltered;
+            IsCommentFiltered = source.IsCommentFiltered;
+        }
+
         [Key(0)]
         public bool IsAbundanceFiltered { get; set; }
         [Key(1)]
