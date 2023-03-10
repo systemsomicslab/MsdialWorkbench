@@ -54,6 +54,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private readonly List<AnalysisFileBean> _files;
         private readonly IReadOnlyList<CompoundSearcher> _compoundSearchers;
         private readonly UndoManager _undoManager;
+        private readonly AlignmentSpotPropertyModelCollection _spots;
         private readonly ReadOnlyReactivePropertySlim<MSDecResult> _msdecResult;
 
         public LcmsAlignmentModel(
@@ -84,7 +85,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper).Items;
             _undoManager = new UndoManager().AddTo(Disposables);
 
-            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop).AddTo(Disposables)));
+            _spots = new AlignmentSpotPropertyModelCollection(Container.AlignmentSpotProperties).AddTo(Disposables);
+            Ms1Spots = _spots.Items;
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
 
             InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Lcms).AddTo(Disposables);
@@ -138,7 +140,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            PlotModel = new AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, selectedBrush, brushes)
+            PlotModel = new AlignmentPeakPlotModel(_spots, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, selectedBrush, brushes)
             {
                 GraphTitle = ((IFileBean)_alignmentFile).FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
@@ -249,8 +251,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 id => Ms1Spots.Argmin(spot => Math.Abs(spot.MasterAlignmentID - id)),
                 Target.Select(t => t?.MasterAlignmentID ?? 0d),
                 "Region focus by ID",
-                (rtSpotFocus, spot => spot.TimesCenter),
-                (mzSpotFocus, spot => spot.MassCenter)).AddTo(Disposables);
+                ((ISpotFocus, Func<AlignmentSpotPropertyModel, double>))(rtSpotFocus, spot => spot.TimesCenter),
+                ((ISpotFocus, Func<AlignmentSpotPropertyModel, double>))(mzSpotFocus, spot => spot.MassCenter)).AddTo(Disposables);
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, rtSpotFocus, mzSpotFocus);
 
             var peakInformationModel = new PeakInformationAlignmentModel(Target).AddTo(Disposables);
@@ -280,7 +282,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public ParameterBase Parameter { get; }
 
-        public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
+        public ReadOnlyObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
         public InternalStandardSetModel InternalStandardSetModel { get; }
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
@@ -336,8 +338,5 @@ namespace CompMs.App.Msdial.Model.Lcms
                 _dataBaseMapper,
                 Parameter);
         }
-
-        public void Undo() => _undoManager.Undo();
-        public void Redo() => _undoManager.Redo();
     }
 }

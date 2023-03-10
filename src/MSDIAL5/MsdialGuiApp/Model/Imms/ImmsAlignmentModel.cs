@@ -106,7 +106,7 @@ namespace CompMs.App.Msdial.Model.Imms
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator, status: ~FilterEnableStatus.Rt).AddTo(Disposables);
 
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel);
-            PlotModel = new AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, SelectedBrush, Brushes)
+            PlotModel = new AlignmentPeakPlotModel(new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(Ms1Spots), spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, SelectedBrush, Brushes)
             {
                 GraphTitle = ((IFileBean)alignmentFileModel).FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
@@ -190,7 +190,7 @@ namespace CompMs.App.Msdial.Model.Imms
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(Ms1Spots, Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, observableBarItemsLoader).AddTo(Disposables);
+            AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(Ms1Spots), Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, observableBarItemsLoader).AddTo(Disposables);
 
             MsdecResult = Target.SkipNull()
                 .Select(t => loader.LoadMSDecResult(t.MasterAlignmentID))

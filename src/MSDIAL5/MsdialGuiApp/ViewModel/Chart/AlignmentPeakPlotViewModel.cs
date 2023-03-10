@@ -56,13 +56,16 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             LabelProperty = model.LabelSource
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+
+            DuplicatesCommand = model.CanDuplicates.ToReactiveCommand()
+                .WithSubscribe(model.Duplicates).AddTo(Disposables);
         }
 
         public Action Focus { get; }
 
         public ReadOnlyReactivePropertySlim<bool> IsFocused { get; }
 
-        public ObservableCollection<AlignmentSpotPropertyModel> Spots { get; }
+        public ReadOnlyObservableCollection<AlignmentSpotPropertyModel> Spots { get; }
 
         public IAxisManager<double> HorizontalAxis { get; }
 
@@ -87,5 +90,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<string> VerticalProperty { get; }
 
         public ReadOnlyReactivePropertySlim<string> LabelProperty { get; }
+
+        public ReactiveCommand DuplicatesCommand { get; }
     }
 }

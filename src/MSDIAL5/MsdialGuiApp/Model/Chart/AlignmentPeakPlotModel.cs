@@ -15,8 +15,23 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class AlignmentPeakPlotModel : DisposableModelBase
     {
+        private readonly AlignmentSpotPropertyModelCollection _spots;
+
         public AlignmentPeakPlotModel(
-            ObservableCollection<AlignmentSpotPropertyModel> spots,
+            AlignmentSpotPropertyModelCollection spots,
+            Func<AlignmentSpotPropertyModel, double> horizontalSelector,
+            Func<AlignmentSpotPropertyModel, double> verticalSelector,
+            IReactiveProperty<AlignmentSpotPropertyModel> targetSource,
+            IObservable<string> labelSource,
+            BrushMapData<AlignmentSpotPropertyModel> selectedBrush,
+            IList<BrushMapData<AlignmentSpotPropertyModel>> brushes)
+            : this(spots.Items, horizontalSelector, verticalSelector, targetSource, labelSource, selectedBrush, brushes) {
+
+            _spots = spots;
+        }
+
+        public AlignmentPeakPlotModel(
+            ReadOnlyObservableCollection<AlignmentSpotPropertyModel> spots,
             Func<AlignmentSpotPropertyModel, double> horizontalSelector,
             Func<AlignmentSpotPropertyModel, double> verticalSelector,
             IReactiveProperty<AlignmentSpotPropertyModel> targetSource,
@@ -60,7 +75,7 @@ namespace CompMs.App.Msdial.Model.Chart
             Disposables.Add(collectionChanged.Connect());
         }
 
-        public ObservableCollection<AlignmentSpotPropertyModel> Spots { get; }
+        public ReadOnlyObservableCollection<AlignmentSpotPropertyModel> Spots { get; }
 
         public IReactiveProperty<AlignmentSpotPropertyModel> TargetSource { get; }
 
@@ -106,5 +121,17 @@ namespace CompMs.App.Msdial.Model.Chart
         private BrushMapData<AlignmentSpotPropertyModel> _selectedBrush;
 
         public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
+
+        public IObservable<bool> CanDuplicates => new[]{
+            Observable.Return(_spots is null),
+            TargetSource.Select(t => t is null),
+        }.CombineLatestValuesAreAllFalse();
+
+        public void Duplicates() {
+            if (TargetSource.Value is null || _spots is null) {
+                return;
+            }
+            _spots.Duplicates(TargetSource.Value);
+        }
     }
 }

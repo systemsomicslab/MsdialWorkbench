@@ -164,7 +164,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             }
 
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel);
-            RtMzPlotModel = new AlignmentPeakPlotModel(accumulatedPropModels, spot => spot.TimesCenter, spot => spot.MassCenter, accumulatedTarget, labelSource, SelectedBrush, Brushes)
+            RtMzPlotModel = new AlignmentPeakPlotModel(new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(accumulatedPropModels), spot => spot.TimesCenter, spot => spot.MassCenter, accumulatedTarget, labelSource, SelectedBrush, Brushes)
             {
                 GraphTitle = ((IFileBean)alignmentFileBean).FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
@@ -193,7 +193,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             RtAlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             RtAlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            DtMzPlotModel = new AlignmentPeakPlotModel(propModels, spot => spot.TimesCenter, spot => spot.MassCenter, target, labelSource, SelectedBrush, Brushes)
+            DtMzPlotModel = new AlignmentPeakPlotModel(new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(propModels), spot => spot.TimesCenter, spot => spot.MassCenter, target, labelSource, SelectedBrush, Brushes)
             {
                 GraphTitle = ((IFileBean)alignmentFileBean).FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
@@ -274,7 +274,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             RtBarChartModel = new BarChartModel(accumulatedTarget, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush), projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
             DtBarChartModel = new BarChartModel(target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush), projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
 
-            AlignmentSpotTableModel = new LcimmsAlignmentSpotTableModel(driftProps, target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, observableBarItemsLoader).AddTo(Disposables);
+            AlignmentSpotTableModel = new LcimmsAlignmentSpotTableModel(new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(driftProps), target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, observableBarItemsLoader).AddTo(Disposables);
 
             MsdecResult = target.SkipNull()
                 .Select(t => loader.LoadMSDecResult(t.MasterAlignmentID))
