@@ -254,6 +254,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
         [TestMethod()]
         public void MergeShrinkTest() {
             var container1 = new MsScanMatchResultContainer();
+            Assert.AreEqual(1, container1.MatchResults.Count); // Unkonown result exists.
             var commonResult = new MsScanMatchResult { Source = SourceType.TextDB, TotalScore = 0.7f, Priority = 2, };
             var results1 = new[]
             {
@@ -261,7 +262,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
                 new MsScanMatchResult { Source = SourceType.MspDB, TotalScore = 0.8f, Priority = 1, },
             };
             container1.AddResults(results1);
-            Assert.AreEqual(3, container1.MatchResults.Count);
+            Assert.AreEqual(2, container1.MatchResults.Count);
 
             var container2 = new MsScanMatchResultContainer();
             var results2 = new[]
@@ -271,10 +272,10 @@ namespace CompMs.MsdialCore.DataObj.Tests
                 new MsScanMatchResult { Source = SourceType.MspDB, TotalScore = 0.6f, Priority = 1, },
             };
             container2.AddResults(results2);
-            Assert.AreEqual(4, container2.MatchResults.Count);
+            Assert.AreEqual(3, container2.MatchResults.Count);
 
             container1.MergeContainers(container2);
-            Assert.AreEqual(5, container1.MatchResults.Count);
+            Assert.AreEqual(4, container1.MatchResults.Count);
         }
 
         [TestMethod()]

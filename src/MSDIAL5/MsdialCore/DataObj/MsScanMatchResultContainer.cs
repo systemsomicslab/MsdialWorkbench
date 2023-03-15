@@ -6,6 +6,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using MessagePack;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CompMs.MsdialCore.DataObj
@@ -27,19 +28,19 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         [SerializationConstructor]
-        public MsScanMatchResultContainer(List<MsScanMatchResult> matchResults, Dictionary<int, MsScanMatchResult> mSRawID2MspBasedMatchResult, List<MsScanMatchResult> textDbBasedMatchResults) {
-            InnerMatchResults = matchResults;
-            matchResults.RemoveAll(r => r.Source == SourceType.Unknown);
+        public MsScanMatchResultContainer(ReadOnlyCollection<MsScanMatchResult> matchResults, Dictionary<int, MsScanMatchResult> mSRawID2MspBasedMatchResult, List<MsScanMatchResult> textDbBasedMatchResults) {
+            var innerMatchResults = matchResults.ToList();
+            innerMatchResults.RemoveAll(r => r.Source == SourceType.Unknown);
+            InnerMatchResults = innerMatchResults;
             MSRawID2MspBasedMatchResult = mSRawID2MspBasedMatchResult;
             TextDbBasedMatchResults = textDbBasedMatchResults;
         }
 
         // general match results
         [Key(0)]
-        public List<MsScanMatchResult> MatchResults => InnerMatchResults.Prepend(UnknownResult).ToList();
+        public ReadOnlyCollection<MsScanMatchResult> MatchResults => (InnerMatchResults.Any() ? InnerMatchResults : new List<MsScanMatchResult> { UnknownResult }).AsReadOnly();
 
-        [IgnoreMember]
-        public List<MsScanMatchResult> InnerMatchResults { get; } 
+        private List<MsScanMatchResult> InnerMatchResults { get; } 
 
         [IgnoreMember]
         public MsScanMatchResult Representative {
