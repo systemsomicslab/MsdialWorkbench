@@ -195,15 +195,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private void SetAnnotationResult(ChromatogramPeakFeature chromPeakFeature, IAnnotationQuery<MsScanMatchResult> query) {
             var candidates = query.FindCandidates();
             var results = _evaluator.FilterByThreshold(candidates);
-            var topResults = new List<MsScanMatchResult>();
-            for (int i = 0; i < NUMBER_OF_ANNOTATION_RESULTS; i++) { // Set top results.
-                if (results.Count == 0) {
-                    break;
-                }
-                var top = _evaluator.SelectTopHit(results);
-                topResults.Add(top);
-                results.Remove(top);
-            }
+            var topResults = _evaluator.SelectTopN(results, NUMBER_OF_ANNOTATION_RESULTS);
             chromPeakFeature.MatchResults.AddResults(topResults);
         }
 

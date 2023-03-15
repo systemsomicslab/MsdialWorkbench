@@ -14,6 +14,18 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
     }
 
     public static class MatchResultEvaluatorExtension {
+        public static IEnumerable<TResult> SelectTopN<TResult>(this IMatchResultEvaluator<TResult> evaluator, IEnumerable<TResult> results, int number) {
+            var results_ = results.ToList();
+            for (int i = 0; i < number; i++) {
+                if (results_.Count == 0) {
+                    yield break;
+                }
+                var result = evaluator.SelectTopHit(results_);
+                yield return result;
+                results_.Remove(result);
+            }
+        }
+
         public static IMatchResultEvaluator<TSource> Contramap<TSource, TTarget>(this IMatchResultEvaluator<TTarget> evaluator, Func<TSource, TTarget> consumer) {
             return new ConsumingEvaluatorImpl<TSource, TTarget>(evaluator, consumer);
         }

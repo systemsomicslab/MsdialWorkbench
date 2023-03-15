@@ -15,6 +15,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 {
     public class EadLipidomicsAnnotationProcess : IAnnotationProcess
     {
+        private static readonly int NUMBER_OF_ANNOTATION_RESULTS = 3;
+
         public void RunAnnotation(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResults, IDataProvider provider, int numThread = 1, CancellationToken token = default, Action<double> reportAction = null) {
             var parentID2IsotopePeakIDs = GetParentID2IsotopePeakIDs(chromPeakFeatures);
 
@@ -134,45 +136,23 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var results = _evaluator.FilterByThreshold(candidates);
             if (results.Count > 0) {
                 var matches = _evaluator.SelectReferenceMatchResults(results);
+                var topResults = new List<MsScanMatchResult>();
                 if (matches.Count > 0) {
                     var best = _evaluator.SelectTopHit(matches);
-                    best.IsReferenceMatched = true;
-                    chromPeakFeature.MatchResults.AddResult(best);
+                    topResults.Add(best);
 
                     foreach (var factory in _eadQueryFactories) {
                         var query2 = factory.Create(query.Property, query.Scan, spectrums, query.IonFeature, factory.PrepareParameter());
                         var candidates2 = query2.FindCandidates();
                         var results2 = _evaluator.FilterByThreshold(candidates2);
-                        if (results2.Count > 0) {
-                            var matches2 = _evaluator.SelectReferenceMatchResults(results2);
-                            var best2 = _evaluator.SelectTopHit(matches2.Count > 0 ? matches2 : results2);
-                            chromPeakFeature.MatchResults.AddResult(best2);
-                        }
+                        topResults.AddRange(_evaluator.SelectTopN(results2, NUMBER_OF_ANNOTATION_RESULTS));
                     }
                 }
-                else if (results.Count > 0) {
-                    var best = _evaluator.SelectTopHit(results);
-                    best.IsAnnotationSuggested = true;
-                    chromPeakFeature.MatchResults.AddResult(best);
+                else {
+                    topResults.AddRange(_evaluator.SelectTopN(results, NUMBER_OF_ANNOTATION_RESULTS));
                 }
 
-                //var best = annotator.SelectTopHit(matches.Count > 0 ? matches : results);
-                //best.IsReferenceMatched = true;
-                //chromPeakFeature.MatchResults.AddResult(best);
-
-                //foreach (var eadLipidContainerPair in eadLipidContainerPairs) {
-                //    var container2 = eadLipidContainerPair.Container;
-                //    var query2 = eadLipidContainerPair.Factory.Create(query.Property, query.Scan, spectrums, query.IonFeature, container2.Parameter);
-                //    var candidates2 = eadLipidContainerPair.Container.Annotator.FindCandidates((query2, annotatorContainer.Annotator.Refer(best)));
-                //    var results2 = container2.Annotator.FilterByThreshold(candidates2);
-                //    if (results2.Count > 0) {
-                //        var matches2 = container2.Annotator.SelectReferenceMatchResults(results2);
-                //        var best2 = container2.Annotator.SelectTopHit(matches2.Count > 0 ? matches2 : results2);
-                        
-                //        best2.IsReferenceMatched = true;
-                //        chromPeakFeature.MatchResults.AddResult(best2);
-                //    }
-                //}
+                chromPeakFeature.MatchResults.AddResults(topResults);
             }
         }
 
