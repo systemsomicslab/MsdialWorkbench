@@ -13,7 +13,6 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.DataStructure;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using CompMs.Common.MessagePack;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Design;
@@ -48,7 +47,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly MsdialLcImMsParameter _parameter;
         private readonly List<AnalysisFileBean> _files;
         private readonly UndoManager _undoManager;
-        private readonly MSDecLoader _decLoader;
 
         public LcimmsAlignmentModel(
             AlignmentFileBeanModel alignmentFileBean,
@@ -219,9 +217,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
             DtAlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             DtAlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            var loader = alignmentFileBean.CreateTemporaryMSDecLoader().AddTo(Disposables);
-            _decLoader = loader;
-            var decLoader = new MsDecSpectrumLoader(loader, Ms1Spots);
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
                 parameter.ProjectParam.SpectrumCommentToColorBytes
                .ToDictionary(
@@ -253,6 +248,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
             IConnectableObservable<List<SpectrumPeak>> refSpectrum = MatchResultCandidatesModel.LoadSpectrumObservable(refLoader).Publish();
             Disposables.Add(refSpectrum.Connect());
+            IMsSpectrumLoader<AlignmentSpotPropertyModel> decLoader = new AlignmentMSDecSpectrumLoader(_alignmentFileBean);
             Ms2SpectrumModel = new MsSpectrumModel(
                 Target.SelectSwitch(decLoader.LoadSpectrumAsObservable),
                 refSpectrum,
@@ -277,7 +273,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             AlignmentSpotTableModel = new LcimmsAlignmentSpotTableModel(new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(driftProps), target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, observableBarItemsLoader).AddTo(Disposables);
 
             MsdecResult = target.SkipNull()
-                .Select(t => loader.LoadMSDecResult(t.MasterAlignmentID))
+                .Select(t => _alignmentFileBean.LoadMSDecResultByIndex(t.MasterAlignmentID))
+                .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -369,7 +366,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public ReadOnlyReactivePropertySlim<LcimmsCompoundSearchModel> CompoundSearchModel { get; }
 
         public override void SearchFragment() {
-            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), _decLoader, _parameter);
+            using (var decLoader = _alignmentFileBean.CreateTemporaryMSDecLoader()) {
+                MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), decLoader, _parameter);
+            }
         }
 
         public override void InvokeMsfinder() {

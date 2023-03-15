@@ -55,7 +55,6 @@ namespace CompMs.App.Msdial.Model.Dims
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly IMessageBroker _broker;
         private readonly UndoManager _undoManager;
-        private readonly MSDecLoader _decLoader;
 
         public DimsAlignmentModel(
             AlignmentFileBeanModel alignmentFileModel,
@@ -134,9 +133,6 @@ namespace CompMs.App.Msdial.Model.Dims
                 VerticalTitle = "Kendrick mass defect"
             }.AddTo(Disposables);
 
-            var decLoader = alignmentFileModel.CreateTemporaryMSDecLoader().AddTo(Disposables);
-            _decLoader = decLoader;
-            var decSpecLoader = new MsDecSpectrumLoader(decLoader, Ms1Spots);
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
                parameter.ProjectParam.SpectrumCommentToColorBytes
                .ToDictionary(
@@ -167,6 +163,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
             IConnectableObservable<List<SpectrumPeak>> refSpectrum = MatchResultCandidatesModel.LoadSpectrumObservable(refLoader).Publish();
             Disposables.Add(refSpectrum.Connect());
+            IMsSpectrumLoader<AlignmentSpotPropertyModel> decSpecLoader = new AlignmentMSDecSpectrumLoader(_alignmentFile);
             Ms2SpectrumModel = new MsSpectrumModel(
                 Target.SelectSwitch(decSpecLoader.LoadSpectrumAsObservable),
                 refSpectrum,
@@ -212,7 +209,8 @@ namespace CompMs.App.Msdial.Model.Dims
             AlignmentSpotTableModel = new DimsAlignmentSpotTableModel(new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(Ms1Spots), Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, observableBarItemsLoader).AddTo(Disposables);
 
             _msdecResult = Target.SkipNull()
-                .Select(t => decLoader.LoadMSDecResult(t.MasterAlignmentID))
+                .Select(t => _alignmentFile.LoadMSDecResultByIndex(t.MasterAlignmentID))
+                .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             CanSeachCompound = new[] {
@@ -310,7 +308,9 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         public override void SearchFragment() {
-            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), _decLoader, _parameter);
+            using (var decLoader = _alignmentFile.CreateTemporaryMSDecLoader()) {
+                MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), decLoader, _parameter);
+            }
         }
 
         public override void InvokeMsfinder() {

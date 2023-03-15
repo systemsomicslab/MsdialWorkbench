@@ -12,7 +12,6 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using CompMs.Common.MessagePack;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Design;
@@ -45,7 +44,6 @@ namespace CompMs.App.Msdial.Model.Imms
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly IReadOnlyList<CompoundSearcher> _compoundSearchers;
         private readonly UndoManager _undoManager;
-        private readonly MSDecLoader _decLoader;
 
         public ImmsAlignmentModel(
             AlignmentFileBeanModel alignmentFileModel,
@@ -115,9 +113,6 @@ namespace CompMs.App.Msdial.Model.Imms
                 VerticalTitle = "m/z",
             }.AddTo(Disposables);
 
-            var loader = alignmentFileModel.CreateTemporaryMSDecLoader().AddTo(Disposables);
-            _decLoader = loader;
-            var decLoader = new MsDecSpectrumLoader(loader, Ms1Spots);
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
                _parameter.ProjectParam.SpectrumCommentToColorBytes
                .ToDictionary(
@@ -149,6 +144,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
             IConnectableObservable<List<SpectrumPeak>> refSpectrum = MatchResultCandidatesModel.LoadSpectrumObservable(refLoader).Publish();
             Disposables.Add(refSpectrum.Connect());
+            IMsSpectrumLoader<AlignmentSpotPropertyModel> decLoader = new AlignmentMSDecSpectrumLoader(_alignmentFile);
             Ms2SpectrumModel = new MsSpectrumModel(
                 Target.SelectSwitch(decLoader.LoadSpectrumAsObservable),
                 refSpectrum,
@@ -193,7 +189,8 @@ namespace CompMs.App.Msdial.Model.Imms
             AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(Ms1Spots), Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, observableBarItemsLoader).AddTo(Disposables);
 
             MsdecResult = Target.SkipNull()
-                .Select(t => loader.LoadMSDecResult(t.MasterAlignmentID))
+                .Select(t => _alignmentFile.LoadMSDecResultByIndex(t.MasterAlignmentID))
+                .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -295,7 +292,9 @@ namespace CompMs.App.Msdial.Model.Imms
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
         public override void SearchFragment() {
-            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), _decLoader, _parameter);
+            using (var decLoader = _alignmentFile.CreateTemporaryMSDecLoader()) {
+                MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), decLoader, _parameter);
+            }
         }
 
         public override void InvokeMsfinder() {

@@ -69,6 +69,11 @@ namespace CompMs.App.Msdial.Model.DataObj
         }
         private Task<MSDecLoader> _mSDecLoader;
 
+        /// <summary>
+        /// Generate a temporarily available MSDecLoader.
+        /// MSDecLoader may become unavailable without notice.
+        /// </summary>
+        /// <returns>MSDecLoader</returns>
         public MSDecLoader CreateTemporaryMSDecLoader() {
             return new MSDecLoader(File.Open(_alignmentFile.SpectraFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete));
         }
