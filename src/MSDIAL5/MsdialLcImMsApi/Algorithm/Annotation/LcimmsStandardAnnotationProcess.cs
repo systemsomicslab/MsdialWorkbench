@@ -9,6 +9,7 @@ using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,6 +17,8 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
 {
     public sealed class LcimmsStandardAnnotationProcess : IAnnotationProcess
     {
+        private static readonly int NUMBER_OF_ANNOTATION_RESULTS = 3;
+
         public LcimmsStandardAnnotationProcess(IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> queryFactories, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             _queryFacotries = queryFactories ?? throw new ArgumentNullException(nameof(queryFactories));
             _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
@@ -69,19 +72,9 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
                 var query = factory.Create(chromatogramPeakFeature, msdecResult, spectrum, chromatogramPeakFeature.PeakCharacter, factory.PrepareParameter());
                 var candidates = query.FindCandidates();
                 var results = _evaluator.FilterByThreshold(candidates);
-                var matches = _evaluator.SelectReferenceMatchResults(results);
-                if (matches.Count > 0) {
-                    var best = _evaluator.SelectTopHit(matches);
-                    best.IsReferenceMatched = true;
-                    chromatogramPeakFeature.MatchResults.AddResult(best);
-                    parentChromatogramPeakFeature.MatchResults.AddResult(best);
-                }
-                else if (results.Count > 0) {
-                    var best = _evaluator.SelectTopHit(results);
-                    best.IsAnnotationSuggested = true;
-                    chromatogramPeakFeature.MatchResults.AddResult(best);
-                    parentChromatogramPeakFeature.MatchResults.AddResult(best);
-                }
+                var topResults = _evaluator.SelectTopN(results, NUMBER_OF_ANNOTATION_RESULTS).ToArray();
+                chromatogramPeakFeature.MatchResults.AddResults(topResults);
+                parentChromatogramPeakFeature.MatchResults.AddResults(topResults);
             }
             chromatogramPeakFeature.SetMatchResultProperty(_refer, _evaluator);
         }

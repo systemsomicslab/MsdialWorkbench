@@ -127,6 +127,26 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             Assert.AreEqual(annotator.Dummy, chromPeaks[3].MatchResults.Representative);
         }
 
+        [TestMethod()]
+        public async Task RunAnnotationAsyncSetSomeHighScoreResultsTest() {
+            var chromPeaks = new[]
+            {
+                new ChromatogramPeakFeature { },
+            };
+            foreach (var peak in chromPeaks) peak.PeakCharacter.IsotopeWeightNumber = 0;
+            var msdecResults = new[]
+            {
+                new MSDecResult { },
+            };
+            var annotator = new MockAnnotator("Annotator");
+            var process = new StandardAnnotationProcess(new MockFactory(annotator.Id, annotator), annotator, annotator);
+            await process.RunAnnotationAsync(chromPeaks, msdecResults, new MockProvider(), 4);
+
+            await Console.Out.WriteLineAsync(string.Join(",", chromPeaks[0].MatchResults.MatchResults.Select(r => r.Name))).ConfigureAwait(false);
+            var highScoreSubset = annotator.Dummies.Where(r => annotator.IsReferenceMatched(r) || annotator.IsAnnotationSuggested(r)).ToArray();
+            CollectionAssert.IsSubsetOf(highScoreSubset, chromPeaks[0].MatchResults.MatchResults);
+        }
+
         class MockProvider : IDataProvider
         {
             public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
@@ -225,7 +245,23 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 Id = key;
                 Dummy = new MsScanMatchResult
                 {
-                    Name = "dummy", AnnotatorID = Key, Source = SourceType.MspDB,
+                    Name = "dummy", AnnotatorID = key, Source = SourceType.MspDB, TotalScore = 0.90f,
+                };
+                Dummies = new List<MsScanMatchResult>
+                {
+                    Dummy,
+                    new MsScanMatchResult
+                    {
+                        Name = "dummy2", AnnotatorID = key, Source = SourceType.MspDB, TotalScore = 0.80f,
+                    },
+                    new MsScanMatchResult
+                    {
+                        Name = "dummy3", AnnotatorID = key, Source = SourceType.MspDB, TotalScore = 0.70f,
+                    },
+                    new MsScanMatchResult
+                    {
+                        Name = "dummy4", AnnotatorID = key, Source = SourceType.MspDB, TotalScore = 0.60f,
+                    },
                 };
             }
 
@@ -248,16 +284,18 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
 
             public MsScanMatchResult Dummy { get; }
 
+            public List<MsScanMatchResult> Dummies { get; }
+
             public List<MsScanMatchResult> FindCandidates(MockQuery query) {
-                return new List<MsScanMatchResult> { Dummy, };
+                return Dummies.ToList();
             }
 
             public bool IsAnnotationSuggested(MsScanMatchResult result) {
-                return false;
+                return 0.8f > result.TotalScore && result.TotalScore >= 0.7f;
             }
 
             public bool IsReferenceMatched(MsScanMatchResult result) {
-                return true;
+                return result.TotalScore >= 0.8f;
             }
 
             public MoleculeMsReference Refer(MsScanMatchResult result) {
