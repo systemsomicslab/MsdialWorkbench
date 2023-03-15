@@ -1,12 +1,13 @@
 ﻿using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
+using Reactive.Bindings.Extensions;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class AlignmentFileBeanModelCollection : BindableBase
+    public sealed class AlignmentFileBeanModelCollection : DisposableModelBase
     {
         private readonly IList<AlignmentFileBean> _originalFiles;
         private readonly IReadOnlyList<AnalysisFileBean> _analysisFiles;
@@ -23,7 +24,7 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public void Add(AlignmentFileBean file) {
             _originalFiles.Add(file);
-            _files.Add(new AlignmentFileBeanModel(file, _analysisFiles));
+            _files.Add(new AlignmentFileBeanModel(file, _analysisFiles).AddTo(Disposables));
         }
     }
 }

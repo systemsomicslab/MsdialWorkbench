@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class AlignmentFileBeanModel : BindableBase, IFileBean
+    public sealed class AlignmentFileBeanModel : DisposableModelBase, IFileBean
     {
         private readonly AlignmentFileBean _alignmentFile;
         private readonly IReadOnlyList<AnalysisFileBean> _analysisFiles;
