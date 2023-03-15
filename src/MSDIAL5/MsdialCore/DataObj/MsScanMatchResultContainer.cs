@@ -6,6 +6,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using MessagePack;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CompMs.MsdialCore.DataObj
@@ -23,15 +24,14 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         public MsScanMatchResultContainer() {
-            MatchResults = new List<MsScanMatchResult>
-            {
-                UnknownResult,
-            };
+            InnerMatchResults = new List<MsScanMatchResult> { };
         }
 
         [SerializationConstructor]
-        public MsScanMatchResultContainer(List<MsScanMatchResult> matchResults, Dictionary<int, MsScanMatchResult> mSRawID2MspBasedMatchResult, List<MsScanMatchResult> textDbBasedMatchResults) {
-            MatchResults = matchResults;
+        public MsScanMatchResultContainer(ReadOnlyCollection<MsScanMatchResult> matchResults, Dictionary<int, MsScanMatchResult> mSRawID2MspBasedMatchResult, List<MsScanMatchResult> textDbBasedMatchResults) {
+            var innerMatchResults = matchResults.ToList();
+            innerMatchResults.RemoveAll(r => r.Source == SourceType.Unknown);
+            InnerMatchResults = innerMatchResults;
             MSRawID2MspBasedMatchResult = mSRawID2MspBasedMatchResult;
             TextDbBasedMatchResults = textDbBasedMatchResults;
         }
@@ -42,16 +42,16 @@ namespace CompMs.MsdialCore.DataObj
 
         // general match results
         [Key(0)]
-        public List<MsScanMatchResult> MatchResults { get; }
+        public ReadOnlyCollection<MsScanMatchResult> MatchResults => (InnerMatchResults.Any() ? InnerMatchResults : new List<MsScanMatchResult> { UnknownResult }).AsReadOnly();
+
+        private List<MsScanMatchResult> InnerMatchResults { get; } 
 
         [IgnoreMember]
         public MsScanMatchResult Representative {
             get {
                 if (cacheRepresentative is null) {
-                    var results = MatchResults.Where(result => !result.IsDecoy).ToArray();
-                    cacheRepresentative = results.Length > 0
-                        ? results.DefaultIfEmpty(UnknownResult).Argmax(ResultOrder)
-                        : null;
+                    var results = InnerMatchResults.Where(result => !result.IsDecoy);
+                    cacheRepresentative = results.DefaultIfEmpty(UnknownResult).Argmax(ResultOrder);
                 }
                 return cacheRepresentative;
             }
@@ -194,7 +194,7 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         private void AddResultCore(MsScanMatchResult result) {
-            MatchResults.Add(result);
+            InnerMatchResults.Add(result);
             cacheRepresentative = null;
         }
 
@@ -203,15 +203,15 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         private void AddResultsCore(IEnumerable<MsScanMatchResult> results) {
-            MatchResults.AddRange(results.Where(result => !MatchResults.Contains(result)).ToArray());
+            InnerMatchResults.AddRange(results.Where(result => !InnerMatchResults.Contains(result)).ToArray());
             cacheRepresentative = null;
         }
 
         public void RemoveResult(MsScanMatchResult result) {
-            if (!MatchResults.Contains(result)) {
+            if (!InnerMatchResults.Contains(result)) {
                 return;
             }
-            MatchResults.Remove(result);
+            InnerMatchResults.Remove(result);
             if (cacheRepresentative == result) {
                 cacheRepresentative = null;
             }
@@ -222,17 +222,16 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         private void ClearResultsCore() {
-            MatchResults.Clear();
-            MatchResults.Add(UnknownResult);
+            InnerMatchResults.Clear();
             cacheRepresentative = null;
         }
 
         public List<MsScanMatchResult> GetManuallyResults() {
-            return MatchResults.Where(result => (result.Source & SourceType.Manual) != SourceType.None).ToList();
+            return InnerMatchResults.Where(result => (result.Source & SourceType.Manual) != SourceType.None).ToList();
         }
 
         public void RemoveManuallyResults() {
-            MatchResults.RemoveAll(result => (result.Source & SourceType.Manual) != SourceType.None);
+            InnerMatchResults.RemoveAll(result => (result.Source & SourceType.Manual) != SourceType.None);
             cacheRepresentative = null;
         }
 
@@ -263,7 +262,7 @@ namespace CompMs.MsdialCore.DataObj
 
         public void ClearMspResults() {
             foreach (var kvp in MSRawID2MspBasedMatchResult) {
-                MatchResults.Remove(kvp.Value);
+                InnerMatchResults.Remove(kvp.Value);
             }
             MSRawID2MspBasedMatchResult.Clear();
             cacheRepresentative = null;
@@ -289,14 +288,14 @@ namespace CompMs.MsdialCore.DataObj
 
         public void ClearTextDbResults() {
             foreach (var result in TextDbBasedMatchResults) {
-                MatchResults.Remove(result);
+                InnerMatchResults.Remove(result);
             }
             TextDbBasedMatchResults.Clear();
             cacheRepresentative = null;
         }
 
         public void MergeContainers(MsScanMatchResultContainer other) {
-            AddResults(other.MatchResults);
+            AddResults(other.InnerMatchResults);
             foreach (var kvp in other.MSRawID2MspBasedMatchResult)
                 MSRawID2MspBasedMatchResult.Add(kvp.Key, kvp.Value);
             TextDbBasedMatchResults.AddRange(other.TextDbBasedMatchResults);

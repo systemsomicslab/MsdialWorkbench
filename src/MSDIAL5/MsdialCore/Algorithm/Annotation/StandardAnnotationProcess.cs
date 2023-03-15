@@ -15,6 +15,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 {
     public sealed class StandardAnnotationProcess : IAnnotationProcess
     {
+        private static readonly int NUMBER_OF_ANNOTATION_RESULTS = 3;
+
         public void RunAnnotation(
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             IReadOnlyList<MSDecResult> msdecResults,
@@ -191,24 +193,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         private void SetAnnotationResult(ChromatogramPeakFeature chromPeakFeature, IAnnotationQuery<MsScanMatchResult> query) {
-            
-            //if (Math.Abs(chromPeakFeature.ChromXsTop.RT.Value - 2.707) < 0.01 &&
-            //    Math.Abs(chromPeakFeature.Mass - 467.29955) < 0.01) {
-            //    Console.WriteLine();
-            //}
             var candidates = query.FindCandidates();
             var results = _evaluator.FilterByThreshold(candidates);
-            var matches = _evaluator.SelectReferenceMatchResults(results);
-            if (matches.Count > 0) {
-                var best = _evaluator.SelectTopHit(matches);
-                best.IsReferenceMatched = true;
-                chromPeakFeature.MatchResults.AddResult(best);
-            }
-            else if (results.Count > 0) {
-                var best = _evaluator.SelectTopHit(results);
-                best.IsAnnotationSuggested = true;
-                chromPeakFeature.MatchResults.AddResult(best);
-            }
+            var topResults = _evaluator.SelectTopN(results, NUMBER_OF_ANNOTATION_RESULTS);
+            chromPeakFeature.MatchResults.AddResults(topResults);
         }
 
         private void SetRepresentativeProperty(ChromatogramPeakFeature chromPeakFeature) {
