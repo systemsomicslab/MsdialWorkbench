@@ -59,8 +59,31 @@ namespace CompMs.App.Msdial.Model.DataObj
             }
         }
 
-        public MSDecLoader CreateMSDecLoader() {
-            return new MSDecLoader(_alignmentFile.SpectraFilePath);
+        private Task<MSDecLoader> MSDecLoader {
+            get {
+                if (_mSDecLoader is null || _mSDecLoader.IsCompleted && _mSDecLoader.Result.IsDisposed) {
+                    return _mSDecLoader = Task.FromResult(new MSDecLoader(_alignmentFile.SpectraFilePath).AddTo(Disposables));
+                }
+                return _mSDecLoader;
+            }
+        }
+        private Task<MSDecLoader> _mSDecLoader;
+
+        public MSDecLoader CreateTemporaryMSDecLoader() {
+            return new MSDecLoader(File.Open(_alignmentFile.SpectraFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete));
+        }
+
+        public async Task<MSDecResult> LoadMSDecResultByIndex(int index, CancellationToken token = default) {
+            await _alignmentMsdecSem.WaitAsync(token).ConfigureAwait(false);
+            token.ThrowIfCancellationRequested();
+            try {
+                var loader = await MSDecLoader.ConfigureAwait(false);
+                token.ThrowIfCancellationRequested();
+                return loader.LoadMSDecResult(index);
+            }
+            finally {
+                _alignmentMsdecSem.Release();
+            }
         }
 
         public async Task<List<MSDecResult>> LoadMSDecResultsAsync(CancellationToken token = default) {

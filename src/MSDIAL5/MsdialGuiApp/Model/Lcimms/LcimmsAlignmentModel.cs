@@ -219,7 +219,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             DtAlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             DtAlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            var loader = alignmentFileBean.CreateMSDecLoader().AddTo(Disposables);
+            var loader = alignmentFileBean.CreateTemporaryMSDecLoader().AddTo(Disposables);
             _decLoader = loader;
             var decLoader = new MsDecSpectrumLoader(loader, Ms1Spots);
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(

@@ -37,7 +37,7 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         public MsScanMatchResultContainer(MsScanMatchResultContainer source)
-            : this(source.MatchResults.ToList(), source.MSRawID2MspBasedMatchResult.ToDictionary(kvp => kvp.Key, kvp => kvp.Value), source.TextDbBasedMatchResults.ToList()) {
+            : this(source.MatchResults, source.MSRawID2MspBasedMatchResult.ToDictionary(kvp => kvp.Key, kvp => kvp.Value), source.TextDbBasedMatchResults.ToList()) {
         }
 
         // general match results

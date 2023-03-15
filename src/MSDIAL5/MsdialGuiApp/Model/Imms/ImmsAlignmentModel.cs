@@ -115,7 +115,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 VerticalTitle = "m/z",
             }.AddTo(Disposables);
 
-            var loader = alignmentFileModel.CreateMSDecLoader().AddTo(Disposables);
+            var loader = alignmentFileModel.CreateTemporaryMSDecLoader().AddTo(Disposables);
             _decLoader = loader;
             var decLoader = new MsDecSpectrumLoader(loader, Ms1Spots);
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(

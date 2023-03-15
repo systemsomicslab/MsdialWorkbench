@@ -134,7 +134,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 VerticalTitle = "Kendrick mass defect"
             }.AddTo(Disposables);
 
-            var decLoader = alignmentFileModel.CreateMSDecLoader().AddTo(Disposables);
+            var decLoader = alignmentFileModel.CreateTemporaryMSDecLoader().AddTo(Disposables);
             _decLoader = decLoader;
             var decSpecLoader = new MsDecSpectrumLoader(decLoader, Ms1Spots);
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(

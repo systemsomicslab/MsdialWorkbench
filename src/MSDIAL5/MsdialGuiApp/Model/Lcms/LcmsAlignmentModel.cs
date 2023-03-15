@@ -48,7 +48,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT);
         }
 
-        private readonly MSDecLoader _decLoader;
         private readonly AlignmentFileBeanModel _alignmentFile;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly List<AnalysisFileBean> _files;
@@ -98,9 +97,9 @@ namespace CompMs.App.Msdial.Model.Lcms
                 ProteinResultContainerModel = proteinResultContainerModel;
             }
 
-            _decLoader = _alignmentFile.CreateMSDecLoader().AddTo(Disposables);
             _msdecResult = Target.SkipNull()
-                .Select(t => _decLoader.LoadMSDecResult(t.MasterAlignmentID))
+                .Select(t => _alignmentFile.LoadMSDecResultByIndex(t.MasterAlignmentID))
+                .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -181,7 +180,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
             IConnectableObservable<List<SpectrumPeak>> refSpectrum = MatchResultCandidatesModel.LoadSpectrumObservable(refLoader).Publish();
             Disposables.Add(refSpectrum.Connect());
-            MsDecSpectrumLoader msDecSpectrumLoader = new MsDecSpectrumLoader(_decLoader, Ms1Spots);
+            IMsSpectrumLoader<AlignmentSpotPropertyModel> msDecSpectrumLoader = new AlignmentMSDecSpectrumLoader(_alignmentFile);
             Ms2SpectrumModel = new MsSpectrumModel(
                 Target.SelectSwitch(msDecSpectrumLoader.LoadSpectrumAsObservable),
                 refSpectrum,
@@ -324,7 +323,9 @@ namespace CompMs.App.Msdial.Model.Lcms
         public bool CanSaveSpectra() => Target.Value.innerModel != null && _msdecResult.Value != null;
 
         public override void SearchFragment() {
-            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), _decLoader, Parameter);
+            using (var decLoader = _alignmentFile.CreateTemporaryMSDecLoader()) {
+                MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), decLoader, Parameter);
+            }
         }
 
         public override void InvokeMsfinder() {
