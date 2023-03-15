@@ -20,12 +20,14 @@ namespace CompMs.App.Msdial.Model.DataObj
         private readonly IReadOnlyList<AnalysisFileBean> _analysisFiles;
         private readonly SemaphoreSlim _alignmentResultSem;
         private readonly SemaphoreSlim _alignmentMsdecSem;
+        private readonly SemaphoreSlim _alignmentEicSem;
 
         public AlignmentFileBeanModel(AlignmentFileBean alignmentFile, IReadOnlyList<AnalysisFileBean> analysisFiles) {
             _alignmentFile = alignmentFile;
             _analysisFiles = analysisFiles;
-            _alignmentResultSem = new SemaphoreSlim(1, 1);
-            _alignmentMsdecSem = new SemaphoreSlim(1, 1);
+            _alignmentResultSem = new SemaphoreSlim(1, 1).AddTo(Disposables);
+            _alignmentMsdecSem = new SemaphoreSlim(1, 1).AddTo(Disposables);
+            _alignmentEicSem = new SemaphoreSlim(1, 1).AddTo(Disposables);
         }
 
         public string FileName => _alignmentFile.FileName;
@@ -145,6 +147,19 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public AlignmentEicLoader CreateEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> deserializer, AnalysisFileBeanModelCollection analysisFiles, ProjectBaseParameterModel projectBaseParameter) {
             return new AlignmentEicLoader(deserializer, _alignmentFile.EicFilePath, analysisFiles, projectBaseParameter);
+        }
+
+        public async Task SaveEicInfoAsync(ChromatogramSerializer<ChromatogramSpotInfo> serializer, IEnumerable<ChromatogramSpotInfo> spotInfos, CancellationToken token = default) {
+            await _alignmentEicSem.WaitAsync(token).ConfigureAwait(false);
+            try {
+                using (var stream = new TemporaryFileStream(_alignmentFile.EicFilePath)) {
+                    serializer.SerializeAll(stream, spotInfos);
+                    stream.Move();
+                }
+            }
+            finally {
+                _alignmentEicSem.Release();
+            }
         }
 
         public ProteinResultContainer LoadProteinResult() {
