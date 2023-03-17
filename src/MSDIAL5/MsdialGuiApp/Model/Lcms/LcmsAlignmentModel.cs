@@ -53,7 +53,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         private readonly List<AnalysisFileBean> _files;
         private readonly IReadOnlyList<CompoundSearcher> _compoundSearchers;
         private readonly UndoManager _undoManager;
-        private readonly AlignmentSpotPropertyModelCollection _spots;
         private readonly ReadOnlyReactivePropertySlim<MSDecResult> _msdecResult;
 
         public LcmsAlignmentModel(
@@ -84,8 +83,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper).Items;
             _undoManager = new UndoManager().AddTo(Disposables);
 
-            _spots = new AlignmentSpotPropertyModelCollection(Container.AlignmentSpotProperties).AddTo(Disposables);
-            Ms1Spots = _spots.Items;
+            var spotsSource = new AlignmentSpotSource(alignmentFileBean, Container, CHROMATOGRAM_SPOT_SERIALIZER).AddTo(Disposables);
+            Ms1Spots = spotsSource.Spots.Items;
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
 
             InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Lcms).AddTo(Disposables);
@@ -98,7 +97,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
 
             _msdecResult = Target.SkipNull()
-                .Select(t => _alignmentFile.LoadMSDecResultByIndex(t.MasterAlignmentID))
+                .Select(t => _alignmentFile.LoadMSDecResultByIndexAsync(t.MasterAlignmentID))
                 .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -139,7 +138,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            PlotModel = new AlignmentPeakPlotModel(_spots, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, selectedBrush, brushes)
+            PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, selectedBrush, brushes)
             {
                 GraphTitle = ((IFileBean)_alignmentFile).FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),

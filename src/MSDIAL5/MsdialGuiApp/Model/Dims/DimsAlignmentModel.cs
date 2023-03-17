@@ -209,7 +209,7 @@ namespace CompMs.App.Msdial.Model.Dims
             AlignmentSpotTableModel = new DimsAlignmentSpotTableModel(new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(Ms1Spots), Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, observableBarItemsLoader).AddTo(Disposables);
 
             _msdecResult = Target.SkipNull()
-                .Select(t => _alignmentFile.LoadMSDecResultByIndex(t.MasterAlignmentID))
+                .Select(t => _alignmentFile.LoadMSDecResultByIndexAsync(t.MasterAlignmentID))
                 .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);

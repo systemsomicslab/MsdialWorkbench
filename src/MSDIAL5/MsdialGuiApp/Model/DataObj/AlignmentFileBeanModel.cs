@@ -5,6 +5,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using Reactive.Bindings.Extensions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -63,8 +64,14 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         private Task<MSDecLoader> MSDecLoader {
             get {
-                if (_mSDecLoader is null || _mSDecLoader.IsCompleted && _mSDecLoader.Result.IsDisposed) {
-                    return _mSDecLoader = Task.FromResult(new MSDecLoader(_alignmentFile.SpectraFilePath).AddTo(Disposables));
+                if (_mSDecLoader?.Result is null || _mSDecLoader.IsCompleted && _mSDecLoader.Result.IsDisposed) {
+                    try {
+                        var loader = new MSDecLoader(_alignmentFile.SpectraFilePath).AddTo(Disposables);
+                        return _mSDecLoader = Task.FromResult(loader);
+                    }
+                    catch (ArgumentException) {
+                        return _mSDecLoader = Task.FromResult((MSDecLoader)null);
+                    }
                 }
                 return _mSDecLoader;
             }
@@ -80,7 +87,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             return new MSDecLoader(File.Open(_alignmentFile.SpectraFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete));
         }
 
-        public async Task<MSDecResult> LoadMSDecResultByIndex(int index, CancellationToken token = default) {
+        public async Task<MSDecResult> LoadMSDecResultByIndexAsync(int index, CancellationToken token = default) {
             await _alignmentMsdecSem.WaitAsync(token).ConfigureAwait(false);
             token.ThrowIfCancellationRequested();
             try {
@@ -138,6 +145,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             await _alignmentMsdecSem.WaitAsync(token).ConfigureAwait(false);
             try {
                 var list = (results as List<MSDecResult>) ?? results.ToList();
+                MSDecLoader.Result?.Dispose();
                 MsdecResultsWriter.Write(_alignmentFile.SpectraFilePath, list);
             }
             finally {
@@ -145,8 +153,23 @@ namespace CompMs.App.Msdial.Model.DataObj
             }
         }
 
+        public async Task AppendMSDecResultAsync(MSDecResult result, CancellationToken token = default) {
+            var results = await LoadMSDecResultsAsync(token).ConfigureAwait(false);
+            await SaveMSDecResultsAsync(results.Append(result), token).ConfigureAwait(false);
+        }
+
         public AlignmentEicLoader CreateEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> deserializer, AnalysisFileBeanModelCollection analysisFiles, ProjectBaseParameterModel projectBaseParameter) {
             return new AlignmentEicLoader(deserializer, _alignmentFile.EicFilePath, analysisFiles, projectBaseParameter);
+        }
+
+        public async Task<ChromatogramSpotInfo> LoadEicInfoByIndexAsync(int index, ChromatogramSerializer<ChromatogramSpotInfo> deserializer, CancellationToken token = default) {
+            await _alignmentEicSem.WaitAsync(token).ConfigureAwait(false);
+            try {
+                return deserializer.DeserializeAtFromFile(_alignmentFile.EicFilePath, index);
+            }
+            finally {
+                _alignmentEicSem.Release();
+            }
         }
 
         public async Task SaveEicInfoAsync(ChromatogramSerializer<ChromatogramSpotInfo> serializer, IEnumerable<ChromatogramSpotInfo> spotInfos, CancellationToken token = default) {
@@ -160,6 +183,18 @@ namespace CompMs.App.Msdial.Model.DataObj
             finally {
                 _alignmentEicSem.Release();
             }
+        }
+
+        public async Task AppendEicInfoAsync(ChromatogramSerializer<ChromatogramSpotInfo> serializer, ChromatogramSpotInfo spotInfo, CancellationToken token = default) {
+            await _alignmentEicSem.WaitAsync(token).ConfigureAwait(false);
+            ChromatogramSpotInfo[] infos;
+            try {
+                infos = serializer.DeserializeAllFromFile(_alignmentFile.EicFilePath).ToArray();
+            }
+            finally {
+                _alignmentEicSem.Release();
+            }
+            await SaveEicInfoAsync(serializer, infos.Append(spotInfo), token).ConfigureAwait(false);
         }
 
         public ProteinResultContainer LoadProteinResult() {

@@ -189,7 +189,7 @@ namespace CompMs.App.Msdial.Model.Imms
             AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(Ms1Spots), Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, observableBarItemsLoader).AddTo(Disposables);
 
             MsdecResult = Target.SkipNull()
-                .Select(t => _alignmentFile.LoadMSDecResultByIndex(t.MasterAlignmentID))
+                .Select(t => _alignmentFile.LoadMSDecResultByIndexAsync(t.MasterAlignmentID))
                 .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);

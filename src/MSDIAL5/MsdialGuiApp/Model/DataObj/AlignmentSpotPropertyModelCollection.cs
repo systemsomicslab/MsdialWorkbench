@@ -22,7 +22,7 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public ReadOnlyObservableCollection<AlignmentSpotPropertyModel> Items { get; }
 
-        public void Duplicates(AlignmentSpotPropertyModel spot) {
+        public AlignmentSpotPropertyModel Duplicates(AlignmentSpotPropertyModel spot) {
             var nextMasterId = _currentMasterId + 1;
             var newSpot = spot.Clone(nextMasterId, nextMasterId).AddTo(Disposables);
             var links = newSpot.innerModel.PeakCharacter.PeakLinks;
@@ -37,6 +37,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             _currentMasterId = GetMaxMasterId(new[] { newSpot.innerModel, });
             _originalSpots.Add(newSpot.innerModel);
             _items.Add(newSpot);
+            return newSpot;
         }
 
         private static int GetMaxMasterId(IEnumerable<AlignmentSpotProperty> spots) {

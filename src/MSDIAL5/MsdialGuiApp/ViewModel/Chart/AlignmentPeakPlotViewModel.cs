@@ -57,8 +57,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            DuplicatesCommand = model.CanDuplicates.ToReactiveCommand()
-                .WithSubscribe(model.Duplicates).AddTo(Disposables);
+            DuplicatesCommand = model.CanDuplicates.ToAsyncReactiveCommand()
+                .WithSubscribe(model.DuplicatesAsync).AddTo(Disposables);
         }
 
         public Action Focus { get; }
@@ -91,6 +91,6 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReadOnlyReactivePropertySlim<string> LabelProperty { get; }
 
-        public ReactiveCommand DuplicatesCommand { get; }
+        public AsyncReactiveCommand DuplicatesCommand { get; }
     }
 }

@@ -20,7 +20,7 @@ namespace CompMs.App.Msdial.Model.Loader
             if (target is null) {
                 return Task.FromResult(new MSDecResult());
             }
-            return _alignmentFile.LoadMSDecResultByIndex(target.MasterAlignmentID);
+            return _alignmentFile.LoadMSDecResultByIndexAsync(target.MasterAlignmentID);
         }
 
         IObservable<List<SpectrumPeak>> IMsSpectrumLoader<AlignmentSpotPropertyModel>.LoadSpectrumAsObservable(AlignmentSpotPropertyModel target) {

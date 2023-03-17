@@ -10,24 +10,25 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class AlignmentPeakPlotModel : DisposableModelBase
     {
-        private readonly AlignmentSpotPropertyModelCollection _spots;
+        private readonly AlignmentSpotSource _spotsSource;
 
         public AlignmentPeakPlotModel(
-            AlignmentSpotPropertyModelCollection spots,
+            AlignmentSpotSource spotsSource,
             Func<AlignmentSpotPropertyModel, double> horizontalSelector,
             Func<AlignmentSpotPropertyModel, double> verticalSelector,
             IReactiveProperty<AlignmentSpotPropertyModel> targetSource,
             IObservable<string> labelSource,
             BrushMapData<AlignmentSpotPropertyModel> selectedBrush,
             IList<BrushMapData<AlignmentSpotPropertyModel>> brushes)
-            : this(spots.Items, horizontalSelector, verticalSelector, targetSource, labelSource, selectedBrush, brushes) {
+            : this(spotsSource.Spots.Items, horizontalSelector, verticalSelector, targetSource, labelSource, selectedBrush, brushes) {
 
-            _spots = spots;
+            _spotsSource = spotsSource;
         }
 
         public AlignmentPeakPlotModel(
@@ -123,15 +124,16 @@ namespace CompMs.App.Msdial.Model.Chart
         public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 
         public IObservable<bool> CanDuplicates => new[]{
-            Observable.Return(_spots is null),
+            Observable.Return(_spotsSource is null),
             TargetSource.Select(t => t is null),
         }.CombineLatestValuesAreAllFalse();
 
-        public void Duplicates() {
-            if (TargetSource.Value is null || _spots is null) {
-                return;
+        public Task DuplicatesAsync() {
+            var spot = TargetSource.Value;
+            if (spot is null || _spotsSource is null) {
+                return Task.CompletedTask;
             }
-            _spots.Duplicates(TargetSource.Value);
+            return _spotsSource.DuplicateSpotAsync(spot);
         }
     }
 }

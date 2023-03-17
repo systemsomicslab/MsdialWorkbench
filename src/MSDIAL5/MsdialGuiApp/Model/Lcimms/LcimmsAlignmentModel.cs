@@ -273,7 +273,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             AlignmentSpotTableModel = new LcimmsAlignmentSpotTableModel(new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(driftProps), target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, observableBarItemsLoader).AddTo(Disposables);
 
             MsdecResult = target.SkipNull()
-                .Select(t => _alignmentFileBean.LoadMSDecResultByIndex(t.MasterAlignmentID))
+                .Select(t => _alignmentFileBean.LoadMSDecResultByIndexAsync(t.MasterAlignmentID))
                 .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
