@@ -11,12 +11,13 @@ namespace CompMs.App.Msdial.Model.DataObj
     {
         private readonly IList<AlignmentSpotProperty> _originalSpots;
         private readonly ObservableCollection<AlignmentSpotPropertyModel> _items;
-        private int _currentMasterId;
+        private int _currentMasterId, _currentLocalId;
 
         public AlignmentSpotPropertyModelCollection(ObservableCollection<AlignmentSpotProperty> spots) {
             _originalSpots = spots;
             _items = new ObservableCollection<AlignmentSpotPropertyModel>(EnumerateSpots(spots).Select(spot => new AlignmentSpotPropertyModel(spot).AddTo(Disposables)));
             Items = new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(_items);
+            _currentLocalId = GetMaxLocalId(spots);
             _currentMasterId = GetMaxMasterId(spots);
         }
 
@@ -24,7 +25,7 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public AlignmentSpotPropertyModel Duplicates(AlignmentSpotPropertyModel spot) {
             var nextMasterId = _currentMasterId + 1;
-            var newSpot = spot.Clone(nextMasterId, nextMasterId).AddTo(Disposables);
+            var newSpot = spot.Clone(nextMasterId, ++_currentLocalId).AddTo(Disposables);
             var links = newSpot.innerModel.PeakCharacter.PeakLinks;
             if (links.Any()) {
                 var friends = FindByParentId(newSpot.innerModel.ParentAlignmentID).ToDictionary(s => s.AlignmentID, s => s);
@@ -42,6 +43,10 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         private static int GetMaxMasterId(IEnumerable<AlignmentSpotProperty> spots) {
             return EnumerateSpots(spots).Select(s => s.MasterAlignmentID).DefaultIfEmpty().Max();
+        }
+
+        private static int GetMaxLocalId(IEnumerable<AlignmentSpotProperty> spots) {
+            return spots.Select(s => s.AlignmentID).DefaultIfEmpty().Max();
         }
 
         private IEnumerable<AlignmentSpotProperty> FindByParentId(int id) {
