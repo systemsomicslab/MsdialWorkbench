@@ -15,7 +15,7 @@ namespace CompMs.App.Msdial.Model.Table
 
     abstract class PeakSpotTableModelBase<T> : DisposableModelBase, IPeakSpotTableModelBase where T: class
     {
-        public PeakSpotTableModelBase(ObservableCollection<T> peakSpots, IReactiveProperty<T> target) {
+        public PeakSpotTableModelBase(ReadOnlyObservableCollection<T> peakSpots, IReactiveProperty<T> target) {
             if (peakSpots is null) {
                 throw new ArgumentNullException(nameof(peakSpots));
             }
@@ -27,7 +27,7 @@ namespace CompMs.App.Msdial.Model.Table
             Target = target;
         }
 
-        public ObservableCollection<T> PeakSpots { get; }
+        public ReadOnlyObservableCollection<T> PeakSpots { get; }
 
         public IReactiveProperty<T> Target { get; }
 

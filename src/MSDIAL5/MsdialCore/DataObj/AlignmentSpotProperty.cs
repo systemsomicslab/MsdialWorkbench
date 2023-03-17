@@ -189,8 +189,6 @@ namespace CompMs.MsdialCore.DataObj {
             get => matchResults ?? (matchResults = new MsScanMatchResultContainer());
             set => matchResults = value;
         }
-
-        [Key(57)]
         private MsScanMatchResultContainer matchResults;
 
         [Key(28)]
@@ -321,6 +319,78 @@ namespace CompMs.MsdialCore.DataObj {
             }
         }
 
+        public AlignmentSpotProperty Clone(ref int masterId, int alignmentId) {
+            var driftSpots = new List<AlignmentSpotProperty>(AlignmentDriftSpotFeatures.Count);
+            foreach (var driftSpot in AlignmentDriftSpotFeatures) {
+                driftSpots.Add(driftSpot.Clone(ref masterId, driftSpot.AlignmentID));
+            }
+            var spot = new AlignmentSpotProperty
+            {
+                MasterAlignmentID = masterId++,
+                AlignmentID = alignmentId,
+                ParentAlignmentID = ParentAlignmentID,
+                RepresentativeFileID = RepresentativeFileID,
+                TimesCenter = new ChromXs(TimesCenter.RT, TimesCenter.RI, TimesCenter.Drift, TimesCenter.Mz, TimesCenter.MainType),
+                MassCenter = MassCenter,
+                QuantMass = QuantMass,
+                InternalStandardAlignmentID = InternalStandardAlignmentID,
+                AlignedPeakProperties = AlignedPeakPropertiesTask.Result.Select(peak => peak.Clone()).ToList(),
+                AlignmentDriftSpotFeatures = driftSpots,
+                IsotopicPeaks = IsotopicPeaks?.Select(p => new IsotopicPeak(p)).ToList(),
+                PeakCharacter = new IonFeatureCharacter(PeakCharacter),
+                IonMode = IonMode,
+                AdductType = AdductType,
+                Name = Name,
+                Formula = Formula,
+                Ontology = Ontology,
+                SMILES = SMILES,
+                InChIKey = InChIKey,
+                Protein = Protein,
+                ProteinGroupID = ProteinGroupID,
+                CollisionCrossSection = CollisionCrossSection,
+                MSRawID2MspIDs = MSRawID2MspIDs?.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToList()),
+                TextDbIDs = TextDbIDs?.ToList(),
+                IsotopeTrackTextDbID = IsotopeTrackTextDbID,
+                MSRawID2MspBasedMatchResult = MSRawID2MspBasedMatchResult?.ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
+                TextDbBasedMatchResult = TextDbBasedMatchResult,
+                Comment = Comment,
+                AnnotationCode = AnnotationCode,
+                AnnotationCodeCorrDec = AnnotationCodeCorrDec,
+                matchResults = new MsScanMatchResultContainer(matchResults),
+                CorrDecLibraryIDs = CorrDecLibraryIDs?.ToList(),
+                AnovaPvalue = AnovaPvalue,
+                FoldChange = FoldChange,
+                HeightAverage = HeightAverage,
+                HeightMin = HeightMin,
+                HeightMax = HeightMax,
+                PeakWidthAverage = PeakWidthAverage,
+                SignalToNoiseAve = SignalToNoiseAve,
+                SignalToNoiseMax = SignalToNoiseMax,
+                SignalToNoiseMin = SignalToNoiseMin,
+                EstimatedNoiseAve = EstimatedNoiseAve,
+                EstimatedNoiseMax = EstimatedNoiseMax,
+                EstimatedNoiseMin = EstimatedNoiseMin,
+                TimesMin = new ChromXs(TimesMin.RT, TimesMin.RI, TimesMin.Drift, TimesMin.Mz, TimesMin.MainType),
+                TimesMax = new ChromXs(TimesMax.RT, TimesMax.RI, TimesMax.Drift, TimesMax.Mz, TimesMax.MainType),
+                MassMin = MassMin,
+                MassMax = MassMax,
+                FeatureFilterStatus = new FeatureFilterStatus(FeatureFilterStatus),
+                IsManuallyModifiedForQuant = IsManuallyModifiedForQuant,
+                IonAbundanceUnit = IonAbundanceUnit,
+                FillParcentage = FillParcentage,
+                RelativeAmplitudeValue = RelativeAmplitudeValue,
+                MonoIsotopicPercentage = MonoIsotopicPercentage,
+                AlignmentSpotVariableCorrelations = AlignmentSpotVariableCorrelations?.Select(c => new AlignmentSpotVariableCorrelation(c)).ToList(),
+                IsBlankFilteredByPostCurator = IsBlankFilteredByPostCurator,
+                IsRmdFilteredByPostCurator = IsRmdFilteredByPostCurator,
+                IsRsdFilteredByPostCurator = IsRsdFilteredByPostCurator,
+                IsBlankGhostFilteredByPostCurator = IsBlankGhostFilteredByPostCurator,
+                IsMzFilteredByPostCurator = IsMzFilteredByPostCurator,
+                MSDecResultIdUsed = MSDecResultIdUsed,
+            };
+            return spot;
+        }
+
         // IMSProperty
         ChromXs IMSProperty.ChromXs {
             get => TimesCenter;
@@ -375,6 +445,16 @@ namespace CompMs.MsdialCore.DataObj {
 
     [MessagePackObject]
     public class AlignmentSpotVariableCorrelation {
+        [SerializationConstructor]
+        public AlignmentSpotVariableCorrelation() {
+            
+        }
+
+        public AlignmentSpotVariableCorrelation(AlignmentSpotVariableCorrelation source) {
+            CorrelateAlignmentID = source.CorrelateAlignmentID;
+            CorrelationScore = source.CorrelationScore;
+        }
+
         [Key(0)]
         public int CorrelateAlignmentID { get; set; }
         [Key(1)]

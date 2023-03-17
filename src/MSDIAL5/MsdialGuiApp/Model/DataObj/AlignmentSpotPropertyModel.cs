@@ -249,6 +249,12 @@ namespace CompMs.App.Msdial.Model.DataObj
             OnPropertyChanged(string.Empty);
         }
 
+        public AlignmentSpotPropertyModel Clone(int newMasterId, int newLocalId) {
+            var id = newMasterId;
+            var model = innerModel.Clone(ref id, newLocalId);
+            return new AlignmentSpotPropertyModel(model);
+        }
+
         // IPeakSpotModel
         IMSIonProperty IPeakSpotModel.MSIon => innerModel;
         IMoleculeProperty IPeakSpotModel.Molecule => innerModel;

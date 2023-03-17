@@ -261,5 +261,60 @@ namespace CompMs.MsdialCore.DataObj
 
         // INormalizableValue
         double INormalizableValue.PeakHeight => PeakHeightTop;
+
+        public AlignmentChromPeakFeature Clone() {
+            return new AlignmentChromPeakFeature
+            {
+                FileID = FileID,
+                FileName = FileName,
+                MasterPeakID = MasterPeakID,
+                PeakID = PeakID,
+                ParentPeakID = ParentPeakID,
+                SeekPointToDCLFile = SeekPointToDCLFile,
+                MS1RawSpectrumID = MS1RawSpectrumID,
+                MS1RawSpectrumIDatAccumulatedMS1 = MS1RawSpectrumIDatAccumulatedMS1,
+                MS2RawSpectrumID = MS2RawSpectrumID,
+                MS2RawSpectrumID2CE = MS2RawSpectrumID2CE is null ? null : new Dictionary<int, double>(MS2RawSpectrumID2CE),
+                ChromScanIdLeft = ChromScanIdLeft,
+                ChromScanIdTop = ChromScanIdTop,
+                ChromScanIdRight = ChromScanIdRight,
+                MS1RawSpectrumIdTop = MS1RawSpectrumIdTop,
+                MS1RawSpectrumIdLeft = MS1RawSpectrumIdLeft,
+                MS1RawSpectrumIdRight = MS1RawSpectrumIdRight,
+                MS1AccumulatedMs1RawSpectrumIdTop = MS1AccumulatedMs1RawSpectrumIdTop,
+                MS1AccumulatedMs1RawSpectrumIdLeft = MS1AccumulatedMs1RawSpectrumIdLeft,
+                MS1AccumulatedMs1RawSpectrumIdRight = MS1AccumulatedMs1RawSpectrumIdRight,
+                ChromXsLeft = new ChromXs(ChromXsLeft.RT, ChromXsLeft.RI, ChromXsLeft.Drift, ChromXsLeft.Mz, ChromXsLeft.MainType),
+                ChromXsTop = new ChromXs(ChromXsTop.RT, ChromXsTop.RI, ChromXsTop.Drift, ChromXsTop.Mz, ChromXsTop.MainType),
+                ChromXsRight = new ChromXs(ChromXsRight.RT, ChromXsRight.RI, ChromXsRight.Drift, ChromXsRight.Mz, ChromXsRight.MainType),
+                PeakHeightLeft = PeakHeightLeft,
+                PeakHeightTop = PeakHeightTop,
+                PeakHeightRight = PeakHeightRight,
+                PeakAreaAboveZero = PeakAreaAboveZero,
+                PeakAreaAboveBaseline = PeakAreaAboveBaseline,
+                Mass = Mass,
+                IonMode = IonMode,
+                Name = Name,
+                Formula = Formula,
+                Ontology = Ontology,
+                SMILES = SMILES,
+                InChIKey = InChIKey,
+                Protein = Protein,
+                ProteinGroupID = ProteinGroupID,
+                CollisionCrossSection = CollisionCrossSection,
+                MSRawID2MspIDs = MSRawID2MspIDs.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToList()),
+                TextDbIDs = TextDbIDs.ToList(),
+                MSRawID2MspBasedMatchResult = MSRawID2MspBasedMatchResult is null ? null : new Dictionary<int, MsScanMatchResult>(MSRawID2MspBasedMatchResult),
+                TextDbBasedMatchResult = TextDbBasedMatchResult,
+                matchResults = new MsScanMatchResultContainer(MatchResults),
+                PeakCharacter = new IonFeatureCharacter(PeakCharacter),
+                PeakShape = new ChromatogramPeakShape(PeakShape),
+                NormalizedPeakHeight = NormalizedPeakHeight,
+                NormalizedPeakAreaAboveZero = NormalizedPeakAreaAboveZero,
+                NormalizedPeakAreaAboveBaseline = NormalizedPeakAreaAboveBaseline,
+                MSDecResultIdUsed = MSDecResultIdUsed,
+                IsManuallyModifiedForQuant = IsManuallyModifiedForQuant,
+            };
+        }
     }
 }

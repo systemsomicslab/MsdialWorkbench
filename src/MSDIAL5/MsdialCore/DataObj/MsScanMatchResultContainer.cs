@@ -36,6 +36,10 @@ namespace CompMs.MsdialCore.DataObj
             TextDbBasedMatchResults = textDbBasedMatchResults;
         }
 
+        public MsScanMatchResultContainer(MsScanMatchResultContainer source)
+            : this(source.MatchResults, source.MSRawID2MspBasedMatchResult.ToDictionary(kvp => kvp.Key, kvp => kvp.Value), source.TextDbBasedMatchResults.ToList()) {
+        }
+
         // general match results
         [Key(0)]
         public ReadOnlyCollection<MsScanMatchResult> MatchResults => (InnerMatchResults.Any() ? InnerMatchResults : new List<MsScanMatchResult> { UnknownResult }).AsReadOnly();

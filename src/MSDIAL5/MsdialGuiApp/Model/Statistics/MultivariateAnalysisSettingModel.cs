@@ -16,13 +16,13 @@ using System.Windows;
 namespace CompMs.App.Msdial.Model.Statistics {
     internal sealed class MultivariateAnalysisSettingModel : BindableBase {
         private readonly ParameterBase _parameter;
-        private readonly ObservableCollection<AlignmentSpotPropertyModel> _spotprops;
+        private readonly ReadOnlyObservableCollection<AlignmentSpotPropertyModel> _spotprops;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
         private readonly List<AnalysisFileBean> _analysisfiles;
         private readonly IObservable<KeyBrushMapper<string>> _brushmaps;
 
         public MultivariateAnalysisSettingModel(ParameterBase parameter,
-           ObservableCollection<AlignmentSpotPropertyModel> spotprops,
+           ReadOnlyObservableCollection<AlignmentSpotPropertyModel> spotprops,
            IMatchResultEvaluator<MsScanMatchResult> evaluator,
            List<AnalysisFileBean> analysisfiles,
            IObservable<KeyBrushMapper<string>> brushmaps

@@ -33,7 +33,7 @@ namespace CompMs.App.Msdial.Model.Core
             _projectBaseParameter = new ProjectBaseParameterModel(Storage.Parameter.ProjectParam).AddTo(Disposables);
             var files = new AnalysisFileBeanModelCollection(Storage.AnalysisFiles.Select(file => new AnalysisFileBeanModel(file)));
             _analysisFileBeanModelCollection = files;
-            _alignmentFileBeanModelCollection = new AlignmentFileBeanModelCollection(Storage.AlignmentFiles);
+            _alignmentFileBeanModelCollection = new AlignmentFileBeanModelCollection(Storage.AlignmentFiles, Storage.AnalysisFiles).AddTo(Disposables);
             AnalysisFilePropertyResetModel = new AnalysisFilePropertyResetModel(files, _projectBaseParameter);
             FileClassSetModel = new FileClassSetModel(_projectBaseParameter);
 

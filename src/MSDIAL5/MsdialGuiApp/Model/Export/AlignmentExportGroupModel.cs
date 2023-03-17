@@ -48,7 +48,7 @@ namespace CompMs.App.Msdial.Model.Export
 
         public void Export(AlignmentFileBeanModel alignmentFile, string exportDirectory, Action<string> notification) {
             var outNameTemplate = $"{{0}}_{((IFileBean)alignmentFile).FileID}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}";
-            var msdecResults = alignmentFile.ReadMSDecResults();
+            var msdecResults = alignmentFile.LoadMSDecResults();
             var peakSpot = _peakSpotSupplyer.Supply(alignmentFile, default);
             ExportMethod.Export(outNameTemplate, exportDirectory, peakSpot, msdecResults, notification, Types.Where(type => type.IsSelected));
         }

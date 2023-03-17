@@ -23,7 +23,7 @@ namespace CompMs.App.Msdial.Model.Lcms
     abstract class LcmsPeakSpotTableModel<T> : PeakSpotTableModelBase<T>, ILcmsPeakSpotTableModel where T : class
     {
         public LcmsPeakSpotTableModel(
-            ObservableCollection<T> peakSpots,
+            ReadOnlyObservableCollection<T> peakSpots,
             IReactiveProperty<T> target,
             double massMin,
             double massMax,
@@ -49,7 +49,7 @@ namespace CompMs.App.Msdial.Model.Lcms
     sealed class LcmsAlignmentSpotTableModel : LcmsPeakSpotTableModel<AlignmentSpotPropertyModel>
     {
         public LcmsAlignmentSpotTableModel(
-            ObservableCollection<AlignmentSpotPropertyModel> peakSpots,
+            ReadOnlyObservableCollection<AlignmentSpotPropertyModel> peakSpots,
             IReactiveProperty<AlignmentSpotPropertyModel> target,
             IObservable<IBrushMapper<BarItem>> classBrush,
             FileClassPropertiesModel classProperties,
@@ -69,7 +69,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
     sealed class LcmsAnalysisPeakTableModel : LcmsPeakSpotTableModel<ChromatogramPeakFeatureModel>
     {
-        public LcmsAnalysisPeakTableModel(ObservableCollection<ChromatogramPeakFeatureModel> peakSpots, IReactiveProperty<ChromatogramPeakFeatureModel> target)
+        public LcmsAnalysisPeakTableModel(ReadOnlyObservableCollection<ChromatogramPeakFeatureModel> peakSpots, IReactiveProperty<ChromatogramPeakFeatureModel> target)
             : base(peakSpots, target,
                   peakSpots.Select(peakSpot => peakSpot.Mass).DefaultIfEmpty().Min(), peakSpots.Select(peakSpot => peakSpot.Mass).DefaultIfEmpty().Max(),
                   peakSpots.DefaultIfEmpty().Min(peakSpot => peakSpot?.ChromXValue) ?? 0d, peakSpots.DefaultIfEmpty().Max(peakSpot => peakSpot?.ChromXValue) ?? 0d) {
