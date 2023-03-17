@@ -334,7 +334,7 @@ namespace CompMs.MsdialCore.DataObj {
                 MassCenter = MassCenter,
                 QuantMass = QuantMass,
                 InternalStandardAlignmentID = InternalStandardAlignmentID,
-                AlignedPeakPropertiesTask = AlignedPeakPropertiesTask,
+                AlignedPeakProperties = AlignedPeakPropertiesTask.Result.Select(peak => peak.Clone()).ToList(),
                 AlignmentDriftSpotFeatures = driftSpots,
                 IsotopicPeaks = IsotopicPeaks?.Select(p => new IsotopicPeak(p)).ToList(),
                 PeakCharacter = new IonFeatureCharacter(PeakCharacter),
