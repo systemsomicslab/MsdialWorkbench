@@ -274,7 +274,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             RtBarChartModel = new BarChartModel(accumulatedTarget, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush), projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
             DtBarChartModel = new BarChartModel(target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush), projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
 
-            AlignmentSpotTableModel = new LcimmsAlignmentSpotTableModel(driftProps, target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, observableBarItemsLoader).AddTo(Disposables);
+            AlignmentSpotTableModel = new LcimmsAlignmentSpotTableModel(driftProps, target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, observableBarItemsLoader, PeakSpotNavigatorModel).AddTo(Disposables);
 
             MsdecResult = target.SkipNull()
                 .Select(t => loader.LoadMSDecResult(t.MasterAlignmentID))
