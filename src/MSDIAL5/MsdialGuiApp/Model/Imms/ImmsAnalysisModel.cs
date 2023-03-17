@@ -178,7 +178,7 @@ namespace CompMs.App.Msdial.Model.Imms
             SurveyScanModel.Elements.HorizontalProperty = nameof(SpectrumPeakWrapper.Mass);
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
 
-            PeakTableModel = new ImmsAnalysisPeakTableModel(Ms1Peaks, Target).AddTo(Disposables);
+            PeakTableModel = new ImmsAnalysisPeakTableModel(Ms1Peaks, Target, PeakSpotNavigatorModel).AddTo(Disposables);
 
             var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, MZ_TOLELANCE, Target.Select(t => t?.Mass ?? 0d), "F5", "m/z", isItalic: true).AddTo(Disposables);
             var dtSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, DT_TOLELANCE, Target.Select(t => t?.ChromXValue ?? 0d), "F4", "Mobility[1/k0]", isItalic: false).AddTo(Disposables);

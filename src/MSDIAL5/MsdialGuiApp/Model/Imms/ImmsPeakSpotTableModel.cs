@@ -1,16 +1,16 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Table;
 using CompMs.Graphics.Base;
 using Reactive.Bindings;
 using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
-    interface IImmsPeakSpotTableModel : IPeakSpotTableModelBase
+    internal interface IImmsPeakSpotTableModel : IPeakSpotTableModelBase
     {
         double MassMin { get; }
         double MassMax { get; }
@@ -18,29 +18,18 @@ namespace CompMs.App.Msdial.Model.Imms
         double DriftMax { get; }
     }
 
-    abstract class ImmsPeakSpotTableModel<T> : PeakSpotTableModelBase<T>, IImmsPeakSpotTableModel where T : class
+    internal abstract class ImmsPeakSpotTableModel<T> : PeakSpotTableModelBase<T>, IImmsPeakSpotTableModel where T : class
     {
-        public ImmsPeakSpotTableModel(
-            ObservableCollection<T> peakSpots,
-            IReactiveProperty<T> target,
-            double massMin, double massMax,
-            double driftMin, double driftMax)
-            : base(peakSpots, target) {
+        private readonly PeakSpotNavigatorModel _peakSpotNavigatorModel;
 
-            MassMin = massMin;
-            MassMax = massMax;
-
-            DriftMin = driftMin;
-            DriftMax = driftMax;
+        public ImmsPeakSpotTableModel(ObservableCollection<T> peakSpots, IReactiveProperty<T> target, PeakSpotNavigatorModel peakSpotNavigatorModel) : base(peakSpots, target) {
+            _peakSpotNavigatorModel = peakSpotNavigatorModel ?? throw new ArgumentNullException(nameof(peakSpotNavigatorModel));
         }
 
-        public double MassMin { get; }
-
-        public double MassMax { get; }
-
-        public double DriftMin { get; }
-
-        public double DriftMax { get; }
+        public double MassMin => _peakSpotNavigatorModel.MzLowerValue;
+        public double MassMax => _peakSpotNavigatorModel.MzUpperValue;
+        public double DriftMin => _peakSpotNavigatorModel.DtLowerValue;
+        public double DriftMax => _peakSpotNavigatorModel.DtUpperValue;
     }
 
     internal sealed class ImmsAlignmentSpotTableModel : ImmsPeakSpotTableModel<AlignmentSpotPropertyModel>
@@ -50,10 +39,9 @@ namespace CompMs.App.Msdial.Model.Imms
             IReactiveProperty<AlignmentSpotPropertyModel> target,
             IObservable<IBrushMapper<BarItem>> classBrush,
             FileClassPropertiesModel classProperties,
-            IObservable<IBarItemsLoader> barItemsLoader)
-            : base(spots, target,
-                  spots.Select(peak => peak.MassCenter).DefaultIfEmpty().Min(), spots.Select(peak => peak.MassCenter).DefaultIfEmpty().Max(),
-                  spots.Select(peak => peak.TimesCenter).DefaultIfEmpty().Min(), spots.Select(peak => peak.TimesCenter).DefaultIfEmpty().Max()) {
+            IObservable<IBarItemsLoader> barItemsLoader,
+            PeakSpotNavigatorModel peakSpotNavigatorModel)
+            : base(spots, target, peakSpotNavigatorModel) {
             ClassBrush = classBrush;
             BarItemsLoader = barItemsLoader;
             FileClassProperties = classProperties;
@@ -66,10 +54,8 @@ namespace CompMs.App.Msdial.Model.Imms
 
     internal sealed class ImmsAnalysisPeakTableModel : ImmsPeakSpotTableModel<ChromatogramPeakFeatureModel>
     {
-        public ImmsAnalysisPeakTableModel(ObservableCollection<ChromatogramPeakFeatureModel> peaks, IReactiveProperty<ChromatogramPeakFeatureModel> target)
-            : base(peaks, target,
-                  peaks.Select(peak => peak.Mass).DefaultIfEmpty().Min(), peaks.Select(peak => peak.Mass).DefaultIfEmpty().Max(),
-                  peaks.DefaultIfEmpty().Min(peak => peak.ChromXValue) ?? 0d, peaks.DefaultIfEmpty().Max(peak => peak.ChromXValue) ?? 0d) {
+        public ImmsAnalysisPeakTableModel(ObservableCollection<ChromatogramPeakFeatureModel> peaks, IReactiveProperty<ChromatogramPeakFeatureModel> target, PeakSpotNavigatorModel peakSpotNavigatorModel)
+            : base(peaks, target, peakSpotNavigatorModel) {
         }
     }
 }
