@@ -193,8 +193,9 @@ namespace Rfx.Riken.OsakaUniv
                 if (fileExtension != ".abf" && fileExtension != ".cdf" && 
                     fileExtension != ".mzml" && fileExtension != ".raw" &&
                     fileExtension != ".d" && fileExtension != ".iabf" && fileExtension != ".ibf"
-                     && fileExtension != ".wiff" && fileExtension != ".wiff2" && fileExtension != ".qgd" && fileExtension != ".lcd") {
-                    errorMessage += "This program can just accept .abf, .mzml, .cdf, .d, .ibf, .wiff, .wiff2, .lcd, .qgd or .raw files.";
+                     && fileExtension != ".wiff" && fileExtension != ".wiff2" && fileExtension != ".qgd" && fileExtension != ".lcd"
+                     && fileExtension != ".lrp") {
+                    errorMessage += "This program can just accept .abf, .mzml, .cdf, .d, .ibf, .wiff, .wiff2, .lcd, .qgd, .lrp or .raw files.";
                     break;
                 }
 #endif
