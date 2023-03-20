@@ -115,6 +115,10 @@ namespace CompMs.MsdialCore.Export
                         msRunIDFormat = "[MS, MS:1000768, Thermo nativeID format, ]";
                     }
                     break;
+                case (".LRP"):
+                    msRunFormat = "[,, LRP file, ]";
+                    msRunIDFormat = "[,, LRP file Datapoint Number, ]";
+                    break;
             };
 
             var database = new List<List<string>>();
