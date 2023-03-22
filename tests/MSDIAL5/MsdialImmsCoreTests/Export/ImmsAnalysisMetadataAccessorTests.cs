@@ -64,6 +64,7 @@ namespace CompMs.MsdialImmsCore.Export.Tests
         [TestMethod()]
         public void GetContentTest() {
             var parameter = new ParameterBase { CentroidMs1Tolerance = 0.01f, MS2DataType = MSDataType.Centroid, };
+            var stubFile = new AnalysisFileBean { AcquisitionType = AcquisitionType.DDA, };
             var refer = new MockRefer();
             var accessor = new ImmsAnalysisMetadataAccessor(refer, parameter);
             var basePeak = new BaseChromatogramPeakFeature
@@ -90,7 +91,7 @@ namespace CompMs.MsdialImmsCore.Export.Tests
                 });
             var msdec = new MSDecResult();
             var provider = new MockDataProvider();
-            var content = accessor.GetContent(feature, msdec, provider);
+            var content = accessor.GetContent(feature, msdec, provider, stubFile);
 
             Assert.AreEqual("100.991", content["Mobility left"]);
             Assert.AreEqual("101.001", content["Mobility"]);

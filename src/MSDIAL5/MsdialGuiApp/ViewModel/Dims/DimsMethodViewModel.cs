@@ -76,13 +76,13 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             {
                 new SpectraType(
                     ExportspectraType.deconvoluted,
-                    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, , ExportspectraType.deconvoluted, TODO)),
+                    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.deconvoluted)),
                 new SpectraType(
                     ExportspectraType.centroid,
-                    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, TODO, ExportspectraType.centroid, TODO)),
+                    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.centroid)),
                 new SpectraType(
                     ExportspectraType.profile,
-                    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, TODO, ExportspectraType.profile, TODO)),
+                    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.profile)),
             };
             var spectraFormats = new List<SpectraFormat>
             {

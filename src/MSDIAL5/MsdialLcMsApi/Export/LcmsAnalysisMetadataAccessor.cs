@@ -13,13 +13,11 @@ namespace CompMs.MsdialLcMsApi.Export
 {
     public class LcmsAnalysisMetadataAccessor : BaseAnalysisMetadataAccessor
     {
-        public LcmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, ExportspectraType type)
-            : base(refer, parameter, type, TODO) {
+        public LcmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, ExportspectraType type) : base(refer, parameter, type) {
 
         }
 
-        public LcmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter)
-            : this(refer, parameter, parameter.ExportSpectraType) {
+        public LcmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter) : base(refer, parameter, parameter.ExportSpectraType) {
 
         }
 
@@ -66,9 +64,10 @@ namespace CompMs.MsdialLcMsApi.Export
             MSDecResult msdec,
             MoleculeMsReference reference,
             MsScanMatchResult matchResult,
-            IReadOnlyList<RawSpectrum> spectrumList) {
+            IReadOnlyList<RawSpectrum> spectrumList,
+            AnalysisFileBean analysisFile) {
 
-            var content = base.GetContentCore(feature, msdec, reference, matchResult, spectrumList);
+            var content = base.GetContentCore(feature, msdec, reference, matchResult, spectrumList, analysisFile);
             content["RT left(min)"] = string.Format("{0:F3}", feature.ChromXsLeft.RT.Value);
             content["RT (min)"] = string.Format("{0:F3}", feature.ChromXsTop.RT.Value);
             content["RT right (min)"] = string.Format("{0:F3}", feature.ChromXsRight.RT.Value);

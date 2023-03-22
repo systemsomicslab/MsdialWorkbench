@@ -82,13 +82,11 @@ namespace CompMs.MsdialImmsCore.Export
 
     public class ImmsAnalysisMetadataAccessor : BaseAnalysisMetadataAccessor
     {
-        public ImmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, ExportspectraType type)
-            : base(refer, parameter, type, TODO) {
+        public ImmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, ExportspectraType type) : base(refer, parameter, type) {
 
         }
 
-        public ImmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter)
-            : this(refer, parameter, parameter.ExportSpectraType) {
+        public ImmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter) : base(refer, parameter, parameter.ExportSpectraType) {
 
         }
 
@@ -136,9 +134,10 @@ namespace CompMs.MsdialImmsCore.Export
             MSDecResult msdec,
             MoleculeMsReference reference,
             MsScanMatchResult matchResult,
-            IReadOnlyList<RawSpectrum> spectrumList) {
+            IReadOnlyList<RawSpectrum> spectrumList,
+            AnalysisFileBean analysisFile) {
 
-            var content = base.GetContentCore(feature, msdec, reference, matchResult, spectrumList);
+            var content = base.GetContentCore(feature, msdec, reference, matchResult, spectrumList, analysisFile);
             content["Mobility left"] = string.Format("{0:F3}", feature.ChromXsLeft.Drift.Value);
             content["Mobility"] = string.Format("{0:F3}", feature.ChromXs.Drift.Value);
             content["Mobility right"] = string.Format("{0:F3}", feature.ChromXsRight.Drift.Value);

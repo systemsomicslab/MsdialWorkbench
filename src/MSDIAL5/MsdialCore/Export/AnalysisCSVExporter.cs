@@ -33,7 +33,7 @@ namespace CompMs.MsdialCore.Export
             IReadOnlyList<string> headers,
             IAnalysisMetadataAccessor metaAccessor) {
 
-            var metadata = metaAccessor.GetContent(features, msdec, provider);
+            var metadata = metaAccessor.GetContent(features, msdec, provider, TODO);
             sw.WriteLine(string.Join(Separator, headers.Select(header => metadata[header])));
         }
     }
