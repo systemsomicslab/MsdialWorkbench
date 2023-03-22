@@ -51,7 +51,6 @@ namespace CompMs.App.Msdial.Model.Setting
             DatasetFileName = projectParameter.ProjectFileName;
             Ionization = projectParameter.Ionization;
             SeparationType = GetSeparationType(parameter);
-            AcquisitionType = projectParameter.AcquisitionType;
             MS1DataType = projectParameter.MSDataType;
             MS2DataType = projectParameter.MS2DataType;
             IonMode = projectParameter.IonMode;
@@ -100,12 +99,6 @@ namespace CompMs.App.Msdial.Model.Setting
             set => SetProperty(ref collisionType, value);
         }
         private CollisionType collisionType = CollisionType.HCD;
-
-        public AcquisitionType AcquisitionType {
-            get => acquisitionType;
-            set => SetProperty(ref acquisitionType, value);
-        }
-        private AcquisitionType acquisitionType = AcquisitionType.DDA;
 
         public MSDataType MS1DataType {
             get => ms1DataType;
@@ -198,7 +191,6 @@ namespace CompMs.App.Msdial.Model.Setting
             projectParameter.ProjectFileName = DatasetFileName;
             projectParameter.ProjectFolderPath = DatasetFolderPath;
             projectParameter.Ionization = Ionization;
-            projectParameter.AcquisitionType = AcquisitionType;
             projectParameter.MSDataType = MS1DataType;
             projectParameter.MS2DataType = MS2DataType;
             projectParameter.IonMode = IonMode;
