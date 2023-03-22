@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.DataObj;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
@@ -57,6 +58,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             IsEnabled = isEnabled.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
+            SelectedAcquisitionType = model.ToReactivePropertySlimAsSynchronized(m => m.SelectedAcquisitionType).AddTo(Disposables);
+            SetSelectedAcquisitionTypeCommand = SelectedAcquisitionType.Select(x => Enum.IsDefined(typeof(AcquisitionType), x))
+                .ToReactiveCommand()
+                .WithSubscribe(model.SetSelectedAquisitionTypeToAll)
+                .AddTo(Disposables);
+
             ObserveHasErrors = new[]
             {
                 analysisFileHasError,
@@ -88,6 +95,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         }
 
         public DatasetFileSettingModel Model { get; }
+
+        public ReactivePropertySlim<AcquisitionType> SelectedAcquisitionType { get; }
+        public ReactiveCommand SetSelectedAcquisitionTypeCommand { get; }
 
         public bool IsReadOnly { get; }
 
