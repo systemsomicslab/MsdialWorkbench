@@ -214,7 +214,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 heightLoader, areaBaselineLoader, areaZeroLoader,
                 normalizedHeightLoader, normalizedAreaBaselineLoader, normalizedAreaZeroLoader,
             };
-            var barItemsLoaderDataProperty = NormalizationSetModel.Normalized.ToConstant(normalizedHeightLoader).ToReactiveProperty(barItemLoaderDatas.First()).AddTo(Disposables);
+            var barItemsLoaderDataProperty = NormalizationSetModel.IsNormalized.Where(x => x).Take(1).ToConstant(normalizedHeightLoader).ToReactiveProperty(barItemLoaderDatas.First()).AddTo(Disposables);
             BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, barItemLoaderDatas, barBrush, projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
 
             // Class eic
