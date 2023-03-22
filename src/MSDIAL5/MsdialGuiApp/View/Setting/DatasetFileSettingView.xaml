@@ -33,11 +33,11 @@
                 </ObjectDataProvider.MethodParameters>       
             </ObjectDataProvider>
 
-            <ObjectDataProvider x:Key="AcquisitionTypes" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
-                <ObjectDataProvider.MethodParameters>
-                    <x:Type TypeName="common:AcquisitionType"/>
-                </ObjectDataProvider.MethodParameters>       
-            </ObjectDataProvider>
+            <x:Array x:Key="AcquisitionTypes" Type="{x:Type common:AcquisitionType}">
+                <common:AcquisitionType>DDA</common:AcquisitionType>
+                <common:AcquisitionType>SWATH</common:AcquisitionType>
+                <common:AcquisitionType>AIF</common:AcquisitionType>
+            </x:Array>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -68,7 +68,14 @@
             <ComboBox ItemsSource="{Binding Source={StaticResource AcquisitionTypes}}"
                       SelectedItem="{Binding SelectedAcquisitionType.Value, Mode=TwoWay}"
                       VerticalContentAlignment="Center"
-                      Width="80"/>
+                      Width="80">
+                <ComboBox.ToolTip>
+                    <TextBlock>
+                        DDA: When you analyze a data set from data dependent MS/MS, select this option.<LineBreak />
+                        SWATH, AIF: When you analyze a data set from data independent MS/MS, select this option.
+                    </TextBlock>  
+                </ComboBox.ToolTip>
+            </ComboBox>
             <Button Content="Set to all"
                     Command="{Binding SetSelectedAcquisitionTypeCommand, Mode=OneTime}"
                     Padding="4"
@@ -150,6 +157,20 @@
                                         SortMemberPath="AcquisitionType.Value"
                                         Width="80"
                                         ClipboardContentBinding="{Binding Path=AcquisitionType.Value}">
+                    <DataGridComboBoxColumn.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="ToolTip">
+                                <Setter.Value>
+                                    <TextBlock>
+                                        DDA:<LineBreak />
+                                        When you analyze a data set from data dependent MS/MS, select this option.
+                                        SWATH, AIF:<LineBreak />
+                                        When you analyze a data set from data independent MS/MS, select this option. <LineBreak />
+                                    </TextBlock>  
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </DataGridComboBoxColumn.CellStyle>
                 </DataGridComboBoxColumn>
                 
                 <DataGridTemplateColumn SortMemberPath="AnalysisBatch.Value" Width="0.5*" Header="Batch" IsReadOnly="False" ClipboardContentBinding="{Binding Path=AnalysisBatch.Value}">
