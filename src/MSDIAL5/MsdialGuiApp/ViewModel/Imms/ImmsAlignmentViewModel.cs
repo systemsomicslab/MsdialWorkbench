@@ -14,7 +14,6 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
-using System.Reactive.Linq;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
@@ -93,6 +92,11 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             var notification = TaskNotification.Start("Loading alignment results...");
             messageBroker.Publish(notification);
             model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => messageBroker.Publish(TaskNotification.End(notification)));
+
+            NormalizationSetViewModel = new NormalizationSetViewModel(model.NormalizationSetModel, internalStandardSetViewModel).AddTo(Disposables);
+            ShowNormalizationSettingCommand = new ReactiveCommand()
+                .WithSubscribe(() => messageBroker.Publish(NormalizationSetViewModel))
+                .AddTo(Disposables);
         }
 
         public Chart.AlignmentPeakPlotViewModel PlotViewModel {
@@ -153,6 +157,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
 
         public ICommand InternalStandardSetCommand { get; }
+
+        public NormalizationSetViewModel NormalizationSetViewModel { get; }
+        public object ShowNormalizationSettingCommand { get; }
 
         public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
         private DelegateCommand _showIonTableCommand;
