@@ -6,11 +6,11 @@ namespace CompMs.App.Msdial.Model.Loader
 {
     internal sealed class BarItemsLoaderData : BindableBase
     {
-        public BarItemsLoaderData(string label, string axisLabel, IObservable<IBarItemsLoader> observableLoader) : this(label, Observable.Return(axisLabel), observableLoader, Observable.Return(true)) {
+        public BarItemsLoaderData(string label, string axisLabel, IBarItemsLoader loader) : this(label, Observable.Return(axisLabel), Observable.Return(loader), Observable.Return(true)) {
 
         }
 
-        public BarItemsLoaderData(string label, string axisLabel, IObservable<IBarItemsLoader> observableLoader, IObservable<bool> isEnabled) : this(label, Observable.Return(axisLabel), observableLoader, isEnabled) {
+        public BarItemsLoaderData(string label, IObservable<string> axisLabel, IBarItemsLoader loader, IObservable<bool> isEnabled) : this(label, axisLabel, Observable.Return(loader), isEnabled) {
 
         }
 
