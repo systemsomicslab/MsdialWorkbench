@@ -208,10 +208,16 @@
                             <DataTemplate>
                                 <DataTemplate.Resources>
                                     <DataTemplate DataType="{x:Type vm:ImmsAnalysisViewModel}">
-                                        <TextBlock x:Name="TabItem_DtMzPairwisePlotPeakView" Text="Peak spot viewer" VerticalAlignment="Stretch"/>
+                                        <TextBlock x:Name="TabItem_DtMzPairwisePlotPeakView"
+                                                   Text="Peak spot viewer"
+                                                   VerticalAlignment="Stretch"
+                                                   DataContextChanged="TabItem_DtMzPairwisePlotPeakView_DataContextChanged"/>
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type vm:ImmsAlignmentViewModel}">
-                                        <TextBlock x:Name="TabItem_DtMzPairwisePlotAlignmentView" Text="Alignment spot viewer" VerticalAlignment="Stretch"/>
+                                        <TextBlock x:Name="TabItem_DtMzPairwisePlotAlignmentView"
+                                                   Text="Alignment spot viewer"
+                                                   VerticalAlignment="Stretch"
+                                                   DataContextChanged="TabItem_DtMzPairwisePlotAlignmentView_DataContextChanged"/>
                                     </DataTemplate>
                                 </DataTemplate.Resources>
                                 <ContentPresenter Content="{Binding Value}"/>
