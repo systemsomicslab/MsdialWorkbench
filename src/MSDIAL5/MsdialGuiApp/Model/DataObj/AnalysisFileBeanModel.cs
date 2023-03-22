@@ -111,14 +111,16 @@ namespace CompMs.App.Msdial.Model.DataObj
         }
 
         public AcquisitionType AcquisitionType {
-            get => AcquisitionType.DDA/*_file.AcquisitionType*/;
+            get => _acquisitonType/*_file.AcquisitionType*/;
             set {
-                if (true/*_file.AcquisitionType != value*/) {
+                if (_acquisitonType/*_file.AcquisitionType*/ != value) {
                     /*_file.AnalysisFileId = value;*/
+                    _acquisitonType = value;
                     OnPropertyChanged(nameof(AcquisitionType));
                 }
             }
         }
+        private AcquisitionType _acquisitonType = AcquisitionType.DDA;
 
         public string PeakAreaBeanInformationFilePath => _file.PeakAreaBeanInformationFilePath;
         public string DeconvolutionFilePath => _file.DeconvolutionFilePath;
