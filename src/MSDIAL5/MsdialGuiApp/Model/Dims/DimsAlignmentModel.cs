@@ -217,10 +217,8 @@ namespace CompMs.App.Msdial.Model.Dims
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-
-            var barItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName, fileCollection);
-            var observableBarItemsLoader = Observable.Return(barItemsLoader);
-            AlignmentSpotTableModel = new DimsAlignmentSpotTableModel(Ms1Spots, Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, observableBarItemsLoader).AddTo(Disposables);
+            var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
+            AlignmentSpotTableModel = new DimsAlignmentSpotTableModel(Ms1Spots, Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderProperty).AddTo(Disposables);
 
             _msdecResult = Target.SkipNull()
                 .Select(t => _alignmentFile.LoadMSDecResultByIndexAsync(t.MasterAlignmentID))
