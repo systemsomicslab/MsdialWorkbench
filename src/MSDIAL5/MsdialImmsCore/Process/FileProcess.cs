@@ -58,11 +58,11 @@ namespace CompMs.MsdialImmsCore.Process
             file.ChromPeakFeaturesSummary = summary;
 
             Console.WriteLine("Deconvolution started");
-            var mSDecResultCollections = _deconvolutionProcess.Deconvolute(TODO, provider, chromPeakFeatures.Items, summary, reportAction, token);
+            var mSDecResultCollections = _deconvolutionProcess.Deconvolute(file, provider, chromPeakFeatures.Items, summary, reportAction, token);
 
             // annotations
             Console.WriteLine("Annotation started");
-            _peakAnnotationProcess.Annotate(TODO, provider, chromPeakFeatures.Items, mSDecResultCollections, reportAction, token);
+            _peakAnnotationProcess.Annotate(file, provider, chromPeakFeatures.Items, mSDecResultCollections, reportAction, token);
 
             // file save
             await SaveToFileAsync(file, chromPeakFeatures, mSDecResultCollections).ConfigureAwait(false);
@@ -78,11 +78,11 @@ namespace CompMs.MsdialImmsCore.Process
             file.ChromPeakFeaturesSummary = summary;
 
             Console.WriteLine("Deconvolution started");
-            var mSDecResultCollections = _deconvolutionProcess.Deconvolute(TODO, provider, chromPeakFeatures.Items, summary, reportAction, token);
+            var mSDecResultCollections = _deconvolutionProcess.Deconvolute(file, provider, chromPeakFeatures.Items, summary, reportAction, token);
 
             // annotations
             Console.WriteLine("Annotation started");
-            _peakAnnotationProcess.Annotate(TODO, provider, chromPeakFeatures.Items, mSDecResultCollections, reportAction, token);
+            _peakAnnotationProcess.Annotate(file, provider, chromPeakFeatures.Items, mSDecResultCollections, reportAction, token);
             var _elements = chromPeakFeatures.Items.Select(item => new Raw2DElement(item.PeakFeature.Mass, item.PeakFeature.ChromXsTop.Drift.Value)).ToList();
             var pixels = RetrieveRawSpectraOnPixels(file, _elements);
 
@@ -118,7 +118,7 @@ namespace CompMs.MsdialImmsCore.Process
             var mSDecResultCollections = await resultsTask.ConfigureAwait(false);
             // annotations
             Console.WriteLine("Annotation started");
-            _peakAnnotationProcess.Annotate(TODO, provider, chromPeakFeatures.Items, mSDecResultCollections, reportAction, token);
+            _peakAnnotationProcess.Annotate(file, provider, chromPeakFeatures.Items, mSDecResultCollections, reportAction, token);
 
             // file save
             await SaveToFileAsync(file, chromPeakFeatures, mSDecResultCollections).ConfigureAwait(false);
