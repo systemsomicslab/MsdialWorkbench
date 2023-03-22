@@ -31,14 +31,13 @@ namespace CompMs.MsdialImmsCore.Process
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));
             }
-
             if (evaluator is null) {
                 throw new ArgumentNullException(nameof(evaluator));
             }
 
             _peakPickProcess = new PeakPickProcess(storage);
             _deconvolutionProcess = new DeconvolutionProcess(storage);
-            _peakAnnotationProcess = new PeakAnnotationProcess(TODO, storage, evaluator, mspAnnotator, textDBAnnotator);
+            _peakAnnotationProcess = new PeakAnnotationProcess(storage, evaluator, mspAnnotator, textDBAnnotator);
         }
 
         public Task RunAllAsync(IEnumerable<AnalysisFileBean> files, IEnumerable<IDataProvider> providers, IEnumerable<Action<int>> reportActions, int numParallel, Action afterEachRun, CancellationToken token = default) {
@@ -63,7 +62,7 @@ namespace CompMs.MsdialImmsCore.Process
 
             // annotations
             Console.WriteLine("Annotation started");
-            _peakAnnotationProcess.Annotate(provider, chromPeakFeatures.Items, mSDecResultCollections, reportAction, token);
+            _peakAnnotationProcess.Annotate(TODO, provider, chromPeakFeatures.Items, mSDecResultCollections, reportAction, token);
 
             // file save
             await SaveToFileAsync(file, chromPeakFeatures, mSDecResultCollections).ConfigureAwait(false);
@@ -83,7 +82,7 @@ namespace CompMs.MsdialImmsCore.Process
 
             // annotations
             Console.WriteLine("Annotation started");
-            _peakAnnotationProcess.Annotate(provider, chromPeakFeatures.Items, mSDecResultCollections, reportAction, token);
+            _peakAnnotationProcess.Annotate(TODO, provider, chromPeakFeatures.Items, mSDecResultCollections, reportAction, token);
             var _elements = chromPeakFeatures.Items.Select(item => new Raw2DElement(item.PeakFeature.Mass, item.PeakFeature.ChromXsTop.Drift.Value)).ToList();
             var pixels = RetrieveRawSpectraOnPixels(file, _elements);
 
@@ -119,7 +118,7 @@ namespace CompMs.MsdialImmsCore.Process
             var mSDecResultCollections = await resultsTask.ConfigureAwait(false);
             // annotations
             Console.WriteLine("Annotation started");
-            _peakAnnotationProcess.Annotate(provider, chromPeakFeatures.Items, mSDecResultCollections, reportAction, token);
+            _peakAnnotationProcess.Annotate(TODO, provider, chromPeakFeatures.Items, mSDecResultCollections, reportAction, token);
 
             // file save
             await SaveToFileAsync(file, chromPeakFeatures, mSDecResultCollections).ConfigureAwait(false);
