@@ -133,9 +133,9 @@ namespace CompMs.MsdialCore.DataObj
                 storage.MspDB = await LoadMspDBAsync(streamManager, Combine(prefix, GetNewMspFileName(projectTitle))).ConfigureAwait(false);
                 if (storage.Parameter.ProjectParam.AcquisitionType != Common.Enum.AcquisitionType.None) {
                     foreach (var file in storage.AnalysisFiles) {
-                        //file.AcquisitionType = storage.Parameter.ProjectParam.AcquisitionType;
+                        file.AcquisitionType = storage.Parameter.ProjectParam.AcquisitionType;
                     }
-                    //storage.Parameter.ProjectParam.AcquisitionType = Common.Enum.AcquisitionType.None;
+                    storage.Parameter.ProjectParam.AcquisitionType = Common.Enum.AcquisitionType.None;
                 }
                 return storage;
             }
