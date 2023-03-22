@@ -24,7 +24,7 @@ namespace CompMs.App.Msdial.Model.Dims
             ParameterBase parameter,
             double rangeBegin,
             double rangeEnd)
-            : base(provider, parameter, ChromXType.Mz, ChromXUnit.Mz, rangeBegin, rangeEnd) {
+            : base(TODO, provider, parameter, ChromXType.Mz, ChromXUnit.Mz, rangeBegin, rangeEnd) {
             _isRelative = false;
         }
 
@@ -34,7 +34,7 @@ namespace CompMs.App.Msdial.Model.Dims
             double rangeBegin,
             double rangeEnd,
             double relativeRange)
-            : base(provider, parameter, ChromXType.Mz, ChromXUnit.Mz, rangeBegin, rangeEnd) {
+            : base(TODO, provider, parameter, ChromXType.Mz, ChromXUnit.Mz, rangeBegin, rangeEnd) {
             _isRelative = true;
             _relativeRange = relativeRange;
         }

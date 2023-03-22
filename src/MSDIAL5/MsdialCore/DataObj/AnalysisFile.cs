@@ -47,6 +47,8 @@ namespace CompMs.MsdialCore.DataObj {
         public ChromatogramPeaksDataSummaryDto ChromPeakFeaturesSummary { get; set; } = new ChromatogramPeaksDataSummaryDto();
         [Key(17)]
         public string ProteinAssembledResultFilePath { get; set; } // *.prf
+        [Key(18)]
+        public AcquisitionType AcquisitionType { get; set; }
 
         public AnalysisFileBean() {
 

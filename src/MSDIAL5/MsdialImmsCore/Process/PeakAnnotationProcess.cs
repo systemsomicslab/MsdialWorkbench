@@ -20,16 +20,18 @@ namespace CompMs.MsdialImmsCore.Process
         private readonly IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> _mspAnnotator;
         private readonly IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> _textDBAnnotator;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
+        private readonly AnalysisFileBean _file;
 
         public PeakAnnotationProcess(
+            AnalysisFileBean file,
             IMsdialDataStorage<MsdialImmsParameter> storage,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> textDBAnnotator) {
+            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> mspAnnotator, IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> textDBAnnotator) {
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _mspAnnotator = mspAnnotator;
             _textDBAnnotator = textDBAnnotator;
             _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
+            _file = file ?? throw new ArgumentNullException(nameof(file));
         }
 
         public void Annotate(
@@ -43,7 +45,7 @@ namespace CompMs.MsdialImmsCore.Process
             PeakAnnotation(mSDecResultCollections, provider, chromPeakFeatures, _storage.DataBases.CreateQueryFactories().MoleculeQueryFactories, _mspAnnotator, _textDBAnnotator, _evaluator, _storage.DataBaseMapper, parameter, reportAction, token);
 
             // characterizatin
-            PeakCharacterization(mSDecResultCollections, provider, chromPeakFeatures, _evaluator, parameter, reportAction);
+            PeakCharacterization(_file, mSDecResultCollections, provider, chromPeakFeatures, _evaluator, parameter, reportAction);
         }
 
         private static void PeakAnnotation(
@@ -76,16 +78,16 @@ namespace CompMs.MsdialImmsCore.Process
         }
 
         private static void PeakCharacterization(
+            AnalysisFileBean file,
             IReadOnlyList<MSDecResultCollection> mSDecResultCollections,
             IDataProvider provider,
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            MsdialImmsParameter parameter,
-            Action<int> reportAction) {
+            MsdialImmsParameter parameter, Action<int> reportAction) {
 
-            new PeakCharacterEstimator(90, 10).Process(provider, chromPeakFeatures, mSDecResultCollections.Any() ? mSDecResultCollections.Argmin(kvp => kvp.CollisionEnergy).MSDecResults : null,
+            new PeakCharacterEstimator(90, 10).Process(file, provider, chromPeakFeatures, mSDecResultCollections.Any() ? mSDecResultCollections.Argmin(kvp => kvp.CollisionEnergy).MSDecResults : null,
                 evaluator,
-                parameter, reportAction, true);
+parameter, reportAction, true);
         }
     }
 }

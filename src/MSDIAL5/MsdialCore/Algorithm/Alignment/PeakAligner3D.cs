@@ -32,14 +32,14 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var accProvider = AccumulateDataProviderFactory.Create(analysisFile);
             var rawSpectras = new Dictionary<IonMode, Lazy<RawSpectra>>
             {
-                { IonMode.Positive, new Lazy<RawSpectra>(() => new RawSpectra(accProvider, IonMode.Positive, Param.AcquisitionType)) },
-                { IonMode.Negative, new Lazy<RawSpectra>(() => new RawSpectra(accProvider, IonMode.Negative, Param.AcquisitionType)) },
+                { IonMode.Positive, new Lazy<RawSpectra>(() => new RawSpectra(accProvider, IonMode.Positive, analysisFile.AcquisitionType)) },
+                { IonMode.Negative, new Lazy<RawSpectra>(() => new RawSpectra(accProvider, IonMode.Negative, analysisFile.AcquisitionType)) },
             };
             var rtRange = new ChromatogramRange(double.MinValue, double.MaxValue, ChromXType.RT, ChromXUnit.Min);
             var dRawSpectras = new Dictionary<IonMode, Lazy<RawSpectra>>
             {
-                { IonMode.Positive, new Lazy<RawSpectra>(() => new RawSpectra(rawProvider, IonMode.Positive, Param.AcquisitionType)) },
-                { IonMode.Negative, new Lazy<RawSpectra>(() => new RawSpectra(rawProvider, IonMode.Negative, Param.AcquisitionType)) },
+                { IonMode.Positive, new Lazy<RawSpectra>(() => new RawSpectra(rawProvider, IonMode.Positive, analysisFile.AcquisitionType)) },
+                { IonMode.Negative, new Lazy<RawSpectra>(() => new RawSpectra(rawProvider, IonMode.Negative, analysisFile.AcquisitionType)) },
             };
             var dtRange = new ChromatogramRange(double.MinValue, double.MaxValue, ChromXType.Drift, ChromXUnit.Msec);
 

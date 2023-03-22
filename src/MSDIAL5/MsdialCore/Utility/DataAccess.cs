@@ -80,6 +80,25 @@ namespace CompMs.MsdialCore.Utility {
             }
         }
 
+        public static bool IsSWATH(IReadOnlyList<RawSpectrum> spectra) {
+            var precursorRanges = spectra.Where(n => n.MsLevel == 2).
+                Select(n => n.Precursor.IsolationWindowUpperOffset - n.Precursor.IsolationWindowLowerOffset).
+                ToList();
+            if (precursorRanges.Average() > 5) return true;
+
+            var distinctPrecursors = spectra.Where(n => n.MsLevel == 2).
+                Select(n => n.Precursor.IsolationTargetMz).Distinct().ToList();
+            if (distinctPrecursors.Count() < 100) return true;
+
+            var precursorMin = distinctPrecursors.Min();
+            var ms2pointnumber_havingsamemz = spectra.Where(n => n.MsLevel == 2).Count(n => Math.Abs(n.Precursor.IsolationTargetMz - precursorMin) < 0.1);
+            var ms1pointnumber = spectra.Count(n => n.MsLevel == 1);
+
+            if (Math.Abs(ms1pointnumber - ms2pointnumber_havingsamemz) < 10) return true;
+
+            return false;
+        }
+
         // converter
         public static ChromatogramPeakFeature GetChromatogramPeakFeature(PeakDetectionResult result, ChromXType type, ChromXUnit unit, double mass, IonMode ionMode) {
             if (result == null) return null;
@@ -269,27 +288,27 @@ namespace CompMs.MsdialCore.Utility {
 
 
         public static List<List<ChromatogramPeak>> GetMs2Peaklistlist(IDataProvider provider, double precursorMz,
-            int startScanID, int endScanID, List<double> productMzList, ParameterBase param, double targetCE = -1,
-            ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) {
+            int startScanID, int endScanID, List<double> productMzList, ParameterBase param, AcquisitionType acquisitionType,
+            double targetCE = -1, ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) {
             var chromPeakslist = new List<List<ChromatogramPeak>>();
 
             foreach (var productMz in productMzList) {
-                var chromPeaks = GetMs2Peaklist(provider, precursorMz, productMz, startScanID, endScanID, param, targetCE, type, unit);
+                var chromPeaks = GetMs2Peaklist(provider, precursorMz, productMz, startScanID, endScanID, param, targetCE, acquisitionType, type, unit);
                 chromPeakslist.Add(chromPeaks);
             }
             return chromPeakslist;
         }
 
         public static List<ChromatogramPeak> GetMs2Peaklist(IDataProvider provider,
-            double precursorMz, double productMz, int startID, int endID, ParameterBase param, 
-            double targetCE, ChromXType type, ChromXUnit unit) {
+            double precursorMz, double productMz, int startID, int endID, ParameterBase param,
+            double targetCE, AcquisitionType acquisitionType, ChromXType type, ChromXUnit unit) {
             var chromPeaks = new List<ChromatogramPeak>();
             for (int i = startID; i <= endID; i++) {
                 var spec = provider.LoadMsSpectrumFromIndex(i);
                 if (spec.MsLevel == 2 && spec.Precursor != null) {
                     if (targetCE >= 0 && spec.CollisionEnergy >= 0 && Math.Abs(targetCE - spec.CollisionEnergy) > 1) continue; // for AIF mode
 
-                    if (IsInMassWindow(precursorMz, spec, param.CentroidMs1Tolerance, param.AcquisitionType)) {
+                    if (IsInMassWindow(precursorMz, spec, param.CentroidMs1Tolerance, acquisitionType)) {
                         (double basepeakMz, _, double summedIntensity) = new Spectrum(spec.Spectrum).RetrieveBin(productMz, param.CentroidMs2Tolerance);
                         var chromX = type == ChromXType.Drift ? new ChromXs(spec.DriftTime, type, unit) : new ChromXs(spec.ScanStartTime, type, unit);
                         var id = type == ChromXType.Drift ? spec.OriginalIndex : spec.Index;
@@ -302,11 +321,11 @@ namespace CompMs.MsdialCore.Utility {
 
         
         public static List<ValuePeak[]> GetMs2ValuePeaks(IDataProvider provider, double precursorMz,
-            int startScanID, int endScanID, IReadOnlyList<double> pMzValues, ParameterBase param, double targetCE = -1,
-            ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) {
+            int startScanID, int endScanID, IReadOnlyList<double> pMzValues, ParameterBase param, AcquisitionType acquisitionType,
+            double targetCE = -1, ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) {
 
             var counter = 0;
-            var arrayLength = GetTargetArrayLength(provider, startScanID, endScanID, precursorMz, targetCE, param);
+            var arrayLength = GetTargetArrayLength(provider, startScanID, endScanID, precursorMz, targetCE, param, acquisitionType);
             var valuePeakArrayList = new List<ValuePeak[]>(pMzValues.Count);
             valuePeakArrayList.AddRange(pMzValues.Select(_ => new ValuePeak[arrayLength]));
 
@@ -315,7 +334,7 @@ namespace CompMs.MsdialCore.Utility {
                 if (spec.MsLevel == 2 && spec.Precursor != null) {
                     if (targetCE >= 0 && spec.CollisionEnergy >= 0 && Math.Abs(targetCE - spec.CollisionEnergy) > 1) continue; // for AIF mode
 
-                    if (IsInMassWindow(precursorMz, spec, param.CentroidMs1Tolerance, param.AcquisitionType)) {
+                    if (IsInMassWindow(precursorMz, spec, param.CentroidMs1Tolerance, acquisitionType)) {
                         var chromX = type == ChromXType.Drift ? spec.DriftTime : spec.ScanStartTime;
                         var id = type == ChromXType.Drift ? spec.OriginalIndex : spec.Index;
                         var intensities = RetrieveIntensitiesFromMzValues(pMzValues, spec.Spectrum, param.CentroidMs2Tolerance);
@@ -330,13 +349,13 @@ namespace CompMs.MsdialCore.Utility {
             return valuePeakArrayList;
         }
 
-        private static int GetTargetArrayLength(IDataProvider provider, int startScanID, int endScanID, double precursorMz, double targetCE, ParameterBase param) {
+        private static int GetTargetArrayLength(IDataProvider provider, int startScanID, int endScanID, double precursorMz, double targetCE, ParameterBase param, AcquisitionType type) {
             var counter = 0;
             for (int i = startScanID; i <= endScanID; i++) {
                 var spec = provider.LoadMsSpectrumFromIndex(i);
                 if (spec.MsLevel == 2 && spec.Precursor != null) {
                     if (targetCE >= 0 && spec.CollisionEnergy >= 0 && Math.Abs(targetCE - spec.CollisionEnergy) > 1) continue; // for AIF mode
-                    if (IsInMassWindow(precursorMz, spec, param.CentroidMs1Tolerance, param.AcquisitionType)) {
+                    if (IsInMassWindow(precursorMz, spec, param.CentroidMs1Tolerance, type)) {
                         counter++;
                     }
                 }
@@ -851,10 +870,10 @@ namespace CompMs.MsdialCore.Utility {
 
 
         // get spectrum
-        public static List<SpectrumPeak> GetMassSpectrum(IReadOnlyList<RawSpectrum> spectrumList, MSDecResult msdecResult, ExportspectraType type, int msScanPoint, ParameterBase param) {
+        public static List<SpectrumPeak> GetMassSpectrum(IReadOnlyList<RawSpectrum> spectrumList, MSDecResult msdecResult, ExportspectraType type, int msScanPoint, ParameterBase param, AcquisitionType acquisitionType) {
             if (msScanPoint < 0) return new List<SpectrumPeak>();
             if (type == ExportspectraType.deconvoluted) return msdecResult.Spectrum;
-            if (type == ExportspectraType.centroid && param.AcquisitionType == AcquisitionType.DDA) return msdecResult.Spectrum;
+            if (type == ExportspectraType.centroid && acquisitionType == AcquisitionType.DDA) return msdecResult.Spectrum;
 
             var spectra = new List<SpectrumPeak>();
             var spectrum = spectrumList[msScanPoint];

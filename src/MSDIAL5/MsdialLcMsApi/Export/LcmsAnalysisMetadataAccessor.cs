@@ -14,7 +14,7 @@ namespace CompMs.MsdialLcMsApi.Export
     public class LcmsAnalysisMetadataAccessor : BaseAnalysisMetadataAccessor
     {
         public LcmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, ExportspectraType type)
-            : base(refer, parameter, type) {
+            : base(refer, parameter, type, TODO) {
 
         }
 

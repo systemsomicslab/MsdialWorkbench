@@ -14,13 +14,14 @@ using System.Threading.Tasks;
 namespace CompMs.App.Msdial.Model.Loader {
     class TicLoader {
         public TicLoader(
+            AnalysisFileBean file,
             IDataProvider provider,
             ParameterBase parameter,
             ChromXType chromXType,
             ChromXUnit chromXUnit,
-            double rangeBegin,
-            double rangeEnd) {
-            
+            double rangeBegin, double rangeEnd) {
+
+            this.file = file;
             this.provider = provider;
             this.parameter = parameter;
             this.chromXType = chromXType;
@@ -29,6 +30,7 @@ namespace CompMs.App.Msdial.Model.Loader {
             this.rangeEnd = rangeEnd;
         }
 
+        protected readonly AnalysisFileBean file;
         protected readonly IDataProvider provider;
         protected readonly ParameterBase parameter;
         protected readonly ChromXType chromXType;
@@ -48,7 +50,7 @@ namespace CompMs.App.Msdial.Model.Loader {
         }
 
         protected virtual List<PeakItem> LoadTicCore() {
-            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), parameter.IonMode, parameter.AcquisitionType);
+            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), parameter.IonMode, file.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(rangeBegin, rangeEnd, chromXType, chromXUnit);
             var chromatogram = rawSpectra.GetMs1TotalIonChromatogram(chromatogramRange);
             return chromatogram

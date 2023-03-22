@@ -21,6 +21,7 @@ namespace CompMs.MsdialGcMsApi.Process
         private static readonly double ANNOTATION_START = 60d;
         private static readonly double ANNOTATION_END = 90d;
 
+        private readonly AnalysisFileBean _analysisFile;
         private readonly IDataProviderFactory<AnalysisFileBean> _providerFactory;
         private readonly Dictionary<int, RiDictionaryInfo> _riDictionaryInfo;
         private readonly Action<int> _reportAction;
@@ -28,15 +29,15 @@ namespace CompMs.MsdialGcMsApi.Process
         private readonly Ms1Dec _ms1Deconvolution;
         private readonly Annotation _annotation;
 
-        public FileProcess(IDataProviderFactory<AnalysisFileBean> providerFactory, IMsdialDataStorage<MsdialGcmsParameter> storage, Action<int> reportAction) {
+        public FileProcess(AnalysisFileBean file, IDataProviderFactory<AnalysisFileBean> providerFactory, IMsdialDataStorage<MsdialGcmsParameter> storage, Action<int> reportAction) {
             if (storage is null || storage.Parameter is null) {
                 throw new ArgumentNullException(nameof(storage));
             }
-
+            _analysisFile = file;
             _providerFactory = providerFactory ?? throw new ArgumentNullException(nameof(providerFactory));
             _riDictionaryInfo = storage.Parameter.FileIdRiInfoDictionary;
             _reportAction = reportAction;
-            _peakSpotting = new PeakSpotting(storage.IupacDatabase, storage.Parameter);
+            _peakSpotting = new PeakSpotting(_analysisFile, storage.IupacDatabase, storage.Parameter);
             _ms1Deconvolution = new Ms1Dec(storage.Parameter);
             _annotation = new Annotation(storage.MspDB, storage.Parameter);
         }
@@ -69,7 +70,7 @@ namespace CompMs.MsdialGcMsApi.Process
             var spectrumFeatures = _annotation.MainProcess(msdecResults, carbon2RtDict, reportAnnotation);
             token.ThrowIfCancellationRequested();
 
-            var peakdetectionResults = _ms1Deconvolution.GetPeakDetectionResultsByQuantMassInformation(spectra, spectrumFeatures, msdecResults);
+            var peakdetectionResults = _ms1Deconvolution.GetPeakDetectionResultsByQuantMassInformation(analysisFileObject.GetAnalysisFileBean, spectra, spectrumFeatures, msdecResults);
 
             // save
             analysisFileObject.SaveChromatogramPeakFeatures(chromPeakFeatures);
@@ -80,7 +81,7 @@ namespace CompMs.MsdialGcMsApi.Process
 
         public static void Run(AnalysisFileBean file, IMsdialDataStorage<MsdialGcmsParameter> container, bool isGuiProcess = false, Action<int> reportAction = null, CancellationToken token = default) {
             var providerFactory = new StandardDataProviderFactory(isGuiProcess: isGuiProcess);
-            new FileProcess(providerFactory, container, reportAction).RunAsync(new AnalysisFileObject(file), token).Wait();
+            new FileProcess(file, providerFactory, container, reportAction).RunAsync(new AnalysisFileObject(file), token).Wait();
         }
     }
 }

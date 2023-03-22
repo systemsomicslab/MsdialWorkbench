@@ -38,7 +38,7 @@ namespace CompMs.MsdialImmsCore.Process
 
             _peakPickProcess = new PeakPickProcess(storage);
             _deconvolutionProcess = new DeconvolutionProcess(storage);
-            _peakAnnotationProcess = new PeakAnnotationProcess(storage, evaluator, mspAnnotator, textDBAnnotator);
+            _peakAnnotationProcess = new PeakAnnotationProcess(TODO, storage, evaluator, mspAnnotator, textDBAnnotator);
         }
 
         public Task RunAllAsync(IEnumerable<AnalysisFileBean> files, IEnumerable<IDataProvider> providers, IEnumerable<Action<int>> reportActions, int numParallel, Action afterEachRun, CancellationToken token = default) {
@@ -59,7 +59,7 @@ namespace CompMs.MsdialImmsCore.Process
             file.ChromPeakFeaturesSummary = summary;
 
             Console.WriteLine("Deconvolution started");
-            var mSDecResultCollections = _deconvolutionProcess.Deconvolute(provider, chromPeakFeatures.Items, summary, reportAction, token);
+            var mSDecResultCollections = _deconvolutionProcess.Deconvolute(TODO, provider, chromPeakFeatures.Items, summary, reportAction, token);
 
             // annotations
             Console.WriteLine("Annotation started");
@@ -79,7 +79,7 @@ namespace CompMs.MsdialImmsCore.Process
             file.ChromPeakFeaturesSummary = summary;
 
             Console.WriteLine("Deconvolution started");
-            var mSDecResultCollections = _deconvolutionProcess.Deconvolute(provider, chromPeakFeatures.Items, summary, reportAction, token);
+            var mSDecResultCollections = _deconvolutionProcess.Deconvolute(TODO, provider, chromPeakFeatures.Items, summary, reportAction, token);
 
             // annotations
             Console.WriteLine("Annotation started");

@@ -29,19 +29,19 @@ namespace CompMs.App.MsdialConsole.Export
                 ResultExport.WriteChromPeakFeatureExportHeader(sw, category);
                 if (category == Common.Enum.MachineCategory.GCMS) {
                     foreach (var msdec in msdecResults) {
-                        ResultExport.WriteChromPeakFeatureMetadata(sw, null, msdec, spectrumList, param, mspDB, textDB);
+                        ResultExport.WriteChromPeakFeatureMetadata(sw, TODO, null, msdec, spectrumList, param, mspDB, textDB);
                     }
                 }
                 else {
                     foreach (var feature in chromPeakFeatures) {
                         var msdecID = feature.MasterPeakID;
                         var msdec = msdecResults[msdecID];
-                        ResultExport.WriteChromPeakFeatureMetadata(sw, feature, msdec, spectrumList, param, mspDB, textDB);
+                        ResultExport.WriteChromPeakFeatureMetadata(sw, TODO, feature, msdec, spectrumList, param, mspDB, textDB);
 
                         foreach (var driftFeature in feature.DriftChromFeatures.OrEmptyIfNull()) {
                             msdecID = driftFeature.MasterPeakID;
                             msdec = msdecResults[msdecID];
-                            ResultExport.WriteChromPeakFeatureMetadata(sw, driftFeature, msdec, spectrumList, param, mspDB, textDB);
+                            ResultExport.WriteChromPeakFeatureMetadata(sw, TODO, driftFeature, msdec, spectrumList, param, mspDB, textDB);
                         }
                     }
                 }

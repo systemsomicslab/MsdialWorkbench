@@ -52,7 +52,7 @@ namespace CompMs.MsdialDimsCore.Export.Tests
 
         [TestMethod()]
         public void GetHeadersTest() {
-            var accessor = new DimsAnalysisMetadataAccessor(null, null, default);
+            var accessor = new DimsAnalysisMetadataAccessor(null, null, TODO, default, TODO);
             CollectionAssert.AreEqual(diHeaders, accessor.GetHeaders());
         }
 
@@ -60,7 +60,7 @@ namespace CompMs.MsdialDimsCore.Export.Tests
         public void GetContentTest() {
             var parameter = new ParameterBase { CentroidMs1Tolerance = 0.01f, MS2DataType = MSDataType.Centroid, };
             var refer = new MockRefer();
-            var accessor = new DimsAnalysisMetadataAccessor(refer, parameter);
+            var accessor = new DimsAnalysisMetadataAccessor(refer, parameter, TODO);
             var basePeak = new BaseChromatogramPeakFeature
             {
                 ChromXsLeft = new ChromXs(699.99951, ChromXType.Mz, ChromXUnit.Mz),

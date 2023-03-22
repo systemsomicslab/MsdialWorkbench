@@ -83,7 +83,7 @@ namespace CompMs.MsdialImmsCore.Export
     public class ImmsAnalysisMetadataAccessor : BaseAnalysisMetadataAccessor
     {
         public ImmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, ExportspectraType type)
-            : base(refer, parameter, type) {
+            : base(refer, parameter, type, TODO) {
 
         }
 

@@ -26,7 +26,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             _chromatogramRange = new ChromatogramRange(_parameter.DriftTimeBegin, _parameter.DriftTimeEnd, ChromXType.Drift, ChromXUnit.Msec);
         }
 
-        public ChromatogramPeakFeatureCollection Run(IDataProvider provider, double initialProgress, double progressMax, Action<int> reportAction = null) {
+        public ChromatogramPeakFeatureCollection Run(AnalysisFileBean file, IDataProvider provider, double initialProgress, double progressMax, Action<int> reportAction = null) {
             var rawSpectra = new RawSpectra(provider, _parameter.ProjectParam.IonMode, _parameter.ProjectParam.AcquisitionType);
             var detector = new PeakDetection(_parameter.PeakPickBaseParam.MinimumDatapoints, _parameter.PeakPickBaseParam.MinimumAmplitude);
             IEnumerable<ChromatogramPeakFeature> chromPeakFeatures;

@@ -24,7 +24,7 @@ namespace CompMs.MsdialLcMsApi.Process
             _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
         }
 
-        public void Annotate(IReadOnlyList<MSDecResultCollection> mSDecResultCollections, IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, CancellationToken token, Action<int> reportAction) {
+        public void Annotate(AnalysisFileBean file, IReadOnlyList<MSDecResultCollection> mSDecResultCollections, IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, CancellationToken token, Action<int> reportAction) {
             var initial_annotation = 60.0;
             var max_annotation = 30.0;
             foreach (var (ce2msdecs, index) in mSDecResultCollections.WithIndex()) {
@@ -42,7 +42,7 @@ namespace CompMs.MsdialLcMsApi.Process
             }
 
             // characterizatin
-            new PeakCharacterEstimator(90, 10).Process(provider, chromPeakFeatures, mSDecResultCollections.Any() ? mSDecResultCollections.Argmin(kvp => kvp.CollisionEnergy).MSDecResults : null, _evaluator, _storage.Parameter, reportAction);
+            new PeakCharacterEstimator(90, 10).Process(_file, provider, chromPeakFeatures, mSDecResultCollections.Any() ? mSDecResultCollections.Argmin(kvp => kvp.CollisionEnergy).MSDecResults : null, _evaluator, _storage.Parameter, reportAction);
         }
     }
 }

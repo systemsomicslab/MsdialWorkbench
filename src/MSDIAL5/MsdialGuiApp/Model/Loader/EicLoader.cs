@@ -17,14 +17,15 @@ namespace CompMs.App.Msdial.Model.Loader
     public class EicLoader : IChromatogramLoader
     {
         protected EicLoader(
+            AnalysisFileBean file,
             IDataProvider provider,
             ParameterBase parameter,
             ChromXType chromXType,
             ChromXUnit chromXUnit,
             double rangeBegin,
-            double rangeEnd,
-            bool isConstantRange = true) {
+            double rangeEnd, bool isConstantRange = true) {
 
+            this.file = file;
             this.provider = provider;
             this.parameter = parameter;
             this.chromXType = chromXType;
@@ -33,10 +34,11 @@ namespace CompMs.App.Msdial.Model.Loader
             this.rangeEnd = rangeEnd;
             _isConstantRange = isConstantRange;
 
-            _rawSpectraTask = Task.Run(async () => new RawSpectra(await provider.LoadMs1SpectrumsAsync(default).ConfigureAwait(false), parameter.IonMode, parameter.AcquisitionType));
+            _rawSpectraTask = Task.Run(async () => new RawSpectra(await provider.LoadMs1SpectrumsAsync(default).ConfigureAwait(false), parameter.IonMode, file.AcquisitionType));
             _chromatogramRange = new ChromatogramRange(rangeBegin, rangeEnd, chromXType, chromXUnit);
         }
 
+        protected readonly AnalysisFileBean file;
         protected readonly IDataProvider provider;
         protected readonly ParameterBase parameter;
         protected readonly ChromXType chromXType;
@@ -197,12 +199,12 @@ namespace CompMs.App.Msdial.Model.Loader
                 .ToList();
         }
 
-        public static EicLoader BuildForAllRange(IDataProvider provider, ParameterBase parameter, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd) {
-            return new EicLoader(provider, parameter, chromXType, chromXUnit, rangeBegin, rangeEnd);
+        public static EicLoader BuildForAllRange(AnalysisFileBean file, IDataProvider provider, ParameterBase parameter, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd) {
+            return new EicLoader(file, provider, parameter, chromXType, chromXUnit, rangeBegin, rangeEnd);
         }
 
-        public static EicLoader BuildForPeakRange(IDataProvider provider, ParameterBase parameter, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd) {
-            return new EicLoader(provider, parameter, chromXType, chromXUnit, rangeBegin, rangeEnd, isConstantRange: false);
+        public static EicLoader BuildForPeakRange(AnalysisFileBean file, IDataProvider provider, ParameterBase parameter, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd) {
+            return new EicLoader(file, provider, parameter, chromXType, chromXUnit, rangeBegin, rangeEnd, isConstantRange: false);
         }
     }
 }

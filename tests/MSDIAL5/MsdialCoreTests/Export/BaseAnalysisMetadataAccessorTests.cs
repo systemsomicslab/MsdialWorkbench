@@ -130,7 +130,7 @@ namespace CompMs.MsdialCore.Export.Tests
 
         class TestAnalysisMetadataAccessor : BaseAnalysisMetadataAccessor
         {
-            public TestAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, ExportspectraType type) : base(refer, parameter, type) {
+            public TestAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, ExportspectraType type) : base(refer, parameter, type, TODO) {
 
             }
         }

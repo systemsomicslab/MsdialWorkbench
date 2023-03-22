@@ -22,15 +22,17 @@ namespace CompMs.MsdialCore.Export
 
     public abstract class BaseAnalysisMetadataAccessor : IAnalysisMetadataAccessor
     {
-        public BaseAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, ExportspectraType type) {
+        public BaseAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, ExportspectraType type, AcquisitionType acquisitionType) {
             this.refer = refer;
             this.parameter = parameter;
             this.type = type;
+            this.acquisitionType = acquisitionType;
         }
 
         protected readonly ParameterBase parameter;
         protected readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
         private readonly ExportspectraType type;
+        private readonly AcquisitionType acquisitionType;
 
         public string[] GetHeaders() => GetHeadersCore();
 
@@ -131,7 +133,7 @@ namespace CompMs.MsdialCore.Export
         }
 
         private string GetSpectrumListContent(MSDecResult msdec, IReadOnlyList<RawSpectrum> spectrumList) {
-            var spectrum = DataAccess.GetMassSpectrum(spectrumList, msdec, type, msdec.RawSpectrumID, parameter);
+            var spectrum = DataAccess.GetMassSpectrum(spectrumList, msdec, type, msdec.RawSpectrumID, parameter, acquisitionType);
             if (spectrum.IsEmptyOrNull()) {
                 return "null";
             }

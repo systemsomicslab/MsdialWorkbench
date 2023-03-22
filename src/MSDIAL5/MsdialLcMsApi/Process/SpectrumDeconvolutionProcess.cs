@@ -34,14 +34,14 @@ namespace CompMs.MsdialLcMsApi.Process
                     var max_msdec_aif = max_msdec / ceList.Count;
                     var initial_msdec_aif = initial_msdec + max_msdec_aif * i;
                     var results = new Ms2Dec(initial_msdec_aif, max_msdec_aif).GetMS2DecResults(
-                        provider, chromPeakFeatures, _storage.Parameter, summary, _storage.IupacDatabase, reportAction, token, targetCE);
+                        TODO, provider, chromPeakFeatures, _storage.Parameter, summary, _storage.IupacDatabase, reportAction, token, targetCE);
                     mSDecREsultCollections.Add(new MSDecResultCollection(results, targetCE));
                 }
             }
             else {
                 var targetCE = ceList.IsEmptyOrNull() ? -1 : ceList[0];
                 var results = new Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(
-                    provider, chromPeakFeatures, _storage.Parameter, summary, _storage.IupacDatabase, reportAction, token);
+                    TODO, provider, chromPeakFeatures, _storage.Parameter, summary, _storage.IupacDatabase, reportAction, token);
                 mSDecREsultCollections.Add(new MSDecResultCollection(results, targetCE));
             }
             return mSDecREsultCollections;

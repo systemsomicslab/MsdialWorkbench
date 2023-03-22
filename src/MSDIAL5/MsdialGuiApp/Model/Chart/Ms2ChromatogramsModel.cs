@@ -4,6 +4,7 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Algorithm.ChromSmoothing;
 using CompMs.Common.Components;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.MSDec;
@@ -25,13 +26,13 @@ namespace CompMs.App.Msdial.Model.Chart
         private static readonly ReadOnlyCollection<Pen> DECONVOLUTION_PENS = ChartBrushes.GetSolidColorPenList(1d, DashStyles.Solid);
         private static readonly ReadOnlyCollection<Pen> RAW_PENS = ChartBrushes.GetSolidColorPenList(1d, DashStyles.Dash);
 
-        public Ms2ChromatogramsModel(IObservable<ChromatogramPeakFeatureModel> peak, IObservable<MSDecResult> msScan, IMsSpectrumLoader<ChromatogramPeakFeatureModel> loader, IDataProvider provider, ParameterBase parameter) {
+        public Ms2ChromatogramsModel(IObservable<ChromatogramPeakFeatureModel> peak, IObservable<MSDecResult> msScan, IMsSpectrumLoader<ChromatogramPeakFeatureModel> loader, IDataProvider provider, ParameterBase parameter, AcquisitionType acquisitionType) {
             NumberOfChromatograms = new ReactiveProperty<int>(NUMBER_OF_CHROMATOGRAMS).AddTo(Disposables);
 
             var smoother = new Smoothing();
             var rawChromatograms = peak.SkipNull()
                 .SelectSwitch(t => loader.LoadSpectrumAsObservable(t).CombineLatest(NumberOfChromatograms, (spectrum, number) => (t, spectrum: spectrum.OrderByDescending(peak_ => peak_.Intensity).Take(number).OrderBy(n => n.Mass))))
-                .Select(pair => DataAccess.GetMs2ValuePeaks(provider, pair.t.Mass, pair.t.MS1RawSpectrumIdLeft, pair.t.MS1RawSpectrumIdRight, pair.spectrum.Select(peak_ => (double)peak_.Mass).ToArray(), parameter))
+                .Select(pair => DataAccess.GetMs2ValuePeaks(provider, pair.t.Mass, pair.t.MS1RawSpectrumIdLeft, pair.t.MS1RawSpectrumIdRight, pair.spectrum.Select(peak_ => (double)peak_.Mass).ToArray(), parameter, acquisitionType))
                 .Select(chromatograms => chromatograms.Select(n => smoother.LinearWeightedMovingAverage(n, parameter.SmoothingLevel)))
                 .Select(chromatograms => new ChromatogramsModel(
                     "Raw MS/MS chromatogram",
@@ -51,8 +52,8 @@ namespace CompMs.App.Msdial.Model.Chart
 
             Loader = loader as MultiMsRawSpectrumLoader;
 
-            var isSwath = parameter.AcquisitionType == CompMs.Common.Enum.AcquisitionType.SWATH ||
-                parameter.AcquisitionType == CompMs.Common.Enum.AcquisitionType.AIF;
+            var isSwath = acquisitionType == CompMs.Common.Enum.AcquisitionType.SWATH ||
+                acquisitionType == CompMs.Common.Enum.AcquisitionType.AIF;
             IsRawSelected = new ReactivePropertySlim<bool>(!isSwath).AddTo(Disposables);
             IsDeconvolutedSelected = new ReactivePropertySlim<bool>(isSwath).AddTo(Disposables);
             IsBothSelected = new ReactivePropertySlim<bool>(false).AddTo(Disposables);

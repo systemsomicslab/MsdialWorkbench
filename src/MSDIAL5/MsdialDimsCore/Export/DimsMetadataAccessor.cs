@@ -70,12 +70,12 @@ namespace CompMs.MsdialDimsCore.Export
 
     public class DimsAnalysisMetadataAccessor : BaseAnalysisMetadataAccessor
     {
-        public DimsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter)
-            : this(refer, parameter, parameter.ExportSpectraType) {
+        public DimsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, AcquisitionType acquisitionType)
+            : this(refer, parameter, parameter.ExportSpectraType, acquisitionType) {
         }
 
-        public DimsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, ExportspectraType type)
-            : base(refer, parameter, type) {
+        public DimsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, ExportspectraType type, AcquisitionType acquisitionType)
+            : base(refer, parameter, type, acquisitionType) {
         }
 
         protected override string[] GetHeadersCore() {
