@@ -155,15 +155,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DelegateCommand<Window> _normalizeCommand;
 
         private void Normalize(Window owner) {
-            using (var model = _model.BuildNormalizeSetModel())
+            var model = _model.NormalizationSetModel;
             using (var vm = new NormalizationSetViewModel(model, _internalStandardSetViewModel)) {
-                var view = new NormalizationSetView
-                {
-                    DataContext = vm,
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                };
-                view.ShowDialog();
+                _broker.Publish(vm);
             }
         }
 

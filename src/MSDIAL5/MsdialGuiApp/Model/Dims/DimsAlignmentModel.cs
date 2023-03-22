@@ -81,18 +81,13 @@ namespace CompMs.App.Msdial.Model.Dims
             _undoManager = new UndoManager().AddTo(Disposables);
             _dataBaseMapper = mapper;
             _matchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
-
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databaseStorage, mapper);
 
-
-            var barItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName, fileCollection);
-            var observableBarItemsLoader = Observable.Return(barItemsLoader);
             var spotsSource = new AlignmentSpotSource(alignmentFileModel, Container, CHROMATOGRAM_SPOT_SERIALIZER).AddTo(Disposables);
             Ms1Spots = spotsSource.Spots.Items;
-
             InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Dims).AddTo(Disposables);
+            NormalizationSetModel = new NormalizationSetModel(Container, _files, _fileCollection, _dataBaseMapper, _matchResultEvaluator, InternalStandardSetModel, _parameter, _broker).AddTo(Disposables);
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator, status: ~(FilterEnableStatus.Rt | FilterEnableStatus.Dt)).AddTo(Disposables);
-            InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Dims).AddTo(Disposables);
 
             var ontologyBrush = new BrushMapData<AlignmentSpotPropertyModel>(
                     new KeyBrushMapper<AlignmentSpotPropertyModel, string>(
@@ -189,9 +184,20 @@ namespace CompMs.App.Msdial.Model.Dims
                 ),
                 item => item.Class,
                 Colors.Blue);
-            var barItemsLoaderData = new BarItemsLoaderData("Loader", "Intensity", observableBarItemsLoader, Observable.Return(true));
-            var barItemsLoaderDataProperty = new ReactiveProperty<BarItemsLoaderData>(barItemsLoaderData).AddTo(Disposables);
-            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush), projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
+            var fileIdToClassNameAsObservable = projectBaseParameter.ObserveProperty(p => p.FileIdToClassName).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var normalizedAreaZeroLoader = new BarItemsLoaderData("Normalized peak area above zero", Target.OfType<AlignmentSpotPropertyModel>().Select(t => t.IonAbundanceUnit.ToLabel()), Observable.Return(new NormalizedAreaAboveZeroBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)), NormalizationSetModel.IsNormalized);
+            var normalizedAreaBaselineLoader = new BarItemsLoaderData("Normalized peak area above base line", Target.OfType<AlignmentSpotPropertyModel>().Select(t => t.IonAbundanceUnit.ToLabel()), Observable.Return(new NormalizedAreaAboveBaseLineBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)), NormalizationSetModel.IsNormalized);
+            var normalizedHeightLoader = new BarItemsLoaderData("Normalized peak height", Target.OfType<AlignmentSpotPropertyModel>().Select(t => t.IonAbundanceUnit.ToLabel()), Observable.Return(new NormalizedHeightBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)), NormalizationSetModel.IsNormalized);
+            var areaZeroLoader = new BarItemsLoaderData("Peak area above zero", Observable.Return("Area"), Observable.Return(new AreaAboveZeroBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)), Observable.Return(true));
+            var areaBaselineLoader = new BarItemsLoaderData("Peak area above base line", Observable.Return("Area"), Observable.Return(new AreaAboveBaseLineBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)), Observable.Return(true));
+            var heightLoader = new BarItemsLoaderData("Peak height", Observable.Return("Height"), Observable.Return(new HeightBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)), Observable.Return(true));
+            var barItemLoaderDatas = new[]
+            {
+                heightLoader, areaBaselineLoader, areaZeroLoader,
+                normalizedHeightLoader, normalizedAreaBaselineLoader, normalizedAreaZeroLoader,
+            };
+            var barItemsLoaderDataProperty = NormalizationSetModel.IsNormalized.Where(x => x).Take(1).ToConstant(normalizedHeightLoader).ToReactiveProperty(barItemLoaderDatas.First()).AddTo(Disposables);
+            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, barItemLoaderDatas, Observable.Return(classBrush), projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
 
             var classToColor = parameter.ClassnameToColorBytes
                 .ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
@@ -208,6 +214,9 @@ namespace CompMs.App.Msdial.Model.Dims
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
+
+            var barItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName, fileCollection);
+            var observableBarItemsLoader = Observable.Return(barItemsLoader);
             AlignmentSpotTableModel = new DimsAlignmentSpotTableModel(Ms1Spots, Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, observableBarItemsLoader).AddTo(Disposables);
 
             _msdecResult = Target.SkipNull()
@@ -277,9 +286,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public InternalStandardSetModel InternalStandardSetModel { get; }
 
-        public NormalizationSetModel BuildNormalizeSetModel() {
-            return new NormalizationSetModel(Container, _files, _fileCollection, _dataBaseMapper, _matchResultEvaluator, InternalStandardSetModel, _parameter, _broker);
-        }
+        public NormalizationSetModel NormalizationSetModel { get; }
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
