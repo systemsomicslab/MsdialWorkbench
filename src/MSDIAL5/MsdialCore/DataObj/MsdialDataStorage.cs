@@ -131,6 +131,12 @@ namespace CompMs.MsdialCore.DataObj
                 LoadDataBaseMapper(mapper, storage);
                 storage.DataBaseMapper = mapper;
                 storage.MspDB = await LoadMspDBAsync(streamManager, Combine(prefix, GetNewMspFileName(projectTitle))).ConfigureAwait(false);
+                if (storage.Parameter.ProjectParam.AcquisitionType != Common.Enum.AcquisitionType.None) {
+                    foreach (var file in storage.AnalysisFiles) {
+                        //file.AcquisitionType = storage.Parameter.ProjectParam.AcquisitionType;
+                    }
+                    //storage.Parameter.ProjectParam.AcquisitionType = Common.Enum.AcquisitionType.None;
+                }
                 return storage;
             }
 

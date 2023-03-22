@@ -52,6 +52,9 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         [RegularExpression("[0-9]*\\.?[0-9]+")]
         public ReactiveProperty<string> ResponseVariable { get; }
 
+        [Required(ErrorMessage = "AcquisitionType is required.")]
+        public ReactiveProperty<AcquisitionType> AcquisitionType { get; }
+
         public Subject<Unit> CommitTrigger { get; } = new Subject<Unit>();
 
         public ReadOnlyReactivePropertySlim<bool> HasErrors { get; }
@@ -147,6 +150,14 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
                 .Subscribe(x => model.ResponseVariable = double.Parse(x))
                 .AddTo(Disposables);
 
+            AcquisitionType = new ReactiveProperty<AcquisitionType>(model.AcquisitionType)
+                .SetValidateAttribute(() => AcquisitionType)
+                .AddTo(Disposables);
+            CommitAsObservable
+                .WithLatestFrom(AcquisitionType, (_, x) => x)
+                .Subscribe(x => model.AcquisitionType = x)
+                .AddTo(Disposables);
+
             HasErrors = new[]
             {
                 AnalysisFilePath.ObserveHasErrors,
@@ -158,7 +169,8 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
                 AnalysisFileIncluded.ObserveHasErrors,
                 AnalysisBatch.ObserveHasErrors,
                 DilutionFactor.ObserveHasErrors,
-                ResponseVariable.ObserveHasErrors
+                ResponseVariable.ObserveHasErrors,
+                AcquisitionType.ObserveHasErrors,
             }.CombineLatestValuesAreAllFalse()
             .Inverse()
             .ToReadOnlyReactivePropertySlim(true)
@@ -176,6 +188,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
                 AnalysisBatch.ToUnit(),
                 DilutionFactor.ToUnit(),
                 ResponseVariable.ToUnit(),
+                AcquisitionType.ToUnit(),
             }.Merge();
         }
 

@@ -32,6 +32,12 @@
                     <x:Type TypeName="common:AnalysisFileType"/>
                 </ObjectDataProvider.MethodParameters>       
             </ObjectDataProvider>
+
+            <x:Array x:Key="AcquisitionTypes" Type="{x:Type common:AcquisitionType}">
+                <common:AcquisitionType>DDA</common:AcquisitionType>
+                <common:AcquisitionType>SWATH</common:AcquisitionType>
+                <common:AcquisitionType>AIF</common:AcquisitionType>
+            </x:Array>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -44,7 +50,6 @@
         <StackPanel Orientation="Horizontal"
                     Grid.Row="0">
             <Label Content="Analysis file paths" HorizontalAlignment="Left" VerticalAlignment="Center" Height="24" Margin="8,0"/>
-            
             <Button x:Name="Button_AnalysisFilePathsSelect" Content="Browse"
                     Command="{x:Static local:DatasetFileSettingView.OpenDialogCommand}"
                     IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}"
@@ -54,6 +59,27 @@
                     <ToolTip Content="Select analysis files (now abf format only). Here, you have the only chance to change the name of your samples. You should change the type of samples especially for quality control samples which are also utilized for peak alignment. The remaining properties including Class ID, Analytical order, and Included can be changed after data processing." />
                 </ToolTipService.ToolTip>
             </Button>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Grid.Row="0">
+            <ComboBox ItemsSource="{Binding Source={StaticResource AcquisitionTypes}}"
+                      SelectedItem="{Binding SelectedAcquisitionType.Value, Mode=TwoWay}"
+                      VerticalContentAlignment="Center"
+                      Width="80">
+                <ComboBox.ToolTip>
+                    <TextBlock>
+                        DDA: When you analyze a data set from data dependent MS/MS, select this option.<LineBreak />
+                        SWATH, AIF: When you analyze a data set from data independent MS/MS, select this option.
+                    </TextBlock>  
+                </ComboBox.ToolTip>
+            </ComboBox>
+            <Button Content="Set to all"
+                    Command="{Binding SetSelectedAcquisitionTypeCommand, Mode=OneTime}"
+                    Padding="4"
+                    Margin="8,0"/>
         </StackPanel>
         
         <DataGrid ClipboardCopyMode="IncludeHeader" x:Name="Datagrid_AnalysisFileProperties" Style="{StaticResource ResourceKey=ToolTipErrorStyleDataGrid}" 
@@ -125,6 +151,28 @@
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
 
+                <DataGridComboBoxColumn ItemsSource="{Binding Source={StaticResource AcquisitionTypes}}"
+                                        Header="Acquisiotion type"
+                                        SelectedItemBinding="{Binding Path=AcquisitionType.Value}"
+                                        SortMemberPath="AcquisitionType.Value"
+                                        Width="80"
+                                        ClipboardContentBinding="{Binding Path=AcquisitionType.Value}">
+                    <DataGridComboBoxColumn.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="ToolTip">
+                                <Setter.Value>
+                                    <TextBlock>
+                                        DDA:<LineBreak />
+                                        When you analyze a data set from data dependent MS/MS, select this option.
+                                        SWATH, AIF:<LineBreak />
+                                        When you analyze a data set from data independent MS/MS, select this option. <LineBreak />
+                                    </TextBlock>  
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </DataGridComboBoxColumn.CellStyle>
+                </DataGridComboBoxColumn>
+                
                 <DataGridTemplateColumn SortMemberPath="AnalysisBatch.Value" Width="0.5*" Header="Batch" IsReadOnly="False" ClipboardContentBinding="{Binding Path=AnalysisBatch.Value}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
