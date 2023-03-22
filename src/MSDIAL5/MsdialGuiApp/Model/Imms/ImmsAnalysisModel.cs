@@ -166,7 +166,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
 
             // Ms2 chromatogram
-            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawLoader, provider, parameter, TODO).AddTo(Disposables);
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawLoader, provider, parameter, analysisFileModel.AcquisitionType).AddTo(Disposables);
 
             var surveyScanSpectrum = new SurveyScanSpectrum(Target, target => Observable.FromAsync(token => LoadMsSpectrumAsync(target, token)))
                 .AddTo(Disposables);

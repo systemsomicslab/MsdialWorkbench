@@ -211,7 +211,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             }.AddTo(Disposables);
 
             // Ms2 chromatogram
-            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawSpectrumLoader, provider, Parameter, TODO).AddTo(Disposables);
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawSpectrumLoader, provider, Parameter, analysisFileModel.AcquisitionType).AddTo(Disposables);
 
             // SurveyScan
             var msdataType = Parameter.MSDataType;

@@ -270,7 +270,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
 
             // Ms2 chromatogram
-            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(target, target.Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation)), rawLoader, spectrumProvider, parameter, TODO).AddTo(Disposables);
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(target, target.Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation)), rawLoader, spectrumProvider, parameter, analysisFileModel.AcquisitionType).AddTo(Disposables);
 
             // Raw vs Purified spectrum model
             RawPurifiedSpectrumsModel = new RawPurifiedSpectrumsModel(
