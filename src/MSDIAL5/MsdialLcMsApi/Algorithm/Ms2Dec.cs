@@ -89,7 +89,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             }
             if (curatedSpectra.IsEmptyOrNull()) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
 
-            if (!param.IsDoMs2ChromDeconvolution) {
+            if (!file.IsDoMs2ChromDeconvolution) {
                 if (param.IsDoAndromedaMs2Deconvolution)
                     return MSDecObjectHandler.GetAndromedaSpectrum(chromPeakFeature, curatedSpectra, param, iupac, Math.Abs(chromPeakFeature.PeakCharacter.Charge));
                 else

@@ -245,6 +245,7 @@ namespace CompMs.MsdialCore.Parameter
         [Key(7)]
         public ChromDecBaseParameter ChromDecBaseParam { get; set; } = new ChromDecBaseParameter();
         [IgnoreMember]
+        [Obsolete("Use AnalysisFileBean.IsDoMs2ChromDeconvolution")]
         public bool IsDoMs2ChromDeconvolution { get => ChromDecBaseParam.IsDoMs2ChromDeconvolution; set => ChromDecBaseParam.IsDoMs2ChromDeconvolution = value; }
         [IgnoreMember]
         public float SigmaWindowValue { get => ChromDecBaseParam.SigmaWindowValue; set => ChromDecBaseParam.SigmaWindowValue = value; }
@@ -590,7 +591,6 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "Keep isotope range", KeptIsotopeRange.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Exclude after precursor", RemoveAfterPrecursor.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Keep original precursor isotopes", KeepOriginalPrecursorIsotopes.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Is do ms2 chrom deconvolution", IsDoMs2ChromDeconvolution.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Is do andromeda ms2 deconvolution", IsDoAndromedaMs2Deconvolution.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Andromeda delta", AndromedaDelta.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Andromeda max peaks", AndromedaMaxPeaks.ToString() }));
@@ -1140,6 +1140,7 @@ namespace CompMs.MsdialCore.Parameter
     [MessagePackObject]
     public class ChromDecBaseParameter {
         [Key(0)]
+        [Obsolete("Use AnalysisFileBean.IsDoMs2ChromDeconvolution")]
         public bool IsDoMs2ChromDeconvolution { get; set; } = false;
         [Key(1)]
         public float SigmaWindowValue { get; set; } = 0.5F;

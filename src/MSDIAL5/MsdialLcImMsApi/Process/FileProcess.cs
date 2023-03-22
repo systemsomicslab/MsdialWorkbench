@@ -190,13 +190,13 @@ namespace CompMs.MsdialLcImMsApi.Process
                     }
                     var max_msdec_aif = max_msdec / ceList.Count;
                     var initial_msdec_aif = initial_msdec + max_msdec_aif * i;
-                    targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec_aif, max_msdec_aif).GetMS2DecResults(
+                    targetCE2MSDecResults[targetCE] = new Ms2Dec(TODO, initial_msdec_aif, max_msdec_aif).GetMS2DecResults(
                         provider, chromPeakFeatures, parameter, summary, iupac, reportAction, token, targetCE);
                 }
             }
             else {
                 var targetCE = ceList.IsEmptyOrNull() ? -1 : Math.Round(ceList[0], 2);
-                targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(
+                targetCE2MSDecResults[targetCE] = new Ms2Dec(TODO, initial_msdec, max_msdec).GetMS2DecResults(
                        provider, chromPeakFeatures, parameter, summary, iupac, reportAction, token, targetCE);
             }
             return targetCE2MSDecResults;

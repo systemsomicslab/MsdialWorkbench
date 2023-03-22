@@ -50,6 +50,9 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(18)]
         public AcquisitionType AcquisitionType { get; set; }
 
+        [IgnoreMember]
+        public bool IsDoMs2ChromDeconvolution => AcquisitionType != AcquisitionType.DDA;
+
         public AnalysisFileBean() {
 
         }
