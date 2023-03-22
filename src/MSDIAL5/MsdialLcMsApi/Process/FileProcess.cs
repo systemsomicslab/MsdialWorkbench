@@ -53,7 +53,7 @@ namespace CompMs.MsdialLcMsApi.Process
             // chrom deconvolutions
             token.ThrowIfCancellationRequested();
             Console.WriteLine("Deconvolution started");
-            var mSDecResultCollections = _spectrumDeconvolutionProcess.Deconvolute(provider, chromPeakFeatures.Items, summaryDto, reportAction, token);
+            var mSDecResultCollections = _spectrumDeconvolutionProcess.Deconvolute(provider, chromPeakFeatures.Items, file, summaryDto, reportAction, token);
 
             // annotations
             token.ThrowIfCancellationRequested();

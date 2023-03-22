@@ -1,11 +1,9 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcmsApi.Parameter;
 using System;
