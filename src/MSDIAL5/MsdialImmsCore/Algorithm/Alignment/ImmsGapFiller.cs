@@ -33,7 +33,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
             };
         }
 
-        protected override List<ChromatogramPeak> GetPeaks(Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
+        protected override List<ChromatogramPeak> GetPeaks(Ms1Spectra ms1Spectra, RawSpectra rawSpectra, IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
             var mzTol = this.mzTol;
             var chromatogramRange = new ChromatogramRange(center.Drift.Value - peakWidth * 1.5, center.Drift.Value + peakWidth * 1.5, ChromXType.Drift, ChromXUnit.Msec);
             var peaklist = ms1Spectra.GetMs1ExtractedChromatogram(center.Mz.Value, mzTol, chromatogramRange);

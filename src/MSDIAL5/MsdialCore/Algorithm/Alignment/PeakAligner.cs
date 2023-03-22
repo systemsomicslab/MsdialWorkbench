@@ -132,6 +132,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                 }
             }
             var ms1Spectra = new Ms1Spectra(spectra, Param.IonMode);
+            var rawSpectra = new RawSpectra(spectra, Param.IonMode, analysisFile.AcquisitionType);
             var peakInfos = peaks.Zip(spots)
                 .AsParallel()
                 .AsOrdered()
@@ -140,7 +141,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                     (var peak, var spot) = peakAndSpot;
 
                     if (spot.AlignedPeakProperties.First(p => p.FileID == analysisFile.AnalysisFileId).MasterPeakID < 0) {
-                        Filler.GapFill(ms1Spectra, spectra, spot, analysisFile.AnalysisFileId);
+                        Filler.GapFill(ms1Spectra, rawSpectra, spectra, spot, analysisFile.AnalysisFileId);
                     }
                     if (DataObjConverter.GetRepresentativeFileID(spot.AlignedPeakProperties.Where(p => p.PeakID >= 0).ToArray()) == analysisFile.AnalysisFileId) {
                         var index = spectra.LowerBound(peak.MS1RawSpectrumIdTop, (s, id) => s.Index.CompareTo(id));
