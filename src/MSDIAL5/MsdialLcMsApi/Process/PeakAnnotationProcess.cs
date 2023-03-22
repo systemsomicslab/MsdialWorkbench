@@ -42,7 +42,7 @@ namespace CompMs.MsdialLcMsApi.Process
             }
 
             // characterizatin
-            new PeakCharacterEstimator(90, 10).Process(_file, provider, chromPeakFeatures, mSDecResultCollections.Any() ? mSDecResultCollections.Argmin(kvp => kvp.CollisionEnergy).MSDecResults : null, _evaluator, _storage.Parameter, reportAction);
+            new PeakCharacterEstimator(90, 10).Process(file, provider, chromPeakFeatures, mSDecResultCollections.Any() ? mSDecResultCollections.Argmin(kvp => kvp.CollisionEnergy).MSDecResults : null, _evaluator, _storage.Parameter, reportAction);
         }
     }
 }
