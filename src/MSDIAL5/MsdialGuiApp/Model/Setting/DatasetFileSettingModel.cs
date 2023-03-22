@@ -120,16 +120,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 .Average(group => group.Count())
                 > 4;
 
-            var set = IncludedFileModels.Select(f => f.AcquisitionType).ToHashSet();
-            if (set.Count == 1) {
-                parameter.AcquisitionType = set.First();
-            }
-            else if (set.Count == 0) {
-                parameter.AcquisitionType = AcquisitionType.DDA;
-            }
-            else {
-                parameter.AcquisitionType = AcquisitionType.DDA;
-            }
+            parameter.AcquisitionType = AcquisitionType.None;
         }
     }
 }
