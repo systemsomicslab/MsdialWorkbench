@@ -75,8 +75,8 @@ namespace CompMs.App.MsdialConsole.LabelDataHandler {
             var maxPrecursorDiff_Percent = 100;
 
             var inputfilename = Path.GetFileNameWithoutExtension(inputfile_plant);
-            var output_node_file = Path.Combine(outputdir, inputfilename + "_node.txt");
-            var output_edge_file = Path.Combine(outputdir, inputfilename + "_edge.txt");
+            var output_node_file = Path.Combine(outputdir, inputfilename + "_node_bonanza.txt");
+            var output_edge_file = Path.Combine(outputdir, inputfilename + "_edge_bonanza.txt");
 
             var plantSpectra = MspFileParser.MspFileReader(inputfile_plant);
             var mslibSpectra = MspFileParser.MspFileReader(inputfile_mslib);
@@ -106,7 +106,8 @@ namespace CompMs.App.MsdialConsole.LabelDataHandler {
                     if (massDiff > maxPrecursorDiff) continue;
                     if (Math.Max(prop1.PrecursorMz, prop2.PrecursorMz) * maxPrecursorDiff_Percent * 0.01 - Math.Min(prop1.PrecursorMz, prop2.PrecursorMz) < 0) continue;
 
-                    var scoreitem = MsScanMatching.GetModifiedDotProductScore(prop1, prop2);
+                    //var scoreitem = MsScanMatching.GetModifiedDotProductScore(prop1, prop2);
+                    var scoreitem = MsScanMatching.GetBonanzaScore(prop1, prop2);
                     if (scoreitem[1] < minimumPeakMatch) continue;
                     if (scoreitem[0] < matchThreshold) continue;
 
@@ -136,7 +137,8 @@ namespace CompMs.App.MsdialConsole.LabelDataHandler {
                     if (massDiff > maxPrecursorDiff) continue;
                     if (Math.Max(prop1.PrecursorMz, prop2.PrecursorMz) * maxPrecursorDiff_Percent * 0.01 - Math.Min(prop1.PrecursorMz, prop2.PrecursorMz) < 0) continue;
 
-                    var scoreitem = MsScanMatching.GetModifiedDotProductScore(prop1, prop2);
+                    //var scoreitem = MsScanMatching.GetModifiedDotProductScore(prop1, prop2);
+                    var scoreitem = MsScanMatching.GetBonanzaScore(prop1, prop2);
                     if (scoreitem[1] < minimumPeakMatch) continue;
                     if (scoreitem[0] < matchThreshold) continue;
 
@@ -152,7 +154,7 @@ namespace CompMs.App.MsdialConsole.LabelDataHandler {
 
             var cNode2Links = new Dictionary<int, List<LinkNode>>();
             foreach (var item in node2links) {
-                var nitem = item.Value.OrderByDescending(n => n.Score[1]).ToList();
+                var nitem = item.Value.OrderByDescending(n => n.Score[0]).ToList();
                 cNode2Links[item.Key] = new List<LinkNode>();
                 for (int i = 0; i < nitem.Count; i++) {
                     if (i > maxEdgeNumPerNode - 1) break;
@@ -162,7 +164,7 @@ namespace CompMs.App.MsdialConsole.LabelDataHandler {
 
             var cNode2Links_with_reffile = new Dictionary<int, List<LinkNode>>();
             foreach (var item in node2links_with_reffile) {
-                var nitem = item.Value.OrderByDescending(n => n.Score[1]).ToList();
+                var nitem = item.Value.OrderByDescending(n => n.Score[0]).ToList();
                 cNode2Links_with_reffile[item.Key] = new List<LinkNode>();
                 for (int i = 0; i < nitem.Count; i++) {
                     if (i > maxEdgeNumPerNode - 1) break;

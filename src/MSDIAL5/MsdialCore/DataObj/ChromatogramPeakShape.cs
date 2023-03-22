@@ -6,6 +6,24 @@ using System.Text;
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
     public class ChromatogramPeakShape {
+        [SerializationConstructor]
+        public ChromatogramPeakShape() {
+            
+        }
+
+        public ChromatogramPeakShape(ChromatogramPeakShape peakShape) {
+            EstimatedNoise = EstimatedNoise;
+            SignalToNoise = SignalToNoise;
+            PeakPureValue = PeakPureValue;
+            ShapenessValue = ShapenessValue;
+            GaussianSimilarityValue = GaussianSimilarityValue;
+            IdealSlopeValue = IdealSlopeValue;
+            BasePeakValue = BasePeakValue;
+            SymmetryValue = SymmetryValue;
+            AmplitudeOrderValue = AmplitudeOrderValue;
+            AmplitudeScoreValue = AmplitudeScoreValue;
+        }
+
         [Key(0)]
         public float EstimatedNoise { get; set; }
         [Key(1)]

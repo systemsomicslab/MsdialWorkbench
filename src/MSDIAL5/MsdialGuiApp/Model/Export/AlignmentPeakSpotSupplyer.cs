@@ -3,9 +3,11 @@ using CompMs.App.Msdial.Model.Search;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Threading;
 
 namespace CompMs.App.Msdial.Model.Export
@@ -26,10 +28,12 @@ namespace CompMs.App.Msdial.Model.Export
         }
         private bool _useFilter;
 
-        public IReadOnlyList<AlignmentSpotProperty> Supply(AlignmentFileBean file, CancellationToken token) {
-            var container = AlignmentResultContainer.LoadLazy(file);
+        public IReadOnlyList<AlignmentSpotProperty> Supply(AlignmentFileBeanModel file, CancellationToken token) {
+            var container = file.LoadAlignmentResultAsync().Result;
             if (UseFilter) {
-                return container.AlignmentSpotProperties.Where(spot => _peakFilterModel.PeakFilter(new AlignmentSpotPropertyModel(spot), _evaluator)).ToList();
+                using (var disposable = new CompositeDisposable()) {
+                    return container.AlignmentSpotProperties.Where(spot => _peakFilterModel.PeakFilter(new AlignmentSpotPropertyModel(spot).AddTo(disposable), _evaluator)).ToList();
+                } 
             }
             return container.AlignmentSpotProperties;
         }

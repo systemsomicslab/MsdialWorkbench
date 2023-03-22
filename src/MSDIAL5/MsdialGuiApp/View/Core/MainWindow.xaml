@@ -6,6 +6,7 @@
               xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
               xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Core"
               xmlns:properties="clr-namespace:CompMs.App.Msdial.Properties"
+              xmlns:util="clr-namespace:CompMs.App.Msdial.Utility"
               xmlns:progressbar="clr-namespace:CompMs.Graphics.UI.ProgressBar;assembly=ChartDrawing"
               mc:Ignorable="d"
               Icon="/Resources/msdial_icon.ico"
@@ -62,6 +63,13 @@
                         <Setter Property="BorderThickness" Value="0"/>
                     </Style>
                 </StackPanel.Resources>
+                <TextBlock FontSize="24" VerticalAlignment="Center"
+                           Margin="16,0">
+                    <Hyperlink NavigateUri="https://github.com/systemsomicslab/MsdialWorkbench"
+                               RequestNavigate="Hyperlink_RequestNavigate">
+                        GitHub
+                    </Hyperlink>
+                </TextBlock>
                 <Button Command="{Binding ShowAboutCommand}"
                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                         Background="Transparent"
@@ -80,7 +88,7 @@
                         VerticalAlignment="Center">
                 <Image Source="/Resources/msdial_icon.png" Width="240"/>
                 <TextBlock Text="MS-DIAL" FontSize="72" FontFamily="arial" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                <TextBlock Text="{x:Static properties:Resources.VERSION}" FontSize="48" FontFamily="arial" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <TextBlock DataContext="{x:Static util:GlobalResources.Instance}" Text="{Binding Version}" FontSize="48" FontFamily="arial" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </StackPanel>
 
             <StackPanel VerticalAlignment="Center" Grid.Row="0" Grid.Column="1">

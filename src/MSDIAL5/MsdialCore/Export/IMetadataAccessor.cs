@@ -1,6 +1,5 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -9,7 +8,6 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
@@ -18,7 +16,7 @@ namespace CompMs.MsdialCore.Export
     public interface IMetadataAccessor
     {
         string[] GetHeaders();
-        ReadOnlyDictionary<string, string> GetContent(AlignmentSpotProperty spot, IMSScanProperty msdec);
+        IReadOnlyDictionary<string, string> GetContent(AlignmentSpotProperty spot, IMSScanProperty msdec);
     }
 
     public abstract class BaseMetadataAccessor : IMetadataAccessor {
@@ -34,10 +32,10 @@ namespace CompMs.MsdialCore.Export
 
         public string[] GetHeaders() => GetHeadersCore();
 
-        public ReadOnlyDictionary<string, string> GetContent(AlignmentSpotProperty spot, IMSScanProperty msdec) {
+        IReadOnlyDictionary<string, string> IMetadataAccessor.GetContent(AlignmentSpotProperty spot, IMSScanProperty msdec) {
             var matchResult = spot.MatchResults.Representative;
             var reference = _refer?.Refer(matchResult);
-            return new ReadOnlyDictionary<string, string>(GetContentCore(spot, msdec, reference, matchResult));
+            return GetContentCore(spot, msdec, reference, matchResult);
         }
 
         protected virtual string[] GetHeadersCore() {
@@ -81,8 +79,17 @@ namespace CompMs.MsdialCore.Export
             MoleculeMsReference reference,
             MsScanMatchResult matchResult){
 
-            var comment = string.IsNullOrEmpty(spot.Comment) ? string.Empty : (spot.Comment + "; ");
-            comment += $"Normalized unit {spot.IonAbundanceUnit}";
+            var comment = spot.Comment;
+            if (!string.IsNullOrEmpty(comment)) {
+                comment += "; ";
+            }
+            comment += $"Normalized unit: {spot.IonAbundanceUnit}";
+            if (matchResult.AnyMatched) {
+                if (!string.IsNullOrEmpty(comment)) {
+                    comment += "; ";
+                }
+                comment += $"Annotation method: {matchResult.AnnotatorID}";
+            }
             return new Dictionary<string, string>
             {
                 { "Alignment ID" ,spot.MasterAlignmentID.ToString() },

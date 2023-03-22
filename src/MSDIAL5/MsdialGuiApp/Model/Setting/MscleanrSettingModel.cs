@@ -68,7 +68,7 @@ namespace CompMs.App.Msdial.Model.Setting {
         }
 
         private readonly MsdialLcmsParameter _parameter;
-        private readonly ObservableCollection<AlignmentSpotPropertyModel> _spotprops;
+        private readonly ReadOnlyObservableCollection<AlignmentSpotPropertyModel> _spotprops;
         //public MsdialLcmsParameter Parameter { get; }
         //public ObservableCollection<AlignmentSpotPropertyModel> Spotprops { get; }
 
@@ -82,7 +82,7 @@ namespace CompMs.App.Msdial.Model.Setting {
         //    _spots = spots;
         //}
 
-        public MscleanrSettingModel(MsdialLcmsParameter parameter, ObservableCollection<AlignmentSpotPropertyModel> spotprops) {
+        public MscleanrSettingModel(MsdialLcmsParameter parameter, ReadOnlyObservableCollection<AlignmentSpotPropertyModel> spotprops) {
             _parameter = parameter;
             _spotprops = spotprops;
         }

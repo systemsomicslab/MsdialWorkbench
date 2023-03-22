@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
@@ -9,6 +10,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
 using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -16,7 +18,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class AlignmentSpotPropertyModel : BindableBase, IPeakSpotModel, IFilterable, IAnnotatedObject
+    public sealed class AlignmentSpotPropertyModel : DisposableModelBase, IPeakSpotModel, IFilterable, IAnnotatedObject
     {
         public int AlignmentID => innerModel.AlignmentID;
         public int MasterAlignmentID => innerModel.MasterAlignmentID;
@@ -102,7 +104,7 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public string AdductIonName => innerModel.AdductType.AdductIonName;
 
-        public string AnnotatorID => innerModel.MatchResults.Representative.AnnotatorID;
+        public string AnnotatorID => MatchResultsModel.Representative.AnnotatorID;
 
         public string Comment {
             get => innerModel.Comment;
@@ -131,13 +133,14 @@ namespace CompMs.App.Msdial.Model.DataObj
         public double FillPercentage => innerModel.FillParcentage;
         public double AnovaPvalue => innerModel.AnovaPvalue;
         public double FoldChange => innerModel.FoldChange;
-        public MsScanMatchResultContainer MatchResults => innerModel.MatchResults;
+        MsScanMatchResultContainer IAnnotatedObject.MatchResults => innerModel.MatchResults;
+        public MsScanMatchResultContainerModel MatchResultsModel { get; }
 
         public string Isotope => $"M + {innerModel.PeakCharacter.IsotopeWeightNumber}";
 
         public MsScanMatchResult MspBasedMatchResult => innerModel.MspBasedMatchResult;
         public MsScanMatchResult TextDbBasedMatchResult => innerModel.TextDbBasedMatchResult;
-        public MsScanMatchResult ScanMatchResult => innerModel.MatchResults?.Representative ?? innerModel.TextDbBasedMatchResult ?? innerModel.MspBasedMatchResult;
+        public MsScanMatchResult ScanMatchResult => MatchResultsModel.Representative ?? innerModel.TextDbBasedMatchResult ?? innerModel.MspBasedMatchResult;
 
         public bool IsRefMatched(IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             return innerModel.IsReferenceMatched(evaluator);
@@ -235,13 +238,21 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public AlignmentSpotPropertyModel(AlignmentSpotProperty innerModel) {
             this.innerModel = innerModel;
+            MatchResultsModel = new MsScanMatchResultContainerModel(innerModel.MatchResults).AddTo(Disposables);
             _alignedPeakPropertiesModelProperty = Observable.FromAsync(() => innerModel.AlignedPeakPropertiesTask)
                 .Select(peaks => peaks?.Select(peak => new AlignmentChromPeakFeatureModel(peak)).ToList().AsReadOnly())
-                .ToReactiveProperty(); // TODO: Dispose
+                .ToReactiveProperty()
+                .AddTo(Disposables);
         }
 
         public void RaisePropertyChanged() {
             OnPropertyChanged(string.Empty);
+        }
+
+        public AlignmentSpotPropertyModel Clone(int newMasterId, int newLocalId) {
+            var id = newMasterId;
+            var model = innerModel.Clone(ref id, newLocalId);
+            return new AlignmentSpotPropertyModel(model);
         }
 
         // IPeakSpotModel
@@ -250,23 +261,22 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public void SetConfidence(MoleculeMsReference reference, MsScanMatchResult result) {
             DataAccess.SetMoleculeMsPropertyAsConfidence(innerModel, reference);
-            MatchResults.RemoveManuallyResults();
-            MatchResults.AddResult(result);
+            MatchResultsModel.RemoveManuallyResults();
+            MatchResultsModel.AddResult(result);
             OnPropertyChanged(string.Empty);
         }
 
         public void SetUnsettled(MoleculeMsReference reference, MsScanMatchResult result) {
             DataAccess.SetMoleculeMsPropertyAsUnsettled(innerModel, reference);
-            MatchResults.RemoveManuallyResults();
-            MatchResults.AddResult(result);
+            MatchResultsModel.RemoveManuallyResults();
+            MatchResultsModel.AddResult(result);
             OnPropertyChanged(string.Empty);
         }
 
-        public void SetUnknown() {
-            DataAccess.ClearMoleculePropertyInfomation(this);
-            MatchResults.RemoveManuallyResults();
-            MatchResults.AddResult(new MsScanMatchResult { Source = SourceType.Manual | SourceType.Unknown });
-            OnPropertyChanged(string.Empty);
+        public void SetUnknown(UndoManager undoManager) {
+            IDoCommand command = new SetUnknownDoCommand(this, MatchResultsModel);
+            command.Do();
+            undoManager.Add(command);
         }
 
         // IChromatogramPeak

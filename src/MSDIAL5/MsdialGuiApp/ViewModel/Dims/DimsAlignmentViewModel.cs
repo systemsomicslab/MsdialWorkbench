@@ -14,7 +14,6 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Input;
 
@@ -50,7 +49,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             _peakSpotTableService = peakSpotTableService;
             _broker = broker;
 
+            UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
+
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
+            SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
 
             var (peakPlotViewFocusAction, peakPlotViewFocused) = focusControlManager.Request();
             PlotViewModel = new AlignmentPeakPlotViewModel(_model.PlotModel, focus: peakPlotViewFocusAction, isFocused: peakPlotViewFocused).AddTo(Disposables);
@@ -69,7 +71,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                     PeakSpotNavigatorViewModel.CommentFilterKeyword,
                     PeakSpotNavigatorViewModel.OntologyFilterKeyword,
                     PeakSpotNavigatorViewModel.AdductFilterKeyword,
-                    PeakSpotNavigatorViewModel.IsEditting)
+                    PeakSpotNavigatorViewModel.IsEditting,
+                    SetUnknownCommand,
+                    UndoManagerViewModel)
                 .AddTo(Disposables);
 
             SearchCompoundCommand = _model.CanSeachCompound
@@ -82,12 +86,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
             MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
-            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel, };
-
-            SetUnknownCommand = model.Target.Select(t => !(t is null))
-                .ToReactiveCommand()
-                .WithSubscribe(() => model.Target.Value.SetUnknown())
-                .AddTo(Disposables);
+            var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
+            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel, matchResultCandidatesViewModel, };
 
             _internalStandardSetViewModel = new InternalStandardSetViewModel(model.InternalStandardSetModel).AddTo(Disposables);
             InternalStandardSetCommand = new ReactiveCommand().WithSubscribe(_ => broker.Publish(_internalStandardSetViewModel)).AddTo(Disposables);
@@ -96,6 +96,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             broker.Publish(notification);
             model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => broker.Publish(TaskNotification.End(notification)));
         }
+
+        public UndoManagerViewModel UndoManagerViewModel { get; }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public AlignmentPeakPlotViewModel PlotViewModel { get; }

@@ -41,8 +41,8 @@ namespace CompMs.App.Msdial.Model.Imms
         private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly FacadeMatchResultEvaluator _matchResultEvaluator;
 
-        public ImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker)
-            : base(analysisFileBeanModelCollection, storage.AlignmentFiles, projectBaseParameter) {
+        public ImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker)
+            : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, projectBaseParameter) {
             _storage = storage;
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             _broker = broker;
@@ -95,7 +95,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
-            AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, }, AlignmentFile, storage.AlignmentFiles, peakSpotSupplyer);
+            AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, }, AlignmentFile, alignmentFileBeanModelCollection.Files, peakSpotSupplyer, storage.Parameter.DataExportParam);
             this.ObserveProperty(m => m.AlignmentFile)
                 .Subscribe(file => AlignmentResultExportModel.AlignmentFile = file)
                 .AddTo(Disposables);
@@ -196,39 +196,17 @@ namespace CompMs.App.Msdial.Model.Imms
                     var factory = new ImmsAlignmentProcessFactory(storage, _matchResultEvaluator);
                     var aligner = factory.CreatePeakAligner();
                     aligner.ProviderFactory = ProviderFactory; // TODO: I'll remove this later.
-                    var alignmentFile = storage.AlignmentFiles.Last();
-                    var result = await Task.Run(() => aligner.Alignment(storage.AnalysisFiles, alignmentFile, CHROMATOGRAM_SPOT_SERIALIZER)).ConfigureAwait(false);
-                    result.Save(alignmentFile);
-                    MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList());
+                    var alignmentFileModel = AlignmentFiles.Files.Last();
+                    var result = await Task.Run(() => alignmentFileModel.RunAlignment(aligner, CHROMATOGRAM_SPOT_SERIALIZER)).ConfigureAwait(false);
+                    var tasks = new[]
+                    {
+                        alignmentFileModel.SaveAlignmentResultAsync(result),
+                        alignmentFileModel.SaveMSDecResultsAsync(alignmentFileModel.LoadMSDecResultsFromEachFiles(result.AlignmentSpotProperties)),
+                    };
+                    await Task.WhenAll(tasks).ConfigureAwait(false);
                 });
             _broker.Publish(request);
             return request.Result ?? false;
-        }
-
-        private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialImmsParameter> storage, IReadOnlyList<AlignmentSpotProperty> spots) {
-            var files = storage.AnalysisFiles;
-
-            var pointerss = new List<(int version, List<long> pointers, bool isAnnotationInfo)>();
-            foreach (var file in files) {
-                MsdecResultsReader.GetSeekPointers(file.DeconvolutionFilePath, out var version, out var pointers, out var isAnnotationInfo);
-                pointerss.Add((version, pointers, isAnnotationInfo));
-            }
-
-            var streams = new List<System.IO.FileStream>();
-            try {
-                streams = files.Select(file => System.IO.File.OpenRead(file.DeconvolutionFilePath)).ToList();
-                foreach (var spot in spots) {
-                    var repID = spot.RepresentativeFileID;
-                    var peakID = spot.AlignedPeakProperties[repID].GetMSDecResultID();
-                    var decResult = MsdecResultsReader.ReadMSDecResult(
-                        streams[repID], pointerss[repID].pointers[peakID],
-                        pointerss[repID].version, pointerss[repID].isAnnotationInfo);
-                    yield return decResult;
-                }
-            }
-            finally {
-                streams.ForEach(stream => stream.Close());
-            }
         }
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
@@ -249,14 +227,14 @@ namespace CompMs.App.Msdial.Model.Imms
             return AnalysisModel;
         }
 
-        protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
+        protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBeanModel alignmentFileModel) {
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
             }
 
             return AlignmentModel = new ImmsAlignmentModel(
-                alignmentFile,
+                alignmentFileModel,
                 AnalysisFileModelCollection,
                 _matchResultEvaluator,
                 _storage.DataBases,

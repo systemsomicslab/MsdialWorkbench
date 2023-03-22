@@ -184,12 +184,12 @@ namespace CompMs.MsdialCore.Utility
             if (alignmentWithMSMS.Length != 0) {
                 return alignmentWithMSMS.Argmax(peak =>
                     // highest total score then highest intensity
-                    (peak.MatchResults.MatchResults.DefaultIfEmpty().Max(val => val.TotalScore), peak.PeakHeightTop)
+                    (peak.MatchResults.MatchResults.Max(val => val.TotalScore), peak.PeakHeightTop)
                 ).FileID;
             }
             return alignment.Argmax(peak =>
                 // highest total score then highest intensity
-                (peak.MatchResults.MatchResults.DefaultIfEmpty().Max(val => val.TotalScore), peak.PeakHeightTop)
+                (peak.MatchResults.MatchResults.Max(val => val.TotalScore), peak.PeakHeightTop)
             ).FileID;
         }
     }

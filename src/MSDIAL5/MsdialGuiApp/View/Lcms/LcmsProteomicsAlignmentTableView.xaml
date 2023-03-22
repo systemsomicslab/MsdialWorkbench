@@ -26,6 +26,8 @@
     </UserControl.Resources>
     <UserControl.InputBindings>
         <KeyBinding Command="{Binding SetUnknownCommand}" Gesture="Ctrl+D"/>
+        <KeyBinding Command="{Binding UndoManagerViewModel.UndoCommand}" Gesture="Ctrl+Z"/>
+        <KeyBinding Command="{Binding UndoManagerViewModel.RedoCommand}" Gesture="Ctrl+Y"/>
     </UserControl.InputBindings>
     <Grid>
         <Grid.RowDefinitions>

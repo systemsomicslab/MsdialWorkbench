@@ -1,10 +1,10 @@
-﻿using CompMs.MsdialCore.DataObj;
+﻿using CompMs.App.Msdial.Model.DataObj;
 using System;
 
 namespace CompMs.App.Msdial.Model.Export
 {
     internal interface IAlignmentResultExportModel {
         int CountExportFiles();
-        void Export(AlignmentFileBean alignmentFile, string exportDirectory, Action<string> notification);
+        void Export(AlignmentFileBeanModel alignmentFile, string exportDirectory, Action<string> notification);
     }
 }

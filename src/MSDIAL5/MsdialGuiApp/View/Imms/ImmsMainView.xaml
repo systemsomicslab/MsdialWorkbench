@@ -149,6 +149,8 @@
     </UserControl.Resources>
     <UserControl.InputBindings>
         <KeyBinding Gesture="Ctrl+D" Command="{Binding SelectedViewModel.Value.SetUnknownCommand, Mode=OneWay}"/>
+        <KeyBinding Gesture="Ctrl+Z" Command="{Binding SelectedViewModel.Value.UndoManagerViewModel.UndoCommand, Mode=OneWay}"/>
+        <KeyBinding Gesture="Ctrl+Y" Command="{Binding SelectedViewModel.Value.UndoManagerViewModel.RedoCommand, Mode=OneWay}"/>
     </UserControl.InputBindings>
 
     <Grid Name="Grid_MainWindow">
@@ -358,6 +360,9 @@
                                         <DataTemplate DataType="{x:Type info:MoleculeStructureViewModel}">
                                             <infoview:MoleculeStructureView/>
                                         </DataTemplate>
+                                        <DataTemplate DataType="{x:Type info:MatchResultCandidatesViewModel}">
+                                            <infoview:MatchResultCandidatesView/>
+                                        </DataTemplate>
                                     </DataTemplate.Resources>
                                     <ContentPresenter Content="{Binding}"/>
                                 </DataTemplate>
@@ -375,6 +380,10 @@
                                         </DataTemplate>
                                         <DataTemplate DataType="{x:Type info:MoleculeStructureViewModel}">
                                             <TextBlock Text="Structure"
+                                                       VerticalAlignment="Stretch"/>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type info:MatchResultCandidatesViewModel}">
+                                            <TextBlock Text="Candidates"
                                                        VerticalAlignment="Stretch"/>
                                         </DataTemplate>
                                     </DataTemplate.Resources>
