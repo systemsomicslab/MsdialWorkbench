@@ -159,7 +159,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public ICommand InternalStandardSetCommand { get; }
 
         public NormalizationSetViewModel NormalizationSetViewModel { get; }
-        public object ShowNormalizationSettingCommand { get; }
+        public ReactiveCommand ShowNormalizationSettingCommand { get; }
 
         public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
         private DelegateCommand _showIonTableCommand;

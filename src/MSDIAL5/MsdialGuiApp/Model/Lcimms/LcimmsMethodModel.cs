@@ -160,7 +160,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 Storage.Parameter,
                 Storage.AnalysisFiles,
                 PeakFilterModel,
-                AccumulatedPeakFilterModel)
+                AccumulatedPeakFilterModel,
+                _broker)
             .AddTo(Disposables);
         }
 
