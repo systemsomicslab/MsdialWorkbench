@@ -38,6 +38,9 @@ namespace CompMs.App.MsdialConsole.Process {
 
             param.FileID_ClassName = analysisFiles.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileClass);
 
+            foreach (var analysisFile in analysisFiles) {
+                analysisFile.AcquisitionType = param.ProjectParam.AcquisitionType;
+            }
             if (param.GetType() == typeof(MsdialGcmsParameter)) {
                 param.Ionization = Common.Enum.Ionization.EI;
             }

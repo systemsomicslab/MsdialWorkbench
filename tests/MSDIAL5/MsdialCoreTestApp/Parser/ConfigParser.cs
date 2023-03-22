@@ -215,7 +215,7 @@ namespace CompMs.App.MsdialConsole.Parser
 
                 case "acquisition type":
                     if (valueLower == "dda" || valueLower == "swath" || valueLower == "aif")
-                        param.AcquisitionType = (AcquisitionType)Enum.Parse(typeof(AcquisitionType), valueLower, true);
+                        param.ProjectParam.AcquisitionType = (AcquisitionType)Enum.Parse(typeof(AcquisitionType), valueLower, true);
                     return true;
 
                 case "slovent type":
