@@ -117,7 +117,8 @@ namespace CompMs.App.Msdial.Model.Dims
                     break;
             }
 
-            Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
+            var target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
+            Target = target;
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -185,18 +186,20 @@ namespace CompMs.App.Msdial.Model.Dims
                 item => item.Class,
                 Colors.Blue);
             var fileIdToClassNameAsObservable = projectBaseParameter.ObserveProperty(p => p.FileIdToClassName).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            var normalizedAreaZeroLoader = new BarItemsLoaderData("Normalized peak area above zero", Target.OfType<AlignmentSpotPropertyModel>().Select(t => t.IonAbundanceUnit.ToLabel()), Observable.Return(new NormalizedAreaAboveZeroBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)), NormalizationSetModel.IsNormalized);
-            var normalizedAreaBaselineLoader = new BarItemsLoaderData("Normalized peak area above base line", Target.OfType<AlignmentSpotPropertyModel>().Select(t => t.IonAbundanceUnit.ToLabel()), Observable.Return(new NormalizedAreaAboveBaseLineBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)), NormalizationSetModel.IsNormalized);
-            var normalizedHeightLoader = new BarItemsLoaderData("Normalized peak height", Target.OfType<AlignmentSpotPropertyModel>().Select(t => t.IonAbundanceUnit.ToLabel()), Observable.Return(new NormalizedHeightBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)), NormalizationSetModel.IsNormalized);
-            var areaZeroLoader = new BarItemsLoaderData("Peak area above zero", Observable.Return("Area"), Observable.Return(new AreaAboveZeroBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)), Observable.Return(true));
-            var areaBaselineLoader = new BarItemsLoaderData("Peak area above base line", Observable.Return("Area"), Observable.Return(new AreaAboveBaseLineBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)), Observable.Return(true));
-            var heightLoader = new BarItemsLoaderData("Peak height", Observable.Return("Height"), Observable.Return(new HeightBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)), Observable.Return(true));
+            var peakSpotAxisLabelAsObservable = target.OfType<AlignmentSpotPropertyModel>().Select(t => t.IonAbundanceUnit.ToLabel()).Publish();
+            var normalizedAreaZeroLoader = new BarItemsLoaderData("Normalized peak area above zero", peakSpotAxisLabelAsObservable, Observable.Return(new NormalizedAreaAboveZeroBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)), NormalizationSetModel.IsNormalized);
+            var normalizedAreaBaselineLoader = new BarItemsLoaderData("Normalized peak area above base line", peakSpotAxisLabelAsObservable, Observable.Return(new NormalizedAreaAboveBaseLineBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)), NormalizationSetModel.IsNormalized);
+            var normalizedHeightLoader = new BarItemsLoaderData("Normalized peak height", peakSpotAxisLabelAsObservable, Observable.Return(new NormalizedHeightBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)), NormalizationSetModel.IsNormalized);
+            var areaZeroLoader = new BarItemsLoaderData("Peak area above zero", "Area", Observable.Return(new AreaAboveZeroBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)));
+            var areaBaselineLoader = new BarItemsLoaderData("Peak area above base line", "Area", Observable.Return(new AreaAboveBaseLineBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)));
+            var heightLoader = new BarItemsLoaderData("Peak height", "Height", Observable.Return(new HeightBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)));
             var barItemLoaderDatas = new[]
             {
                 heightLoader, areaBaselineLoader, areaZeroLoader,
                 normalizedHeightLoader, normalizedAreaBaselineLoader, normalizedAreaZeroLoader,
             };
             var barItemsLoaderDataProperty = NormalizationSetModel.IsNormalized.Where(x => x).Take(1).ToConstant(normalizedHeightLoader).ToReactiveProperty(barItemLoaderDatas.First()).AddTo(Disposables);
+            Disposables.Add(peakSpotAxisLabelAsObservable.Connect());
             BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, barItemLoaderDatas, Observable.Return(classBrush), projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
 
             var classToColor = parameter.ClassnameToColorBytes
