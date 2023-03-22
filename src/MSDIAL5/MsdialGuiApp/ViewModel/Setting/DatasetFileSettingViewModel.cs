@@ -59,9 +59,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             IsEnabled = isEnabled.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             SelectedAcquisitionType = model.ToReactivePropertySlimAsSynchronized(m => m.SelectedAcquisitionType).AddTo(Disposables);
-            SetSelectedAcquisitionTypeCommand = SelectedAcquisitionType.Select(x => Enum.IsDefined(typeof(AcquisitionType), x))
+            SetSelectedAcquisitionTypeCommand = new[]
+            {
+                Observable.Return(!model.IsReadOnly),
+                SelectedAcquisitionType.Select(x => Enum.IsDefined(typeof(AcquisitionType), x)),
+            }.CombineLatestValuesAreAllTrue()
                 .ToReactiveCommand()
-                .WithSubscribe(model.SetSelectedAquisitionTypeToAll)
+                .WithSubscribe(SetSelectedAquisitionTypeToAll)
                 .AddTo(Disposables);
 
             ObserveHasErrors = new[]
@@ -137,6 +141,15 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         }
 
         private static readonly string FileNameDuplicateErrorMessage = "File name duplicated.";
+
+        private void SetSelectedAquisitionTypeToAll() {
+            if (IsReadOnly) {
+                return;
+            }
+            foreach (var file in AnalysisFilePropertyCollection) {
+                file.AcquisitionType.Value = SelectedAcquisitionType.Value;
+            }
+        }
     }
 
     public class SelectedAnalysisFileQuery
