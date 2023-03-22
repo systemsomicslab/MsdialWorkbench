@@ -214,7 +214,7 @@ namespace CompMs.App.Msdial.Model.Setting
             parameter.ProteomicsParam.CollisionType = CollisionType;
 
             var storage = CreateDataStorage(parameter);
-            storage.AnalysisFiles = fileSettingModel.IncludedFiles.ToList();
+            storage.AnalysisFiles = fileSettingModel.IncludedFileModels.Select(f => f.File).ToList();
             storage.IupacDatabase = IupacResourceParser.GetIUPACDatabase(); //Get IUPAC reference
             storage.DataBases = DataBaseStorage.CreateEmpty();
             storage.DataBaseMapper = new DataBaseMapper();

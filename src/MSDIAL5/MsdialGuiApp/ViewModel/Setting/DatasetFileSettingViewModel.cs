@@ -21,7 +21,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             IsReadOnly = model.IsReadOnly;
 
-            AnalysisFilePropertyCollection = Model.Files
+            AnalysisFilePropertyCollection = Model.FileModels
                 .ToReadOnlyReactiveCollection(v => new AnalysisFileBeanViewModel(v))
                 .AddTo(Disposables);
 
