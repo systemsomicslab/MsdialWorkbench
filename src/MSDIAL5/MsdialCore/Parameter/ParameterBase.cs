@@ -61,8 +61,9 @@ namespace CompMs.MsdialCore.Parameter
 
 
         // Project type
-        //[IgnoreMember]
-        //public AcquisitionType AcquisitionType { get => ProjectParam.AcquisitionType; set => ProjectParam.AcquisitionType = value; }
+        [IgnoreMember]
+        [Obsolete("Use AnalysisFileBean.AcquisitionType property.")]
+        public AcquisitionType AcquisitionType { get => ProjectParam.AcquisitionType; set => ProjectParam.AcquisitionType = value; }
         [IgnoreMember]
         public MSDataType MSDataType { get => ProjectParam.MSDataType; set => ProjectParam.MSDataType = value; }
         [IgnoreMember]
@@ -808,6 +809,7 @@ namespace CompMs.MsdialCore.Parameter
         } 
         // Project type
         [Key(10)]
+        [Obsolete("Use AnalysisFileBean.AcquisitionType property.")]
         public AcquisitionType AcquisitionType { get; set; } = AcquisitionType.DDA;
         [Key(11)]
         public MSDataType MSDataType { get; set; } = MSDataType.Centroid;
