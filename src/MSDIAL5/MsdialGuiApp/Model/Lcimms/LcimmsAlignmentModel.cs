@@ -270,7 +270,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             var classBrush = new KeyBrushMapper<BarItem, string>(classToColor, item => item.Class, Colors.Blue);
             var fileIdToClassNameAsObservable = projectBaseParameter.ObserveProperty(p => p.FileIdToClassName).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            var peakSpotAxisLabelAsObservable = Target.OfType<AlignmentSpotPropertyModel>().Select(t => t.IonAbundanceUnit.ToLabel()).Publish();
+            var peakSpotAxisLabelAsObservable = target.OfType<AlignmentSpotPropertyModel>().SelectSwitch(t => t.ObserveProperty(t_ => t_.IonAbundanceUnit).Select(t_ => t_.ToLabel())).Publish();
             var normalizedAreaZeroLoader = new BarItemsLoaderData("Normalized peak area above zero", peakSpotAxisLabelAsObservable, new NormalizedAreaAboveZeroBarItemsLoader(fileIdToClassNameAsObservable, fileCollection), NormalizationSetModel.IsNormalized);
             var normalizedAreaBaselineLoader = new BarItemsLoaderData("Normalized peak area above base line", peakSpotAxisLabelAsObservable, new NormalizedAreaAboveBaseLineBarItemsLoader(fileIdToClassNameAsObservable, fileCollection), NormalizationSetModel.IsNormalized);
             var normalizedHeightLoader = new BarItemsLoaderData("Normalized peak height", peakSpotAxisLabelAsObservable, new NormalizedHeightBarItemsLoader(fileIdToClassNameAsObservable, fileCollection), NormalizationSetModel.IsNormalized);
@@ -282,7 +282,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 heightLoader, areaBaselineLoader, areaZeroLoader,
                 normalizedHeightLoader, normalizedAreaBaselineLoader, normalizedAreaZeroLoader,
             };
-            var barItemsLoaderDataProperty = NormalizationSetModel.IsNormalized.Where(x => x).Take(1).ToConstant(normalizedHeightLoader).ToReactiveProperty(barItemLoaderDatas.First()).AddTo(Disposables);
+            var barItemsLoaderDataProperty = NormalizationSetModel.Normalized.ToConstant(normalizedHeightLoader).ToReactiveProperty(NormalizationSetModel.IsNormalized.Value ? normalizedHeightLoader : heightLoader).AddTo(Disposables);
             Disposables.Add(peakSpotAxisLabelAsObservable.Connect());
             RtBarChartModel = new BarChartModel(accumulatedTarget, barItemsLoaderDataProperty, barItemLoaderDatas, Observable.Return(classBrush), projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
             DtBarChartModel = new BarChartModel(target, barItemsLoaderDataProperty, barItemLoaderDatas, Observable.Return(classBrush), projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
