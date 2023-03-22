@@ -16,16 +16,7 @@ namespace CompMs.App.Msdial.Model.Loader
 {
     public class EicLoader : IChromatogramLoader
     {
-        protected EicLoader(
-            AnalysisFileBean file,
-            IDataProvider provider,
-            ParameterBase parameter,
-            ChromXType chromXType,
-            ChromXUnit chromXUnit,
-            double rangeBegin,
-            double rangeEnd, bool isConstantRange = true) {
-
-            this.file = file;
+        protected EicLoader(AnalysisFileBean file, IDataProvider provider, ParameterBase parameter, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd, bool isConstantRange = true) {
             this.provider = provider;
             this.parameter = parameter;
             this.chromXType = chromXType;
@@ -38,7 +29,6 @@ namespace CompMs.App.Msdial.Model.Loader
             _chromatogramRange = new ChromatogramRange(rangeBegin, rangeEnd, chromXType, chromXUnit);
         }
 
-        protected readonly AnalysisFileBean file;
         protected readonly IDataProvider provider;
         protected readonly ParameterBase parameter;
         protected readonly ChromXType chromXType;

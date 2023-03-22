@@ -182,8 +182,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
                         : $"Spot ID: {t.MasterPeakID} Mass m/z: {t.Mass:F5} RT: {t.InnerModel.PeakFeature.ChromXsTop.RT.Value:F2} min"))
                 .Subscribe(title => RtMzPlotModel.GraphTitle = title)
                 .AddTo(Disposables);
-            var rtEicLoader = EicLoader.BuildForAllRange(TODO, accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
-            RtEicLoader = EicLoader.BuildForPeakRange(TODO, accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
+            var rtEicLoader = EicLoader.BuildForAllRange(analysisFileModel.File, accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
+            RtEicLoader = EicLoader.BuildForPeakRange(analysisFileModel.File, accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
             RtEicModel = new EicModel(accumulatedTarget, rtEicLoader)
             {
                 HorizontalTitle = RtMzPlotModel.HorizontalTitle,
@@ -204,8 +204,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 .Subscribe(title => DtMzPlotModel.GraphTitle = title)
                 .AddTo(Disposables);
 
-            var dtEicLoader = new LcimmsEicLoader(spectrumProvider, parameter);
-            DtEicLoader = EicLoader.BuildForPeakRange(TODO, spectrumProvider, parameter, ChromXType.Drift, ChromXUnit.Msec, parameter.DriftTimeBegin, parameter.DriftTimeEnd);
+            var dtEicLoader = new LcimmsEicLoader(spectrumProvider, parameter, new RawSpectra(spectrumProvider, parameter.IonMode, analysisFileModel.AcquisitionType));
+            DtEicLoader = EicLoader.BuildForPeakRange(analysisFileModel.File, spectrumProvider, parameter, ChromXType.Drift, ChromXUnit.Msec, parameter.DriftTimeBegin, parameter.DriftTimeEnd);
             DtEicModel = new EicModel(target, dtEicLoader)
             {
                 HorizontalTitle = DtMzPlotModel.HorizontalTitle,
