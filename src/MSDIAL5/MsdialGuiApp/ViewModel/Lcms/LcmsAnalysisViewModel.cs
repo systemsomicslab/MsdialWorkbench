@@ -122,7 +122,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 Observable.Return(_model.EicLoader),
                 PeakSpotNavigatorViewModel,
                 SetUnknownCommand,
-                PeakSpotNavigatorViewModel.IsEditting,
                 UndoManagerViewModel)
             .AddTo(Disposables);
 

@@ -13,60 +13,31 @@ using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    abstract class LcmsPeakSpotTableViewModel : PeakSpotTableViewModelBase
+    internal abstract class LcmsPeakSpotTableViewModel : PeakSpotTableViewModelBase
     {
-        protected LcmsPeakSpotTableViewModel(
-            ILcmsPeakSpotTableModel model,
-            IReactiveProperty<double> massLower,
-            IReactiveProperty<double> massUpper,
-            IReactiveProperty<double> rtLower,
-            IReactiveProperty<double> rtUpper,
-            IReactiveProperty<string> metaboliteFilterKeyword,
-            IReactiveProperty<string> commentFilterKeyword,
-            IReactiveProperty<string> ontologyFilterKeyword,
-            IReactiveProperty<string> adductFilterKeyword,
-            ICommand setUnknownCommand,
-            UndoManagerViewModel undoManagerViewModel)
-            : base(model, metaboliteFilterKeyword, commentFilterKeyword, ontologyFilterKeyword, adductFilterKeyword) {
-            if (massLower is null) {
-                throw new ArgumentNullException(nameof(massLower));
-            }
+        private readonly PeakSpotNavigatorViewModel _peakSpotNavigatorViewModel;
 
-            if (massUpper is null) {
-                throw new ArgumentNullException(nameof(massUpper));
-            }
-
-            if (rtLower is null) {
-                throw new ArgumentNullException(nameof(rtLower));
-            }
-
-            if (rtUpper is null) {
-                throw new ArgumentNullException(nameof(rtUpper));
-            }
-
+        protected LcmsPeakSpotTableViewModel(ILcmsPeakSpotTableModel model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
+            : base(model, peakSpotNavigatorViewModel.MetaboliteFilterKeyword, peakSpotNavigatorViewModel.CommentFilterKeyword, peakSpotNavigatorViewModel.OntologyFilterKeyword, peakSpotNavigatorViewModel.AdductFilterKeyword) {
             MassMin = model.MassMin;
             MassMax = model.MassMax;
-            MassLower = massLower;
-            MassUpper = massUpper;
-
             RtMin = model.RtMin;
             RtMax = model.RtMax;
-            RtLower = rtLower;
-            RtUpper = rtUpper;
 
             SetUnknownCommand = setUnknownCommand;
             UndoManagerViewModel = undoManagerViewModel;
+            _peakSpotNavigatorViewModel = peakSpotNavigatorViewModel ?? throw new ArgumentNullException(nameof(peakSpotNavigatorViewModel));
         }
 
         public double MassMin { get; }
         public double MassMax { get; }
-        public IReactiveProperty<double> MassLower { get; }
-        public IReactiveProperty<double> MassUpper { get; }
+        public IReactiveProperty<double> MassLower => _peakSpotNavigatorViewModel.MzLowerValue;
+        public IReactiveProperty<double> MassUpper => _peakSpotNavigatorViewModel.MzUpperValue;
 
         public double RtMin { get; }
         public double RtMax { get; }
-        public IReactiveProperty<double> RtLower { get; }
-        public IReactiveProperty<double> RtUpper { get; }
+        public IReactiveProperty<double> RtLower => _peakSpotNavigatorViewModel.RtLowerValue;
+        public IReactiveProperty<double> RtUpper => _peakSpotNavigatorViewModel.RtUpperValue;
 
         public ICommand SetUnknownCommand { get; }
         public UndoManagerViewModel UndoManagerViewModel { get; }
@@ -79,18 +50,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             PeakSpotNavigatorViewModel peakSpotNavigatorViewModel,
             ICommand setUnknownCommand,
             UndoManagerViewModel undoManagerViewModel)
-            : base(
-                  model,
-                  peakSpotNavigatorViewModel.MzLowerValue,
-                  peakSpotNavigatorViewModel.MzUpperValue,
-                  peakSpotNavigatorViewModel.RtLowerValue,
-                  peakSpotNavigatorViewModel.RtUpperValue,
-                  peakSpotNavigatorViewModel.MetaboliteFilterKeyword,
-                  peakSpotNavigatorViewModel.CommentFilterKeyword,
-                  peakSpotNavigatorViewModel.OntologyFilterKeyword,
-                  peakSpotNavigatorViewModel.AdductFilterKeyword,
-                  setUnknownCommand,
-                  undoManagerViewModel) {
+            : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel) {
             if (eicLoader is null) {
                 throw new ArgumentNullException(nameof(eicLoader));
             }
@@ -112,25 +72,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IObservable<EicLoader> eicLoader,
             PeakSpotNavigatorViewModel peakSpotNavigatorViewModel,
             ICommand setUnknownCommand,
-            IReactiveProperty<bool> isEditting,
             UndoManagerViewModel undoManagerViewModel)
-            : base(
-                  model,
-                  peakSpotNavigatorViewModel.MzLowerValue,
-                  peakSpotNavigatorViewModel.MzUpperValue,
-                  peakSpotNavigatorViewModel.RtLowerValue,
-                  peakSpotNavigatorViewModel.RtUpperValue,
-                  peakSpotNavigatorViewModel.MetaboliteFilterKeyword,
-                  peakSpotNavigatorViewModel.CommentFilterKeyword,
-                  peakSpotNavigatorViewModel.OntologyFilterKeyword,
-                  peakSpotNavigatorViewModel.AdductFilterKeyword,
-                  setUnknownCommand,
-                  undoManagerViewModel) {
+            : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel) {
             if (eicLoader is null) {
                 throw new ArgumentNullException(nameof(eicLoader));
             }
             EicLoader = eicLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            IsEditting = isEditting ?? throw new ArgumentNullException(nameof(isEditting));
+            IsEditting = peakSpotNavigatorViewModel.IsEditting;
         }
 
         public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
@@ -140,18 +88,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     internal sealed class LcmsAlignmentSpotTableViewModel : LcmsPeakSpotTableViewModel
     {
         public LcmsAlignmentSpotTableViewModel(LcmsAlignmentSpotTableModel model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
-            : base(
-                  model,
-                  peakSpotNavigatorViewModel.MzLowerValue,
-                  peakSpotNavigatorViewModel.MzUpperValue,
-                  peakSpotNavigatorViewModel.RtLowerValue,
-                  peakSpotNavigatorViewModel.RtUpperValue,
-                  peakSpotNavigatorViewModel.MetaboliteFilterKeyword,
-                  peakSpotNavigatorViewModel.CommentFilterKeyword,
-                  peakSpotNavigatorViewModel.OntologyFilterKeyword,
-                  peakSpotNavigatorViewModel.AdductFilterKeyword,
-                  setUnknownCommand,
-                  undoManagerViewModel) {
+            : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel) {
             BarItemsLoader = model.BarItemsLoader;
             ClassBrush = model.ClassBrush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             IsEditting = peakSpotNavigatorViewModel.IsEditting;
@@ -166,18 +103,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
     internal sealed class LcmsProteomicsAlignmentTableViewModel : LcmsPeakSpotTableViewModel {
         public LcmsProteomicsAlignmentTableViewModel(LcmsAlignmentSpotTableModel model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
-            : base(
-                  model,
-                  peakSpotNavigatorViewModel.MzLowerValue,
-                  peakSpotNavigatorViewModel.MzUpperValue,
-                  peakSpotNavigatorViewModel.RtLowerValue,
-                  peakSpotNavigatorViewModel.RtUpperValue,
-                  peakSpotNavigatorViewModel.MetaboliteFilterKeyword,
-                  peakSpotNavigatorViewModel.CommentFilterKeyword,
-                  peakSpotNavigatorViewModel.OntologyFilterKeyword,
-                  peakSpotNavigatorViewModel.AdductFilterKeyword,
-                  setUnknownCommand,
-                  undoManagerViewModel) {
+            : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel) {
             ProteinFilterKeyword = peakSpotNavigatorViewModel.ProteinFilterKeyword;
             IsEditting = peakSpotNavigatorViewModel.IsEditting;
                 
