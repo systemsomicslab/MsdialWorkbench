@@ -1,7 +1,6 @@
 ﻿<Window x:Class="CompMs.App.Msdial.View.Help.HelpAboutDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:props="clr-namespace:CompMs.App.Msdial.Properties"
         xmlns:util="clr-namespace:CompMs.App.Msdial.Utility"
         Title="About MS-DIAL" Height="420" Width="300">
     <Grid>
@@ -15,7 +14,7 @@
         <StackPanel Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10">
             <Label DataContext="{x:Static util:GlobalResources.Instance}" Content="{Binding Version}"/>
             <Label DataContext="{x:Static util:GlobalResources.Instance}" Content="{Binding LatestUpdate}" ContentStringFormat="Latest update: {0}"/>
-            <Label Content="Contact: htsugawa@go.tuat.ac.jp"/>
+            <Label Content="Contact: msdial-jp-groups@go.tuat.ac.jp"/>
             <Label Content="Current developer: Hiroshi Tsugawa (TUAT)"/>
             <Label Content="Current developer: Yuki Matsuzawa (TUAT)"/>
             <Label Content="Current developer: Kozo Nishida (TUAT)"/>
