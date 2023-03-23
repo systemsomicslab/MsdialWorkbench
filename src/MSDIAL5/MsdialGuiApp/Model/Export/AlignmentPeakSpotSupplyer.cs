@@ -1,13 +1,16 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading;
 
 namespace CompMs.App.Msdial.Model.Export
@@ -16,10 +19,12 @@ namespace CompMs.App.Msdial.Model.Export
     {
         private readonly PeakFilterModel _peakFilterModel;
         private readonly IMatchResultEvaluator<IFilterable> _evaluator;
+        private readonly IReadOnlyReactiveProperty<IAlignmentModel> _currentResult;
 
-        public AlignmentPeakSpotSupplyer(PeakFilterModel peakFilterModel, IMatchResultEvaluator<IFilterable> evaluator) {
+        public AlignmentPeakSpotSupplyer(PeakFilterModel peakFilterModel, IMatchResultEvaluator<IFilterable> evaluator, IReadOnlyReactiveProperty<IAlignmentModel> currentResult) {
             _peakFilterModel = peakFilterModel ?? throw new ArgumentNullException(nameof(peakFilterModel));
             _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
+            _currentResult = currentResult;
         }
 
         public bool UseFilter {
@@ -29,7 +34,13 @@ namespace CompMs.App.Msdial.Model.Export
         private bool _useFilter;
 
         public IReadOnlyList<AlignmentSpotProperty> Supply(AlignmentFileBeanModel file, CancellationToken token) {
-            var container = file.LoadAlignmentResultAsync().Result;
+            AlignmentResultContainer container;
+            if (_currentResult.Value is null || file != _currentResult.Value.AlignmentFile) {
+                container = file.LoadAlignmentResultAsync(token).Result;
+            }
+            else {
+                container = _currentResult.Value.AlignmentResult;
+            }
             if (UseFilter) {
                 using (var disposable = new CompositeDisposable()) {
                     return container.AlignmentSpotProperties.Where(spot => _peakFilterModel.PeakFilter(new AlignmentSpotPropertyModel(spot).AddTo(disposable), _evaluator)).ToList();

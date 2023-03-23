@@ -16,6 +16,7 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm.Alignment;
 using CompMs.MsdialLcMsApi.Export;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
@@ -62,7 +63,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             List<AnalysisFileBean> analysisFiles = analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File).ToList();
             var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
             var metadataAccessorFactory = new LcmsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter);
-            AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(PeakFilterModel, _matchResultEvaluator.Contramap((IFilterable filterable) => filterable.MatchResults.Representative));
+            var currentAlignmentResult = this.ObserveProperty(m => m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(PeakFilterModel, _matchResultEvaluator.Contramap((IFilterable filterable) => filterable.MatchResults.Representative), currentAlignmentResult);
             var peakGroup = new AlignmentExportGroupModel(
                 "Peaks",
                 new ExportMethod(
@@ -103,10 +105,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 exportGroups.Add(new ProteinGroupExportModel(new ProteinGroupExporter(), analysisFiles));
             }
 
-            AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, AlignmentFile, alignmentFileBeanModelCollection.Files, peakSpotSupplyer, storage.Parameter.DataExportParam);
-            this.ObserveProperty(m => m.AlignmentFile)
-                .Subscribe(file => AlignmentResultExportModel.AlignmentFile = file)
-                .AddTo(Disposables);
+            AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, this.ObserveProperty(m => m.AlignmentFile), alignmentFileBeanModelCollection.Files, peakSpotSupplyer, storage.Parameter.DataExportParam).AddTo(Disposables);
         }
 
         public PeakFilterModel PeakFilterModel { get; }
@@ -123,7 +122,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             get => _alignmentModel;
             set => SetProperty(ref _alignmentModel, value);
         }
-
         private LcmsAlignmentModel _alignmentModel;
 
         public AlignmentResultExportModel AlignmentResultExportModel { get; }
