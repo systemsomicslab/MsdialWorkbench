@@ -48,7 +48,7 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(17)]
         public string ProteinAssembledResultFilePath { get; set; } // *.prf
         [Key(18)]
-        public AcquisitionType AcquisitionType { get; set; }
+        public AcquisitionType AcquisitionType { get; set; } = AcquisitionType.None;
 
         [IgnoreMember]
         public bool IsDoMs2ChromDeconvolution => AcquisitionType != AcquisitionType.DDA;
