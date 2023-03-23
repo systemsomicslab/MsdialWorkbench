@@ -52,7 +52,7 @@ namespace CompMs.MsdialDimsCore.Export.Tests
 
         [TestMethod()]
         public void GetHeadersTest() {
-            var accessor = new DimsAnalysisMetadataAccessor(null, null);
+            var accessor = new DimsAnalysisMetadataAccessor(null, null, default);
             CollectionAssert.AreEqual(diHeaders, accessor.GetHeaders());
         }
 
