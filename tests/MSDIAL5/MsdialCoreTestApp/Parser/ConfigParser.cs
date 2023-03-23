@@ -215,7 +215,10 @@ namespace CompMs.App.MsdialConsole.Parser
 
                 case "acquisition type":
                     if (valueLower == "dda" || valueLower == "swath" || valueLower == "aif")
+#pragma warning disable CS0618 // Type or member is obsolete
+                        // ProjectBaseParameter.AcquisitionType is obsolete, but is used because it is not possible to set the AcquisitionType of individual files in the Console application.
                         param.ProjectParam.AcquisitionType = (AcquisitionType)Enum.Parse(typeof(AcquisitionType), valueLower, true);
+#pragma warning restore CS0618 // Type or member is obsolete
                     return true;
 
                 case "slovent type":

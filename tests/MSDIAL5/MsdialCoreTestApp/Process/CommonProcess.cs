@@ -39,7 +39,10 @@ namespace CompMs.App.MsdialConsole.Process {
             param.FileID_ClassName = analysisFiles.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileClass);
 
             foreach (var analysisFile in analysisFiles) {
+#pragma warning disable CS0618 // Type or member is obsolete
+                // ProjectBaseParameter.AcquisitionType is obsolete, but is used because it is not possible to set the AcquisitionType of individual files in the Console application.
                 analysisFile.AcquisitionType = param.ProjectParam.AcquisitionType;
+#pragma warning restore CS0618 // Type or member is obsolete
             }
             if (param.GetType() == typeof(MsdialGcmsParameter)) {
                 param.Ionization = Common.Enum.Ionization.EI;

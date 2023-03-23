@@ -119,8 +119,6 @@ namespace CompMs.App.Msdial.Model.Setting
                 .GroupBy(analysisfile => analysisfile.AnalysisFileType)
                 .Average(group => group.Count())
                 > 4;
-
-            parameter.AcquisitionType = AcquisitionType.None;
         }
     }
 }
