@@ -16,17 +16,13 @@ namespace CompMs.App.Msdial.ViewModel.Dims
     internal abstract class DimsPeakSpotTableViewModel : PeakSpotTableViewModelBase
     {
         protected DimsPeakSpotTableViewModel(IDimsPeakSpotTableModel model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
-            : base(model, peakSpotNavigatorViewModel) {
+            : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel) {
             MassMin = model.MassMin;
             MassMax = model.MassMax;
-            SetUnknownCommand = setUnknownCommand;
-            UndoManagerViewModel = undoManagerViewModel;
         }
 
         public double MassMin { get; }
         public double MassMax { get; }
-        public ICommand SetUnknownCommand { get; }
-        public UndoManagerViewModel UndoManagerViewModel { get; }
     }
 
     internal sealed class DimsAnalysisPeakTableViewModel : DimsPeakSpotTableViewModel

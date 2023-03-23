@@ -16,16 +16,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
     internal abstract class LcimmsPeakSpotTableViewModel : PeakSpotTableViewModelBase
     {
         protected LcimmsPeakSpotTableViewModel(ILcimmsPeakSpotTableModel model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
-            : base(model, peakSpotNavigatorViewModel) {
+            : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel) {
             MassMin = model.MassMin;
             MassMax = model.MassMax;
             RtMin = model.RtMin;
             RtMax = model.RtMax;
             DtMin = model.DtMin;
             DtMax = model.DtMax;
-
-            SetUnknownCommand = setUnknownCommand;
-            UndoManagerViewModel = undoManagerViewModel;
         }
 
         public double MassMin { get; }
@@ -34,9 +31,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public double RtMax { get; }
         public double DtMin { get; }
         public double DtMax { get; }
-
-        public ICommand SetUnknownCommand { get; }
-        public UndoManagerViewModel UndoManagerViewModel { get; }
     }
 
     internal sealed class LcimmsAnalysisPeakTableViewModel : LcimmsPeakSpotTableViewModel
