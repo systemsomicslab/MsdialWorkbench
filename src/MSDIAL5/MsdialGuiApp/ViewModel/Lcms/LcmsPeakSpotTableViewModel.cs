@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Graphics.Base;
@@ -118,27 +119,20 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public LcmsAnalysisPeakTableViewModel(
             ILcmsPeakSpotTableModel model,
             IObservable<EicLoader> eicLoader,
-            IReactiveProperty<double> massLower,
-            IReactiveProperty<double> massUpper,
-            IReactiveProperty<double> rtLower,
-            IReactiveProperty<double> rtUpper,
-            IReactiveProperty<string> metaboliteFilterKeyword,
-            IReactiveProperty<string> commentFilterKeyword,
-            IReactiveProperty<string> ontologyFilterKeyword,
-            IReactiveProperty<string> adductFilterKeyword,
+            PeakSpotNavigatorViewModel peakSpotNavigatorViewModel,
             ICommand setUnknownCommand,
             IReactiveProperty<bool> isEditting,
             UndoManagerViewModel undoManagerViewModel)
             : base(
                   model,
-                  massLower,
-                  massUpper,
-                  rtLower,
-                  rtUpper,
-                  metaboliteFilterKeyword,
-                  commentFilterKeyword,
-                  ontologyFilterKeyword,
-                  adductFilterKeyword,
+                  peakSpotNavigatorViewModel.MzLowerValue,
+                  peakSpotNavigatorViewModel.MzUpperValue,
+                  peakSpotNavigatorViewModel.RtLowerValue,
+                  peakSpotNavigatorViewModel.RtUpperValue,
+                  peakSpotNavigatorViewModel.MetaboliteFilterKeyword,
+                  peakSpotNavigatorViewModel.CommentFilterKeyword,
+                  peakSpotNavigatorViewModel.OntologyFilterKeyword,
+                  peakSpotNavigatorViewModel.AdductFilterKeyword,
                   setUnknownCommand,
                   undoManagerViewModel) {
             if (eicLoader is null) {
@@ -147,6 +141,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             EicLoader = eicLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             IsEditting = isEditting ?? throw new ArgumentNullException(nameof(isEditting));
         }
+
         public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
         public IReactiveProperty<bool> IsEditting { get; }
     }

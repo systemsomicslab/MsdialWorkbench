@@ -118,16 +118,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
 
             PeakTableViewModel = new LcmsAnalysisPeakTableViewModel(
-                this._model.PeakTableModel,
-                Observable.Return(this._model.EicLoader),
-                PeakSpotNavigatorViewModel.MzLowerValue,
-                PeakSpotNavigatorViewModel.MzUpperValue,
-                PeakSpotNavigatorViewModel.RtLowerValue,
-                PeakSpotNavigatorViewModel.RtUpperValue,
-                PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
-                PeakSpotNavigatorViewModel.CommentFilterKeyword,
-                PeakSpotNavigatorViewModel.OntologyFilterKeyword,
-                PeakSpotNavigatorViewModel.AdductFilterKeyword,
+                _model.PeakTableModel,
+                Observable.Return(_model.EicLoader),
+                PeakSpotNavigatorViewModel,
                 SetUnknownCommand,
                 PeakSpotNavigatorViewModel.IsEditting,
                 UndoManagerViewModel)
