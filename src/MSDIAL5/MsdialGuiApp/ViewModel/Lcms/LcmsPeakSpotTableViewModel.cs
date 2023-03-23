@@ -36,33 +36,20 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     }
 
     internal sealed class LcmsProteomicsPeakTableViewModel : LcmsPeakSpotTableViewModel {
-        public LcmsProteomicsPeakTableViewModel(
-            ILcmsPeakSpotTableModel model,
-            IObservable<EicLoader> eicLoader,
-            PeakSpotNavigatorViewModel peakSpotNavigatorViewModel,
-            ICommand setUnknownCommand,
-            UndoManagerViewModel undoManagerViewModel)
+        public LcmsProteomicsPeakTableViewModel(ILcmsPeakSpotTableModel model, IObservable<EicLoader> eicLoader, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
             : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel) {
             if (eicLoader is null) {
                 throw new ArgumentNullException(nameof(eicLoader));
             }
-            ProteinFilterKeyword = peakSpotNavigatorViewModel.ProteinFilterKeyword;
             EicLoader = eicLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
 
-        public IReactiveProperty<string> PeptideFilterKeyword => MetaboliteFilterKeyword;
-        public IReactiveProperty<string> ProteinFilterKeyword { get; }
         public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
     }
 
     internal sealed class LcmsAnalysisPeakTableViewModel : LcmsPeakSpotTableViewModel
     {
-        public LcmsAnalysisPeakTableViewModel(
-            ILcmsPeakSpotTableModel model,
-            IObservable<EicLoader> eicLoader,
-            PeakSpotNavigatorViewModel peakSpotNavigatorViewModel,
-            ICommand setUnknownCommand,
-            UndoManagerViewModel undoManagerViewModel)
+        public LcmsAnalysisPeakTableViewModel(ILcmsPeakSpotTableModel model, IObservable<EicLoader> eicLoader, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
             : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel) {
             if (eicLoader is null) {
                 throw new ArgumentNullException(nameof(eicLoader));
@@ -90,9 +77,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     internal sealed class LcmsProteomicsAlignmentTableViewModel : LcmsPeakSpotTableViewModel {
         public LcmsProteomicsAlignmentTableViewModel(LcmsAlignmentSpotTableModel model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
             : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel) {
-            ProteinFilterKeyword = peakSpotNavigatorViewModel.ProteinFilterKeyword;
+
         }
-        public IReactiveProperty<string> PeptideFilterKeyword => MetaboliteFilterKeyword;
-        public IReactiveProperty<string> ProteinFilterKeyword { get; }
     }
 }
