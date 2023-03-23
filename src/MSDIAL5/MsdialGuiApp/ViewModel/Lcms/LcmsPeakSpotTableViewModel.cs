@@ -174,36 +174,24 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     }
 
     internal sealed class LcmsProteomicsAlignmentTableViewModel : LcmsPeakSpotTableViewModel {
-        public LcmsProteomicsAlignmentTableViewModel(
-            LcmsAlignmentSpotTableModel model,
-            IReactiveProperty<double> massLower,
-            IReactiveProperty<double> massUpper,
-            IReactiveProperty<double> rtLower,
-            IReactiveProperty<double> rtUpper,
-            IReactiveProperty<string> proteinFilterKeyword,
-            IReactiveProperty<string> peptideFilterKeyword,
-            IReactiveProperty<string> commentFilterKeyword,
-            IReactiveProperty<string> ontologyFilterKeyword,
-            IReactiveProperty<string> adductFilterKeyword,
-            ICommand setUnknownCommand,
-            IReactiveProperty<bool> isEditting,
-            UndoManagerViewModel undoManagerViewModel)
+        public LcmsProteomicsAlignmentTableViewModel(LcmsAlignmentSpotTableModel model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
             : base(
                   model,
-                  massLower,
-                  massUpper,
-                  rtLower,
-                  rtUpper,
-                  peptideFilterKeyword,
-                  commentFilterKeyword,
-                  ontologyFilterKeyword,
-                  adductFilterKeyword,
+                  peakSpotNavigatorViewModel.MzLowerValue,
+                  peakSpotNavigatorViewModel.MzUpperValue,
+                  peakSpotNavigatorViewModel.RtLowerValue,
+                  peakSpotNavigatorViewModel.RtUpperValue,
+                  peakSpotNavigatorViewModel.MetaboliteFilterKeyword,
+                  peakSpotNavigatorViewModel.CommentFilterKeyword,
+                  peakSpotNavigatorViewModel.OntologyFilterKeyword,
+                  peakSpotNavigatorViewModel.AdductFilterKeyword,
                   setUnknownCommand,
                   undoManagerViewModel) {
-            ProteinFilterKeyword = proteinFilterKeyword;
-            IsEditting = isEditting ?? throw new ArgumentNullException(nameof(isEditting));
+            ProteinFilterKeyword = peakSpotNavigatorViewModel.ProteinFilterKeyword;
+            IsEditting = peakSpotNavigatorViewModel.IsEditting;
+                
         }
-        public IReactiveProperty<string> PeptideFilterKeyword { get => this.MetaboliteFilterKeyword; }
+        public IReactiveProperty<string> PeptideFilterKeyword => MetaboliteFilterKeyword;
         public IReactiveProperty<string> ProteinFilterKeyword { get; }
         public IReactiveProperty<bool> IsEditting { get; }
     }
