@@ -366,15 +366,6 @@
                                     IsSynchronizedWithCurrentItem="True"
                                     ItemContainerStyle="{StaticResource MainWindowTabItemStyle}"
                                     Grid.Row="0">
-                            <TabControl.Style>
-                                <Style TargetType="TabControl">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding PeakDetailViewModels.Length}" Value="2">
-                                            <Setter Property="SelectedIndex" Value="0"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TabControl.Style>
                             <TabControl.ContentTemplate>
                                 <DataTemplate>
                                     <DataTemplate.Resources>
