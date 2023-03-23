@@ -26,10 +26,10 @@ namespace CompMs.App.Msdial.Model.Core
         }
 
         public AlignmentResultContainer Container {
-            get => container;
-            private set => SetProperty(ref container, value);
+            get => _container;
+            private set => SetProperty(ref _container, value);
         }
-        private AlignmentResultContainer container;
+        private AlignmentResultContainer _container;
 
         public virtual Task SaveAsync() {
             return _alignmentFileModel.SaveAlignmentResultAsync(Container);
@@ -39,15 +39,22 @@ namespace CompMs.App.Msdial.Model.Core
         public abstract void InvokeMsfinder();
 
         protected readonly CompositeDisposable Disposables = new CompositeDisposable();
-        private bool disposedValue;
+
+        // IAlignmentModel interface
+        AlignmentFileBeanModel IAlignmentModel.AlignmentFile => _alignmentFileModel;
+        AlignmentResultContainer IAlignmentModel.AlignmentResult => Container;
+
+
+        // IDisposable interface
+        private bool _disposedValue;
 
         protected virtual void Dispose(bool disposing) {
-            if (!disposedValue) {
+            if (!_disposedValue) {
                 if (disposing) {
                     // TODO: dispose managed state (managed objects)
                     Disposables.Dispose();
                 }
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 
