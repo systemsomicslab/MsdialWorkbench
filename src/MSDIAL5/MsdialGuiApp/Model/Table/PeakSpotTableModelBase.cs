@@ -1,4 +1,5 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.App.Msdial.Model.Search;
+using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,9 @@ namespace CompMs.App.Msdial.Model.Table
 
     abstract class PeakSpotTableModelBase<T> : DisposableModelBase, IPeakSpotTableModelBase where T: class
     {
-        public PeakSpotTableModelBase(ReadOnlyObservableCollection<T> peakSpots, IReactiveProperty<T> target) {
+        private readonly PeakSpotNavigatorModel _peakSpotNavigatorModel;
+
+        public PeakSpotTableModelBase(ReadOnlyObservableCollection<T> peakSpots, IReactiveProperty<T> target, PeakSpotNavigatorModel peakSpotNavigatorModel) {
             if (peakSpots is null) {
                 throw new ArgumentNullException(nameof(peakSpots));
             }
@@ -25,6 +28,7 @@ namespace CompMs.App.Msdial.Model.Table
             }
             PeakSpots = peakSpots;
             Target = target;
+            _peakSpotNavigatorModel = peakSpotNavigatorModel;
         }
 
         public ReadOnlyObservableCollection<T> PeakSpots { get; }

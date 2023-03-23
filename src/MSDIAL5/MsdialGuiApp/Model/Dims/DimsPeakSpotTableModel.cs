@@ -20,7 +20,7 @@ namespace CompMs.App.Msdial.Model.Dims
     {
         private readonly PeakSpotNavigatorModel _peakSpotNavigatorModel;
 
-        protected DimsPeakSpotTableModel(ReadOnlyObservableCollection<T> peakSpots, IReactiveProperty<T> target, PeakSpotNavigatorModel peakSpotNavigatorModel) : base(peakSpots, target) {
+        protected DimsPeakSpotTableModel(ReadOnlyObservableCollection<T> peakSpots, IReactiveProperty<T> target, PeakSpotNavigatorModel peakSpotNavigatorModel) : base(peakSpots, target, peakSpotNavigatorModel) {
             _peakSpotNavigatorModel = peakSpotNavigatorModel;
         }
 
