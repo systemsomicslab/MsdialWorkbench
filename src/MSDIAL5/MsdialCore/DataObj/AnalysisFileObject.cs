@@ -1,4 +1,5 @@
-﻿using CompMs.MsdialCore.Algorithm;
+﻿using CompMs.Common.Enum;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
@@ -37,5 +38,7 @@ namespace CompMs.MsdialCore.DataObj
         public void SaveMsdecResultWithAnnotationInfo(List<MSDecResult> msdecResults) {
             MsdecResultsWriter.Write(_instance.DeconvolutionFilePath, msdecResults, true);
         }
+
+        public AnalysisFileBean GetAnalysisFileBean { get => _instance; }
     }
 }

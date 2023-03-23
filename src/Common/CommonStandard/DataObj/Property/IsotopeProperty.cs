@@ -26,6 +26,19 @@ namespace CompMs.Common.DataObj.Property {
     /// </summary>
     [MessagePackObject]
     public class IsotopicPeak {
+        [SerializationConstructor]
+        public IsotopicPeak() {
+            
+        }
+
+        public IsotopicPeak(IsotopicPeak source) {
+            RelativeAbundance = source.RelativeAbundance;
+            AbsoluteAbundance = source.AbsoluteAbundance;
+            Mass = source.Mass;
+            MassDifferenceFromMonoisotopicIon = source.MassDifferenceFromMonoisotopicIon;
+            Comment = source.Comment;
+        }
+
         [Key(0)]
         public double RelativeAbundance { get; set; }
         [Key(4)]

@@ -25,6 +25,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -111,7 +112,7 @@ namespace CompMs.App.Msdial.Model.Dims
             Target.Select(t => $"File: {analysisFileModel.AnalysisFileName}" + (t is null ? string.Empty : $"Spot ID: {t.MasterPeakID} Scan: {t.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5}"))
                 .Subscribe(title => PlotModel.GraphTitle = title);
 
-            var eicLoader = DimsEicLoader.BuildForEicView(provider, parameter);
+            var eicLoader = DimsEicLoader.BuildForEicView(analysisFileModel.File, provider, parameter);
             EicModel = new EicModel(Target, eicLoader)
             {
                 HorizontalTitle = "m/z",
@@ -167,10 +168,10 @@ namespace CompMs.App.Msdial.Model.Dims
                 Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
 
             // Ms2 chromatogram
-            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawLoader, provider, parameter).AddTo(Disposables);
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawLoader, provider, parameter, analysisFileModel.AcquisitionType).AddTo(Disposables);
 
-            EicLoader = DimsEicLoader.BuildForPeakTable(provider, parameter);
-            PeakTableModel = new DimsAnalysisPeakTableModel(Ms1Peaks, Target, PeakSpotNavigatorModel).AddTo(Disposables);
+            EicLoader = DimsEicLoader.BuildForPeakTable(analysisFileModel.File, provider, parameter);
+            PeakTableModel = new DimsAnalysisPeakTableModel(new ReadOnlyObservableCollection<ChromatogramPeakFeatureModel>(Ms1Peaks), Target, PeakSpotNavigatorModel).AddTo(Disposables);
 
             var mzSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, MZ_TOLERANCE, Target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
             var idSpotFocus = new IdSpotFocus<ChromatogramPeakFeatureModel>(

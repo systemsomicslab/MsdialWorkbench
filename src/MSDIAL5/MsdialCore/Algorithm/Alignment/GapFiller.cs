@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using CompMs.Common.Components;
+﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Alignment
 {
@@ -27,17 +26,13 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
         public GapFiller(ParameterBase param) : this(param.SmoothingMethod, param.SmoothingLevel, param.IsForceInsertForGapFilling) { }
 
-        public void GapFill(Ms1Spectra ms1Spectra, IDataProvider provider, AlignmentSpotProperty spot, int fileID) {
-            GapFill(ms1Spectra, provider.LoadMs1Spectrums(), spot, fileID);
-        }
-
-        public void GapFill(Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectra, AlignmentSpotProperty spot, int fileID) {
+        public void GapFill(Ms1Spectra ms1Spectra, RawSpectra rawSpectra, IReadOnlyList<RawSpectrum> spectra, AlignmentSpotProperty spot, int fileID) {
             var peaks = spot.AlignedPeakProperties;
             var filtered = peaks.Where(peak => peak.PeakID >= 0);
             var chromXCenter = GetCenter(filtered);
             var peakWidth = GetPeakWidth(filtered);
             var noise = GetEstimatedNoise(filtered);
-            var peaklist = GetPeaks(ms1Spectra, spectra, chromXCenter, peakWidth, fileID, smoothingMethod, smoothingLevel);
+            var peaklist = GetPeaks(ms1Spectra, rawSpectra, spectra, chromXCenter, peakWidth, fileID, smoothingMethod, smoothingLevel);
 
             var target = peaks.First(peak => peak?.FileID == fileID);
             target.PeakShape.EstimatedNoise = noise;
@@ -75,7 +70,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             SetAlignmentChromPeakFeature(result, center, peaklist, id, leftId, rightId);
         }
 
-        protected abstract List<ChromatogramPeak> GetPeaks(Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel);
+        protected abstract List<ChromatogramPeak> GetPeaks(Ms1Spectra ms1Spectra, RawSpectra rawSpectra, IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel);
 
         protected virtual (List<(ChromatogramPeak, int)>, int) GetPeakTopCandidates(List<ChromatogramPeak> sPeaklist, double centralAx, double axTol) {
             var candidates = new List<(ChromatogramPeak, int)>();

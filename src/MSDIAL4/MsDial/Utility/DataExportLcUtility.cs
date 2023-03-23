@@ -5324,6 +5324,10 @@ namespace Rfx.Riken.OsakaUniv
                             msRunFormat = "[MS, MS:1000584, mzML format, ]";
                             msRunIDFormat = "[MS, MS:1000776, scan number only nativeID format, ]";
                             break;
+                        case (".LRP"):
+                            msRunFormat = "[,, LRP file, ]";
+                            msRunIDFormat = "[,, LRP file Datapoint Number, ]";
+                            break;
                     };
 
                     var database = new List<List<string>>();

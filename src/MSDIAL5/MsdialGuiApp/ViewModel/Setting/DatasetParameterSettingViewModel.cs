@@ -47,8 +47,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             CollisionType = Model.ToReactivePropertySlimAsSynchronized(m => m.CollisionType)
                 .AddTo(Disposables);
-            AcquisitionType = Model.ToReactivePropertySlimAsSynchronized(m => m.AcquisitionType)
-                .AddTo(Disposables);
             MS1DataType = Model.ToReactivePropertySlimAsSynchronized(m => m.MS1DataType)
                 .AddTo(Disposables);
             MS2DataType = Model.ToReactivePropertySlimAsSynchronized(m => m.MS2DataType)
@@ -83,7 +81,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 Ionization.ToUnit(),
                 SeparationType.ToUnit(),
                 CollisionType.ToUnit(),
-                AcquisitionType.ToUnit(),
                 MS1DataType.ToUnit(),
                 MS2DataType.ToUnit(),
                 IonMode.ToUnit(),
@@ -132,8 +129,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReactivePropertySlim<bool> Imaging { get; }
 
         public ReactivePropertySlim<CollisionType> CollisionType { get; }
-
-        public ReactivePropertySlim<AcquisitionType> AcquisitionType { get; }
 
         public ReactivePropertySlim<MSDataType> MS1DataType { get; }
 

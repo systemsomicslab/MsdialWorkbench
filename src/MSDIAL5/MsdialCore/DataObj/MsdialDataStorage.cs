@@ -131,6 +131,14 @@ namespace CompMs.MsdialCore.DataObj
                 LoadDataBaseMapper(mapper, storage);
                 storage.DataBaseMapper = mapper;
                 storage.MspDB = await LoadMspDBAsync(streamManager, Combine(prefix, GetNewMspFileName(projectTitle))).ConfigureAwait(false);
+                foreach (var file in storage.AnalysisFiles) {
+                    if (file.AcquisitionType == Common.Enum.AcquisitionType.None) {
+#pragma warning disable CS0618 // Type or member is obsolete
+                        // ProjectBaseParameter.AcquisitionType is obsolete, but is used to load previous projects.
+                        file.AcquisitionType = storage.Parameter.ProjectParam.AcquisitionType;
+#pragma warning restore CS0618 // Type or member is obsolete
+                    }
+                }
                 return storage;
             }
 

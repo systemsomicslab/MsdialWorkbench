@@ -20,7 +20,7 @@ namespace CompMs.App.Msdial.Model.Dims
     {
         private readonly PeakSpotNavigatorModel _peakSpotNavigatorModel;
 
-        protected DimsPeakSpotTableModel(ObservableCollection<T> peakSpots, IReactiveProperty<T> target, PeakSpotNavigatorModel peakSpotNavigatorModel) : base(peakSpots, target) {
+        protected DimsPeakSpotTableModel(ReadOnlyObservableCollection<T> peakSpots, IReactiveProperty<T> target, PeakSpotNavigatorModel peakSpotNavigatorModel) : base(peakSpots, target) {
             _peakSpotNavigatorModel = peakSpotNavigatorModel;
         }
 
@@ -30,7 +30,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
     internal sealed class DimsAnalysisPeakTableModel : DimsPeakSpotTableModel<ChromatogramPeakFeatureModel>
     {
-        public DimsAnalysisPeakTableModel(ObservableCollection<ChromatogramPeakFeatureModel> peaks, IReactiveProperty<ChromatogramPeakFeatureModel> target, PeakSpotNavigatorModel peakSpotNavigatorModel)
+        public DimsAnalysisPeakTableModel(ReadOnlyObservableCollection<ChromatogramPeakFeatureModel> peaks, IReactiveProperty<ChromatogramPeakFeatureModel> target, PeakSpotNavigatorModel peakSpotNavigatorModel)
             : base(peaks, target, peakSpotNavigatorModel) {
 
         }
@@ -39,7 +39,7 @@ namespace CompMs.App.Msdial.Model.Dims
     internal sealed class DimsAlignmentSpotTableModel : DimsPeakSpotTableModel<AlignmentSpotPropertyModel>
     {
         public DimsAlignmentSpotTableModel(
-            ObservableCollection<AlignmentSpotPropertyModel> spots,
+            ReadOnlyObservableCollection<AlignmentSpotPropertyModel> spots,
             IReactiveProperty<AlignmentSpotPropertyModel> target,
             IObservable<IBrushMapper<BarItem>> classBrush,
             FileClassPropertiesModel classProperties,

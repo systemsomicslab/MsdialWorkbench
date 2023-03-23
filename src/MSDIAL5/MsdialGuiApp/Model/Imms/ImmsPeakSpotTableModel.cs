@@ -22,7 +22,7 @@ namespace CompMs.App.Msdial.Model.Imms
     {
         private readonly PeakSpotNavigatorModel _peakSpotNavigatorModel;
 
-        public ImmsPeakSpotTableModel(ObservableCollection<T> peakSpots, IReactiveProperty<T> target, PeakSpotNavigatorModel peakSpotNavigatorModel) : base(peakSpots, target) {
+        public ImmsPeakSpotTableModel(ReadOnlyObservableCollection<T> peakSpots, IReactiveProperty<T> target, PeakSpotNavigatorModel peakSpotNavigatorModel) : base(peakSpots, target) {
             _peakSpotNavigatorModel = peakSpotNavigatorModel ?? throw new ArgumentNullException(nameof(peakSpotNavigatorModel));
         }
 
@@ -35,7 +35,7 @@ namespace CompMs.App.Msdial.Model.Imms
     internal sealed class ImmsAlignmentSpotTableModel : ImmsPeakSpotTableModel<AlignmentSpotPropertyModel>
     {
         public ImmsAlignmentSpotTableModel(
-            ObservableCollection<AlignmentSpotPropertyModel> spots,
+            ReadOnlyObservableCollection<AlignmentSpotPropertyModel> spots,
             IReactiveProperty<AlignmentSpotPropertyModel> target,
             IObservable<IBrushMapper<BarItem>> classBrush,
             FileClassPropertiesModel classProperties,
@@ -54,7 +54,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
     internal sealed class ImmsAnalysisPeakTableModel : ImmsPeakSpotTableModel<ChromatogramPeakFeatureModel>
     {
-        public ImmsAnalysisPeakTableModel(ObservableCollection<ChromatogramPeakFeatureModel> peaks, IReactiveProperty<ChromatogramPeakFeatureModel> target, PeakSpotNavigatorModel peakSpotNavigatorModel)
+        public ImmsAnalysisPeakTableModel(ReadOnlyObservableCollection<ChromatogramPeakFeatureModel> peaks, IReactiveProperty<ChromatogramPeakFeatureModel> target, PeakSpotNavigatorModel peakSpotNavigatorModel)
             : base(peaks, target, peakSpotNavigatorModel) {
         }
     }

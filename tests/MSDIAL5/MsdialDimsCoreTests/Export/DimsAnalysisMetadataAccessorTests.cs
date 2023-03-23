@@ -52,13 +52,14 @@ namespace CompMs.MsdialDimsCore.Export.Tests
 
         [TestMethod()]
         public void GetHeadersTest() {
-            var accessor = new DimsAnalysisMetadataAccessor(null, null, default);
+            var accessor = new DimsAnalysisMetadataAccessor(null, null);
             CollectionAssert.AreEqual(diHeaders, accessor.GetHeaders());
         }
 
         [TestMethod()]
         public void GetContentTest() {
             var parameter = new ParameterBase { CentroidMs1Tolerance = 0.01f, MS2DataType = MSDataType.Centroid, };
+            var stubFile = new AnalysisFileBean { AcquisitionType = AcquisitionType.DDA, };
             var refer = new MockRefer();
             var accessor = new DimsAnalysisMetadataAccessor(refer, parameter);
             var basePeak = new BaseChromatogramPeakFeature
@@ -81,7 +82,7 @@ namespace CompMs.MsdialDimsCore.Export.Tests
                 });
             var msdec = new MSDecResult();
             var provider = new MockDataProvider();
-            var content = accessor.GetContent(feature, msdec, provider);
+            var content = accessor.GetContent(feature, msdec, provider, stubFile);
 
             Assert.AreEqual("699.99951", content["m/z left"]);
             Assert.AreEqual("700.00001", content["m/z"]);

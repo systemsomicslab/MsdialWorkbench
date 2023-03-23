@@ -26,6 +26,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -124,8 +125,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 .AddTo(Disposables);
 
             // Eic chart
-            var eicLoader = EicLoader.BuildForAllRange(this._provider, Parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
-            EicLoader = EicLoader.BuildForPeakRange(this._provider, Parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
+            var eicLoader = EicLoader.BuildForAllRange(analysisFileModel.File, provider, Parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
+            EicLoader = EicLoader.BuildForPeakRange(analysisFileModel.File, provider, Parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
             EicModel = new EicModel(Target, eicLoader) {
                 HorizontalTitle = PlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
@@ -210,7 +211,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             }.AddTo(Disposables);
 
             // Ms2 chromatogram
-            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawSpectrumLoader, provider, Parameter).AddTo(Disposables);
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawSpectrumLoader, provider, Parameter, analysisFileModel.AcquisitionType).AddTo(Disposables);
 
             // SurveyScan
             var msdataType = Parameter.MSDataType;
@@ -237,7 +238,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
 
             // Peak table
-            PeakTableModel = new LcmsAnalysisPeakTableModel(Ms1Peaks, Target, PeakSpotNavigatorModel).AddTo(Disposables);
+            PeakTableModel = new LcmsAnalysisPeakTableModel(new ReadOnlyObservableCollection<ChromatogramPeakFeatureModel>(Ms1Peaks), Target, PeakSpotNavigatorModel).AddTo(Disposables);
 
             var rtSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, RtTol, Target.Select(t => t?.ChromXValue ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
             var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, MzTol, Target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);

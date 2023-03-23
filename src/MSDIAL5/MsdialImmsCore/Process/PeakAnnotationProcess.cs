@@ -33,17 +33,17 @@ namespace CompMs.MsdialImmsCore.Process
         }
 
         public void Annotate(
+            AnalysisFileBean analysisFile,
             IDataProvider provider,
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             IReadOnlyList<MSDecResultCollection> mSDecResultCollections,
-            Action<int> reportAction,
-            CancellationToken token) {
+            Action<int> reportAction, CancellationToken token) {
 
             var parameter = _storage.Parameter;
             PeakAnnotation(mSDecResultCollections, provider, chromPeakFeatures, _storage.DataBases.CreateQueryFactories().MoleculeQueryFactories, _mspAnnotator, _textDBAnnotator, _evaluator, _storage.DataBaseMapper, parameter, reportAction, token);
 
             // characterizatin
-            PeakCharacterization(mSDecResultCollections, provider, chromPeakFeatures, _evaluator, parameter, reportAction);
+            PeakCharacterization(analysisFile, mSDecResultCollections, provider, chromPeakFeatures, _evaluator, parameter, reportAction);
         }
 
         private static void PeakAnnotation(
@@ -76,16 +76,15 @@ namespace CompMs.MsdialImmsCore.Process
         }
 
         private static void PeakCharacterization(
+            AnalysisFileBean file,
             IReadOnlyList<MSDecResultCollection> mSDecResultCollections,
             IDataProvider provider,
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            MsdialImmsParameter parameter,
-            Action<int> reportAction) {
+            MsdialImmsParameter parameter, Action<int> reportAction) {
 
-            new PeakCharacterEstimator(90, 10).Process(provider, chromPeakFeatures, mSDecResultCollections.Any() ? mSDecResultCollections.Argmin(kvp => kvp.CollisionEnergy).MSDecResults : null,
-                evaluator,
-                parameter, reportAction, true);
+            new PeakCharacterEstimator(90, 10).Process(file, provider, chromPeakFeatures, mSDecResultCollections.Any() ? mSDecResultCollections.Argmin(kvp => kvp.CollisionEnergy).MSDecResults : null,
+                evaluator, parameter, reportAction, true);
         }
     }
 }

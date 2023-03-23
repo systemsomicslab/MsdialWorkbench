@@ -25,6 +25,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -51,7 +52,7 @@ namespace CompMs.App.Msdial.Model.Imms
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseStorage databases,
             DataBaseMapper mapper,
-            ParameterBase parameter,
+            MsdialImmsParameter parameter,
             PeakFilterModel peakFilterModel)
             : base(analysisFileModel) {
             if (evaluator is null) {
@@ -61,7 +62,7 @@ namespace CompMs.App.Msdial.Model.Imms
             _provider = provider;
             _dataBaseMapper = mapper;
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper).Items;
-            _parameter = parameter as MsdialImmsParameter;
+            _parameter = parameter;
             _undoManager = new UndoManager().AddTo(Disposables);
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, status: ~FilterEnableStatus.Rt).AddTo(Disposables);
@@ -108,8 +109,8 @@ namespace CompMs.App.Msdial.Model.Imms
                         : $"Spot ID: {t.InnerModel.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.InnerModel.PeakFeature.Mass:N5}"))
                 .Subscribe(title => PlotModel.GraphTitle = title);
 
-            var eicLoader = EicLoader.BuildForAllRange(provider, parameter, ChromXType.Drift, ChromXUnit.Msec, this._parameter.DriftTimeBegin, this._parameter.DriftTimeEnd);
-            EicLoader = EicLoader.BuildForPeakRange(provider, parameter, ChromXType.Drift, ChromXUnit.Msec, this._parameter.DriftTimeBegin, this._parameter.DriftTimeEnd);
+            var eicLoader = EicLoader.BuildForAllRange(analysisFileModel.File, provider, parameter, ChromXType.Drift, ChromXUnit.Msec, parameter.DriftTimeBegin, parameter.DriftTimeEnd);
+            EicLoader = EicLoader.BuildForPeakRange(analysisFileModel.File, provider, parameter, ChromXType.Drift, ChromXUnit.Msec, parameter.DriftTimeBegin, parameter.DriftTimeEnd);
             EicModel = new EicModel(Target, eicLoader)
             {
                 HorizontalTitle = PlotModel.HorizontalTitle,
@@ -165,7 +166,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
 
             // Ms2 chromatogram
-            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawLoader, provider, parameter).AddTo(Disposables);
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawLoader, provider, parameter, analysisFileModel.AcquisitionType).AddTo(Disposables);
 
             var surveyScanSpectrum = new SurveyScanSpectrum(Target, target => Observable.FromAsync(token => LoadMsSpectrumAsync(target, token)))
                 .AddTo(Disposables);
@@ -178,7 +179,7 @@ namespace CompMs.App.Msdial.Model.Imms
             SurveyScanModel.Elements.HorizontalProperty = nameof(SpectrumPeakWrapper.Mass);
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
 
-            PeakTableModel = new ImmsAnalysisPeakTableModel(Ms1Peaks, Target, PeakSpotNavigatorModel).AddTo(Disposables);
+            PeakTableModel = new ImmsAnalysisPeakTableModel(new ReadOnlyObservableCollection<ChromatogramPeakFeatureModel>(Ms1Peaks), Target, PeakSpotNavigatorModel).AddTo(Disposables);
 
             var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, MZ_TOLELANCE, Target.Select(t => t?.Mass ?? 0d), "F5", "m/z", isItalic: true).AddTo(Disposables);
             var dtSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, DT_TOLELANCE, Target.Select(t => t?.ChromXValue ?? 0d), "F4", "Mobility[1/k0]", isItalic: false).AddTo(Disposables);

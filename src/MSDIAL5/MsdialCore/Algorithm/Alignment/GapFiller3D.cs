@@ -16,12 +16,12 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         public GapFiller3D(SmoothingMethod smoothingMethod, int smoothingLevel, bool isForceInsert) : base(smoothingMethod, smoothingLevel, isForceInsert) { }
         public GapFiller3D(ParameterBase param) : base(param) { }
 
-        public void GapFillFirst(List<RawSpectrum> spectra, AlignmentSpotProperty spot, int fileID) {
+        public void GapFillFirst(RawSpectra rawSpectra, AlignmentSpotProperty spot, int fileID) {
             var peaks = spot.AlignedPeakProperties;
             var filtered = peaks.Where(peak => peak.PeakID >= 0);
             var chromXCenter = GetCenterFirst(filtered);
             var peakWidth = GetAveragePeakWidthFirst(filtered);
-            var peaklist = GetPeaksFirst(spectra, chromXCenter, peakWidth, fileID, smoothingMethod, smoothingLevel);
+            var peaklist = GetPeaksFirst(rawSpectra, chromXCenter, peakWidth, fileID, smoothingMethod, smoothingLevel);
             var target = peaks.FirstOrDefault(peak => peak.FileID == fileID);
             GapFillCore(peaklist, chromXCenter, AxTolFirst, target);
         }
@@ -48,10 +48,10 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         protected abstract double GetAveragePeakWidthFirst(IEnumerable<AlignmentChromPeakFeature> peaks);
         protected abstract double GetAveragePeakWidthSecond(IEnumerable<AlignmentChromPeakFeature> peaks);
 
-        protected override List<ChromatogramPeak> GetPeaks(Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
-            return GetPeaksFirst(spectrum, center, peakWidth, fileID, smoothingMethod, smoothingLevel);
+        protected override List<ChromatogramPeak> GetPeaks(Ms1Spectra ms1Spectra, RawSpectra rawSpectra, IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
+            return GetPeaksFirst(rawSpectra, center, peakWidth, fileID, smoothingMethod, smoothingLevel);
         }
-        protected abstract List<ChromatogramPeak> GetPeaksFirst(IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel);
+        protected abstract List<ChromatogramPeak> GetPeaksFirst(RawSpectra rawSpectra, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel);
         protected abstract List<ChromatogramPeak> GetPeaksSecond(IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel);
     }
 }

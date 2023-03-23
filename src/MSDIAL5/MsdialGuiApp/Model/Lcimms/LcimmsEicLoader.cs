@@ -19,13 +19,13 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly MsdialLcImMsParameter _parameter;
         private readonly RawSpectra _rawSpectra;
 
-        public LcimmsEicLoader(IDataProvider provider, MsdialLcImMsParameter parameter) {
+        public LcimmsEicLoader(IDataProvider provider, MsdialLcImMsParameter parameter, RawSpectra rawSpectra) {
             if (provider is null) {
                 throw new ArgumentNullException(nameof(provider));
             }
 
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
-            _rawSpectra = new RawSpectra(provider, parameter.IonMode, parameter.AcquisitionType);
+            _rawSpectra = rawSpectra ?? throw new ArgumentNullException(nameof(rawSpectra));
         }
 
         public Task<DataObj.Chromatogram> LoadChromatogramAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {

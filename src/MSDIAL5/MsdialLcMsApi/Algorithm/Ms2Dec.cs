@@ -1,11 +1,9 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcmsApi.Parameter;
 using System;
@@ -25,15 +23,15 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             this.ProgressMax = ProgressMax;
         }
        
-        public List<MSDecResult> GetMS2DecResults(IDataProvider provider, IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
-            MsdialLcmsParameter param, ChromatogramPeaksDataSummary summary, IupacDatabase iupac,
-            Action<int> reportAction, System.Threading.CancellationToken token, double targetCE = -1) {
+        public List<MSDecResult> GetMS2DecResults(AnalysisFileBean file, IDataProvider provider,
+            IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, MsdialLcmsParameter param, ChromatogramPeaksDataSummary summary,
+            IupacDatabase iupac, Action<int> reportAction, System.Threading.CancellationToken token, double targetCE = -1) {
 
             var msdecResults = new List<MSDecResult>();
             var numThreads = param.NumThreads == 1 ? 1 : 2;
             if (numThreads == 1) {
                 foreach (var spot in chromPeakFeatures) {
-                    var result = GetMS2DecResult(provider, spot, param, summary, iupac, targetCE);
+                    var result = GetMS2DecResult(file, provider, spot, param, summary, iupac, targetCE);
                     result.ScanID = spot.PeakID;
                     msdecResults.Add(result);
                     ReportProgress.Show(InitialProgress, ProgressMax, result.ScanID, chromPeakFeatures.Count, reportAction);
@@ -49,7 +47,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                     tasks[i] = Task.Run(() => { 
                         while (queue.TryDequeue(out var index)) {
                             var spot = chromPeakFeatures[index];
-                            var result = GetMS2DecResult(provider, spot, param, summary, iupac, targetCE);
+                            var result = GetMS2DecResult(file, provider, spot, param, summary, iupac, targetCE);
                             result.ScanID = spot.PeakID;
                             msdecResultArray[index] = result;
                             Interlocked.Increment(ref counter);
@@ -63,10 +61,10 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
 
         }
 
-        public MSDecResult GetMS2DecResult(IDataProvider provider,
-            ChromatogramPeakFeature chromPeakFeature, MsdialLcmsParameter param,
-            ChromatogramPeaksDataSummary summary, IupacDatabase iupac,
-            double targetCE = -1) { // targetCE is used in multiple CEs option
+        public MSDecResult GetMS2DecResult(AnalysisFileBean file,
+            IDataProvider provider, ChromatogramPeakFeature chromPeakFeature,
+            MsdialLcmsParameter param, ChromatogramPeaksDataSummary summary,
+            IupacDatabase iupac, double targetCE = -1) { // targetCE is used in multiple CEs option
 
             if (Math.Abs(chromPeakFeature.PeakFeature.ChromXsTop.RT.Value - 9.795) < 0.01 && Math.Abs(chromPeakFeature.Mass - 609.59631) < 0.01) {
                 Console.WriteLine();
@@ -91,7 +89,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             }
             if (curatedSpectra.IsEmptyOrNull()) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
 
-            if (!param.IsDoMs2ChromDeconvolution) {
+            if (!file.IsDoMs2ChromDeconvolution) {
                 if (param.IsDoAndromedaMs2Deconvolution)
                     return MSDecObjectHandler.GetAndromedaSpectrum(chromPeakFeature, curatedSpectra, param, iupac, Math.Abs(chromPeakFeature.PeakCharacter.Charge));
                 else
@@ -106,7 +104,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
 
             //preparing MS1 and MS/MS chromatograms
             //note that the MS1 chromatogram trace (i.e. EIC) is also used as the candidate of model chromatogram
-            var rawSpectrum = new RawSpectra(provider, param.IonMode, param.AcquisitionType);
+            var rawSpectrum = new RawSpectra(provider, param.IonMode, file.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(startRt, endRt, ChromXType.RT, ChromXUnit.Min);
             var ms1Peaklist = rawSpectrum.GetMs1ExtractedChromatogram(precursorMz, param.CentroidMs1Tolerance, chromatogramRange).Peaks;
 
@@ -124,7 +122,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             }
             int topScanNum = minimumID;
 
-            var ms2ValuePeaksList = DataAccess.GetMs2ValuePeaks(provider, precursorMz, startIndex, endIndex, curatedSpectra.Select(x => (double)x.Mass).ToList(), param, targetCE);
+            var ms2ValuePeaksList = DataAccess.GetMs2ValuePeaks(provider, precursorMz, startIndex, endIndex, curatedSpectra.Select(x => (double)x.Mass).ToList(), param, file.AcquisitionType, targetCE);
             var sMs2Chromatograms = new List<Chromatogram_temp2>();
             foreach (var ms2Peaks in ms2ValuePeaksList) {
                 Chromatogram_temp2 chromatogram = new Chromatogram_temp2(ms2Peaks, ChromXType.RT, ChromXUnit.Min).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);

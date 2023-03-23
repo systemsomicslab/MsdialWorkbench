@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Components;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using System.Collections.Generic;
@@ -9,25 +8,14 @@ using System.Linq;
 namespace CompMs.App.Msdial.Model.Loader
 {
     internal sealed class BpcLoader {
-        public BpcLoader(
-            IDataProvider provider,
-            ParameterBase parameter,
-            ChromXType chromXType,
-            ChromXUnit chromXUnit,
-            double rangeBegin,
-            double rangeEnd) {
-
-            _provider = provider;
+        public BpcLoader(RawSpectra rawSpectra, ParameterBase parameter, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd) {
             _parameter = parameter;
-            _chromXType = chromXType;
-            _chromXUnit = chromXUnit;
             _chromatogramRange = new ChromatogramRange(rangeBegin, rangeEnd, chromXType, chromXUnit);
+            _rawSpectra = rawSpectra;
         }
 
-        private readonly IDataProvider _provider;
+        private readonly RawSpectra _rawSpectra;
         private readonly ParameterBase _parameter;
-        private readonly ChromXType _chromXType;
-        private readonly ChromXUnit _chromXUnit;
         private readonly ChromatogramRange _chromatogramRange;
 
         internal List<PeakItem>
@@ -42,7 +30,7 @@ namespace CompMs.App.Msdial.Model.Loader
         }
 
         private List<PeakItem> LoadBpcCore() {
-            return new RawSpectra(_provider.LoadMs1Spectrums(), _parameter.IonMode, _parameter.AcquisitionType)
+            return _rawSpectra
                 .GetMs1BasePeakChromatogram(_chromatogramRange)
                 .Smoothing(_parameter.SmoothingMethod, _parameter.SmoothingLevel)
                 .Where(peak => peak != null)
