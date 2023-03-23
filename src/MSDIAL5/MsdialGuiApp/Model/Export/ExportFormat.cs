@@ -63,16 +63,16 @@ namespace CompMs.App.Msdial.Model.Export
         }
         private bool _trimToExcelLimit = true;
 
-        public void Export(string outNameTemplate, string exportDirectory, IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes) {
+        public void Export(string outNameTemplate, string exportDirectory, Lazy<IReadOnlyList<AlignmentSpotProperty>> lazySpots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes) {
             if (IsLongFormat) {
-                ExportLong(outNameTemplate, exportDirectory, spots, msdecResults, notification, exportTypes);
+                ExportLong(outNameTemplate, exportDirectory, lazySpots, msdecResults, notification, exportTypes);
             }
             else {
-                ExportWide(outNameTemplate, exportDirectory, spots, msdecResults, notification, exportTypes);
+                ExportWide(outNameTemplate, exportDirectory, lazySpots, msdecResults, notification, exportTypes);
             }
         }
 
-        public void ExportLong(string outNameTemplate, string exportDirectory, IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes) {
+        public void ExportLong(string outNameTemplate, string exportDirectory, Lazy<IReadOnlyList<AlignmentSpotProperty>> lazySpots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes) {
             var outMetaName = string.Format(outNameTemplate, "PeakMaster");
             var outMetaFile = Format.WithExtension(outMetaName);
             var outMetaPath = Path.Combine(exportDirectory, outMetaFile);
@@ -81,7 +81,7 @@ namespace CompMs.App.Msdial.Model.Export
             using (var outstream = File.Open(outMetaPath, FileMode.Create, FileAccess.Write)) {
                 exporter.ExportMeta(
                     outstream,
-                    spots,
+                    lazySpots.Value,
                     msdecResults,
                     _accessorFactory.CreateAccessor(TrimToExcelLimit));
             }
@@ -93,13 +93,13 @@ namespace CompMs.App.Msdial.Model.Export
             using (var outstream = File.Open(outValuePath, FileMode.Create, FileAccess.Write)) {
                 exporter.ExportValue(
                     outstream,
-                    spots,
+                    lazySpots.Value,
                     _analysisFiles,
                     exportTypes.Select(type => (type.TargetLabel, type.QuantValueAccessor)).ToArray());
             }
         }
 
-        public void ExportWide(string outNameTemplate, string exportDirectory, IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes) {
+        public void ExportWide(string outNameTemplate, string exportDirectory, Lazy<IReadOnlyList<AlignmentSpotProperty>> lazySpots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes) {
             var exporter = Format.CreateWideExporter();
             var accessor = _accessorFactory.CreateAccessor(TrimToExcelLimit);
             foreach (var exportType in exportTypes) {
@@ -111,7 +111,7 @@ namespace CompMs.App.Msdial.Model.Export
                 using (var outstream = File.Open(outPath, FileMode.Create, FileAccess.Write)) {
                     exporter.Export(
                         outstream,
-                        spots,
+                        lazySpots.Value,
                         msdecResults,
                         _analysisFiles,
                         accessor,
