@@ -35,12 +35,6 @@ namespace CompMs.App.Msdial.Model.Core
             return _alignmentFileModel.SaveAlignmentResultAsync(Container);
         }
 
-        public string DisplayLabel {
-            get => displayLabel;
-            set => SetProperty(ref displayLabel, value);
-        }
-        private string displayLabel = string.Empty;
-
         public abstract void SearchFragment();
         public abstract void InvokeMsfinder();
 
