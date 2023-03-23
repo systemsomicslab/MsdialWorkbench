@@ -76,39 +76,30 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public LcmsProteomicsPeakTableViewModel(
             ILcmsPeakSpotTableModel model,
             IObservable<EicLoader> eicLoader,
-            IReactiveProperty<double> massLower,
-            IReactiveProperty<double> massUpper,
-            IReactiveProperty<double> rtLower,
-            IReactiveProperty<double> rtUpper,
-            IReactiveProperty<string> proteinFilterKeyword,
-            IReactiveProperty<string> peptideFilterKeyword,
-            IReactiveProperty<string> commentFilterKeyword,
-            IReactiveProperty<string> ontologyFilterKeyword,
-            IReactiveProperty<string> adductFilterKeyword,
+            PeakSpotNavigatorViewModel peakSpotNavigatorViewModel,
             ICommand setUnknownCommand,
-            IReactiveProperty<bool> isEditting,
             UndoManagerViewModel undoManagerViewModel)
             : base(
                   model,
-                  massLower,
-                  massUpper,
-                  rtLower,
-                  rtUpper,
-                  peptideFilterKeyword,
-                  commentFilterKeyword,
-                  ontologyFilterKeyword,
-                  adductFilterKeyword,
+                  peakSpotNavigatorViewModel.MzLowerValue,
+                  peakSpotNavigatorViewModel.MzUpperValue,
+                  peakSpotNavigatorViewModel.RtLowerValue,
+                  peakSpotNavigatorViewModel.RtUpperValue,
+                  peakSpotNavigatorViewModel.MetaboliteFilterKeyword,
+                  peakSpotNavigatorViewModel.CommentFilterKeyword,
+                  peakSpotNavigatorViewModel.OntologyFilterKeyword,
+                  peakSpotNavigatorViewModel.AdductFilterKeyword,
                   setUnknownCommand,
                   undoManagerViewModel) {
             if (eicLoader is null) {
                 throw new ArgumentNullException(nameof(eicLoader));
             }
-            ProteinFilterKeyword = proteinFilterKeyword;
-            IsEditting = isEditting ?? throw new ArgumentNullException(nameof(isEditting));
+            ProteinFilterKeyword = peakSpotNavigatorViewModel.ProteinFilterKeyword;
+            IsEditting = peakSpotNavigatorViewModel.IsEditting;
             EicLoader = eicLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
 
-        public IReactiveProperty<string> PeptideFilterKeyword { get => this.MetaboliteFilterKeyword; }
+        public IReactiveProperty<string> PeptideFilterKeyword => MetaboliteFilterKeyword;
         public IReactiveProperty<string> ProteinFilterKeyword { get; }
         public IReactiveProperty<bool> IsEditting { get; }
         public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
