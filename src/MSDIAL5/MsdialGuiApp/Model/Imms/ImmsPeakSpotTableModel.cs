@@ -3,10 +3,12 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Table;
+using CompMs.Common.Interfaces;
 using CompMs.Graphics.Base;
 using Reactive.Bindings;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
@@ -18,18 +20,19 @@ namespace CompMs.App.Msdial.Model.Imms
         double DriftMax { get; }
     }
 
-    internal abstract class ImmsPeakSpotTableModel<T> : PeakSpotTableModelBase<T>, IImmsPeakSpotTableModel where T : class
+    internal abstract class ImmsPeakSpotTableModel<T> : PeakSpotTableModelBase<T>, IImmsPeakSpotTableModel where T : class, IChromatogramPeak
     {
-        private readonly PeakSpotNavigatorModel _peakSpotNavigatorModel;
-
         public ImmsPeakSpotTableModel(ReadOnlyObservableCollection<T> peakSpots, IReactiveProperty<T> target, PeakSpotNavigatorModel peakSpotNavigatorModel) : base(peakSpots, target, peakSpotNavigatorModel) {
-            _peakSpotNavigatorModel = peakSpotNavigatorModel ?? throw new ArgumentNullException(nameof(peakSpotNavigatorModel));
+            MassMin = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Min();
+            MassMax = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Max();
+            DriftMin = peakSpots.Select(s => s.ChromXs.Drift.Value).DefaultIfEmpty().Min();
+            DriftMax = peakSpots.Select(s => s.ChromXs.Drift.Value).DefaultIfEmpty().Max();
         }
 
-        public double MassMin => _peakSpotNavigatorModel.MzLowerValue;
-        public double MassMax => _peakSpotNavigatorModel.MzUpperValue;
-        public double DriftMin => _peakSpotNavigatorModel.DtLowerValue;
-        public double DriftMax => _peakSpotNavigatorModel.DtUpperValue;
+        public double MassMin { get; }
+        public double MassMax { get; }
+        public double DriftMin { get; }
+        public double DriftMax { get; }
     }
 
     internal sealed class ImmsAlignmentSpotTableModel : ImmsPeakSpotTableModel<AlignmentSpotPropertyModel>
