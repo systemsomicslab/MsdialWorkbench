@@ -32,6 +32,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public IReactiveProperty<double> MassUpper => _peakSpotNavigatorViewModel.MzUpperValue;
         public ICommand SetUnknownCommand { get; }
         public UndoManagerViewModel UndoManagerViewModel { get; }
+        public IReactiveProperty<bool> IsEdittng => _peakSpotNavigatorViewModel.IsEditting;
     }
 
     internal sealed class DimsAnalysisPeakTableViewModel : DimsPeakSpotTableViewModel
@@ -42,10 +43,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 throw new ArgumentNullException(nameof(eicLoader));
             }
             EicLoader = eicLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            IsEditting = peakSpotNavigatorViewModel.IsEditting;
         }
 
-        public IReactiveProperty<bool> IsEditting { get; }
         public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
     }
 
@@ -55,11 +54,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel) {
             BarItemsLoader = model.BarItemsLoader;
             ClassBrush = model.ClassBrush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            IsEdittng = peakSpotNavigatorViewModel.IsEditting;
             FileClassPropertiesModel = model.FileClassProperties;
         }
 
-        public IReactiveProperty IsEdittng { get; }
         public IObservable<IBarItemsLoader> BarItemsLoader { get; }
         public ReadOnlyReactivePropertySlim<IBrushMapper<BarItem>> ClassBrush { get; }
         public FileClassPropertiesModel FileClassPropertiesModel { get; }

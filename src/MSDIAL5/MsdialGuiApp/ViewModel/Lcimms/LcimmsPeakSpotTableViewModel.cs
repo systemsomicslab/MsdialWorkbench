@@ -28,7 +28,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
             SetUnknownCommand = setUnknownCommand;
             UndoManagerViewModel = undoManagerViewModel;
-            _peakSpotNavigatorViewModel = peakSpotNavigatorViewModel;
+            _peakSpotNavigatorViewModel = peakSpotNavigatorViewModel ?? throw new ArgumentNullException(nameof(peakSpotNavigatorViewModel));
         }
 
         public double MassMin { get; }
@@ -46,6 +46,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
         public ICommand SetUnknownCommand { get; }
         public UndoManagerViewModel UndoManagerViewModel { get; }
+        public IReactiveProperty<bool> IsEditting => _peakSpotNavigatorViewModel.IsEditting;
     }
 
     internal sealed class LcimmsAnalysisPeakTableViewModel : LcimmsPeakSpotTableViewModel
@@ -56,11 +57,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 throw new ArgumentNullException(nameof(eicLoader));
             }
             EicLoader = eicLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            IsEditting = peakSpotNavigatorViewModel.IsEditting;
         }
 
         public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
-        public IReactiveProperty<bool> IsEditting { get; }
     }
    
     internal sealed class LcimmsAlignmentSpotTableViewModel : LcimmsPeakSpotTableViewModel
@@ -69,13 +68,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel) {
             BarItemsLoader = model.BarItemsLoader;
             ClassBrush = model.ClassBrush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            IsEditting = peakSpotNavigatorViewModel.IsEditting;
             FileClassPropertiesModel = model.FileClassProperties;
         }
 
         public IObservable<IBarItemsLoader> BarItemsLoader { get; }
         public ReadOnlyReactivePropertySlim<IBrushMapper<BarItem>> ClassBrush { get; }
         public FileClassPropertiesModel FileClassPropertiesModel { get; }
-        public IReactiveProperty<bool> IsEditting { get; }
     }
 }

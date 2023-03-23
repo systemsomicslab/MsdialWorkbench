@@ -41,6 +41,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public ICommand SetUnknownCommand { get; }
         public UndoManagerViewModel UndoManagerViewModel { get; }
+        public IReactiveProperty<bool> IsEditting => _peakSpotNavigatorViewModel.IsEditting;
     }
 
     internal sealed class LcmsProteomicsPeakTableViewModel : LcmsPeakSpotTableViewModel {
@@ -55,13 +56,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 throw new ArgumentNullException(nameof(eicLoader));
             }
             ProteinFilterKeyword = peakSpotNavigatorViewModel.ProteinFilterKeyword;
-            IsEditting = peakSpotNavigatorViewModel.IsEditting;
             EicLoader = eicLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
 
         public IReactiveProperty<string> PeptideFilterKeyword => MetaboliteFilterKeyword;
         public IReactiveProperty<string> ProteinFilterKeyword { get; }
-        public IReactiveProperty<bool> IsEditting { get; }
         public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
     }
 
@@ -78,11 +77,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 throw new ArgumentNullException(nameof(eicLoader));
             }
             EicLoader = eicLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            IsEditting = peakSpotNavigatorViewModel.IsEditting;
         }
 
         public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
-        public IReactiveProperty<bool> IsEditting { get; }
     }
    
     internal sealed class LcmsAlignmentSpotTableViewModel : LcmsPeakSpotTableViewModel
@@ -91,25 +88,20 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel) {
             BarItemsLoader = model.BarItemsLoader;
             ClassBrush = model.ClassBrush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            IsEditting = peakSpotNavigatorViewModel.IsEditting;
             FileClassPropertiesModel = model.FileClassProperties;
         }
 
         public IObservable<IBarItemsLoader> BarItemsLoader { get; }
         public ReadOnlyReactivePropertySlim<IBrushMapper<BarItem>> ClassBrush { get; }
         public FileClassPropertiesModel FileClassPropertiesModel { get; }
-        public IReactiveProperty<bool> IsEditting { get; }
     }
 
     internal sealed class LcmsProteomicsAlignmentTableViewModel : LcmsPeakSpotTableViewModel {
         public LcmsProteomicsAlignmentTableViewModel(LcmsAlignmentSpotTableModel model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
             : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel) {
             ProteinFilterKeyword = peakSpotNavigatorViewModel.ProteinFilterKeyword;
-            IsEditting = peakSpotNavigatorViewModel.IsEditting;
-                
         }
         public IReactiveProperty<string> PeptideFilterKeyword => MetaboliteFilterKeyword;
         public IReactiveProperty<string> ProteinFilterKeyword { get; }
-        public IReactiveProperty<bool> IsEditting { get; }
     }
 }
