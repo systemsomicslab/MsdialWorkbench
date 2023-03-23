@@ -112,15 +112,6 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
 
         // Project type
 
-        public AcquisitionType AcquisitionType {
-            get => innerModel.AcquisitionType;
-            set {
-                if (innerModel.AcquisitionType == value) return;
-                innerModel.AcquisitionType = value;
-                OnPropertyChanged(nameof(AcquisitionType));
-            }
-        }
-
         public MSDataType MSDataType {
             get => innerModel.MSDataType;
             set {

@@ -1,4 +1,4 @@
-using CompMs.Common.Components;
+﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -61,9 +61,6 @@ namespace CompMs.MsdialCore.Parameter
 
 
         // Project type
-        [IgnoreMember]
-        [Obsolete("Use AnalysisFileBean.AcquisitionType property.")]
-        public AcquisitionType AcquisitionType { get => ProjectParam.AcquisitionType; set => ProjectParam.AcquisitionType = value; }
         [IgnoreMember]
         public MSDataType MSDataType { get => ProjectParam.MSDataType; set => ProjectParam.MSDataType = value; }
         [IgnoreMember]
@@ -500,7 +497,6 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "Project folder path", ProjectFolderPath.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Project file path", Path.Combine(ProjectFolderPath, ProjectFileName).ToString() }));
 
-            //pStrings.Add(String.Join(": ", new string[] { "Acquisition type", AcquisitionType.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "MS1 data type", MSDataType.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "MS2 data type", MS2DataType.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Ion mode", IonMode.ToString() }));
