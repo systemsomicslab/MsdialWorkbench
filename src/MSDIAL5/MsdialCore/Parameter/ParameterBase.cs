@@ -1,4 +1,4 @@
-﻿using CompMs.Common.Components;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -810,7 +810,7 @@ namespace CompMs.MsdialCore.Parameter
         // Project type
         [Key(10)]
         [Obsolete("Use AnalysisFileBean.AcquisitionType property.")]
-        public AcquisitionType AcquisitionType { get; set; } = AcquisitionType.DDA;
+        public AcquisitionType AcquisitionType { get; set; } = AcquisitionType.None;
         [Key(11)]
         public MSDataType MSDataType { get; set; } = MSDataType.Centroid;
         [Key(12)]
