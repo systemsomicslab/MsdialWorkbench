@@ -26,7 +26,7 @@ namespace CompMs.App.Msdial.Model.Statistics
                 throw new ArgumentNullException(nameof(spots));
             }
 
-            var spotModels = spots.Select(spot => new NormalizationSpotPropertyModel(spot.innerModel));
+            var spotModels = spots.Select(spot => new NormalizationSpotPropertyModel(spot));
             Spots = new ObservableCollection<NormalizationSpotPropertyModel>(spotModels);
             TargetMsMethod = targetMsMethod ?? throw new ArgumentNullException(nameof(targetMsMethod));
 
@@ -59,9 +59,11 @@ namespace CompMs.App.Msdial.Model.Statistics
     internal sealed class NormalizationSpotPropertyModel : BindableBase, INormalizationTarget
     {
         private readonly AlignmentSpotProperty _spot;
+        private readonly AlignmentSpotPropertyModel _spotModel;
 
-        public NormalizationSpotPropertyModel(AlignmentSpotProperty spot) {
-            _spot = spot;
+        public NormalizationSpotPropertyModel(AlignmentSpotPropertyModel spotModel) {
+            _spotModel = spotModel;
+            _spot = spotModel.innerModel;
             Id = _spot.MasterAlignmentID;
             Metabolite = _spot.Name;
             Adduct = _spot.AdductType.AdductIonName;
@@ -86,7 +88,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             }
         }
 
-        IonAbundanceUnit INormalizationTarget.IonAbundanceUnit { get => _spot.IonAbundanceUnit; set => _spot.IonAbundanceUnit = value; }
+        IonAbundanceUnit INormalizationTarget.IonAbundanceUnit { get => _spotModel.IonAbundanceUnit; set => _spotModel.IonAbundanceUnit = value; }
 
         IReadOnlyList<INormalizationTarget> INormalizationTarget.Children => ((INormalizationTarget)_spot).Children;
 
