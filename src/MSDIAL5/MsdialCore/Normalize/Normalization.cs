@@ -120,10 +120,10 @@ namespace CompMs.MsdialCore.Normalize
             var ticValues = new List<double>();
             var filecount = globalSpots[0].Values.Count;
             for (int i = 0; i < filecount; i++) {
-                var objs = globalSpots.Select(n => n.Values[i]).ToList();
-                var maxHeight = objs.Max(n => n.PeakHeight);
-                var maxAreaZero = objs.Max(n => n.PeakAreaAboveZero);
-                var maxAreaBase = objs.Max(n => n.PeakAreaAboveBaseline);
+                var objs = globalSpots.Select(n => n.Values[i]).DefaultIfEmpty().ToList();
+                var maxHeight = objs.Max(n => n?.PeakHeight) ?? 1d;
+                var maxAreaZero = objs.Max(n => n?.PeakAreaAboveZero) ?? 1d;
+                var maxAreaBase = objs.Max(n => n?.PeakAreaAboveBaseline) ?? 1d;
                 foreach (var obj in objs) {
                     obj.NormalizedPeakHeight = obj.PeakHeight / maxHeight * 100;
                     obj.NormalizedPeakAreaAboveZero = obj.PeakAreaAboveZero / maxAreaZero * 100;
