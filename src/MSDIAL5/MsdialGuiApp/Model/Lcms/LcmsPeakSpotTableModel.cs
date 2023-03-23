@@ -3,10 +3,12 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Table;
+using CompMs.Common.Interfaces;
 using CompMs.Graphics.Base;
 using Reactive.Bindings;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
@@ -18,18 +20,19 @@ namespace CompMs.App.Msdial.Model.Lcms
         double RtMax { get; }
     }
 
-    internal abstract class LcmsPeakSpotTableModel<T> : PeakSpotTableModelBase<T>, ILcmsPeakSpotTableModel where T : class
+    internal abstract class LcmsPeakSpotTableModel<T> : PeakSpotTableModelBase<T>, ILcmsPeakSpotTableModel where T : class, IChromatogramPeak
     {
-        private readonly PeakSpotNavigatorModel _peakSpotNavigatorModel;
-
         public LcmsPeakSpotTableModel(ReadOnlyObservableCollection<T> peakSpots, IReactiveProperty<T> target, PeakSpotNavigatorModel peakSpotNavigatorModel) : base(peakSpots, target, peakSpotNavigatorModel) {
-            _peakSpotNavigatorModel = peakSpotNavigatorModel ?? throw new ArgumentNullException(nameof(peakSpotNavigatorModel));
+            MassMin = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Min();
+            MassMax = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Max();
+            RtMin = peakSpots.Select(s => s.ChromXs.RT.Value).DefaultIfEmpty().Min();
+            RtMax = peakSpots.Select(s => s.ChromXs.RT.Value).DefaultIfEmpty().Max();
         }
 
-        public double MassMin => _peakSpotNavigatorModel.MzLowerValue;
-        public double MassMax => _peakSpotNavigatorModel.MzUpperValue;
-        public double RtMin => _peakSpotNavigatorModel.RtLowerValue;
-        public double RtMax => _peakSpotNavigatorModel.RtUpperValue;
+        public double MassMin { get; }
+        public double MassMax { get; }
+        public double RtMin { get; }
+        public double RtMax { get; }
     }
 
     internal sealed class LcmsAlignmentSpotTableModel : LcmsPeakSpotTableModel<AlignmentSpotPropertyModel>
