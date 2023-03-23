@@ -21,10 +21,6 @@ namespace CompMs.App.Msdial.Model.Export
         private readonly IMatchResultEvaluator<IFilterable> _evaluator;
         private readonly IReadOnlyReactiveProperty<IAlignmentModel> _currentResult;
 
-        public AlignmentPeakSpotSupplyer(PeakFilterModel peakFilterModel, IMatchResultEvaluator<IFilterable> evaluator) : this(peakFilterModel, evaluator, new ReactivePropertySlim<IAlignmentModel>(null)) {
-
-        }
-
         public AlignmentPeakSpotSupplyer(PeakFilterModel peakFilterModel, IMatchResultEvaluator<IFilterable> evaluator, IReadOnlyReactiveProperty<IAlignmentModel> currentResult) {
             _peakFilterModel = peakFilterModel ?? throw new ArgumentNullException(nameof(peakFilterModel));
             _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
