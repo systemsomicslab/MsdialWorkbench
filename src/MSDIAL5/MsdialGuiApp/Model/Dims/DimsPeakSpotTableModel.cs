@@ -3,7 +3,6 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Table;
-using CompMs.Common.Interfaces;
 using CompMs.Graphics.Base;
 using Reactive.Bindings;
 using System;
@@ -18,26 +17,19 @@ namespace CompMs.App.Msdial.Model.Dims
         double MassMax { get; }
     }
 
-    internal abstract class DimsPeakSpotTableModel<T> : PeakSpotTableModelBase<T>, IDimsPeakSpotTableModel where T: class, ISpectrumPeak
+    internal sealed class DimsAnalysisPeakTableModel : PeakSpotTableModelBase<ChromatogramPeakFeatureModel>, IDimsPeakSpotTableModel
     {
-        protected DimsPeakSpotTableModel(IReadOnlyList<T> peakSpots, IReactiveProperty<T> target, PeakSpotNavigatorModel peakSpotNavigatorModel) : base(peakSpots, target, peakSpotNavigatorModel) {
-            MassMin = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Min();
-            MassMax = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Max();
+        public DimsAnalysisPeakTableModel(IReadOnlyList<ChromatogramPeakFeatureModel> peaks, IReactiveProperty<ChromatogramPeakFeatureModel> target, PeakSpotNavigatorModel peakSpotNavigatorModel)
+            : base(peaks, target, peakSpotNavigatorModel) {
+            MassMin = peaks.Select(s => s.Mass).DefaultIfEmpty().Min();
+            MassMax = peaks.Select(s => s.Mass).DefaultIfEmpty().Max();
         }
 
         public double MassMin { get; }
         public double MassMax { get; }
     }
 
-    internal sealed class DimsAnalysisPeakTableModel : DimsPeakSpotTableModel<ChromatogramPeakFeatureModel>
-    {
-        public DimsAnalysisPeakTableModel(IReadOnlyList<ChromatogramPeakFeatureModel> peaks, IReactiveProperty<ChromatogramPeakFeatureModel> target, PeakSpotNavigatorModel peakSpotNavigatorModel)
-            : base(peaks, target, peakSpotNavigatorModel) {
-
-        }
-    }
-
-    internal sealed class DimsAlignmentSpotTableModel : DimsPeakSpotTableModel<AlignmentSpotPropertyModel>
+    internal sealed class DimsAlignmentSpotTableModel : AlignmentSpotTableModelBase, IDimsPeakSpotTableModel
     {
         public DimsAlignmentSpotTableModel(
             IReadOnlyList<AlignmentSpotPropertyModel> spots,
@@ -46,14 +38,12 @@ namespace CompMs.App.Msdial.Model.Dims
             FileClassPropertiesModel classProperties,
             IObservable<IBarItemsLoader> barItemsLoader,
             PeakSpotNavigatorModel peakSpotNavigatorModel)
-            : base(spots, target, peakSpotNavigatorModel) {
-            ClassBrush = classBrush;
-            BarItemsLoader = barItemsLoader;
-            FileClassProperties = classProperties;
+            : base(spots, target, classBrush, classProperties, barItemsLoader, peakSpotNavigatorModel) {
+            MassMin = spots.Select(s => s.Mass).DefaultIfEmpty().Min();
+            MassMax = spots.Select(s => s.Mass).DefaultIfEmpty().Max();
         }
 
-        public IObservable<IBrushMapper<BarItem>> ClassBrush { get; }
-        public IObservable<IBarItemsLoader> BarItemsLoader { get; }
-        public FileClassPropertiesModel FileClassProperties { get; }
+        public double MassMin { get; }
+        public double MassMax { get; }
     }
 }

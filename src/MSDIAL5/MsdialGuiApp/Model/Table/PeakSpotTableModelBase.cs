@@ -3,7 +3,6 @@ using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace CompMs.App.Msdial.Model.Table
 {
@@ -14,7 +13,7 @@ namespace CompMs.App.Msdial.Model.Table
         IReactiveProperty Target { get; }
     }
 
-    abstract class PeakSpotTableModelBase<T> : DisposableModelBase, IPeakSpotTableModelBase where T: class
+    internal abstract class PeakSpotTableModelBase<T> : DisposableModelBase, IPeakSpotTableModelBase where T: class
     {
         private readonly PeakSpotNavigatorModel _peakSpotNavigatorModel;
         private readonly IReadOnlyList<T> _peakSpots;

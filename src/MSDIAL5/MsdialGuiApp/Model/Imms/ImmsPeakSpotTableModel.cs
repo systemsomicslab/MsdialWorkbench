@@ -3,12 +3,10 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Table;
-using CompMs.Common.Interfaces;
 using CompMs.Graphics.Base;
 using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Imms
@@ -21,22 +19,7 @@ namespace CompMs.App.Msdial.Model.Imms
         double DriftMax { get; }
     }
 
-    internal abstract class ImmsPeakSpotTableModel<T> : PeakSpotTableModelBase<T>, IImmsPeakSpotTableModel where T : class, IChromatogramPeak
-    {
-        public ImmsPeakSpotTableModel(IReadOnlyList<T> peakSpots, IReactiveProperty<T> target, PeakSpotNavigatorModel peakSpotNavigatorModel) : base(peakSpots, target, peakSpotNavigatorModel) {
-            MassMin = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Min();
-            MassMax = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Max();
-            DriftMin = peakSpots.Select(s => s.ChromXs.Drift.Value).DefaultIfEmpty().Min();
-            DriftMax = peakSpots.Select(s => s.ChromXs.Drift.Value).DefaultIfEmpty().Max();
-        }
-
-        public double MassMin { get; }
-        public double MassMax { get; }
-        public double DriftMin { get; }
-        public double DriftMax { get; }
-    }
-
-    internal sealed class ImmsAlignmentSpotTableModel : ImmsPeakSpotTableModel<AlignmentSpotPropertyModel>
+    internal sealed class ImmsAlignmentSpotTableModel : AlignmentSpotTableModelBase, IImmsPeakSpotTableModel
     {
         public ImmsAlignmentSpotTableModel(
             IReadOnlyList<AlignmentSpotPropertyModel> spots,
@@ -45,21 +28,33 @@ namespace CompMs.App.Msdial.Model.Imms
             FileClassPropertiesModel classProperties,
             IObservable<IBarItemsLoader> barItemsLoader,
             PeakSpotNavigatorModel peakSpotNavigatorModel)
-            : base(spots, target, peakSpotNavigatorModel) {
-            ClassBrush = classBrush;
-            BarItemsLoader = barItemsLoader;
-            FileClassProperties = classProperties;
+            : base(spots, target, classBrush, classProperties, barItemsLoader, peakSpotNavigatorModel) {
+
+            MassMin = spots.Select(s => s.Mass).DefaultIfEmpty().Min();
+            MassMax = spots.Select(s => s.Mass).DefaultIfEmpty().Max();
+            DriftMin = spots.Select(s => s.Drift).DefaultIfEmpty().Min();
+            DriftMax = spots.Select(s => s.Drift).DefaultIfEmpty().Max();
         }
 
-        public IObservable<IBrushMapper<BarItem>> ClassBrush { get; }
-        public IObservable<IBarItemsLoader> BarItemsLoader { get; }
-        public FileClassPropertiesModel FileClassProperties { get; }
+        public double MassMin { get; }
+        public double MassMax { get; }
+        public double DriftMin { get; }
+        public double DriftMax { get; }
     }
 
-    internal sealed class ImmsAnalysisPeakTableModel : ImmsPeakSpotTableModel<ChromatogramPeakFeatureModel>
+    internal sealed class ImmsAnalysisPeakTableModel : PeakSpotTableModelBase<ChromatogramPeakFeatureModel>, IImmsPeakSpotTableModel
     {
         public ImmsAnalysisPeakTableModel(IReadOnlyList<ChromatogramPeakFeatureModel> peaks, IReactiveProperty<ChromatogramPeakFeatureModel> target, PeakSpotNavigatorModel peakSpotNavigatorModel)
             : base(peaks, target, peakSpotNavigatorModel) {
+            MassMin = peaks.Select(s => s.Mass).DefaultIfEmpty().Min();
+            MassMax = peaks.Select(s => s.Mass).DefaultIfEmpty().Max();
+            DriftMin = peaks.Select(s => s.Drift.Value).DefaultIfEmpty().Min();
+            DriftMax = peaks.Select(s => s.Drift.Value).DefaultIfEmpty().Max();
         }
+
+        public double MassMin { get; }
+        public double MassMax { get; }
+        public double DriftMin { get; }
+        public double DriftMax { get; }
     }
 }

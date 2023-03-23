@@ -27,7 +27,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
     internal sealed class DimsAnalysisPeakTableViewModel : DimsPeakSpotTableViewModel
     {
-        public DimsAnalysisPeakTableViewModel(DimsPeakSpotTableModel<ChromatogramPeakFeatureModel> model, IObservable<EicLoader> eicLoader, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
+        public DimsAnalysisPeakTableViewModel(DimsAnalysisPeakTableModel model, IObservable<EicLoader> eicLoader, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
             : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel) {
             if (eicLoader is null) {
                 throw new ArgumentNullException(nameof(eicLoader));
