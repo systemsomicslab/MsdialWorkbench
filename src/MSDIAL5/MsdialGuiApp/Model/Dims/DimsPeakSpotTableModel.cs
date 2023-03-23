@@ -3,10 +3,12 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Table;
+using CompMs.Common.Interfaces;
 using CompMs.Graphics.Base;
 using Reactive.Bindings;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
@@ -16,16 +18,15 @@ namespace CompMs.App.Msdial.Model.Dims
         double MassMax { get; }
     }
 
-    internal abstract class DimsPeakSpotTableModel<T> : PeakSpotTableModelBase<T>, IDimsPeakSpotTableModel where T: class
+    internal abstract class DimsPeakSpotTableModel<T> : PeakSpotTableModelBase<T>, IDimsPeakSpotTableModel where T: class, ISpectrumPeak
     {
-        private readonly PeakSpotNavigatorModel _peakSpotNavigatorModel;
-
         protected DimsPeakSpotTableModel(ReadOnlyObservableCollection<T> peakSpots, IReactiveProperty<T> target, PeakSpotNavigatorModel peakSpotNavigatorModel) : base(peakSpots, target, peakSpotNavigatorModel) {
-            _peakSpotNavigatorModel = peakSpotNavigatorModel;
+            MassMin = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Min();
+            MassMax = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Max();
         }
 
-        public double MassMin => _peakSpotNavigatorModel.MzLowerValue;
-        public double MassMax => _peakSpotNavigatorModel.MzUpperValue;
+        public double MassMin { get; }
+        public double MassMax { get; }
     }
 
     internal sealed class DimsAnalysisPeakTableModel : DimsPeakSpotTableModel<ChromatogramPeakFeatureModel>
