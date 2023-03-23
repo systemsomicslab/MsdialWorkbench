@@ -103,7 +103,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 exportGroups.Add(new ProteinGroupExportModel(new ProteinGroupExporter(), analysisFiles));
             }
 
-            AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, AlignmentFile, alignmentFileBeanModelCollection.Files, peakSpotSupplyer, storage.Parameter.DataExportParam);
+            AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, AlignmentFile, alignmentFileBeanModelCollection.Files, peakSpotSupplyer, storage.Parameter.DataExportParam).AddTo(Disposables);
             this.ObserveProperty(m => m.AlignmentFile)
                 .Subscribe(file => AlignmentResultExportModel.AlignmentFile = file)
                 .AddTo(Disposables);
