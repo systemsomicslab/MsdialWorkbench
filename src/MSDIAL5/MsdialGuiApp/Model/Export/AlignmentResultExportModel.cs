@@ -3,6 +3,8 @@ using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
@@ -17,8 +19,9 @@ namespace CompMs.App.Msdial.Model.Export
     {
         private readonly DataExportBaseParameter _dataExportParameter;
 
-        public AlignmentResultExportModel(IEnumerable<IAlignmentResultExportModel> exportGroups, AlignmentFileBeanModel alignmentFile, IReadOnlyList<AlignmentFileBeanModel> alignmentFiles, AlignmentPeakSpotSupplyer peakSpotSupplyer, DataExportBaseParameter dataExportParameter) {
+        public AlignmentResultExportModel(IEnumerable<IAlignmentResultExportModel> exportGroups, IObservable<AlignmentFileBeanModel> currentAlignmentFileAsObservable, AlignmentFileBeanModel alignmentFile, IReadOnlyList<AlignmentFileBeanModel> alignmentFiles, AlignmentPeakSpotSupplyer peakSpotSupplyer, DataExportBaseParameter dataExportParameter) {
             AlignmentFiles = alignmentFiles;
+            CurrentAlignmentFile = currentAlignmentFileAsObservable.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             PeakSpotSupplyer = peakSpotSupplyer ?? throw new ArgumentNullException(nameof(peakSpotSupplyer));
             _dataExportParameter = dataExportParameter;
             AlignmentFile = alignmentFile;
@@ -32,6 +35,8 @@ namespace CompMs.App.Msdial.Model.Export
             set => SetProperty(ref _exportDirectory, value);
         }
         private string _exportDirectory;
+
+        public ReadOnlyReactivePropertySlim<AlignmentFileBeanModel> CurrentAlignmentFile { get; }
 
         public AlignmentFileBeanModel AlignmentFile {
             get => _alignmentFile;
