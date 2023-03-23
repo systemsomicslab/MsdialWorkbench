@@ -15,31 +15,23 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 {
     internal abstract class ImmsPeakSpotTableViewModel : PeakSpotTableViewModelBase
     {
-        private readonly PeakSpotNavigatorViewModel _peakSpotNavigatorViewModel;
-
         protected ImmsPeakSpotTableViewModel(IImmsPeakSpotTableModel model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
-            : base(model, peakSpotNavigatorViewModel.MetaboliteFilterKeyword, peakSpotNavigatorViewModel.CommentFilterKeyword, peakSpotNavigatorViewModel.OntologyFilterKeyword, peakSpotNavigatorViewModel.AdductFilterKeyword) {
+            : base(model, peakSpotNavigatorViewModel) {
             MassMin = model.MassMin;
             MassMax = model.MassMax;
             DriftMin = model.DriftMin;
             DriftMax = model.DriftMax;
             SetUnknownCommand = setUnknownCommand;
             UndoManagerViewModel = undoManagerViewModel;
-            _peakSpotNavigatorViewModel = peakSpotNavigatorViewModel ?? throw new ArgumentNullException(nameof(peakSpotNavigatorViewModel));
         }
 
         public double MassMin { get; }
         public double MassMax { get; }
-        public IReactiveProperty<double> MassLower => _peakSpotNavigatorViewModel.MzLowerValue;
-        public IReactiveProperty<double> MassUpper => _peakSpotNavigatorViewModel.MzUpperValue;
-
         public double DriftMin { get; }
         public double DriftMax { get; }
-        public IReactiveProperty<double> DriftLower => _peakSpotNavigatorViewModel.DtLowerValue;
-        public IReactiveProperty<double> DriftUpper => _peakSpotNavigatorViewModel.DtUpperValue;
+
         public ICommand SetUnknownCommand { get; }
         public UndoManagerViewModel UndoManagerViewModel { get; }
-        public IReactiveProperty<bool> IsEditting => _peakSpotNavigatorViewModel.IsEditting;
     }
 
     internal sealed class ImmsAnalysisPeakTableViewModel : ImmsPeakSpotTableViewModel

@@ -15,24 +15,18 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 {
     internal abstract class DimsPeakSpotTableViewModel : PeakSpotTableViewModelBase
     {
-        private readonly PeakSpotNavigatorViewModel _peakSpotNavigatorViewModel;
-
         protected DimsPeakSpotTableViewModel(IDimsPeakSpotTableModel model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
-            : base(model, peakSpotNavigatorViewModel.MetaboliteFilterKeyword, peakSpotNavigatorViewModel.CommentFilterKeyword, peakSpotNavigatorViewModel.OntologyFilterKeyword, peakSpotNavigatorViewModel.AdductFilterKeyword) {
+            : base(model, peakSpotNavigatorViewModel) {
             MassMin = model.MassMin;
             MassMax = model.MassMax;
             SetUnknownCommand = setUnknownCommand;
             UndoManagerViewModel = undoManagerViewModel;
-            _peakSpotNavigatorViewModel = peakSpotNavigatorViewModel;
         }
 
         public double MassMin { get; }
         public double MassMax { get; }
-        public IReactiveProperty<double> MassLower => _peakSpotNavigatorViewModel.MzLowerValue;
-        public IReactiveProperty<double> MassUpper => _peakSpotNavigatorViewModel.MzUpperValue;
         public ICommand SetUnknownCommand { get; }
         public UndoManagerViewModel UndoManagerViewModel { get; }
-        public IReactiveProperty<bool> IsEdittng => _peakSpotNavigatorViewModel.IsEditting;
     }
 
     internal sealed class DimsAnalysisPeakTableViewModel : DimsPeakSpotTableViewModel

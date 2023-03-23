@@ -15,10 +15,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 {
     internal abstract class LcmsPeakSpotTableViewModel : PeakSpotTableViewModelBase
     {
-        private readonly PeakSpotNavigatorViewModel _peakSpotNavigatorViewModel;
-
         protected LcmsPeakSpotTableViewModel(ILcmsPeakSpotTableModel model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
-            : base(model, peakSpotNavigatorViewModel.MetaboliteFilterKeyword, peakSpotNavigatorViewModel.CommentFilterKeyword, peakSpotNavigatorViewModel.OntologyFilterKeyword, peakSpotNavigatorViewModel.AdductFilterKeyword) {
+            : base(model, peakSpotNavigatorViewModel) {
             MassMin = model.MassMin;
             MassMax = model.MassMax;
             RtMin = model.RtMin;
@@ -26,22 +24,15 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             SetUnknownCommand = setUnknownCommand;
             UndoManagerViewModel = undoManagerViewModel;
-            _peakSpotNavigatorViewModel = peakSpotNavigatorViewModel ?? throw new ArgumentNullException(nameof(peakSpotNavigatorViewModel));
         }
 
         public double MassMin { get; }
         public double MassMax { get; }
-        public IReactiveProperty<double> MassLower => _peakSpotNavigatorViewModel.MzLowerValue;
-        public IReactiveProperty<double> MassUpper => _peakSpotNavigatorViewModel.MzUpperValue;
-
         public double RtMin { get; }
         public double RtMax { get; }
-        public IReactiveProperty<double> RtLower => _peakSpotNavigatorViewModel.RtLowerValue;
-        public IReactiveProperty<double> RtUpper => _peakSpotNavigatorViewModel.RtUpperValue;
 
         public ICommand SetUnknownCommand { get; }
         public UndoManagerViewModel UndoManagerViewModel { get; }
-        public IReactiveProperty<bool> IsEditting => _peakSpotNavigatorViewModel.IsEditting;
     }
 
     internal sealed class LcmsProteomicsPeakTableViewModel : LcmsPeakSpotTableViewModel {

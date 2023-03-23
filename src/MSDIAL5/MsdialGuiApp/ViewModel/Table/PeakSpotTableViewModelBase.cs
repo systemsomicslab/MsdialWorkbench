@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Table;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using System;
@@ -9,57 +10,33 @@ namespace CompMs.App.Msdial.ViewModel.Table
 {
     public abstract class PeakSpotTableViewModelBase : ViewModelBase
     {
-        private readonly IPeakSpotTableModelBase model;
+        private readonly IPeakSpotTableModelBase _model;
+        private readonly PeakSpotNavigatorViewModel _peakSpotNavigatorViewModel;
 
-        public PeakSpotTableViewModelBase(
-            IPeakSpotTableModelBase model,
-            IReactiveProperty<string> metaboliteFilterKeyword,
-            IReactiveProperty<string> commentFilterKeyword,
-            IReactiveProperty<string> ontologyFilterKeyword,
-            IReactiveProperty<string> adductFilterKeyword) {
-            if (model is null) {
-                throw new ArgumentNullException(nameof(model));
-            }
+        public PeakSpotTableViewModelBase(IPeakSpotTableModelBase model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel) {
+            _model = model ?? throw new ArgumentNullException(nameof(model));
+            _peakSpotNavigatorViewModel = peakSpotNavigatorViewModel ?? throw new ArgumentNullException(nameof(peakSpotNavigatorViewModel));
 
-            if (metaboliteFilterKeyword is null) {
-                throw new ArgumentNullException(nameof(metaboliteFilterKeyword));
-            }
-
-            if (commentFilterKeyword is null) {
-                throw new ArgumentNullException(nameof(commentFilterKeyword));
-            }
-
-            if (ontologyFilterKeyword is null) {
-                throw new ArgumentNullException(nameof(ontologyFilterKeyword));
-            }
-
-            if (adductFilterKeyword is null) {
-                throw new ArgumentNullException(nameof(adductFilterKeyword));
-            }
-
-            this.model = model;
-            PeakSpotsView = CollectionViewSource.GetDefaultView(this.model.PeakSpots);
-            Target = this.model.Target;
-            MetaboliteFilterKeyword = metaboliteFilterKeyword;
-            CommentFilterKeyword = commentFilterKeyword;
-            OntologyFilterKeyword = ontologyFilterKeyword;
-            AdductFilterKeyword = adductFilterKeyword;
+            PeakSpotsView = CollectionViewSource.GetDefaultView(model.PeakSpots);
         }
 
-        public ICollectionView PeakSpotsView {
-            get => peakSpotsView;
-            set => SetProperty(ref peakSpotsView, value);
-        }
-        private ICollectionView peakSpotsView;
+        public ICollectionView PeakSpotsView { get; }
+        public IReactiveProperty Target => _model.Target;
 
-        public IReactiveProperty Target { get; }
+        public IReactiveProperty<double> MassLower => _peakSpotNavigatorViewModel.MzLowerValue;
+        public IReactiveProperty<double> MassUpper => _peakSpotNavigatorViewModel.MzUpperValue;
+        public IReactiveProperty<double> RtLower => _peakSpotNavigatorViewModel.RtLowerValue;
+        public IReactiveProperty<double> RtUpper => _peakSpotNavigatorViewModel.RtUpperValue;
+        public IReactiveProperty<double> DtLower => _peakSpotNavigatorViewModel.DtLowerValue;
+        public IReactiveProperty<double> DtUpper => _peakSpotNavigatorViewModel.DtUpperValue;
+        public IReactiveProperty<double> DriftLower => _peakSpotNavigatorViewModel.DtLowerValue;
+        public IReactiveProperty<double> DriftUpper => _peakSpotNavigatorViewModel.DtUpperValue;
 
-        public IReactiveProperty<string> MetaboliteFilterKeyword { get; }
+        public IReactiveProperty<string> MetaboliteFilterKeyword => _peakSpotNavigatorViewModel.MetaboliteFilterKeyword;
+        public IReactiveProperty<string> CommentFilterKeyword => _peakSpotNavigatorViewModel.CommentFilterKeyword;
+        public IReactiveProperty<string> OntologyFilterKeyword => _peakSpotNavigatorViewModel.OntologyFilterKeyword;
+        public IReactiveProperty<string> AdductFilterKeyword => _peakSpotNavigatorViewModel.AdductFilterKeyword;
 
-        public IReactiveProperty<string> CommentFilterKeyword { get; }
-
-        public IReactiveProperty<string> OntologyFilterKeyword { get; }
-
-        public IReactiveProperty<string> AdductFilterKeyword { get; }
+        public IReactiveProperty<bool> IsEdittng => _peakSpotNavigatorViewModel.IsEditting;
     }
 }
