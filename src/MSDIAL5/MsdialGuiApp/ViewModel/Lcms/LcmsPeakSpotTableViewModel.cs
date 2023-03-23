@@ -148,34 +148,22 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
    
     internal sealed class LcmsAlignmentSpotTableViewModel : LcmsPeakSpotTableViewModel
     {
-        public LcmsAlignmentSpotTableViewModel(
-            LcmsAlignmentSpotTableModel model,
-            IReactiveProperty<double> massLower,
-            IReactiveProperty<double> massUpper,
-            IReactiveProperty<double> rtLower,
-            IReactiveProperty<double> rtUpper,
-            IReactiveProperty<string> metaboliteFilterKeyword,
-            IReactiveProperty<string> commentFilterKeyword,
-            IReactiveProperty<string> ontologyFilterKeyword,
-            IReactiveProperty<string> adductFilterKeyword,
-            ICommand setUnknownCommand,
-            IReactiveProperty<bool> isEditting,
-            UndoManagerViewModel undoManagerViewModel)
+        public LcmsAlignmentSpotTableViewModel(LcmsAlignmentSpotTableModel model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
             : base(
                   model,
-                  massLower,
-                  massUpper,
-                  rtLower,
-                  rtUpper,
-                  metaboliteFilterKeyword,
-                  commentFilterKeyword,
-                  ontologyFilterKeyword,
-                  adductFilterKeyword,
+                  peakSpotNavigatorViewModel.MzLowerValue,
+                  peakSpotNavigatorViewModel.MzUpperValue,
+                  peakSpotNavigatorViewModel.RtLowerValue,
+                  peakSpotNavigatorViewModel.RtUpperValue,
+                  peakSpotNavigatorViewModel.MetaboliteFilterKeyword,
+                  peakSpotNavigatorViewModel.CommentFilterKeyword,
+                  peakSpotNavigatorViewModel.OntologyFilterKeyword,
+                  peakSpotNavigatorViewModel.AdductFilterKeyword,
                   setUnknownCommand,
                   undoManagerViewModel) {
             BarItemsLoader = model.BarItemsLoader;
             ClassBrush = model.ClassBrush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            IsEditting = isEditting ?? throw new ArgumentNullException(nameof(isEditting));
+            IsEditting = peakSpotNavigatorViewModel.IsEditting;
             FileClassPropertiesModel = model.FileClassProperties;
         }
 
