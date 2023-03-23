@@ -19,15 +19,15 @@ namespace CompMs.App.Msdial.Model.Export
     {
         private readonly DataExportBaseParameter _dataExportParameter;
 
-        public AlignmentResultExportModel(IEnumerable<IAlignmentResultExportModel> exportGroups, IObservable<AlignmentFileBeanModel> currentAlignmentFileAsObservable, AlignmentFileBeanModel alignmentFile, IReadOnlyList<AlignmentFileBeanModel> alignmentFiles, AlignmentPeakSpotSupplyer peakSpotSupplyer, DataExportBaseParameter dataExportParameter) {
+        public AlignmentResultExportModel(IEnumerable<IAlignmentResultExportModel> exportGroups, IObservable<AlignmentFileBeanModel> alignmentFileAsObservable, IReadOnlyList<AlignmentFileBeanModel> alignmentFiles, AlignmentPeakSpotSupplyer peakSpotSupplyer, DataExportBaseParameter dataExportParameter) {
             AlignmentFiles = alignmentFiles;
-            CurrentAlignmentFile = currentAlignmentFileAsObservable.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            CurrentAlignmentFile = alignmentFileAsObservable.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             PeakSpotSupplyer = peakSpotSupplyer ?? throw new ArgumentNullException(nameof(peakSpotSupplyer));
             _dataExportParameter = dataExportParameter;
-            AlignmentFile = alignmentFile;
             var groups = new ObservableCollection<IAlignmentResultExportModel>(exportGroups);
             Groups = new ReadOnlyObservableCollection<IAlignmentResultExportModel>(groups);
             ExportDirectory = dataExportParameter.ExportFolderPath;
+            Disposables.Add(CurrentAlignmentFile.Subscribe(f => AlignmentFile = f));
         }
 
         public string ExportDirectory {
