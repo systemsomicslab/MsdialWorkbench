@@ -46,7 +46,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                 var processor = new FileProcess(_storage, null, null, _evaluator);
                 await processor.RunAllAsync(files.Select(file => file.File), files.Select(_providerFactory.Create), Enumerable.Repeat<Action<int>>(null, files.Count), 2, null).ConfigureAwait(false);
                 foreach (var file in files) {
-                    ImageModels.Add(new ImagingImmsImageModel(file));
+                    ImageModels.Add(new ImagingImmsImageModel(file, _storage, _evaluator, _providerFactory));
                 }
             }
             else if (option.HasFlag(ProcessOption.Identification)) {
@@ -54,14 +54,14 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                 var processor = new FileProcess(_storage, null, null, _evaluator);
                 await processor.AnnotateAllAsync(files.Select(file => file.File), files.Select(_providerFactory.Create), Enumerable.Repeat<Action<int>>(null, files.Count), 2, null).ConfigureAwait(false);
                 foreach (var file in files) {
-                    ImageModels.Add(new ImagingImmsImageModel(file));
+                    ImageModels.Add(new ImagingImmsImageModel(file, _storage, _evaluator, _providerFactory));
                 }
             }
         }
 
         public override Task LoadAsync(CancellationToken token) {
             foreach (var file in AnalysisFileModelCollection.AnalysisFiles) {
-                ImageModels.Add(new ImagingImmsImageModel(file));
+                ImageModels.Add(new ImagingImmsImageModel(file, _storage, _evaluator, _providerFactory));
             }
             var analysisFile = AnalysisFileModelCollection.IncludedAnalysisFiles.FirstOrDefault();
             if (!(analysisFile is null)) {

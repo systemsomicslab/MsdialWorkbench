@@ -1,10 +1,16 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Imms;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.DataObj;
+using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Design;
+using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialImmsCore.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -23,7 +29,7 @@ namespace CompMs.App.Msdial.Model.Imaging
         private readonly ObservableCollection<IntensityImageModel> _intensities;
         private readonly List<Raw2DElement> _elements;
 
-        public WholeImageResultModel(AnalysisFileBeanModel file, MaldiFrames maldiFrames, RoiModel wholeRoi) {
+        public WholeImageResultModel(AnalysisFileBeanModel file, MaldiFrames maldiFrames, RoiModel wholeRoi, IMsdialDataStorage<MsdialImmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBeanModel> providerFactory) {
             File = file ?? throw new ArgumentNullException(nameof(file));
             _peaks = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath, default).Result;
             Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(_peaks.Items.Select(item => new ChromatogramPeakFeatureModel(item).AddTo(Disposables)));
@@ -65,6 +71,9 @@ namespace CompMs.App.Msdial.Model.Imaging
                 .SkipNull()
                 .Subscribe(intensity => SelectedPeakIntensities = intensity)
                 .AddTo(Disposables);
+
+            var peakFilter = new PeakFilterModel(DisplayFilter.All);
+            var analysisModel = new ImmsAnalysisModel(file, providerFactory.Create(file), evaluator, storage.DataBases, storage.DataBaseMapper, storage.Parameter, peakFilter).AddTo(Disposables);
         }
 
         public AnalysisFileBeanModel File { get; }

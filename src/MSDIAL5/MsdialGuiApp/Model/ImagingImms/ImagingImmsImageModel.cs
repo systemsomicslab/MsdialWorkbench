@@ -2,7 +2,12 @@
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imaging;
 using CompMs.App.Msdial.Model.Information;
+using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialImmsCore.Parameter;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.ObjectModel;
@@ -16,13 +21,12 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         private readonly SemaphoreSlim _semaphoreSlim;
         private int _roiId = 0;
 
-        public ImagingImmsImageModel(AnalysisFileBeanModel file)
-        {
+        public ImagingImmsImageModel(AnalysisFileBeanModel file, IMsdialDataStorage<MsdialImmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBeanModel> providerFactory) {
             File = file ?? throw new ArgumentNullException(nameof(file));
             var maldiFrames = new MaldiFrames(file.File.GetMaldiFrames());
             var wholeRoi = new RoiModel(file, _roiId, maldiFrames, ChartBrushes.GetChartBrush(_roiId).Color);
             ++_roiId;
-            ImageResult = new WholeImageResultModel(file, maldiFrames, wholeRoi).AddTo(Disposables);
+            ImageResult = new WholeImageResultModel(file, maldiFrames, wholeRoi, storage, evaluator, providerFactory).AddTo(Disposables);
 
             ImagingRoiModels = new ObservableCollection<ImagingRoiModel>
             {
