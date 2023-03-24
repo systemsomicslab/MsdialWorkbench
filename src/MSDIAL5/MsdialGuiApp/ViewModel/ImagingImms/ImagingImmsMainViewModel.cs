@@ -3,7 +3,11 @@ using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Imaging;
+using CompMs.App.Msdial.ViewModel.Search;
+using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.WindowService;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -15,30 +19,31 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.ViewModel.ImagingImms
 {
-    internal sealed class ImagingMainViewModel : MethodViewModel
+    internal sealed class ImagingImmsMainViewModel : MethodViewModel
     {
         private readonly ImagingImmsMethodModel _model;
         private readonly IMessageBroker _broker;
 
-        public ImagingMainViewModel(ImagingImmsMethodModel model, IMessageBroker broker)
+        public ImagingImmsMainViewModel(ImagingImmsMethodModel model, IMessageBroker broker, IWindowService<CompoundSearchVM> compoundSearchService, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : base(model,
                   new ReactiveProperty<IAnalysisResultViewModel>(), new ReactiveProperty<IAlignmentResultViewModel>(),
                   new ViewModelSwitcher(Observable.Never<ViewModelBase>(), Observable.Never<ViewModelBase>(), new IObservable<ViewModelBase>[0]),
                   new ViewModelSwitcher(Observable.Never<ViewModelBase>(), Observable.Never<ViewModelBase>(), new IObservable<ViewModelBase>[0])) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _broker = broker;
-            ImageViewModels = model.ImageModels.ToReadOnlyReactiveCollection(m => new ImagingImageViewModel(m, broker)).AddTo(Disposables);
+            var focusManager = new FocusControlManager().AddTo(Disposables);
+            ImageViewModels = model.ImageModels.ToReadOnlyReactiveCollection(m => new ImagingImmsImageViewModel(m, focusManager, broker, compoundSearchService, peakSpotTableService)).AddTo(Disposables);
             RoiCompareViewModels = new ReadOnlyObservableCollection<ImagingRoiCompareViewModel>(new ObservableCollection<ImagingRoiCompareViewModel>());
         }
 
-        public ReadOnlyObservableCollection<ImagingImageViewModel> ImageViewModels { get; }
+        public ReadOnlyObservableCollection<ImagingImmsImageViewModel> ImageViewModels { get; }
         public ReadOnlyObservableCollection<ImagingRoiCompareViewModel> RoiCompareViewModels { get; }
 
-        public ImagingImageViewModel SelectedImageViewModel {
+        public ImagingImmsImageViewModel SelectedImageViewModel {
             get => _selectedImageViewModel;
             set => SetProperty(ref _selectedImageViewModel, value);
         }
-        private ImagingImageViewModel _selectedImageViewModel;
+        private ImagingImmsImageViewModel _selectedImageViewModel;
 
         public ImagingRoiCompareViewModel SelectedRoiCompareViewModel {
             get => _selectedRoiCompareViewModel;
@@ -63,6 +68,5 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
                 _broker.Publish(vm);
             }
         }
-
     }
 }
