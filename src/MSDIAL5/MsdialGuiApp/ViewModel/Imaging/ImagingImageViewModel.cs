@@ -1,4 +1,4 @@
-﻿using CompMs.App.Msdial.Model.Imaging;
+﻿using CompMs.App.Msdial.Model.ImagingImms;
 using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
@@ -11,9 +11,9 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
 {
     internal sealed class ImagingImageViewModel : ViewModelBase
     {
-        private readonly ImagingImageModel _model;
+        private readonly ImagingImmsImageModel _model;
 
-        public ImagingImageViewModel(ImagingImageModel model, IMessageBroker broker) {
+        public ImagingImageViewModel(ImagingImmsImageModel model, IMessageBroker broker) {
             _model = model ?? throw new System.ArgumentNullException(nameof(model));
             RoiViewModels = model.ImagingRoiModels.ToReadOnlyReactiveCollection(m => new ImagingRoiViewModel(m)).AddTo(Disposables);
             SelectedRoiViewModels = RoiViewModels.ToFilteredReadOnlyObservableCollection(vm => vm.IsSelected.Value, vm => vm.IsSelected).AddTo(Disposables);

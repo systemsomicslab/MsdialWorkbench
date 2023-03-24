@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Imaging;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.CommonMVVM;
 using Reactive.Bindings.Extensions;
@@ -8,14 +9,15 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CompMs.App.Msdial.Model.Imaging
+namespace CompMs.App.Msdial.Model.ImagingImms
 {
-    internal sealed class ImagingImageModel : DisposableModelBase
+    internal sealed class ImagingImmsImageModel : DisposableModelBase
     {
         private readonly SemaphoreSlim _semaphoreSlim;
-        private int _roiId = 0; 
+        private int _roiId = 0;
 
-        public ImagingImageModel(AnalysisFileBeanModel file) {
+        public ImagingImmsImageModel(AnalysisFileBeanModel file)
+        {
             File = file ?? throw new ArgumentNullException(nameof(file));
             var maldiFrames = new MaldiFrames(file.File.GetMaldiFrames());
             var wholeRoi = new RoiModel(file, _roiId, maldiFrames, ChartBrushes.GetChartBrush(_roiId).Color);
@@ -51,21 +53,26 @@ namespace CompMs.App.Msdial.Model.Imaging
         public PeakInformationAnalysisModel PeakInformationModel { get; }
         public MoleculeStructureModel MoleculeStructureModel { get; }
 
-        public async Task AddRoiAsync() {
+        public async Task AddRoiAsync()
+        {
             await _semaphoreSlim.WaitAsync();
-            try {
+            try
+            {
                 var roi = RoiEditModel.CreateRoi(_roiId, ChartBrushes.GetChartBrush(_roiId).Color);
                 ++_roiId;
-                if (roi is null) {
+                if (roi is null)
+                {
                     return;
                 }
                 var imagingRoi = await ImageResult.CreateImagingRoiModelAsync(roi);
-                if (imagingRoi is null) {
+                if (imagingRoi is null)
+                {
                     return;
                 }
                 ImagingRoiModels.Add(imagingRoi.AddTo(Disposables));
             }
-            finally {
+            finally
+            {
                 _semaphoreSlim.Release();
             }
         }
