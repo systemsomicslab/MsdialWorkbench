@@ -29,7 +29,7 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
         }
 
         public AnalysisPeakPlotViewModel PeakPlotViewModel { get; }
-        public ReactiveProperty<ChromatogramPeakFeatureModel> Target => _model.Target;
+        public ReactivePropertySlim<ChromatogramPeakFeatureModel> Target => _model.Target;
         public ReadOnlyReactiveCollection<IntensityImageViewModel> Intensities { get; }
         public ReactiveProperty<IntensityImageViewModel> SelectedPeakIntensities { get; }
         public ImagingRoiViewModel ImagingRoiViewModel { get; }

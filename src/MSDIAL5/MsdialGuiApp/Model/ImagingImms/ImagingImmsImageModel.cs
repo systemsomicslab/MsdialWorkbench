@@ -23,30 +23,19 @@ namespace CompMs.App.Msdial.Model.ImagingImms
 
         public ImagingImmsImageModel(AnalysisFileBeanModel file, IMsdialDataStorage<MsdialImmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBeanModel> providerFactory) {
             File = file ?? throw new ArgumentNullException(nameof(file));
+            _semaphoreSlim = new SemaphoreSlim(1, 1).AddTo(Disposables);
             var maldiFrames = new MaldiFrames(file.File.GetMaldiFrames());
             var wholeRoi = new RoiModel(file, _roiId, maldiFrames, ChartBrushes.GetChartBrush(_roiId).Color);
             ++_roiId;
-            ImageResult = new WholeImageResultModel(file, maldiFrames, wholeRoi, storage, evaluator, providerFactory).AddTo(Disposables);
+            var imageResult = new WholeImageResultModel(file, maldiFrames, wholeRoi, storage, evaluator, providerFactory).AddTo(Disposables);
+            ImageResult = imageResult;
 
             ImagingRoiModels = new ObservableCollection<ImagingRoiModel>
             {
-                ImageResult.ImagingRoiModel
+                imageResult.ImagingRoiModel
             };
             RoiEditModel = new RoiEditModel(file, maldiFrames);
-
-            PeakInformationModel = new PeakInformationAnalysisModel(ImageResult.Target).AddTo(Disposables);
-            PeakInformationModel.Add(
-                t => new MzPoint(t?.Mass ?? 0d),
-                t => new DriftPoint(t?.InnerModel.ChromXs.Drift.Value ?? 0d),
-                t => new CcsPoint(t?.InnerModel.CollisionCrossSection ?? 0d));
-            PeakInformationModel.Add(
-                t => new HeightAmount(t?.Intensity ?? 0d),
-                t => new AreaAmount(t?.PeakArea ?? 0d));
-            var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
-            MoleculeStructureModel = moleculeStructureModel;
-            ImageResult.Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
-            SaveImagesModel = new SaveImagesModel(ImageResult, ImagingRoiModels);
-            _semaphoreSlim = new SemaphoreSlim(1, 1).AddTo(Disposables);
+            SaveImagesModel = new SaveImagesModel(imageResult, ImagingRoiModels);
         }
 
         public WholeImageResultModel ImageResult { get; }
@@ -54,8 +43,8 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         public RoiEditModel RoiEditModel { get; }
         public SaveImagesModel SaveImagesModel { get; }
         public AnalysisFileBeanModel File { get; }
-        public PeakInformationAnalysisModel PeakInformationModel { get; }
-        public MoleculeStructureModel MoleculeStructureModel { get; }
+        public PeakInformationAnalysisModel PeakInformationModel => ImageResult.AnalysisModel.PeakInformationModel;
+        public MoleculeStructureModel MoleculeStructureModel => ImageResult.AnalysisModel.MoleculeStructureModel;
 
         public async Task AddRoiAsync()
         {
