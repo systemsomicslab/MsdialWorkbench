@@ -14,7 +14,7 @@
              xmlns:infovm="clr-namespace:CompMs.App.Msdial.ViewModel.Information"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance Type={x:Type vm:ImagingMainViewModel}}"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:ImagingImmsMainViewModel}}"
              d:Background="White"
              d:DesignHeight="780" d:DesignWidth="1280">
     <UserControl.Resources>
@@ -47,7 +47,7 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-            <DataTemplate DataType="{x:Type vm:ImagingMainViewModel}" x:Key="ImageSelector">
+            <DataTemplate DataType="{x:Type vm:ImagingImmsMainViewModel}" x:Key="ImageSelector">
                 <GroupBox Header="Images" Style="{StaticResource GroupBoxHeader}">
                     <ListBox ItemsSource="{Binding ImageViewModels}"
                              SelectedItem="{Binding SelectedImageViewModel}"
@@ -55,7 +55,7 @@
                              IsSynchronizedWithCurrentItem="True"/>
                 </GroupBox>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type imvm:ImagingImageViewModel}" x:Key="RoiSelector">
+            <DataTemplate DataType="{x:Type vm:ImagingImmsImageViewModel}" x:Key="RoiSelector">
                 <GroupBox Header="ROIs" Style="{StaticResource GroupBoxHeader}">
                     <ItemsControl ItemsSource="{Binding RoiViewModels}">
                         <ItemsControl.ItemTemplate>

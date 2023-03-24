@@ -15,30 +15,30 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.ViewModel.ImagingImms
 {
-    internal sealed class ImagingMainViewModel : MethodViewModel
+    internal sealed class ImagingImmsMainViewModel : MethodViewModel
     {
         private readonly ImagingImmsMethodModel _model;
         private readonly IMessageBroker _broker;
 
-        public ImagingMainViewModel(ImagingImmsMethodModel model, IMessageBroker broker)
+        public ImagingImmsMainViewModel(ImagingImmsMethodModel model, IMessageBroker broker)
             : base(model,
                   new ReactiveProperty<IAnalysisResultViewModel>(), new ReactiveProperty<IAlignmentResultViewModel>(),
                   new ViewModelSwitcher(Observable.Never<ViewModelBase>(), Observable.Never<ViewModelBase>(), new IObservable<ViewModelBase>[0]),
                   new ViewModelSwitcher(Observable.Never<ViewModelBase>(), Observable.Never<ViewModelBase>(), new IObservable<ViewModelBase>[0])) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _broker = broker;
-            ImageViewModels = model.ImageModels.ToReadOnlyReactiveCollection(m => new ImagingImageViewModel(m, broker)).AddTo(Disposables);
+            ImageViewModels = model.ImageModels.ToReadOnlyReactiveCollection(m => new ImagingImmsImageViewModel(m, broker)).AddTo(Disposables);
             RoiCompareViewModels = new ReadOnlyObservableCollection<ImagingRoiCompareViewModel>(new ObservableCollection<ImagingRoiCompareViewModel>());
         }
 
-        public ReadOnlyObservableCollection<ImagingImageViewModel> ImageViewModels { get; }
+        public ReadOnlyObservableCollection<ImagingImmsImageViewModel> ImageViewModels { get; }
         public ReadOnlyObservableCollection<ImagingRoiCompareViewModel> RoiCompareViewModels { get; }
 
-        public ImagingImageViewModel SelectedImageViewModel {
+        public ImagingImmsImageViewModel SelectedImageViewModel {
             get => _selectedImageViewModel;
             set => SetProperty(ref _selectedImageViewModel, value);
         }
-        private ImagingImageViewModel _selectedImageViewModel;
+        private ImagingImmsImageViewModel _selectedImageViewModel;
 
         public ImagingRoiCompareViewModel SelectedRoiCompareViewModel {
             get => _selectedRoiCompareViewModel;
