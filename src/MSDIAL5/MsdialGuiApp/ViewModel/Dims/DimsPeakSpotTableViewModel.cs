@@ -13,10 +13,10 @@ using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    internal abstract class DimsPeakSpotTableViewModel : PeakSpotTableViewModelBase
+    internal sealed class DimsAnalysisPeakTableViewModel : AnalysisPeakTableViewModelBase
     {
-        protected DimsPeakSpotTableViewModel(IDimsPeakSpotTableModel model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
-            : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel) {
+        public DimsAnalysisPeakTableViewModel(DimsAnalysisPeakTableModel model, IObservable<EicLoader> eicLoader, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
+            : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel, eicLoader) {
             MassMin = model.MassMin;
             MassMax = model.MassMax;
         }
@@ -25,30 +25,15 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public double MassMax { get; }
     }
 
-    internal sealed class DimsAnalysisPeakTableViewModel : DimsPeakSpotTableViewModel
-    {
-        public DimsAnalysisPeakTableViewModel(DimsAnalysisPeakTableModel model, IObservable<EicLoader> eicLoader, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
-            : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel) {
-            if (eicLoader is null) {
-                throw new ArgumentNullException(nameof(eicLoader));
-            }
-            EicLoader = eicLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-        }
-
-        public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
-    }
-
-    internal sealed class DimsAlignmentSpotTableViewModel : DimsPeakSpotTableViewModel
+    internal sealed class DimsAlignmentSpotTableViewModel : AlignmentSpotTableViewModelBase
     {
         public DimsAlignmentSpotTableViewModel(DimsAlignmentSpotTableModel model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
             : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel) {
-            BarItemsLoader = model.BarItemsLoader;
-            ClassBrush = model.ClassBrush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            FileClassPropertiesModel = model.FileClassProperties;
+            MassMin = model.MassMin;
+            MassMax = model.MassMax;
         }
 
-        public IObservable<IBarItemsLoader> BarItemsLoader { get; }
-        public ReadOnlyReactivePropertySlim<IBrushMapper<BarItem>> ClassBrush { get; }
-        public FileClassPropertiesModel FileClassPropertiesModel { get; }
+        public double MassMin { get; }
+        public double MassMax { get; }
     }
 }
