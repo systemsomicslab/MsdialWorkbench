@@ -43,12 +43,12 @@ namespace CompMs.App.Msdial.Model.Export
         public void Export(AlignmentFileBeanModel alignmentFile, string exportDirectory, Action<string> notification) {
             var dt = DateTime.Now;
             var cts = new CancellationTokenSource();
-            var spots = _peakSpotSupplyer.Supply(alignmentFile, cts.Token);
+            var lazySpots = new Lazy<IReadOnlyList<AlignmentSpotProperty>>(() => _peakSpotSupplyer.Supply(alignmentFile, cts.Token));
             var msdecResults = alignmentFile.LoadMSDecResults();
             if (ExportIndividually) {
                 foreach (var format in Formats) {
                     notification?.Invoke($"Exporting {((IFileBean)alignmentFile).FileName}");
-                    foreach (var spot in spots) {
+                    foreach (var spot in lazySpots.Value) {
                         var outNameTemplate = $"{{0}}_AlignmentID {spot.MasterAlignmentID}_{spot.TimesCenter.Value:f2}_{spot.MassCenter:f4}_{dt:yyyy_MM_dd_HH_mm_ss}_{((IFileBean)alignmentFile).FileName}.{{1}}";
                         if (format.IsSelected) {
                             format.Export(new[] { spot }, msdecResults, outNameTemplate, exportDirectory, notification: null);
@@ -60,7 +60,7 @@ namespace CompMs.App.Msdial.Model.Export
                 var outNameTemplate = $"{{0}}_{dt:yyyy_MM_dd_HH_mm_ss}_{((IFileBean)alignmentFile).FileName}.{{1}}";
                 foreach (var format in Formats) {
                     if (format.IsSelected) {
-                        format.Export(spots, msdecResults, outNameTemplate, exportDirectory, notification);
+                        format.Export(lazySpots.Value, msdecResults, outNameTemplate, exportDirectory, notification);
                     }
                 }
             }
