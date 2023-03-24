@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.ImagingImms;
 using CompMs.App.Msdial.ViewModel.Imaging;
 using CompMs.App.Msdial.ViewModel.Information;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -14,12 +15,11 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
     {
         private readonly ImagingImmsImageModel _model;
 
-        public ImagingImmsImageViewModel(ImagingImmsImageModel model, IMessageBroker broker)
-        {
+        public ImagingImmsImageViewModel(ImagingImmsImageModel model, FocusControlManager focusManager, IMessageBroker broker) {
             _model = model ?? throw new System.ArgumentNullException(nameof(model));
             RoiViewModels = model.ImagingRoiModels.ToReadOnlyReactiveCollection(m => new ImagingRoiViewModel(m)).AddTo(Disposables);
             SelectedRoiViewModels = RoiViewModels.ToFilteredReadOnlyObservableCollection(vm => vm.IsSelected.Value, vm => vm.IsSelected).AddTo(Disposables);
-            ImageResultViewModel = new WholeImageResultViewModel(model.ImageResult).AddTo(Disposables);
+            ImageResultViewModel = new WholeImageResultViewModel(model.ImageResult, focusManager, broker).AddTo(Disposables);
             var peakInfo = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             var moleculeStructure = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
             PeakDetailViewModels = new ViewModelBase[] { peakInfo, moleculeStructure, };

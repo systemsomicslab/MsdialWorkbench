@@ -3,6 +3,7 @@ using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Imaging;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -27,7 +28,8 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
                   new ViewModelSwitcher(Observable.Never<ViewModelBase>(), Observable.Never<ViewModelBase>(), new IObservable<ViewModelBase>[0])) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _broker = broker;
-            ImageViewModels = model.ImageModels.ToReadOnlyReactiveCollection(m => new ImagingImmsImageViewModel(m, broker)).AddTo(Disposables);
+            var focusManager = new FocusControlManager().AddTo(Disposables);
+            ImageViewModels = model.ImageModels.ToReadOnlyReactiveCollection(m => new ImagingImmsImageViewModel(m, focusManager, broker)).AddTo(Disposables);
             RoiCompareViewModels = new ReadOnlyObservableCollection<ImagingRoiCompareViewModel>(new ObservableCollection<ImagingRoiCompareViewModel>());
         }
 
@@ -63,6 +65,5 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
                 _broker.Publish(vm);
             }
         }
-
     }
 }

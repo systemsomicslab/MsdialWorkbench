@@ -1,10 +1,13 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.ImagingImms;
+﻿using CompMs.App.Msdial.Model.ImagingImms;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Imaging;
+using CompMs.App.Msdial.ViewModel.Imms;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System.Linq;
 using System.Reactive.Linq;
 
@@ -14,10 +17,10 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
     {
         private readonly WholeImageResultModel _model;
 
-        public WholeImageResultViewModel(WholeImageResultModel model)
-        {
+        public WholeImageResultViewModel(WholeImageResultModel model, FocusControlManager focusManager, IMessageBroker broker) {
             _model = model ?? throw new System.ArgumentNullException(nameof(model));
-            PeakPlotViewModel = new AnalysisPeakPlotViewModel(model.PeakPlotModel, () => { }, Observable.Never<bool>());
+            var analysisViewModel = new ImmsAnalysisViewModel(model.AnalysisModel, null, null, broker, focusManager).AddTo(Disposables);
+            AnalysisViewModel = analysisViewModel;
 
             Intensities = model.Intensities.ToReadOnlyReactiveCollection(intensity => new IntensityImageViewModel(intensity)).AddTo(Disposables);
             SelectedPeakIntensities = model.ToReactivePropertyAsSynchronized(
@@ -28,8 +31,8 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
             ImagingRoiViewModel = new ImagingRoiViewModel(model.ImagingRoiModel).AddTo(Disposables);
         }
 
-        public AnalysisPeakPlotViewModel PeakPlotViewModel { get; }
-        public ReactivePropertySlim<ChromatogramPeakFeatureModel> Target => _model.Target;
+        public ImmsAnalysisViewModel AnalysisViewModel { get; }
+        public AnalysisPeakPlotViewModel PeakPlotViewModel => AnalysisViewModel.PlotViewModel;
         public ReadOnlyReactiveCollection<IntensityImageViewModel> Intensities { get; }
         public ReactiveProperty<IntensityImageViewModel> SelectedPeakIntensities { get; }
         public ImagingRoiViewModel ImagingRoiViewModel { get; }
