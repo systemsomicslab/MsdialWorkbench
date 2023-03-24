@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Imaging;
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Utility;
@@ -21,7 +22,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
-namespace CompMs.App.Msdial.Model.Imaging
+namespace CompMs.App.Msdial.Model.ImagingImms
 {
     internal sealed class WholeImageResultModel : DisposableModelBase
     {
@@ -29,7 +30,8 @@ namespace CompMs.App.Msdial.Model.Imaging
         private readonly ObservableCollection<IntensityImageModel> _intensities;
         private readonly List<Raw2DElement> _elements;
 
-        public WholeImageResultModel(AnalysisFileBeanModel file, MaldiFrames maldiFrames, RoiModel wholeRoi, IMsdialDataStorage<MsdialImmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBeanModel> providerFactory) {
+        public WholeImageResultModel(AnalysisFileBeanModel file, MaldiFrames maldiFrames, RoiModel wholeRoi, IMsdialDataStorage<MsdialImmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBeanModel> providerFactory)
+        {
             File = file ?? throw new ArgumentNullException(nameof(file));
             _peaks = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath, default).Result;
             Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(_peaks.Items.Select(item => new ChromatogramPeakFeatureModel(item).AddTo(Disposables)));
@@ -51,7 +53,8 @@ namespace CompMs.App.Msdial.Model.Imaging
                 Target,
                 Observable.Return(string.Empty),
                 intensityBrush,
-                brushes, new PeakLinkModel(Peaks)) {
+                brushes, new PeakLinkModel(Peaks))
+            {
                 HorizontalTitle = "Mobility [1/K0]",
                 VerticalTitle = "m/z",
                 HorizontalProperty = nameof(ChromatogramPeakFeatureModel.ChromXValue),
@@ -82,13 +85,15 @@ namespace CompMs.App.Msdial.Model.Imaging
         public ReactiveProperty<ChromatogramPeakFeatureModel> Target { get; }
         public ImagingRoiModel ImagingRoiModel { get; }
         public ReadOnlyObservableCollection<IntensityImageModel> Intensities { get; }
-        public IntensityImageModel SelectedPeakIntensities {
+        public IntensityImageModel SelectedPeakIntensities
+        {
             get => _selectedPeakIntensities;
             set => SetProperty(ref _selectedPeakIntensities, value);
         }
         private IntensityImageModel _selectedPeakIntensities;
 
-        public async Task<ImagingRoiModel> CreateImagingRoiModelAsync(RoiModel roi) {
+        public async Task<ImagingRoiModel> CreateImagingRoiModelAsync(RoiModel roi)
+        {
             var rawSpectraOnPixels = await Task.Run(() => roi.RetrieveRawSpectraOnPixels(_elements)).ConfigureAwait(false);
             var result = new ImagingRoiModel($"ROI{roi.Id}", roi, rawSpectraOnPixels, Peaks, Target);
             result.Select();

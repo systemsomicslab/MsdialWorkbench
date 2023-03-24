@@ -1,5 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Imaging;
+using CompMs.App.Msdial.Model.ImagingImms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
