@@ -1,8 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.ImagingImms;
 using CompMs.App.Msdial.ViewModel.Imaging;
 using CompMs.App.Msdial.ViewModel.Information;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.WindowService;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Helpers;
@@ -15,15 +18,13 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
     {
         private readonly ImagingImmsImageModel _model;
 
-        public ImagingImmsImageViewModel(ImagingImmsImageModel model, FocusControlManager focusManager, IMessageBroker broker) {
+        public ImagingImmsImageViewModel(ImagingImmsImageModel model, FocusControlManager focusManager, IMessageBroker broker, IWindowService<CompoundSearchVM> compoundSearchService, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
             _model = model ?? throw new System.ArgumentNullException(nameof(model));
             RoiViewModels = model.ImagingRoiModels.ToReadOnlyReactiveCollection(m => new ImagingRoiViewModel(m)).AddTo(Disposables);
             SelectedRoiViewModels = RoiViewModels.ToFilteredReadOnlyObservableCollection(vm => vm.IsSelected.Value, vm => vm.IsSelected).AddTo(Disposables);
-            ImageResultViewModel = new WholeImageResultViewModel(model.ImageResult, focusManager, broker).AddTo(Disposables);
+            ImageResultViewModel = new WholeImageResultViewModel(model.ImageResult, focusManager, compoundSearchService, peakSpotTableService, broker).AddTo(Disposables);
             var peakInfo = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             var moleculeStructure = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
-            PeakDetailViewModels = new ViewModelBase[] { peakInfo, moleculeStructure, };
-            Ms2ViewModels = new ViewModelBase[0];
             RoiEditViewModel = new RoiEditViewModel(model.RoiEditModel).AddTo(Disposables);
             SaveImagesViewModel = new SaveImagesViewModel(model.SaveImagesModel, broker).AddTo(Disposables);
             AddRoiCommand = new AsyncReactiveCommand().WithSubscribe(model.AddRoiAsync).AddTo(Disposables);
@@ -35,9 +36,7 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
         public WholeImageResultViewModel ImageResultViewModel { get; }
         public RoiEditViewModel RoiEditViewModel { get; }
         public SaveImagesViewModel SaveImagesViewModel { get; }
-        public ViewModelBase[] PeakDetailViewModels { get; }
-        public ViewModelBase[] Ms2ViewModels { get; }
-
+        public ViewModelBase[] PeakDetailViewModels => ImageResultViewModel.AnalysisViewModel.PeakDetailViewModels;
         public AsyncReactiveCommand AddRoiCommand { get; }
     }
 }
