@@ -192,9 +192,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             if (parameter.IsUseCcsForAnnotationScoring) {
                 result.IsCcsMatch = Math.Abs(property.CollisionCrossSection - reference.CollisionCrossSection) <= parameter.CcsTolerance;
             }
-            if (result.Name == "ST 24:1;O5") {
-                Console.WriteLine();
-            }
+            
         }
 
         private void ValidateOnLipidomics(

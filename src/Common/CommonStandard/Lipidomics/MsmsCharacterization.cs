@@ -44,25 +44,29 @@ namespace CompMs.Common.Lipidomics
                 if (adduct.AdductIonName == "[M+H]+")
                 {
                     // seek 184.07332 (C5H15NO4P)
-                    var threshold = 10.0;
+                    var threshold = 5.0;
                     var diagnosticMz = 184.07332;
                     var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
                     // for eieio
                     var PEHeaderLoss = theoreticalMz - 141.019094261;
-                    var PEspecific = MassDiffDictionary.CarbonMass * 5
-                        + MassDiffDictionary.HydrogenMass * 12
-                        + MassDiffDictionary.NitrogenMass
-                        + MassDiffDictionary.OxygenMass * 4
-                        + MassDiffDictionary.PhosphorusMass
-                        + Proton;
-                    var PEHeader = 141.019094261 + Proton;
                     var isClassIonFound2 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEHeaderLoss, 5.0);
-                    var isClassIonFound3 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEspecific, 1.0);
-                    var isClassIonFound4 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEHeader, 3.0);
-                    if (isClassIonFound2 && isClassIonFound3) return null;
-                    if (isClassIonFound4) return null;
+                    if (isClassIonFound2 && isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, PEHeaderLoss, diagnosticMz)) {
+                        return null;
+                    }
+
+                    //var PEspecific = MassDiffDictionary.CarbonMass * 5
+                    //    + MassDiffDictionary.HydrogenMass * 12
+                    //    + MassDiffDictionary.NitrogenMass
+                    //    + MassDiffDictionary.OxygenMass * 4
+                    //    + MassDiffDictionary.PhosphorusMass
+                    //    + Proton;
+                    //var PEHeader = 141.019094261 + Proton;
+                    //var isClassIonFound3 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEspecific, 1.0);
+                    //var isClassIonFound4 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEHeader, 3.0);
+                    //if (isClassIonFound2 && isClassIonFound3) return null;
+                    //if (isClassIonFound4) return null;
 
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
@@ -1920,11 +1924,17 @@ namespace CompMs.Common.Lipidomics
                     var diagnosticMz2 = 104.106990;
                     var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIon1Found != true) return null;
-                    //
+
                     // for eieio
-                    var PEHeader = 141.019094261 + Proton;
-                    var isClassIonFound4 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEHeader, 3.0);
-                    if (isClassIonFound4) return null;
+                    var PEHeaderLoss = theoreticalMz - 141.019094261;
+                    var isClassIonFound2 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEHeaderLoss, 5.0);
+                    if (isClassIonFound2 && isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, PEHeaderLoss, diagnosticMz)) {
+                        return null;
+                    }
+
+                    //var PEHeader = 141.019094261 + Proton;
+                    //var isClassIonFound4 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEHeader, 3.0);
+                    //if (isClassIonFound4) return null;
 
                     var candidates = new List<LipidMolecule>();
                     var chainSuffix = "";
@@ -2037,7 +2047,8 @@ namespace CompMs.Common.Lipidomics
                     if (totalCarbon > 28) return null; //  currently carbon > 28 is recognized as EtherPE
 
                     // seek PreCursor -141(C2H8NO4P)
-                    var threshold = 50.0;
+                    //var threshold = 50.0;
+                    var threshold = 3.0;
                     var diagnosticMz = theoreticalMz - 141.019094;
 
                     var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
@@ -14321,6 +14332,26 @@ AdductIon adduct)
                 }
             }
             return false;
+        }
+
+        private static bool isFragment1GreaterThanFragment2(List<SpectrumPeak> spectrum, double ms2Tolerance,
+            double fragment1, double fragment2) {
+            var frag1intensity = 0.0;
+            var frag2intensity = 0.0;
+            for (int i = 0; i < spectrum.Count; i++) {
+                var mz = spectrum[i].Mass;
+                var intensity = spectrum[i].Intensity; // should be normalized by max intensity to 100
+
+                if (intensity > frag1intensity && Math.Abs(mz - fragment1) < ms2Tolerance) {
+                    frag1intensity = intensity;
+                }
+
+                if (intensity > frag2intensity && Math.Abs(mz - fragment2) < ms2Tolerance) {
+                    frag2intensity = intensity;
+                }
+            }
+            if (frag1intensity > frag2intensity) return true;
+            else return false;
         }
 
         private static bool isPeakFoundWithACritetion(List<SpectrumPeak> spectrum, double beginMz,
