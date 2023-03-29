@@ -94,7 +94,21 @@ namespace CompMs.Common.Lipidomics
         public static ILipidSpectrumGenerator OadLipidGenerator {
             get {
                 if (@oadlipidgenerator is null) {
-                    var generator = new OadDefaultSpectrumGenerator();
+                    var generator = new FacadeLipidSpectrumGenerator();
+                    generator.Add(LbmClass.PC, new PCOadSpectrumGenerator());
+                    generator.Add(LbmClass.LPC, new OadDefaultSpectrumGenerator());
+                    generator.Add(LbmClass.EtherPC, new OadDefaultSpectrumGenerator());
+                    generator.Add(LbmClass.EtherLPC, new OadDefaultSpectrumGenerator());
+                    generator.Add(LbmClass.PE, new OadDefaultSpectrumGenerator());
+                    generator.Add(LbmClass.LPE, new OadDefaultSpectrumGenerator());
+                    generator.Add(LbmClass.EtherPE, new OadDefaultSpectrumGenerator());
+                    generator.Add(LbmClass.EtherLPE, new OadDefaultSpectrumGenerator());
+                    generator.Add(LbmClass.PG, new OadDefaultSpectrumGenerator());
+                    generator.Add(LbmClass.PI, new OadDefaultSpectrumGenerator());
+                    generator.Add(LbmClass.PS, new OadDefaultSpectrumGenerator());
+                    generator.Add(LbmClass.TG, new OadDefaultSpectrumGenerator());
+                    generator.Add(LbmClass.DG, new OadDefaultSpectrumGenerator());
+                    generator.Add(LbmClass.SM, new OadDefaultSpectrumGenerator());
                     @oadlipidgenerator = generator;
                 }
                 return @oadlipidgenerator;

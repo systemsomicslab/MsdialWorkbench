@@ -29,7 +29,10 @@ namespace CompMs.Common.Lipidomics
                 adduct.AdductIonName == "[M+Na]+" ||
                 adduct.AdductIonName == "[M+NH4]+" ||
                 adduct.AdductIonName == "[M+H-H2O]+" ||
-                adduct.AdductIonName == "[M-H2O+H]+")
+                adduct.AdductIonName == "[M-H2O+H]+"||
+                adduct.AdductIonName == "[M-H]-" ||
+                adduct.AdductIonName == "[M+HCOO]-"||
+                adduct.AdductIonName == "[M+CH3COO]-")
             {
                 return true;
             }
@@ -90,11 +93,22 @@ namespace CompMs.Common.Lipidomics
 
         private static readonly IEqualityComparer<SpectrumPeak> comparer = new SpectrumEqualityComparer();
 
+        private readonly Dictionary<LbmClass, List<ILipidSpectrumGenerator>> map = new Dictionary<LbmClass, List<ILipidSpectrumGenerator>>();
+        public void Add(LbmClass lipidClass, ILipidSpectrumGenerator generator)
+        {
+            if (!map.ContainsKey(lipidClass))
+            {
+                map.Add(lipidClass, new List<ILipidSpectrumGenerator>());
+            }
+            map[lipidClass].Add(generator);
+        }
+
     }
     public class OadClassFragment
     {
         public double nlMass { get; set; }
         public List<SpectrumPeak> spectrum { get; set; }
     }
+
 }
 
