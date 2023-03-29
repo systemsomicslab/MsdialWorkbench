@@ -132,6 +132,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         private void SetAnnotationResult(ChromatogramPeakFeature chromPeakFeature, IAnnotationQuery<MsScanMatchResult> query, RawPeakElement[] spectrums) {
+            if (Math.Abs(chromPeakFeature.PrecursorMz - 704.52090) < 0.001) {
+                Console.WriteLine();
+            }
             var candidates = query.FindCandidates();
             var results = _evaluator.FilterByThreshold(candidates);
             if (results.Count > 0) {
@@ -139,8 +142,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 var topResults = new List<MsScanMatchResult>();
                 if (matches.Count > 0) {
                     var best = _evaluator.SelectTopHit(matches);
+                    chromPeakFeature.MatchResults.AddResult(best);
                     topResults.Add(best);
-
                     foreach (var factory in _eadQueryFactories) {
                         var query2 = factory.Create(query.Property, query.Scan, spectrums, query.IonFeature, factory.PrepareParameter());
                         var candidates2 = query2.FindCandidates();
@@ -151,7 +154,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 else {
                     topResults.AddRange(_evaluator.SelectTopN(results, NUMBER_OF_ANNOTATION_RESULTS));
                 }
-
                 chromPeakFeature.MatchResults.AddResults(topResults);
             }
         }
