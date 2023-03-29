@@ -44,7 +44,7 @@ namespace CompMs.Common.Lipidomics
                 if (adduct.AdductIonName == "[M+H]+")
                 {
                     // seek 184.07332 (C5H15NO4P)
-                    var threshold = 5.0;
+                    var threshold = 3.0;
                     var diagnosticMz = 184.07332;
                     var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -1919,7 +1919,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     if (totalCarbon > 28) return null; //  currently carbon > 28 is recognized as EtherPC
                     // seek 184.07332 (C5H15NO4P)
-                    var threshold = 5.0;
+                    var threshold = 3.0;
                     var diagnosticMz = 184.07332;
                     var diagnosticMz2 = 104.106990;
                     var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
