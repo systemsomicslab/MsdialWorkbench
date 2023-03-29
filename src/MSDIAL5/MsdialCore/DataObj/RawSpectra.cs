@@ -16,17 +16,21 @@ namespace CompMs.MsdialCore.DataObj
         private readonly ConcurrentDictionary<(ChromXType, ChromXUnit), Lazy<IChromatogramTypedSpectra>> _spectraImpls;
         private readonly IReadOnlyList<RawSpectrum> _spectra;
         private readonly IonMode _ionMode;
+        private readonly AcquisitionType _acquisitionType;
+        public AcquisitionType AcquisitionType { get => _acquisitionType; }
 
         public RawSpectra(IDataProvider provider, IonMode ionMode, AcquisitionType acquisitionType) {
             _spectra = provider.LoadMsSpectrums();
             _ionMode = ionMode;
             _spectraImpls = new ConcurrentDictionary<(ChromXType, ChromXUnit), Lazy<IChromatogramTypedSpectra>>();
+            _acquisitionType = acquisitionType;
         }
 
         public RawSpectra(IReadOnlyList<RawSpectrum> spectra, IonMode ionMode, AcquisitionType acquisitionType) {
             _spectra = spectra;
             _ionMode = ionMode;
             _spectraImpls = new ConcurrentDictionary<(ChromXType, ChromXUnit), Lazy<IChromatogramTypedSpectra>>();
+            _acquisitionType= acquisitionType;
         }
 
         public Chromatogram GetMs1ExtractedChromatogram(double mz, double tolerance, ChromatogramRange chromatogramRange) {

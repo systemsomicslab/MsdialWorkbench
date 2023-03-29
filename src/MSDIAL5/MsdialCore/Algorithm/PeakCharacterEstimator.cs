@@ -40,13 +40,13 @@ namespace CompMs.MsdialCore.Algorithm
         public List<AdductIon> SearchedAdducts { get; set; } = new List<AdductIon>();
 
         public void Process(
-            IDataProvider provider, 
+            AnalysisFileBean file,
+            IDataProvider provider,
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
-            IReadOnlyList<MSDecResult> msdecResults, 
-            IMatchResultEvaluator<MsScanMatchResult> evaluator, 
-            ParameterBase parameter, 
-            Action<int> reportAction,
-            bool isDriftAxis = false) {
+            IReadOnlyList<MSDecResult> msdecResults,
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            ParameterBase parameter,
+            Action<int> reportAction, bool isDriftAxis = false) {
 
             var rtMargin = isDriftAxis ? 0.01F : 0.0177F;
             // some adduct features are automatically insearted even if users did not select any type of adduct
@@ -56,7 +56,7 @@ namespace CompMs.MsdialCore.Algorithm
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.PeakID).ToList();
             Initialization(chromPeakFeatures);
 
-            RawSpectra rawSpectra = new RawSpectra(provider, parameter.IonMode, parameter.AcquisitionType);
+            RawSpectra rawSpectra = new RawSpectra(provider, parameter.IonMode, file.AcquisitionType);
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.Mass).ToList();
             if (chromPeakFeatures.Count < 10000) {
                 for (int i = 0; i < chromPeakFeatures.Count; i++) {
@@ -278,7 +278,8 @@ namespace CompMs.MsdialCore.Algorithm
             assignLinksBasedOnChromatogramCorrelation(chromPeakFeatures, param, rawSpectra);
 
             // linked by partial matching of MS1 and MS2
-            if (param.AcquisitionType == AcquisitionType.AIF || param.AcquisitionType == AcquisitionType.SWATH) return;
+            //if (param.AcquisitionType == AcquisitionType.AIF || param.AcquisitionType == AcquisitionType.SWATH) return;
+            if (rawSpectra.AcquisitionType == AcquisitionType.AIF || rawSpectra.AcquisitionType == AcquisitionType.SWATH) return;
             assignLinksBasedOnPartialMatchingOfMS1MS2(chromPeakFeatures, msdecResults, param);
         }
 

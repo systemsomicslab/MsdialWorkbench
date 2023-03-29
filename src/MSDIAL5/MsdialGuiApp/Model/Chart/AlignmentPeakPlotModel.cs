@@ -10,13 +10,29 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class AlignmentPeakPlotModel : DisposableModelBase
     {
+        private readonly AlignmentSpotSource _spotsSource;
+
         public AlignmentPeakPlotModel(
-            ObservableCollection<AlignmentSpotPropertyModel> spots,
+            AlignmentSpotSource spotsSource,
+            Func<AlignmentSpotPropertyModel, double> horizontalSelector,
+            Func<AlignmentSpotPropertyModel, double> verticalSelector,
+            IReactiveProperty<AlignmentSpotPropertyModel> targetSource,
+            IObservable<string> labelSource,
+            BrushMapData<AlignmentSpotPropertyModel> selectedBrush,
+            IList<BrushMapData<AlignmentSpotPropertyModel>> brushes)
+            : this(spotsSource.Spots.Items, horizontalSelector, verticalSelector, targetSource, labelSource, selectedBrush, brushes) {
+
+            _spotsSource = spotsSource;
+        }
+
+        public AlignmentPeakPlotModel(
+            ReadOnlyObservableCollection<AlignmentSpotPropertyModel> spots,
             Func<AlignmentSpotPropertyModel, double> horizontalSelector,
             Func<AlignmentSpotPropertyModel, double> verticalSelector,
             IReactiveProperty<AlignmentSpotPropertyModel> targetSource,
@@ -60,7 +76,7 @@ namespace CompMs.App.Msdial.Model.Chart
             Disposables.Add(collectionChanged.Connect());
         }
 
-        public ObservableCollection<AlignmentSpotPropertyModel> Spots { get; }
+        public ReadOnlyObservableCollection<AlignmentSpotPropertyModel> Spots { get; }
 
         public IReactiveProperty<AlignmentSpotPropertyModel> TargetSource { get; }
 
@@ -106,5 +122,18 @@ namespace CompMs.App.Msdial.Model.Chart
         private BrushMapData<AlignmentSpotPropertyModel> _selectedBrush;
 
         public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
+
+        public IObservable<bool> CanDuplicates => new[]{
+            Observable.Return(_spotsSource is null),
+            TargetSource.Select(t => t is null),
+        }.CombineLatestValuesAreAllFalse();
+
+        public Task DuplicatesAsync() {
+            var spot = TargetSource.Value;
+            if (spot is null || _spotsSource is null) {
+                return Task.CompletedTask;
+            }
+            return _spotsSource.DuplicateSpotAsync(spot);
+        }
     }
 }

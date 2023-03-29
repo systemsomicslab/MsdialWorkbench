@@ -5,11 +5,13 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Common.Proteomics.DataObj;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
@@ -22,9 +24,12 @@ using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Windows;
 using System.Windows.Media;
 
@@ -34,6 +39,7 @@ namespace CompMs.App.Msdial.Model.Dims
         private static readonly double MZ_TOLERANCE = 20;
 
         private readonly CompoundSearcherCollection _compoundSearchers;
+        private readonly UndoManager _undoManager;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly IDataProvider _provider;
         private readonly ParameterBase _parameter;
@@ -60,6 +66,8 @@ namespace CompMs.App.Msdial.Model.Dims
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
 
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databaseStorage, mapper);
+
+            _undoManager = new UndoManager().AddTo(Disposables);
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, status: ~(FilterEnableStatus.Rt | FilterEnableStatus.Dt)).AddTo(Disposables);
 
@@ -104,7 +112,7 @@ namespace CompMs.App.Msdial.Model.Dims
             Target.Select(t => $"File: {analysisFileModel.AnalysisFileName}" + (t is null ? string.Empty : $"Spot ID: {t.MasterPeakID} Scan: {t.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5}"))
                 .Subscribe(title => PlotModel.GraphTitle = title);
 
-            var eicLoader = DimsEicLoader.BuildForEicView(provider, parameter);
+            var eicLoader = DimsEicLoader.BuildForEicView(analysisFileModel.File, provider, parameter);
             EicModel = new EicModel(Target, eicLoader)
             {
                 HorizontalTitle = "m/z",
@@ -138,11 +146,17 @@ namespace CompMs.App.Msdial.Model.Dims
                 true);
             var spectraExporter = new NistSpectraExporter(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
             var rawLoader = new MultiMsRawSpectrumLoader(provider, parameter).AddTo(Disposables);
+            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
+            var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
+                ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
+                : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
+            IConnectableObservable<List<SpectrumPeak>> refSpectrum = MatchResultCandidatesModel.LoadSpectrumObservable(refLoader).Publish();
+            Disposables.Add(refSpectrum.Connect());
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 Target,
                 rawLoader,
                 new MsDecSpectrumLoader(decLoader, Ms1Peaks),
-                new MsRefSpectrumLoader(mapper),
+                refSpectrum,
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Mass),
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity),
                 new GraphLabels("Measure vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity)),
@@ -154,10 +168,10 @@ namespace CompMs.App.Msdial.Model.Dims
                 Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
 
             // Ms2 chromatogram
-            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawLoader, provider, parameter).AddTo(Disposables);
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawLoader, provider, parameter, analysisFileModel.AcquisitionType).AddTo(Disposables);
 
-            EicLoader = DimsEicLoader.BuildForPeakTable(provider, parameter);
-            PeakTableModel = new DimsAnalysisPeakTableModel(Ms1Peaks, Target).AddTo(Disposables);
+            EicLoader = DimsEicLoader.BuildForPeakTable(analysisFileModel.File, provider, parameter);
+            PeakTableModel = new DimsAnalysisPeakTableModel(new ReadOnlyObservableCollection<ChromatogramPeakFeatureModel>(Ms1Peaks), Target).AddTo(Disposables);
 
             var mzSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, MZ_TOLERANCE, Target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
             var idSpotFocus = new IdSpotFocus<ChromatogramPeakFeatureModel>(
@@ -186,10 +200,11 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
 
+        public UndoManager UndoManager => _undoManager;
+
         public AnalysisPeakPlotModel PlotModel { get; }
 
         public EicModel EicModel { get; }
-
         public RawDecSpectrumsModel Ms2SpectrumModel { get; }
         public Ms2ChromatogramsModel Ms2ChromatogramsModel { get; }
         public DimsAnalysisPeakTableModel PeakTableModel { get; }
@@ -198,11 +213,15 @@ namespace CompMs.App.Msdial.Model.Dims
         public PeakInformationAnalysisModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
         public MoleculeStructureModel MoleculeStructureModel { get; }
+        public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
         public FocusNavigatorModel FocusNavigatorModel { get; }
 
         public ICompoundSearchModel BuildCompoundSearchModel() {
-            return new CompoundSearchModel(AnalysisFileModel, Target.Value, MsdecResult.Value, _compoundSearchers.Items);
+            return new CompoundSearchModel(AnalysisFileModel, Target.Value, MsdecResult.Value, _compoundSearchers.Items, _undoManager);
         }
+
+        public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
+        public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
         public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;
         public void SaveSpectra(Stream stream, ExportSpectraFileFormat format) {
@@ -245,5 +264,8 @@ namespace CompMs.App.Msdial.Model.Dims
             SaveSpectra(memory, ExportSpectraFileFormat.msp);
             Clipboard.SetText(System.Text.Encoding.UTF8.GetString(memory.ToArray()));
         }
+
+        public void Undo() => _undoManager.Undo();
+        public void Redo() => _undoManager.Redo();
     }
 }

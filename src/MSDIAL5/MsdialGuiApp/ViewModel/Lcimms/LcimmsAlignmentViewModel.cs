@@ -45,18 +45,21 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 throw new ArgumentNullException(nameof(focusControlManager));
             }
 
-            this._model = model;
-            this._compoundSearchService = compoundSearchService;
-            this._peakSpotTableService = peakSpotTableService;
+            _model = model;
+            _compoundSearchService = compoundSearchService;
+            _peakSpotTableService = peakSpotTableService;
 
-            Target = this._model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
+            SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
 
-            Brushes = this._model.Brushes.AsReadOnly();
-            SelectedBrush = this._model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
+            Target = _model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            Brushes = _model.Brushes.AsReadOnly();
+            SelectedBrush = _model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
 
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
 
-            Ms1Spots = CollectionViewSource.GetDefaultView(this._model.Ms1Spots);
+            Ms1Spots = CollectionViewSource.GetDefaultView(_model.Ms1Spots);
 
             var (peakPlotFocusAction, peakPlotFocused) = focusControlManager.Request();
             RtMzPlotViewModel = new AlignmentPeakPlotViewModel(model.RtMzPlotModel, peakPlotFocusAction, peakPlotFocused).AddTo(Disposables);
@@ -86,11 +89,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 PeakSpotNavigatorViewModel.CommentFilterKeyword,
                 PeakSpotNavigatorViewModel.OntologyFilterKeyword,
                 PeakSpotNavigatorViewModel.AdductFilterKeyword,
-                PeakSpotNavigatorViewModel.IsEditting)
-                .AddTo(Disposables);
-
-            SetUnknownCommand = Target.Select(t => !(t is null)).ToReactiveCommand()
-                .WithSubscribe(() => Target.Value.SetUnknown())
+                PeakSpotNavigatorViewModel.IsEditting,
+                SetUnknownCommand,
+                UndoManagerViewModel)
                 .AddTo(Disposables);
 
             SearchCompoundCommand = new[]{
@@ -111,16 +112,23 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
             MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
-            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel, };
+            var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
+            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel, matchResultCandidatesViewModel, };
 
             var internalStandardSetViewModel = new InternalStandardSetViewModel(model.InternalStandardSetModel).AddTo(Disposables);
             InternalStandardSetCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(internalStandardSetViewModel)).AddTo(Disposables);
+
+            NormalizationSetViewModel = new NormalizationSetViewModel(model.NormalizationSetModel, internalStandardSetViewModel).AddTo(Disposables);
+            ShowNormalizationSettingCommand = new ReactiveCommand()
+                .WithSubscribe(() => broker.Publish(NormalizationSetViewModel))
+                .AddTo(Disposables);
 
             var notification = TaskNotification.Start("Loading alignment results...");
             broker.Publish(notification);
             model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => broker.Publish(TaskNotification.End(notification)));
         }
 
+        public UndoManagerViewModel UndoManagerViewModel { get; }
         public AlignmentPeakPlotViewModel RtMzPlotViewModel { get; }
         public AlignmentPeakPlotViewModel DtMzPlotViewModel { get; }
         public MsSpectrumViewModel Ms2SpectrumViewModel { get; }
@@ -149,7 +157,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public ViewModelBase[] PeakDetailViewModels { get; }
 
         public ICommand InternalStandardSetCommand { get; }
-
+        public NormalizationSetViewModel NormalizationSetViewModel { get; }
+        public ReactiveCommand ShowNormalizationSettingCommand { get; }
         public ICommand SetUnknownCommand { get; }
         public ReactiveCommand SearchCompoundCommand { get; }
 

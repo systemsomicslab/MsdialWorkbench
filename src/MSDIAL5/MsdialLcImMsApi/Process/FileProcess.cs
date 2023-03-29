@@ -61,7 +61,7 @@ namespace CompMs.MsdialLcImMsApi.Process
             file.ChromPeakFeaturesSummary = summary;
 
             Console.WriteLine("Deconvolution started");
-            var targetCE2MSDecResults = SpectrumDeconvolution(spectrumProvider, chromPeakFeatures, summary, parameter, iupacDB, reportAction, token);
+            var targetCE2MSDecResults = SpectrumDeconvolution(file, spectrumProvider, chromPeakFeatures, summary, parameter, iupacDB, reportAction, token);
             var mSDecResultCollections = targetCE2MSDecResults.Select(pair => new MSDecResultCollection(pair.Value, pair.Key)).ToArray();
 
             // annotations
@@ -70,7 +70,7 @@ namespace CompMs.MsdialLcImMsApi.Process
 
             // characterizatin
             //PeakCharacterization(targetCE2MSDecResults, spectrumProvider, chromPeakFeatures, evaluator, parameter, reportAction);
-            PeakCharacterization(mSDecResultCollections, accSpectrumProvider, chromPeakFeatures, evaluator, parameter, reportAction);
+            PeakCharacterization(file, mSDecResultCollections, accSpectrumProvider, chromPeakFeatures, evaluator, parameter, reportAction);
 
             // file save
             SaveToFile(file, chromPeakFeatures, targetCE2MSDecResults);
@@ -96,7 +96,7 @@ namespace CompMs.MsdialLcImMsApi.Process
             PeakAnnotation(annotationProcess, spectrumProvider, chromPeakFeatures.Items, mSDecResultCollections, storage.Parameter, reportAction, token);
 
             // characterizatin
-            PeakCharacterization(mSDecResultCollections, accSpectrumProvider, chromPeakFeatures.Items, evaluator, storage.Parameter, reportAction);
+            PeakCharacterization(file, mSDecResultCollections, accSpectrumProvider, chromPeakFeatures.Items, evaluator, storage.Parameter, reportAction);
 
             // file save
             await SaveToFileAsync(file, chromPeakFeatures, mSDecResultCollections).ConfigureAwait(false);
@@ -148,8 +148,8 @@ namespace CompMs.MsdialLcImMsApi.Process
                 coeff = null;
             }
 
-            var chromPeakFeatures = new PeakSpotting(0, 30, parameter).Execute4DFeatureDetection(spectrumProvider, accSpectrumProvider,
-                parameter.NumThreads, token, reportAction);
+            var chromPeakFeatures = new PeakSpotting(0, 30, parameter).Execute4DFeatureDetection(file, spectrumProvider,
+                accSpectrumProvider, parameter.NumThreads, token, reportAction);
             var iupacDB = storage.IupacDatabase;
             IsotopeEstimator.Process(chromPeakFeatures, parameter, iupacDB);
             CopyIsotopeInformation2DriftFeatures(chromPeakFeatures);
@@ -169,19 +169,19 @@ namespace CompMs.MsdialLcImMsApi.Process
         }
 
         private static Dictionary<double, List<MSDecResult>> SpectrumDeconvolution(
+            AnalysisFileBean file,
             IDataProvider provider,
             List<ChromatogramPeakFeature> chromPeakFeatures,
             ChromatogramPeaksDataSummaryDto summary,
             MsdialLcImMsParameter parameter,
             IupacDatabase iupac,
-            Action<int> reportAction,
-            CancellationToken token) {
+            Action<int> reportAction, CancellationToken token) {
 
             var targetCE2MSDecResults = new Dictionary<double, List<MSDecResult>>();
             var initial_msdec = 30.0;
             var max_msdec = 30.0;
             var ceList = provider.LoadCollisionEnergyTargets();
-            if (parameter.AcquisitionType == Common.Enum.AcquisitionType.AIF) {
+            if (file.AcquisitionType == Common.Enum.AcquisitionType.AIF) {
                 for (int i = 0; i < ceList.Count; i++) {
                     var targetCE = Math.Round(ceList[i], 2); // must be rounded by 2 decimal points
                     if (targetCE <= 0) {
@@ -190,13 +190,13 @@ namespace CompMs.MsdialLcImMsApi.Process
                     }
                     var max_msdec_aif = max_msdec / ceList.Count;
                     var initial_msdec_aif = initial_msdec + max_msdec_aif * i;
-                    targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec_aif, max_msdec_aif).GetMS2DecResults(
+                    targetCE2MSDecResults[targetCE] = new Ms2Dec(file, initial_msdec_aif, max_msdec_aif).GetMS2DecResults(
                         provider, chromPeakFeatures, parameter, summary, iupac, reportAction, token, targetCE);
                 }
             }
             else {
                 var targetCE = ceList.IsEmptyOrNull() ? -1 : Math.Round(ceList[0], 2);
-                targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(
+                targetCE2MSDecResults[targetCE] = new Ms2Dec(file, initial_msdec, max_msdec).GetMS2DecResults(
                        provider, chromPeakFeatures, parameter, summary, iupac, reportAction, token, targetCE);
             }
             return targetCE2MSDecResults;
@@ -222,16 +222,16 @@ namespace CompMs.MsdialLcImMsApi.Process
         }
 
         private static void PeakCharacterization(
+            AnalysisFileBean file,
             MSDecResultCollection[] mSDecResultCollections,
             IDataProvider provider,
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            MsdialLcImMsParameter parameter,
-            Action<int> reportAction) {
+            MsdialLcImMsParameter parameter, Action<int> reportAction) {
 
-            new PeakCharacterEstimator(90, 10).Process(provider, chromPeakFeatures, mSDecResultCollections.Any() ? mSDecResultCollections.Argmin(kvp => kvp.CollisionEnergy).MSDecResults : null,
+            new PeakCharacterEstimator(90, 10).Process(file, provider, chromPeakFeatures, mSDecResultCollections.Any() ? mSDecResultCollections.Argmin(kvp => kvp.CollisionEnergy).MSDecResults : null,
                 evaluator,
-                parameter, reportAction);
+parameter, reportAction);
         }
 
         private static void SaveToFile(

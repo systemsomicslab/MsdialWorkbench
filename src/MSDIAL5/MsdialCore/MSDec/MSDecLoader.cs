@@ -23,6 +23,8 @@ namespace CompMs.MsdialCore.MSDec {
 
         }
 
+        public bool IsDisposed => _disposedValue;
+
         private static FileStream FileOpen(string deconvolutionFile) {
             if (!File.Exists(deconvolutionFile)) {
                 throw new ArgumentException(nameof(deconvolutionFile));

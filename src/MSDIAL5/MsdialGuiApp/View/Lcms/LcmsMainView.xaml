@@ -151,6 +151,8 @@
     </UserControl.Resources>
     <UserControl.InputBindings>
         <KeyBinding Gesture="Ctrl+D" Command="{Binding SelectedViewModel.Value.SetUnknownCommand, Mode=OneWay}"/>
+        <KeyBinding Gesture="Ctrl+Z" Command="{Binding SelectedViewModel.Value.UndoManagerViewModel.UndoCommand, Mode=OneWay}"/>
+        <KeyBinding Gesture="Ctrl+Y" Command="{Binding SelectedViewModel.Value.UndoManagerViewModel.RedoCommand, Mode=OneWay}"/>
     </UserControl.InputBindings>
 
     <Grid Name="Grid_MainWindow">
@@ -200,7 +202,6 @@
                                 ItemsSource="{Binding ResultViewModels}"
                                 SelectedItem="{Binding SelectedViewModel}"
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                                SelectionChanged="TabControl_PairwisePlotViewer_SelectionChanged"
                                 ItemContainerStyle="{StaticResource MainWindowTabItemStyle}"
                                 Grid.Row="1" Grid.Column="1" >
                         <TabControl.ItemTemplate>
@@ -365,15 +366,6 @@
                                     IsSynchronizedWithCurrentItem="True"
                                     ItemContainerStyle="{StaticResource MainWindowTabItemStyle}"
                                     Grid.Row="0">
-                            <TabControl.Style>
-                                <Style TargetType="TabControl">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding PeakDetailViewModels.Length}" Value="2">
-                                            <Setter Property="SelectedIndex" Value="0"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TabControl.Style>
                             <TabControl.ContentTemplate>
                                 <DataTemplate>
                                     <DataTemplate.Resources>
@@ -385,6 +377,9 @@
                                         </DataTemplate>
                                         <DataTemplate DataType="{x:Type info:MoleculeStructureViewModel}">
                                             <infoview:MoleculeStructureView/>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type info:MatchResultCandidatesViewModel}">
+                                            <infoview:MatchResultCandidatesView/>
                                         </DataTemplate>
                                     </DataTemplate.Resources>
                                     <ContentPresenter Content="{Binding}"/>
@@ -403,6 +398,10 @@
                                         </DataTemplate>
                                         <DataTemplate DataType="{x:Type info:MoleculeStructureViewModel}">
                                             <TextBlock Text="Structure"
+                                                       VerticalAlignment="Stretch"/>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type info:MatchResultCandidatesViewModel}">
+                                            <TextBlock Text="Candidates"
                                                        VerticalAlignment="Stretch"/>
                                         </DataTemplate>
                                     </DataTemplate.Resources>

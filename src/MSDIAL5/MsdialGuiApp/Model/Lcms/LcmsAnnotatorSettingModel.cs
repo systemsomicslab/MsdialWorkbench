@@ -37,13 +37,30 @@ namespace CompMs.App.Msdial.Model.Lcms
                 };
             }
             else { // meaning lbm
-                SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
-                    SimpleDotProductCutOff = 0.15F,
-                    WeightedDotProductCutOff = 0.15F,
-                    ReverseDotProductCutOff = 0.5F,
-                    MatchedPeaksPercentageCutOff = 0.0F,
-                    MinimumSpectrumMatch = 1
-                };
+
+                var type = dataBaseSettingModel.CollisionType;
+                switch (type) {
+                    case CollisionType.OAD:
+                    case CollisionType.EIEIO:
+                    case CollisionType.EID:
+                        SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
+                            SimpleDotProductCutOff = 0.05F,
+                            WeightedDotProductCutOff = 0.05F,
+                            ReverseDotProductCutOff = 0.25F,
+                            MatchedPeaksPercentageCutOff = 0.0F,
+                            MinimumSpectrumMatch = 1
+                        };
+                        break;
+                    default:
+                        SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
+                            SimpleDotProductCutOff = 0.15F,
+                            WeightedDotProductCutOff = 0.15F,
+                            ReverseDotProductCutOff = 0.5F,
+                            MatchedPeaksPercentageCutOff = 0.0F,
+                            MinimumSpectrumMatch = 1
+                        };
+                        break;
+                }
             }
         }
 

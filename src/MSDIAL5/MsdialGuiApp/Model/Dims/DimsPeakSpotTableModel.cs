@@ -19,7 +19,7 @@ namespace CompMs.App.Msdial.Model.Dims
     abstract class DimsPeakSpotTableModel<T> : PeakSpotTableModelBase<T>, IDimsPeakSpotTableModel where T: class
     {
         protected DimsPeakSpotTableModel(
-            ObservableCollection<T> peakSpots,
+            ReadOnlyObservableCollection<T> peakSpots,
             IReactiveProperty<T> target,
             double massMin, double massMax)
             : base(peakSpots, target) {
@@ -35,7 +35,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
     internal sealed class DimsAnalysisPeakTableModel : DimsPeakSpotTableModel<ChromatogramPeakFeatureModel>
     {
-        public DimsAnalysisPeakTableModel(ObservableCollection<ChromatogramPeakFeatureModel> peaks, IReactiveProperty<ChromatogramPeakFeatureModel> target)
+        public DimsAnalysisPeakTableModel(ReadOnlyObservableCollection<ChromatogramPeakFeatureModel> peaks, IReactiveProperty<ChromatogramPeakFeatureModel> target)
             : base(peaks, target, peaks.Select(peak => peak.Mass).DefaultIfEmpty().Min(), peaks.Select(peak => peak.Mass).DefaultIfEmpty().Max()) {
 
         }
@@ -44,7 +44,7 @@ namespace CompMs.App.Msdial.Model.Dims
     internal sealed class DimsAlignmentSpotTableModel : DimsPeakSpotTableModel<AlignmentSpotPropertyModel>
     {
         public DimsAlignmentSpotTableModel(
-            ObservableCollection<AlignmentSpotPropertyModel> spots,
+            ReadOnlyObservableCollection<AlignmentSpotPropertyModel> spots,
             IReactiveProperty<AlignmentSpotPropertyModel> target,
             IObservable<IBrushMapper<BarItem>> classBrush,
             FileClassPropertiesModel classProperties,

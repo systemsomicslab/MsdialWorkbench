@@ -125,7 +125,7 @@
 
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
-                            <Grid  FocusManager.FocusedElement="{Binding ElementName=TextBox_AnalyticalOrder.Value}">
+                            <Grid  FocusManager.FocusedElement="{Binding ElementName=TextBox_AnalyticalOrder}">
                                 <TextBox Name="TextBox_AnalyticalOrder" Text="{Binding AnalysisFileAnalyticalOrder.Value, UpdateSourceTrigger=PropertyChanged}" />
                             </Grid>
                         </DataTemplate>

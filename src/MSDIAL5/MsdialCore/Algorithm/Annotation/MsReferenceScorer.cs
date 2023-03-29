@@ -134,7 +134,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             if (result.InChIKey.IsEmptyOrNull()) {
                 result.TotalScore = result.TotalScore * 0.9F;
             }
-
             Validate(result, property, scan, reference, parameter);
 
             return result;

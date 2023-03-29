@@ -14,19 +14,17 @@ using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
-using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
-using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcImMsApi.Algorithm;
 using CompMs.MsdialLcImMsApi.Algorithm.Alignment;
 using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcImMsApi.Process;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -58,7 +56,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             List<AnalysisFileBean> analysisFiles = analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File).ToList();
             var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
             var metadataAccessorFactory = new LcimmsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter);
-            AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(PeakFilterModel, matchResultEvaluator.Contramap((IFilterable filterable) => filterable.MatchResults.Representative));
+            var currentAlignmentResult = this.ObserveProperty(m => m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(PeakFilterModel, matchResultEvaluator.Contramap((IFilterable filterable) => filterable.MatchResults.Representative), currentAlignmentResult);
             var peakGroup = new AlignmentExportGroupModel(
                 "Peaks",
                 new ExportMethod(
@@ -96,10 +95,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
-            AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, }, AlignmentFile, alignmentFileBeanModelCollection.Files, peakSpotSupplyer, storage.Parameter.DataExportParam);
-            this.ObserveProperty(m => m.AlignmentFile)
-                .Subscribe(file => AlignmentResultExportModel.AlignmentFile = file)
-                .AddTo(Disposables);
+            AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, }, this.ObserveProperty(m => m.AlignmentFile), alignmentFileBeanModelCollection.Files, peakSpotSupplyer, storage.Parameter.DataExportParam).AddTo(Disposables);
         }
 
         private FacadeMatchResultEvaluator matchResultEvaluator;
@@ -163,7 +159,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 Storage.Parameter,
                 Storage.AnalysisFiles,
                 PeakFilterModel,
-                AccumulatedPeakFilterModel)
+                AccumulatedPeakFilterModel,
+                _broker)
             .AddTo(Disposables);
         }
 
@@ -223,51 +220,22 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 async _ =>
                 {
                     RawMeasurement map(AnalysisFileBean file) {
-                        return DataAccess.LoadMeasurement(file, false, true, 5, 1000);
+                        return file.LoadRawMeasurement(false, true, 5, 1000);
                     }
                     AlignmentProcessFactory aFactory = new LcimmsAlignmentProcessFactory(Storage, matchResultEvaluator, providerFactory.ContraMap((Func<AnalysisFileBean, RawMeasurement>)map), accProviderFactory.ContraMap((Func<AnalysisFileBean, RawMeasurement>)map));
                     var alignmentFile = Storage.AlignmentFiles.Last();
+                    var alignmentFileModel = AlignmentFiles.Files.Last();
                     var aligner = aFactory.CreatePeakAligner();
-                    var result = await Task.Run(() => aligner.Alignment(Storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer)).ConfigureAwait(false);
-                    result.Save(alignmentFile);
-                    MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(Storage, result.AlignmentSpotProperties).ToList());
+                    var result = await Task.Run(() => alignmentFileModel.RunAlignment(aligner, chromatogramSpotSerializer)).ConfigureAwait(false);
+                    var tasks = new[]
+                    {
+                        alignmentFileModel.SaveAlignmentResultAsync(result),
+                        alignmentFileModel.SaveMSDecResultsAsync(alignmentFileModel.LoadMSDecResultsFromEachFiles(result.AlignmentSpotProperties)),
+                    };
+                    await Task.WhenAll(tasks).ConfigureAwait(false);
                 });
             _broker.Publish(request);
             return request.Result ?? false;
-        }
-
-        private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialLcImMsParameter> storage, IReadOnlyList<AlignmentSpotProperty> spots) {
-            var files = storage.AnalysisFiles;
-
-            var pointerss = new List<(int version, List<long> pointers, bool isAnnotationInfo)>();
-            foreach (var file in files) {
-                MsdecResultsReader.GetSeekPointers(file.DeconvolutionFilePath, out var version, out var pointers, out var isAnnotationInfo);
-                pointerss.Add((version, pointers, isAnnotationInfo));
-            }
-
-            var streams = new List<FileStream>();
-            try {
-                streams = files.Select(file => File.OpenRead(file.DeconvolutionFilePath)).ToList();
-                foreach (var spot in spots) {
-                    var repID = spot.RepresentativeFileID;
-                    var peakID = spot.AlignedPeakProperties[repID].GetMSDecResultID();
-                    var decResult = MsdecResultsReader.ReadMSDecResult(
-                        streams[repID], pointerss[repID].pointers[peakID],
-                        pointerss[repID].version, pointerss[repID].isAnnotationInfo);
-                    yield return decResult;
-                    foreach (var dSpot in spot.AlignmentDriftSpotFeatures) {
-                        var dRepID = dSpot.RepresentativeFileID;
-                        var dPeakID = dSpot.AlignedPeakProperties[dRepID].GetMSDecResultID();
-                        var dDecResult = MsdecResultsReader.ReadMSDecResult(
-                            streams[dRepID], pointerss[dRepID].pointers[dPeakID],
-                            pointerss[dRepID].version, pointerss[dRepID].isAnnotationInfo);
-                        yield return dDecResult;
-                    }
-                }
-            }
-            finally {
-                streams.ForEach(stream => stream.Close());
-            }
         }
 
         public void SaveProject() {

@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
@@ -10,15 +9,16 @@ using CompMs.MsdialLcImMsApi.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CompMs.MsdialLcImMsApi.Algorithm {
     public class Ms2Dec {
+        private readonly AnalysisFileBean _analysisFile;
 
         public double InitialProgress { get; set; } = 30.0;
         public double ProgressMax { get; set; } = 30.0;
 
-        public Ms2Dec(double InitialProgress, double ProgressMax) {
+        public Ms2Dec(AnalysisFileBean analysisFile, double InitialProgress, double ProgressMax) {
+            _analysisFile = analysisFile ?? throw new ArgumentNullException(nameof(analysisFile));
             this.InitialProgress = InitialProgress;
             this.ProgressMax = ProgressMax;
         }
@@ -44,8 +44,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             return msdecResults;
         }
 
-        public MSDecResult GetMS2DecResult(IDataProvider provider, ChromatogramPeakFeature rtChromPeak, ChromatogramPeakFeature dtChromPeak,
-            MsdialLcImMsParameter param, ChromatogramPeaksDataSummaryDto summary, IupacDatabase iupac, double targetCE) {
+        public MSDecResult GetMS2DecResult(IDataProvider provider, ChromatogramPeakFeature rtChromPeak, ChromatogramPeakFeature dtChromPeak, MsdialLcImMsParameter param, ChromatogramPeaksDataSummaryDto summary, IupacDatabase iupac, double targetCE) {
             if (dtChromPeak.MS2RawSpectrumID < 0) return MSDecObjectHandler.GetDefaultMSDecResult(dtChromPeak);
 
             // check target CE ID
@@ -74,7 +73,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             }
 
             if (curatedSpectra.IsEmptyOrNull()) return MSDecObjectHandler.GetDefaultMSDecResult(dtChromPeak);
-            if (!param.IsDoMs2ChromDeconvolution) {
+            if (!_analysisFile.IsDoMs2ChromDeconvolution) {
                 if (param.IsDoAndromedaMs2Deconvolution)
                     return MSDecObjectHandler.GetAndromedaSpectrum(dtChromPeak, curatedSpectra, param, iupac, Math.Abs(dtChromPeak.PeakCharacter.Charge));
                 else

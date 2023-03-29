@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
@@ -25,6 +26,30 @@ namespace CompMs.App.Msdial.Model.Loader
     public interface IMsSpectrumLoader<in T>
     {
         IObservable<List<SpectrumPeak>> LoadSpectrumAsObservable(T target);
+    }
+
+    public static class MsSpectrumLoaderExtension {
+        public static IMsSpectrumLoader<U> Contramap<T, U>(this IMsSpectrumLoader<T> loader, Func<U, IObservable<T>> map) {
+            return new ContramapImplLoader<T, U>(loader, map);
+        }
+
+        public static IMsSpectrumLoader<U> Contramap<T, U>(this IMsSpectrumLoader<T> loader, Func<U, T> map) {
+            return new ContramapImplLoader<T, U>(loader, u => Observable.Return(map(u)));
+        }
+
+        class ContramapImplLoader<T, U> : IMsSpectrumLoader<U> {
+            private readonly IMsSpectrumLoader<T> _loader;
+            private readonly Func<U, IObservable<T>> _map;
+
+            public ContramapImplLoader(IMsSpectrumLoader<T> loader, Func<U, IObservable<T>> map) {
+                _loader = loader;
+                _map = map;
+            }
+
+            public IObservable<List<SpectrumPeak>> LoadSpectrumAsObservable(U target) {
+                return _map(target).SelectSwitch(_loader.LoadSpectrumAsObservable);
+            }
+        }
     }
 
     internal sealed class MsRawSpectrumLoader : IMsSpectrumLoader<ChromatogramPeakFeatureModel>

@@ -45,7 +45,7 @@ namespace CompMs.MsdialLcMsApi.Process
             // feature detections
             token.ThrowIfCancellationRequested();
             Console.WriteLine("Peak picking started");
-            var chromPeakFeatures = _peakPickProcess.Pick(provider, token, reportAction);
+            var chromPeakFeatures = _peakPickProcess.Pick(file, provider, token, reportAction);
 
             var summaryDto = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, chromPeakFeatures.Items);
             file.ChromPeakFeaturesSummary = summaryDto;
@@ -53,12 +53,12 @@ namespace CompMs.MsdialLcMsApi.Process
             // chrom deconvolutions
             token.ThrowIfCancellationRequested();
             Console.WriteLine("Deconvolution started");
-            var mSDecResultCollections = _spectrumDeconvolutionProcess.Deconvolute(provider, chromPeakFeatures.Items, summaryDto, reportAction, token);
+            var mSDecResultCollections = _spectrumDeconvolutionProcess.Deconvolute(provider, chromPeakFeatures.Items, file, summaryDto, reportAction, token);
 
             // annotations
             token.ThrowIfCancellationRequested();
             Console.WriteLine("Annotation started");
-            _peakAnnotationProcess.Annotate(mSDecResultCollections, chromPeakFeatures.Items, provider, token, reportAction);
+            _peakAnnotationProcess.Annotate(file, mSDecResultCollections, chromPeakFeatures.Items, provider, token, reportAction);
 
             // file save
             token.ThrowIfCancellationRequested();
@@ -77,7 +77,7 @@ namespace CompMs.MsdialLcMsApi.Process
             var chromPeakFeatures = await peakTask.ConfigureAwait(false);
             chromPeakFeatures.ClearMatchResultProperties();
             var mSDecResultCollections = await resultsTask.ConfigureAwait(false);
-            _peakAnnotationProcess.Annotate(mSDecResultCollections, chromPeakFeatures.Items, provider, token, reportAction);
+            _peakAnnotationProcess.Annotate(file, mSDecResultCollections, chromPeakFeatures.Items, provider, token, reportAction);
 
             // file save
             token.ThrowIfCancellationRequested();

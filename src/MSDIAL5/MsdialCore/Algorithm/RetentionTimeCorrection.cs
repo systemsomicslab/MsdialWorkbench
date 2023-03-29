@@ -26,7 +26,7 @@ namespace CompMs.MsdialCore.Algorithm {
             List<MoleculeMsReference> iStdLib, AnalysisFileBean property, RetentionTimeCorrectionParam rtParam) {
             System.Diagnostics.Debug.WriteLine("num lib: " + iStdLib.Count);
             
-            var stdList = GetStdPair(provider, param, iStdLib);
+            var stdList = GetStdPair(property, provider, param, iStdLib);
 
             // original RT array
             var spectrumList = provider.LoadMsSpectrums();
@@ -35,13 +35,13 @@ namespace CompMs.MsdialCore.Algorithm {
         }
 
         private static List<StandardPair> GetStdPair(
-            IDataProvider provider,
-            ParameterBase param, List<MoleculeMsReference> iStdLib) {
+            AnalysisFileBean file,
+            IDataProvider provider, ParameterBase param, List<MoleculeMsReference> iStdLib) {
             if (iStdLib.IsEmptyOrNull()) return new List<StandardPair>();
 
             var targetList = new List<StandardPair>();
             var peakpickCore = new PeakSpottingCore(param);
-            var rawSpectra = new RawSpectra(provider, param.IonMode, param.AcquisitionType);
+            var rawSpectra = new RawSpectra(provider, param.IonMode, file.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(param.RetentionTimeBegin, param.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
             foreach (var i in iStdLib) {
                 var startMass = i.PrecursorMz;
