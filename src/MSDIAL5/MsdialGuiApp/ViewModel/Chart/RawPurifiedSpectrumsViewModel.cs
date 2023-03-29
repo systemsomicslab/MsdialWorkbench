@@ -141,5 +141,35 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReadOnlyReactivePropertySlim<IBrushMapper<SpectrumComment>> UpperSpectrumBrushSource { get; }
         public ReadOnlyReactivePropertySlim<IBrushMapper<SpectrumComment>> LowerSpectrumBrushSource { get; }
+
+        public List<object> Items {
+            get {
+                return new List<object>
+                {
+                    new
+                    {
+                        Spectrum = UpperSpectrum,
+                        IsLoaded = UpperSpectrumLoaded,
+                        VerticalAxis = UpperVerticalAxis,
+                        HorizontalProperty = HorizontalProperty,
+                        VerticalProperty = VerticalProperty,
+                        LabelProperty = LabelProperty,
+                        OrderingProperty = OrderingProperty,
+                        BrushSource = UpperSpectrumBrushSource,
+                    },
+                    new
+                    {
+                        Spectrum = LowerSpectrum,
+                        IsLoaded = LowerSpectrumLoaded,
+                        VerticalAxis = LowerVerticalAxis,
+                        HorizontalProperty = HorizontalProperty,
+                        VerticalProperty = VerticalProperty,
+                        LabelProperty = LabelProperty,
+                        OrderingProperty = OrderingProperty,
+                        BrushSource = LowerSpectrumBrushSource,
+                    }
+                };
+            }
+        }
     }
 }
