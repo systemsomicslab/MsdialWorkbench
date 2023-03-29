@@ -28,8 +28,13 @@ namespace CompMs.App.Msdial.Model.Imaging
             var pf = PixelFormats.Indexed8;
             var stride = (pf.BitsPerPixel + 7) / 8;
             var image = new byte[width * stride * height];
-            var zmin = features.IntensityArray.DefaultIfEmpty(0).Min();
-            var zmax = features.IntensityArray.DefaultIfEmpty(255).Max();
+            var wmin = features.IntensityArray.DefaultIfEmpty(0).Min();
+            var wmax = features.IntensityArray.DefaultIfEmpty(255).Max();
+            var zmin = wmin + (wmax - wmin) * 0.05;
+            var zmax = wmax - (wmax - wmin) * 0.05;
+            if (zmin == zmax) {
+                zmax = zmin - 1;
+            }
             foreach (var (intensity, info) in features.IntensityArray.Zip(frameInfos.Infos, (x, y) => (x, y))) {
                 image[width * stride * (info.YIndexPos - ymin) + (info.XIndexPos - xmin) * stride] = (byte)Math.Max(1, (intensity - zmin) / (zmax - zmin) * 255);
             }
