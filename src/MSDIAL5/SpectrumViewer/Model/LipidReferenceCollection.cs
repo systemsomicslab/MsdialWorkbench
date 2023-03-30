@@ -24,7 +24,7 @@ namespace CompMs.App.SpectrumViewer.Model
 
             lipidParser = FacadeLipidParser.Default;
             lipidGenerator = new LipidGenerator(new TotalChainVariationGenerator(new Omega3nChainGenerator(), 6));
-            spectrumGenerator = FacadeLipidSpectrumGenerator.Default;
+            spectrumGenerator = FacadeLipidSpectrumGenerator.OadLipidGenerator;
         }
 
         public string Name { get => Lipid.ToString(); }
