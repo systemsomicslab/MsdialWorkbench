@@ -182,7 +182,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         private static ViewModelSwitcher PrepareMassSpectrumViewModels(IObservable<ImmsAnalysisViewModel> analysisAsObservable, IObservable<ImmsAlignmentViewModel> alignmentAsObservable) {
             var rawdec = analysisAsObservable.Select(vm => vm?.RawDecSpectrumsViewModel);
-            var rawpur = Observable.Never<ViewModelBase>(); // analysisAsObservable.Select(vm => vm?.RawPurifiedSpectrumsViewModel);
+            var rawpur = Observable.Return<ViewModelBase>(null); // analysisAsObservable.Select(vm => vm?.RawPurifiedSpectrumsViewModel);
             var ms2chrom = analysisAsObservable.Select(vm => vm?.Ms2ChromatogramsViewModel);
             var repref = alignmentAsObservable.Select(vm => vm?.Ms2SpectrumViewModel);
             return new ViewModelSwitcher(rawdec, repref, new IObservable<ViewModelBase>[] { rawdec, ms2chrom, rawpur, repref});

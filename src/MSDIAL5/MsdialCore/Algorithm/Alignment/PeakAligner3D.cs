@@ -32,21 +32,22 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var accProvider = AccumulateDataProviderFactory.Create(analysisFile);
             var rawSpectras = new Dictionary<IonMode, Lazy<RawSpectra>>
             {
-                { IonMode.Positive, new Lazy<RawSpectra>(() => new RawSpectra(accProvider, IonMode.Positive, Param.AcquisitionType)) },
-                { IonMode.Negative, new Lazy<RawSpectra>(() => new RawSpectra(accProvider, IonMode.Negative, Param.AcquisitionType)) },
+                { IonMode.Positive, new Lazy<RawSpectra>(() => new RawSpectra(accProvider, IonMode.Positive, analysisFile.AcquisitionType)) },
+                { IonMode.Negative, new Lazy<RawSpectra>(() => new RawSpectra(accProvider, IonMode.Negative, analysisFile.AcquisitionType)) },
             };
             var rtRange = new ChromatogramRange(double.MinValue, double.MaxValue, ChromXType.RT, ChromXUnit.Min);
             var dRawSpectras = new Dictionary<IonMode, Lazy<RawSpectra>>
             {
-                { IonMode.Positive, new Lazy<RawSpectra>(() => new RawSpectra(rawProvider, IonMode.Positive, Param.AcquisitionType)) },
-                { IonMode.Negative, new Lazy<RawSpectra>(() => new RawSpectra(rawProvider, IonMode.Negative, Param.AcquisitionType)) },
+                { IonMode.Positive, new Lazy<RawSpectra>(() => new RawSpectra(rawProvider, IonMode.Positive, analysisFile.AcquisitionType)) },
+                { IonMode.Negative, new Lazy<RawSpectra>(() => new RawSpectra(rawProvider, IonMode.Negative, analysisFile.AcquisitionType)) },
             };
             var dtRange = new ChromatogramRange(double.MinValue, double.MaxValue, ChromXType.Drift, ChromXUnit.Msec);
 
             var peakInfos = new List<ChromatogramPeakInfo>();
             foreach ((var peak, var spot) in peaks.Zip(spots)) {
+                var rawSpectra = rawSpectras[peak.IonMode].Value;
                 if (spot.AlignedPeakProperties.FirstOrDefault(p => p.FileID == analysisFile.AnalysisFileId).MasterPeakID < 0) {
-                    Filler3d.GapFillFirst(accumulated, spot, analysisFile.AnalysisFileId);
+                    Filler3d.GapFillFirst(rawSpectra, spot, analysisFile.AnalysisFileId);
                 }
                 if (DataObjConverter.GetRepresentativeFileID(spot.AlignedPeakProperties.Where(p => p.PeakID >= 0).ToArray()) == analysisFile.AnalysisFileId) {
                     var index = accumulated.LowerBound(peak.MS1AccumulatedMs1RawSpectrumIdTop, (s, id) => s.Index.CompareTo(id));
@@ -60,7 +61,6 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
                 // UNDONE: retrieve spectrum data
                 var detected = spot.AlignedPeakProperties.Where(x => x.MasterPeakID >= 0);
-                var rawSpectra = rawSpectras[peak.IonMode].Value;
                 var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(peak.Mass, (detected.Max(x => x.Mass) - detected.Min(x => x.Mass)) * 1.5f, rtRange);
                 var peakInfo = new ChromatogramPeakInfo(
                     peak.FileID, chromatogram.Peaks,

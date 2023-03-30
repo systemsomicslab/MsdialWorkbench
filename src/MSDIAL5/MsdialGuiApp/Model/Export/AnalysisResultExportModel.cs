@@ -129,7 +129,7 @@ namespace CompMs.App.Msdial.Model.Export
 
         public void Export(Stream stream, IReadOnlyList<ChromatogramPeakFeature> features, IDataProvider provider, SpectraType spectraType, AnalysisFileBeanModel fileBeanModel) {
             var msdecs = spectraType.GetSpectra(fileBeanModel);
-            Exporter.Export(stream, features, msdecs, provider, spectraType.Accessor);
+            Exporter.Export(stream, features, msdecs, provider, spectraType.Accessor, fileBeanModel.File);
         }
     }
 

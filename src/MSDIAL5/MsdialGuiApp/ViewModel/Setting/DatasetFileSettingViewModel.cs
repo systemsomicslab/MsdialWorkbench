@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.DataObj;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
@@ -21,7 +22,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             IsReadOnly = model.IsReadOnly;
 
-            AnalysisFilePropertyCollection = Model.Files
+            AnalysisFilePropertyCollection = Model.FileModels
                 .ToReadOnlyReactiveCollection(v => new AnalysisFileBeanViewModel(v))
                 .AddTo(Disposables);
 
@@ -57,6 +58,16 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             IsEnabled = isEnabled.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
+            SelectedAcquisitionType = model.ToReactivePropertySlimAsSynchronized(m => m.SelectedAcquisitionType).AddTo(Disposables);
+            SetSelectedAcquisitionTypeCommand = new[]
+            {
+                Observable.Return(!model.IsReadOnly),
+                SelectedAcquisitionType.Select(x => Enum.IsDefined(typeof(AcquisitionType), x)),
+            }.CombineLatestValuesAreAllTrue()
+                .ToReactiveCommand()
+                .WithSubscribe(SetSelectedAquisitionTypeToAll)
+                .AddTo(Disposables);
+
             ObserveHasErrors = new[]
             {
                 analysisFileHasError,
@@ -88,6 +99,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         }
 
         public DatasetFileSettingModel Model { get; }
+
+        public ReactivePropertySlim<AcquisitionType> SelectedAcquisitionType { get; }
+        public ReactiveCommand SetSelectedAcquisitionTypeCommand { get; }
 
         public bool IsReadOnly { get; }
 
@@ -127,6 +141,15 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         }
 
         private static readonly string FileNameDuplicateErrorMessage = "File name duplicated.";
+
+        private void SetSelectedAquisitionTypeToAll() {
+            if (IsReadOnly) {
+                return;
+            }
+            foreach (var file in AnalysisFilePropertyCollection) {
+                file.AcquisitionType.Value = SelectedAcquisitionType.Value;
+            }
+        }
     }
 
     public class SelectedAnalysisFileQuery

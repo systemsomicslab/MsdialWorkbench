@@ -56,6 +56,7 @@ namespace CompMs.MsdialCore.Export.Tests
         [TestMethod()]
         public void GetContentTest() {
             var parameter = new ParameterBase { CentroidMs1Tolerance = 0.01f, MS2DataType = MSDataType.Centroid, };
+            var stubFile = new AnalysisFileBean { AcquisitionType = AcquisitionType.DDA, };
             var refer = new MockRefer();
             var accessor = new TestAnalysisMetadataAccessor(refer, parameter, ExportspectraType.deconvoluted);
             var basePeak = new BaseChromatogramPeakFeature
@@ -100,7 +101,7 @@ namespace CompMs.MsdialCore.Export.Tests
                 },
             };
             var provider = new MockDataProvider();
-            var content = accessor.GetContent(feature, msdec, provider);
+            var content = accessor.GetContent(feature, msdec, provider, stubFile);
 
             Assert.AreEqual("100", content["Peak ID"]);
             Assert.AreEqual("Metabolite", content["Name"]);

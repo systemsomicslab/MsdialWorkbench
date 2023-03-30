@@ -516,6 +516,13 @@
     <SolidColorBrush x:Key="TabItem.Disabled.Border" Color="#D9D9D9"/>
 
     <Style x:Key="MainWindowTabItemStyle" TargetType="{x:Type TabItem}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                <Setter Property="IsEnabled" Value="False"/>
+            </DataTrigger>
+        </Style.Triggers>
+
+        <Setter Property="IsEnabled" Value="True"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
         <Setter Property="Foreground" Value="Black"/>
         <Setter Property="BorderBrush" Value="{StaticResource TabItem.Static.Border}"/>

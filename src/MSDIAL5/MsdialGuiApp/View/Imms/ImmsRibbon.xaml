@@ -97,7 +97,7 @@
                KeyTip="D">
         <RibbonGroup>
             <RibbonButton Label="Normalization" LargeImageSource="{StaticResource Data_normalization_is}"
-                          IsEnabled="False"
+                          Command="{Binding AlignmentViewModel.Value.ShowNormalizationSettingCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
                           KeyTip="N"/>
             <RibbonButton Label="Principal component analysis" LargeImageSource="{StaticResource PCA_is}"
                           IsEnabled="False"
@@ -174,7 +174,6 @@
                 </RibbonButton.ToolTip>
             </RibbonButton>
             <RibbonButton Label="Class property setting" LargeImageSource="{StaticResource Class_property_setting_is}"
-                          IsEnabled="False"
                           Command="{Binding DataContext.DatasetViewModel.Value.FileClassSettingCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                           KeyTip="C">
                 <RibbonButton.ToolTip>

@@ -62,7 +62,7 @@ namespace CompMs.App.MsdialConsole.Process {
                     var features = MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);
                     var msdecs = MsdecResultsReader.ReadMSDecResults(file.DeconvolutionFilePath, out _, out _);
                     using (var stream = streamManager.Create(file.AnalysisFileName + ".txt").Result) {
-                        exporter.Export(stream, features, msdecs, spectrumProviderFactory.Create(file), metadata);
+                        exporter.Export(stream, features, msdecs, spectrumProviderFactory.Create(file), metadata, file);
                     }
     #if DEBUG
                     Console.WriteLine($"Test: {features.SelectMany(feature => feature.DriftChromFeatures, (feature, drift) => (feature.Mass, feature.PeakHeightTop, drift.Mass, drift.PeakHeightTop).GetHashCode()).Aggregate((a, b) => a ^ b)}");

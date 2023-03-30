@@ -1,7 +1,6 @@
 ﻿using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,15 +24,8 @@ namespace CompMs.MsdialCore.Export
             sw.WriteLine(string.Join(Separator, headers));
         }
 
-        protected override void WriteContent(
-            StreamWriter sw,
-            ChromatogramPeakFeature features,
-            MSDecResult msdec,
-            IDataProvider provider,
-            IReadOnlyList<string> headers,
-            IAnalysisMetadataAccessor metaAccessor) {
-
-            var metadata = metaAccessor.GetContent(features, msdec, provider);
+        protected override void WriteContent(StreamWriter sw, ChromatogramPeakFeature features, MSDecResult msdec, IDataProvider provider, IReadOnlyList<string> headers, IAnalysisMetadataAccessor metaAccessor, AnalysisFileBean analysisFile) {
+            var metadata = metaAccessor.GetContent(features, msdec, provider, analysisFile);
             sw.WriteLine(string.Join(Separator, headers.Select(header => metadata[header])));
         }
     }

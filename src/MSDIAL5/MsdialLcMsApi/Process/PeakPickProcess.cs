@@ -15,8 +15,8 @@ namespace CompMs.MsdialLcMsApi.Process
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
         }
 
-        public ChromatogramPeakFeatureCollection Pick(IDataProvider provider, CancellationToken token, Action<int> reportAction) {
-            var chromPeakFeatures = new PeakSpotting(0, 30).Run(provider, _storage.Parameter, token, reportAction);
+        public ChromatogramPeakFeatureCollection Pick(AnalysisFileBean file, IDataProvider provider, CancellationToken token, Action<int> reportAction) {
+            var chromPeakFeatures = new PeakSpotting(file, 0, 30).Run(provider, _storage.Parameter, token, reportAction);
             IsotopeEstimator.Process(chromPeakFeatures, _storage.Parameter, _storage.IupacDatabase);
             return new ChromatogramPeakFeatureCollection(chromPeakFeatures);
         }

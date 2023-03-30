@@ -79,14 +79,14 @@ namespace CompMs.MsdialCore.Export {
             sw.WriteLine(String.Join("\t", header));
         }
 
-        public static void WriteChromPeakFeatureMetadata(StreamWriter sw, ChromatogramPeakFeature feature, MSDecResult msdec, 
-            List<RawSpectrum> spectrumList, ParameterBase param, List<MoleculeMsReference> mspDB, List<MoleculeMsReference> textDB) {
+        public static void WriteChromPeakFeatureMetadata(StreamWriter sw, AnalysisFileBean file, ChromatogramPeakFeature feature,
+            MSDecResult msdec, List<RawSpectrum> spectrumList, ParameterBase param, List<MoleculeMsReference> mspDB, List<MoleculeMsReference> textDB) {
             var category = param.MachineCategory;
             var type = param.ExportSpectraType;
             var ms1tol = param.CentroidMs1Tolerance;
             var isotopes = category != MachineCategory.GCMS ? DataAccess.GetIsotopicPeaks(spectrumList, feature.MS1RawSpectrumIdTop, (float)feature.PrecursorMz, ms1tol) : new List<IsotopicPeak>();
             var isotopeString = isotopes.IsEmptyOrNull() ? "null" : String.Join(";", isotopes.Select(n => String.Join(" ", new string[] { String.Format("{0:0.00000}", n.Mass), String.Format("{0:0}", n.AbsoluteAbundance) })));
-            var spectrum = DataAccess.GetMassSpectrum(spectrumList, msdec, type, msdec.RawSpectrumID, param);
+            var spectrum = DataAccess.GetMassSpectrum(spectrumList, msdec, type, msdec.RawSpectrumID, param, file.AcquisitionType);
             var specString = spectrum.IsEmptyOrNull() ? "null" : String.Join(";", spectrum.Select(n => String.Join(" ", new string[] { String.Format("{0:0.00000}", n.Mass), String.Format("{0:0}", n.Intensity) })));
             var peakID = category == MachineCategory.GCMS ? msdec.ScanID.ToString() : feature.MasterPeakID.ToString();
             var name = category == MachineCategory.GCMS ? MoleculeMsRefDataRetrieve.GetCompoundName(msdec.MspID, mspDB) : feature.Name;

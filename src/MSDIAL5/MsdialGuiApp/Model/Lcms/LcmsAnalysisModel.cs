@@ -125,8 +125,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 .AddTo(Disposables);
 
             // Eic chart
-            var eicLoader = EicLoader.BuildForAllRange(this._provider, Parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
-            EicLoader = EicLoader.BuildForPeakRange(this._provider, Parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
+            var eicLoader = EicLoader.BuildForAllRange(analysisFileModel.File, provider, Parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
+            EicLoader = EicLoader.BuildForPeakRange(analysisFileModel.File, provider, Parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
             EicModel = new EicModel(Target, eicLoader) {
                 HorizontalTitle = PlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
@@ -211,7 +211,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             }.AddTo(Disposables);
 
             // Ms2 chromatogram
-            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawSpectrumLoader, provider, Parameter).AddTo(Disposables);
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawSpectrumLoader, provider, Parameter, analysisFileModel.AcquisitionType).AddTo(Disposables);
 
             // SurveyScan
             var msdataType = Parameter.MSDataType;

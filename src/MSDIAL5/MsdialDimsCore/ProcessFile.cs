@@ -48,7 +48,7 @@ namespace CompMs.MsdialDimsCore
 
             var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, param.MinimumDatapoints, param.MinimumAmplitude);
             if (peakPickResults.IsEmptyOrNull()) return;
-            var peakFeatures = ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, provider, param.AcquisitionType);
+            var peakFeatures = ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, provider, file.AcquisitionType);
 
             if (peakFeatures.Count == 0) return;
             // IsotopeEstimator.Process(peakFeatures, param, iupacDB); // in dims, skip the isotope estimation process.
@@ -68,7 +68,7 @@ namespace CompMs.MsdialDimsCore
             _annotationProcess.RunAnnotation(peakFeatures, msdecResults, provider, param.NumThreads, token, v => reportAction?.Invoke((int)v));
 
             var characterEstimator = new Algorithm.PeakCharacterEstimator(90, 10);
-            characterEstimator.Process(peakFeatures, msdecResults, _evaluator, param, reportAction, provider);
+            characterEstimator.Process(file, peakFeatures, msdecResults, _evaluator, param, reportAction, provider);
 
             MsdialPeakSerializer.SaveChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath, peakFeatures);
             MsdecResultsWriter.Write(file.DeconvolutionFilePath, msdecResults);
@@ -94,7 +94,7 @@ namespace CompMs.MsdialDimsCore
             _annotationProcess.RunAnnotation(peakFeatures.Items, msdecResults.MSDecResults, provider, param.NumThreads, token, v => reportAction?.Invoke((int)v));
 
             var characterEstimator = new Algorithm.PeakCharacterEstimator(90, 10);
-            characterEstimator.Process(peakFeatures.Items, msdecResults.MSDecResults, _evaluator, param, reportAction, provider);
+            characterEstimator.Process(file, peakFeatures.Items, msdecResults.MSDecResults, _evaluator, param, reportAction, provider);
 
             await peakFeatures.SerializeAsync(file, token).ConfigureAwait(false);
             reportAction?.Invoke(100);
@@ -121,7 +121,7 @@ namespace CompMs.MsdialDimsCore
 
             var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, param.MinimumDatapoints, param.MinimumAmplitude);
             if (peakPickResults.IsEmptyOrNull()) return;
-            var peakFeatures = ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, provider, param.AcquisitionType);
+            var peakFeatures = ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, provider, file.AcquisitionType);
 
             if (peakFeatures.Count == 0) return;
             // IsotopeEstimator.Process(peakFeatures, param, iupacDB); // in dims, skip the isotope estimation process.
@@ -141,7 +141,7 @@ namespace CompMs.MsdialDimsCore
             annotationProcess.RunAnnotation(peakFeatures, msdecResults, provider, param.NumThreads, token, v => reportAction?.Invoke((int)v));
 
             var characterEstimator = new Algorithm.PeakCharacterEstimator(90, 10);
-            characterEstimator.Process(peakFeatures, msdecResults, evaluator, param, reportAction, provider);
+            characterEstimator.Process(file, peakFeatures, msdecResults, evaluator, param, reportAction, provider);
 
             MsdialPeakSerializer.SaveChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath, peakFeatures);
             MsdecResultsWriter.Write(file.DeconvolutionFilePath, msdecResults);

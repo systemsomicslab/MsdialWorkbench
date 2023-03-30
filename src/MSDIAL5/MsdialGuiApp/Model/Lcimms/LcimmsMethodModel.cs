@@ -20,6 +20,7 @@ using CompMs.MsdialLcImMsApi.Algorithm.Alignment;
 using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcImMsApi.Process;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
@@ -55,7 +56,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             List<AnalysisFileBean> analysisFiles = analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File).ToList();
             var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
             var metadataAccessorFactory = new LcimmsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter);
-            AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(PeakFilterModel, matchResultEvaluator.Contramap((IFilterable filterable) => filterable.MatchResults.Representative));
+            var currentAlignmentResult = this.ObserveProperty(m => m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(PeakFilterModel, matchResultEvaluator.Contramap((IFilterable filterable) => filterable.MatchResults.Representative), currentAlignmentResult);
             var peakGroup = new AlignmentExportGroupModel(
                 "Peaks",
                 new ExportMethod(
@@ -93,10 +95,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
-            AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, }, AlignmentFile, alignmentFileBeanModelCollection.Files, peakSpotSupplyer, storage.Parameter.DataExportParam);
-            this.ObserveProperty(m => m.AlignmentFile)
-                .Subscribe(file => AlignmentResultExportModel.AlignmentFile = file)
-                .AddTo(Disposables);
+            AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, }, this.ObserveProperty(m => m.AlignmentFile), alignmentFileBeanModelCollection.Files, peakSpotSupplyer, storage.Parameter.DataExportParam).AddTo(Disposables);
         }
 
         private FacadeMatchResultEvaluator matchResultEvaluator;
@@ -160,7 +159,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 Storage.Parameter,
                 Storage.AnalysisFiles,
                 PeakFilterModel,
-                AccumulatedPeakFilterModel)
+                AccumulatedPeakFilterModel,
+                _broker)
             .AddTo(Disposables);
         }
 
