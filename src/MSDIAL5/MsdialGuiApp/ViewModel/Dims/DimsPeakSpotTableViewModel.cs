@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Graphics.Base;
@@ -12,95 +13,27 @@ using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    internal abstract class DimsPeakSpotTableViewModel : PeakSpotTableViewModelBase
+    internal sealed class DimsAnalysisPeakTableViewModel : AnalysisPeakTableViewModelBase
     {
-        protected DimsPeakSpotTableViewModel(
-            IDimsPeakSpotTableModel model,
-            IReactiveProperty<double> massLower, IReactiveProperty<double> massUpper,
-            IReactiveProperty<string> metaboliteFilterKeyword,
-            IReactiveProperty<string> commentFilterKeyword,
-            IReactiveProperty<string> ontologyFilterKeyword,
-            IReactiveProperty<string> adductFilterKeyword,
-            ICommand setUnknownCommand,
-            UndoManagerViewModel undoManagerViewModel)
-            : base(model, metaboliteFilterKeyword, commentFilterKeyword, ontologyFilterKeyword, adductFilterKeyword) {
-            if (massLower is null) {
-                throw new ArgumentNullException(nameof(massLower));
-            }
-
-            if (massUpper is null) {
-                throw new ArgumentNullException(nameof(massUpper));
-            }
-
+        public DimsAnalysisPeakTableViewModel(DimsAnalysisPeakTableModel model, IObservable<EicLoader> eicLoader, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
+            : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel, eicLoader) {
             MassMin = model.MassMin;
             MassMax = model.MassMax;
-            MassLower = massLower;
-            MassUpper = massUpper;
-            SetUnknownCommand = setUnknownCommand;
-            UndoManagerViewModel = undoManagerViewModel;
         }
 
         public double MassMin { get; }
-
         public double MassMax { get; }
-
-        public IReactiveProperty<double> MassLower { get; }
-
-        public IReactiveProperty<double> MassUpper { get; }
-        public ICommand SetUnknownCommand { get; }
-        public UndoManagerViewModel UndoManagerViewModel { get; }
     }
 
-    internal sealed class DimsAnalysisPeakTableViewModel : DimsPeakSpotTableViewModel
+    internal sealed class DimsAlignmentSpotTableViewModel : AlignmentSpotTableViewModelBase
     {
-        public DimsAnalysisPeakTableViewModel(
-            DimsPeakSpotTableModel<ChromatogramPeakFeatureModel> model,
-            IObservable<EicLoader> eicLoader,
-            IReactiveProperty<double> massLower,
-            IReactiveProperty<double> massUpper,
-            IReactiveProperty<string> metaboliteFilterKeyword,
-            IReactiveProperty<string> commentFilterKeyword,
-            IReactiveProperty<string> ontologyFilterKeyword,
-            IReactiveProperty<string> adductFilterKeyword,
-            IReactiveProperty<bool> isEditting,
-            ICommand setUnknownCommand,
-            UndoManagerViewModel undoManagerViewModel)
-            : base(model, massLower, massUpper, metaboliteFilterKeyword, commentFilterKeyword, ontologyFilterKeyword, adductFilterKeyword, setUnknownCommand, undoManagerViewModel) {
-            if (eicLoader is null) {
-                throw new ArgumentNullException(nameof(eicLoader));
-            }
-
-            EicLoader = eicLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            IsEditting = isEditting ?? throw new ArgumentNullException(nameof(isEditting));
+        public DimsAlignmentSpotTableViewModel(DimsAlignmentSpotTableModel model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
+            : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel) {
+            MassMin = model.MassMin;
+            MassMax = model.MassMax;
         }
 
-        public IReactiveProperty<bool> IsEditting { get; }
-        public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
-    }
-
-    internal sealed class DimsAlignmentSpotTableViewModel : DimsPeakSpotTableViewModel
-    {
-        public DimsAlignmentSpotTableViewModel(
-            DimsAlignmentSpotTableModel model,
-            IReactiveProperty<double> massLower,
-            IReactiveProperty<double> massUpper,
-            IReactiveProperty<string> metaboliteFilterKeyword,
-            IReactiveProperty<string> commentFilterKeyword,
-            IReactiveProperty<string> ontologyFilterKeyword,
-            IReactiveProperty<string> adductFilterKeyword,
-            IReactiveProperty isEdittng,
-            ICommand setUnknownCommand,
-            UndoManagerViewModel undoManagerViewModel)
-            : base(model, massLower, massUpper, metaboliteFilterKeyword, commentFilterKeyword, ontologyFilterKeyword, adductFilterKeyword, setUnknownCommand, undoManagerViewModel) {
-            BarItemsLoader = model.BarItemsLoader;
-            ClassBrush = model.ClassBrush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            IsEdittng = isEdittng ?? throw new ArgumentNullException(nameof(isEdittng));
-            FileClassPropertiesModel = model.FileClassProperties;
-        }
-
-        public IReactiveProperty IsEdittng { get; }
-        public IObservable<IBarItemsLoader> BarItemsLoader { get; }
-        public ReadOnlyReactivePropertySlim<IBrushMapper<BarItem>> ClassBrush { get; }
-        public FileClassPropertiesModel FileClassPropertiesModel { get; }
+        public double MassMin { get; }
+        public double MassMax { get; }
     }
 }

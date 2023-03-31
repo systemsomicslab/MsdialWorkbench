@@ -59,19 +59,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             var (ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused) = focusControlManager.Request();
             Ms2ChromatogramsViewModel = new Ms2ChromatogramsViewModel(model.Ms2ChromatogramsModel, ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused).AddTo(Disposables);
 
-            PeakTableViewModel = new DimsAnalysisPeakTableViewModel(
-                _model.PeakTableModel,
-                Observable.Return(_model.EicLoader),
-                PeakSpotNavigatorViewModel.MzLowerValue,
-                PeakSpotNavigatorViewModel.MzUpperValue,
-                PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
-                PeakSpotNavigatorViewModel.CommentFilterKeyword,
-                PeakSpotNavigatorViewModel.OntologyFilterKeyword,
-                PeakSpotNavigatorViewModel.AdductFilterKeyword,
-                PeakSpotNavigatorViewModel.IsEditting,
-                SetUnknownCommand,
-                UndoManagerViewModel)
-                .AddTo(Disposables);
+            PeakTableViewModel = new DimsAnalysisPeakTableViewModel(_model.PeakTableModel, Observable.Return(_model.EicLoader), PeakSpotNavigatorViewModel, SetUnknownCommand, UndoManagerViewModel).AddTo(Disposables);
 
             SearchCompoundCommand = model.CanSearchCompound
                 .ToReactiveCommand()

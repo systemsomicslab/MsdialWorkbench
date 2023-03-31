@@ -65,38 +65,38 @@
             <StackPanel Margin="5,0,0,0"
                         Grid.Column="1">
                 <TextBlock Text="Metabolite name filter"/>
-                <TextBox Text="{Binding MetaboliteFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
+                <TextBox Text="{Binding PeakSpotNavigatorViewModel.MetaboliteFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Stretch"/>
             </StackPanel>
 
             <StackPanel Margin="5,0,0,0"
                         Grid.Column="2">
                 <TextBlock Text="Comment filter"/>
-                <TextBox Text="{Binding CommentFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
+                <TextBox Text="{Binding PeakSpotNavigatorViewModel.CommentFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Stretch"/>
             </StackPanel>
 
             <rs:RangeSlider Tag="m/z range"
                             Minimum="{Binding MassMin, Mode=OneWay}"
                             Maximum="{Binding MassMax, Mode=OneWay}"
-                            LowerValue="{Binding MassLower.Value, Mode=TwoWay}"
-                            UpperValue="{Binding MassUpper.Value, Mode=TwoWay}"
+                            LowerValue="{Binding PeakSpotNavigatorViewModel.MzLowerValue.Value, Mode=TwoWay}"
+                            UpperValue="{Binding PeakSpotNavigatorViewModel.MzUpperValue.Value, Mode=TwoWay}"
                             Style="{StaticResource EditableRangeSlider}"
                             Margin="8,0"
                             Grid.Column="3"/>
             <rs:RangeSlider Tag="Retention time"
                             Minimum="{Binding RtMin, Mode=OneWay}"
                             Maximum="{Binding RtMax, Mode=OneWay}"
-                            LowerValue="{Binding RtLower.Value, Mode=TwoWay}"
-                            UpperValue="{Binding RtUpper.Value, Mode=TwoWay}"
+                            LowerValue="{Binding PeakSpotNavigatorViewModel.RtLowerValue.Value, Mode=TwoWay}"
+                            UpperValue="{Binding PeakSpotNavigatorViewModel.RtUpperValue.Value, Mode=TwoWay}"
                             Style="{StaticResource EditableRangeSlider}"
                             Margin="8,0"
                             Grid.Column="4"/>
             <rs:RangeSlider Tag="Mobility"
                             Minimum="{Binding DtMin, Mode=OneWay}"
                             Maximum="{Binding DtMax, Mode=OneWay}"
-                            LowerValue="{Binding DtLower.Value, Mode=TwoWay}"
-                            UpperValue="{Binding DtUpper.Value, Mode=TwoWay}"
+                            LowerValue="{Binding PeakSpotNavigatorViewModel.DtLowerValue.Value, Mode=TwoWay}"
+                            UpperValue="{Binding PeakSpotNavigatorViewModel.DtUpperValue.Value, Mode=TwoWay}"
                             Style="{StaticResource EditableRangeSlider}"
                             Margin="8,0"
                             Grid.Column="5"/>
@@ -114,7 +114,7 @@
                   VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                   behavior:DataGridCommitBehavior.Enable="True"
                   behavior:DataGridScrollToSelectionBehavior.Enable="True"
-                  behavior:DataGridIsEdittingBehavior.IsEditting="{Binding IsEditting.Value, Mode=OneWayToSource}"
+                  behavior:DataGridIsEdittingBehavior.IsEditting="{Binding PeakSpotNavigatorViewModel.IsEditting.Value, Mode=OneWayToSource}"
                   Grid.Row="1">
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">
