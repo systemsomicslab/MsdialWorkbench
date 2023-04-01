@@ -191,6 +191,115 @@ namespace CompMs.Common.Lipidomics {
             return null;
         }
 
+        public static LipidMolecule JudgeIfPhosphatidylglycerol(IMSScanProperty msScanProp, double ms2Tolerance,
+           double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PS 46:6, totalCarbon = 46 and totalDoubleBond = 6
+           int sn1Carbon, int sn2Carbon, int sn1Double, int sn2Double,
+           AdductIon adduct) {
+            var spectrum = msScanProp.Spectrum;
+            var candidates = new List<LipidMolecule>();
+
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (adduct.IonMode == IonMode.Positive) { // positive ion mode 
+                if (adduct.AdductIonName == "[M+NH4]+") {
+                    // seek -189.040227 (C3H8O6P+NH4)
+                    var threshold = 10.0;
+                    var diagnosticMz = theoreticalMz - 189.040227;
+                    var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    if (isClassIonFound == false) return null;
+
+                    // from here, acyl level annotation is executed.
+                    var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass;
+                    var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
+
+                    var query = new List<SpectrumPeak> {
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = nl_SN2, Intensity = 0.01 }
+                            };
+
+                    if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_SN1, diagnosticMz) &&
+                        LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_SN2, diagnosticMz)) {
+                        // meaning high possibility that the spectrum belongs to BMP
+                        return null;
+                    }
+
+                    var foundCount = 0;
+                    var averageIntensity = 0.0;
+                    LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
+
+                    if (foundCount == 2) {
+                        var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PG", LbmClass.PG, sn1Carbon, sn1Double,
+                            sn2Carbon, sn2Double, averageIntensity);
+                        candidates.Add(molecule);
+                    }
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("PG", LbmClass.PG, "", theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, 0, candidates, 2);
+                }
+                else if (adduct.AdductIonName == "[M+Na]+") {
+                    // seek -171.005851 (C3H8O6P) - 22.9892207 (Na+)
+                    var threshold = 10.0;
+                    var diagnosticMz = theoreticalMz - 171.005851 - 22.9892207;// + MassDiffDictionary.HydrogenMass;
+                    var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    if (isClassIonFound == false) return null;
+
+                    // from here, acyl level annotation is executed.
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("PG", LbmClass.PG, "", theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, 0, candidates, 2);
+
+                }
+            }
+            return null;
+        }
+
+        public static LipidMolecule JudgeIfBismonoacylglycerophosphate(IMSScanProperty msScanProp, double ms2Tolerance,
+           double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PS 46:6, totalCarbon = 46 and totalDoubleBond = 6
+           int sn1Carbon, int sn2Carbon, int sn1Double, int sn2Double,
+           AdductIon adduct) {
+            var spectrum = msScanProp.Spectrum;
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (adduct.IonMode == IonMode.Positive) { // positive ion mode 
+                if (adduct.AdductIonName == "[M+NH4]+") {
+                    // seek -189.040227 (C3H8O6P+NH4)
+                    var threshold = 0.01;
+                    var diagnosticMz = theoreticalMz - 189.040227;
+                    var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    //if (isClassIonFound == false) return null;
+
+                    // from here, acyl level annotation is executed.
+                    var candidates = new List<LipidMolecule>();
+                    var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass;
+                    var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
+
+                    var query = new List<SpectrumPeak> {
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 10 },
+                                new SpectrumPeak() { Mass = nl_SN2, Intensity = 10 }
+                            };
+
+                    if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, diagnosticMz, nl_SN1) &&
+                        LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, diagnosticMz, nl_SN2)) {
+                        // meaning high possibility that the spectrum belongs to PG
+                        return null;
+                    }
+
+                    var foundCount = 0;
+                    var averageIntensity = 0.0;
+                    LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
+
+                    if (foundCount == 2) { 
+                        var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("BMP", LbmClass.BMP, sn1Carbon, sn1Double,
+                            sn2Carbon, sn2Double, averageIntensity);
+                        candidates.Add(molecule);
+                    }
+                    if (candidates.Count == 0) return null;
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("BMP", LbmClass.BMP, "", theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, 0, candidates, 2);
+
+                }
+            }
+            return null;
+        }
+
+
+
         public static LipidMolecule JudgeIfLysopc(IMSScanProperty msScanProp, double ms2Tolerance,
             double theoreticalMz, int totalCarbon, int totalDoubleBond, // 
             int snCarbon, int snDoubleBond,
@@ -348,5 +457,78 @@ namespace CompMs.Common.Lipidomics {
             return null;
         }
 
+        public static LipidMolecule JudgeIfSphingomyelin(IMSScanProperty msScanProp, double ms2Tolerance,
+            double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
+            int sphCarbon, int acylCarbon, int sphDouble, int acylDouble,
+            AdductIon adduct) {
+            var spectrum = msScanProp.Spectrum;
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (adduct.IonMode == IonMode.Positive) { // positive ion mode 
+                if (adduct.AdductIonName == "[M+H]+") {
+                    // seek 184.07332 (C5H15NO4P)
+                    var threshold = 10.0;
+                    var diagnosticMz = 184.07332;
+                    var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    if (isClassIonFound == false) return null;
+                    // from here, acyl level annotation is executed.
+                    var candidates = new List<LipidMolecule>();
+                    if (sphCarbon <= 13) return null;
+                    if (sphCarbon == 16 && sphDouble >= 3) return null;
+                    if (acylCarbon < 8) return null;
+
+                    var C5H14NO4P = 183.066047;
+                    var C2H2N = 40.018724;
+
+                    var diagnosChain1 = LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + C2H2N + MassDiffDictionary.HydrogenMass + Proton;
+                    var diagnosChain2 = diagnosChain1 + C5H14NO4P - MassDiffDictionary.HydrogenMass;
+                    var query = new List<SpectrumPeak> {
+                                new SpectrumPeak() { Mass = diagnosChain1, Intensity = 0.5 },
+                                new SpectrumPeak() { Mass = diagnosChain2, Intensity = 1.0 }
+                            };
+                    
+
+                    var foundCount = 0;
+                    var averageIntensity = 0.0;
+                    LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
+
+                    if (foundCount > 1) { // the diagnostic acyl ion must be observed for level 2 annotation
+                        var molecule = LipidMsmsCharacterizationUtility.getCeramideMoleculeObjAsLevel2("SM", LbmClass.SM, "d", sphCarbon, sphDouble,
+                            acylCarbon, acylDouble, averageIntensity);
+                        candidates.Add(molecule);
+                    }
+                   
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("SM", LbmClass.SM, "d", theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, 0, candidates, 2);
+
+                }
+                else if (adduct.AdductIonName == "[M+Na]+") {
+                    // seek -59.0735 [M-C3H9N+Na]+
+                    var threshold = 20.0;
+                    var diagnosticMz = theoreticalMz - 59.0735;
+                    // seek -183.06604 [M-C5H14NO4P+Na]+
+                    var threshold2 = 30.0;
+                    var diagnosticMz2 = theoreticalMz - 183.06604;
+                    // seek -183.06604 [M-C5H16NO5P+H]+
+                    var threshold3 = 1;
+                    var diagnosticMz3 = theoreticalMz - 183.06604 - 39.993064;
+
+                    var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
+                    var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
+                    //if (isClassIonFound == !true || isClassIon2Found == !true || isClassIon3Found == !true) return null;
+                    if (isClassIonFound == false || isClassIon2Found == false) return null;
+
+                    // from here, acyl level annotation is executed.
+                    var candidates = new List<LipidMolecule>();
+                   
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("SM", LbmClass.SM, "d", theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, 0, candidates, 2);
+
+                }
+
+            }
+            
+            return null;
+        }
     }
 }

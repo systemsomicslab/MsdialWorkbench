@@ -133,7 +133,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 presensePercentageFactor = 0.5;
             }
 
-            var msmsScore = (result.WeightedDotProduct * dotProductFactor + result.SimpleDotProduct * dotProductFactor + result.ReverseDotProduct * revesrseDotProdFactor + result.MatchedPeaksPercentage * presensePercentageFactor) /
+            var msmsScore = (
+                result.WeightedDotProduct * dotProductFactor + 
+                result.SimpleDotProduct * dotProductFactor + 
+                result.ReverseDotProduct * revesrseDotProdFactor + 
+                result.MatchedPeaksPercentage * presensePercentageFactor) /
                 (dotProductFactor + dotProductFactor + revesrseDotProdFactor + presensePercentageFactor);
 
             if (result.AcurateMassSimilarity >= 0 && massFactor > 0)
