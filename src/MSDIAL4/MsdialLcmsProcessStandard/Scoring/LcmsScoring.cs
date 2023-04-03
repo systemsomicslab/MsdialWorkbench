@@ -212,7 +212,7 @@ namespace Msdial.Lcms.Dataprocess.Scoring
                 var result = GetLipidMoleculeAnnotationResult(expSpec, molecule, bin);
                 if (result != null) {
                     if (result.AnnotationLevel == 1) {
-                        if (compClass == "SM" && molecule.LipidName.Contains("3O"))
+                        if (compClass == "SM" && (molecule.LipidName.Contains("3O") || molecule.LipidName.Contains("O3")))
                             return defaultPresenceScore + 1.0; // add bonus
                         else
                             return defaultPresenceScore + 0.5; // add bonus
