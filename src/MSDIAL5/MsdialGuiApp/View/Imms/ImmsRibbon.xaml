@@ -37,32 +37,7 @@
     </Ribbon.ContextualTabGroups>
 
     <ribbon:MsdialProcessingTab DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
-    <RibbonTab Header="Data visualization"
-               KeyTip="D">
-        <RibbonGroup>
-            <RibbonButton Label="Normalization" LargeImageSource="{StaticResource Data_normalization_is}"
-                          Command="{Binding AlignmentViewModel.Value.ShowNormalizationSettingCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
-                          KeyTip="N"/>
-            <RibbonButton Label="Principal component analysis" LargeImageSource="{StaticResource PCA_is}"
-                          IsEnabled="False"
-                          KeyTip="P"/>
-            <RibbonButton Label="Partial least squares" LargeImageSource="{StaticResource PLS_is}"
-                          IsEnabled="False"
-                          KeyTip="R"/>
-            <RibbonButton Label="Partial least squares" LargeImageSource="{StaticResource PLS-DA_is}"
-                          IsEnabled="False"
-                          KeyTip="D"/>
-            <RibbonButton Label="Hierarchical clustering analysis" LargeImageSource="{StaticResource HCA_is}"
-                          IsEnabled="False"
-                          KeyTip="H"/>
-            <RibbonButton Label="Molecular spectrum networking" LargeImageSource="{StaticResource Molecular_networking_is}"
-                          IsEnabled="False"
-                          KeyTip="M"/>
-            <RibbonButton Label="Pathway" LargeImageSource="{StaticResource Pathway_is}"
-                          IsEnabled="False"
-                          KeyTip="W"/>
-        </RibbonGroup>
-    </RibbonTab>
+    <ribbon:MsdialDataVisualizationTab DataContext="{Binding}"/>
     <RibbonTab Header="Search"
                KeyTip="S">
         <RibbonGroup>
