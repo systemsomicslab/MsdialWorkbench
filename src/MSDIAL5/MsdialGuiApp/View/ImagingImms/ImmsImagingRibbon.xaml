@@ -5,8 +5,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         mc:Ignorable="d" 
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.ImagingImms"
+        xmlns:vmcore="clr-namespace:CompMs.App.Msdial.ViewModel.Core"
         xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
         xmlns:chartSetting="clr-namespace:CompMs.App.Msdial.View.ChartSetting"
+        xmlns:ribbon="clr-namespace:CompMs.App.Msdial.View.RibbonControl"
         Background="{StaticResource MainThemeColor}"
         d:Background="White"
         d:DataContext="{d:DesignInstance Type={x:Type vm:ImagingImmsMainViewModel}}"
@@ -19,79 +21,21 @@
         </ResourceDictionary>
     </Ribbon.Resources>
     <Ribbon.QuickAccessToolBar>
-        <RibbonQuickAccessToolBar>
-            <RibbonButton SmallImageSource="{StaticResource New_project_is}"
-                          Command="{Binding DataContext.CreateNewProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                          CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
-            <RibbonButton SmallImageSource="{StaticResource Open_is}"
-                          Command="{Binding DataContext.OpenProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                          CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
-            <RibbonButton SmallImageSource="{StaticResource Save_is}"
-                          Command="{Binding DataContext.SaveProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                          CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
-        </RibbonQuickAccessToolBar>
+        <ribbon:MsdialQuickAccessToolBar DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
     </Ribbon.QuickAccessToolBar>
     <Ribbon.HelpPaneContent>
-        <RibbonButton SmallImageSource="{StaticResource Version_is}"/>
+        <RibbonButton SmallImageSource="{StaticResource Version_is}"
+                      Command="{Binding Path=(Window.DataContext).(vmcore:MainWindowVM.ShowAboutCommand), RelativeSource={RelativeSource AncestorType=Window}}"/>
     </Ribbon.HelpPaneContent>
     <Ribbon.ApplicationMenu>
-        <RibbonApplicationMenu SmallImageSource="{StaticResource New_project_is}"
-                               KeyTip="F"
-                               Background="{StaticResource SubThemeColor}">
-            <RibbonApplicationMenuItem Header="New project" ImageSource="{StaticResource New_project_is}"
-                                       Command="{Binding DataContext.CreateNewProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                       CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-                                       KeyTip="N"/>
-            <RibbonApplicationMenuItem Header="Open project" ImageSource="{StaticResource Open_is}"
-                                       Command="{Binding DataContext.OpenProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                       CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-                                       KeyTip="O"/>
-            <RibbonApplicationSplitMenuItem Header="Save" ImageSource="{StaticResource Save_is}"
-                                            Command="{Binding DataContext.SaveProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                            KeyTip="S">
-                <RibbonApplicationMenuItem Header="Save as..." ImageSource="{StaticResource Save_as_is}"
-                                           Command="{Binding DataContext.SaveAsProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                           KeyTip="A"/>
-                <RibbonApplicationMenuItem Header="Save parameter as..."
-                                           Command="{Binding DataContext.DatasetViewModel.Value.SaveParameterAsCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
-            </RibbonApplicationSplitMenuItem>
-        </RibbonApplicationMenu>
+        <ribbon:MsdialApplicationMenu DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
     </Ribbon.ApplicationMenu>
     <Ribbon.ContextualTabGroups>
         <RibbonContextualTabGroup Header="Graph tools" Visibility="Visible" Background="{StaticResource MainThemeColor}"/>
     </Ribbon.ContextualTabGroups>
-    <RibbonTab Header="Processing"
-               KeyTip="P">
-        <RibbonGroup Header="Data">
-            <RibbonButton Label="All processing (from peak detection)" LargeImageSource="{StaticResource All_process_is}"
-                          Command="{Binding DataContext.ExecuteAllMethodProcessCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                          KeyTip="A">
-                <RibbonButton.ToolTip>Reanalysis for all data processing.</RibbonButton.ToolTip>
-            </RibbonButton>
-            <RibbonButton Label="Identification" LargeImageSource="{StaticResource From_annotation_process_is}"
-                          Command="{Binding DataContext.ExecuteIdentificationMethodProcessCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                          KeyTip="I">
-                <RibbonButton.ToolTip>Reanalysis for peak identification.</RibbonButton.ToolTip>
-            </RibbonButton>
-            <RibbonButton Label="Alignment" LargeImageSource="{StaticResource From_alignment_process_is}"
-                          Command="{Binding DataContext.ExecuteAlignmentMethodProcessCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                          KeyTip="L">
-                <RibbonButton.ToolTip>Reanalysis for peak alignment.</RibbonButton.ToolTip>
-            </RibbonButton>
-        </RibbonGroup>
-        <RibbonGroup Header="Post processing">
-            <RibbonButton Label="Amalgamation of different polarity peak list" LargeImageSource="{StaticResource Merging_pos_neg_data_is}"
-                          IsEnabled="False"
-                          KeyTip="M">
-                <RibbonButton.ToolTip>The adduct type can be evaluated by using different ion mode peak list.</RibbonButton.ToolTip>
-            </RibbonButton>
-            <RibbonButton Label="Quant mass manager" LargeImageSource="{StaticResource Quant_mass_manager_is}"
-                          IsEnabled="False"
-                          KeyTip="Q">
-                <RibbonButton.ToolTip>Users can define the quant masses for metabolic profiling in GC-MS project.</RibbonButton.ToolTip>
-            </RibbonButton>
-        </RibbonGroup>
-    </RibbonTab>
+
+    <ribbon:MsdialProcessingTab DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
+
     <RibbonTab Header="Data visualization"
                KeyTip="D">
         <RibbonGroup>

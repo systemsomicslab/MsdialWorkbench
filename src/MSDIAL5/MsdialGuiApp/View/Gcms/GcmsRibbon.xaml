@@ -21,4 +21,6 @@
     <Ribbon.ApplicationMenu>
         <ribbon:MsdialApplicationMenu DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
     </Ribbon.ApplicationMenu>
+
+    <ribbon:MsdialProcessingTab DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
 </Ribbon>
