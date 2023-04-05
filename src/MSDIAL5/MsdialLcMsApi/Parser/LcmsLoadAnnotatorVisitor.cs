@@ -23,7 +23,7 @@ namespace CompMs.MsdialLcMsApi.Parser
 
         public ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(StandardRestorationKey key, MoleculeDataBase database) {
             if (key.SourceType.HasFlag(SourceType.MspDB)) {
-                return new LcmsMspAnnotator(database, key.Parameter, Parameter.TargetOmics, key.Key, key.Priority);
+                return new LcmsMspAnnotator(database, key.Parameter, Parameter.TargetOmics, Parameter.CollistionType, key.Key, key.Priority);
             }
             else if (key.SourceType.HasFlag(SourceType.TextDB)) {
                 return new LcmsTextDBAnnotator(database, key.Parameter, key.Key, key.Priority);
@@ -32,7 +32,7 @@ namespace CompMs.MsdialLcMsApi.Parser
         }
 
         public ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(MspDbRestorationKey key, MoleculeDataBase database) {
-            return new LcmsMspAnnotator(database, Parameter.MspSearchParam, Parameter.TargetOmics, key.Key, key.Priority);
+            return new LcmsMspAnnotator(database, Parameter.MspSearchParam, Parameter.TargetOmics, Parameter.CollistionType, key.Key, key.Priority);
         }
 
         public ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(TextDbRestorationKey key, MoleculeDataBase database) {

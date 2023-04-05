@@ -56,7 +56,7 @@
                                   CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     </MenuItem>
                     <Separator/>
-                    <MenuItem Header="Duplicates selected peak spot" Command="{Binding DuplicatesCommand, Mode=OneTime}"/>
+                    <MenuItem Header="Duplicate selected peak spot" Command="{Binding DuplicatesCommand, Mode=OneTime}"/>
                 </ContextMenu>
             </chart:MultiChart.ContextMenu>
             <chart:ScatterControlSlim x:Name="alignmentScatter"

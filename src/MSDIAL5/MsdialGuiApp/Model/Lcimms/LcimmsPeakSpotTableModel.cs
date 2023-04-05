@@ -1,16 +1,17 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Table;
 using CompMs.Graphics.Base;
 using Reactive.Bindings;
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Lcimms
 {
-    interface ILcimmsPeakSpotTableModel : IPeakSpotTableModelBase {
+    internal interface ILcimmsPeakSpotTableModel : IPeakSpotTableModelBase {
         double MassMin { get; }
         double MassMax { get; }
         double RtMin { get; }
@@ -19,25 +20,22 @@ namespace CompMs.App.Msdial.Model.Lcimms
         double DtMax { get; }
     }
 
-    abstract class LcimmsPeakSpotTableModel<T> : PeakSpotTableModelBase<T>, ILcimmsPeakSpotTableModel where T : class
+    internal sealed class LcimmsAlignmentSpotTableModel : AlignmentSpotTableModelBase, ILcimmsPeakSpotTableModel
     {
-        public LcimmsPeakSpotTableModel(
-            ReadOnlyObservableCollection<T> peakSpots,
-            IReactiveProperty<T> target,
-            double massMin,
-            double massMax,
-            double rtMin,
-            double rtMax,
-            double dtMin,
-            double dtMax)
-            : base(peakSpots, target) {
-
-            MassMin = massMin;
-            MassMax = massMax;
-            RtMin = rtMin;
-            RtMax = rtMax;
-            DtMin = dtMin;
-            DtMax = dtMax;
+        public LcimmsAlignmentSpotTableModel(
+            IReadOnlyList<AlignmentSpotPropertyModel> peakSpots,
+            IReactiveProperty<AlignmentSpotPropertyModel> target,
+            IObservable<IBrushMapper<BarItem>> classBrush,
+            FileClassPropertiesModel classProperties,
+            IObservable<IBarItemsLoader> barItemsLoader,
+            PeakSpotNavigatorModel peakSpotNavigatorModel)
+            : base(peakSpots, target, classBrush, classProperties, barItemsLoader, peakSpotNavigatorModel) {
+            MassMin = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Min();
+            MassMax = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Max();
+            RtMin = peakSpots.Select(s => s.RT).DefaultIfEmpty().Min();
+            RtMax = peakSpots.Select(s => s.RT).DefaultIfEmpty().Max();
+            DtMin = peakSpots.Select(s => s.Drift).DefaultIfEmpty().Min();
+            DtMax = peakSpots.Select(s => s.Drift).DefaultIfEmpty().Max();
         }
 
         public double MassMin { get; }
@@ -48,35 +46,23 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public double DtMax { get; }
     }
 
-    internal sealed class LcimmsAlignmentSpotTableModel : LcimmsPeakSpotTableModel<AlignmentSpotPropertyModel>
+    internal sealed class LcimmsAnalysisPeakTableModel : PeakSpotTableModelBase<ChromatogramPeakFeatureModel>, ILcimmsPeakSpotTableModel
     {
-        public LcimmsAlignmentSpotTableModel(
-            ReadOnlyObservableCollection<AlignmentSpotPropertyModel> peakSpots,
-            IReactiveProperty<AlignmentSpotPropertyModel> target,
-            IObservable<IBrushMapper<BarItem>> classBrush,
-            FileClassPropertiesModel classProperties,
-            IObservable<IBarItemsLoader> barItemsLoader)
-            : base(peakSpots, target,
-                  peakSpots.DefaultIfEmpty().Min(peak => peak?.MassCenter) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.MassCenter) ?? 0d,
-                  peakSpots.DefaultIfEmpty().Min(peak => peak?.RT) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.RT) ?? 0d,
-                  peakSpots.DefaultIfEmpty().Min(peak => peak?.Drift) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.Drift) ?? 0d) {
-            ClassBrush = classBrush;
-            BarItemsLoader = barItemsLoader;
-            FileClassProperties = classProperties;
+        public LcimmsAnalysisPeakTableModel(IReadOnlyList<ChromatogramPeakFeatureModel> peakSpots, IReactiveProperty<ChromatogramPeakFeatureModel> target, PeakSpotNavigatorModel peakSpotNavigatorModel)
+            : base(peakSpots, target, peakSpotNavigatorModel) {
+            MassMin = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Min();
+            MassMax = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Max();
+            RtMin = peakSpots.Select(s => s.RT.Value).DefaultIfEmpty().Min();
+            RtMax = peakSpots.Select(s => s.RT.Value).DefaultIfEmpty().Max();
+            DtMin = peakSpots.Select(s => s.Drift.Value).DefaultIfEmpty().Min();
+            DtMax = peakSpots.Select(s => s.Drift.Value).DefaultIfEmpty().Max();
         }
 
-        public IObservable<IBrushMapper<BarItem>> ClassBrush { get; }
-        public IObservable<IBarItemsLoader> BarItemsLoader { get; }
-        public FileClassPropertiesModel FileClassProperties { get; }
-    }
-
-    internal sealed class LcimmsAnalysisPeakTableModel : LcimmsPeakSpotTableModel<ChromatogramPeakFeatureModel>
-    {
-        public LcimmsAnalysisPeakTableModel(ReadOnlyObservableCollection<ChromatogramPeakFeatureModel> peakSpots, IReactiveProperty<ChromatogramPeakFeatureModel> target)
-            : base(peakSpots, target,
-                peakSpots.DefaultIfEmpty().Min(peak => peak?.Mass) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0d,
-                peakSpots.DefaultIfEmpty().Min(peak => peak?.InnerModel.ChromXs.RT.Value) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.InnerModel.PeakFeature.ChromXsTop.RT.Value) ?? 0d,
-                peakSpots.DefaultIfEmpty().Min(peak => peak?.InnerModel.ChromXs.Drift.Value) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.InnerModel.PeakFeature.ChromXsTop.Drift.Value) ?? 0d) {
-        }
+        public double MassMin { get; }
+        public double MassMax { get; }
+        public double RtMin { get; }
+        public double RtMax { get; }
+        public double DtMin { get; }
+        public double DtMax { get; }
     }
 }

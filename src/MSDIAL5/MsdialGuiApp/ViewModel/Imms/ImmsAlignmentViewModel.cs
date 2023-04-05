@@ -64,16 +64,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             var (barChartViewFocusAction, barChartViewFocused) = focusControlManager.Request();
             BarChartViewModel = new Chart.BarChartViewModel(model.BarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
             AlignmentEicViewModel = new Chart.AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
-            AlignmentSpotTableViewModel = new ImmsAlignmentSpotTableViewModel(
-                model.AlignmentSpotTableModel,
-                PeakSpotNavigatorViewModel.MzLowerValue, PeakSpotNavigatorViewModel.MzUpperValue,
-                PeakSpotNavigatorViewModel.DtLowerValue, PeakSpotNavigatorViewModel.DtUpperValue,
-                PeakSpotNavigatorViewModel.MetaboliteFilterKeyword, PeakSpotNavigatorViewModel.CommentFilterKeyword,
-                PeakSpotNavigatorViewModel.OntologyFilterKeyword, PeakSpotNavigatorViewModel.AdductFilterKeyword,
-                PeakSpotNavigatorViewModel.IsEditting,
-                SetUnknownCommand,
-                UndoManagerViewModel)
-                .AddTo(Disposables);
+            AlignmentSpotTableViewModel = new ImmsAlignmentSpotTableViewModel(model.AlignmentSpotTableModel, PeakSpotNavigatorViewModel, SetUnknownCommand, UndoManagerViewModel).AddTo(Disposables);
 
             SearchCompoundCommand = model.CanSearchCompound
                 .ToReactiveCommand()
