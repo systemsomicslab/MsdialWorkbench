@@ -50,36 +50,9 @@
     </Ribbon.ContextualTabGroups>
 
     <ribbon:MsdialProcessingTab DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
-    <ribbon:MsdialDataVisualizationTab DataContext="{Binding}"/>
-    <ribbon:MsdialSearchTab DataContext="{Binding}"/>
-    <RibbonTab Header="View"
-               KeyTip="V">
-        <RibbonGroup>
-            <!--<RibbonButton Label="Display ion table" LargeImageSource="{StaticResource Ion_table_is}"
-                          IsEnabled="True"
-                          Command="{Binding SelectedViewModel.ShowIonTableCommand}"
-                          KeyTip="I"/>-->
-            <!--<RibbonButton Label="Display total ion chromatogram" LargeImageSource="{StaticResource Total_ion_chromatogram_is}"
-                          IsEnabled="True"
-                          Command="{Binding ShowTicCommand}"
-                          KeyTip="T"/>
-            <RibbonButton Label="Display extracted ion chromatogram" LargeImageSource="{StaticResource Extracted_ion_chromatogram_is}"
-                          IsEnabled="True"
-                          Command="{Binding ShowEicCommand}"
-                          KeyTip="E"/>
-            <RibbonButton Label="Display base peak chromatogram" LargeImageSource="{StaticResource Base_peak_chromatogram_is}"
-                          IsEnabled="True"
-                          Command="{Binding ShowBpcCommand}"
-                          KeyTip="B"/>
-            <RibbonButton Label="Display TIC, BPC, and most abundant ion's EIC" LargeImageSource="{StaticResource TIC_BPC_and_most_abundanct_EIC_is}"
-                          IsEnabled="True"
-                          Command="{Binding ShowTicBpcRepEICCommand}"
-                          KeyTip="C"/>-->
-            <RibbonButton Label="Display retention time correction window"
-                          IsEnabled="false"
-                          KeyTip="R"/>
-        </RibbonGroup>
-    </RibbonTab>
+    <ribbon:MsdialDataVisualizationTab/>
+    <ribbon:MsdialSearchTab/>
+    <ribbon:MsdialViewTab/>
     <RibbonTab Header="Option"
                KeyTip="O">
         <RibbonGroup>
