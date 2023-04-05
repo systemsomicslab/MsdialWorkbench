@@ -3075,7 +3075,7 @@ namespace Riken.Metabolomics.Lipidomics
                  ? string.Empty
                  : oxidized == 1
                      ? ";O"
-                     : ";" + oxidized + "O";
+                     : ";O" + oxidized;
             return chainPrefix + carbon + ":" + rdbString + oxString;
         }
 
@@ -3107,7 +3107,7 @@ namespace Riken.Metabolomics.Lipidomics
             getPrefixSuffix(sn2AcylChainString, out sn2Prefix, out sn2Suffix);
 
             var oxtotal = sn1OxidizedCount + sn2OxidizedCount;
-            var oxString = oxtotal == 0 ? string.Empty : "+" + oxtotal + "O";
+            var oxString = oxtotal == 0 ? string.Empty : "+"  + "O" + oxtotal;
 
             var totalChain = sn1Prefix + (sn1CarbonCount + sn2CarbonCount).ToString() + ":" +
                 (sn1DoubleBond + sn2DoubleBond).ToString() + sn1Suffix + oxString; // d48:2
@@ -3353,7 +3353,7 @@ namespace Riken.Metabolomics.Lipidomics
             getPrefixSuffix(sn3AcylChainString, out sn3Prefix, out sn3Suffix);
 
             var oxtotal = sn1OxidizedCount + sn2OxidizedCount + sn3OxidizedCount;
-            var oxString = oxtotal == 0 ? string.Empty : "+" + oxtotal + "O";
+            var oxString = oxtotal == 0 ? string.Empty : "+" + "O" + oxtotal;
             var totalChain = sn1Prefix + (sn1CarbonCount + sn2CarbonCount + sn3CarbonCount).ToString() + ":" +
                 (sn1DoubleBond + sn2DoubleBond + sn3DoubleBond).ToString() + sn1Suffix + oxString; // d48:2
             var sublevelLipidName = lipidheader + " " + totalChain; // SM d48:2
@@ -3495,7 +3495,7 @@ namespace Riken.Metabolomics.Lipidomics
             getPrefixSuffix(sn4AcylChainString, out sn4Prefix, out sn4Suffix);
 
             var oxtotal = sn1OxidizedCount + sn2OxidizedCount + sn3OxidizedCount + sn4OxidizedCount;
-            var oxString = oxtotal == 0 ? string.Empty : "+" + oxtotal + "O";
+            var oxString = oxtotal == 0 ? string.Empty : "+" + "O" + oxtotal;
             var totalChain = sn1Prefix + (sn1CarbonCount + sn2CarbonCount + sn3CarbonCount + sn4CarbonCount).ToString() + ":" +
                 (sn1DoubleBond + sn2DoubleBond + sn3DoubleBond + sn4DoubleBond).ToString() + sn1Suffix + oxString; // d48:2
             var sublevelLipidName = lipidheader + " " + totalChain; // SM d48:2
