@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vm="clr-namespace:CompMs.App.RawDataViewer.ViewModel"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              xmlns:ccore="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type={x:Type vm:RawMsSpectrumCheckViewModel}}"
@@ -22,6 +23,26 @@
                                   Background="WhiteSmoke"
                                   BorderBrush="Black"
                                   Grid.Row="0">
+            <chart:MultiChart.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Save image as..">
+                        <MenuItem Header="Save as emf"
+                                  Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Save as png"
+                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                    <MenuItem Header="Copy image as..">
+                        <MenuItem Header="Copy as emf"
+                                  Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Copy as png"
+                                  Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                </ContextMenu>
+            </chart:MultiChart.ContextMenu>
             <chart:LineSpectrumControlSlim ItemsSource="{Binding Spectrum.Value}"
                                            DataType="{x:Type ccore:DataPoint}"
                                            HorizontalProperty="X"

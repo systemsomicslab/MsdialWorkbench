@@ -27,6 +27,8 @@
     </UserControl.Resources>
     <UserControl.InputBindings>
         <KeyBinding Command="{Binding SetUnknownCommand}" Gesture="Ctrl+D"/>
+        <KeyBinding Command="{Binding UndoManagerViewModel.UndoCommand}" Gesture="Ctrl+Z"/>
+        <KeyBinding Command="{Binding UndoManagerViewModel.RedoCommand}" Gesture="Ctrl+Y"/>
     </UserControl.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
@@ -68,37 +70,37 @@
             <StackPanel Margin="5,0,0,0"
                         Grid.Column="1">
                 <TextBlock Text="Protein name filter"/>
-                <TextBox Text="{Binding ProteinFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
+                <TextBox Text="{Binding PeakSpotNavigatorViewModel.ProteinFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Stretch"/>
             </StackPanel>
             
             <StackPanel Margin="5,0,0,0"
                         Grid.Column="2">
                 <TextBlock Text="Peptide name filter"/>
-                <TextBox Text="{Binding PeptideFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
+                <TextBox Text="{Binding PeakSpotNavigatorViewModel.MetaboliteFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Stretch"/>
             </StackPanel>
 
             <StackPanel Margin="5,0,0,0"
                         Grid.Column="3">
                 <TextBlock Text="Comment filter"/>
-                <TextBox Text="{Binding CommentFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
+                <TextBox Text="{Binding PeakSpotNavigatorViewModel.CommentFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Stretch"/>
             </StackPanel>
 
             <rs:RangeSlider Tag="m/z range"
                             Minimum="{Binding MassMin, Mode=OneWay}"
                             Maximum="{Binding MassMax, Mode=OneWay}"
-                            LowerValue="{Binding MassLower.Value, Mode=TwoWay}"
-                            UpperValue="{Binding MassUpper.Value, Mode=TwoWay}"
+                            LowerValue="{Binding PeakSpotNavigatorViewModel.MzLowerValue.Value, Mode=TwoWay}"
+                            UpperValue="{Binding PeakSpotNavigatorViewModel.MzUpperValue.Value, Mode=TwoWay}"
                             Style="{StaticResource EditableRangeSlider}"
                             Margin="8,0"
                             Grid.Column="4"/>
             <rs:RangeSlider Tag="Retention time"
                             Minimum="{Binding RtMin, Mode=OneWay}"
                             Maximum="{Binding RtMax, Mode=OneWay}"
-                            LowerValue="{Binding RtLower.Value, Mode=TwoWay}"
-                            UpperValue="{Binding RtUpper.Value, Mode=TwoWay}"
+                            LowerValue="{Binding PeakSpotNavigatorViewModel.RtLowerValue.Value, Mode=TwoWay}"
+                            UpperValue="{Binding PeakSpotNavigatorViewModel.RtUpperValue.Value, Mode=TwoWay}"
                             Style="{StaticResource EditableRangeSlider}"
                             Margin="8,0"
                             Grid.Column="5"/>

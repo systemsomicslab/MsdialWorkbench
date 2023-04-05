@@ -32,7 +32,7 @@ namespace CompMs.Common.Enum
         Imaging = 0x4,
     }
     public enum MSDataType { Centroid, Profile }
-    public enum AcquisitionType { DDA, SWATH, AIF }
+    public enum AcquisitionType { DDA, SWATH, AIF, None }
     public enum AnalysisFileType { Sample, Standard, QC, Blank }
     public enum RetentionType { RI, RT }
     public enum RiCompoundType { Alkanes, Fames }

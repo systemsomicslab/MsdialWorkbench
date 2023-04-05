@@ -15,14 +15,15 @@
 		<ItemGroup>
 			<_DeployToItem Include="$(OutputPath)\*.lbm*" />
 		</ItemGroup>
-		<DownloadFile SourceUrl="$(Lbm2Url)"
-                  DestinationFolder="$(OutputPath)"
-                  Condition="!Exists('%(_DeployToItem.FullPath)')" />
+		<DownloadFile SourceUrl="$(Lbm2Url)" DestinationFolder="$(OutputPath)" Condition="!Exists('%(_DeployToItem.FullPath)')" />
 	</Target>
 	<PropertyGroup>
 		<HighEntropyVA>false</HighEntropyVA>
 		<SignAssembly>False</SignAssembly>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Compile Remove="Model\Imaging\WholeImageResultModel.cs" />
+	</ItemGroup>
 	<ItemGroup>
 		<Resource Include="Resources\msdial_icon.ico" />
 	</ItemGroup>

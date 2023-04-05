@@ -31,7 +31,6 @@ namespace CompMs.MsdialGcMsApi.Process
             if (storage is null || storage.Parameter is null) {
                 throw new ArgumentNullException(nameof(storage));
             }
-
             _providerFactory = providerFactory ?? throw new ArgumentNullException(nameof(providerFactory));
             _riDictionaryInfo = storage.Parameter.FileIdRiInfoDictionary;
             _peakSpotting = new PeakSpotting(storage.IupacDatabase, storage.Parameter);
@@ -49,7 +48,7 @@ namespace CompMs.MsdialGcMsApi.Process
             // feature detections
             Console.WriteLine("Peak picking started");
             var reportSpotting = ReportProgress.FromRange(reportAction, PEAKSPOTTING_START, PEAKSPOTTING_END);
-            var chromPeakFeatures = _peakSpotting.Run(provider, reportSpotting, token);
+            var chromPeakFeatures = _peakSpotting.Run(analysisFile, provider, reportSpotting, token);
             await analysisFile.SetChromatogramPeakFeaturesSummaryAsync(provider, chromPeakFeatures, token).ConfigureAwait(false);
             token.ThrowIfCancellationRequested();
 
@@ -67,7 +66,7 @@ namespace CompMs.MsdialGcMsApi.Process
             var annotatedMSDecResults = _annotation.MainProcess(msdecResults, carbon2RtDict, reportAnnotation);
             token.ThrowIfCancellationRequested();
 
-            var spectrumFeatureCollection = _ms1Deconvolution.GetSpectrumFeaturesByQuantMassInformation(spectra, annotatedMSDecResults);
+            var spectrumFeatureCollection = _ms1Deconvolution.GetSpectrumFeaturesByQuantMassInformation(analysisFile, spectra, annotatedMSDecResults);
 
             // save
             analysisFile.SaveChromatogramPeakFeatures(chromPeakFeatures);
@@ -92,7 +91,7 @@ namespace CompMs.MsdialGcMsApi.Process
             var annotatedMSDecResults = _annotation.MainProcess(mSDecResults, carbon2RtDict, reportAnnotation);
             token.ThrowIfCancellationRequested();
 
-            var spectrumFeatureCollection = _ms1Deconvolution.GetSpectrumFeaturesByQuantMassInformation(spectra, annotatedMSDecResults);
+            var spectrumFeatureCollection = _ms1Deconvolution.GetSpectrumFeaturesByQuantMassInformation(analysisFile, spectra, annotatedMSDecResults);
 
             // save
             analysisFile.SaveMsdecResultWithAnnotationInfo(mSDecResults);

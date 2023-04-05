@@ -13,8 +13,9 @@
              xmlns:chartvm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
              xmlns:infovm="clr-namespace:CompMs.App.Msdial.ViewModel.Information"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:search="clr-namespace:CompMs.App.Msdial.View.Search"
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance Type={x:Type vm:ImagingMainViewModel}}"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:ImagingImmsMainViewModel}}"
              d:Background="White"
              d:DesignHeight="780" d:DesignWidth="1280">
     <UserControl.Resources>
@@ -47,7 +48,7 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-            <DataTemplate DataType="{x:Type vm:ImagingMainViewModel}" x:Key="ImageSelector">
+            <DataTemplate DataType="{x:Type vm:ImagingImmsMainViewModel}" x:Key="ImageSelector">
                 <GroupBox Header="Images" Style="{StaticResource GroupBoxHeader}">
                     <ListBox ItemsSource="{Binding ImageViewModels}"
                              SelectedItem="{Binding SelectedImageViewModel}"
@@ -55,7 +56,7 @@
                              IsSynchronizedWithCurrentItem="True"/>
                 </GroupBox>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type imvm:ImagingImageViewModel}" x:Key="RoiSelector">
+            <DataTemplate DataType="{x:Type vm:ImagingImmsImageViewModel}" x:Key="RoiSelector">
                 <GroupBox Header="ROIs" Style="{StaticResource GroupBoxHeader}">
                     <ItemsControl ItemsSource="{Binding RoiViewModels}">
                         <ItemsControl.ItemTemplate>
@@ -88,11 +89,11 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="160"/>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <local:ImmsImagingRibbon Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3"/>
+        <local:ImmsImagingRibbon Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4"/>
 
         <Grid Grid.Column="0" Grid.Row="1">
             <Grid.RowDefinitions>
@@ -112,14 +113,147 @@
 
         <Grid Grid.Column="1" Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="240"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+            
+            <search:PeakSpotNavigatorView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.AnalysisViewModel.PeakSpotNavigatorViewModel}"
+                                          Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"/>
+
+            <chart:SurveyScanView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.AnalysisViewModel.SurveyScanViewModel}"
+                                  Grid.Row="2" Grid.Column="0"/>
+
+            <TabControl Grid.Row="0" Grid.Column="1">
+                <TabItem Header="ROI intensities">
+                    <Grid Margin="8,24,8,8">
+                        <Grid.Resources>
+                            <Style TargetType="ItemsControl">
+                                <Setter Property="ItemsPanel">
+                                    <Setter.Value>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Rows="1"/>
+                                        </ItemsPanelTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Grid.Resources>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="24"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="40"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Intensity" VerticalAlignment="Center"
+                                   Grid.Row="0" Grid.Column="0">
+                            <TextBlock.LayoutTransform>
+                                <RotateTransform Angle="-90" CenterX=".5" CenterY=".5"/>
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
+                        <ItemsControl ItemsSource="{Binding SelectedImageViewModel.SelectedRoiViewModels}"
+                                      Grid.Row="1" Grid.Column="1">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type imvm:ImagingRoiViewModel}">
+                                    <TextBlock Text="{Binding Id}"
+                                               HorizontalAlignment="Center"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <GridSplitter Height="2" VerticalAlignment="Top" HorizontalAlignment="Stretch" Foreground="Gray" Grid.Row="1" Grid.Column="1"/>
+                        <GridSplitter Width="2" VerticalAlignment="Stretch" HorizontalAlignment="Right" Foreground="Gray" Grid.Row="0" Grid.Column="0"/>
+                        <Border Background="WhiteSmoke" Padding="0,24,0,0" 
+                                Grid.Row="0" Grid.Column="1">
+                            <Viewbox Stretch="Fill">
+                                <ItemsControl ItemsSource="{Binding SelectedImageViewModel.SelectedRoiViewModels}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type imvm:ImagingRoiViewModel}">
+                                            <Border Width="100"
+                                                    BorderThickness="0"
+                                                    Padding="5,0"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Bottom">
+                                                <Rectangle Width="90" Height="{Binding SelectedRoiPeakSummary.Value.AccumulatedIntensity}">
+                                                    <Rectangle.Fill>
+                                                        <SolidColorBrush Color="{Binding Roi.Color}" PresentationOptions:Freeze="True"/>
+                                                    </Rectangle.Fill>
+                                                    <Rectangle.ToolTip>
+                                                        <TextBlock Text="{Binding SelectedRoiPeakSummary.Value.AccumulatedIntensity, StringFormat=Average intensity: {0:F0}}"/>
+                                                    </Rectangle.ToolTip>
+                                                </Rectangle>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Viewbox>
+                        </Border>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="EIC">
+                    <chart:EicView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.AnalysisViewModel.EicViewModel}"/>
+                </TabItem>
+            </TabControl>
+            <chart:PeakView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.PeakPlotViewModel}" Grid.Row="1" Grid.Column="1"/>
+            <GridSplitter Width="2" Foreground="Gray"
+                          VerticalAlignment="Stretch" HorizontalAlignment="Left"
+                          Grid.RowSpan="2" Grid.Column="1"/>
+            <GridSplitter Height="2" Foreground="Gray"
+                          VerticalAlignment="Top" HorizontalAlignment="Stretch"
+                          Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
+        </Grid>
+
+        <Grid Grid.Column="2" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TabControl ItemsSource="{Binding SelectedImageViewModel.ImageResultViewModel.AnalysisViewModel.PeakDetailViewModels}"
+                        Grid.Row="0">
+                <TabControl.ContentTemplate>
+                    <DataTemplate>
+                        <DataTemplate.Resources>
+                            <DataTemplate DataType="{x:Type infovm:PeakInformationViewModel}">
+                                <info:PeakInformationView/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type infovm:CompoundDetailViewModel}">
+                                <info:CompoundDetailView/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type infovm:MoleculeStructureViewModel}">
+                                <info:MoleculeStructureView/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type infovm:MatchResultCandidatesViewModel}">
+                                <info:MatchResultCandidatesView/>
+                            </DataTemplate>
+                        </DataTemplate.Resources>
+                        <ContentPresenter Content="{Binding}"/>
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <DataTemplate.Resources>
+                            <DataTemplate DataType="{x:Type infovm:PeakInformationViewModel}">
+                                <TextBlock>Peak information</TextBlock>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type infovm:CompoundDetailViewModel}">
+                                <TextBlock>Compound information</TextBlock>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type infovm:MoleculeStructureViewModel}">
+                                <TextBlock>Structure</TextBlock>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type infovm:MatchResultCandidatesViewModel}">
+                                <TextBlock>Candidates</TextBlock>
+                            </DataTemplate>
+                        </DataTemplate.Resources>
+                        <ContentPresenter Content="{Binding}"/>
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+            </TabControl>
+            <Grid Grid.Row="1">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
@@ -200,151 +334,23 @@
                     </Viewbox>
                 </Border>
             </Grid>
-            <chart:PeakView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.PeakPlotViewModel}"
-                            Grid.Row="1" Grid.Column="1"/>
-            <Grid Margin="8,24,8,8" Grid.Row="1" Grid.Column="0">
-                <Grid.Resources>
-                    <Style TargetType="ItemsControl">
-                        <Setter Property="ItemsPanel">
-                            <Setter.Value>
-                                <ItemsPanelTemplate>
-                                    <UniformGrid Rows="1"/>
-                                </ItemsPanelTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </Grid.Resources>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="24"/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition Height="40"/>
-                </Grid.RowDefinitions>
-
-                <TextBlock Text="Intensity" VerticalAlignment="Center"
-                           Grid.Row="0" Grid.Column="0">
-                    <TextBlock.LayoutTransform>
-                        <RotateTransform Angle="-90" CenterX=".5" CenterY=".5"/>
-                    </TextBlock.LayoutTransform>
-                </TextBlock>
-                <ItemsControl ItemsSource="{Binding SelectedImageViewModel.SelectedRoiViewModels}"
-                              Grid.Row="1" Grid.Column="1">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="{x:Type imvm:ImagingRoiViewModel}">
-                            <TextBlock Text="{Binding Id}"
-                                       HorizontalAlignment="Center"/>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-                <GridSplitter Height="2" VerticalAlignment="Top" HorizontalAlignment="Stretch" Foreground="Gray" Grid.Row="1" Grid.Column="1"/>
-                <GridSplitter Width="2" VerticalAlignment="Stretch" HorizontalAlignment="Right" Foreground="Gray" Grid.Row="0" Grid.Column="0"/>
-                <Border Background="WhiteSmoke" Padding="0,24,0,0" 
-                        Grid.Row="0" Grid.Column="1">
-                    <Viewbox Stretch="Fill">
-                        <ItemsControl ItemsSource="{Binding SelectedImageViewModel.SelectedRoiViewModels}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type imvm:ImagingRoiViewModel}">
-                                    <Border Width="100"
-                                            BorderThickness="0"
-                                            Padding="5,0"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Bottom">
-                                        <Rectangle Width="90" Height="{Binding SelectedRoiPeakSummary.Value.AccumulatedIntensity}">
-                                            <Rectangle.Fill>
-                                                <SolidColorBrush Color="{Binding Roi.Color}" PresentationOptions:Freeze="True"/>
-                                            </Rectangle.Fill>
-                                            <Rectangle.ToolTip>
-                                                <TextBlock Text="{Binding SelectedRoiPeakSummary.Value.AccumulatedIntensity, StringFormat=Average intensity: {0:F0}}"/>
-                                            </Rectangle.ToolTip>
-                                        </Rectangle>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </Viewbox>
-                </Border>
-            </Grid>
-            <GridSplitter Height="2" Foreground="Gray"
-                          VerticalAlignment="Top" HorizontalAlignment="Stretch"
-                          Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
-        </Grid>
-
-        <Grid Grid.Column="2" Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <TabControl ItemsSource="{Binding SelectedImageViewModel.PeakDetailViewModels}"
-                        Grid.Row="0">
-                <TabControl.ContentTemplate>
-                    <DataTemplate>
-                        <DataTemplate.Resources>
-                            <DataTemplate DataType="{x:Type infovm:PeakInformationViewModel}">
-                                <info:PeakInformationView/>
-                            </DataTemplate>
-                            <DataTemplate DataType="{x:Type infovm:CompoundDetailViewModel}">
-                                <info:CompoundDetailView/>
-                            </DataTemplate>
-                            <DataTemplate DataType="{x:Type infovm:MoleculeStructureViewModel}">
-                                <info:MoleculeStructureView/>
-                            </DataTemplate>
-                        </DataTemplate.Resources>
-                        <ContentPresenter Content="{Binding}"/>
-                    </DataTemplate>
-                </TabControl.ContentTemplate>
-                <TabControl.ItemTemplate>
-                    <DataTemplate>
-                        <DataTemplate.Resources>
-                            <DataTemplate DataType="{x:Type infovm:PeakInformationViewModel}">
-                                <TextBlock>Peak information</TextBlock>
-                            </DataTemplate>
-                            <DataTemplate DataType="{x:Type infovm:CompoundDetailViewModel}">
-                                <TextBlock>Compound information</TextBlock>
-                            </DataTemplate>
-                            <DataTemplate DataType="{x:Type infovm:MoleculeStructureViewModel}">
-                                <TextBlock>Structure</TextBlock>
-                            </DataTemplate>
-                        </DataTemplate.Resources>
-                        <ContentPresenter Content="{Binding}"/>
-                    </DataTemplate>
-                </TabControl.ItemTemplate>
-            </TabControl>
-            <TabControl ItemsSource="{Binding SelectedImageViewModel.Ms2ViewModels}"
-                        Grid.Row="1">
-                <TabControl.ItemTemplate>
-                    <DataTemplate>
-                        <DataTemplate.Resources>
-                            <DataTemplate DataType="{x:Type chartvm:RawDecSpectrumsViewModel}">
-                                <TextBlock>Exp. vs. Ref.</TextBlock>
-                            </DataTemplate>
-                            <DataTemplate DataType="{x:Type chartvm:RawPurifiedSpectrumsViewModel}">
-                                <TextBlock>Raw vs. Purified</TextBlock>
-                            </DataTemplate>
-                        </DataTemplate.Resources>
-                        <ContentPresenter Content="{Binding}"/>
-                    </DataTemplate>
-                </TabControl.ItemTemplate>
-                <TabControl.ContentTemplate>
-                    <DataTemplate>
-                        <DataTemplate.Resources>
-                            <DataTemplate DataType="{x:Type chartvm:RawDecSpectrumsViewModel}">
-                                <chart:ExpRefView/>
-                            </DataTemplate>
-                            <DataTemplate DataType="{x:Type chartvm:RawPurifiedSpectrumsViewModel}">
-                                <chart:RawPurifiedView/>
-                            </DataTemplate>
-                        </DataTemplate.Resources>
-                        <ContentPresenter Content="{Binding}"/>
-                    </DataTemplate>
-                </TabControl.ContentTemplate>
-            </TabControl>
             <GridSplitter HorizontalAlignment="Stretch"
                           VerticalAlignment="Top"
                           Foreground="Gray"
-                          Height="1"
+                          Height="2"
                           Grid.Row="1"/>
         </Grid>
+        <GridSplitter HorizontalAlignment="Left"
+                      VerticalAlignment="Stretch"
+                      Foreground="Gray"
+                      Width="2"
+                      Grid.Column="1"
+                      Grid.Row="1" Grid.RowSpan="2"/>
+        <GridSplitter HorizontalAlignment="Left"
+                      VerticalAlignment="Stretch"
+                      Foreground="Gray"
+                      Width="2"
+                      Grid.Column="2"
+                      Grid.Row="1" Grid.RowSpan="2"/>
     </Grid>
 </UserControl>

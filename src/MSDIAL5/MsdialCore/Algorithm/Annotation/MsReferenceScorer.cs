@@ -43,17 +43,33 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var spectrumPenalty = reference.Spectrum != null && reference.Spectrum.Count == 1 ? true : false;
             double[] matchedPeaksScores = null;
             if (omics == TargetOmics.Lipidomics) {
-                if (this.collisionType == CollisionType.EIEIO) {
-                    matchedPeaksScores = MsScanMatching.GetEieioBasedLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
-                }
-                else if (this.collisionType == CollisionType.EID) {
-                    matchedPeaksScores = MsScanMatching.GetEidBasedLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
-                }
-                else if (this.collisionType == CollisionType.OAD) {
-                    matchedPeaksScores = MsScanMatching.GetOadBasedLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+                if (source == SourceType.GeneratedLipid) {
+                    if (this.collisionType == CollisionType.EIEIO) {
+                        matchedPeaksScores = MsScanMatching.GetEieioBasedLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+                    }
+                    else if (this.collisionType == CollisionType.EID) {
+                        matchedPeaksScores = MsScanMatching.GetEidBasedLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+                    }
+                    else if (this.collisionType == CollisionType.OAD) {
+                        matchedPeaksScores = MsScanMatching.GetOadBasedLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+                    }
+                    else {
+                        matchedPeaksScores = MsScanMatching.GetLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+                    }
                 }
                 else {
-                    matchedPeaksScores = MsScanMatching.GetLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+                    if (this.collisionType == CollisionType.EIEIO) {
+                        matchedPeaksScores = MsScanMatching.GetLipidomicsMoleculerSpeciesLevelAnnotationPeaksScoresForEIEIO(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+                    }
+                    else if (this.collisionType == CollisionType.EID) {
+                        matchedPeaksScores = MsScanMatching.GetLipidomicsMoleculerSpeciesLevelAnnotationPeaksScoresForEIEIO(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+                    }
+                    else if (this.collisionType == CollisionType.OAD) {
+                        matchedPeaksScores = MsScanMatching.GetLipidomicsMoleculerSpeciesLevelAnnotationPeaksScoresForEIEIO(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+                    }
+                    else {
+                        matchedPeaksScores = MsScanMatching.GetLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+                    }
                 }
             }
             else {
@@ -117,7 +133,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 presensePercentageFactor = 0.5;
             }
 
-            var msmsScore = (result.WeightedDotProduct * dotProductFactor + result.SimpleDotProduct * dotProductFactor + result.ReverseDotProduct * revesrseDotProdFactor + result.MatchedPeaksPercentage * presensePercentageFactor) /
+            var msmsScore = (
+                result.WeightedDotProduct * dotProductFactor + 
+                result.SimpleDotProduct * dotProductFactor + 
+                result.ReverseDotProduct * revesrseDotProdFactor + 
+                result.MatchedPeaksPercentage * presensePercentageFactor) /
                 (dotProductFactor + dotProductFactor + revesrseDotProdFactor + presensePercentageFactor);
 
             if (result.AcurateMassSimilarity >= 0 && massFactor > 0)
@@ -134,7 +154,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             if (result.InChIKey.IsEmptyOrNull()) {
                 result.TotalScore = result.TotalScore * 0.9F;
             }
-
             Validate(result, property, scan, reference, parameter);
 
             return result;
@@ -148,7 +167,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             ValidateBase(result, property, reference, parameter);
             if (omics == TargetOmics.Lipidomics) {
-                if (collisionType == CollisionType.EIEIO || collisionType == CollisionType.OAD || collisionType == CollisionType.EID) {
+                if (source == SourceType.GeneratedLipid && (
+                    collisionType == CollisionType.EIEIO || collisionType == CollisionType.OAD || collisionType == CollisionType.EID)) {
                     ValidateOnEadLipidomics(result, scan, reference, parameter);
                 }
                 else {
@@ -193,9 +213,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             if (parameter.IsUseCcsForAnnotationScoring) {
                 result.IsCcsMatch = Math.Abs(property.CollisionCrossSection - reference.CollisionCrossSection) <= parameter.CcsTolerance;
             }
-            if (result.Name == "ST 24:1;O5") {
-                Console.WriteLine();
-            }
+            
         }
 
         private void ValidateOnLipidomics(
@@ -203,8 +221,17 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             IMSScanProperty scan,
             MoleculeMsReference reference,
             MsRefSearchParameterBase parameter) {
+            var name = reference.Name;
+            bool isLipidClassMatch, isLipidChainsMatch, isLipidPositionMatch, isOtherLipidMatch;
 
-            var name = MsScanMatching.GetRefinedLipidAnnotationLevel(scan, reference, parameter.Ms2Tolerance, out var isLipidClassMatch, out var isLipidChainsMatch, out var isLipidPositionMatch, out var isOtherLipidMatch);
+            if (collisionType == CollisionType.EIEIO || collisionType == CollisionType.EID) {
+                name = MsScanMatching.GetRefinedLipidAnnotationLevelForEIEIO(scan, reference, parameter.Ms2Tolerance,
+                    out isLipidClassMatch, out isLipidChainsMatch, out isLipidPositionMatch, out isOtherLipidMatch);
+            }
+            else {
+                name = MsScanMatching.GetRefinedLipidAnnotationLevel(scan, reference, parameter.Ms2Tolerance,
+                    out isLipidClassMatch, out isLipidChainsMatch, out isLipidPositionMatch, out isOtherLipidMatch);
+            }
             result.IsLipidChainsMatch = isLipidChainsMatch;
             result.IsLipidClassMatch = isLipidClassMatch;
             result.IsLipidPositionMatch = isLipidPositionMatch;

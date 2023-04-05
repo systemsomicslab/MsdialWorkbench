@@ -26,8 +26,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
             _chromatogramRange = new ChromatogramRange(_parameter.DriftTimeBegin, _parameter.DriftTimeEnd, ChromXType.Drift, ChromXUnit.Msec);
         }
 
-        public ChromatogramPeakFeatureCollection Run(IDataProvider provider, double initialProgress, double progressMax, Action<int> reportAction = null) {
-            var rawSpectra = new RawSpectra(provider, _parameter.ProjectParam.IonMode, _parameter.ProjectParam.AcquisitionType);
+        public ChromatogramPeakFeatureCollection Run(AnalysisFileBean file, IDataProvider provider, double initialProgress, double progressMax, Action<int> reportAction = null) {
+            var rawSpectra = new RawSpectra(provider, _parameter.ProjectParam.IonMode, file.AcquisitionType);
             var detector = new PeakDetection(_parameter.PeakPickBaseParam.MinimumDatapoints, _parameter.PeakPickBaseParam.MinimumAmplitude);
             IEnumerable<ChromatogramPeakFeature> chromPeakFeatures;
             if (_parameter.AdvancedProcessOptionBaseParam.IsTargetMode) {
@@ -37,7 +37,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 var reporter = ReportProgress.FromLength(reportAction, initialProgress, progressMax);
                 chromPeakFeatures = DetectChromatogramPeaks(provider, reporter, rawSpectra, detector);
             }
-            var reevaluatedPeaks = ReevaluateChromPeakFeatures(chromPeakFeatures, provider);
+            var reevaluatedPeaks = ReevaluateChromPeakFeatures(chromPeakFeatures, provider, file);
             var collection = new ChromatogramPeakFeatureCollection(reevaluatedPeaks.OrderBy(item => item.ChromXs.Value).ThenBy(item => item.PeakFeature.Mass).ToList());
             collection.ResetAmplitudeScore();
             collection.ResetPeakID();
@@ -113,7 +113,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             return chromPeakFeatures;
         }
 
-        private void SetMs2RawSpectrumIDs2ChromatogramPeakFeature(ChromatogramPeakFeature feature, IDataProvider provider) {
+        private void SetMs2RawSpectrumIDs2ChromatogramPeakFeature(ChromatogramPeakFeature feature, IDataProvider provider, AnalysisFileBean analysisFile) {
             var spectrumList = provider.LoadMsNSpectrums(level: 2);
             var scanPolarity = _parameter.ProjectParam.IonMode.ToPolarity();
             var peakFeature = feature.PeakFeature;
@@ -128,7 +128,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 if (spec.Precursor is null || spec.ScanPolarity != scanPolarity) {
                     continue;
                 }
-                var IsMassInWindow = spec.Precursor.ContainsMz(mass, ms2Tol, _parameter.ProjectParam.AcquisitionType);
+                var IsMassInWindow = spec.Precursor.ContainsMz(mass, ms2Tol, analysisFile.AcquisitionType);
                 var IsDtInWindow = spec.Precursor.ContainsDriftTime(dt) // used for diapasef
                     || (spec.Precursor.IsNotDiapasefData && spec.IsInDriftTimeRange(dtStart, dtEnd)); // normal dia
                 if (IsMassInWindow && IsDtInWindow) {
@@ -145,10 +145,10 @@ namespace CompMs.MsdialImmsCore.Algorithm
             }
         }
 
-        private List<ChromatogramPeakFeature> ReevaluateChromPeakFeatures(IEnumerable<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider) {
+        private List<ChromatogramPeakFeature> ReevaluateChromPeakFeatures(IEnumerable<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, AnalysisFileBean analysisFile) {
             var recalculatedPeakspots = new List<ChromatogramPeakFeature>();
             var minDatapoint = 3;
-            var rawSpectra = new RawSpectra(provider, _parameter.ProjectParam.IonMode, _parameter.ProjectParam.AcquisitionType);
+            var rawSpectra = new RawSpectra(provider, _parameter.ProjectParam.IonMode, analysisFile.AcquisitionType);
             foreach (var spot in chromPeakFeatures) {
                 //get EIC chromatogram
                 var peakFeature = spot.PeakFeature;
@@ -162,7 +162,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
                 spot.SetPeakProperties(peakOfChromatogram);
                 if (!spot.IsMultiLayeredData()) {
-                    SetMs2RawSpectrumIDs2ChromatogramPeakFeature(spot, provider);
+                    SetMs2RawSpectrumIDs2ChromatogramPeakFeature(spot, provider, analysisFile);
                 }
                 recalculatedPeakspots.Add(spot);
             }

@@ -60,21 +60,22 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 throw new ArgumentNullException(nameof(focusControlManager));
             }
 
-            this._model = model;
-            this._compoundSearchService = compoundSearchService;
-            this._peakSpotTableService = peakSpotTableService;
-            this._proteomicsTableService = proteomicsTableService;
+            _model = model;
+            _compoundSearchService = compoundSearchService;
+            _peakSpotTableService = peakSpotTableService;
+            _proteomicsTableService = proteomicsTableService;
             _broker = broker;
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
+            UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
 
             var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
-            PlotViewModel = new AnalysisPeakPlotViewModel(this._model.PlotModel, peakPlotAction, peakPlotFocused).AddTo(Disposables);
+            PlotViewModel = new AnalysisPeakPlotViewModel(_model.PlotModel, peakPlotAction, peakPlotFocused).AddTo(Disposables);
             EicViewModel = new EicViewModel(
-                this._model.EicModel,
+                _model.EicModel,
                 horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
 
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-                this._model.Parameter.ProjectParam.SpectrumCommentToColorBytes
+                _model.Parameter.ProjectParam.SpectrumCommentToColorBytes
                 .ToDictionary(
                     kvp => kvp.Key,
                     kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
@@ -82,7 +83,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 item => item.ToString(),
                 Colors.Blue);
 
-            var projectParameter = this._model.Parameter.ProjectParam;
+            var projectParameter = _model.Parameter.ProjectParam;
             var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(
                 comment =>
                 {
@@ -114,40 +115,22 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 this._model.SurveyScanModel,
                 horizontalAxis: PlotViewModel.VerticalAxis).AddTo(Disposables);
 
-            SetUnknownCommand = model.Target.Select(t => !(t is null))
-                .ToReactiveCommand()
-                .WithSubscribe(() => model.Target.Value.SetUnknown())
-                .AddTo(Disposables);
+            SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
 
             PeakTableViewModel = new LcmsAnalysisPeakTableViewModel(
-                this._model.PeakTableModel,
-                Observable.Return(this._model.EicLoader),
-                PeakSpotNavigatorViewModel.MzLowerValue,
-                PeakSpotNavigatorViewModel.MzUpperValue,
-                PeakSpotNavigatorViewModel.RtLowerValue,
-                PeakSpotNavigatorViewModel.RtUpperValue,
-                PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
-                PeakSpotNavigatorViewModel.CommentFilterKeyword,
-                PeakSpotNavigatorViewModel.OntologyFilterKeyword,
-                PeakSpotNavigatorViewModel.AdductFilterKeyword,
+                _model.PeakTableModel,
+                Observable.Return(_model.EicLoader),
+                PeakSpotNavigatorViewModel,
                 SetUnknownCommand,
-                PeakSpotNavigatorViewModel.IsEditting)
+                UndoManagerViewModel)
             .AddTo(Disposables);
 
             ProteomicsPeakTableViewModel = new LcmsProteomicsPeakTableViewModel(
-                this._model.PeakTableModel,
-                Observable.Return(this._model.EicLoader),
-                PeakSpotNavigatorViewModel.MzLowerValue,
-                PeakSpotNavigatorViewModel.MzUpperValue,
-                PeakSpotNavigatorViewModel.RtLowerValue,
-                PeakSpotNavigatorViewModel.RtUpperValue,
-                PeakSpotNavigatorViewModel.ProteinFilterKeyword,
-                PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
-                PeakSpotNavigatorViewModel.CommentFilterKeyword,
-                PeakSpotNavigatorViewModel.OntologyFilterKeyword,
-                PeakSpotNavigatorViewModel.AdductFilterKeyword,
+                _model.PeakTableModel,
+                Observable.Return(_model.EicLoader),
+                PeakSpotNavigatorViewModel,
                 SetUnknownCommand,
-                PeakSpotNavigatorViewModel.IsEditting)
+                UndoManagerViewModel)
             .AddTo(Disposables);
 
             SearchCompoundCommand = this._model.CanSearchCompound
@@ -171,12 +154,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
+            var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
             if (model.MoleculeStructureModel is null) {
-                PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
+                PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, matchResultCandidatesViewModel, };
             }
             else {
                 MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
-                PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel, };
+                PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel, matchResultCandidatesViewModel, };
             }
 
             ProteinResultContainerAsObservable = Observable.Return(model.ProteinResultContainerModel);
@@ -195,7 +179,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
-
+        public UndoManagerViewModel UndoManagerViewModel { get; }
         public ICommand SetUnknownCommand { get; }
         public ReactiveCommand SearchCompoundCommand { get; }
 

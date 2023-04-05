@@ -25,7 +25,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
             this.projectParameter = projectParameter ?? throw new ArgumentNullException(nameof(projectParameter));
         }
 
-        public List<ChromatogramPeakFeature> Detect(IDataProvider provider) {
+        public List<ChromatogramPeakFeature> Detect(AnalysisFileBean analysisFile, IDataProvider provider) {
 
             var ms1Spectrum = provider.LoadMs1Spectrums().Argmax(spec => spec.Spectrum.Length);
             var chromPeaks = DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum);
@@ -35,7 +35,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
             if (peakPickResults.IsEmptyOrNull()) {
                 return new List<ChromatogramPeakFeature>();
             }
-            return ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, provider, projectParameter.AcquisitionType);
+            return ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, provider, analysisFile.AcquisitionType);
         }
 
         private static List<ChromatogramPeakFeature> ConvertPeaksToPeakFeatures(List<PeakDetectionResult> peakPickResults, RawSpectrum ms1Spectrum, IDataProvider provider, AcquisitionType type) {

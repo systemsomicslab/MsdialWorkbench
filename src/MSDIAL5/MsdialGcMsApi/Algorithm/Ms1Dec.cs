@@ -18,8 +18,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             return MSDecHandler.GetMSDecResults(spectrumList, chromPeakFeatures, _parameter, reporter.ReportAction, reporter.InitialProgress, reporter.ProgressMax);
         }
 
-        public SpectrumFeatureCollection GetSpectrumFeaturesByQuantMassInformation(IReadOnlyList<RawSpectrum> spectra, IReadOnlyList<AnnotatedMSDecResult> msdecResults) {
-            var rawSpectra = new RawSpectra(spectra, _parameter.IonMode, _parameter.AcquisitionType);
+        public SpectrumFeatureCollection GetSpectrumFeaturesByQuantMassInformation(AnalysisFileBean file, IReadOnlyList<RawSpectrum> spectra, IReadOnlyList<AnnotatedMSDecResult> msdecResults) {
+            var rawSpectra = new RawSpectra(spectra, _parameter.IonMode, file.AcquisitionType);
 
             var spectrumFeatures = new List<SpectrumFeature>(msdecResults.Count);
             foreach (var annotatedMSDecResult in msdecResults) {

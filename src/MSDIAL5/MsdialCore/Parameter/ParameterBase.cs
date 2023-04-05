@@ -62,8 +62,6 @@ namespace CompMs.MsdialCore.Parameter
 
         // Project type
         [IgnoreMember]
-        public AcquisitionType AcquisitionType { get => ProjectParam.AcquisitionType; set => ProjectParam.AcquisitionType = value; }
-        [IgnoreMember]
         public MSDataType MSDataType { get => ProjectParam.MSDataType; set => ProjectParam.MSDataType = value; }
         [IgnoreMember]
         public MSDataType MS2DataType { get => ProjectParam.MS2DataType; set => ProjectParam.MS2DataType = value; }
@@ -245,6 +243,7 @@ namespace CompMs.MsdialCore.Parameter
         [Key(7)]
         public ChromDecBaseParameter ChromDecBaseParam { get; set; } = new ChromDecBaseParameter();
         [IgnoreMember]
+        [Obsolete("Use AnalysisFileBean.IsDoMs2ChromDeconvolution")]
         public bool IsDoMs2ChromDeconvolution { get => ChromDecBaseParam.IsDoMs2ChromDeconvolution; set => ChromDecBaseParam.IsDoMs2ChromDeconvolution = value; }
         [IgnoreMember]
         public float SigmaWindowValue { get => ChromDecBaseParam.SigmaWindowValue; set => ChromDecBaseParam.SigmaWindowValue = value; }
@@ -498,7 +497,6 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "Project folder path", ProjectFolderPath.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Project file path", Path.Combine(ProjectFolderPath, ProjectFileName).ToString() }));
 
-            pStrings.Add(String.Join(": ", new string[] { "Acquisition type", AcquisitionType.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "MS1 data type", MSDataType.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "MS2 data type", MS2DataType.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Ion mode", IonMode.ToString() }));
@@ -590,7 +588,6 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "Keep isotope range", KeptIsotopeRange.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Exclude after precursor", RemoveAfterPrecursor.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Keep original precursor isotopes", KeepOriginalPrecursorIsotopes.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Is do ms2 chrom deconvolution", IsDoMs2ChromDeconvolution.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Is do andromeda ms2 deconvolution", IsDoAndromedaMs2Deconvolution.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Andromeda delta", AndromedaDelta.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Andromeda max peaks", AndromedaMaxPeaks.ToString() }));
@@ -808,7 +805,8 @@ namespace CompMs.MsdialCore.Parameter
         } 
         // Project type
         [Key(10)]
-        public AcquisitionType AcquisitionType { get; set; } = AcquisitionType.DDA;
+        [Obsolete("Use AnalysisFileBean.AcquisitionType property.")]
+        public AcquisitionType AcquisitionType { get; set; } = AcquisitionType.None;
         [Key(11)]
         public MSDataType MSDataType { get; set; } = MSDataType.Centroid;
         [Key(12)]
@@ -1089,7 +1087,7 @@ namespace CompMs.MsdialCore.Parameter
         [Key(4)]
         public float Ms1AlignmentTolerance { get; set; } = 0.015F;
         [Key(5)]
-        public float RetentionTimeAlignmentTolerance { get; set; } = 0.05F;
+        public float RetentionTimeAlignmentTolerance { get; set; } = 0.10F;
         [Key(6)]
         public float SpectrumSimilarityAlignmentTolerance { get; set; } = 0.8F;
         [Key(7)]
@@ -1140,6 +1138,7 @@ namespace CompMs.MsdialCore.Parameter
     [MessagePackObject]
     public class ChromDecBaseParameter {
         [Key(0)]
+        [Obsolete("Use AnalysisFileBean.IsDoMs2ChromDeconvolution")]
         public bool IsDoMs2ChromDeconvolution { get; set; } = false;
         [Key(1)]
         public float SigmaWindowValue { get; set; } = 0.5F;

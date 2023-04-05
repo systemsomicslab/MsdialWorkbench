@@ -113,6 +113,16 @@ namespace CompMs.App.Msdial.Model.DataObj
             }
         }
 
+        public AcquisitionType AcquisitionType {
+            get => _file.AcquisitionType;
+            set {
+                if (_file.AcquisitionType != value) {
+                    _file.AcquisitionType = value;
+                    OnPropertyChanged(nameof(AcquisitionType));
+                }
+            }
+        }
+
         public string PeakAreaBeanInformationFilePath => _file.PeakAreaBeanInformationFilePath;
         public string DeconvolutionFilePath => _file.DeconvolutionFilePath;
         public string ProteinAssembledResultFilePath => _file.ProteinAssembledResultFilePath;

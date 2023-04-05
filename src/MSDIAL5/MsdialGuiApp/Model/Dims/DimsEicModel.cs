@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using System.Collections.Generic;
@@ -19,22 +20,11 @@ namespace CompMs.App.Msdial.Model.Dims
         private readonly double _relativeRange;
         private readonly bool _isRelative;
 
-        private DimsEicLoader(
-            IDataProvider provider,
-            ParameterBase parameter,
-            double rangeBegin,
-            double rangeEnd)
-            : base(provider, parameter, ChromXType.Mz, ChromXUnit.Mz, rangeBegin, rangeEnd) {
+        private DimsEicLoader(AnalysisFileBean analysisFile, IDataProvider provider, ParameterBase parameter, double rangeBegin, double rangeEnd) : base(analysisFile, provider, parameter, ChromXType.Mz, ChromXUnit.Mz, rangeBegin, rangeEnd) {
             _isRelative = false;
         }
 
-        private DimsEicLoader(
-            IDataProvider provider,
-            ParameterBase parameter,
-            double rangeBegin,
-            double rangeEnd,
-            double relativeRange)
-            : base(provider, parameter, ChromXType.Mz, ChromXUnit.Mz, rangeBegin, rangeEnd) {
+        private DimsEicLoader(AnalysisFileBean analysisFile, IDataProvider provider, ParameterBase parameter, double rangeBegin, double rangeEnd, double relativeRange) : base(analysisFile, provider, parameter, ChromXType.Mz, ChromXUnit.Mz, rangeBegin, rangeEnd) {
             _isRelative = true;
             _relativeRange = relativeRange;
         }
@@ -55,12 +45,12 @@ namespace CompMs.App.Msdial.Model.Dims
             });
         }
 
-        public static DimsEicLoader BuildForEicView(IDataProvider provider, ParameterBase parameter) {
-            return new DimsEicLoader(provider, parameter, parameter.MassRangeBegin, parameter.MassRangeEnd);
+        public static DimsEicLoader BuildForEicView(AnalysisFileBean analysisFile, IDataProvider provider, ParameterBase parameter) {
+            return new DimsEicLoader(analysisFile, provider, parameter, parameter.MassRangeBegin, parameter.MassRangeEnd);
         }
 
-        public static DimsEicLoader BuildForPeakTable(IDataProvider provider, ParameterBase parameter) {
-            return new DimsEicLoader(provider, parameter, parameter.MassRangeBegin, parameter.MassRangeEnd, relativeRange: 3d);
+        public static DimsEicLoader BuildForPeakTable(AnalysisFileBean analysisFile, IDataProvider provider, ParameterBase parameter) {
+            return new DimsEicLoader(analysisFile, provider, parameter, parameter.MassRangeBegin, parameter.MassRangeEnd, relativeRange: 3d);
         }
     }
 }

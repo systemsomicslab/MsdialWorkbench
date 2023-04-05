@@ -1,8 +1,8 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.App.Msdial.Model.Search;
+using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace CompMs.App.Msdial.Model.Table
 {
@@ -13,26 +13,19 @@ namespace CompMs.App.Msdial.Model.Table
         IReactiveProperty Target { get; }
     }
 
-    abstract class PeakSpotTableModelBase<T> : DisposableModelBase, IPeakSpotTableModelBase where T: class
+    internal abstract class PeakSpotTableModelBase<T> : DisposableModelBase, IPeakSpotTableModelBase where T: class
     {
-        public PeakSpotTableModelBase(ObservableCollection<T> peakSpots, IReactiveProperty<T> target) {
-            if (peakSpots is null) {
-                throw new ArgumentNullException(nameof(peakSpots));
-            }
+        private readonly PeakSpotNavigatorModel _peakSpotNavigatorModel;
+        private readonly IReadOnlyList<T> _peakSpots;
+        private readonly IReactiveProperty<T> _target;
 
-            if (target is null) {
-                throw new ArgumentNullException(nameof(target));
-            }
-            PeakSpots = peakSpots;
-            Target = target;
+        public PeakSpotTableModelBase(IReadOnlyList<T> peakSpots, IReactiveProperty<T> target, PeakSpotNavigatorModel peakSpotNavigatorModel) {
+            _peakSpots = peakSpots ?? throw new ArgumentNullException(nameof(peakSpots));
+            _target = target ?? throw new ArgumentNullException(nameof(target));
+            _peakSpotNavigatorModel = peakSpotNavigatorModel ?? throw new ArgumentNullException(nameof(peakSpotNavigatorModel));
         }
 
-        public ObservableCollection<T> PeakSpots { get; }
-
-        public IReactiveProperty<T> Target { get; }
-
-        IReadOnlyList<object> IPeakSpotTableModelBase.PeakSpots => PeakSpots;
-
-        IReactiveProperty IPeakSpotTableModelBase.Target => Target;
+        IReadOnlyList<object> IPeakSpotTableModelBase.PeakSpots => _peakSpots;
+        IReactiveProperty IPeakSpotTableModelBase.Target => _target;
     }
 }

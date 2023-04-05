@@ -14,7 +14,6 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
-using System.Reactive.Linq;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
@@ -47,7 +46,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             _compoundSearchService = compoundSearchService;
             _peakSpotTableService = peakSpotTableService;
             _messageBroker = messageBroker;
+            UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
             Target = model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
 
             Brushes = model.Brushes.AsReadOnly();
             SelectedBrush = model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
@@ -63,14 +64,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             var (barChartViewFocusAction, barChartViewFocused) = focusControlManager.Request();
             BarChartViewModel = new Chart.BarChartViewModel(model.BarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
             AlignmentEicViewModel = new Chart.AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
-            AlignmentSpotTableViewModel = new ImmsAlignmentSpotTableViewModel(
-                model.AlignmentSpotTableModel,
-                PeakSpotNavigatorViewModel.MzLowerValue, PeakSpotNavigatorViewModel.MzUpperValue,
-                PeakSpotNavigatorViewModel.DtLowerValue, PeakSpotNavigatorViewModel.DtUpperValue,
-                PeakSpotNavigatorViewModel.MetaboliteFilterKeyword, PeakSpotNavigatorViewModel.CommentFilterKeyword,
-                PeakSpotNavigatorViewModel.OntologyFilterKeyword, PeakSpotNavigatorViewModel.AdductFilterKeyword,
-                PeakSpotNavigatorViewModel.IsEditting)
-                .AddTo(Disposables);
+            AlignmentSpotTableViewModel = new ImmsAlignmentSpotTableViewModel(model.AlignmentSpotTableModel, PeakSpotNavigatorViewModel, SetUnknownCommand, UndoManagerViewModel).AddTo(Disposables);
 
             SearchCompoundCommand = model.CanSearchCompound
                 .ToReactiveCommand()
@@ -80,10 +74,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
             MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
-            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel, };
-            SetUnknownCommand = Target.Select(t => !(t is null)).ToReactiveCommand()
-                .WithSubscribe(() => Target.Value.SetUnknown())
-                .AddTo(Disposables);
+            var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
+            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel, matchResultCandidatesViewModel, };
 
             var internalStandardSetViewModel = new InternalStandardSetViewModel(model.InternalStandardSetModel).AddTo(Disposables);
             InternalStandardSetCommand = new ReactiveCommand().WithSubscribe(_ => messageBroker.Publish(internalStandardSetViewModel)).AddTo(Disposables);
@@ -91,6 +83,11 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             var notification = TaskNotification.Start("Loading alignment results...");
             messageBroker.Publish(notification);
             model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => messageBroker.Publish(TaskNotification.End(notification)));
+
+            NormalizationSetViewModel = new NormalizationSetViewModel(model.NormalizationSetModel, internalStandardSetViewModel).AddTo(Disposables);
+            ShowNormalizationSettingCommand = new ReactiveCommand()
+                .WithSubscribe(() => messageBroker.Publish(NormalizationSetViewModel))
+                .AddTo(Disposables);
         }
 
         public Chart.AlignmentPeakPlotViewModel PlotViewModel {
@@ -123,6 +120,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
         private ImmsAlignmentSpotTableViewModel _alignmentSpotTableViewModel;
 
+        public UndoManagerViewModel UndoManagerViewModel { get; }
+
         public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
 
         public ReactivePropertySlim<BrushMapData<AlignmentSpotPropertyModel>> SelectedBrush { get; }
@@ -149,6 +148,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
 
         public ICommand InternalStandardSetCommand { get; }
+
+        public NormalizationSetViewModel NormalizationSetViewModel { get; }
+        public ReactiveCommand ShowNormalizationSettingCommand { get; }
 
         public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
         private DelegateCommand _showIonTableCommand;

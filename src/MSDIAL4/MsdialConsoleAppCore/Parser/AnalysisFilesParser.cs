@@ -50,7 +50,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                     var extension = System.IO.Path.GetExtension(filepath).ToLower();
                     if (extension == ".abf" || extension == ".cdf" || extension == ".mzml" || 
                         extension == ".ibf" || extension == ".wiff" || extension == ".wiff2" ||
-                        extension == ".raw" || extension == ".d") {
+                        extension == ".raw" || extension == ".d" || extension == ".lrp") {
                         if (!extensions.Contains(extension)) {
                             extensions.Add(extension);
                         }
@@ -81,7 +81,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                 var extension = System.IO.Path.GetExtension(file).ToLower();
                 if (extension == ".abf" || extension == ".cdf" || extension == ".mzml" || extension == ".ibf" 
                     || extension == ".wiff" || extension == ".wiff2"
-                    || extension == ".raw" || extension == ".d")
+                    || extension == ".raw" || extension == ".d" || extension == ".lrp")
                     importableFiles.Add(file);
             }
 
@@ -89,7 +89,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                 var extension = System.IO.Path.GetExtension(file).ToLower();
                 if (extension == ".abf" || extension == ".cdf" || extension == ".mzml" || extension == ".ibf"
                     || extension == ".wiff" || extension == ".wiff2"
-                    || extension == ".raw" || extension == ".d")
+                    || extension == ".raw" || extension == ".d" || extension == ".lrp")
                     importableFiles.Add(file);
             }
 

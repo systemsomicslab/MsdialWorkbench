@@ -4,11 +4,25 @@ using MessagePack;
 namespace CompMs.MsdialCore.DataObj
 {
     [MessagePackObject]
-    public sealed class ChromatogramPeakShape {
+    public class ChromatogramPeakShape {
         [SerializationConstructor]
         public ChromatogramPeakShape() {
-
+            
         }
+
+        public ChromatogramPeakShape(ChromatogramPeakShape peakShape) {
+            EstimatedNoise = EstimatedNoise;
+            SignalToNoise = SignalToNoise;
+            PeakPureValue = PeakPureValue;
+            ShapenessValue = ShapenessValue;
+            GaussianSimilarityValue = GaussianSimilarityValue;
+            IdealSlopeValue = IdealSlopeValue;
+            BasePeakValue = BasePeakValue;
+            SymmetryValue = SymmetryValue;
+            AmplitudeOrderValue = AmplitudeOrderValue;
+            AmplitudeScoreValue = AmplitudeScoreValue;
+        }
+
 
         public ChromatogramPeakShape(PeakDetectionResult peakDetectionResult) {
             EstimatedNoise = peakDetectionResult.EstimatedNoise;

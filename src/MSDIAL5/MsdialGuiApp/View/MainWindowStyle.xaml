@@ -3,12 +3,14 @@
                     xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
                     xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
                     xmlns:do="clr-namespace:CompMs.MsdialCore.DataObj;assembly=MsdialCore"
-                    xmlns:if="clr-namespace:CompMs.Common.Interfaces;assembly=Common">
+                    xmlns:if="clr-namespace:CompMs.Common.Interfaces;assembly=Common"
+                    xmlns:converter2="clr-namespace:CompMs.Graphics.Converter;assembly=ChartDrawing">
     <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
     <converter:BooleanToEnumConverter x:Key="EnumToBoolean"/>
     <converter:CBoolNegativeConverter x:Key="NegativeConverter"/>
     <converter:BooleanAllConverter x:Key="BooleanAll"/>
     <converter:BooleanAnyConverter x:Key="BooleanAny"/>
+    <converter2:AreEqualsConverter x:Key="AreEquals"/>
 
     <ControlTemplate x:Key="InputErrorTemplate">
         <DockPanel>
@@ -514,6 +516,13 @@
     <SolidColorBrush x:Key="TabItem.Disabled.Border" Color="#D9D9D9"/>
 
     <Style x:Key="MainWindowTabItemStyle" TargetType="{x:Type TabItem}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                <Setter Property="IsEnabled" Value="False"/>
+            </DataTrigger>
+        </Style.Triggers>
+
+        <Setter Property="IsEnabled" Value="True"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
         <Setter Property="Foreground" Value="Black"/>
         <Setter Property="BorderBrush" Value="{StaticResource TabItem.Static.Border}"/>

@@ -127,7 +127,7 @@
                KeyTip="D">
         <RibbonGroup>
             <RibbonButton Label="Normalization" LargeImageSource="{StaticResource Data_normalization_is}"
-                          IsEnabled="False"
+                          Command="{Binding AlignmentViewModel.Value.ShowNormalizationSettingCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
                           KeyTip="N"/>
             <RibbonButton Label="Principal component analysis" LargeImageSource="{StaticResource PCA_is}"
                           IsEnabled="False"
@@ -238,7 +238,7 @@
                KeyTip="E">
         <RibbonGroup>
             <RibbonButton Label="Peak list result" LargeImageSource="{StaticResource Peak_list_export_is}"
-                          IsEnabled="False"
+                          Command="{Binding DataContext.DatasetViewModel.Value.FilePropertyResetCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                           KeyTip="P"/>
             <RibbonButton Label="Alignment result" LargeImageSource="{StaticResource Alignment_result_export_is}"
                           Command="{Binding ExportAlignmentResultCommand}"

@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.DataObj.Property;
 using MessagePack;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
@@ -25,6 +26,18 @@ namespace CompMs.MsdialCore.DataObj {
             PeakGroupID = peakGroupID;
             IsLinked = isLinked;
             AdductParent = adductParent;
+        }
+
+        public IonFeatureCharacter(IonFeatureCharacter source) {
+            AdductType = source.AdductType;
+            AdductTypeByAmalgamationProgram = source.AdductTypeByAmalgamationProgram;
+            Charge = source.Charge;
+            PeakLinks = source.PeakLinks.ToList();
+            IsotopeWeightNumber = source.IsotopeWeightNumber;
+            IsotopeParentPeakID = source.IsotopeParentPeakID;
+            PeakGroupID = source.PeakGroupID;
+            IsLinked = source.IsLinked;
+            AdductParent = source.AdductParent;
         }
 
         // ion feature

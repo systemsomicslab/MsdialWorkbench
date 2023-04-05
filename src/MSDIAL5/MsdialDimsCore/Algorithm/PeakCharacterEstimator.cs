@@ -29,8 +29,8 @@ namespace CompMs.MsdialDimsCore.Algorithm
         }
         public List<AdductIon> SearchedAdducts { get; set; } = new List<AdductIon>();
 
-        public void Process(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResults,
-            IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase parameter, Action<int> reportAction, IDataProvider provider) {
+        public void Process(AnalysisFileBean file, IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
+            IReadOnlyList<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase parameter, Action<int> reportAction, IDataProvider provider) {
             
             // some adduct features are automatically insearted even if users did not select any type of adduct
             SearchedAdductInitialize(parameter);
@@ -39,7 +39,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.PeakID).ToList();
             Initialization(chromPeakFeatures);
 
-            CharacterAssigner(chromPeakFeatures, provider, msdecResults, evaluator, parameter);
+            CharacterAssigner(file, chromPeakFeatures, provider, msdecResults, evaluator, parameter);
             ReportProgress.Show(InitialProgress, ProgressMax, chromPeakFeatures.Count, chromPeakFeatures.Count, reportAction);
 
             FinalizationForAdduct(chromPeakFeatures, parameter);
@@ -185,8 +185,8 @@ namespace CompMs.MsdialDimsCore.Algorithm
         // the RT deviations of peakspots should be less than 0.03 min
         // here, each peak is evaluated.
         // the purpose is to group the ions which are recognized as the same metabolite
-        private void CharacterAssigner(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
-            IDataProvider provider, IReadOnlyList<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param) {
+        private void CharacterAssigner(AnalysisFileBean file,
+            IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, IReadOnlyList<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param) {
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return;
 
             // if the first inchikey is same, it's recognized as the same metabolite.
@@ -205,10 +205,10 @@ namespace CompMs.MsdialDimsCore.Algorithm
             assignLinksBasedOnAdductPairingMethod(chromPeakFeatures, param);
 
             // linkage by chromatogram correlations
-            assignLinksBasedOnChromatogramCorrelation(chromPeakFeatures, provider, param);
+            assignLinksBasedOnChromatogramCorrelation(chromPeakFeatures, provider, param, file.AcquisitionType);
 
             // linked by partial matching of MS1 and MS2
-            if (param.AcquisitionType == AcquisitionType.AIF) return;
+            if (file.AcquisitionType == AcquisitionType.AIF) return;
             // In dims, there are too many peaks that are falsely detected.
             // assignLinksBasedOnPartialMatchingOfMS1MS2(chromPeakFeatures, msdecResults, param);
         }
@@ -320,9 +320,9 @@ namespace CompMs.MsdialDimsCore.Algorithm
         }
 
         // currently, only pure peaks are evaluated by this way.
-        private void assignLinksBasedOnChromatogramCorrelation(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, ParameterBase param) {
+        private void assignLinksBasedOnChromatogramCorrelation(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, ParameterBase param, AcquisitionType type) {
             if (chromPeakFeatures[0].ChromXs.RT.Value < 0) return;
-            var rawSpectra = new RawSpectra(provider, param.IonMode, param.AcquisitionType);
+            var rawSpectra = new RawSpectra(provider, param.IonMode, type);
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && n.PeakShape.PeakPureValue >= 0.9)) {
                 
                 var tTopRt = peak.ChromXsTop.RT.Value;

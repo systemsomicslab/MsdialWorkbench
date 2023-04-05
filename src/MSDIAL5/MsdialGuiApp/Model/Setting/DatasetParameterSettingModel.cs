@@ -52,7 +52,6 @@ namespace CompMs.App.Msdial.Model.Setting
             DatasetFileName = projectParameter.ProjectFileName;
             Ionization = projectParameter.Ionization;
             SeparationType = GetSeparationType(parameter);
-            AcquisitionType = projectParameter.AcquisitionType;
             MS1DataType = projectParameter.MSDataType;
             MS2DataType = projectParameter.MS2DataType;
             IonMode = projectParameter.IonMode;
@@ -101,12 +100,6 @@ namespace CompMs.App.Msdial.Model.Setting
             set => SetProperty(ref collisionType, value);
         }
         private CollisionType collisionType = CollisionType.HCD;
-
-        public AcquisitionType AcquisitionType {
-            get => acquisitionType;
-            set => SetProperty(ref acquisitionType, value);
-        }
-        private AcquisitionType acquisitionType = AcquisitionType.DDA;
 
         public MSDataType MS1DataType {
             get => ms1DataType;
@@ -199,7 +192,6 @@ namespace CompMs.App.Msdial.Model.Setting
             projectParameter.ProjectFileName = DatasetFileName;
             projectParameter.ProjectFolderPath = DatasetFolderPath;
             projectParameter.Ionization = Ionization;
-            projectParameter.AcquisitionType = AcquisitionType;
             projectParameter.MSDataType = MS1DataType;
             projectParameter.MS2DataType = MS2DataType;
             projectParameter.IonMode = IonMode;
@@ -210,12 +202,11 @@ namespace CompMs.App.Msdial.Model.Setting
             projectParameter.License = License;
             projectParameter.CollisionEnergy = CollisionEnergy;
             projectParameter.Comment = Comment;
-            parameter.IsDoMs2ChromDeconvolution = parameter.AcquisitionType != AcquisitionType.DDA;
 
             parameter.ProteomicsParam.CollisionType = CollisionType;
 
             var storage = CreateDataStorage(parameter);
-            storage.AnalysisFiles = fileSettingModel.IncludedFiles.ToList();
+            storage.AnalysisFiles = fileSettingModel.IncludedFileModels.Select(f => f.File).ToList();
             storage.IupacDatabase = IupacResourceParser.GetIUPACDatabase(); //Get IUPAC reference
             storage.DataBases = DataBaseStorage.CreateEmpty();
             storage.DataBaseMapper = new DataBaseMapper();

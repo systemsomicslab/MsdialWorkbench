@@ -24,6 +24,7 @@ namespace CompMs.App.Msdial.View.Setting
             new FileSelectionItem("Raw file", ".raw"),
             new FileSelectionItem("LCD file", ".lcd"),
             new FileSelectionItem("QGD file", ".qgd"),
+            new FileSelectionItem("LRP file", ".lrp"),
             // new FileSelectionItem("MIS file", ".mis"),
         };
         private static readonly IFileSelectionItem[] ACCEPTABLE_ITEMS = FILE_SELECTION_ITEMS
