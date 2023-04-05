@@ -68,46 +68,7 @@
     <ribbon:MsdialDataVisualizationTab/>
     <ribbon:MsdialSearchTab/>
     <ribbon:MsdialViewTab/>
-    <RibbonTab Header="Option"
-               KeyTip="O">
-        <RibbonGroup>
-            <RibbonButton Label="File property setting" LargeImageSource="{StaticResource File_property_setting_is}"
-                          Command="{Binding DataContext.DatasetViewModel.Value.FilePropertyResetCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                          KeyTip="F">
-                <RibbonButton.ToolTip>
-                    The file properties including type, analytical order, class, and included/not included can be modified here.
-                </RibbonButton.ToolTip>
-            </RibbonButton>
-            <RibbonButton Label="Class property setting" LargeImageSource="{StaticResource Class_property_setting_is}"
-                          Command="{Binding DataContext.DatasetViewModel.Value.FileClassSettingCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                          KeyTip="C">
-                <RibbonButton.ToolTip>
-                    The class properties including the color and the order in chart can be modified here.
-                </RibbonButton.ToolTip>
-            </RibbonButton>
-            <RibbonButton Label="Alignment result property setting" LargeImageSource="{StaticResource Alignment_result_property_setting_is}"
-                          Command="{Binding AlignmentViewModel.Value.InternalStandardSetCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
-                          KeyTip="L">
-                <RibbonButton.ToolTip>
-                    The internal standard information can be added to each peak. Please add the suitable alignment ID to each peak.
-                </RibbonButton.ToolTip>
-            </RibbonButton>
-            <RibbonButton Label="Project property setting" LargeImageSource="{StaticResource Project_property_setting_is}"
-                          IsEnabled="False"
-                          KeyTip="P">
-                <RibbonButton.ToolTip>
-                    Meta data can be added for MassBank, MoNA, and MSP export.
-                </RibbonButton.ToolTip>
-            </RibbonButton>
-            <RibbonButton Label="Experiment config setting" LargeImageSource="{StaticResource Experiment_config_setting_is}"
-                          IsEnabled="False"
-                          KeyTip="E">
-                <RibbonButton.ToolTip>
-                    Change Experiment config, such as cycle name, collision energy, and deconvolution target
-                </RibbonButton.ToolTip>
-            </RibbonButton>
-        </RibbonGroup>
-    </RibbonTab>
+    <ribbon:MsdialOptionTab DataContext="{Binding Path=(Window.DataContext).(vmcore:MainWindowVM.DatasetViewModel).Value, RelativeSource={RelativeSource AncestorType=Window}}"/>
     <RibbonTab Header="Export"
                KeyTip="E">
         <RibbonGroup>
