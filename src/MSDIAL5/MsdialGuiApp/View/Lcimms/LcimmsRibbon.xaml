@@ -5,6 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         mc:Ignorable="d"
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcimms"
+        xmlns:vmcore="clr-namespace:CompMs.App.Msdial.ViewModel.Core"
         xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
         xmlns:common="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
         xmlns:chartSetting="clr-namespace:CompMs.App.Msdial.View.ChartSetting"
@@ -50,7 +51,8 @@
         <ribbon:MsdialQuickAccessToolBar DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
     </Ribbon.QuickAccessToolBar>
     <Ribbon.HelpPaneContent>
-        <RibbonButton SmallImageSource="{StaticResource Version_is}"/>
+        <RibbonButton SmallImageSource="{StaticResource Version_is}"
+                      Command="{Binding Path=(Window.DataContext).(vmcore:MainWindowVM.ShowAboutCommand), RelativeSource={RelativeSource AncestorType=Window}}"/>
     </Ribbon.HelpPaneContent>
     <Ribbon.ApplicationMenu>
         <RibbonApplicationMenu SmallImageSource="{StaticResource New_project_is}"
