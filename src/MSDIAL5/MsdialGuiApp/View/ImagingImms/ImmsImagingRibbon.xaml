@@ -39,35 +39,7 @@
     <ribbon:MsdialSearchTab/>
     <ribbon:MsdialViewTab/>
     <ribbon:MsdialOptionTab DataContext="{Binding Path=(Window.DataContext).(vmcore:MainWindowVM.DatasetViewModel).Value, RelativeSource={RelativeSource AncestorType=Window}}"/>
-
-    <RibbonTab Header="Export"
-               KeyTip="E">
-        <RibbonGroup>
-            <RibbonButton Label="Peak list result" LargeImageSource="{StaticResource Peak_list_export_is}"
-                          Command="{Binding ExportAnalysisResultCommand}"
-                          CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-                          KeyTip="P"/>
-            <RibbonButton Label="Alignment result" LargeImageSource="{StaticResource Alignment_result_export_is}"
-                          Command="{Binding ExportAlignmentResultCommand}"
-                          CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-                          KeyTip="L"/>
-            <RibbonButton Label="Export normalization result" LargeImageSource="{StaticResource RawNormalized_comparison_result_is}"
-                          IsEnabled="False"
-                          KeyTip="N"/>
-            <RibbonButton Label="Molecular spectrum networking export" LargeImageSource="{StaticResource Molecular_network_result_export_is}"
-                          IsEnabled="False"
-                          KeyTip="M"/>
-            <RibbonButton Label="Export parameter" LargeImageSource="{StaticResource Parameter_file_export_is}"
-                          Command="{Binding ExportParameterCommand, Mode=OneTime}"
-                          KeyTip="T"/>
-            <RibbonButton Label="Export as lipoquality database format"
-                          IsEnabled="False"
-                          KeyTip="D"/>
-            <RibbonButton Label="Copy screenshot to clipboard (emf)"
-                          IsEnabled="False"
-                          KeyTip="C"/>
-        </RibbonGroup>
-    </RibbonTab>
+    <ribbon:MsdialExportTab/>
     <RibbonTab Header="Help"
                KeyTip="H">
         <RibbonGroup>
