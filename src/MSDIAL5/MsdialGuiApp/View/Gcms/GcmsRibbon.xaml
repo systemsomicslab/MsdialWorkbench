@@ -27,4 +27,5 @@
     <ribbon:MsdialSearchTab/>
     <ribbon:MsdialViewTab/>
     <ribbon:MsdialOptionTab DataContext="{Binding Path=(Window.DataContext).(vmcore:MainWindowVM.DatasetViewModel).Value, RelativeSource={RelativeSource AncestorType=Window}}"/>
+    <ribbon:MsdialExportTab/>
 </Ribbon>
