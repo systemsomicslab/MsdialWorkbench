@@ -224,6 +224,7 @@ namespace CompMs.Common.Lipidomics
                     var dbPeak = diffs[bond - 1 - 1] - MassDiffDictionary.HydrogenMass;
                     peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + dbPeak + Electron), (factor * abundance), $"{sphingo} C{bond} DB ") { SpectrumComment = speccomment });
                     peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + dbPeak + MassDiffDictionary.HydrogenMass), (factor * abundance * 0.5), $"{sphingo} C{bond} DB +H") { SpectrumComment = speccomment });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + dbPeak + MassDiffDictionary.HydrogenMass * 2), (factor * abundance * 0.5), $"{sphingo} C{bond} DB +2H") { SpectrumComment = speccomment });
                 }
             }
             return peaks;
