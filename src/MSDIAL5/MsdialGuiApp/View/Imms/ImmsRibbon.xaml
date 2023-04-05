@@ -31,41 +31,12 @@
     <Ribbon.ApplicationMenu>
         <ribbon:MsdialApplicationMenu DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
     </Ribbon.ApplicationMenu>
+
     <Ribbon.ContextualTabGroups>
         <RibbonContextualTabGroup Header="Graph tools" Visibility="Visible" Background="{StaticResource MainThemeColor}"/>
     </Ribbon.ContextualTabGroups>
-    <RibbonTab Header="Processing"
-               KeyTip="P">
-        <RibbonGroup Header="Data">
-            <RibbonButton Label="All processing (from peak detection)" LargeImageSource="{StaticResource All_process_is}"
-                          Command="{Binding DataContext.ExecuteAllMethodProcessCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                          KeyTip="A">
-                <RibbonButton.ToolTip>Reanalysis for all data processing.</RibbonButton.ToolTip>
-            </RibbonButton>
-            <RibbonButton Label="Identification" LargeImageSource="{StaticResource From_annotation_process_is}"
-                          Command="{Binding DataContext.ExecuteIdentificationMethodProcessCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                          KeyTip="I">
-                <RibbonButton.ToolTip>Reanalysis for peak identification.</RibbonButton.ToolTip>
-            </RibbonButton>
-            <RibbonButton Label="Alignment" LargeImageSource="{StaticResource From_alignment_process_is}"
-                          Command="{Binding DataContext.ExecuteAlignmentMethodProcessCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                          KeyTip="L">
-                <RibbonButton.ToolTip>Reanalysis for peak alignment.</RibbonButton.ToolTip>
-            </RibbonButton>
-        </RibbonGroup>
-        <RibbonGroup Header="Post processing">
-            <RibbonButton Label="Amalgamation of different polarity peak list" LargeImageSource="{StaticResource Merging_pos_neg_data_is}"
-                          IsEnabled="False"
-                          KeyTip="M">
-                <RibbonButton.ToolTip>The adduct type can be evaluated by using different ion mode peak list.</RibbonButton.ToolTip>
-            </RibbonButton>
-            <RibbonButton Label="Quant mass manager" LargeImageSource="{StaticResource Quant_mass_manager_is}"
-                          IsEnabled="False"
-                          KeyTip="Q">
-                <RibbonButton.ToolTip>Users can define the quant masses for metabolic profiling in GC-MS project.</RibbonButton.ToolTip>
-            </RibbonButton>
-        </RibbonGroup>
-    </RibbonTab>
+
+    <ribbon:MsdialProcessingTab DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
     <RibbonTab Header="Data visualization"
                KeyTip="D">
         <RibbonGroup>

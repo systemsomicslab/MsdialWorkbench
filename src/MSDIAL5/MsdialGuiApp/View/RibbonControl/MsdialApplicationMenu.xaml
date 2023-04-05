@@ -9,6 +9,9 @@
                        KeyTip="F"
                        Background="{StaticResource SubThemeColor}"
                        d:DataContext="{d:DesignInstance Type={x:Type vm:MainWindowVM}}">
+    <RibbonApplicationMenu.Resources>
+        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+    </RibbonApplicationMenu.Resources>
     <RibbonApplicationMenuItem Header="New project" ImageSource="{StaticResource New_project_is}"
                                Command="{Binding CreateNewProjectCommand}"
                                KeyTip="N"/>
