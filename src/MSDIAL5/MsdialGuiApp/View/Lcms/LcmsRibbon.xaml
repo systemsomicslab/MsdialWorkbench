@@ -9,6 +9,7 @@
         xmlns:enum="clr-namespace:CompMs.Common.Enum;assembly=Common"
         xmlns:common="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
         xmlns:chartSetting="clr-namespace:CompMs.App.Msdial.View.ChartSetting"
+        xmlns:ribbon="clr-namespace:CompMs.App.Msdial.View.RibbonControl"
         d:Background="White"
         d:DataContext="{d:DesignInstance Type={x:Type vm:LcmsMethodViewModel}}"
         d:DesignHeight="450" d:DesignWidth="800">
@@ -49,17 +50,7 @@
     </Ribbon.Resources>
 
     <Ribbon.QuickAccessToolBar>
-        <RibbonQuickAccessToolBar>
-            <RibbonButton SmallImageSource="{StaticResource New_project_is}"
-                          Command="{Binding DataContext.CreateNewProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                          CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
-            <RibbonButton SmallImageSource="{StaticResource Open_is}"
-                          Command="{Binding DataContext.OpenProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                          CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
-            <RibbonButton SmallImageSource="{StaticResource Save_is}"
-                          Command="{Binding DataContext.SaveProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                          CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
-        </RibbonQuickAccessToolBar>
+        <ribbon:MsdialQuickAccessToolBar DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
     </Ribbon.QuickAccessToolBar>
     <Ribbon.HelpPaneContent>
         <RibbonButton SmallImageSource="{StaticResource Version_is}"/>
