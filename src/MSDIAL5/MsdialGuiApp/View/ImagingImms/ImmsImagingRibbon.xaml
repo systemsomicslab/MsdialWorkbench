@@ -40,20 +40,7 @@
     <ribbon:MsdialViewTab/>
     <ribbon:MsdialOptionTab DataContext="{Binding Path=(Window.DataContext).(vmcore:MainWindowVM.DatasetViewModel).Value, RelativeSource={RelativeSource AncestorType=Window}}"/>
     <ribbon:MsdialExportTab/>
-    <RibbonTab Header="Help"
-               KeyTip="H">
-        <RibbonGroup>
-            <RibbonButton Label="About" LargeImageSource="{StaticResource Version_is}"
-                          IsEnabled="False"
-                          KeyTip="A"/>
-            <RibbonButton Label="Licence" LargeImageSource="{StaticResource Licence_is}"
-                          IsEnabled="False"
-                          KeyTip="L"/>
-            <RibbonButton Label="Tutorial" LargeImageSource="{StaticResource Tutorial_is}"
-                          IsEnabled="False"
-                          KeyTip="T"/>
-        </RibbonGroup>
-    </RibbonTab>
+    <ribbon:MsdialHelpTab DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
     <RibbonTab Header="Spot filtering"
                ContextualTabGroupHeader="Graph tools">
         <RibbonGroup Header="Display filter">
@@ -70,8 +57,8 @@
     </RibbonTab>
     <chartSetting:ExpRefViewSettingRibbonTab ContextualTabGroupHeader="Graph tools"
                                              DataContext="{Binding AnalysisViewModel.Value.RawDecSpectrumsViewModel}"
-                                             d:DataContext="{d:DesignInstance Type={x:Type vmchart:RawDecSpectrumsViewModel}}"
                                              Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
+                                             d:DataContext="{d:DesignInstance Type={x:Type vmchart:RawDecSpectrumsViewModel}}"
                                              Style="{StaticResource FocusWhenVisible}"/>
     <chartSetting:Ms2ChromatogramSettingRibbonTab ContextualTabGroupHeader="Graph tools"
                                                   DataContext="{Binding AnalysisViewModel.Value.Ms2ChromatogramsViewModel}"
