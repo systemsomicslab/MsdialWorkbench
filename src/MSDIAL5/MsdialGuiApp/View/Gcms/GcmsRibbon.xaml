@@ -18,4 +18,7 @@
         <RibbonButton SmallImageSource="{StaticResource Version_is}"
                       Command="{Binding Path=(Window.DataContext).(vmcore:MainWindowVM.ShowAboutCommand), RelativeSource={RelativeSource AncestorType=Window}}"/>
     </Ribbon.HelpPaneContent>
+    <Ribbon.ApplicationMenu>
+        <ribbon:MsdialApplicationMenu DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
+    </Ribbon.ApplicationMenu>
 </Ribbon>

@@ -29,27 +29,7 @@
                       Command="{Binding Path=(Window.DataContext).(vmcore:MainWindowVM.ShowAboutCommand), RelativeSource={RelativeSource AncestorType=Window}}"/>
     </Ribbon.HelpPaneContent>
     <Ribbon.ApplicationMenu>
-        <RibbonApplicationMenu SmallImageSource="{StaticResource New_project_is}"
-                               KeyTip="F"
-                               Background="{StaticResource SubThemeColor}">
-            <RibbonApplicationMenuItem Header="New project" ImageSource="{StaticResource New_project_is}"
-                                       Command="{Binding DataContext.CreateNewProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                       CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-                                       KeyTip="N"/>
-            <RibbonApplicationMenuItem Header="Open project" ImageSource="{StaticResource Open_is}"
-                                       Command="{Binding DataContext.OpenProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                       CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-                                       KeyTip="O"/>
-            <RibbonApplicationSplitMenuItem Header="Save" ImageSource="{StaticResource Save_is}"
-                                            Command="{Binding DataContext.SaveProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                            KeyTip="S">
-                <RibbonApplicationMenuItem Header="Save as..." ImageSource="{StaticResource Save_as_is}"
-                                           Command="{Binding DataContext.SaveAsProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                           KeyTip="A"/>
-                <RibbonApplicationMenuItem Header="Save parameter as..."
-                                           Command="{Binding DataContext.DatasetViewModel.Value.SaveParameterAsCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
-            </RibbonApplicationSplitMenuItem>
-        </RibbonApplicationMenu>
+        <ribbon:MsdialApplicationMenu DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
     </Ribbon.ApplicationMenu>
     <Ribbon.ContextualTabGroups>
         <RibbonContextualTabGroup Header="Graph tools" Visibility="Visible" Background="{StaticResource MainThemeColor}"/>
