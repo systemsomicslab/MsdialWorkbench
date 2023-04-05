@@ -66,28 +66,7 @@
 
     <ribbon:MsdialProcessingTab DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
     <ribbon:MsdialDataVisualizationTab DataContext="{Binding}"/>
-    <RibbonTab Header="Search"
-               KeyTip="S">
-        <RibbonGroup>
-            <RibbonButton Label="MS/MS fragment searcher" LargeImageSource="{StaticResource Fragment_search_is}"
-                          IsEnabled="True"
-                          Command="{Binding ShowFragmentSearchSettingCommand}"
-                          KeyTip="F">
-                <RibbonButton.ToolTip>The unique product ion or neutral loss can be examined.</RibbonButton.ToolTip>
-            </RibbonButton>
-            <RibbonButton Label="Spectral search" LargeImageSource="{StaticResource Spectral_library_search_is}"
-                          IsEnabled="False"
-                          KeyTip="S"/>
-            <RibbonButton Label="Msfinder search" LargeImageSource="{StaticResource Msfinder_is}"
-                          Command="{Binding GoToMsfinderCommand}"
-                          IsEnabled="True"
-                          KeyTip="M"/>
-            <RibbonButton Label="MassQL search" LargeImageSource="{StaticResource MassQL_icon_is}"
-                          IsEnabled="True"
-                          Command="{Binding ShowMassqlSearchSettingCommand}"
-                          KeyTip="T"/>
-        </RibbonGroup>
-    </RibbonTab>
+    <ribbon:MsdialSearchTab DataContext="{Binding}"/>
     <RibbonTab Header="View"
                KeyTip="V">
         <RibbonGroup>
