@@ -109,6 +109,8 @@ namespace CompMs.Common.Lipidomics
                     generator.Add(LbmClass.TG, new OadDefaultSpectrumGenerator());
                     generator.Add(LbmClass.DG, new OadDefaultSpectrumGenerator());
                     generator.Add(LbmClass.SM, new SMOadSpectrumGenerator());
+                    generator.Add(LbmClass.Cer_NDS, new CeramideOadSpectrumGenerator());
+                    generator.Add(LbmClass.Cer_NS, new CeramideOadSpectrumGenerator());
                     @oadlipidgenerator = generator;
                 }
                 return @oadlipidgenerator;
