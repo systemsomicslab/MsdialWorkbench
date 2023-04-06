@@ -5,6 +5,7 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Runtime.CompilerServices;
 
 namespace CompMs.App.Msdial.ViewModel.Search
 {
@@ -114,18 +115,20 @@ namespace CompMs.App.Msdial.ViewModel.Search
             return (flag & CheckedFilter.Value & EnabledFilter) != 0;
         }
 
-        private bool WriteFilter(DisplayFilter flag, bool value) {
+        private bool WriteFilter(DisplayFilter flag, bool value, [CallerMemberName]string propertyname = "") {
             var availableFilter = flag & EnabledFilter;
             if (availableFilter != 0) {
                 if (value) {
                     if (availableFilter.Any(~CheckedFilter.Value)) {
                         CheckedFilter.Value |= availableFilter;
+                        OnPropertyChanged(propertyname);
                         return true;
                     }
                 }
                 else {
                     if (availableFilter.Any(CheckedFilter.Value)) {
                         CheckedFilter.Value &= ~availableFilter;
+                        OnPropertyChanged(propertyname);
                         return true;
                     }
                 }

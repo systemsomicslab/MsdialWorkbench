@@ -11,14 +11,12 @@ namespace CompMs.App.Msdial.ViewModel.Search
     public class SpotFocusViewModel : ViewModelBase
     {
         public SpotFocusViewModel(ISpotFocus spotFocus) {
-            Value = spotFocus.ObserveProperty(m => m.Value)
-                .Select(x => x.ToString(spotFocus.Format))
-                .ToReactiveProperty()
+            Value = spotFocus.ToReactivePropertyAsSynchronized(
+                m => m.Value,
+                op => op.Select(m => m.ToString()),
+                op => op.Select(vm => double.TryParse(vm, out var m) ? Observable.Return(m) : Observable.Never<double>()).Switch(),
+                ignoreValidationErrorValue: true)
                 .SetValidateAttribute(() => Value)
-                .AddTo(Disposables);
-            Value.Throttle(TimeSpan.FromSeconds(1))
-                .Where(_ => !Value.HasErrors)
-                .Subscribe(_ => spotFocus.Value = double.TryParse(Value.Value, out var x) ? x : 0d)
                 .AddTo(Disposables);
 
             FocusCommand = Value.ObserveHasErrors
@@ -39,7 +37,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
 
         public bool IsItalic { get; }
 
-        [RegularExpression(@"-?\d*.?\d+", ErrorMessage = "Invalid format")]
+        [RegularExpression(@"-?\d*.?\d*", ErrorMessage = "Invalid format")]
         public ReactiveProperty<string> Value { get; }
 
         public ReactiveCommand FocusCommand { get; }

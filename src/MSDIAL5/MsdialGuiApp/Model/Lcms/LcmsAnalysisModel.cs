@@ -272,7 +272,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Target,
                 id => Ms1Peaks.Argmin(p => Math.Abs(p.MasterPeakID - id)),
                 Target.Select(t => t?.MasterPeakID ?? 0d),
-                "Region focus by ID",
+                "ID",
                 (rtSpotFocus, peak => peak.ChromXValue ?? 0d),
                 (mzSpotFocus, peak => peak.Mass)).AddTo(Disposables);
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, rtSpotFocus, mzSpotFocus);
