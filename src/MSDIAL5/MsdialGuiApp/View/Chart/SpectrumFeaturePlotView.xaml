@@ -10,18 +10,24 @@
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              Name="PeakPairPlot"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:SpectrumFeaturePlotViewModel}}"
              d:Background="White"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </UserControl.Resources>
 
     <Grid>
         <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis, Mode=OneWay}"
                           VerticalAxis="{Binding VerticalAxis, Mode=OneWay}"
-                          HorizontalTitle="{Binding HorizontalTitle.Value, Mode=OneWay}"
-                          VerticalTitle="{Binding VerticalTitle.Value, Mode=OneWay}"
-                          GraphTitle="{Binding GraphTitle.Value, Mode=OneWay}"
+                          HorizontalTitle="{Binding HorizontalLabel.Value, Mode=OneWay}"
+                          VerticalTitle="{Binding VerticalLabel.Value, Mode=OneWay}"
+                          GraphTitle="{Binding Title.Value, Mode=OneWay}"
                           Background="WhiteSmoke" BorderBrush="Black"
                           Style="{StaticResource OverlapChart}">
             <chart:MultiChart.ContextMenu>
@@ -51,13 +57,13 @@
                 </ContextMenu>
             </chart:MultiChart.ContextMenu>
             <chart:ScatterControlSlim x:Name="analysisScatter"
-                                      ItemsSource="{Binding Spots, Mode=OneWay}"
+                                      ItemsSource="{Binding ChromatogramPeaks, Mode=OneWay}"
                                       DataType="{x:Type do:ChromatogramPeakFeatureModel}"
-                                      HorizontalProperty="{Binding HorizontalProperty.Value, Mode=OneWay}"
-                                      VerticalProperty="{Binding VerticalProperty.Value, Mode=OneWay}"
-                                      PointBrush="{Binding Brush.Value}"
+                                      HorizontalProperty="{Binding HorizontalProperty, Mode=OneWay}"
+                                      VerticalProperty="{Binding VerticalProperty, Mode=OneWay}"
+                                      PointBrush="{Binding Brush}"
                                       Radius="5.5"
-                                      SelectedItem="{Binding Target.Value, Mode=TwoWay}">
+                                      SelectedItem="{Binding SelectedChromatogramPeak.Value, Mode=TwoWay}">
                 <chart:ScatterControlSlim.ToolTip>
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                         <StackPanel Orientation="Vertical">
@@ -72,54 +78,29 @@
                     </ToolTip>
                 </chart:ScatterControlSlim.ToolTip>
             </chart:ScatterControlSlim>
-            <chart:Annotator ItemsSource="{Binding Spots, Mode=OneWay}"
-                             HorizontalPropertyName="{Binding HorizontalProperty.Value, Mode=OneWay}"
-                             VerticalPropertyName="{Binding VerticalProperty.Value, Mode=OneWay}"
-                             LabelPropertyName="{Binding LabelProperty.Value, Mode=OneWay}"/>
-            <chart:SpotLinkedAnnotator Spots="{Binding Spots, Mode=OneWay}"
-                                       Links="{Binding Links, Mode=OneWay}"
-                                       Annotators="{Binding Annotations, Mode=OneWay}"
-                                       DataType="{x:Type do:ChromatogramPeakFeatureModel}"
-                                       Target="{Binding Target.Value, Mode=OneWay}"
-                                       HorizontalProperty="{Binding HorizontalProperty.Value, Mode=OneWay}"
-                                       VerticalProperty="{Binding VerticalProperty.Value, Mode=OneWay}"
-                                       LinkBrush="{Binding LinkerBrush, Mode=OneWay}"
-                                       SpotLabelBrush="{Binding SpotLabelBrush, Mode=OneWay}"
-                                       Radius="5.5"/>
+            <chart:Annotator ItemsSource="{Binding ChromatogramPeaks, Mode=OneWay}"
+                             HorizontalPropertyName="{Binding HorizontalProperty, Mode=OneWay}"
+                             VerticalPropertyName="{Binding VerticalProperty, Mode=OneWay}"
+                             LabelPropertyName="{Binding LabelProperty, Mode=OneWay}"/>
             <chart:ScatterControl ItemsSource="{Binding Spectra, Mode=OneWay}"
-                                  HorizontalPropertyName="{Binding HorizontalProperty.Value, Mode=OneWay}"
-                                  VerticalPropertyName="{Binding VerticalProperty.Value, Mode=OneWay}"
+                                  HorizontalPropertyName="{Binding HorizontalProperty, Mode=OneWay}"
+                                  VerticalPropertyName="{Binding HorizontalProperty, Mode=OneWay}"
                                   VerticalAxis="{x:Static axis:ConstantAxisManager.Instance}"
                                   PointGeometry="M -1,1 H 1 L 0,-1 Z"
                                   PointBrush="Gray"
                                   Radius="6"
-                                  Height="12" VerticalAlignment="Top"/>
-            <ContentControl Content="{Binding SelectedPoint, ElementName=analysisScatter}"
-                            ContentTemplate="{DynamicResource FocusCross}"
-                            IsHitTestVisible="False">
-                <ContentControl.Resources>
-                    <DataTemplate x:Key="FocusCross">
-                        <Canvas ClipToBounds="True">
-                            <Canvas.Resources>
-                                <Style TargetType="Rectangle">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SelectedPoint, ElementName=analysisScatter}" Value="{x:Null}">
-                                            <Setter Property="Visibility" Value="Hidden"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Canvas.Resources>
-                            <Rectangle Fill="Red" VerticalAlignment="Stretch" IsHitTestVisible="False"
-                                       Width="1" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Canvas}}"
-                                       Canvas.Left="{Binding X}"/>
-                            <Rectangle Fill="Red" HorizontalAlignment="Stretch" IsHitTestVisible="False"
-                                       Height="1" Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Canvas}}"
-                                       Canvas.Top="{Binding Y}"/>
-                        </Canvas>
-                    </DataTemplate>
-                </ContentControl.Resources>
-            </ContentControl>
+                                  Height="100"
+                                  VerticalAlignment="Top"/>
+            <Canvas DataContext="{Binding SelectedPoint, ElementName=analysisScatter}"
+                    ClipToBounds="True"
+                    Visibility="{Binding HasValue, Converter={StaticResource BooleanToVisibility}}">
+                <Rectangle Fill="Red" VerticalAlignment="Stretch" IsHitTestVisible="False"
+                           Width="1" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Canvas}}"
+                           Canvas.Left="{Binding X}"/>
+                <Rectangle Fill="Red" HorizontalAlignment="Stretch" IsHitTestVisible="False"
+                           Height="1" Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Canvas}}"
+                           Canvas.Top="{Binding Y}"/>
+            </Canvas>
         </chart:MultiChart>
     </Grid>
 </UserControl>

@@ -21,9 +21,9 @@
 		<HighEntropyVA>false</HighEntropyVA>
 		<SignAssembly>False</SignAssembly>
 	</PropertyGroup>
-	<ItemGroup>
-	  <Compile Remove="Model\Imaging\WholeImageResultModel.cs" />
-	</ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
 	<ItemGroup>
 		<Resource Include="Resources\msdial_icon.ico" />
 	</ItemGroup>

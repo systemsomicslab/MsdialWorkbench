@@ -9,6 +9,7 @@ using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialDimsCore.Parameter;
+using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
@@ -124,6 +125,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                     return new DimsAnnotatorSettingViewModelFactory();
                 case IMsdialDataStorage<MsdialImmsParameter> _:
                     return new ImmsAnnotatorSettingViewModelFactory();
+                //case IMsdialDataStorage<MsdialGcmsParameter> _:
+                //    return new GcmsAnnotatorSettingViewModelFactory();
             }
             throw new NotImplementedException("unknown method acquired.");
         }

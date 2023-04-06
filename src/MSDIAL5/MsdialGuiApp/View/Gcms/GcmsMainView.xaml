@@ -7,6 +7,7 @@
              xmlns:commonview="clr-namespace:CompMs.App.Msdial.View.Core"
              xmlns:search="clr-namespace:CompMs.App.Msdial.View.Search"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Gcms"
+             xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              mc:Ignorable="d" 
              Name="MainControl"
              d:DataContext="{d:DesignInstance Type={x:Type vm:GcmsMethodViewModel}}"
@@ -35,6 +36,8 @@
         <commonview:Navigator Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"/>
         <search:FocusNavigatorView DataContext="{Binding SelectedViewModel.Value.FocusNavigatorViewModel, Mode=OneWay}"
                                    Grid.Row="2" Grid.Column="1"/>
+        <chart:SpectrumFeaturePlotView DataContext="{Binding AnalysisViewModel.Value.PeakPlotViewModel}"
+                                       Grid.Row="1" Grid.Column="2"/>
         <GridSplitter Margin="0,0,0,0" 
                     Width="2" ResizeDirection="Columns" ResizeBehavior="CurrentAndNext" 
                     VerticalAlignment="Stretch" HorizontalAlignment="Right" 

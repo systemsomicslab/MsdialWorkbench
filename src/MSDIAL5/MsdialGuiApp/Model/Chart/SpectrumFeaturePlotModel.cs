@@ -14,11 +14,15 @@ namespace CompMs.App.Msdial.Model.Chart
     {
         public SpectrumFeaturePlotModel(Ms1BasedSpectrumFeatureCollection spectra, ObservableCollection<ChromatogramPeakFeatureModel> peaks)
         {
-            ChromatogramPeaks = new ReadOnlyObservableCollection<ChromatogramPeakFeatureModel>(peaks);
-            Spectra = new ReadOnlyObservableCollection<Ms1BasedSpectrumFeature>(spectra.Items);
+            SpectraWrapper = new ReadOnlyObservableCollection<object>(new ObservableCollection<object>(spectra.Items.Select(item => new SpectrumWrapper(item))));
+            SelectedSpectrumWrapper = new ReactivePropertySlim<object>().AddTo(Disposables);
 
-            SelectedSpectrum = new ReactivePropertySlim<Ms1BasedSpectrumFeature>().AddTo(Disposables);
+            Spectra = new ReadOnlyObservableCollection<Ms1BasedSpectrumFeature>(spectra.Items);
+            SelectedSpectrum = SelectedSpectrumWrapper.OfType<SpectrumWrapper>().Select(s => s.Feature).ToReactiveProperty().AddTo(Disposables);
+
+            ChromatogramPeaks = new ReadOnlyObservableCollection<ChromatogramPeakFeatureModel>(peaks);
             SelectedChromatogramPeak = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
+
 
             HorizontalLabel = new ReactivePropertySlim<string>("Retention time [min]").AddTo(Disposables);
             VerticalLabel = new ReactivePropertySlim<string>("m/z").AddTo(Disposables);
@@ -37,9 +41,11 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalAxis = ContinuousAxisManager<double>.Build(peaks, p => p.RT.Value).AddTo(Disposables);
         }
 
-        public ReactivePropertySlim<Ms1BasedSpectrumFeature> SelectedSpectrum { get; }
-        public ReactivePropertySlim<ChromatogramPeakFeatureModel> SelectedChromatogramPeak { get; }
+        public ReactivePropertySlim<object> SelectedSpectrumWrapper { get; }
+        public ReadOnlyObservableCollection<object> SpectraWrapper { get; }
+        public ReactiveProperty<Ms1BasedSpectrumFeature> SelectedSpectrum { get; }
         public ReadOnlyObservableCollection<Ms1BasedSpectrumFeature> Spectra { get; }
+        public ReactivePropertySlim<ChromatogramPeakFeatureModel> SelectedChromatogramPeak { get; }
         public ReadOnlyObservableCollection<ChromatogramPeakFeatureModel> ChromatogramPeaks { get; }
 
         public IAxisManager<double> HorizontalAxis { get; }
@@ -47,5 +53,15 @@ namespace CompMs.App.Msdial.Model.Chart
         public ReactivePropertySlim<string> HorizontalLabel { get; }
         public ReactivePropertySlim<string> VerticalLabel { get; }
         public ReadOnlyReactivePropertySlim<string> Title { get; }
+
+        class SpectrumWrapper : BindableBase {
+            public SpectrumWrapper(Ms1BasedSpectrumFeature feature) {
+                Feature = feature;
+                ChromXValue = feature.Scan.ChromXs.RT.Value;
+            }
+
+            public double ChromXValue { get; }
+            public Ms1BasedSpectrumFeature Feature { get; }
+        }
     }
 }

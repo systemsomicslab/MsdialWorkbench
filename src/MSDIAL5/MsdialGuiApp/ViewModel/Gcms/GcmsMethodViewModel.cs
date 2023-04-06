@@ -5,6 +5,7 @@ using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Reactive.Linq;
@@ -19,11 +20,13 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         private readonly IMessageBroker _broker;
         private readonly FocusControlManager _focusControl;
 
-        public GcmsMethodViewModel(GcmsMethodModel model, ReactivePropertySlim<IAnalysisResultViewModel> analysisFileViewModel, ReactivePropertySlim<IAlignmentResultViewModel> alignmentFileViewModel, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels, IMessageBroker broker, FocusControlManager focusControl)
+        public GcmsMethodViewModel(GcmsMethodModel model, ReactiveProperty<IAnalysisResultViewModel> analysisFileViewModel, ReactivePropertySlim<IAlignmentResultViewModel> alignmentFileViewModel, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels, IMessageBroker broker, FocusControlManager focusControl)
             : base(model, analysisFileViewModel, alignmentFileViewModel, chromatogramViewModels, massSpectrumViewModels) {
             _model = model;
             _broker = broker;
             _focusControl = focusControl;
+            Disposables.Add(analysisFileViewModel);
+            Disposables.Add(alignmentFileViewModel);
         }
 
         protected override Task LoadAlignmentFileCoreAsync(AlignmentFileBeanViewModel alignmentFile, CancellationToken token) {
@@ -38,9 +41,13 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         }
 
         public static GcmsMethodViewModel Create(GcmsMethodModel model, IMessageBroker broker) {
-
             var focusControlManager = new FocusControlManager();
-            var analysisAsObservable = new ReactivePropertySlim<IAnalysisResultViewModel>();
+            var analysisAsObservable = Observable.Create<GcmsAnalysisModel>(observer => {
+                observer.OnNext(model.SelectedAnalysisModel);
+                return model.ObserveProperty(m => m.SelectedAnalysisModel, isPushCurrentValueAtFirst: false).Subscribe(observer);
+            }).Where(m => m != null)
+            .Select(m => new GcmsAnalysisViewModel(m))
+            .ToReactiveProperty<IAnalysisResultViewModel>();
             var alignmentAsObservable = new ReactivePropertySlim<IAlignmentResultViewModel>();
 
             var tmpSwitcher = new ViewModelSwitcher(Observable.Return<ViewModelBase>(null), Observable.Return<ViewModelBase>(null));
