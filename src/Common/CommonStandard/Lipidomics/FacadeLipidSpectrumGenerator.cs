@@ -97,7 +97,7 @@ namespace CompMs.Common.Lipidomics
                     var generator = new FacadeLipidSpectrumGenerator();
                     generator.Add(LbmClass.PC, new PCOadSpectrumGenerator());
                     generator.Add(LbmClass.LPC, new OadDefaultSpectrumGenerator());
-                    generator.Add(LbmClass.EtherPC, new OadDefaultSpectrumGenerator());
+                    generator.Add(LbmClass.EtherPC, new EtherPCOadSpectrumGenerator());
                     generator.Add(LbmClass.EtherLPC, new OadDefaultSpectrumGenerator());
                     generator.Add(LbmClass.PE, new PEOadSpectrumGenerator());
                     generator.Add(LbmClass.LPE, new OadDefaultSpectrumGenerator());
