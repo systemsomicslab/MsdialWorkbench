@@ -103,7 +103,7 @@ namespace CompMs.Common.Lipidomics
                     generator.Add(LbmClass.LPE, new OadDefaultSpectrumGenerator());
                     generator.Add(LbmClass.EtherPE, new OadDefaultSpectrumGenerator());
                     generator.Add(LbmClass.EtherLPE, new OadDefaultSpectrumGenerator());
-                    generator.Add(LbmClass.PG, new OadDefaultSpectrumGenerator());
+                    generator.Add(LbmClass.PG, new PGOadSpectrumGenerator());
                     generator.Add(LbmClass.PI, new OadDefaultSpectrumGenerator());
                     generator.Add(LbmClass.PS, new OadDefaultSpectrumGenerator());
                     generator.Add(LbmClass.TG, new OadDefaultSpectrumGenerator());
