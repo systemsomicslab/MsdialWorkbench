@@ -1,5 +1,4 @@
-﻿using CompMs.App.MsdialConsole.EadSpectraAnalysis;
-using CompMs.Common.Algorithm.Scoring;
+﻿using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
 using CompMs.Common.Parser;
 using System;
@@ -10,24 +9,40 @@ using System.Text;
 
 namespace CompMs.App.MsdialConsole.MolecularNetwork {
 
-  
+    public class LinkNode {
+        public double[] Score { get; set; }
+        public MoleculeMsReference Node { get; set; }
+    }
+
+    public class MoleculerNetworkParameter {
+        public double MinimumPeakMatch { get; set; } = 6;
+        public double MatchThreshold { get; set; } = 0.95;
+        public double MaxEdgeNumPerNode { get; set; } = 5;
+        public double MaxPrecursorDiff { get; set; } = 400;
+        public double MaxPrecursorDiff_Percent { get; set; } = 100;
+    }
+
     public sealed class MoleculerSpectrumNetworkingTest {
         private MoleculerSpectrumNetworkingTest() { }
 
-        public static void Run(string input, string outputdir, string version) {
+        public static void Run(string input, string parameterfile, string outputdir) {
             if (!Directory.Exists(outputdir)) {
                 Directory.CreateDirectory(outputdir);
             }
 
-            var minimumPeakMatch = 6;
-            var matchThreshold = 0.95;
-            var maxEdgeNumPerNode = 5;
-            var maxPrecursorDiff = 400.0;
-            var maxPrecursorDiff_Percent = 100;
+            var dt = DateTime.Now;
+            var timeStamp = dt.Year.ToString() + dt.Month.ToString() + dt.Day.ToString() + dt.Hour.ToString() + dt.Minute.ToString() + dt.Second.ToString();
+            var param = ReadParameters(parameterfile);
+
+            var minimumPeakMatch = param.MinimumPeakMatch;
+            var matchThreshold = param.MatchThreshold;
+            var maxEdgeNumPerNode = param.MaxEdgeNumPerNode;
+            var maxPrecursorDiff = param.MaxPrecursorDiff;
+            var maxPrecursorDiff_Percent = param.MaxPrecursorDiff_Percent;
 
             var inputfilename = Path.GetFileNameWithoutExtension(input);
-            var output_node_file = Path.Combine(outputdir, inputfilename + "_" + version + "_node.txt");
-            var output_edge_file = Path.Combine(outputdir, inputfilename + "_" + version + "_edge.txt");
+            var output_node_file = Path.Combine(outputdir, inputfilename + "_" + timeStamp + "_node.txt");
+            var output_edge_file = Path.Combine(outputdir, inputfilename + "_" + timeStamp + "_edge.txt");
 
             var spectra = MspFileParser.MspFileReader(input);
 
@@ -104,11 +119,49 @@ namespace CompMs.App.MsdialConsole.MolecularNetwork {
                     var lines = new List<string>() {
                         key, record.PrecursorMz.ToString(), record.ChromXs.Value.ToString(),
                         record.Name,
-                        record.AdductType.ToString(), 
+                        record.AdductType.ToString(),
                     };
                     sw.WriteLine(String.Join("\t", lines));
                 }
             }
+        }
+
+        public static MoleculerNetworkParameter ReadParameters(string file) {
+            var param = new MoleculerNetworkParameter();
+            using (var sr = new StreamReader(file)) {
+                while (sr.Peek() != -1) {
+                    var line = sr.ReadLine();
+                    var linearray = line.Split('=');
+                    if (linearray.Length > 1) {
+                        var key = linearray[0];
+                        var value = linearray[1];
+                        switch (key.ToLower()) {
+                            case "minimumpeakmatch":
+                                if (double.TryParse(value, out double minimumpeakmatch))
+                                    param.MinimumPeakMatch = minimumpeakmatch;
+                                break;
+                            case "matchthreshold":
+                                if (double.TryParse(value, out double matchthreshold))
+                                    param.MatchThreshold = matchthreshold;
+                                break;
+                            case "maxedgenumpernode":
+                                if (double.TryParse(value, out double maxedgenumpernode))
+                                    param.MaxEdgeNumPerNode = maxedgenumpernode;
+                                break;
+                            case "maxprecursordiff":
+                                if (double.TryParse(value, out double maxprecursordiff))
+                                    param.MaxPrecursorDiff = maxprecursordiff;
+                                break;
+                            case "maxprecursordiff_percent":
+                                if (double.TryParse(value, out double maxprecursordiff_percent))
+                                    param.MaxPrecursorDiff_Percent = maxprecursordiff_percent;
+                                break;
+                            default: break;
+                        }
+                    }
+                }
+            }
+            return param;
         }
     }
 }
