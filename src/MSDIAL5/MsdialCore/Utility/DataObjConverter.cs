@@ -124,7 +124,7 @@ namespace CompMs.MsdialCore.Utility
             spot.Ontology = representative.Ontology;
             spot.SMILES = representative.SMILES;
             spot.InChIKey = representative.InChIKey;
-            spot.AdductType = Common.Parser.AdductIonParser.GetAdductIonBean(representative.PeakCharacter.AdductType.AdductIonName);
+            spot.SetAdductType(Common.Parser.AdductIonParser.GetAdductIonBean(representative.PeakCharacter.AdductType.AdductIonName));
             spot.PeakCharacter = new IonFeatureCharacter
             {
                 AdductType = spot.AdductType,
