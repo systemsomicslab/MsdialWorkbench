@@ -1,81 +1,69 @@
-﻿<Ribbon x:Class="CompMs.App.Msdial.View.Imms.ImmsRibbon"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-        mc:Ignorable="d" 
-        xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
-        xmlns:vmcore="clr-namespace:CompMs.App.Msdial.ViewModel.Core"
-        xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
-        xmlns:common="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
-        xmlns:chartSetting="clr-namespace:CompMs.App.Msdial.View.ChartSetting"
-        xmlns:ribbon="clr-namespace:CompMs.App.Msdial.View.RibbonControl"
-        Background="{StaticResource MainThemeColor}"
-        d:Background="White"
-        d:DataContext="{d:DesignInstance Type={x:Type vm:ImmsMethodViewModel}}"
-        d:DesignHeight="450" d:DesignWidth="800">
-    <Ribbon.Resources>
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Imms.ImmsRibbon"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+            mc:Ignorable="d" 
+            xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
+            xmlns:vmcore="clr-namespace:CompMs.App.Msdial.ViewModel.Core"
+            xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+            xmlns:chartSetting="clr-namespace:CompMs.App.Msdial.View.ChartSetting"
+            xmlns:ribbon="clr-namespace:CompMs.App.Msdial.View.RibbonControl"
+            d:Background="White"
+            d:DataContext="{d:DesignInstance Type={x:Type vm:ImmsMethodViewModel}}">
+    <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
-    </Ribbon.Resources>
-    <Ribbon.QuickAccessToolBar>
-        <ribbon:MsdialQuickAccessToolBar DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
-    </Ribbon.QuickAccessToolBar>
-    <Ribbon.HelpPaneContent>
-        <RibbonButton SmallImageSource="{StaticResource Version_is}"
-                      Command="{Binding Path=(Window.DataContext).(vmcore:MainWindowVM.ShowAboutCommand), RelativeSource={RelativeSource AncestorType=Window}}"/>
-    </Ribbon.HelpPaneContent>
-    <Ribbon.ApplicationMenu>
-        <ribbon:MsdialApplicationMenu DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
-    </Ribbon.ApplicationMenu>
+    </UserControl.Resources>
+    <Ribbon Background="{StaticResource MainThemeColor}">
+        <Ribbon.QuickAccessToolBar>
+            <ribbon:MsdialQuickAccessToolBar DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
+        </Ribbon.QuickAccessToolBar>
+        <Ribbon.HelpPaneContent>
+            <RibbonButton SmallImageSource="{StaticResource Version_is}"
+                          Command="{Binding Path=(Window.DataContext).(vmcore:MainWindowVM.ShowAboutCommand), RelativeSource={RelativeSource AncestorType=Window}}"/>
+        </Ribbon.HelpPaneContent>
+        <Ribbon.ApplicationMenu>
+            <ribbon:MsdialApplicationMenu DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
+        </Ribbon.ApplicationMenu>
 
-    <Ribbon.ContextualTabGroups>
-        <RibbonContextualTabGroup Header="Graph tools" Visibility="Visible" Background="{StaticResource MainThemeColor}"/>
-    </Ribbon.ContextualTabGroups>
+        <Ribbon.ContextualTabGroups>
+            <RibbonContextualTabGroup Header="Graph tools" Visibility="Visible" Background="{StaticResource MainThemeColor}"/>
+        </Ribbon.ContextualTabGroups>
 
-    <ribbon:MsdialProcessingTab DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
-    <ribbon:MsdialDataVisualizationTab/>
-    <ribbon:MsdialSearchTab/>
-    <ribbon:MsdialViewTab/>
-    <ribbon:MsdialOptionTab DataContext="{Binding Path=(Window.DataContext).(vmcore:MainWindowVM.DatasetViewModel).Value, RelativeSource={RelativeSource AncestorType=Window}}"/>
-    <ribbon:MsdialExportTab/>
-    <ribbon:MsdialHelpTab DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
-    <ribbon:MsdialFilterTab ContextualTabGroupHeader="Graph tools"/>
-    <RibbonTab Header="Utility"
-               ContextualTabGroupHeader="Graph tools">
-        <RibbonGroup Header="Peak color">
-            <RibbonComboBox Label="Alignment"
-                            SelectionBoxWidth="80"
-                            VerticalAlignment="Center">
-                <RibbonGallery SelectedValue="{Binding AlignmentViewModel.Value.SelectedBrush.Value}"
-                               SelectedValuePath="Mapper">
-                    <RibbonGalleryCategory ItemsSource="{Binding AlignmentViewModel.Value.Brushes}"
-                                           DisplayMemberPath="Label"/>
-                </RibbonGallery>
-            </RibbonComboBox>
-        </RibbonGroup>
-    </RibbonTab>
-    <chartSetting:ExpRefViewSettingRibbonTab ContextualTabGroupHeader="Graph tools"
-                                             DataContext="{Binding AnalysisViewModel.Value.RawDecSpectrumsViewModel}"
-                                             d:DataContext="{d:DesignInstance Type={x:Type vmchart:RawDecSpectrumsViewModel}}"
-                                             Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
-                                             Style="{StaticResource FocusWhenVisible}"/>
-    <chartSetting:RepRefViewSettingRibbonTab ContextualTabGroupHeader="Graph tools"
-                                             DataContext="{Binding AlignmentViewModel.Value.Ms2SpectrumViewModel}"
-                                             d:DataContext="{d:DesignInstance Type={x:Type vmchart:MsSpectrumViewModel}}"
-                                             Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
-                                             Style="{StaticResource FocusWhenVisible}"/>
-    <chartSetting:Ms2ChromatogramSettingRibbonTab ContextualTabGroupHeader="Graph tools"
-                                                  DataContext="{Binding AnalysisViewModel.Value.Ms2ChromatogramsViewModel}"
-                                                  d:DataContext="{d:DesignInstance Type={x:Type vmchart:Ms2ChromatogramsViewModel}}"
-                                                  Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
-                                                  Style="{StaticResource FocusWhenVisible}"/>
-    <chartSetting:BarChartOfAlignedSpotSettingRibbonTab ContextualTabGroupHeader="Graph tools"
-                                                        DataContext="{Binding AlignmentViewModel.Value.BarChartViewModel}"
-                                                        d:DataContext="{d:DesignInstance Type={x:Type vmchart:BarChartViewModel}}"
-                                                        Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
-                                                        Style="{StaticResource FocusWhenVisible}"/>
-</Ribbon>
+        <ribbon:MsdialProcessingTab DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
+        <ribbon:MsdialDataVisualizationTab/>
+        <ribbon:MsdialSearchTab/>
+        <ribbon:MsdialViewTab/>
+        <ribbon:MsdialOptionTab DataContext="{Binding Path=(Window.DataContext).(vmcore:MainWindowVM.DatasetViewModel).Value, RelativeSource={RelativeSource AncestorType=Window}}"/>
+        <ribbon:MsdialExportTab/>
+        <ribbon:MsdialHelpTab DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
+        <ribbon:MsdialFilterTab ContextualTabGroupHeader="Graph tools"/>
+        <ribbon:MsdialGraphUtilityTab ContextualTabGroupHeader="Graph tools"
+                                      DataContext="{Binding AlignmentViewModel.Value.PlotViewModel}"
+                                      Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"/>
+        <chartSetting:ExpRefViewSettingRibbonTab ContextualTabGroupHeader="Graph tools"
+                                                 DataContext="{Binding AnalysisViewModel.Value.RawDecSpectrumsViewModel}"
+                                                 d:DataContext="{d:DesignInstance Type={x:Type vmchart:RawDecSpectrumsViewModel}}"
+                                                 Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
+                                                 Style="{StaticResource FocusWhenVisible}"/>
+        <chartSetting:RepRefViewSettingRibbonTab ContextualTabGroupHeader="Graph tools"
+                                                 DataContext="{Binding AlignmentViewModel.Value.Ms2SpectrumViewModel}"
+                                                 d:DataContext="{d:DesignInstance Type={x:Type vmchart:MsSpectrumViewModel}}"
+                                                 Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
+                                                 Style="{StaticResource FocusWhenVisible}"/>
+        <chartSetting:Ms2ChromatogramSettingRibbonTab ContextualTabGroupHeader="Graph tools"
+                                                      DataContext="{Binding AnalysisViewModel.Value.Ms2ChromatogramsViewModel}"
+                                                      d:DataContext="{d:DesignInstance Type={x:Type vmchart:Ms2ChromatogramsViewModel}}"
+                                                      Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
+                                                      Style="{StaticResource FocusWhenVisible}"/>
+        <chartSetting:BarChartOfAlignedSpotSettingRibbonTab ContextualTabGroupHeader="Graph tools"
+                                                            DataContext="{Binding AlignmentViewModel.Value.BarChartViewModel}"
+                                                            d:DataContext="{d:DesignInstance Type={x:Type vmchart:BarChartViewModel}}"
+                                                            Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
+                                                            Style="{StaticResource FocusWhenVisible}"/>
+    </Ribbon>
+</UserControl>
