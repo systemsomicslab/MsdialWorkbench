@@ -69,6 +69,7 @@
     <ribbon:MsdialOptionTab DataContext="{Binding Path=(Window.DataContext).(vmcore:MainWindowVM.DatasetViewModel).Value, RelativeSource={RelativeSource AncestorType=Window}}"/>
     <ribbon:MsdialExportTab/>
     <ribbon:MsdialHelpTab DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
+    <ribbon:MsdialFilterTab ContextualTabGroupHeader="Graph tools"/>
     <chartSetting:ExpRefViewSettingRibbonTab ContextualTabGroupHeader="Graph tools"
                                              DataContext="{Binding AnalysisViewModel.Value.RawDecSpectrumsViewModel}"
                                              d:DataContext="{d:DesignInstance Type={x:Type vmchart:RawDecSpectrumsViewModel}}"

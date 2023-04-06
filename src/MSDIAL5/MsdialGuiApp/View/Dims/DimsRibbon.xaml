@@ -56,35 +56,7 @@
     <ribbon:MsdialOptionTab DataContext="{Binding Path=(Window.DataContext).(vmcore:MainWindowVM.DatasetViewModel).Value, RelativeSource={RelativeSource AncestorType=Window}}"/>
     <ribbon:MsdialExportTab/>
     <ribbon:MsdialHelpTab DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
-    <RibbonTab Header="Filter"
-               ContextualTabGroupHeader="Graph tools">
-        <RibbonGroup Header="Display filter" DataContext="{Binding PeakFilterViewModel}">
-            <RibbonCheckBox Label="Ref. matched" IsChecked="{Binding RefMatched}"/>
-            <RibbonCheckBox Label="Suggested" IsChecked="{Binding Suggested}"/>
-            <RibbonCheckBox Label="Unknown" IsChecked="{Binding Unknown}"/>
-            <RibbonCheckBox Label="MS2 acquired" IsChecked="{Binding Ms2Acquired}"/>
-            <RibbonCheckBox Label="Molecular ion" IsChecked="{Binding MolecularIon}" IsEnabled="False"/>
-            <RibbonCheckBox Label="Blank filter" IsChecked="{Binding Blank}" IsEnabled="False"/>
-            <RibbonCheckBox Label="Unique ions" IsChecked="{Binding UniqueIons}" IsEnabled="False"/>
-            <RibbonCheckBox Label="Manually modified" IsChecked="{Binding ManuallyModified}"/>
-        </RibbonGroup>
-        <RibbonGroup Header="Focus">
-            <RibbonTextBox Label="Focused ID" Text="{Binding AnalysisViewModel.Value.FocusID}"
-                           IsEnabled="False">
-                <RibbonTextBox.InputBindings>
-                    <KeyBinding Gesture="Enter"
-                                Command="{Binding AnalysisViewModel.Value.FocusByIDCommand}"/>
-                </RibbonTextBox.InputBindings>
-            </RibbonTextBox>
-            <RibbonTextBox Label="Focused m/z" Text="{Binding AnalysisViewModel.Value.FocusMz}"
-                           IsEnabled="False">
-                <RibbonTextBox.InputBindings>
-                    <KeyBinding Gesture="Enter"
-                                Command="{Binding AnalysisViewModel.Value.FocusByMzCommand}"/>
-                </RibbonTextBox.InputBindings>
-            </RibbonTextBox>
-        </RibbonGroup>
-    </RibbonTab>
+    <ribbon:MsdialFilterTab ContextualTabGroupHeader="Graph tools"/>
     <RibbonTab Header="Display"
                ContextualTabGroupHeader="Graph tools">
         <RibbonGroup Header="Spots"

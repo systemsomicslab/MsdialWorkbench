@@ -178,7 +178,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 Target,
                 id => Ms1Peaks.Argmin(p => Math.Abs(p.MasterPeakID - id)),
                 Target.Select(t => t?.MasterPeakID ?? 0d),
-                "Region focus by ID",
+                "ID",
                 (mzSpotFocus, peak => peak.Mass)).AddTo(Disposables);
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, mzSpotFocus);
 

@@ -331,7 +331,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 target,
                 id => Ms1Peaks.Argmin(p => Math.Abs(p.MasterPeakID - id)),
                 target.Select(t => t?.MasterPeakID ?? 0d),
-                "Region focus by ID",
+                "ID",
                 (mzSpotFocus, peak => peak.Mass),
                 (rtSpotFocus, peak => peak.InnerModel.ChromXs.RT.Value),
                 (dtSpotFocus, peak => peak.InnerModel.ChromXs.Drift.Value)).AddTo(Disposables);

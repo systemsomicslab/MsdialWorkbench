@@ -41,20 +41,7 @@
     <ribbon:MsdialOptionTab DataContext="{Binding Path=(Window.DataContext).(vmcore:MainWindowVM.DatasetViewModel).Value, RelativeSource={RelativeSource AncestorType=Window}}"/>
     <ribbon:MsdialExportTab/>
     <ribbon:MsdialHelpTab DataContext="{Binding Path=(Window.DataContext), RelativeSource={RelativeSource AncestorType=Window}}"/>
-    <RibbonTab Header="Spot filtering"
-               ContextualTabGroupHeader="Graph tools">
-        <RibbonGroup Header="Display filter">
-            <RibbonCheckBox Label="Ref. matched" IsChecked="{Binding RefMatchedChecked}"/>
-            <RibbonCheckBox Label="Suggested" IsChecked="{Binding SuggestedChecked}"/>
-            <RibbonCheckBox Label="Unknown" IsChecked="{Binding UnknownChecked}"/>
-            <RibbonCheckBox Label="Ccs matched" IsChecked="{Binding CcsChecked}" IsEnabled="False"/>
-            <RibbonCheckBox Label="MS2 acquired" IsChecked="{Binding Ms2AcquiredChecked}"/>
-            <RibbonCheckBox Label="Molecular ion" IsChecked="{Binding MolecularIonChecked}" IsEnabled="False"/>
-            <RibbonCheckBox Label="Blank filter" IsChecked="{Binding BlankFilterChecked}" IsEnabled="False"/>
-            <RibbonCheckBox Label="Unique ions" IsChecked="{Binding UniqueIonsChecked}" IsEnabled="False"/>
-            <RibbonCheckBox Label="Manually modified" IsChecked="{Binding ManuallyModifiedChecked}"/>
-        </RibbonGroup>
-    </RibbonTab>
+    <ribbon:MsdialFilterTab ContextualTabGroupHeader="Graph tools"/>
     <chartSetting:ExpRefViewSettingRibbonTab ContextualTabGroupHeader="Graph tools"
                                              DataContext="{Binding AnalysisViewModel.Value.RawDecSpectrumsViewModel}"
                                              Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
