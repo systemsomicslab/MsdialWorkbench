@@ -34,13 +34,13 @@ namespace CompMs.Common.Lipidomics
 
         private static readonly double Electron = 0.00054858026;
 
-        private readonly ISpectrumPeakGenerator spectrumGenerator;
+        private readonly IOadSpectrumPeakGenerator spectrumGenerator;
         public CeramideOadSpectrumGenerator()
         {
             spectrumGenerator = new OadSpectrumPeakGenerator();
         }
 
-        public CeramideOadSpectrumGenerator(ISpectrumPeakGenerator spectrumGenerator)
+        public CeramideOadSpectrumGenerator(IOadSpectrumPeakGenerator spectrumGenerator)
         {
             this.spectrumGenerator = spectrumGenerator ?? throw new ArgumentNullException(nameof(spectrumGenerator));
         }
@@ -64,18 +64,47 @@ namespace CompMs.Common.Lipidomics
             var nlMass = 0.0;
             var spectrum = new List<SpectrumPeak>();
             spectrum.AddRange(GetCerNsOadSpectrum(lipid, adduct));
+            string[] oadId = new string[] {
+                //"OAD01",
+                "OAD02",
+                //"OAD02+O",
+                "OAD03",
+                //"OAD04",
+                "OAD05",
+                "OAD06",
+                "OAD07",
+                "OAD08",
+                //"OAD09",
+                //"OAD10",
+                //"OAD11",
+                //"OAD12",
+                //"OAD13",
+                //"OAD14",
+                "OAD15",
+                //"OAD15+O",
+                "OAD16",
+                //"OAD17",
+                //"OAD12+O",
+                //"OAD12+O+H",
+                //"OAD12+O+2H",
+                //"OAD01+H"
+                "SphOAD",
+                //"SphOAD+H",
+                //"SphOAD+2H",
+                "SphOAD-CO"
+            };
 
             if (lipid.Chains is PositionLevelChains plChains)
             {
                 if (plChains.Chains[0] is SphingoChain sphingo)
                 {
                     spectrum.AddRange(GetSphingoSpectrum(lipid, sphingo, adduct));
-                    spectrum.AddRange(spectrumGenerator.GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlMass, 30d));
+                    spectrum.AddRange(spectrumGenerator.GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlMass, 30d, oadId));
                 }
                 if (plChains.Chains[1] is AcylChain acyl)
                 {
                     //spectrum.AddRange(GetAcylSpectrum(lipid, acyl, adduct));
-                    spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlMass, 30d));
+                    spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlMass, 30d, oadId));
                 }
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
@@ -96,33 +125,10 @@ namespace CompMs.Common.Lipidomics
                     new[] {
                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass) - H2O, 500d, "Precursor -H2O") { SpectrumComment = SpectrumComment.metaboliteclass },
-                        //new SpectrumPeak(adduct.ConvertToMz(C5H14NO4P), 100d, "Header") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
                     }
                 );
             }
-            //else if (adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "[M+CH3COO]-")
-            //{
-            //    spectrum.AddRange
-            //    (
-            //        new[] {
-            //            new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
-            //            new SpectrumPeak(lipid.Mass-CH3, 100d, "[M-CH3]-") { SpectrumComment = SpectrumComment.metaboliteclass, },
-            //        }
-            //    );
-            //    if (lipid.Chains is SeparatedChains Chains)
-            //    {
-            //        foreach (AcylChain chain in Chains.Chains)
-            //        {
-            //            spectrum.AddRange
-            //            (
-            //                new[]
-            //                {
-            //                    new SpectrumPeak(chain.Mass+MassDiffDictionary.OxygenMass+Electron, 30d, $"-{chain}") { SpectrumComment = SpectrumComment.acylchain },
-            //                }
-            //            );
-            //        }
-            //    }
-            //}
+
             else
             {
                 spectrum.AddRange
