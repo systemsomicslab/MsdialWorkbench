@@ -1642,7 +1642,7 @@ namespace CompMs.Common.Lipidomics
                     break;
                 case "t":
                     totalString = totalOxygen == 0 ?
-                        totalCarbon + ":" + totalDB + ";3O" :
+                        totalCarbon + ":" + totalDB + ";O3" :
                         totalCarbon + ":" + totalDB + ";O" + (totalOxygen + 3).ToString();
                     break;
             }

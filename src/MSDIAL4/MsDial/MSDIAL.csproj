@@ -251,17 +251,14 @@
     </PackageReference>
   </ItemGroup>
 
-  <Target Name="DownloadContentFiles" BeforeTargets="Build">
-    <PropertyGroup>
-      <Lbm2Url>http://prime.psc.riken.jp/compms/msdial/download/lipidblast/LipidMsmsBinaryDB-VS68-AritaM.lbm2</Lbm2Url>
-    </PropertyGroup>
-		<ItemGroup>
-			<_DeployToItem Include="$(OutputPath)\*.lbm*" />
-		</ItemGroup>
-		<DownloadFile SourceUrl="$(Lbm2Url)" DestinationFolder="$(OutputPath)" Condition="!Exists('%(_DeployToItem.FullPath)')" />
-  </Target>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <PropertyGroup>
+      <Lbm2Url>http://prime.psc.riken.jp/compms/msdial/download/lipidblast/Msp20221205132019_conventional_converted.lbm2</Lbm2Url>
+    </PropertyGroup>
+    <ItemGroup>
+      <_DeployToItem Include="$(TargetDir)\*.lbm*" />
+    </ItemGroup>
+    <DownloadFile SourceUrl="$(Lbm2Url)" DestinationFolder="$(TargetDir)" Condition="!Exists('%(_DeployToItem.FullPath)')" />
     <Exec Command="xcopy &quot;$(ProjectDir)CytoscapeLocalBrowser&quot; &quot;$(TargetDir)CytoscapeLocalBrowser&quot; /D/E/C/I/H/Y" />
   </Target>
 </Project>

@@ -2847,7 +2847,7 @@ namespace CompMs.Common.Lipidomics
                  ? string.Empty
                  : oxidized == 1
                      ? ";O"
-                     : ";" + oxidized + "O";
+                     : ";O" + oxidized;
             return chainPrefix + carbon + ":" + rdbString + oxString;
         }
 
