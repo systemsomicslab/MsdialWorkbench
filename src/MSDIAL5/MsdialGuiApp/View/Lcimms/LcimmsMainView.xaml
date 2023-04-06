@@ -14,9 +14,9 @@
              xmlns:info="clr-namespace:CompMs.App.Msdial.ViewModel.Information"
              xmlns:infoview="clr-namespace:CompMs.App.Msdial.View.Information"
              xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
-             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
-             xmlns:commonbehavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
-             behavior:SuppressContextMenuBehavior.IsEnabled="True"
+             xmlns:chartBehavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:behavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
+             chartBehavior:SuppressContextMenuBehavior.IsEnabled="True"
              Name="MainControl"
              d:DataContext="{d:DesignInstance Type={x:Type vm:LcimmsMethodViewModel}}"
              d:DesignHeight="775" d:DesignWidth="1280">
@@ -164,7 +164,7 @@
                                                 </Grid.ColumnDefinitions>
 
                                                 <chart:AlignmentPeakPlotView DataContext="{Binding RtMzPlotViewModel}"
-                                                                             commonbehavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Focus, Mode=OneWay}"
+                                                                             behavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Focus, Mode=OneWay}"
                                                                              d:DataContext="{d:DesignInstance Type={x:Type vmchart:AlignmentPeakPlotViewModel}}"
                                                                              Grid.Column="0">
                                                     <chart:AlignmentPeakPlotView.LabelTemplate>
@@ -185,7 +185,7 @@
                                                 </chart:AlignmentPeakPlotView>
 
                                                 <chart:AlignmentPeakPlotView DataContext="{Binding DtMzPlotViewModel}"
-                                                                             commonbehavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Focus, Mode=OneWay}"
+                                                                             behavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Focus, Mode=OneWay}"
                                                                              d:DataContext="{d:DesignInstance Type={x:Type vmchart:AlignmentPeakPlotViewModel}}"
                                                                              Grid.Column="1">
                                                     <chart:AlignmentPeakPlotView.LabelTemplate>

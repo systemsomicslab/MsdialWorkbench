@@ -14,6 +14,7 @@
              xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              xmlns:info="clr-namespace:CompMs.App.Msdial.ViewModel.Information"
              xmlns:infoview="clr-namespace:CompMs.App.Msdial.View.Information"
+             xmlns:behavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
              Name="MainControl"
              MouseRightButtonDown="MainControl_MouseRightButtonDown"
              ContextMenuOpening="MainControl_ContextMenuOpening"
@@ -249,7 +250,9 @@
                                             </chart:PeakView>
                                         </DataTemplate>
                                         <DataTemplate DataType="{x:Type vm:LcmsAlignmentViewModel}">
-                                            <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}">
+                                            <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}"
+                                                                         Focusable="True"
+                                                                         behavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Focus, Mode=OneWay}">
                                                 <chart:AlignmentPeakPlotView.LabelTemplate>
                                                     <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
                                                         <StackPanel Orientation="Horizontal">
@@ -479,7 +482,6 @@
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type vmchart:MsSpectrumViewModel}">
                                         <chart:RepRefView DataContext="{Binding DataContext.AlignmentViewModel.Value, ElementName=TabControl_MS2Viewer}"
-                                                          xmlns:behavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
                                                           behavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Ms2SpectrumViewModel.FocusAction, Mode=OneWay}">
                                             <chart:RepRefView.ContextMenu>
                                                 <ContextMenu>
