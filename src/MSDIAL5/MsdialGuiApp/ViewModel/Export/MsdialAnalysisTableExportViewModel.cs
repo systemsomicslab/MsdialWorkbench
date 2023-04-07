@@ -1,25 +1,21 @@
 ﻿using CompMs.App.Msdial.Model.Export;
 using CompMs.CommonMVVM;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Reactive;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Export
 {
-    internal interface IMsdialAnalysisExportViewModel : INotifyDataErrorInfo {
-        IObservable<bool> CanExport { get; }
-    }
-
-    internal sealed class MsdialAnalysisExportViewModel : ViewModelBase, IMsdialAnalysisExportViewModel
+    internal sealed class MsdialAnalysisTableExportViewModel : ViewModelBase, IMsdialAnalysisExportViewModel
     {
-        private readonly MsdialAnalysisExport _model;
+        private readonly MsdialAnalysisTableExportModel _model;
         private readonly IObservable<bool> _canExport;
 
-        public MsdialAnalysisExportViewModel(MsdialAnalysisExport model) {
+        public MsdialAnalysisTableExportViewModel(MsdialAnalysisTableExportModel model) {
             _model = model;
 
             ExportSpectraTypes = new ReadOnlyObservableCollection<SpectraType>(model.ExportSpectraTypes);
@@ -27,9 +23,15 @@ namespace CompMs.App.Msdial.ViewModel.Export
             model.ObserveProperty(m => m.SelectedSpectraType).Subscribe(t => SelectedSpectraType = t).AddTo(Disposables);
             model.ObserveProperty(m => m.SelectedFileFormat).Subscribe(f => SelectedFileFormat = f).AddTo(Disposables);
             model.ObserveProperty(m => m.IsotopeExportMax).Subscribe(m => IsotopeExportMax = m).AddTo(Disposables);
+            ShouldExport = model.ToReactivePropertySlimAsSynchronized(m => m.ShouldExport).AddTo(Disposables);
 
-            _canExport = this.ErrorsChangedAsObservable().ToUnit().StartWith(Unit.Default).Select(_ => !HasValidationErrors);
+            _canExport = new[]{
+                ShouldExport,
+                this.ErrorsChangedAsObservable().ToUnit().StartWith(Unit.Default).Select(_ => HasValidationErrors),
+            }.CombineLatestValuesAreAllTrue().Inverse();
         }
+
+        public ReactivePropertySlim<bool> ShouldExport { get; }
 
         public ReadOnlyObservableCollection<SpectraType> ExportSpectraTypes { get; }
 

@@ -13,31 +13,22 @@ namespace CompMs.App.Msdial.Model.Export
 
         public AnalysisResultExportModel(
             AnalysisFileBeanModelCollection files,
-            MsdialAnalysisExport msdialAnalysisExport) {
+            params IMsdialAnalysisExport[] msdialAnalysisExports) {
             if (files is null) {
                 throw new ArgumentNullException(nameof(files));
             }
 
-            MsdialAnalysisExport = msdialAnalysisExport ?? throw new ArgumentNullException(nameof(msdialAnalysisExport));
-            UnSelectedFiles = new ObservableCollection<AnalysisFileBeanModel>(files.AnalysisFiles);
-            SelectedFiles = new ObservableCollection<AnalysisFileBeanModel>();
-        }
-
-        public AnalysisResultExportModel(
-            AnalysisFileBeanModelCollection files,
-            IEnumerable<SpectraType> spectraTypes,
-            IEnumerable<SpectraFormat> spectraFormats,
-            IDataProviderFactory<AnalysisFileBeanModel> providerFactory) {
-            if (files is null) {
-                throw new ArgumentNullException(nameof(files));
+            if (msdialAnalysisExports is null) {
+                throw new ArgumentNullException(nameof(msdialAnalysisExports));
             }
 
-            MsdialAnalysisExport = new MsdialAnalysisExport(spectraTypes, spectraFormats, providerFactory);
+            AnalysisExports = msdialAnalysisExports;
             UnSelectedFiles = new ObservableCollection<AnalysisFileBeanModel>(files.AnalysisFiles);
             SelectedFiles = new ObservableCollection<AnalysisFileBeanModel>();
         }
 
-        public MsdialAnalysisExport MsdialAnalysisExport { get; }
+        public IMsdialAnalysisExport[] AnalysisExports { get; }
+
         public ObservableCollection<AnalysisFileBeanModel> SelectedFiles { get; }
         public ObservableCollection<AnalysisFileBeanModel> UnSelectedFiles { get; }
 
@@ -70,8 +61,10 @@ namespace CompMs.App.Msdial.Model.Export
         private string _destinationFolder;
 
         public void Export() {
-            foreach (var file in SelectedFiles) {
-                MsdialAnalysisExport.Export(DestinationFolder, file);
+            foreach (var exporter in AnalysisExports) {
+                foreach (var file in SelectedFiles) {
+                    exporter.Export(DestinationFolder, file);
+                }
             }
         }
     }

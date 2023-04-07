@@ -264,8 +264,17 @@ namespace CompMs.App.Msdial.Model.Imms
             {
                 new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
             };
-
-            return new AnalysisResultExportModel(AnalysisFileModelCollection, spectraTypes, spectraFormats, ProviderFactory.ContraMap((AnalysisFileBeanModel file) => file.File));
+            var models = new IMsdialAnalysisExport[]
+            {
+                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, ProviderFactory.ContraMap((AnalysisFileBeanModel file) => file.File)),
+                new MsdialAnalysisExportModel(new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter))
+                {
+                    FilePrefix = "Msp",
+                    FileSuffix = "msp",
+                    Label = "Nist format (*.msp)"
+                },
+            };
+            return new AnalysisResultExportModel(AnalysisFileModelCollection, models);
         }
 
         public ChromatogramsModel PrepareTIC() {

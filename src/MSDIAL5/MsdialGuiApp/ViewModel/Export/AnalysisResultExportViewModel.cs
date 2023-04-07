@@ -22,10 +22,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
         public AnalysisResultExportViewModel(AnalysisResultExportModel model) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
 
-            MsdialAnalysisExportViewModels = new IMsdialAnalysisExportViewModel[]
-            {
-                new MsdialAnalysisExportViewModel(model.MsdialAnalysisExport).AddTo(Disposables),
-            };
+            MsdialAnalysisExportViewModels = model.AnalysisExports.Select(m => MsdialAnalysisExportViewModelFactory.Create(m).AddTo(Disposables)).ToArray();
 
             SelectedFrom = model.UnSelectedFiles.ToReadOnlyReactiveCollection(file => new FileBeanSelection(file)).AddTo(Disposables);
             SelectedTo = model.SelectedFiles.ToReadOnlyReactiveCollection(file => new FileBeanSelection(file)).AddTo(Disposables);
