@@ -58,11 +58,17 @@ namespace CompMs.Common.Proteomics.Function {
 
             var revAAs = new List<AminoAcid>();
             if (isSwapKL) {
-                for (int i = 1; i < sequence.Count; i++) {
+                for (int i = 2; i < sequence.Count; i++) {
                     var aaObj = sequence[sequence.Count - i - 1];
                     revAAs.Add(aaObj);
                 }
                 revAAs.Add(sequence[sequence.Count - 1]);
+                revAAs.Add(sequence[sequence.Count - 2]);
+                //for (int i = 1; i < sequence.Count; i++) {
+                //    var aaObj = sequence[sequence.Count - i - 1];
+                //    revAAs.Add(aaObj);
+                //}
+                //revAAs.Add(sequence[sequence.Count - 1]);
             }
             else {
                 for (int i = 0; i < sequence.Count; i++) {

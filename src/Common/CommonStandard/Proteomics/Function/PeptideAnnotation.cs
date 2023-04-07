@@ -51,7 +51,6 @@ namespace CompMs.Common.Proteomics.Function {
             var key = new Tuple<int, int, int>(peptideLength, missedCleavageNum, modificationNum);
             var keyUsed = ID2ProbDictUsed[key];
             
-
             //Console.WriteLine("PEPLength\t{0}\tMCleavage\t{1}\tModification\t{2}\tUsedPepLength\t{3}\tUsedMCleavage\t{4}\tUsedModification\t{5}",
             //    peptideLength, missedCleavageNum, modificationNum, keyUsed.Item1, keyUsed.Item2, keyUsed.Item3);
 
