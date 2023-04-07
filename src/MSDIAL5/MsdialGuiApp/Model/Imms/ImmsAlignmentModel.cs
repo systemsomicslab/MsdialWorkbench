@@ -160,6 +160,9 @@ namespace CompMs.App.Msdial.Model.Imms
                 nameof(SpectrumPeak.SpectrumComment),
                 Observable.Return(upperSpecBrush),
                 Observable.Return(lowerSpecBrush),
+                Observable.Return<ISpectraExporter>(null),
+                Observable.Return<ISpectraExporter>(null),
+                null,
                 MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers)).AddTo(Disposables);
 
             var classBrush = new KeyBrushMapper<BarItem, string>(

@@ -47,32 +47,6 @@ namespace CompMs.App.Msdial.Model.Chart
             string hueProperty,
             IObservable<IBrushMapper> upperSpectrumBrush,
             IObservable<IBrushMapper> lowerSpectrumBrush,
-            IObservable<Ms2ScanMatching> ms2ScanMatching)
-            : this(
-                upperSpectrum,
-                lowerSpectrum,
-                horizontalPropertySelector,
-                verticalPropertySelector,
-                graphLabels,
-                hueProperty,
-                upperSpectrumBrush,
-                lowerSpectrumBrush,
-                Observable.Return((ISpectraExporter)null),
-                Observable.Return((ISpectraExporter)null),
-                null,
-                ms2ScanMatching) {
-
-        }
-
-        public MsSpectrumModel(
-            IObservable<List<SpectrumPeak>> upperSpectrum,
-            IObservable<List<SpectrumPeak>> lowerSpectrum,
-            PropertySelector<SpectrumPeak, double> horizontalPropertySelector,
-            PropertySelector<SpectrumPeak, double> verticalPropertySelector,
-            GraphLabels graphLabels,
-            string hueProperty,
-            IObservable<IBrushMapper> upperSpectrumBrush,
-            IObservable<IBrushMapper> lowerSpectrumBrush,
             IObservable<ISpectraExporter> upperSpectraExporter,
             IObservable<ISpectraExporter> lowerSpectraExporter,
             ReadOnlyReactivePropertySlim<bool> spectrumLoaded,
