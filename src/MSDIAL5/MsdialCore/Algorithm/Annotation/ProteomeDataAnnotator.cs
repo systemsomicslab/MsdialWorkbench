@@ -8,6 +8,7 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
@@ -32,6 +33,20 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             ReportProgress.Show(0, 100, 40, 100, reportAction);
 
             Console.WriteLine("PEP calculator started");
+
+            using (var sw = new StreamWriter(@"E:\6_Projects\PROJECT_Proteomics\20220128_Takeuchi\score.txt")) {
+                sw.WriteLine("Length\tModification\tMissCle\tScore\tPepScore\tIsDecoy");
+                foreach (var score in scores) {
+                    var pepLength = score.PeptideLength;
+                    var modNum = score.Modifications;
+                    var missedCleavages = score.MissedCleavages;
+                    var scoreValue = score.AndromedaScore;
+                    var pepScore = pepContainer.GetPosteriorErrorProbability(score.AndromedaScore, pepLength, modNum, missedCleavages);
+                    var isDecoy = score.IsDecoy;
+                    sw.WriteLine(pepLength + "\t" + modNum + "\t" + missedCleavages + "\t" + scoreValue + "\t" + pepScore + "\t" + isDecoy);
+                }
+            }
+
             foreach (var score in scores) {
                 var pepLength = score.PeptideLength;
                 var modNum = score.Modifications;

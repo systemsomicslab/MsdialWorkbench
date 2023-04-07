@@ -58,8 +58,8 @@ namespace CompMs.Common.Proteomics.Function {
             var spectrum = new List<SpectrumPeak>();
             if (precursorMz >= minMz && precursorMz <= maxMz)
                 spectrum.Add(new SpectrumPeak() { Mass = precursorMz, Intensity = 1000, SpectrumComment = SpectrumComment.precursor, PeakID = sequence.Count });
-            if (precursorMz * 0.5 >= minMz && precursorMz * 0.5 <= maxMz)
-                spectrum.Add(new SpectrumPeak() { Mass = (precursorMz + Proton) * 0.5, Intensity = 1000, SpectrumComment = SpectrumComment.precursor, PeakID = sequence.Count });
+            //if (precursorMz * 0.5 >= minMz && precursorMz * 0.5 <= maxMz)
+            //    spectrum.Add(new SpectrumPeak() { Mass = (precursorMz + Proton) * 0.5, Intensity = 1000, SpectrumComment = SpectrumComment.precursor, PeakID = sequence.Count });
 
             var bMz = Proton;
             var yMz = precursorMz;
@@ -87,15 +87,18 @@ namespace CompMs.Common.Proteomics.Function {
                 bModSequence += sequence[i].ModifiedCode;
                 yModSequence = yModSequence.Substring(sequence[i].Code().Length);
 
-                if (bMz >= minMz && bMz <= maxMz)
+                if (i + 1 == sequence.Count) continue; 
+
+                if (bMz >= minMz && bMz <= maxMz) {
                     spectrum.Add(new SpectrumPeak() { Mass = bMz, Intensity = 1000, SpectrumComment = SpectrumComment.b, PeakID = i + 1 });
+                }
                 if (yMz >= minMz && yMz <= maxMz)
                     spectrum.Add(new SpectrumPeak() { Mass = yMz, Intensity = 1000, SpectrumComment = SpectrumComment.y, PeakID = sequence.Count - i - 1 });
 
-                if (bMz * 0.5 >= minMz && bMz * 0.5 <= maxMz)
-                    spectrum.Add(new SpectrumPeak() { Mass = (bMz + Proton) * 0.5, Intensity = 100, SpectrumComment = SpectrumComment.b2, PeakID = i + 1 });
-                if (yMz * 0.5 >= minMz && yMz * 0.5 <= maxMz)
-                    spectrum.Add(new SpectrumPeak() { Mass = (yMz + Proton) * 0.5, Intensity = 100, SpectrumComment = SpectrumComment.y2, PeakID = sequence.Count - i - 1 });
+                //if (bMz * 0.5 >= minMz && bMz * 0.5 <= maxMz)
+                //    spectrum.Add(new SpectrumPeak() { Mass = (bMz + Proton) * 0.5, Intensity = 100, SpectrumComment = SpectrumComment.b2, PeakID = i + 1 });
+                //if (yMz * 0.5 >= minMz && yMz * 0.5 <= maxMz)
+                //    spectrum.Add(new SpectrumPeak() { Mass = (yMz + Proton) * 0.5, Intensity = 100, SpectrumComment = SpectrumComment.y2, PeakID = sequence.Count - i - 1 });
 
                 if (bSequence.Contains("D") || bSequence.Contains("E") || bSequence.Contains("S") || bSequence.Contains("T")) {
                     if (bMz - H2O >= minMz && bMz - H2O <= maxMz)
