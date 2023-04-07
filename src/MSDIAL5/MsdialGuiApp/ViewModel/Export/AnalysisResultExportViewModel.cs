@@ -17,24 +17,26 @@ namespace CompMs.App.Msdial.ViewModel.Export
     {
         private readonly AnalysisResultExportModel _model;
 
+        public IMsdialAnalysisExportViewModel[] MsdialAnalysisExportViewModels { get; }
+
         public AnalysisResultExportViewModel(AnalysisResultExportModel model) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
 
-            MsdialAnalysisExportViewModel = new MsdialAnalysisExportViewModel(model.MsdialAnalysisExport).AddTo(Disposables);
+            MsdialAnalysisExportViewModels = new IMsdialAnalysisExportViewModel[]
+            {
+                new MsdialAnalysisExportViewModel(model.MsdialAnalysisExport).AddTo(Disposables),
+            };
 
             SelectedFrom = model.UnSelectedFiles.ToReadOnlyReactiveCollection(file => new FileBeanSelection(file)).AddTo(Disposables);
             SelectedTo = model.SelectedFiles.ToReadOnlyReactiveCollection(file => new FileBeanSelection(file)).AddTo(Disposables);
 
-            ExportPeakCommand = new[] {
-                this.ErrorsChangedAsObservable(),
-                MsdialAnalysisExportViewModel.ErrorsChangedAsObservable(),
-            }.Merge()
-            .ToUnit()
-            .StartWith(Unit.Default)
-            .Select(_ => !HasValidationErrors && !MsdialAnalysisExportViewModel.HasValidationErrors)
-            .ToAsyncReactiveCommand()
-            .WithSubscribe(ExportPeakAsync)
-            .AddTo(Disposables);
+            var canExport = this.ErrorsChangedAsObservable().ToUnit().StartWith(Unit.Default).Select(_ => !HasValidationErrors);
+            ExportPeakCommand = MsdialAnalysisExportViewModels.Select(vm => vm.CanExport)
+                .Append(canExport)
+                .CombineLatestValuesAreAllTrue()
+                .ToAsyncReactiveCommand()
+                .WithSubscribe(ExportPeakAsync)
+                .AddTo(Disposables);
         }
 
         public AsyncReactiveCommand ExportPeakCommand { get; }
@@ -99,8 +101,6 @@ namespace CompMs.App.Msdial.ViewModel.Export
                 DestinationFolder = fbd.SelectedPath;
             }
         }
-
-        public MsdialAnalysisExportViewModel MsdialAnalysisExportViewModel { get; }
     }
 
     internal sealed class FileBeanSelection : ViewModelBase

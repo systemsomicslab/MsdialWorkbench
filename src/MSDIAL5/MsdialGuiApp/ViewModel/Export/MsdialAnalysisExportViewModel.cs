@@ -3,13 +3,21 @@ using CompMs.CommonMVVM;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Reactive;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Export
 {
-    internal sealed class MsdialAnalysisExportViewModel : ViewModelBase
+    internal interface IMsdialAnalysisExportViewModel : INotifyDataErrorInfo {
+        IObservable<bool> CanExport { get; }
+    }
+
+    internal sealed class MsdialAnalysisExportViewModel : ViewModelBase, IMsdialAnalysisExportViewModel
     {
         private readonly MsdialAnalysisExport _model;
+        private readonly IObservable<bool> _canExport;
 
         public MsdialAnalysisExportViewModel(MsdialAnalysisExport model) {
             _model = model;
@@ -19,6 +27,8 @@ namespace CompMs.App.Msdial.ViewModel.Export
             model.ObserveProperty(m => m.SelectedSpectraType).Subscribe(t => SelectedSpectraType = t).AddTo(Disposables);
             model.ObserveProperty(m => m.SelectedFileFormat).Subscribe(f => SelectedFileFormat = f).AddTo(Disposables);
             model.ObserveProperty(m => m.IsotopeExportMax).Subscribe(m => IsotopeExportMax = m).AddTo(Disposables);
+
+            _canExport = this.ErrorsChangedAsObservable().ToUnit().StartWith(Unit.Default).Select(_ => !HasValidationErrors);
         }
 
         public ReadOnlyObservableCollection<SpectraType> ExportSpectraTypes { get; }
@@ -70,5 +80,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
             }
         }
         private int _isotopeExportMax = 2;
+
+        IObservable<bool> IMsdialAnalysisExportViewModel.CanExport => _canExport;
     }
 }
