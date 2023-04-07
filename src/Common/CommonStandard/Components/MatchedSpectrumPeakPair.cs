@@ -2,7 +2,7 @@
 
 namespace CompMs.Common.Components
 {
-    internal sealed class MatchedSpectrumPeakPair
+    public sealed class MatchedSpectrumPeakPair
     {
         public MatchedSpectrumPeakPair(ISpectrumPeak experiment, SpectrumPeak reference) {
             Experiment = experiment;
