@@ -24,12 +24,12 @@ namespace CompMs.App.Msdial.ViewModel.Export
             SelectedFrom = model.UnSelectedFiles.ToReadOnlyReactiveCollection(file => new FileBeanSelection(file)).AddTo(Disposables);
             SelectedTo = model.SelectedFiles.ToReadOnlyReactiveCollection(file => new FileBeanSelection(file)).AddTo(Disposables);
 
-            ExportSpectraTypes = new ReadOnlyObservableCollection<SpectraType>(model.ExportSpectraTypes);
-            ExportSpectraFileFormats = new ReadOnlyObservableCollection<SpectraFormat>(model.ExportSpectraFileFormats);
+            ExportSpectraTypes = new ReadOnlyObservableCollection<SpectraType>(model.MsdialAnalysisExport.ExportSpectraTypes);
+            ExportSpectraFileFormats = new ReadOnlyObservableCollection<SpectraFormat>(model.MsdialAnalysisExport.ExportSpectraFileFormats);
 
-            model.ObserveProperty(m => m.SelectedSpectraType).Subscribe(t => SelectedSpectraType = t).AddTo(Disposables);
-            model.ObserveProperty(m => m.SelectedFileFormat).Subscribe(f => SelectedFileFormat = f).AddTo(Disposables);
-            model.ObserveProperty(m => m.IsotopeExportMax).Subscribe(m => IsotopeExportMax = m).AddTo(Disposables);
+            model.MsdialAnalysisExport.ObserveProperty(m => m.SelectedSpectraType).Subscribe(t => SelectedSpectraType = t).AddTo(Disposables);
+            model.MsdialAnalysisExport.ObserveProperty(m => m.SelectedFileFormat).Subscribe(f => SelectedFileFormat = f).AddTo(Disposables);
+            model.MsdialAnalysisExport.ObserveProperty(m => m.IsotopeExportMax).Subscribe(m => IsotopeExportMax = m).AddTo(Disposables);
 
             ExportPeakCommand = this.ErrorsChangedAsObservable().ToUnit()
                 .StartWith(Unit.Default)
@@ -113,7 +113,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
             set {
                 if (SetProperty(ref _selectedSpectraType, value)) {
                     if (!ContainsError(nameof(SelectedSpectraType))) {
-                        _model.SelectedSpectraType = _selectedSpectraType;
+                        _model.MsdialAnalysisExport.SelectedSpectraType = _selectedSpectraType;
                     }
                 }
             }
@@ -131,7 +131,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
             set {
                 if (SetProperty(ref _selectedFileFormat, value)) {
                     if (!ContainsError(nameof(SelectedFileFormat))) {
-                        _model.SelectedFileFormat = _selectedFileFormat;
+                        _model.MsdialAnalysisExport.SelectedFileFormat = _selectedFileFormat;
                     }
                 }
             }
@@ -145,7 +145,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
             set {
                 if (SetProperty(ref _isotopeExportMax, value)) {
                     if (!ContainsError(nameof(IsotopeExportMax))) {
-                        _model.IsotopeExportMax = _isotopeExportMax;
+                        _model.MsdialAnalysisExport.IsotopeExportMax = _isotopeExportMax;
                     }
                 }
             }
