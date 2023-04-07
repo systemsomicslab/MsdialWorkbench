@@ -37,13 +37,13 @@ namespace CompMs.App.Msdial.Model.Chart
 
             var save = new Subject<Stream>().AddTo(Disposables);
             save.Where(s => s != null && s.CanWrite)
-                .WithLatestFrom(spectraExporter.CombineLatest(Spectrum), (stream, pair) => (stream, exporter: pair.First, spectrum: pair.Second))
+                .WithLatestFrom(spectraExporter.CombineLatest(spectrum), (stream, pair) => (stream, exporter: pair.First, spectrum: pair.Second))
                 .Where(trio => trio.exporter != null && trio.spectrum != null)
                 .SelectMany(trio => Observable.FromAsync(token => trio.exporter.SaveAsync(trio.stream, trio.spectrum, token)))
                 .Subscribe()
                 .AddTo(Disposables);
             SaveAsObservable = save;
-            CanSave = spectraExporter.CombineLatest(Spectrum)
+            CanSave = spectraExporter.CombineLatest(spectrum)
                 .Select(p => p.First != null && p.Second != null)
                 .ToReadOnlyReactivePropertySlim(false)
                 .AddTo(Disposables);

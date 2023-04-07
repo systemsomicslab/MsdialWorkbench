@@ -175,7 +175,8 @@ namespace CompMs.App.Msdial.Model.Dims
                     nameof(SpectrumPeak.Intensity)),
                 nameof(SpectrumPeak.SpectrumComment),
                 Observable.Return(upperSpecBrush),
-                Observable.Return(lowerSpecBrush)).AddTo(Disposables);
+                Observable.Return(lowerSpecBrush),
+                MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers)).AddTo(Disposables);
 
             var classBrush = new KeyBrushMapper<BarItem, string>(
                 _parameter.ProjectParam.ClassnameToColorBytes
@@ -282,7 +283,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
         public ICompoundSearchModel BuildCompoundSearchModel() {
-            return new CompoundSearchModel(_files[Target.Value.RepresentativeFileID], Target.Value, _msdecResult.Value, _compoundSearchers.Items, _undoManager);
+            return new CompoundSearchModel(_files[Target.Value.RepresentativeFileID], Target.Value, _msdecResult.Value, _compoundSearchers, _undoManager);
         }
 
         public InternalStandardSetModel InternalStandardSetModel { get; }

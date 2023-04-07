@@ -246,6 +246,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     }
                 },
                 true);
+            var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper);
             MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
@@ -266,7 +267,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     nameof(SpectrumPeak.Intensity)),
                 nameof(SpectrumPeak.SpectrumComment),
                 Observable.Return(upperSpecBrush),
-                Observable.Return(lowerSpecBrush)).AddTo(Disposables);
+                Observable.Return(lowerSpecBrush),
+                MatchResultCandidatesModel.GetCandidatesScorer(searcherCollection)).AddTo(Disposables);
 
             var classBrush = new KeyBrushMapper<BarItem, string>(classToColor, item => item.Class, Colors.Blue);
             var fileIdToClassNameAsObservable = projectBaseParameter.ObserveProperty(p => p.FileIdToClassName).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -330,7 +332,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
             MoleculeStructureModel = moleculeStructureModel;
             Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
 
-            var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper);
             CompoundSearchModel = target
                 .CombineLatest(MsdecResult, (t, r) => t is null || r is null ? null : new LcimmsCompoundSearchModel(_files[t.RepresentativeFileID], t, r, searcherCollection.Items, _undoManager))
                 .DisposePreviousValue()

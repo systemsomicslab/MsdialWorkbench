@@ -1,6 +1,6 @@
 ﻿using CompMs.App.Msdial.Common;
-using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Utility;
+using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager;
@@ -22,6 +22,11 @@ using System.Windows.Media;
 namespace CompMs.App.Msdial.Model.Chart
 {
     public class MsSpectrumModel : DisposableModelBase {
+        private static readonly IReadOnlyDictionary<SpectrumComment, Brush> SpectrumBrushes;
+        private readonly ReadOnlyReactivePropertySlim<MsSpectrum> _upperSpectrum;
+        private readonly ReadOnlyReactivePropertySlim<MsSpectrum> _lowerSpectrum;
+        private readonly ReadOnlyReactivePropertySlim<Ms2ScanMatching> _ms2ScanMatching;
+
         static MsSpectrumModel() {
             SpectrumBrushes = Enum.GetValues(typeof(SpectrumComment))
                 .Cast<SpectrumComment>()
@@ -33,8 +38,6 @@ namespace CompMs.App.Msdial.Model.Chart
                 );
         }
 
-        private static readonly IReadOnlyDictionary<SpectrumComment, Brush> SpectrumBrushes;
-
         public MsSpectrumModel(
             IObservable<List<SpectrumPeak>> upperSpectrum,
             IObservable<List<SpectrumPeak>> lowerSpectrum,
@@ -43,7 +46,8 @@ namespace CompMs.App.Msdial.Model.Chart
             GraphLabels graphLabels,
             string hueProperty,
             IObservable<IBrushMapper> upperSpectrumBrush,
-            IObservable<IBrushMapper> lowerSpectrumBrush)
+            IObservable<IBrushMapper> lowerSpectrumBrush,
+            IObservable<Ms2ScanMatching> ms2ScanMatching)
             : this(
                 upperSpectrum,
                 lowerSpectrum,
@@ -55,7 +59,8 @@ namespace CompMs.App.Msdial.Model.Chart
                 lowerSpectrumBrush,
                 Observable.Return((ISpectraExporter)null),
                 Observable.Return((ISpectraExporter)null),
-                null) {
+                null,
+                ms2ScanMatching) {
 
         }
 
@@ -70,7 +75,8 @@ namespace CompMs.App.Msdial.Model.Chart
             IObservable<IBrushMapper> lowerSpectrumBrush,
             IObservable<ISpectraExporter> upperSpectraExporter,
             IObservable<ISpectraExporter> lowerSpectraExporter,
-            ReadOnlyReactivePropertySlim<bool> spectrumLoaded) {
+            ReadOnlyReactivePropertySlim<bool> spectrumLoaded,
+            IObservable<Ms2ScanMatching> ms2ScanMatching) {
 
             if (upperSpectrum is null) {
                 throw new ArgumentNullException(nameof(upperSpectrum));
@@ -153,6 +159,7 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalPropertySelector = horizontalPropertySelector;
             GraphLabels = graphLabels;
             SpectrumLoaded = spectrumLoaded ?? new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true));
+            _ms2ScanMatching = ms2ScanMatching?.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             ReferenceHasSpectrumInfomation = lowerSpectrum.Select(spectrum => spectrum?.Any() ?? false).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             UpperSpectrumModel = new SingleSpectrumModel(
                 upperSpectrum,
@@ -197,6 +204,16 @@ namespace CompMs.App.Msdial.Model.Chart
                 upperProductSpectrumModel,
                 upperDifferenceSpectrumModel,
             };
+
+            _upperSpectrum = upperMsSpectrum.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            _lowerSpectrum = lowerMsSpectrum.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var canSaveMatchedSpectrum = new[]{
+                ms2ScanMatching?.Select(s => s != null) ?? Observable.Return(false),
+                _upperSpectrum.Select(s => s != null),
+                _lowerSpectrum.Select(s => s != null),
+            }.CombineLatestValuesAreAllTrue().Publish();
+            Disposables.Add(canSaveMatchedSpectrum.Connect());
+            CanSaveMatchedSpectrum = canSaveMatchedSpectrum;
         }
 
         public ReactiveCollection<SingleSpectrumModel> UpperSpectraModel { get; }
@@ -221,6 +238,15 @@ namespace CompMs.App.Msdial.Model.Chart
         public PropertySelector<SpectrumPeak, double> HorizontalPropertySelector { get; }
         public PropertySelector<SpectrumPeak, double> VerticalPropertySelector { get; }
 
+        public IObservable<bool> CanSaveMatchedSpectrum { get; }
+
+        public void SaveMatchedSpectrum(Stream stream) {
+            if (_ms2ScanMatching?.Value is Ms2ScanMatching scorer) {
+                var pairs = scorer.GetMatchedSpectrum(_upperSpectrum.Value.Spectrum, _lowerSpectrum.Value.Spectrum);
+                pairs.Save(stream);
+            }
+        }
+
         public IObservable<bool> CanSaveUpperSpectrum => UpperSpectrumModel.CanSave;
 
         public void SaveUpperSpectrum(Stream stream) {
@@ -243,35 +269,6 @@ namespace CompMs.App.Msdial.Model.Chart
             UpperSpectrumModel.IsVisible.Value = false;
             UpperDifferenceSpectrumModel.IsVisible.Value = true;
             UpperProductSpectrumModel.IsVisible.Value = true;
-        }
-
-        public static MsSpectrumModel Create<T, U, V>(
-            IObservable<T> source,
-            IMsSpectrumLoader<U> upperLoader,
-            IMsSpectrumLoader<V> lowerLoader,
-            Func<SpectrumPeak, double> horizontalSelector,
-            Func<SpectrumPeak, double> verticalSelector,
-            string graphTitle,
-            string horizontalTitle,
-            string verticalTitle,
-            string horizontalProperty,
-            string verticalProperty,
-            string labelProperty,
-            string orderingProperty,
-            string hueProperty,
-            IObservable<IBrushMapper> upperBrush,
-            IObservable<IBrushMapper> lowerBrush)
-            where T: U, V {
-
-            return new MsSpectrumModel(
-                source.SelectSwitch(src => upperLoader.LoadSpectrumAsObservable(src)),
-                source.SelectSwitch(src => lowerLoader.LoadSpectrumAsObservable(src)),
-                new PropertySelector<SpectrumPeak, double>(horizontalProperty, horizontalSelector),
-                new PropertySelector<SpectrumPeak, double>(verticalProperty, verticalSelector),
-                new GraphLabels(graphTitle, horizontalTitle, verticalTitle, labelProperty, orderingProperty),
-                hueProperty,
-                upperBrush,
-                lowerBrush);
         }
 
         public static IBrushMapper<SpectrumComment> GetBrush(Brush defaultBrush) {

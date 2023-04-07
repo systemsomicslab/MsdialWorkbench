@@ -6,6 +6,7 @@
              mc:Ignorable="d" 
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:components="clr-namespace:CompMs.Common.Components;assembly=Common"
+             xmlns:common="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
              xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
              xmlns:io="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
@@ -32,11 +33,15 @@
             <chart:MultiChart.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Show all spectrum peak"
-                              Command="{Binding PlacementTarget.DataContext.SwitchAllSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                              Command="{Binding PlacementTarget.DataContext.SwitchAllSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
                     <MenuItem Header="Show matched spectrum peak"
-                              Command="{Binding PlacementTarget.DataContext.SwitchCompareSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                    <MenuItem Header="Save spectrum as nist format"
-                              Command="{Binding PlacementTarget.DataContext.SaveUpperSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                              Command="{Binding PlacementTarget.DataContext.SwitchCompareSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
+                    <MenuItem Header="Save upper spectrum as nist format"
+                              Command="{Binding PlacementTarget.DataContext.SaveUpperSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
+                    <MenuItem Header="Save lower spectrum as nist format"
+                              Command="{Binding PlacementTarget.DataContext.SaveLowerSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
+                    <MenuItem Header="Save matched spectrum as table format"
+                              Command="{Binding PlacementTarget.DataContext.SaveMatchedSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
                     <MenuItem Header="Save image as...">
                         <MenuItem Header="Save formatted image"
                                   Command="{StaticResource ReverseMsSpectrumSaveEmfCommand}"
