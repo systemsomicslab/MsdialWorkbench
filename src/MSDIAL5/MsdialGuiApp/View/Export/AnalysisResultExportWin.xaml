@@ -90,7 +90,8 @@
 
         </Grid>
 
-        <StackPanel Orientation="Horizontal"
+        <StackPanel DataContext="{Binding MsdialAnalysisExportViewModel}"
+                    Orientation="Horizontal"
                     Margin="4"
                     Grid.Row="2">
             <StackPanel Orientation="Horizontal">
