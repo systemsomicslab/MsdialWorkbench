@@ -81,7 +81,7 @@ namespace CompMs.MsdialCore.Export
             AnalysisFileBean analysisFile) {
 
             var comment = feature.Comment;
-            if (matchResult.AnyMatched) {
+            if (matchResult?.AnyMatched ?? false) {
                 if (!string.IsNullOrEmpty(comment)) {
                     comment += "; ";
                 }
