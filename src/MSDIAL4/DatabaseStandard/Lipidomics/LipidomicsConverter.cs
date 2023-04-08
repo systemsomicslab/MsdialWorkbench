@@ -68,23 +68,15 @@ namespace Riken.Metabolomics.Lipidomics
 
                 //Phospholipid
                 case "PC":
-                    setDoubleAcylChainsLipidAnnotation(molecule, query);
-                    break;
+                case "PC_d5":
                 case "PE":
-                    setDoubleAcylChainsLipidAnnotation(molecule, query);
-                    break;
+                case "PE_d5":
                 case "PG":
-                    setDoubleAcylChainsLipidAnnotation(molecule, query);
-                    break;
+                case "PG_d5":
                 case "PI":
-                    setDoubleAcylChainsLipidAnnotation(molecule, query);
-                    break;
                 case "PS":
-                    setDoubleAcylChainsLipidAnnotation(molecule, query);
-                    break;
+                case "PS_d5":
                 case "PT":
-                    setDoubleAcylChainsLipidAnnotation(molecule, query);
-                    break;
                 case "PA":
                     setDoubleAcylChainsLipidAnnotation(molecule, query);
                     break;
@@ -239,6 +231,7 @@ namespace Riken.Metabolomics.Lipidomics
 
                 //Sterols
                 case "CE":
+                case "CE_d7":
                     setSingleAcylChainsLipidAnnotation(molecule, query);
                     break;
                 case "ACar":
@@ -324,6 +317,7 @@ namespace Riken.Metabolomics.Lipidomics
 
                 //Sphingomyelin
                 case "SM":
+                case "SM_d9":
                     setDoubleAcylChainsLipidAnnotation(molecule, query);
                     break;
 
@@ -353,6 +347,7 @@ namespace Riken.Metabolomics.Lipidomics
                     setDoubleAcylChainsLipidAnnotation(molecule, query);
                     break;
                 case "Cer_NS":
+                case "Cer_NS_d7":
                     setDoubleAcylChainsLipidAnnotation(molecule, query);
                     break;
                 case "Cer_NP":
@@ -952,6 +947,7 @@ namespace Riken.Metabolomics.Lipidomics
 
                 //Sterols
                 case "CE":
+                case "CE_d7":
                     level = "Chain resolved";
                     break;
                 case "ACar":
@@ -1336,6 +1332,7 @@ namespace Riken.Metabolomics.Lipidomics
 
                 //Phospholipid
                 case "PC":
+                case "PC_d5":
                     if (adduct == "[M+H]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
                     {
                         if (lipidsemicoronCount == 2)
@@ -1343,6 +1340,7 @@ namespace Riken.Metabolomics.Lipidomics
                     }
                     break;
                 case "PE":
+                case "PE_d5":
                     if (adduct == "[M+H]+" || adduct == "[M-H]-")
                     {
                         if (lipidsemicoronCount == 2)
@@ -1350,6 +1348,7 @@ namespace Riken.Metabolomics.Lipidomics
                     }
                     break;
                 case "PG":
+                case "PG_d5":
                     if (adduct == "[M+H]+" || adduct == "[M-H]-")
                     {
                         if (lipidsemicoronCount == 2)
@@ -1364,6 +1363,7 @@ namespace Riken.Metabolomics.Lipidomics
                     }
                     break;
                 case "PS":
+                case "PS_d5":
                     if (adduct == "[M+H]+" || adduct == "[M-H]-")
                     {
                         if (lipidsemicoronCount == 2)
@@ -1979,6 +1979,7 @@ namespace Riken.Metabolomics.Lipidomics
                     }
                     break;
                 case "TG":
+                case "TG_d5":
                     if (lipidsemicoronCount == 1)
                         level = "Chain resolved";
                     break;
@@ -2025,6 +2026,7 @@ namespace Riken.Metabolomics.Lipidomics
 
                 //Phospholipid
                 case "PC":
+                case "PC_d5":
                     if (adduct == "[M+H]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
                     {
                         if (lipidsemicoronCount == 1)
@@ -2032,6 +2034,7 @@ namespace Riken.Metabolomics.Lipidomics
                     }
                     break;
                 case "PE":
+                case "PE_d5":
                     if (adduct == "[M+H]+" || adduct == "[M-H]-")
                     {
                         if (lipidsemicoronCount == 1)
@@ -2039,6 +2042,7 @@ namespace Riken.Metabolomics.Lipidomics
                     }
                     break;
                 case "PG":
+                case "PG_d5":
                     if (adduct == "[M+H]+" || adduct == "[M-H]-")
                     {
                         if (lipidsemicoronCount == 1)
@@ -2053,6 +2057,7 @@ namespace Riken.Metabolomics.Lipidomics
                     }
                     break;
                 case "PS":
+                case "PS_d5":
                     if (adduct == "[M+H]+" || adduct == "[M-H]-")
                     {
                         if (lipidsemicoronCount == 1)
@@ -2356,6 +2361,7 @@ namespace Riken.Metabolomics.Lipidomics
 
                 //Sterols
                 case "CE":
+                case "CE_d7":
                     level = "Chain resolved";
                     break;
                 case "CAR":
@@ -2445,6 +2451,7 @@ namespace Riken.Metabolomics.Lipidomics
 
                 //Sphingomyelin
                 case "SM":
+                case "SM_d9":
                     if (lipidname.Contains("t"))
                     {
 
@@ -2500,6 +2507,7 @@ namespace Riken.Metabolomics.Lipidomics
                         level = "Chain resolved";
                     break;
                 case "Cer_NS":
+                case "Cer_NS_d7":
                     if (lipidsemicoronCount == 1)
                         level = "Chain resolved";
                     break;
@@ -4243,6 +4251,22 @@ namespace Riken.Metabolomics.Lipidomics
                 case LbmClass.STSPHex: return "STSPHex";
                 case LbmClass.SPE: return "SPE";
 
+                case LbmClass.PC_d5: return "PC_d5";
+                case LbmClass.PE_d5: return "PE_d5";
+                case LbmClass.PS_d5: return "PS_d5";
+                case LbmClass.PG_d5: return "PG_d5";
+                case LbmClass.PI_d5: return "PI_d5";
+                case LbmClass.SM_d9: return "SM_d9";
+                case LbmClass.Cer_NS_d7: return "Cer_NS_d7";
+                case LbmClass.TG_d5: return "TG_d5";
+                case LbmClass.CE_d7: return "CE_d7";
+                case LbmClass.LPC_d5: return "PC_d5";
+                case LbmClass.LPE_d5: return "PE_d5";
+                case LbmClass.LPS_d5: return "PS_d5";
+                case LbmClass.LPG_d5: return "PG_d5";
+                case LbmClass.LPI_d5: return "PI_d5";
+                case LbmClass.DG_d5: return "TG_d5";
+
 
                 default: return "Undefined";
             }
@@ -4716,6 +4740,15 @@ namespace Riken.Metabolomics.Lipidomics
 
                 case "ST": return LbmClass.ST;
 
+                case "CE_d7": return LbmClass.CE_d7;
+                case "PC_d5": return LbmClass.PC_d5;
+                case "PE_d5": return LbmClass.PE_d5;
+                case "PS_d5": return LbmClass.PS_d5;
+                case "PG_d5": return LbmClass.PG_d5;
+                case "SM_d9": return LbmClass.SM_d9;
+                case "Cer_NS_d7": return LbmClass.Cer_NS_d7;
+                case "TG_d5": return LbmClass.TG_d5;
+
                 default: return LbmClass.Undefined;
             }
         }
@@ -5179,6 +5212,15 @@ namespace Riken.Metabolomics.Lipidomics
                 case "GT1b": return "Sphingolipids";
                 case "GQ1b": return "Sphingolipids";
                 case "NGcGM3": return "Sphingolipids";
+
+                case "CE_d7": return "";
+                case "PC_d5": return "";
+                case "PE_d5": return "";
+                case "PS_d5": return "";
+                case "PG_d5": return "";
+                case "SM_d9": return "";
+                case "Cer_NS_d7": return "";
+                case "TG_d5": return "";
 
                 default: return "Unassigned lipid";
             }
