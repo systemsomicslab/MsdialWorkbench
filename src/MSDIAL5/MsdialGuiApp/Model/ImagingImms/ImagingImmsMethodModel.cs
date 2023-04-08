@@ -96,8 +96,18 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             {
                 new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter(separator: "\t")),
             };
+            var models = new IMsdialAnalysisExport[]
+            {
+                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, _providerFactory),
+                new MsdialAnalysisExportModel(new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter))
+                {
+                    FilePrefix = "Msp",
+                    FileSuffix = "msp",
+                    Label = "Nist format (*.msp)"
+                },
+            };
 
-            return new AnalysisResultExportModel(AnalysisFileModelCollection, spectraTypes, spectraFormats, _providerFactory);
+            return new AnalysisResultExportModel(AnalysisFileModelCollection, models);
         }
     }
 }

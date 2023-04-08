@@ -1,6 +1,10 @@
-﻿using CompMs.MsdialCore.Algorithm;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
+using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -35,5 +39,9 @@ namespace CompMs.MsdialCore.Export
 
         protected abstract void WriteHeader(StreamWriter sw, IReadOnlyList<string> headers);
         protected abstract void WriteContent(StreamWriter sw, ChromatogramPeakFeature features, MSDecResult result, IDataProvider provider, IReadOnlyList<string> headers, IAnalysisMetadataAccessor metaAccessor, AnalysisFileBean analysisFile);
+    }
+
+    public interface IAnalysisExporterZZZ {
+        void Export(Stream stream, AnalysisFileBean analysisFile, ChromatogramPeakFeatureCollection peakFeatureCollection);
     }
 }

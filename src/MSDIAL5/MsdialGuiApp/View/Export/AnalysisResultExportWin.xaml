@@ -15,7 +15,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition/>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
 
@@ -90,41 +90,54 @@
 
         </Grid>
 
-        <StackPanel Orientation="Horizontal"
-                    Margin="4"
-                    Grid.Row="2">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Export format:"
-                           VerticalAlignment="Center"/>
-                <ComboBox ItemsSource="{Binding ExportSpectraFileFormats, Mode=OneTime}"
-                          SelectedValue="{Binding SelectedFileFormat, Mode=OneWayToSource}"
-                          DisplayMemberPath="Format"
-                          SelectedIndex="0"
-                          VerticalContentAlignment="Center"
-                          Width="80"
-                          Margin="8,0,0,0"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal"
-                        Margin="24,0,0,0">
-                <TextBlock Text="Spectra type:"
-                           VerticalAlignment="Center"/>
-                <ComboBox ItemsSource="{Binding ExportSpectraTypes, Mode=OneTime}"
-                          SelectedValue="{Binding SelectedSpectraType, Mode=OneWayToSource}"
-                          DisplayMemberPath="Type"
-                          SelectedIndex="0"
-                          VerticalContentAlignment="Center"
-                          Width="104"
-                          Margin="8,0,0,0"/>
-            </StackPanel>
-            <ui:LabeledContent PrependLabel="Isotope region:"
-                               AppendLabel="Da"
-                               Margin="24,0,0,0"
-                               IsEnabled="False">
-                <TextBox Text="{Binding IsotopeExportMax, Mode=TwoWay}"
-                         VerticalContentAlignment="Center"
-                         Width="40"/>
-            </ui:LabeledContent>
-        </StackPanel>
+        <ItemsControl ItemsSource="{Binding MsdialAnalysisExportViewModels}"
+                      Grid.Row="2">
+            <ItemsControl.Resources>
+                <DataTemplate DataType="{x:Type vm:MsdialAnalysisExportViewModel}">
+                    <CheckBox Content="{Binding Label, Mode=OneTime}"
+                              IsChecked="{Binding ShouldExport.Value}"
+                              Margin="4"/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:MsdialAnalysisTableExportViewModel}">
+                    <StackPanel Margin="4">
+                        <CheckBox Content="Peak table" IsChecked="{Binding ShouldExport.Value}"/>
+                        <StackPanel Orientation="Horizontal" Margin="16,0,0,0" IsEnabled="{Binding ShouldExport.Value}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Export format:"
+                                           VerticalAlignment="Center"/>
+                                <ComboBox ItemsSource="{Binding ExportSpectraFileFormats, Mode=OneTime}"
+                                          SelectedValue="{Binding SelectedFileFormat, Mode=OneWayToSource}"
+                                          DisplayMemberPath="Format"
+                                          SelectedIndex="0"
+                                          VerticalContentAlignment="Center"
+                                          Width="80"
+                                          Margin="8,0,0,0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal"
+                                        Margin="24,0,0,0">
+                                <TextBlock Text="Spectra type:"
+                                           VerticalAlignment="Center"/>
+                                <ComboBox ItemsSource="{Binding ExportSpectraTypes, Mode=OneTime}"
+                                          SelectedValue="{Binding SelectedSpectraType, Mode=OneWayToSource}"
+                                          DisplayMemberPath="Type"
+                                          SelectedIndex="0"
+                                          VerticalContentAlignment="Center"
+                                          Width="104"
+                                          Margin="8,0,0,0"/>
+                            </StackPanel>
+                            <ui:LabeledContent PrependLabel="Isotope region:"
+                                               AppendLabel="Da"
+                                               Margin="24,0,0,0"
+                                               IsEnabled="False">
+                                <TextBox Text="{Binding IsotopeExportMax, Mode=TwoWay}"
+                                         VerticalContentAlignment="Center"
+                                         Width="40"/>
+                            </ui:LabeledContent>
+                        </StackPanel>
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.Resources>
+        </ItemsControl>
 
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Right"
