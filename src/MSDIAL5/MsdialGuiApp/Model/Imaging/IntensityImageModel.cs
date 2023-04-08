@@ -28,10 +28,15 @@ namespace CompMs.App.Msdial.Model.Imaging
             var pf = PixelFormats.Indexed8;
             var stride = (pf.BitsPerPixel + 7) / 8;
             var image = new byte[width * stride * height];
-            var zmin = features.IntensityArray.DefaultIfEmpty(0).Min();
-            var zmax = features.IntensityArray.DefaultIfEmpty(255).Max();
+            var sorted = features.IntensityArray.OrderBy(x => x).ToArray();
+            var length = sorted.Length;
+            var zmin = sorted.DefaultIfEmpty(0d).First();
+            var zmax = sorted.DefaultIfEmpty(255).ElementAt((int)(length * .99));
+            if (zmin == zmax) {
+                zmax = zmin + 1;
+            }
             foreach (var (intensity, info) in features.IntensityArray.Zip(frameInfos.Infos, (x, y) => (x, y))) {
-                image[width * stride * (info.YIndexPos - ymin) + (info.XIndexPos - xmin) * stride] = (byte)Math.Max(1, (intensity - zmin) / (zmax - zmin) * 255);
+                image[width * stride * (info.YIndexPos - ymin) + (info.XIndexPos - xmin) * stride] = (byte)Math.Max(1, Math.Min((intensity - zmin) / (zmax - zmin), 1d) * 255);
             }
             BitmapImageModel = BitmapImageModel.Create(image, width, height, pf, Colormaps.Viridis, $"m/z {Mz.Value}, Mobility {Drift.Value} [1/K0]");
         }
