@@ -212,7 +212,7 @@ namespace CompMs.Common.Lipidomics.Tests
             {
                 new SpectrumPeak(565.3738f,20f),  // P-18:0C1+C+O+H OAD01
                 new SpectrumPeak(564.366f,50f),  // P-18:0C1+O OAD02
-                new SpectrumPeak(563.3582f,100f),  // P-18:0C1+C+O-H OAD03
+                //new SpectrumPeak(563.3582f,100f),  // P-18:0C1+C+O-H OAD03
                 new SpectrumPeak(677.499f,50f),  // 18:1(9)C9+C+O+H OAD01
                 new SpectrumPeak(676.4912f,100f),  // 18:1(9)C9+O OAD02
                 new SpectrumPeak(692.4861f,20f),  // 18:1(9)C9+O OAD02+O
@@ -344,6 +344,9 @@ namespace CompMs.Common.Lipidomics.Tests
                 "OAD15+O",
                 "OAD16",
                 "OAD17",
+                "SphOAD",
+                "SphOAD+H",
+                //"SphOAD+2H",
             };
 
     }
