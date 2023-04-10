@@ -866,18 +866,18 @@ namespace Riken.Metabolomics.Lipidomics
                         result = LipidMsmsCharacterization.JudgeIfDagD5(spectrum, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
                         break;
-                    //case LbmClass.SM_d9:
-                    //    result = LipidMsmsCharacterization.JudgeIfSphingomyelinD9(spectrum, ms2tol, refMz,
-                    //         totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
-                    //    break;
-                    //case LbmClass.CE_d7:
-                    //    result = LipidMsmsCharacterization.JudgeIfCholesterylEsterD7(spectrum, ms2tol, refMz,
-                    //        totalCarbon, totalDbBond, adduct);
-                    //    break;
-                    //case LbmClass.Cer_NS_d7:
-                    //    result = LipidMsmsCharacterization.JudgeIfCeramidensD7(spectrum, ms2tol, refMz,
-                    //         totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
-                    //    break;
+                    case LbmClass.SM_d9:
+                        result = LipidMsmsCharacterization.JudgeIfSphingomyelinD9(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.CE_d7:
+                        result = LipidMsmsCharacterization.JudgeIfCholesterylEsterD7(spectrum, ms2tol, refMz,
+                            totalCarbon, totalDbBond, adduct);
+                        break;
+                    case LbmClass.Cer_NS_d7:
+                        result = LipidMsmsCharacterization.JudgeIfCeramidensD7(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
                     default:
                         return null;
 

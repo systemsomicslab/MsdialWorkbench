@@ -665,6 +665,24 @@
 		</LbmClasses>
 	</Lipid>
 	<Lipid>
+		<Name>SM_d9</Name>
+		<Abbreviation>SM_d9</Abbreviation>
+		<Chains>
+			<Ceramide/>
+			<Total>2</Total>
+		</Chains>
+		<Skelton>
+			<Carbon>5</Carbon>
+			<Hydrogen>12+9</Hydrogen>
+			<Oxygen>3</Oxygen>
+			<Nitrogen>1</Nitrogen>
+			<Phosphorus/>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>SM_d9</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
         <Name>HBMP</Name>
         <Abbreviation>HBMP</Abbreviation>
         <Chains>
