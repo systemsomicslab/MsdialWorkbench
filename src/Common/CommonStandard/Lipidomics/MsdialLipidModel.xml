@@ -464,14 +464,14 @@
         </LbmClasses>
     </Lipid>
 	<Lipid>
-		<Name>PC_d5</Name>
+		<Name>PCd5</Name>
 		<Abbreviation>PC_d5</Abbreviation>
 		<Chains>
 			<Total>2</Total>
 		</Chains>
 		<Skelton>
 			<Carbon>8</Carbon>
-			<Hydrogen>18+5</Hydrogen>
+			<Hydrogen>(18+5)</Hydrogen>
 			<Oxygen>6</Oxygen>
 			<Nitrogen/>
 			<Phosphorus/>
@@ -481,14 +481,14 @@
 		</LbmClasses>
 	</Lipid>
 	<Lipid>
-		<Name>PE_d5</Name>
+		<Name>PEd5</Name>
 		<Abbreviation>PE_d5</Abbreviation>
 		<Chains>
 			<Total>2</Total>
 		</Chains>
 		<Skelton>
 			<Carbon>5</Carbon>
-			<Hydrogen>12+5</Hydrogen>
+			<Hydrogen>(12+5)</Hydrogen>
 			<Oxygen>6</Oxygen>
 			<Nitrogen/>
 			<Phosphorus/>
@@ -498,14 +498,14 @@
 		</LbmClasses>
 	</Lipid>
 	<Lipid>
-		<Name>PG_d5</Name>
+		<Name>PGd5</Name>
 		<Abbreviation>PG_d5</Abbreviation>
 		<Chains>
 			<Total>2</Total>
 		</Chains>
 		<Skelton>
 			<Carbon>6</Carbon>
-			<Hydrogen>13+5</Hydrogen>
+			<Hydrogen>(13+5)</Hydrogen>
 			<Oxygen>8</Oxygen>
 			<Phosphorus/>
 		</Skelton>
@@ -521,7 +521,7 @@
 		</Chains>
 		<Skelton>
 			<Carbon>9</Carbon>
-			<Hydrogen>17+5</Hydrogen>
+			<Hydrogen>(17+5)</Hydrogen>
 			<Oxygen>11</Oxygen>
 			<Phosphorus/>
 		</Skelton>
@@ -530,14 +530,14 @@
 		</LbmClasses>
 	</Lipid>
 	<Lipid>
-		<Name>PS_d5</Name>
+		<Name>PSd5</Name>
 		<Abbreviation>PS_d5</Abbreviation>
 		<Chains>
 			<Total>2</Total>
 		</Chains>
 		<Skelton>
 			<Carbon>6</Carbon>
-			<Hydrogen>12+5</Hydrogen>
+			<Hydrogen>(12+5)</Hydrogen>
 			<Oxygen>8</Oxygen>
 			<Nitrogen/>
 			<Phosphorus/>
@@ -547,7 +547,7 @@
 		</LbmClasses>
 	</Lipid>
 	<Lipid>
-		<Name>LPC_d5</Name>
+		<Name>LPCd5</Name>
 		<Abbreviation>LPC_d5</Abbreviation>
 		<Chains>
 			<Total>1</Total>
@@ -555,7 +555,7 @@
 		</Chains>
 		<Skelton>
 			<Carbon>8</Carbon>
-			<Hydrogen>18+5</Hydrogen>
+			<Hydrogen>(18+5)</Hydrogen>
 			<Oxygen>6</Oxygen>
 			<Nitrogen/>
 			<Phosphorus/>
@@ -565,7 +565,7 @@
 		</LbmClasses>
 	</Lipid>
 	<Lipid>
-		<Name>LPE_d5</Name>
+		<Name>LPEd5</Name>
 		<Abbreviation>LPE_d5</Abbreviation>
 		<Chains>
 			<Total>1</Total>
@@ -573,7 +573,7 @@
 		</Chains>
 		<Skelton>
 			<Carbon>5</Carbon>
-			<Hydrogen>12+5</Hydrogen>
+			<Hydrogen>(12+5)</Hydrogen>
 			<Oxygen>6</Oxygen>
 			<Nitrogen/>
 			<Phosphorus/>
@@ -583,7 +583,7 @@
 		</LbmClasses>
 	</Lipid>
 	<Lipid>
-		<Name>LPG_d5</Name>
+		<Name>LPGd5</Name>
 		<Abbreviation>LPG_d5</Abbreviation>
 		<Chains>
 			<Total>1</Total>
@@ -591,7 +591,7 @@
 		</Chains>
 		<Skelton>
 			<Carbon>6</Carbon>
-			<Hydrogen>13+5</Hydrogen>
+			<Hydrogen>(13+5)</Hydrogen>
 			<Oxygen>8</Oxygen>
 			<Phosphorus/>
 		</Skelton>
@@ -600,7 +600,7 @@
 		</LbmClasses>
 	</Lipid>
 	<Lipid>
-		<Name>LPI_d5</Name>
+		<Name>LPId5</Name>
 		<Abbreviation>LPI_d5</Abbreviation>
 		<Chains>
 			<Total>1</Total>
@@ -608,7 +608,7 @@
 		</Chains>
 		<Skelton>
 			<Carbon>9</Carbon>
-			<Hydrogen>17+5</Hydrogen>
+			<Hydrogen>(17+5)</Hydrogen>
 			<Oxygen>11</Oxygen>
 			<Phosphorus/>
 		</Skelton>
@@ -617,7 +617,7 @@
 		</LbmClasses>
 	</Lipid>
 	<Lipid>
-		<Name>LPS_d5</Name>
+		<Name>LPSd5</Name>
 		<Abbreviation>LPS_d5</Abbreviation>
 		<Chains>
 			<Total>1</Total>
@@ -625,7 +625,7 @@
 		</Chains>
 		<Skelton>
 			<Carbon>6</Carbon>
-			<Hydrogen>12+5</Hydrogen>
+			<Hydrogen>(12+5)</Hydrogen>
 			<Oxygen>8</Oxygen>
 			<Nitrogen/>
 			<Phosphorus/>
@@ -635,14 +635,14 @@
 		</LbmClasses>
 	</Lipid>
 	<Lipid>
-		<Name>TG_d5</Name>
+		<Name>TGd5</Name>
 		<Abbreviation>TG_d5</Abbreviation>
 		<Chains>
 			<Total>3</Total>
 		</Chains>
 		<Skelton>
 			<Carbon>3</Carbon>
-			<Hydrogen>5+5</Hydrogen>
+			<Hydrogen>(5+5)</Hydrogen>
 			<Oxygen>3</Oxygen>
 		</Skelton>
 		<LbmClasses>
@@ -650,14 +650,14 @@
 		</LbmClasses>
 	</Lipid>
 	<Lipid>
-		<Name>DG_d5</Name>
+		<Name>DGd5</Name>
 		<Abbreviation>DG_d5</Abbreviation>
 		<Chains>
 			<Total>2</Total>
 		</Chains>
 		<Skelton>
 			<Carbon>3</Carbon>
-			<Hydrogen>6+5</Hydrogen>
+			<Hydrogen>(6+5)</Hydrogen>
 			<Oxygen>3</Oxygen>
 		</Skelton>
 		<LbmClasses>
@@ -665,7 +665,7 @@
 		</LbmClasses>
 	</Lipid>
 	<Lipid>
-		<Name>SM_d9</Name>
+		<Name>SMd9</Name>
 		<Abbreviation>SM_d9</Abbreviation>
 		<Chains>
 			<Ceramide/>
@@ -673,7 +673,7 @@
 		</Chains>
 		<Skelton>
 			<Carbon>5</Carbon>
-			<Hydrogen>12+9</Hydrogen>
+			<Hydrogen>(12+9)</Hydrogen>
 			<Oxygen>3</Oxygen>
 			<Nitrogen>1</Nitrogen>
 			<Phosphorus/>
