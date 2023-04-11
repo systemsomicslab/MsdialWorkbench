@@ -176,7 +176,7 @@ namespace CompMs.Common.Lipidomics
                 (
                      new[]
                      {
-                         new SpectrumPeak(lipidMass - chainMass , 100d, $"-{acylChain}") { SpectrumComment = SpectrumComment.acylchain },
+                         new SpectrumPeak(lipidMass - chainMass , 30d, $"-{acylChain}") { SpectrumComment = SpectrumComment.acylchain },
                          //new SpectrumPeak(lipidMass - chainMass-H2O , 100d, $"-{acylChain}-H2O"),
                          new SpectrumPeak(lipidMass - chainMass - C6H13O9P , 100d, $"-C6H13O9P -{acylChain}") { SpectrumComment = SpectrumComment.acylchain },
                          //new SpectrumPeak(lipidMass - chainMass - C6H13O9P-H2O , 100d, $"-C6H13O9P -{acylChain}-H2O"),

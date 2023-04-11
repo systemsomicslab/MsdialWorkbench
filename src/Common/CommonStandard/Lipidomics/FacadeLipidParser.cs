@@ -84,6 +84,9 @@ namespace CompMs.Common.Lipidomics
                         new LPGd5LipidParser(),
                         new LPSd5LipidParser(),
                         new CeramideD7LipidParser(),
+                        new SMd9LipidParser(),
+                        new DGd5LipidParser(),
+                        new TGd5LipidParser(),
 
                     }.ForEach(parser.Add);
                     @default = parser;
