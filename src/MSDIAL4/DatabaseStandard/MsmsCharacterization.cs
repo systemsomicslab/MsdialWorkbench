@@ -2007,7 +2007,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                     if (totalCarbon > 28) return null; //  currently carbon > 28 is recognized as EtherPE
 
                     // seek PreCursor -141(C2H8NO4P)
-                    var threshold = 50.0;
+                    var threshold = 10.0;
                     var diagnosticMz = theoreticalMz - 141.019094;
 
                     var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
@@ -14930,7 +14930,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                     if (totalCarbon > 28) return null; //  currently carbon > 28 is recognized as EtherPE
 
                     // seek PreCursor -141(C2H8NO4P)
-                    var threshold = 50.0;
+                    var threshold = 10.0;
                     var diagnosticMz = theoreticalMz - 141.019094;
 
                     var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
@@ -15057,6 +15057,21 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                        totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
             }
+            else if (adduct.IonMode == IonMode.Positive)
+            { // positive ion mode 
+                if (adduct.AdductIonName == "[M+H]+")
+                {
+                    var threshold = 1.0;
+                    var diagnosticMz = theoreticalMz - H2O;
+
+                    var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    if (isClassIon1Found == false) return null;
+
+                    var candidates = new List<LipidMolecule>();
+                    return returnAnnotationResult("LPG_d5", LbmClass.LPG_d5, "", theoreticalMz, adduct,
+                       totalCarbon, totalDoubleBond, 0, candidates, 1);
+                }
+            }
             return null;
         }
 
@@ -15096,6 +15111,21 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                        totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
             }
+            else if (adduct.IonMode == IonMode.Positive)
+            { // positive ion mode 
+                if (adduct.AdductIonName == "[M+H]+")
+                {
+                    var threshold = 1.0;
+                    var diagnosticMz = theoreticalMz - H2O;
+
+                    var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    if (isClassIon1Found == false) return null;
+
+                    var candidates = new List<LipidMolecule>();
+                    return returnAnnotationResult("LPI_d5", LbmClass.LPI_d5, "", theoreticalMz, adduct,
+                       totalCarbon, totalDoubleBond, 0, candidates, 1);
+                }
+            }
             return null;
         }
         public static LipidMolecule JudgeIfLysopsD5(ObservableCollection<double[]> spectrum, double ms2Tolerance,
@@ -15127,6 +15157,21 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                     //var molecule = getSingleacylchainMoleculeObjAsLevel2("LPS_d5", LbmClass.LPS_d5, totalCarbon, totalDoubleBond,
                     //averageIntensity);
                     //candidates.Add(molecule);
+                    return returnAnnotationResult("LPS_d5", LbmClass.LPS_d5, "", theoreticalMz, adduct,
+                       totalCarbon, totalDoubleBond, 0, candidates, 1);
+                }
+            }
+            else if (adduct.IonMode == IonMode.Positive)
+            { // positive ion mode 
+                if (adduct.AdductIonName == "[M+H]+")
+                {
+                    var threshold = 1.0;
+                    var diagnosticMz = theoreticalMz - H2O;
+
+                    var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    if (isClassIon1Found == false) return null;
+
+                    var candidates = new List<LipidMolecule>();
                     return returnAnnotationResult("LPS_d5", LbmClass.LPS_d5, "", theoreticalMz, adduct,
                        totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
@@ -15196,64 +15241,6 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
                     /// DG[M+Na]+ is cannot determine acyl chain
-                    //for (int sn1Carbon = minSn1Carbon; sn1Carbon <= maxSn1Carbon; sn1Carbon++)
-                    //{
-                    //    for (int sn1Double = minSn1DoubleBond; sn1Double <= maxSn1DoubleBond; sn1Double++)
-                    //    {
-                    //        var diagnosticMz = theoreticalMz;// - 22.9892207 + MassDiffDictionary.HydrogenMass; //to choose [M+H]+;
-
-                    //        var sn2Carbon = totalCarbon - sn1Carbon;
-                    //        var sn2Double = totalDoubleBond - sn1Double;
-
-                    //        var nl_SN1 = diagnosticMz - acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
-                    //        var nl_SN2 = diagnosticMz - acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
-                    //        var query = new List<Peak>
-                    //        {
-                    //            new Peak() { Mz = nl_SN1, Intensity = 0.1 },
-                    //            new Peak() { Mz = nl_SN2, Intensity = 0.1 },
-                    //        };
-                    //        var foundCount = 0;
-                    //        var averageIntensity = 0.0;
-                    //        countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
-
-                    //        if (foundCount < 2)
-                    //        {
-                    //            var foundCount2 = 0;
-                    //            var averageIntensity2 = 0.0;
-                    //            var diagnosticMzH = theoreticalMz - 22.9892207 + MassDiffDictionary.HydrogenMass;
-                    //            var nl_SN1_H = diagnosticMzH - acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
-                    //            var nl_SN2_H = diagnosticMzH - acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
-                    //            var query2 = new List<Peak>
-                    //            {
-                    //            new Peak() { Mz = nl_SN1_H, Intensity = 0.1 },
-                    //            new Peak() { Mz = nl_SN2_H, Intensity = 0.1 },
-                    //            };
-                    //            countFragmentExistence(spectrum, query2, ms2Tolerance, out foundCount2, out averageIntensity2);
-                    //            if (foundCount2 == 2)
-                    //            {
-                    //                var molecule = getDiacylglycerolMoleculeObjAsLevel2("DG_d5", LbmClass.DG_d5, sn1Carbon, sn1Double,
-                    //            sn2Carbon, sn2Double, averageIntensity2);
-                    //                candidates.Add(molecule);
-                    //            }
-                    //        }
-                    //        else if (foundCount == 2)
-                    //        {
-                    //            var molecule = getDiacylglycerolMoleculeObjAsLevel2("DG_d5", LbmClass.DG_d5, sn1Carbon, sn1Double,
-                    //            sn2Carbon, sn2Double,
-                    //            averageIntensity);
-                    //            candidates.Add(molecule);
-                    //        }
-                    //    }
-                    //}
-                    ////if (candidates == null || candidates.Count == 0)
-                    ////{
-                    ////    var score = 0;
-                    ////    var molecule0 = getLipidAnnotaionAsLevel1("DAG", LbmClass.DAG, totalCarbon, totalDoubleBond, score, "");
-                    ////    candidates.Add(molecule0);
-                    ////}
-
-                    //if (candidates == null || candidates.Count == 0)
-                    //    return null;
 
                     return returnAnnotationResult("DG_d5", LbmClass.DG_d5, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);

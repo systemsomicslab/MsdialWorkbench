@@ -3748,7 +3748,7 @@ namespace CompMs.Common.Lipidomics
                     if (totalCarbon > 28) return null; //  currently carbon > 28 is recognized as EtherPE
 
                     // seek PreCursor -141(C2H8NO4P)
-                    var threshold = 50.0;
+                    var threshold = 10.0;
                     var diagnosticMz = theoreticalMz - 141.019094;
 
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
@@ -16829,7 +16829,7 @@ AdductIon adduct)
                     if (totalCarbon > 28) return null; //  currently carbon > 28 is recognized as EtherPE
 
                     // seek PreCursor -141(C2H8NO4P)
-                    var threshold = 50.0;
+                    var threshold = 10.0;
                     var diagnosticMz = theoreticalMz - 141.019094;
 
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
@@ -16933,7 +16933,7 @@ AdductIon adduct)
             if (maxSnCarbon > totalCarbon) maxSnCarbon = totalCarbon;
             if (maxSnDoubleBond > totalDoubleBond) maxSnDoubleBond = totalDoubleBond;
             if (adduct.IonMode == IonMode.Negative)
-            { //negative ion mode only
+            { //
                 if (adduct.AdductIonName == "[M-H]-")
                 {
                     // seek C3H6O5P-
@@ -16957,6 +16957,22 @@ AdductIon adduct)
                        totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
             }
+            else if (adduct.IonMode == IonMode.Positive)
+            { // positive ion mode 
+                if (adduct.AdductIonName == "[M+H]+")
+                {
+                    var threshold = 1.0;
+                    var diagnosticMz = theoreticalMz - H2O;
+
+                    var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    if (isClassIon1Found == false) return null;
+
+                    var candidates = new List<LipidMolecule>();
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("LPG_d5", LbmClass.LPG_d5, "", theoreticalMz, adduct,
+                       totalCarbon, totalDoubleBond, 0, candidates, 1);
+                }
+            }
+
             return null;
         }
 
@@ -16997,6 +17013,21 @@ AdductIon adduct)
                        totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
             }
+            else if (adduct.IonMode == IonMode.Positive)
+            { // positive ion mode 
+                if (adduct.AdductIonName == "[M+H]+")
+                {
+                    var threshold = 1.0;
+                    var diagnosticMz = theoreticalMz - H2O;
+
+                    var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    if (isClassIon1Found == false) return null;
+
+                    var candidates = new List<LipidMolecule>();
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("LPI_d5", LbmClass.LPI_d5, "", theoreticalMz, adduct,
+                       totalCarbon, totalDoubleBond, 0, candidates, 1);
+                }
+            }
             return null;
         }
         public static LipidMolecule JudgeIfLysopsD5(IMSScanProperty msScanProp, double ms2Tolerance,
@@ -17029,6 +17060,21 @@ AdductIon adduct)
                     //var molecule = getSingleacylchainMoleculeObjAsLevel2("LPS_d5", LbmClass.LPS_d5, totalCarbon, totalDoubleBond,
                     //averageIntensity);
                     //candidates.Add(molecule);
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("LPS_d5", LbmClass.LPS_d5, "", theoreticalMz, adduct,
+                       totalCarbon, totalDoubleBond, 0, candidates, 1);
+                }
+            }
+            else if (adduct.IonMode == IonMode.Positive)
+            { // positive ion mode 
+                if (adduct.AdductIonName == "[M+H]+")
+                {
+                    var threshold = 1.0;
+                    var diagnosticMz = theoreticalMz - H2O;
+
+                    var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    if (isClassIon1Found == false) return null;
+
+                    var candidates = new List<LipidMolecule>();
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("LPS_d5", LbmClass.LPS_d5, "", theoreticalMz, adduct,
                        totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }

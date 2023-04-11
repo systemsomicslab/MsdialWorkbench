@@ -825,7 +825,7 @@ namespace CompMs.Common.Lipidomics
         }
 	}
 
-    public class PI_d5LipidParser : ILipidParser {
+    public class PId5LipidParser : ILipidParser {
         public string Target { get; } = "PI_d5";
 
         private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(2);
