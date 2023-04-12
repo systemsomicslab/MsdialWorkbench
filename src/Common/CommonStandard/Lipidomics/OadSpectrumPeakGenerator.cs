@@ -74,7 +74,7 @@ namespace CompMs.Common.Lipidomics
 
         private List<SpectrumPeak> DoubleBondSpectrum(int bond, double[] diffs, IChain chain, AdductIon adduct, double chainLoss, double abundance, string[] oadId)
         {
-            var OadPeaks = DoubleBondSpectrumWithId( bond, diffs,  chain,  adduct,  chainLoss,  abundance);
+            var OadPeaks = DoubleBondSpectrumWithId(bond, diffs, chain, adduct, chainLoss, abundance);
             return OadPeaks.Where(p => oadId.Contains(p.OadId)).Select(p => p.spectrum).ToList();
         }
         //private List<SpectrumPeak> DoubleBondSpectrum(int bond, double[] diffs, IChain chain, AdductIon adduct, double chainLoss, double abundance, ILipid lipid)
@@ -191,8 +191,8 @@ namespace CompMs.Common.Lipidomics
             var dbPeakHigher = chainLoss + diffs[bond] + MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass;
             var dbPeak = chainLoss + diffs[bond - 1];
             var dbPeakLower = chainLoss + diffs[bond - 2] + MassDiffDictionary.HydrogenMass;
-                OadPeaks.AddRange(new OadFragmentPeaks[]
-                {
+            OadPeaks.AddRange(new OadFragmentPeaks[]
+            {
                     new OadFragmentPeaks
                     {
                         OadId = "OAD01",
@@ -313,8 +313,8 @@ namespace CompMs.Common.Lipidomics
                     {
                         OadId = "OAD01+H",
                         spectrum = new SpectrumPeak(adduct.ConvertToMz(dbPeakHigher + MassDiffDictionary.HydrogenMass * 2), (factor * abundance * 0.2), $"{chain} C{bond} +C +O +H OAD01+H") { SpectrumComment = speccomment }
-                    } 
-                });
+                    }
+            });
             return OadPeaks;
         }
 
