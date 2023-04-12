@@ -15411,10 +15411,10 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                 { // positive ion mode 
                     if (adduct.AdductIonName == "[M+H]+")
                     {
-                        // seek 184.07332 (C5H15NO4P)
+                        // seek 184.07332 (C5H15NO4P) D9
                         var threshold = 30.0;
-                        var diagnosticMz = 184.07332;
-                        var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                        var diagnosticMz = 184.07332 + MassDiffDictionary.HydrogenMass * 9;
+                    var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                         if (isClassIonFound == false) return null;
 
                         // from here, acyl level annotation is executed.
@@ -15457,13 +15457,13 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                     {
                         // seek -59.0735 [M-C3H9N+Na]+
                         var threshold = 20.0;
-                        var diagnosticMz = theoreticalMz - 59.0735;
+                        var diagnosticMz = theoreticalMz - (59.0735 + MassDiffDictionary.HydrogenMass * 9);
                         // seek -183.06604 [M-C5H14NO4P+Na]+
                         var threshold2 = 30.0;
-                        var diagnosticMz2 = theoreticalMz - 183.06604;
+                        var diagnosticMz2 = theoreticalMz - (183.06604 + MassDiffDictionary.HydrogenMass * 9);
                         // seek -183.06604 [M-C5H16NO5P+H]+
                         var threshold3 = 1;
-                        var diagnosticMz3 = theoreticalMz - 183.06604 - 39.993064;
+                        var diagnosticMz3 = theoreticalMz - (183.06604 + MassDiffDictionary.HydrogenMass * 9) - 39.993064;
 
                         var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                         var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
@@ -15489,7 +15489,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                         var threshold2 = 0.01;
                         var diagnosticMz1 = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
                             theoreticalMz - 74.036779433 : theoreticalMz - 60.021129369;
-                        var diagnosticMz2 = 168.042572 + Electron + (MassDiffDictionary.HydrogenMass * 7);
+                        var diagnosticMz2 = 168.042572 + Electron + (MassDiffDictionary.HydrogenMass * 9);
                         var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                         var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                         if (isClassIon1Found != true || isClassIon2Found != true) return null;
@@ -15556,7 +15556,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                             // if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylDouble >= 7) continue;
-                            var sph1 = diagnosticMz - acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass + (+ MassDiffDictionary.HydrogenMass*7);
+                            var sph1 = diagnosticMz - acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass;
                             var sph2 = sph1 - H2O;
                             var sph3 = sph2 - 12; //[Sph-CH4O2+H]+
                             var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
@@ -15582,7 +15582,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                             if (foundCount >= foundCountThresh)
                             { // 
-                                var molecule = getCeramideMoleculeObjAsLevel2("Cer", LbmClass.Cer_NS, "d", sphCarbon, sphDouble,
+                                var molecule = getCeramideMoleculeObjAsLevel2("Cer_d7", LbmClass.Cer_NS_d7, "d", sphCarbon, sphDouble,
                                     acylCarbon, acylDouble, averageIntensity);
                                 candidates.Add(molecule);
                             }
@@ -15590,7 +15590,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                     }
                     if (candidates.Count == 0) return null;
 
-                    return returnAnnotationResult("Cer", LbmClass.Cer_NS, "d", theoreticalMz, adduct,
+                    return returnAnnotationResult("Cer_d7", LbmClass.Cer_NS_d7, "d", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
                 else if (adductform == "[M+Na]+")
@@ -15621,14 +15621,14 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                             if (foundCount == 1)
                             { // 
-                                var molecule = getCeramideMoleculeObjAsLevel2("Cer", LbmClass.Cer_NS, "d", sphCarbon, sphDouble,
+                                var molecule = getCeramideMoleculeObjAsLevel2("Cer_d7", LbmClass.Cer_NS_d7, "d", sphCarbon, sphDouble,
                                     acylCarbon, acylDouble, averageIntensity);
                                 candidates.Add(molecule);
                             }
                         }
                     }
                     if (candidates.Count == 0) return null;
-                    return returnAnnotationResult("Cer", LbmClass.Cer_NS, "d", theoreticalMz, adduct,
+                    return returnAnnotationResult("Cer_d7", LbmClass.Cer_NS_d7, "d", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
             }
@@ -15692,14 +15692,14 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                             if (foundCount >= 2)
                             { // the diagnostic acyl ion must be observed for level 2 annotation
-                                var molecule = getCeramideMoleculeObjAsLevel2("Cer", LbmClass.Cer_NS, "d", sphCarbon, sphDouble,
+                                var molecule = getCeramideMoleculeObjAsLevel2("Cer_d7", LbmClass.Cer_NS_d7, "d", sphCarbon, sphDouble,
                                     acylCarbon, acylDouble, averageIntensity);
                                 candidates.Add(molecule);
                             }
                         }
                     }
                     if (candidates.Count == 0) return null;
-                    return returnAnnotationResult("Cer", LbmClass.Cer_NS, "d", theoreticalMz, adduct,
+                    return returnAnnotationResult("Cer_d7", LbmClass.Cer_NS_d7, "d", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
             }
