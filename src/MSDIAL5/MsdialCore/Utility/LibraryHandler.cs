@@ -70,6 +70,7 @@ namespace CompMs.MsdialCore.Utility {
             var maxNumberOfModificationsPerPeptide = parameter.MaxNumberOfModificationsPerPeptide;
             var adduct = AdductIonParser.GetAdductIonBean("[M+H]+");
             var minimumPeptideLength = parameter.MinimumPeptideLength;
+            if (minimumPeptideLength <= 1) minimumPeptideLength = 2;
             var maxPeptideMass = parameter.MaxPeptideMass;
             var minPeptideMass = parameter.MinPeptideMass;
             var char2AA = PeptideCalc.GetSimpleChar2AminoAcidDictionary();

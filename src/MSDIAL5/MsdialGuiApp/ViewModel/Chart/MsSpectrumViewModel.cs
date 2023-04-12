@@ -94,12 +94,16 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
+            SaveMatchedSpectrumCommand = model.CanSaveMatchedSpectrum.ToReactiveCommand()
+                .WithSubscribe(SaveSpectrum(model.SaveMatchedSpectrum,  filter: "tab separated values(*.txt)|*.txt"))
+                .AddTo(Disposables);
+
             SaveUpperSpectrumCommand = model.CanSaveUpperSpectrum.ToReactiveCommand()
-                .WithSubscribe(SaveSpectrum(model.SaveUpperSpectrum))
+                .WithSubscribe(SaveSpectrum(model.SaveUpperSpectrum,  filter: "NIST format(*.msp)|*.msp"))
                 .AddTo(Disposables);
 
             SaveLowerSpectrumCommand = model.CanSaveLowerSpectrum.ToReactiveCommand()
-                .WithSubscribe(SaveSpectrum(model.SaveLowerSpectrum))
+                .WithSubscribe(SaveSpectrum(model.SaveLowerSpectrum, filter:  "NIST format(*.msp)|*.msp"))
                 .AddTo(Disposables);
 
             SwitchAllSpectrumCommand = new ReactiveCommand()
@@ -155,11 +159,13 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public Action FocusAction { get; }
         public ReadOnlyReactivePropertySlim<bool> IsFocused { get; }
 
+        public ReactiveCommand SaveMatchedSpectrumCommand { get; }
+
         public ReactiveCommand SaveUpperSpectrumCommand { get; }
 
         public ReactiveCommand SaveLowerSpectrumCommand { get; }
 
-        private Action SaveSpectrum(Action<Stream> handler) {
+        private Action SaveSpectrum(Action<Stream> handler, string filter) {
             void result() {
                 var request = new SaveFileNameRequest(path =>
                 {
@@ -169,7 +175,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 })
                 {
                     Title = "Save spectra",
-                    Filter = "NIST format(*.msp)|*.msp",
+                    Filter = filter,
                     RestoreDirectory = true,
                     AddExtension = true,
                 };

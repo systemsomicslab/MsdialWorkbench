@@ -44,7 +44,7 @@ namespace CompMs.App.Msdial.Model.Imms
         private readonly UndoManager _undoManager;
         private readonly IDataProvider _provider;
         private readonly DataBaseMapper _dataBaseMapper;
-        private readonly IReadOnlyList<CompoundSearcher> _compoundSearchers;
+        private readonly CompoundSearcherCollection _compoundSearchers;
 
         public ImmsAnalysisModel(
             AnalysisFileBeanModel analysisFileModel,
@@ -61,7 +61,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             _provider = provider;
             _dataBaseMapper = mapper;
-            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper).Items;
+            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper);
             _parameter = parameter;
             _undoManager = new UndoManager().AddTo(Disposables);
 
@@ -163,7 +163,8 @@ namespace CompMs.App.Msdial.Model.Imms
                 Observable.Return(lowerSpecBrush),
                 Observable.Return(spectraExporter),
                 Observable.Return(spectraExporter),
-                Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
+                Observable.Return((ISpectraExporter)null),
+                MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers)).AddTo(Disposables);
 
             // Ms2 chromatogram
             Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawLoader, provider, parameter, analysisFileModel.AcquisitionType).AddTo(Disposables);
@@ -259,7 +260,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 AnalysisFileModel,
                 Target.Value,
                 MsdecResult.Value,
-                _compoundSearchers,
+                _compoundSearchers.Items,
                 _undoManager);
         }
 

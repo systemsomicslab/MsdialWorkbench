@@ -60,7 +60,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             Priority = priority;
 
             PeptideMsRef = db.PeptideMsRef.ToList();
-            //DecoyPeptideMsRef = db.DecoyPeptideMsRef.ToList();
+            DecoyPeptideMsRef = db.DecoyPeptideMsRef.ToList();
         }
 
         protected readonly ShotgunProteomicsDB ShotgunProteomicsDB;

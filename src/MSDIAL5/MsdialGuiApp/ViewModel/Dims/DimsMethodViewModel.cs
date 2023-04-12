@@ -89,7 +89,17 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
             };
 
-            var model = new AnalysisResultExportModel(_model.AnalysisFileModelCollection, spectraTypes, spectraFormats, _model.ProviderFactory.ContraMap((AnalysisFileBeanModel file) => file.File));
+            var models = new IMsdialAnalysisExport[]
+            {
+                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, _model.ProviderFactory.ContraMap((AnalysisFileBeanModel file) => file.File)),
+                new MsdialAnalysisExportModel(new AnalysisMspExporter(container.DataBaseMapper, container.Parameter))
+                {
+                    FilePrefix = "Msp",
+                    FileSuffix = "msp",
+                    Label = "Nist format (*.msp)"
+                },
+            };
+            var model = new AnalysisResultExportModel(_model.AnalysisFileModelCollection, models);
             using (var vm = new AnalysisResultExportViewModel(model)) {
                 _broker.Publish(vm);
             }
