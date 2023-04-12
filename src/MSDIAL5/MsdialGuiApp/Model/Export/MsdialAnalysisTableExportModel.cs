@@ -81,13 +81,13 @@ namespace CompMs.App.Msdial.Model.Export
 
     internal sealed class SpectraFormat
     {
-        public SpectraFormat(ExportSpectraFileFormat format, IAnalysisExporter exporter) {
+        public SpectraFormat(ExportSpectraFileFormat format, ILegacyAnalysisExporter exporter) {
             Format = format;
             Exporter = exporter;
         }
 
         public ExportSpectraFileFormat Format { get; }
-        public IAnalysisExporter Exporter { get; }
+        public ILegacyAnalysisExporter Exporter { get; }
 
         public void Export(Stream stream, IReadOnlyList<ChromatogramPeakFeature> features, IDataProvider provider, SpectraType spectraType, AnalysisFileBeanModel fileBeanModel) {
             var msdecs = spectraType.GetSpectra(fileBeanModel);
