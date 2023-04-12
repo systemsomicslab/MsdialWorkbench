@@ -13,9 +13,9 @@ namespace CompMs.App.Msdial.Model.Export
 
     internal sealed class MsdialAnalysisExportModel : BindableBase, IMsdialAnalysisExport
     {
-        private readonly IAnalysisExporterZZZ _exporter;
+        private readonly IAnalysisExporter _exporter;
 
-        public MsdialAnalysisExportModel(IAnalysisExporterZZZ exporter) {
+        public MsdialAnalysisExportModel(IAnalysisExporter exporter) {
             _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
         }
 

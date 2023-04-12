@@ -8,7 +8,7 @@ using System.IO;
 
 namespace CompMs.MsdialCore.Export
 {
-    public sealed class AnalysisMspExporter : IAnalysisExporterZZZ
+    public sealed class AnalysisMspExporter : IAnalysisExporter
     {
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
         private readonly ParameterBase _parameter;
@@ -18,7 +18,7 @@ namespace CompMs.MsdialCore.Export
             _parameter = parameter;
         }
 
-        void IAnalysisExporterZZZ.Export(Stream stream, AnalysisFileBean analysisFile, ChromatogramPeakFeatureCollection peakFeatureCollection) {
+        void IAnalysisExporter.Export(Stream stream, AnalysisFileBean analysisFile, ChromatogramPeakFeatureCollection peakFeatureCollection) {
             var loader = new MSDecLoader(analysisFile.DeconvolutionFilePath);
             foreach (var peak in peakFeatureCollection.Items) {
                 SpectraExport.SaveSpectraTableAsNistFormat(stream, peak, loader.LoadMSDecResult(peak.MasterPeakID).Spectrum, _refer, _parameter);
