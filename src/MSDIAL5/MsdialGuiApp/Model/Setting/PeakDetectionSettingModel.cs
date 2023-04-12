@@ -7,12 +7,12 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public class PeakDetectionSettingModel : BindableBase
+    public sealed class PeakDetectionSettingModel : BindableBase
     {
-        private readonly PeakPickBaseParameter parameter;
+        private readonly PeakPickBaseParameter _parameter;
 
         public PeakDetectionSettingModel(PeakPickBaseParameter parameter, ProcessOption process) {
-            this.parameter = parameter;
+            _parameter = parameter;
             IsReadOnly = (process & ProcessOption.PeakSpotting) == 0;
             MinimumAmplitude = parameter.MinimumAmplitude;
             MassSliceWidth = parameter.MassSliceWidth;
@@ -75,12 +75,12 @@ namespace CompMs.App.Msdial.Model.Setting
             if (IsReadOnly) {
                 return;
             }
-            parameter.MinimumAmplitude = MinimumAmplitude;
-            parameter.MassSliceWidth = MassSliceWidth;
-            parameter.SmoothingMethod = SmoothingMethod;
-            parameter.SmoothingLevel = SmoothingLevel;
-            parameter.MinimumDatapoints = MinimumDatapoints;
-            parameter.ExcludedMassList = ExcludedMassList.ToList();
+            _parameter.MinimumAmplitude = MinimumAmplitude;
+            _parameter.MassSliceWidth = MassSliceWidth;
+            _parameter.SmoothingMethod = SmoothingMethod;
+            _parameter.SmoothingLevel = SmoothingLevel;
+            _parameter.MinimumDatapoints = MinimumDatapoints;
+            _parameter.ExcludedMassList = ExcludedMassList.ToList();
         }
 
         public void LoadParameter(PeakPickBaseParameter parameter) {
