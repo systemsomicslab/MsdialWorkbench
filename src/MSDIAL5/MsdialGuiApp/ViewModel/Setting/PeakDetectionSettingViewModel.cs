@@ -19,37 +19,39 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             Model = model;
             IsReadOnly = model.IsReadOnly;
 
-            MinimumAmplitude = Model.ToReactivePropertyAsSynchronized(
+            MinimumAmplitude = Model.PeakPickSettingModel.ToReactivePropertyAsSynchronized(
                 m => m.MinimumAmplitude,
                 m => m.ToString(),
                 vm => float.Parse(vm),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MinimumAmplitude).AddTo(Disposables);
 
-            MassSliceWidth = Model.ToReactivePropertyAsSynchronized(
+            MassSliceWidth = Model.PeakPickSettingModel.ToReactivePropertyAsSynchronized(
                 m => m.MassSliceWidth,
                 m => m.ToString(),
                 vm => float.Parse(vm),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MassSliceWidth).AddTo(Disposables);
 
-            SmoothingMethod = Model.ToReactivePropertySlimAsSynchronized(m => m.SmoothingMethod).AddTo(Disposables);
+            SmoothingMethod = Model.PeakPickSettingModel
+                .ToReactivePropertySlimAsSynchronized(m => m.SmoothingMethod).AddTo(Disposables);
 
-            SmoothingLevel = Model.ToReactivePropertyAsSynchronized(
+            SmoothingLevel = Model.PeakPickSettingModel.ToReactivePropertyAsSynchronized(
                 m => m.SmoothingLevel,
                 m => m.ToString(),
                 vm => int.Parse(vm),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => SmoothingLevel).AddTo(Disposables);
 
-            MinimumDatapoints = Model.ToReactivePropertyAsSynchronized(
+            MinimumDatapoints = Model.PeakPickSettingModel.ToReactivePropertyAsSynchronized(
                 m => m.MinimumDatapoints,
                 m => m.ToString(),
                 vm => double.Parse(vm),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MinimumDatapoints).AddTo(Disposables);
 
-            ExcludedMassList = Model.ExcludedMassList.ToReadOnlyReactiveCollection(m => new MzSearchQueryViewModel(m)).AddTo(Disposables);
+            ExcludedMassList = Model.PeakPickSettingModel.ExcludedMassList
+                .ToReadOnlyReactiveCollection(m => new MzSearchQueryViewModel(m)).AddTo(Disposables);
 
             AddCommand = new[]
             {
@@ -58,13 +60,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             }.Merge()
             .Select(_ => !ContainsError(nameof(NewMass)) && !ContainsError(nameof(NewTolerance)))
             .ToReactiveCommand()
-            .WithSubscribe(() => Model.AddQuery(NewMass, NewTolerance))
+            .WithSubscribe(() => Model.PeakPickSettingModel.AddQuery(NewMass, NewTolerance))
             .AddTo(Disposables);
 
             RemoveCommand = this.ObserveProperty(vm => vm.SelectedQuery)
                 .Select(q => q != null)
                 .ToReactiveCommand()
-                .WithSubscribe(() => Model.RemoveQuery(SelectedQuery.Model))
+                .WithSubscribe(() => Model.PeakPickSettingModel.RemoveQuery(SelectedQuery.Model))
                 .AddTo(Disposables);
 
             IsEnabled = isEnabled.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
