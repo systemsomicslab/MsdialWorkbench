@@ -683,6 +683,38 @@
 		</LbmClasses>
 	</Lipid>
 	<Lipid>
+		<Name>CE</Name>
+		<Abbreviation>CE</Abbreviation>
+		<Chains>
+			<Total>1</Total>
+			<Capacity>1</Capacity>
+		</Chains>
+		<Skelton>
+			<Carbon>27</Carbon>
+			<Hydrogen>45</Hydrogen>
+			<Oxygen>1</Oxygen>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>CE</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
+		<Name>CEd7</Name>
+		<Abbreviation>CE_d7</Abbreviation>
+		<Chains>
+			<Total>1</Total>
+			<Capacity>1</Capacity>
+		</Chains>
+		<Skelton>
+			<Carbon>27</Carbon>
+			<Hydrogen>(45+7)</Hydrogen>
+			<Oxygen>1</Oxygen>
+		</Skelton>
+		<LbmClasses>
+			<LbmClass>CE_d7</LbmClass>
+		</LbmClasses>
+	</Lipid>
+	<Lipid>
         <Name>HBMP</Name>
         <Abbreviation>HBMP</Abbreviation>
         <Chains>

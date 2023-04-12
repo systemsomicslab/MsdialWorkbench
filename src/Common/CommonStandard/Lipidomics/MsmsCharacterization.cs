@@ -3394,7 +3394,7 @@ namespace CompMs.Common.Lipidomics
                 if (adduct.AdductIonName == "[M+NH4]+")
                 {
                     // seek 369.3515778691 (C27H45+)
-                    var threshold = 60.0;
+                    var threshold = 30.0;
                     var diagnosticMz = 369.3515778691;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -17623,7 +17623,7 @@ AdductIon adduct)
                 if (adduct.AdductIonName == "[M+NH4]+")
                 {
                     // seek 369.3515778691 (C27H45+)+ MassDiffDictionary.HydrogenMass*7
-                    var threshold = 50.0;
+                    var threshold = 20.0;
                     var diagnosticMz = 369.3515778691 + MassDiffDictionary.HydrogenMass * 7;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;

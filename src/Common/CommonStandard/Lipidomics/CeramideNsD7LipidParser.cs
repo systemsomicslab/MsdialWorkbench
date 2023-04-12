@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace CompMs.Common.Lipidomics
 {
-    public class CeramideD7LipidParser : ILipidParser
+    public class CeramideNsD7LipidParser : ILipidParser
     {
         public string Target { get; } = "Cer_d7";
 

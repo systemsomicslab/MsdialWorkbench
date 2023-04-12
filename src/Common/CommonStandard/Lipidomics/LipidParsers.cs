@@ -1087,4 +1087,54 @@ namespace CompMs.Common.Lipidomics
             return null;
         }
 	}
+
+    public class CELipidParser : ILipidParser {
+        public string Target { get; } = "CE";
+
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildSpeciesLevelParser(1, 1);
+        public static readonly string Pattern = $"^CE\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+
+        private static readonly double Skelton = new[]
+        {
+            MassDiffDictionary.CarbonMass * 27,
+            MassDiffDictionary.HydrogenMass * 45,
+            MassDiffDictionary.OxygenMass * 1,
+        }.Sum();
+
+        public ILipid Parse(string lipidStr) {
+            var match = pattern.Match(lipidStr);
+            if (match.Success) {
+                var group = match.Groups;
+                var chains = chainsParser.Parse(group["sn"].Value);
+                return new Lipid(LbmClass.CE, Skelton + chains.Mass, chains);
+            }
+            return null;
+        }
+	}
+
+    public class CEd7LipidParser : ILipidParser {
+        public string Target { get; } = "CE_d7";
+
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildSpeciesLevelParser(1, 1);
+        public static readonly string Pattern = $"^CE_d7\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+
+        private static readonly double Skelton = new[]
+        {
+            MassDiffDictionary.CarbonMass * 27,
+            MassDiffDictionary.HydrogenMass * (45+7),
+            MassDiffDictionary.OxygenMass * 1,
+        }.Sum();
+
+        public ILipid Parse(string lipidStr) {
+            var match = pattern.Match(lipidStr);
+            if (match.Success) {
+                var group = match.Groups;
+                var chains = chainsParser.Parse(group["sn"].Value);
+                return new Lipid(LbmClass.CE_d7, Skelton + chains.Mass, chains);
+            }
+            return null;
+        }
+	}
 }
