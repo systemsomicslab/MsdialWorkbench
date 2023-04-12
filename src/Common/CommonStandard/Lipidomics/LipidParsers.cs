@@ -744,4 +744,397 @@ namespace CompMs.Common.Lipidomics
             return null;
         }
 	}
+
+    public class PCd5LipidParser : ILipidParser {
+        public string Target { get; } = "PC_d5";
+
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(2);
+        public static readonly string Pattern = $"^PC_d5\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+
+        private static readonly double Skelton = new[]
+        {
+            MassDiffDictionary.CarbonMass * 8,
+            MassDiffDictionary.HydrogenMass * (18+5),
+            MassDiffDictionary.OxygenMass * 6,
+            MassDiffDictionary.NitrogenMass,
+            MassDiffDictionary.PhosphorusMass,
+        }.Sum();
+
+        public ILipid Parse(string lipidStr) {
+            var match = pattern.Match(lipidStr);
+            if (match.Success) {
+                var group = match.Groups;
+                var chains = chainsParser.Parse(group["sn"].Value);
+                return new Lipid(LbmClass.PC_d5, Skelton + chains.Mass, chains);
+            }
+            return null;
+        }
+	}
+
+    public class PEd5LipidParser : ILipidParser {
+        public string Target { get; } = "PE_d5";
+
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(2);
+        public static readonly string Pattern = $"^PE_d5\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+
+        private static readonly double Skelton = new[]
+        {
+            MassDiffDictionary.CarbonMass * 5,
+            MassDiffDictionary.HydrogenMass * (12+5),
+            MassDiffDictionary.OxygenMass * 6,
+            MassDiffDictionary.NitrogenMass,
+            MassDiffDictionary.PhosphorusMass,
+        }.Sum();
+
+        public ILipid Parse(string lipidStr) {
+            var match = pattern.Match(lipidStr);
+            if (match.Success) {
+                var group = match.Groups;
+                var chains = chainsParser.Parse(group["sn"].Value);
+                return new Lipid(LbmClass.PE_d5, Skelton + chains.Mass, chains);
+            }
+            return null;
+        }
+	}
+
+    public class PGd5LipidParser : ILipidParser {
+        public string Target { get; } = "PG_d5";
+
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(2);
+        public static readonly string Pattern = $"^PG_d5\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+
+        private static readonly double Skelton = new[]
+        {
+            MassDiffDictionary.CarbonMass * 6,
+            MassDiffDictionary.HydrogenMass * (13+5),
+            MassDiffDictionary.OxygenMass * 8,
+            MassDiffDictionary.PhosphorusMass,
+        }.Sum();
+
+        public ILipid Parse(string lipidStr) {
+            var match = pattern.Match(lipidStr);
+            if (match.Success) {
+                var group = match.Groups;
+                var chains = chainsParser.Parse(group["sn"].Value);
+                return new Lipid(LbmClass.PG_d5, Skelton + chains.Mass, chains);
+            }
+            return null;
+        }
+	}
+
+    public class PId5LipidParser : ILipidParser {
+        public string Target { get; } = "PI_d5";
+
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(2);
+        public static readonly string Pattern = $"^PI_d5\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+
+        private static readonly double Skelton = new[]
+        {
+            MassDiffDictionary.CarbonMass * 9,
+            MassDiffDictionary.HydrogenMass * (17+5),
+            MassDiffDictionary.OxygenMass * 11,
+            MassDiffDictionary.PhosphorusMass,
+        }.Sum();
+
+        public ILipid Parse(string lipidStr) {
+            var match = pattern.Match(lipidStr);
+            if (match.Success) {
+                var group = match.Groups;
+                var chains = chainsParser.Parse(group["sn"].Value);
+                return new Lipid(LbmClass.PI_d5, Skelton + chains.Mass, chains);
+            }
+            return null;
+        }
+	}
+
+    public class PSd5LipidParser : ILipidParser {
+        public string Target { get; } = "PS_d5";
+
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(2);
+        public static readonly string Pattern = $"^PS_d5\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+
+        private static readonly double Skelton = new[]
+        {
+            MassDiffDictionary.CarbonMass * 6,
+            MassDiffDictionary.HydrogenMass * (12+5),
+            MassDiffDictionary.OxygenMass * 8,
+            MassDiffDictionary.NitrogenMass,
+            MassDiffDictionary.PhosphorusMass,
+        }.Sum();
+
+        public ILipid Parse(string lipidStr) {
+            var match = pattern.Match(lipidStr);
+            if (match.Success) {
+                var group = match.Groups;
+                var chains = chainsParser.Parse(group["sn"].Value);
+                return new Lipid(LbmClass.PS_d5, Skelton + chains.Mass, chains);
+            }
+            return null;
+        }
+	}
+
+    public class LPCd5LipidParser : ILipidParser {
+        public string Target { get; } = "LPC_d5";
+
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildSpeciesLevelParser(1, 2);
+        public static readonly string Pattern = $"^LPC_d5\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+
+        private static readonly double Skelton = new[]
+        {
+            MassDiffDictionary.CarbonMass * 8,
+            MassDiffDictionary.HydrogenMass * (18+5),
+            MassDiffDictionary.OxygenMass * 6,
+            MassDiffDictionary.NitrogenMass,
+            MassDiffDictionary.PhosphorusMass,
+        }.Sum();
+
+        public ILipid Parse(string lipidStr) {
+            var match = pattern.Match(lipidStr);
+            if (match.Success) {
+                var group = match.Groups;
+                var chains = chainsParser.Parse(group["sn"].Value);
+                return new Lipid(LbmClass.LPC_d5, Skelton + chains.Mass, chains);
+            }
+            return null;
+        }
+	}
+
+    public class LPEd5LipidParser : ILipidParser {
+        public string Target { get; } = "LPE_d5";
+
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildSpeciesLevelParser(1, 2);
+        public static readonly string Pattern = $"^LPE_d5\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+
+        private static readonly double Skelton = new[]
+        {
+            MassDiffDictionary.CarbonMass * 5,
+            MassDiffDictionary.HydrogenMass * (12+5),
+            MassDiffDictionary.OxygenMass * 6,
+            MassDiffDictionary.NitrogenMass,
+            MassDiffDictionary.PhosphorusMass,
+        }.Sum();
+
+        public ILipid Parse(string lipidStr) {
+            var match = pattern.Match(lipidStr);
+            if (match.Success) {
+                var group = match.Groups;
+                var chains = chainsParser.Parse(group["sn"].Value);
+                return new Lipid(LbmClass.LPE_d5, Skelton + chains.Mass, chains);
+            }
+            return null;
+        }
+	}
+
+    public class LPGd5LipidParser : ILipidParser {
+        public string Target { get; } = "LPG_d5";
+
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildSpeciesLevelParser(1, 2);
+        public static readonly string Pattern = $"^LPG_d5\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+
+        private static readonly double Skelton = new[]
+        {
+            MassDiffDictionary.CarbonMass * 6,
+            MassDiffDictionary.HydrogenMass * (13+5),
+            MassDiffDictionary.OxygenMass * 8,
+            MassDiffDictionary.PhosphorusMass,
+        }.Sum();
+
+        public ILipid Parse(string lipidStr) {
+            var match = pattern.Match(lipidStr);
+            if (match.Success) {
+                var group = match.Groups;
+                var chains = chainsParser.Parse(group["sn"].Value);
+                return new Lipid(LbmClass.LPG_d5, Skelton + chains.Mass, chains);
+            }
+            return null;
+        }
+	}
+
+    public class LPId5LipidParser : ILipidParser {
+        public string Target { get; } = "LPI_d5";
+
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildSpeciesLevelParser(1, 2);
+        public static readonly string Pattern = $"^LPI_d5\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+
+        private static readonly double Skelton = new[]
+        {
+            MassDiffDictionary.CarbonMass * 9,
+            MassDiffDictionary.HydrogenMass * (17+5),
+            MassDiffDictionary.OxygenMass * 11,
+            MassDiffDictionary.PhosphorusMass,
+        }.Sum();
+
+        public ILipid Parse(string lipidStr) {
+            var match = pattern.Match(lipidStr);
+            if (match.Success) {
+                var group = match.Groups;
+                var chains = chainsParser.Parse(group["sn"].Value);
+                return new Lipid(LbmClass.LPI_d5, Skelton + chains.Mass, chains);
+            }
+            return null;
+        }
+	}
+
+    public class LPSd5LipidParser : ILipidParser {
+        public string Target { get; } = "LPS_d5";
+
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildSpeciesLevelParser(1, 2);
+        public static readonly string Pattern = $"^LPS_d5\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+
+        private static readonly double Skelton = new[]
+        {
+            MassDiffDictionary.CarbonMass * 6,
+            MassDiffDictionary.HydrogenMass * (12+5),
+            MassDiffDictionary.OxygenMass * 8,
+            MassDiffDictionary.NitrogenMass,
+            MassDiffDictionary.PhosphorusMass,
+        }.Sum();
+
+        public ILipid Parse(string lipidStr) {
+            var match = pattern.Match(lipidStr);
+            if (match.Success) {
+                var group = match.Groups;
+                var chains = chainsParser.Parse(group["sn"].Value);
+                return new Lipid(LbmClass.LPS_d5, Skelton + chains.Mass, chains);
+            }
+            return null;
+        }
+	}
+
+    public class TGd5LipidParser : ILipidParser {
+        public string Target { get; } = "TG_d5";
+
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(3);
+        public static readonly string Pattern = $"^TG_d5\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+
+        private static readonly double Skelton = new[]
+        {
+            MassDiffDictionary.CarbonMass * 3,
+            MassDiffDictionary.HydrogenMass * (5+5),
+            MassDiffDictionary.OxygenMass * 3,
+        }.Sum();
+
+        public ILipid Parse(string lipidStr) {
+            var match = pattern.Match(lipidStr);
+            if (match.Success) {
+                var group = match.Groups;
+                var chains = chainsParser.Parse(group["sn"].Value);
+                return new Lipid(LbmClass.TG_d5, Skelton + chains.Mass, chains);
+            }
+            return null;
+        }
+	}
+
+    public class DGd5LipidParser : ILipidParser {
+        public string Target { get; } = "DG_d5";
+
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(2);
+        public static readonly string Pattern = $"^DG_d5\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+
+        private static readonly double Skelton = new[]
+        {
+            MassDiffDictionary.CarbonMass * 3,
+            MassDiffDictionary.HydrogenMass * (6+5),
+            MassDiffDictionary.OxygenMass * 3,
+        }.Sum();
+
+        public ILipid Parse(string lipidStr) {
+            var match = pattern.Match(lipidStr);
+            if (match.Success) {
+                var group = match.Groups;
+                var chains = chainsParser.Parse(group["sn"].Value);
+                return new Lipid(LbmClass.DG_d5, Skelton + chains.Mass, chains);
+            }
+            return null;
+        }
+	}
+
+    public class SMd9LipidParser : ILipidParser {
+        public string Target { get; } = "SM_d9";
+
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildCeramideParser(2);
+        public static readonly string Pattern = $"^SM_d9\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+
+        private static readonly double Skelton = new[]
+        {
+            MassDiffDictionary.CarbonMass * 5,
+            MassDiffDictionary.HydrogenMass * (12+9),
+            MassDiffDictionary.OxygenMass * 3,
+            MassDiffDictionary.NitrogenMass * 1,
+            MassDiffDictionary.PhosphorusMass,
+        }.Sum();
+
+        public ILipid Parse(string lipidStr) {
+            var match = pattern.Match(lipidStr);
+            if (match.Success) {
+                var group = match.Groups;
+                var chains = chainsParser.Parse(group["sn"].Value);
+                return new Lipid(LbmClass.SM_d9, Skelton + chains.Mass, chains);
+            }
+            return null;
+        }
+	}
+
+    public class CELipidParser : ILipidParser {
+        public string Target { get; } = "CE";
+
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildSpeciesLevelParser(1, 1);
+        public static readonly string Pattern = $"^CE\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+
+        private static readonly double Skelton = new[]
+        {
+            MassDiffDictionary.CarbonMass * 27,
+            MassDiffDictionary.HydrogenMass * 45,
+            MassDiffDictionary.OxygenMass * 1,
+        }.Sum();
+
+        public ILipid Parse(string lipidStr) {
+            var match = pattern.Match(lipidStr);
+            if (match.Success) {
+                var group = match.Groups;
+                var chains = chainsParser.Parse(group["sn"].Value);
+                return new Lipid(LbmClass.CE, Skelton + chains.Mass, chains);
+            }
+            return null;
+        }
+	}
+
+    public class CEd7LipidParser : ILipidParser {
+        public string Target { get; } = "CE_d7";
+
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildSpeciesLevelParser(1, 1);
+        public static readonly string Pattern = $"^CE_d7\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+
+        private static readonly double Skelton = new[]
+        {
+            MassDiffDictionary.CarbonMass * 27,
+            MassDiffDictionary.HydrogenMass * (45+7),
+            MassDiffDictionary.OxygenMass * 1,
+        }.Sum();
+
+        public ILipid Parse(string lipidStr) {
+            var match = pattern.Match(lipidStr);
+            if (match.Success) {
+                var group = match.Groups;
+                var chains = chainsParser.Parse(group["sn"].Value);
+                return new Lipid(LbmClass.CE_d7, Skelton + chains.Mass, chains);
+            }
+            return null;
+        }
+	}
 }

@@ -1054,15 +1054,15 @@ namespace Msdial.Lcms.Dataprocess.Scoring
                 case LbmClass.DG_d5:
                     return LipidMsmsCharacterization.JudgeIfDagD5(spectrum, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
-                //case LbmClass.SM_d9:
-                //        return LipidMsmsCharacterization.JudgeIfSphingomyelinD9(spectrum, ms2tol, refMz,
-                //        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
-                //case LbmClass.CE_d7:
-                //    return LipidMsmsCharacterization.JudgeIfCholesterylEsterD7(spectrum, ms2tol, refMz,
-                //        totalCarbon, totalDbBond, adduct);
-                //case LbmClass.Cer_NS_d7:
-                //    return LipidMsmsCharacterization.JudgeIfCeramidensD7(spectrum, ms2tol, refMz,
-                //         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.SM_d9:
+                    return LipidMsmsCharacterization.JudgeIfSphingomyelinD9(spectrum, ms2tol, refMz,
+                    totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.CE_d7:
+                    return LipidMsmsCharacterization.JudgeIfCholesterylEsterD7(spectrum, ms2tol, refMz,
+                        totalCarbon, totalDbBond, adduct);
+                case LbmClass.Cer_NS_d7:
+                    return LipidMsmsCharacterization.JudgeIfCeramidensD7(spectrum, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                 default:
                     return null;
             }
