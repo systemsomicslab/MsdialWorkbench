@@ -151,6 +151,7 @@ namespace CompMs.Common.Parser
                         }
 
                         if (queryCheck(mspField, tQueries, ionMode, solventType, collisionType)) {
+                            mspField.ScanID = counter;
                             mspDB.Add(mspField);
                             counter++;
                         }

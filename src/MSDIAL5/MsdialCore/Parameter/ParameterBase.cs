@@ -839,7 +839,7 @@ namespace CompMs.MsdialCore.Parameter
 
         // processing
         [Key(0)]
-        public bool IsDoAndromedaMs2Deconvolution { get; set; } = true;
+        public bool IsDoAndromedaMs2Deconvolution { get; set; } = false;
         [Key(1)]
         public float AndromedaDelta { get; set; } = 100;
         [Key(2)]
