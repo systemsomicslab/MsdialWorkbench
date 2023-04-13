@@ -12,29 +12,31 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
-using CompMs.MsdialGcMsApi.Parameter;
 
 namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
 {
     public abstract class GcmsPeakJoiner : IPeakJoiner
     {
-        public static GcmsPeakJoiner CreateRTJoiner(RiCompoundType riCompoundType, MsRefSearchParameterBase msMatchParam, double mzTol, double rtTol) {
-            return new GcmsRTPeakJoiner(riCompoundType, msMatchParam, mzTol, rtTol);
+        public static GcmsPeakJoiner CreateRTJoiner(RiCompoundType riCompoundType, MsRefSearchParameterBase msMatchParam, AlignmentBaseParameter alignmentParameter) {
+            return new GcmsRTPeakJoiner(riCompoundType, msMatchParam, alignmentParameter);
         }
 
-        public static GcmsPeakJoiner CreateRIJoiner(RiCompoundType riCompoundType, MsRefSearchParameterBase msMatchParam, double mzTol, double riTol) {
-            return new GcmsRIPeakJoiner(riCompoundType, msMatchParam, mzTol, riTol);
+        public static GcmsPeakJoiner CreateRIJoiner(RiCompoundType riCompoundType, MsRefSearchParameterBase msMatchParam, double riTol, AlignmentBaseParameter alignmentParameter) {
+            return new GcmsRIPeakJoiner(riCompoundType, msMatchParam, riTol, alignmentParameter);
         }
 
         protected readonly AlignmentIndexType indextype;
         protected readonly IComparer<IMSScanProperty> comparer;
+        private readonly AlignmentBaseParameter _alignmentParameter;
         protected readonly RiCompoundType riCompoundType;
         protected readonly MsRefSearchParameterBase msMatchParam;
 
-        protected GcmsPeakJoiner(AlignmentIndexType indextype, RiCompoundType riCompoundType, MsRefSearchParameterBase msMatchParam, IComparer<IMSScanProperty> comparer) {
+        protected GcmsPeakJoiner(AlignmentIndexType indextype, RiCompoundType riCompoundType, MsRefSearchParameterBase msMatchParam, IComparer<IMSScanProperty> comparer, AlignmentBaseParameter alignmentParameter) {
             this.indextype = indextype;
             this.comparer = comparer;
+            _alignmentParameter = alignmentParameter ?? throw new ArgumentNullException(nameof(alignmentParameter));
             this.riCompoundType = riCompoundType;
             this.msMatchParam = msMatchParam;
         }
@@ -50,13 +52,13 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
         protected abstract List<AlignmentSpotProperty> JoinAll(List<IMSScanProperty> master, IReadOnlyList<AnalysisFileBean> analysisFiles, DataAccessor accessor);
 
         protected bool IsSimilarTo(IMSScanProperty x, IMSScanProperty y) {
-            var result = MsScanMatching.CompareEIMSScanProperties(x, y, this.msMatchParam, indextype == AlignmentIndexType.RI);
+            var result = MsScanMatching.CompareEIMSScanProperties(x, y, this.msMatchParam, _alignmentParameter.Ms1AlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, indextype == AlignmentIndexType.RI);
             var isRetentionMatch = indextype == AlignmentIndexType.RI ? result.IsRiMatch : result.IsRtMatch;
             return result.IsSpectrumMatch && isRetentionMatch;
         }
 
         protected double GetSimilality(IMSScanProperty x, IMSScanProperty y) {
-            var result = MsScanMatching.CompareEIMSScanProperties(x, y, this.msMatchParam, indextype == AlignmentIndexType.RI);
+            var result = MsScanMatching.CompareEIMSScanProperties(x, y, this.msMatchParam, _alignmentParameter.Ms1AlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, indextype == AlignmentIndexType.RI);
             return result.TotalScore;
         }
 
@@ -114,14 +116,14 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
         private readonly double mzBucket, rtBucket;
         private readonly int mzWidth, rtWidth;
 
-        public GcmsRTPeakJoiner(RiCompoundType riCompoundType, MsRefSearchParameterBase msMatchParam, double mzTol, double rtTol)
-            : base(AlignmentIndexType.RT, riCompoundType, msMatchParam, ChromXsComparer.RTComparer) {
+        public GcmsRTPeakJoiner(RiCompoundType riCompoundType, MsRefSearchParameterBase msMatchParam, AlignmentBaseParameter alignmentParameter)
+            : base(AlignmentIndexType.RT, riCompoundType, msMatchParam, ChromXsComparer.RTComparer, alignmentParameter) {
 
-            this.mzTol = mzTol;
-            this.mzBucket = mzTol * 2;
+            this.mzTol = alignmentParameter.Ms1AlignmentTolerance;
+            this.mzBucket = alignmentParameter.Ms1AlignmentTolerance * 2;
             this.mzWidth = (int)Math.Ceiling(this.mzTol / this.mzBucket);
-            this.rtTol = rtTol;
-            this.rtBucket = rtTol * 2;
+            this.rtTol = alignmentParameter.RetentionTimeAlignmentTolerance;
+            this.rtBucket = alignmentParameter.RetentionTimeAlignmentTolerance * 2;
             this.rtWidth = (int)Math.Ceiling(this.rtTol / this.rtBucket);
         }
 
@@ -215,10 +217,10 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
         private readonly double mzBucket, riBucket;
         private readonly int mzWidth, riWidth;
 
-        public GcmsRIPeakJoiner(RiCompoundType riCompoundType, MsRefSearchParameterBase msMatchParam, double mzTol, double riTol)
-            :base(AlignmentIndexType.RI, riCompoundType, msMatchParam, ChromXsComparer.RIComparer) {
-            this.mzTol = mzTol;
-            this.mzBucket = mzTol * 2;
+        public GcmsRIPeakJoiner(RiCompoundType riCompoundType, MsRefSearchParameterBase msMatchParam, double riTol, AlignmentBaseParameter alignmentParameter)
+            : base(AlignmentIndexType.RI, riCompoundType, msMatchParam, ChromXsComparer.RIComparer, alignmentParameter) {
+            this.mzTol = alignmentParameter.Ms1AlignmentTolerance;
+            this.mzBucket = alignmentParameter.Ms1AlignmentTolerance * 2;
             this.mzWidth = (int)Math.Ceiling(this.mzTol / this.mzBucket);
             this.riTol = riTol;
             this.riBucket = riTol * 2;

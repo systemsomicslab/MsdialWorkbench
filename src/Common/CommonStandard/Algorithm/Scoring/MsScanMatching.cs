@@ -425,6 +425,19 @@ namespace CompMs.Common.Algorithm.Scoring {
         }
 
         public static MsScanMatchResult CompareEIMSScanProperties(IMSScanProperty scan1, IMSScanProperty scan2,
+            MsRefSearchParameterBase param, double eiFactor, double riFactor, bool isUseRetentionIndex = false) {
+            var result = CompareMSScanProperties(scan1, scan2, param, param.Ms1Tolerance, param.MassRangeBegin, param.MassRangeEnd);
+            var msMatchedScore = GetIntegratedSpectraSimilarity(result);
+            if (isUseRetentionIndex) {
+                result.TotalScore = (float)GetTotalSimilarity(result.RiSimilarity, riFactor, msMatchedScore, eiFactor);
+            }
+            else {
+                result.TotalScore = (float)GetTotalSimilarity(result.RtSimilarity, riFactor, msMatchedScore, eiFactor);
+            }
+            return result;
+        }
+
+        public static MsScanMatchResult CompareEIMSScanProperties(IMSScanProperty scan1, IMSScanProperty scan2,
             MsRefSearchParameterBase param, bool isUseRetentionIndex = false) {
             var result = CompareMSScanProperties(scan1, scan2, param, param.Ms1Tolerance, param.MassRangeBegin, param.MassRangeEnd);
             var msMatchedScore = GetIntegratedSpectraSimilarity(result);
@@ -3300,6 +3313,15 @@ namespace CompMs.Common.Algorithm.Scoring {
             }
             else {
                 return (0.6 * eiSimilarity + 0.4 * rtSimilarity);
+            }
+        }
+
+        public static double GetTotalSimilarity(double rtSimilarity, double rtFactor, double eiSimilarity, double eiFactor, bool isUseRT = true) {
+            if (rtSimilarity < 0 || !isUseRT) {
+                return eiSimilarity;
+            }
+            else {
+                return eiFactor * eiSimilarity + rtFactor * rtSimilarity;
             }
         }
     }

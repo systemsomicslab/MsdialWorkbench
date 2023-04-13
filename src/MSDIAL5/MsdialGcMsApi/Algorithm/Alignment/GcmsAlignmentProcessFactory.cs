@@ -52,15 +52,14 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
                     return GcmsPeakJoiner.CreateRTJoiner(
                         GcmsParameter.RiCompoundType,
                         GcmsParameter.MspSearchParam,
-                        GcmsParameter.Ms1AlignmentTolerance,
-                        GcmsParameter.RetentionTimeAlignmentTolerance);
+                        GcmsParameter.AlignmentBaseParam);
                 case Common.Enum.AlignmentIndexType.RI:
                 default:
                     return GcmsPeakJoiner.CreateRIJoiner(
                         GcmsParameter.RiCompoundType,
                         GcmsParameter.MspSearchParam,
-                        GcmsParameter.Ms1AlignmentTolerance,
-                        GcmsParameter.RetentionIndexAlignmentTolerance);
+                        GcmsParameter.RetentionIndexAlignmentTolerance,
+                        GcmsParameter.AlignmentBaseParam);
             }
         }
     }
