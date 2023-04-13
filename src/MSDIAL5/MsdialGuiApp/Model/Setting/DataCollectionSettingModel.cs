@@ -15,7 +15,13 @@ using System.Collections.ObjectModel;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public sealed class DataCollectionSettingModel : BindableBase {
+    public interface IDataCollectionSettingModel {
+        bool IsReadOnly { get; }
+        void LoadParameter(ParameterBase parameter);
+        bool TryCommit();
+    }
+
+    public sealed class DataCollectionSettingModel : BindableBase, IDataCollectionSettingModel {
         private readonly ParameterBase parameter;
         private readonly IReadOnlyList<AnalysisFileBean> analysisFiles;
 

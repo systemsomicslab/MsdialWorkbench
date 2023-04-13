@@ -9,7 +9,6 @@ using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialDimsCore.Parameter;
-using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
@@ -32,7 +31,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             var vms = new ISettingViewModel[]
             {
-                new DataCollectionSettingViewModel(model.DataCollectionSettingModel, isEnabled).AddTo(Disposables),
+                CreateDataCollectionSettingViewModel(model.DataCollectionSettingModel, isEnabled).AddTo(Disposables),
                 new PeakDetectionSettingViewModel(model.PeakDetectionSettingModel, isEnabled).AddTo(Disposables),
                 new DeconvolutionSettingViewModel(model.DeconvolutionSettingModel, isEnabled).AddTo(Disposables),
                 new IdentifySettingViewModel(model.IdentifySettingModel, CreateAnnotatorViewModelFactory(Model.Storage), isEnabled).AddTo(Disposables),
@@ -129,6 +128,17 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 //    return new GcmsAnnotatorSettingViewModelFactory();
             }
             throw new NotImplementedException("unknown method acquired.");
+        }
+
+        private static ISettingViewModel CreateDataCollectionSettingViewModel(IDataCollectionSettingModel model, IObservable<bool> isEnabled) {
+            switch (model) {
+                case DataCollectionSettingModel dc:
+                    return new DataCollectionSettingViewModel(dc, isEnabled);
+                case GcmsDataCollectionSettingModel gdc:
+                    return new GcmsDataCollectionSettingViewModel(gdc, isEnabled);
+                default:
+                    return null;
+            }
         }
     }
 }

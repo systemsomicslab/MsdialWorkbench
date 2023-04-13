@@ -4,7 +4,7 @@ using CompMs.MsdialCore.Parameter;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public sealed class GcmsDataCollectionSettingModel : BindableBase
+    public sealed class GcmsDataCollectionSettingModel : BindableBase, IDataCollectionSettingModel
     {
         private readonly ParameterBase _parameter;
 

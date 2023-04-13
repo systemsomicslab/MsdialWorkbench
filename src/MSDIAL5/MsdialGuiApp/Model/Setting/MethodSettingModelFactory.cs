@@ -19,7 +19,6 @@ using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive;
@@ -30,7 +29,7 @@ namespace CompMs.App.Msdial.Model.Setting
 {
     internal interface IMethodSettingModelFactory
     {
-        DataCollectionSettingModel CreateDataCollectionSetting();
+        IDataCollectionSettingModel CreateDataCollectionSetting();
         PeakDetectionSettingModel CreatePeakDetectionSetting();
         DeconvolutionSettingModel CreateDeconvolutionSetting();
         IdentifySettingModel CreateIdentifySetting();
@@ -75,7 +74,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public IMethodModel BuildMethod() => factoryImpl.BuildMethod();
         public AdductIonSettingModel CreateAdductIonSetting() => factoryImpl.CreateAdductIonSetting();
         public AlignmentParameterSettingModel CreateAlignmentParameterSetting() => factoryImpl.CreateAlignmentParameterSetting();
-        public DataCollectionSettingModel CreateDataCollectionSetting() => factoryImpl.CreateDataCollectionSetting();
+        public IDataCollectionSettingModel CreateDataCollectionSetting() => factoryImpl.CreateDataCollectionSetting();
         public DeconvolutionSettingModel CreateDeconvolutionSetting() => factoryImpl.CreateDeconvolutionSetting();
         public IdentifySettingModel CreateIdentifySetting() => factoryImpl.CreateIdentifySetting();
         public IsotopeTrackSettingModel CreateIsotopeTrackSetting() => factoryImpl.CreateIsotopeTrackSetting();
@@ -110,7 +109,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new AlignmentParameterSettingModel(storage.Parameter, DateTime.Now, storage.AnalysisFiles, _alignmentFileBeanModelCollection, process);
         }
 
-        public DataCollectionSettingModel CreateDataCollectionSetting() {
+        public IDataCollectionSettingModel CreateDataCollectionSetting() {
             return new DataCollectionSettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
@@ -207,7 +206,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new AlignmentParameterSettingModel(storage.Parameter, DateTime.Now, storage.AnalysisFiles, _alignmentFileBeanModelCollection, process);
         }
 
-        public DataCollectionSettingModel CreateDataCollectionSetting() {
+        public IDataCollectionSettingModel CreateDataCollectionSetting() {
             return new DataCollectionSettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
@@ -296,7 +295,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new AlignmentParameterSettingModel(storage.Parameter, DateTime.Now, storage.AnalysisFiles, _alignmentFileBeanModelCollection, process);
         }
 
-        public DataCollectionSettingModel CreateDataCollectionSetting() {
+        public IDataCollectionSettingModel CreateDataCollectionSetting() {
             return new DataCollectionSettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
@@ -384,7 +383,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new AlignmentParameterSettingModel(storage.Parameter, DateTime.Now, storage.AnalysisFiles, _alignmentFileBeanModelCollection, process);
         }
 
-        public DataCollectionSettingModel CreateDataCollectionSetting() {
+        public IDataCollectionSettingModel CreateDataCollectionSetting() {
             return new DataCollectionSettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
@@ -472,7 +471,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new AlignmentParameterSettingModel(storage.Parameter, DateTime.Now, storage.AnalysisFiles, _alignmentFileBeanModelCollection, process);
         }
 
-        public DataCollectionSettingModel CreateDataCollectionSetting() {
+        public IDataCollectionSettingModel CreateDataCollectionSetting() {
             return new DataCollectionSettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
@@ -571,8 +570,8 @@ namespace CompMs.App.Msdial.Model.Setting
             return new AlignmentParameterSettingModel(storage.Parameter, DateTime.Now, storage.AnalysisFiles, _alignmentFileBeanModelCollection, process);
         }
 
-        public DataCollectionSettingModel CreateDataCollectionSetting() {
-            return new DataCollectionSettingModel(storage.Parameter, storage.AnalysisFiles, process);
+        public IDataCollectionSettingModel CreateDataCollectionSetting() {
+            return new GcmsDataCollectionSettingModel(storage.Parameter, process);
         }
 
         public DeconvolutionSettingModel CreateDeconvolutionSetting() {
@@ -619,7 +618,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IsotopeTrackSettingModel CreateIsotopeTrackSetting() {
-            return new IsotopeTrackSettingModel(storage.Parameter, storage.AnalysisFiles, process);
+            return null;
         }
 
         public MobilitySettingModel CreateMobilitySetting() {

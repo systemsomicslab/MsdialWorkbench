@@ -47,7 +47,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private ProcessOption option;
 
-        public DataCollectionSettingModel DataCollectionSettingModel { get; }
+        public IDataCollectionSettingModel DataCollectionSettingModel { get; }
 
         public PeakDetectionSettingModel PeakDetectionSettingModel { get; }
 

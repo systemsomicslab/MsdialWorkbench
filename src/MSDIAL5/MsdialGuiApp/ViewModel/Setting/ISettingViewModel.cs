@@ -3,7 +3,7 @@ using System.Reactive;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    public interface ISettingViewModel
+    public interface ISettingViewModel : IDisposable
     {
         ISettingViewModel Next(ISettingViewModel selected);
         // void Run();
