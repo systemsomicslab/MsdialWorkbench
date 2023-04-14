@@ -32,7 +32,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             var vms = new ISettingViewModel[]
             {
                 CreateDataCollectionSettingViewModel(model.DataCollectionSettingModel, isEnabled).AddTo(Disposables),
-                new PeakDetectionSettingViewModel(model.PeakDetectionSettingModel, isEnabled).AddTo(Disposables),
+                CreatePeakDetectionSettingViewModel(model.PeakDetectionSettingModel, isEnabled).AddTo(Disposables),
                 new DeconvolutionSettingViewModel(model.DeconvolutionSettingModel, isEnabled).AddTo(Disposables),
                 new IdentifySettingViewModel(model.IdentifySettingModel, CreateAnnotatorViewModelFactory(Model.Storage), isEnabled).AddTo(Disposables),
                 new AdductIonSettingViewModel(model.AdductIonSettingModel, isEnabled).AddTo(Disposables),
@@ -136,6 +136,17 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                     return new DataCollectionSettingViewModel(dc, isEnabled);
                 case GcmsDataCollectionSettingModel gdc:
                     return new GcmsDataCollectionSettingViewModel(gdc, isEnabled);
+                default:
+                    return null;
+            }
+        }
+
+        private static ISettingViewModel CreatePeakDetectionSettingViewModel(IPeakDetectionSettingModel model, IObservable<bool> isEnabled) {
+            switch (model) {
+                case PeakDetectionSettingModel dc:
+                    return new PeakDetectionSettingViewModel(dc, isEnabled);
+                case GcmsPeakDetectionSettingModel gdc:
+                    return new GcmsPeakDetectionSettingViewModel(gdc, isEnabled);
                 default:
                     return null;
             }

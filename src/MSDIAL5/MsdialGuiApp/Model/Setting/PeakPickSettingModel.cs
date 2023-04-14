@@ -17,6 +17,7 @@ namespace CompMs.App.Msdial.Model.Setting
             SmoothingMethod = parameter.SmoothingMethod;
             SmoothingLevel = parameter.SmoothingLevel;
             MinimumDatapoints = parameter.MinimumDatapoints;
+            CentroidMs1Tolerance = parameter.CentroidMs1Tolerance;
             ExcludedMassList = new ObservableCollection<MzSearchQuery>(
                 parameter.ExcludedMassList.Select(
                     query => new MzSearchQuery {
@@ -57,6 +58,12 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private double _minimumDataPoints;
 
+        public float CentroidMs1Tolerance {
+            get => _centroidMs1Tolerance;
+            set => SetProperty(ref _centroidMs1Tolerance, value);
+        }
+        private float _centroidMs1Tolerance;
+
         public ObservableCollection<MzSearchQuery> ExcludedMassList { get; }
 
         public void AddQuery(double mass, double tolerance) {
@@ -73,6 +80,7 @@ namespace CompMs.App.Msdial.Model.Setting
             _parameter.SmoothingMethod = SmoothingMethod;
             _parameter.SmoothingLevel = SmoothingLevel;
             _parameter.MinimumDatapoints = MinimumDatapoints;
+            _parameter.CentroidMs1Tolerance = CentroidMs1Tolerance;
             _parameter.ExcludedMassList = ExcludedMassList.ToList();
         }
 
@@ -82,6 +90,7 @@ namespace CompMs.App.Msdial.Model.Setting
             SmoothingMethod = parameter.SmoothingMethod;
             SmoothingLevel = parameter.SmoothingLevel;
             MinimumDatapoints = parameter.MinimumDatapoints;
+            CentroidMs1Tolerance = parameter.CentroidMs1Tolerance;
             ExcludedMassList.Clear();
             foreach (var query in parameter.ExcludedMassList) {
                 ExcludedMassList.Add(new MzSearchQuery

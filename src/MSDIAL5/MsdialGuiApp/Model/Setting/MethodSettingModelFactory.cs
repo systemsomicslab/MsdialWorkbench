@@ -30,7 +30,7 @@ namespace CompMs.App.Msdial.Model.Setting
     internal interface IMethodSettingModelFactory
     {
         IDataCollectionSettingModel CreateDataCollectionSetting();
-        PeakDetectionSettingModel CreatePeakDetectionSetting();
+        IPeakDetectionSettingModel CreatePeakDetectionSetting();
         DeconvolutionSettingModel CreateDeconvolutionSetting();
         IdentifySettingModel CreateIdentifySetting();
         AdductIonSettingModel CreateAdductIonSetting();
@@ -79,7 +79,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public IdentifySettingModel CreateIdentifySetting() => factoryImpl.CreateIdentifySetting();
         public IsotopeTrackSettingModel CreateIsotopeTrackSetting() => factoryImpl.CreateIsotopeTrackSetting();
         public MobilitySettingModel CreateMobilitySetting() => factoryImpl.CreateMobilitySetting();
-        public PeakDetectionSettingModel CreatePeakDetectionSetting() => factoryImpl.CreatePeakDetectionSetting();
+        public IPeakDetectionSettingModel CreatePeakDetectionSetting() => factoryImpl.CreatePeakDetectionSetting();
     }
 
 
@@ -167,7 +167,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return null;
         }
 
-        public PeakDetectionSettingModel CreatePeakDetectionSetting() {
+        public IPeakDetectionSettingModel CreatePeakDetectionSetting() {
             return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
         }
 
@@ -260,7 +260,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return null;
         }
 
-        public PeakDetectionSettingModel CreatePeakDetectionSetting() {
+        public IPeakDetectionSettingModel CreatePeakDetectionSetting() {
             return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
         }
 
@@ -348,7 +348,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new MobilitySettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
-        public PeakDetectionSettingModel CreatePeakDetectionSetting() {
+        public IPeakDetectionSettingModel CreatePeakDetectionSetting() {
             return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
         }
 
@@ -436,7 +436,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new MobilitySettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
-        public PeakDetectionSettingModel CreatePeakDetectionSetting() {
+        public IPeakDetectionSettingModel CreatePeakDetectionSetting() {
             return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
         }
 
@@ -524,7 +524,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new MobilitySettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
-        public PeakDetectionSettingModel CreatePeakDetectionSetting() {
+        public IPeakDetectionSettingModel CreatePeakDetectionSetting() {
             return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
         }
 
@@ -625,8 +625,8 @@ namespace CompMs.App.Msdial.Model.Setting
             return null;
         }
 
-        public PeakDetectionSettingModel CreatePeakDetectionSetting() {
-            return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
+        public IPeakDetectionSettingModel CreatePeakDetectionSetting() {
+            return new GcmsPeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, storage.Parameter.ChromDecBaseParam, process);
         }
 
         public IMethodModel BuildMethod() {

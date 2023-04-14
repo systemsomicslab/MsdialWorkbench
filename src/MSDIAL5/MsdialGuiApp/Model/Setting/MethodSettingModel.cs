@@ -49,7 +49,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public IDataCollectionSettingModel DataCollectionSettingModel { get; }
 
-        public PeakDetectionSettingModel PeakDetectionSettingModel { get; }
+        public IPeakDetectionSettingModel PeakDetectionSettingModel { get; }
 
         public DeconvolutionSettingModel DeconvolutionSettingModel { get; }
 

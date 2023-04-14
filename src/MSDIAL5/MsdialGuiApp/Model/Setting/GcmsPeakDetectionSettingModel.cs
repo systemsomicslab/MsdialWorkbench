@@ -4,7 +4,7 @@ using CompMs.MsdialCore.Parameter;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public sealed class GcmsPeakDetectionSettingModel : BindableBase
+    public sealed class GcmsPeakDetectionSettingModel : BindableBase, IPeakDetectionSettingModel
     {
         private readonly ChromDecBaseParameter _chromDecBaseParameter;
 
@@ -21,27 +21,9 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public AccuracyType AccuracyType {
             get => _accuracyType;
-            set {
-                if (SetProperty(ref _accuracyType, value)) {
-                    OnPropertyChanged(nameof(IsAccurateMS));
-                }
-            }
+            set => SetProperty(ref _accuracyType, value);
         }
         private AccuracyType _accuracyType;
-
-        public bool IsAccurateMS {
-            get {
-                return AccuracyType == AccuracyType.IsAccurate;
-            }
-            set {
-                if (value) {
-                    AccuracyType = AccuracyType.IsAccurate;
-                }
-                else {
-                    AccuracyType = AccuracyType.IsNominal;
-                }
-            }
-        }
 
         public void Commit() {
             if (IsReadOnly) {

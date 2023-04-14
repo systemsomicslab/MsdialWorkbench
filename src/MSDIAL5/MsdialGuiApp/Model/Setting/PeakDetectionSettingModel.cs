@@ -4,8 +4,15 @@ using CompMs.MsdialCore.Parameter;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public sealed class PeakDetectionSettingModel : BindableBase
+    public interface IPeakDetectionSettingModel {
+        bool IsReadOnly { get; }
+        void LoadParameter(PeakPickBaseParameter parameter);
+        void Commit();
+    }
+
+    public sealed class PeakDetectionSettingModel : BindableBase, IPeakDetectionSettingModel
     {
+
         public PeakDetectionSettingModel(PeakPickBaseParameter parameter, ProcessOption process) {
             PeakPickSettingModel = new PeakPickSettingModel(parameter);
             IsReadOnly = (process & ProcessOption.PeakSpotting) == 0;
