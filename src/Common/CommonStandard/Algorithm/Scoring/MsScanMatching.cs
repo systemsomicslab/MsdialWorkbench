@@ -1984,12 +1984,12 @@ namespace CompMs.Common.Algorithm.Scoring {
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                 case LbmClass.SM_d9:
                     return LipidEieioMsmsCharacterization.JudgeIfSphingomyelinD9(msScanProp, ms2tol, refMz,
-                    totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                    totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
                 case LbmClass.CE_d7:
                     return LipidMsmsCharacterization.JudgeIfCholesterylEsterD7(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, adduct);
                 case LbmClass.Cer_NS_d7:
-                    return LipidEieioMsmsCharacterization.JudgeIfCeramidensD7(msScanProp, ms2tol, refMz,
+                    return LipidMsmsCharacterization.JudgeIfCeramidensD7(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
 
                 default:

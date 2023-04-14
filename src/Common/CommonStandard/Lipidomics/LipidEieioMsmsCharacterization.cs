@@ -558,7 +558,6 @@ namespace CompMs.Common.Lipidomics {
                                 new SpectrumPeak() { Mass = diagnosChain1, Intensity = 0.5 },
                                 new SpectrumPeak() { Mass = diagnosChain2, Intensity = 1.0 }
                             };
-
                     var foundCount = 0;
                     var averageIntensity = 0.0;
                     LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
