@@ -33,8 +33,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             {
                 CreateDataCollectionSettingViewModel(model.DataCollectionSettingModel, isEnabled).AddTo(Disposables),
                 CreatePeakDetectionSettingViewModel(model.PeakDetectionSettingModel, isEnabled).AddTo(Disposables),
-                new DeconvolutionSettingViewModel(model.DeconvolutionSettingModel, isEnabled).AddTo(Disposables),
-                new IdentifySettingViewModel(model.IdentifySettingModel, CreateAnnotatorViewModelFactory(Model.Storage), isEnabled).AddTo(Disposables),
+                CreateDeconvolutionSettingViewModel(model.DeconvolutionSettingModel, model.Storage.Parameter.ProjectParam.MachineCategory, isEnabled).AddTo(Disposables),
+                new IdentifySettingViewModel(model.IdentifySettingModel, CreateAnnotatorViewModelFactory(model.Storage), isEnabled).AddTo(Disposables),
                 new AdductIonSettingViewModel(model.AdductIonSettingModel, isEnabled).AddTo(Disposables),
                 new AlignmentParameterSettingViewModel(model.AlignmentParameterSettingModel, isEnabled).AddTo(Disposables),
                 model.MobilitySettingModel is null ? null : new MobilitySettingViewModel(model.MobilitySettingModel, isEnabled).AddTo(Disposables),
@@ -42,9 +42,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             };
             SettingViewModels = new ObservableCollection<ISettingViewModel>(vms.Where(vm => vm != null));
 
-            IsReadOnlyPeakPickParameter = Model.IsReadOnlyPeakPickParameter;
-            IsReadOnlyAnnotationParameter = Model.IsReadOnlyAnnotationParameter;
-            IsReadOnlyAlignmentParameter = Model.IsReadOnlyAlignmentParameter;
+            IsReadOnlyPeakPickParameter = model.IsReadOnlyPeakPickParameter;
+            IsReadOnlyAnnotationParameter = model.IsReadOnlyAnnotationParameter;
+            IsReadOnlyAlignmentParameter = model.IsReadOnlyAlignmentParameter;
 
             ObserveChanges = SettingViewModels.ObserveElementObservableProperty(vm => vm.ObserveChanges).Select(pack => pack.Value);
 
@@ -149,6 +149,15 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                     return new GcmsPeakDetectionSettingViewModel(gdc, isEnabled);
                 default:
                     return null;
+            }
+        }
+
+        private static ISettingViewModel CreateDeconvolutionSettingViewModel(DeconvolutionSettingModel model, MachineCategory category, IObservable<bool> isEnabled) {
+            switch (category) {
+                case MachineCategory.GCMS:
+                    return new GcmsDeconvolutionSettingViewModel(model, isEnabled);
+                default:
+                    return new DeconvolutionSettingViewModel(model, isEnabled);
             }
         }
     }
