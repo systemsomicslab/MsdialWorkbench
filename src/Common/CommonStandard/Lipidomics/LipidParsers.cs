@@ -755,7 +755,8 @@ namespace CompMs.Common.Lipidomics
         private static readonly double Skelton = new[]
         {
             MassDiffDictionary.CarbonMass * 8,
-            MassDiffDictionary.HydrogenMass * (18+5),
+            MassDiffDictionary.HydrogenMass * 13,
+            MassDiffDictionary.Hydrogen2Mass * 5,
             MassDiffDictionary.OxygenMass * 6,
             MassDiffDictionary.NitrogenMass,
             MassDiffDictionary.PhosphorusMass,
@@ -782,7 +783,8 @@ namespace CompMs.Common.Lipidomics
         private static readonly double Skelton = new[]
         {
             MassDiffDictionary.CarbonMass * 5,
-            MassDiffDictionary.HydrogenMass * (12+5),
+            MassDiffDictionary.HydrogenMass * 7,
+            MassDiffDictionary.Hydrogen2Mass * 5,
             MassDiffDictionary.OxygenMass * 6,
             MassDiffDictionary.NitrogenMass,
             MassDiffDictionary.PhosphorusMass,
@@ -809,7 +811,8 @@ namespace CompMs.Common.Lipidomics
         private static readonly double Skelton = new[]
         {
             MassDiffDictionary.CarbonMass * 6,
-            MassDiffDictionary.HydrogenMass * (13+5),
+            MassDiffDictionary.HydrogenMass * 8,
+            MassDiffDictionary.Hydrogen2Mass * 5,
             MassDiffDictionary.OxygenMass * 8,
             MassDiffDictionary.PhosphorusMass,
         }.Sum();
@@ -835,7 +838,8 @@ namespace CompMs.Common.Lipidomics
         private static readonly double Skelton = new[]
         {
             MassDiffDictionary.CarbonMass * 9,
-            MassDiffDictionary.HydrogenMass * (17+5),
+            MassDiffDictionary.HydrogenMass * 12,
+            MassDiffDictionary.Hydrogen2Mass * 5,
             MassDiffDictionary.OxygenMass * 11,
             MassDiffDictionary.PhosphorusMass,
         }.Sum();
@@ -861,7 +865,8 @@ namespace CompMs.Common.Lipidomics
         private static readonly double Skelton = new[]
         {
             MassDiffDictionary.CarbonMass * 6,
-            MassDiffDictionary.HydrogenMass * (12+5),
+            MassDiffDictionary.HydrogenMass * 7,
+            MassDiffDictionary.Hydrogen2Mass * 5,
             MassDiffDictionary.OxygenMass * 8,
             MassDiffDictionary.NitrogenMass,
             MassDiffDictionary.PhosphorusMass,
@@ -888,7 +893,8 @@ namespace CompMs.Common.Lipidomics
         private static readonly double Skelton = new[]
         {
             MassDiffDictionary.CarbonMass * 8,
-            MassDiffDictionary.HydrogenMass * (18+5),
+            MassDiffDictionary.HydrogenMass * 13,
+            MassDiffDictionary.Hydrogen2Mass * 5,
             MassDiffDictionary.OxygenMass * 6,
             MassDiffDictionary.NitrogenMass,
             MassDiffDictionary.PhosphorusMass,
@@ -915,7 +921,8 @@ namespace CompMs.Common.Lipidomics
         private static readonly double Skelton = new[]
         {
             MassDiffDictionary.CarbonMass * 5,
-            MassDiffDictionary.HydrogenMass * (12+5),
+            MassDiffDictionary.HydrogenMass * 7,
+            MassDiffDictionary.Hydrogen2Mass * 5,
             MassDiffDictionary.OxygenMass * 6,
             MassDiffDictionary.NitrogenMass,
             MassDiffDictionary.PhosphorusMass,
@@ -942,7 +949,8 @@ namespace CompMs.Common.Lipidomics
         private static readonly double Skelton = new[]
         {
             MassDiffDictionary.CarbonMass * 6,
-            MassDiffDictionary.HydrogenMass * (13+5),
+            MassDiffDictionary.HydrogenMass * 8,
+            MassDiffDictionary.Hydrogen2Mass * 5,
             MassDiffDictionary.OxygenMass * 8,
             MassDiffDictionary.PhosphorusMass,
         }.Sum();
@@ -968,7 +976,8 @@ namespace CompMs.Common.Lipidomics
         private static readonly double Skelton = new[]
         {
             MassDiffDictionary.CarbonMass * 9,
-            MassDiffDictionary.HydrogenMass * (17+5),
+            MassDiffDictionary.HydrogenMass * 12,
+            MassDiffDictionary.Hydrogen2Mass * 5,
             MassDiffDictionary.OxygenMass * 11,
             MassDiffDictionary.PhosphorusMass,
         }.Sum();
@@ -994,7 +1003,8 @@ namespace CompMs.Common.Lipidomics
         private static readonly double Skelton = new[]
         {
             MassDiffDictionary.CarbonMass * 6,
-            MassDiffDictionary.HydrogenMass * (12+5),
+            MassDiffDictionary.HydrogenMass * 7,
+            MassDiffDictionary.Hydrogen2Mass * 5,
             MassDiffDictionary.OxygenMass * 8,
             MassDiffDictionary.NitrogenMass,
             MassDiffDictionary.PhosphorusMass,
@@ -1021,7 +1031,7 @@ namespace CompMs.Common.Lipidomics
         private static readonly double Skelton = new[]
         {
             MassDiffDictionary.CarbonMass * 3,
-            MassDiffDictionary.HydrogenMass * (5+5),
+            MassDiffDictionary.Hydrogen2Mass * 5,
             MassDiffDictionary.OxygenMass * 3,
         }.Sum();
 
@@ -1046,7 +1056,8 @@ namespace CompMs.Common.Lipidomics
         private static readonly double Skelton = new[]
         {
             MassDiffDictionary.CarbonMass * 3,
-            MassDiffDictionary.HydrogenMass * (6+5),
+            MassDiffDictionary.HydrogenMass,
+            MassDiffDictionary.Hydrogen2Mass * 5,
             MassDiffDictionary.OxygenMass * 3,
         }.Sum();
 
@@ -1071,7 +1082,8 @@ namespace CompMs.Common.Lipidomics
         private static readonly double Skelton = new[]
         {
             MassDiffDictionary.CarbonMass * 5,
-            MassDiffDictionary.HydrogenMass * (12+9),
+            MassDiffDictionary.HydrogenMass * 3,
+            MassDiffDictionary.Hydrogen2Mass * 9,
             MassDiffDictionary.OxygenMass * 3,
             MassDiffDictionary.NitrogenMass * 1,
             MassDiffDictionary.PhosphorusMass,
@@ -1123,7 +1135,8 @@ namespace CompMs.Common.Lipidomics
         private static readonly double Skelton = new[]
         {
             MassDiffDictionary.CarbonMass * 27,
-            MassDiffDictionary.HydrogenMass * (45+7),
+            MassDiffDictionary.HydrogenMass * 38,
+            MassDiffDictionary.Hydrogen2Mass * 7,
             MassDiffDictionary.OxygenMass * 1,
         }.Sum();
 
