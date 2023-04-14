@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Enum;
+using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialGcMsApi.Parameter;
@@ -10,25 +11,25 @@ namespace CompMs.App.Msdial.Model.Setting
 {
     public sealed class GcmsIdentificationSettingModel : BindableBase
     {
+        private readonly MsdialGcmsParameter _parameter;
+
         public GcmsIdentificationSettingModel(MsdialGcmsParameter parameter, ProcessOption process) {
+            SearchParameter = parameter.RefSpecMatchBaseParam.MspSearchParam is null
+                ?  new MsRefSearchParameterBase()
+                : new MsRefSearchParameterBase(parameter.RefSpecMatchBaseParam.MspSearchParam);
             IsReadOnly = (process & ProcessOption.Identification) == 0;
             RetentionType = parameter.RetentionType;
             RetentionIndexFiles = new ObservableCollection<RiDictionaryInfo>(parameter.RefSpecMatchBaseParam.FileIdRiInfoDictionary.Values);
             CompoundType = parameter.RiCompoundType;
             MspFilePath = parameter.ReferenceFileParam.MspFilePath;
-            RetentionIndexTolerance = parameter.RefSpecMatchBaseParam.MspSearchParam.RiTolerance;
-            RetentionTimeTolerance = parameter.RefSpecMatchBaseParam.MspSearchParam.RtTolerance;
-            MzTolerance = parameter.RefSpecMatchBaseParam.MspSearchParam.Ms1Tolerance;
-            EISimilarityCutoff = parameter.RefSpecMatchBaseParam.MspSearchParam.WeightedDotProductCutOff;
-            IdentificationScoreCutoff = parameter.RefSpecMatchBaseParam.MspSearchParam.TotalScoreCutoff;
-            UseRetentionInformationForScoring = parameter.RefSpecMatchBaseParam.MspSearchParam.IsUseTimeForAnnotationScoring;
-            UseRetentionInformationForFiltering = parameter.RefSpecMatchBaseParam.MspSearchParam.IsUseTimeForAnnotationFiltering;
             UseQuantmassDefinedInLibrary = parameter.IsReplaceQuantmassByUserDefinedValue;
-            ReportOnlyTopHit = parameter.RefSpecMatchBaseParam.OnlyReportTopHitInMspSearch;
+            OnlyReportTopHit = parameter.RefSpecMatchBaseParam.OnlyReportTopHitInMspSearch;
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
         }
 
         public bool IsReadOnly { get; }
+
+        public MsRefSearchParameterBase SearchParameter { get; }
 
         public RetentionType RetentionType {
             get => _retentionType;
@@ -50,60 +51,17 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private string _mspFilePath;
 
-        public float RetentionIndexTolerance {
-            get => _retentionIndexTolerance;
-            set => SetProperty(ref _retentionIndexTolerance, value);
-        }
-        private float _retentionIndexTolerance;
-
-        public float RetentionTimeTolerance {
-            get => _retentionTimeTolerance;
-            set => SetProperty(ref _retentionTimeTolerance, value);
-        }
-        private float _retentionTimeTolerance;
-
-        public float MzTolerance {
-            get => _mzTolerance;
-            set => SetProperty(ref _mzTolerance, value);
-        }
-        private float _mzTolerance;
-
-        public float EISimilarityCutoff {
-            get => _eISimilarityCutoff;
-            set => SetProperty(ref _eISimilarityCutoff, value);
-        }
-        private float _eISimilarityCutoff;
-
-        public float IdentificationScoreCutoff {
-            get => _identificationScoreCutoff;
-            set => SetProperty(ref _identificationScoreCutoff, value);
-        }
-        private float _identificationScoreCutoff;
-
-        public bool UseRetentionInformationForScoring {
-            get => _useRetentionInformationForScoring;
-            set => SetProperty(ref _useRetentionInformationForScoring, value);
-        }
-        private bool _useRetentionInformationForScoring;
-
-        public bool UseRetentionInformationForFiltering {
-            get => _useRetentionInformationForFiltering;
-            set => SetProperty(ref _useRetentionInformationForFiltering, value);
-        }
-        private bool _useRetentionInformationForFiltering;
-
         public bool UseQuantmassDefinedInLibrary {
             get => _useQuantmassDefinedInLibrary;
             set => SetProperty(ref _useQuantmassDefinedInLibrary, value);
         }
         private bool _useQuantmassDefinedInLibrary;
 
-        public bool ReportOnlyTopHit {
-            get => _reportOnlyTopHit;
-            set => SetProperty(ref _reportOnlyTopHit, value);
+        public bool OnlyReportTopHit {
+            get => _onlyReportTopHit;
+            set => SetProperty(ref _onlyReportTopHit, value);
         }
-        private bool _reportOnlyTopHit;
-        private readonly MsdialGcmsParameter _parameter;
+        private bool _onlyReportTopHit;
 
         public bool TryCommit() {
             if (IsReadOnly) {
@@ -113,15 +71,9 @@ namespace CompMs.App.Msdial.Model.Setting
             _parameter.RetentionType = RetentionType;
             _parameter.RiCompoundType = CompoundType;
             _parameter.ReferenceFileParam.MspFilePath = MspFilePath;
-            _parameter.RefSpecMatchBaseParam.MspSearchParam.RiTolerance = RetentionIndexTolerance;
-            _parameter.RefSpecMatchBaseParam.MspSearchParam.RtTolerance = RetentionTimeTolerance;
-            _parameter.RefSpecMatchBaseParam.MspSearchParam.Ms1Tolerance = MzTolerance;
-            _parameter.RefSpecMatchBaseParam.MspSearchParam.WeightedDotProductCutOff = EISimilarityCutoff;
-            _parameter.RefSpecMatchBaseParam.MspSearchParam.TotalScoreCutoff = IdentificationScoreCutoff;
-            _parameter.RefSpecMatchBaseParam.MspSearchParam.IsUseTimeForAnnotationScoring = UseRetentionInformationForScoring;
-            _parameter.RefSpecMatchBaseParam.MspSearchParam.IsUseTimeForAnnotationFiltering = UseRetentionInformationForFiltering;
+            _parameter.RefSpecMatchBaseParam.MspSearchParam = SearchParameter;
             _parameter.IsReplaceQuantmassByUserDefinedValue = UseQuantmassDefinedInLibrary;
-            _parameter.RefSpecMatchBaseParam.OnlyReportTopHitInMspSearch = ReportOnlyTopHit;
+            _parameter.RefSpecMatchBaseParam.OnlyReportTopHitInMspSearch = OnlyReportTopHit;
             return true;
         }
 
@@ -137,15 +89,15 @@ namespace CompMs.App.Msdial.Model.Setting
             }
             CompoundType = parameter.RiCompoundType;
             MspFilePath = parameter.ReferenceFileParam.MspFilePath;
-            RetentionIndexTolerance = parameter.RefSpecMatchBaseParam.MspSearchParam.RiTolerance;
-            RetentionTimeTolerance = parameter.RefSpecMatchBaseParam.MspSearchParam.RtTolerance;
-            MzTolerance = parameter.RefSpecMatchBaseParam.MspSearchParam.Ms1Tolerance;
-            EISimilarityCutoff = parameter.RefSpecMatchBaseParam.MspSearchParam.WeightedDotProductCutOff;
-            IdentificationScoreCutoff = parameter.RefSpecMatchBaseParam.MspSearchParam.TotalScoreCutoff;
-            UseRetentionInformationForScoring = parameter.RefSpecMatchBaseParam.MspSearchParam.IsUseTimeForAnnotationScoring;
-            UseRetentionInformationForFiltering = parameter.RefSpecMatchBaseParam.MspSearchParam.IsUseTimeForAnnotationFiltering;
+            SearchParameter.RiTolerance = parameter.RefSpecMatchBaseParam.MspSearchParam.RiTolerance;
+            SearchParameter.RtTolerance = parameter.RefSpecMatchBaseParam.MspSearchParam.RtTolerance;
+            SearchParameter.Ms1Tolerance = parameter.RefSpecMatchBaseParam.MspSearchParam.Ms1Tolerance;
+            SearchParameter.WeightedDotProductCutOff = parameter.RefSpecMatchBaseParam.MspSearchParam.WeightedDotProductCutOff;
+            SearchParameter.TotalScoreCutoff = parameter.RefSpecMatchBaseParam.MspSearchParam.TotalScoreCutoff;
+            SearchParameter.IsUseTimeForAnnotationScoring = parameter.RefSpecMatchBaseParam.MspSearchParam.IsUseTimeForAnnotationScoring;
+            SearchParameter.IsUseTimeForAnnotationFiltering = parameter.RefSpecMatchBaseParam.MspSearchParam.IsUseTimeForAnnotationFiltering;
             UseQuantmassDefinedInLibrary = parameter.IsReplaceQuantmassByUserDefinedValue;
-            ReportOnlyTopHit = parameter.RefSpecMatchBaseParam.OnlyReportTopHitInMspSearch;
+            OnlyReportTopHit = parameter.RefSpecMatchBaseParam.OnlyReportTopHitInMspSearch;
         }
     }
 }

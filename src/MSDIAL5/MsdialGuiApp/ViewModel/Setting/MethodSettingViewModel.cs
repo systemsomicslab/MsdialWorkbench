@@ -113,7 +113,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             return SettingViewModels.OfType<AlignmentParameterSettingViewModel>().FirstOrDefault();
         }
 
-        // TODO: delete method
         private static IAnnotatorSettingViewModelFactory CreateAnnotatorViewModelFactory(IMsdialDataStorage<ParameterBase> storage) {
             switch (storage) {
                 case IMsdialDataStorage<MsdialLcImMsParameter> _:
