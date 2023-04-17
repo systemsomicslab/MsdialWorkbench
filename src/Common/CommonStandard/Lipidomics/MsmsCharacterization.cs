@@ -12377,7 +12377,7 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
 
                             var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20230417
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
