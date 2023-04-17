@@ -471,7 +471,8 @@
 		</Chains>
 		<Skelton>
 			<Carbon>8</Carbon>
-			<Hydrogen>(18+5)</Hydrogen>
+			<Hydrogen>(18-5)</Hydrogen>
+			<Hydrogen2>5</Hydrogen2>
 			<Oxygen>6</Oxygen>
 			<Nitrogen/>
 			<Phosphorus/>
@@ -488,7 +489,8 @@
 		</Chains>
 		<Skelton>
 			<Carbon>5</Carbon>
-			<Hydrogen>(12+5)</Hydrogen>
+			<Hydrogen>(12-5)</Hydrogen>
+			<Hydrogen2>5</Hydrogen2>
 			<Oxygen>6</Oxygen>
 			<Nitrogen/>
 			<Phosphorus/>
@@ -505,7 +507,8 @@
 		</Chains>
 		<Skelton>
 			<Carbon>6</Carbon>
-			<Hydrogen>(13+5)</Hydrogen>
+			<Hydrogen>(13-5)</Hydrogen>
+			<Hydrogen2>5</Hydrogen2>
 			<Oxygen>8</Oxygen>
 			<Phosphorus/>
 		</Skelton>
@@ -521,7 +524,8 @@
 		</Chains>
 		<Skelton>
 			<Carbon>9</Carbon>
-			<Hydrogen>(17+5)</Hydrogen>
+			<Hydrogen>(17-5)</Hydrogen>
+			<Hydrogen2>5</Hydrogen2>
 			<Oxygen>11</Oxygen>
 			<Phosphorus/>
 		</Skelton>
@@ -537,7 +541,8 @@
 		</Chains>
 		<Skelton>
 			<Carbon>6</Carbon>
-			<Hydrogen>(12+5)</Hydrogen>
+			<Hydrogen>(12-5)</Hydrogen>
+			<Hydrogen2>5</Hydrogen2>
 			<Oxygen>8</Oxygen>
 			<Nitrogen/>
 			<Phosphorus/>
@@ -555,7 +560,8 @@
 		</Chains>
 		<Skelton>
 			<Carbon>8</Carbon>
-			<Hydrogen>(18+5)</Hydrogen>
+			<Hydrogen>(18-5)</Hydrogen>
+			<Hydrogen2>5</Hydrogen2>
 			<Oxygen>6</Oxygen>
 			<Nitrogen/>
 			<Phosphorus/>
@@ -573,7 +579,8 @@
 		</Chains>
 		<Skelton>
 			<Carbon>5</Carbon>
-			<Hydrogen>(12+5)</Hydrogen>
+			<Hydrogen>(12-5)</Hydrogen>
+			<Hydrogen2>5</Hydrogen2>
 			<Oxygen>6</Oxygen>
 			<Nitrogen/>
 			<Phosphorus/>
@@ -591,7 +598,8 @@
 		</Chains>
 		<Skelton>
 			<Carbon>6</Carbon>
-			<Hydrogen>(13+5)</Hydrogen>
+			<Hydrogen>(13-5)</Hydrogen>
+			<Hydrogen2>5</Hydrogen2>
 			<Oxygen>8</Oxygen>
 			<Phosphorus/>
 		</Skelton>
@@ -608,7 +616,8 @@
 		</Chains>
 		<Skelton>
 			<Carbon>9</Carbon>
-			<Hydrogen>(17+5)</Hydrogen>
+			<Hydrogen>(17-5)</Hydrogen>
+			<Hydrogen2>5</Hydrogen2>
 			<Oxygen>11</Oxygen>
 			<Phosphorus/>
 		</Skelton>
@@ -625,7 +634,8 @@
 		</Chains>
 		<Skelton>
 			<Carbon>6</Carbon>
-			<Hydrogen>(12+5)</Hydrogen>
+			<Hydrogen>(12-5)</Hydrogen>
+			<Hydrogen2>5</Hydrogen2>
 			<Oxygen>8</Oxygen>
 			<Nitrogen/>
 			<Phosphorus/>
@@ -642,7 +652,8 @@
 		</Chains>
 		<Skelton>
 			<Carbon>3</Carbon>
-			<Hydrogen>(5+5)</Hydrogen>
+			<Hydrogen>(5-5)</Hydrogen>
+			<Hydrogen2>5</Hydrogen2>
 			<Oxygen>3</Oxygen>
 		</Skelton>
 		<LbmClasses>
@@ -657,7 +668,8 @@
 		</Chains>
 		<Skelton>
 			<Carbon>3</Carbon>
-			<Hydrogen>(6+5)</Hydrogen>
+			<Hydrogen>(6-5)</Hydrogen>
+			<Hydrogen2>5</Hydrogen2>
 			<Oxygen>3</Oxygen>
 		</Skelton>
 		<LbmClasses>
@@ -673,7 +685,8 @@
 		</Chains>
 		<Skelton>
 			<Carbon>5</Carbon>
-			<Hydrogen>(12+9)</Hydrogen>
+			<Hydrogen>(12-9)</Hydrogen>
+			<Hydrogen2>9</Hydrogen2>
 			<Oxygen>3</Oxygen>
 			<Nitrogen>1</Nitrogen>
 			<Phosphorus/>
@@ -707,7 +720,8 @@
 		</Chains>
 		<Skelton>
 			<Carbon>27</Carbon>
-			<Hydrogen>(45+7)</Hydrogen>
+			<Hydrogen>(45-7)</Hydrogen>
+			<Hydrogen2>7</Hydrogen2>
 			<Oxygen>1</Oxygen>
 		</Skelton>
 		<LbmClasses>

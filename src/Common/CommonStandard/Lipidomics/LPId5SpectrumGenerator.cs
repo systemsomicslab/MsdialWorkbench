@@ -29,31 +29,31 @@ namespace CompMs.Common.Lipidomics
 
         private static readonly double C3H4D5O6P = new[] { // 172.013675 OCC(O)COP(O)(O)=O
             MassDiffDictionary.CarbonMass * 3,
-            MassDiffDictionary.HydrogenMass * 9,
+            MassDiffDictionary.HydrogenMass * 4,
             MassDiffDictionary.OxygenMass * 6,
             MassDiffDictionary.PhosphorusMass,
-            MassDiffDictionary.HydrogenMass * 5,
+            MassDiffDictionary.Hydrogen2Mass * 5,
         }.Sum();
 
         private static readonly double Gly_C = new[] {
             MassDiffDictionary.CarbonMass * 9,
-            MassDiffDictionary.HydrogenMass * 17,
+            MassDiffDictionary.HydrogenMass * 12,
             MassDiffDictionary.OxygenMass * 9,
             MassDiffDictionary.PhosphorusMass,
-            MassDiffDictionary.HydrogenMass * 5,
+            MassDiffDictionary.Hydrogen2Mass * 5,
         }.Sum();
 
         private static readonly double Gly_O = new[] {
             MassDiffDictionary.CarbonMass * 8,
-            MassDiffDictionary.HydrogenMass * 15,
+            MassDiffDictionary.HydrogenMass * 12,
             MassDiffDictionary.OxygenMass * 10,
             MassDiffDictionary.PhosphorusMass,
-            MassDiffDictionary.HydrogenMass * 3,
+            MassDiffDictionary.Hydrogen2Mass * 3,
        }.Sum();
 
         private static readonly double CD2 = new[]
         {
-            MassDiffDictionary.HydrogenMass * 4,
+            MassDiffDictionary.Hydrogen2Mass * 2,
             MassDiffDictionary.CarbonMass,
         }.Sum();
 
@@ -209,7 +209,7 @@ namespace CompMs.Common.Lipidomics
 
             return new[]
             {
-                new SpectrumPeak(adduct.ConvertToMz(lipidMass - chainMass - MassDiffDictionary.OxygenMass - CD2), 100d, "-CH2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
+                new SpectrumPeak(adduct.ConvertToMz(lipidMass - chainMass - MassDiffDictionary.OxygenMass - CD2), 100d, "-CD2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
             };
         }
 

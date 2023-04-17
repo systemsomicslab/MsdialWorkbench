@@ -37,25 +37,25 @@ namespace CompMs.Common.Lipidomics
 
         private static readonly double Gly_C = new[] {
             MassDiffDictionary.CarbonMass * 6,
-            MassDiffDictionary.HydrogenMass * 12,
+            MassDiffDictionary.HydrogenMass * 7,
             MassDiffDictionary.NitrogenMass,
             MassDiffDictionary.OxygenMass * 6,
             MassDiffDictionary.PhosphorusMass,
-            MassDiffDictionary.HydrogenMass * 5,
+            MassDiffDictionary.Hydrogen2Mass * 5,
         }.Sum();
 
         private static readonly double Gly_O = new[] {
             MassDiffDictionary.CarbonMass * 5,
-            MassDiffDictionary.HydrogenMass * 10,
+            MassDiffDictionary.HydrogenMass * 7,
             MassDiffDictionary.NitrogenMass,
             MassDiffDictionary.OxygenMass * 7,
             MassDiffDictionary.PhosphorusMass,
-            MassDiffDictionary.HydrogenMass * 3,
+            MassDiffDictionary.Hydrogen2Mass * 3,
         }.Sum();
 
         private static readonly double CD2 = new[]
         {
-            MassDiffDictionary.HydrogenMass * 4,
+            MassDiffDictionary.Hydrogen2Mass * 2,
             MassDiffDictionary.CarbonMass,
         }.Sum();
 
@@ -182,12 +182,10 @@ namespace CompMs.Common.Lipidomics
             var chainMass = acylChain.Mass - MassDiffDictionary.HydrogenMass;
             return new[]
             {
-                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chainMass - MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass - CD2), 100d, "-CH2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
-                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chainMass - C3H8NO6P - MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass - CD2), 100d, "-Header -CH2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
+                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chainMass - MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass - CD2), 100d, "-CD2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
+                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chainMass - C3H8NO6P - MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass - CD2), 100d, "-Header -CD2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
             };
         }
-
-
         private static readonly IEqualityComparer<SpectrumPeak> comparer = new SpectrumEqualityComparer();
     }
 }

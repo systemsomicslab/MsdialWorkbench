@@ -13,17 +13,16 @@ namespace CompMs.Common.Lipidomics
     {
         private static readonly double C5H5D9NO4P = new[] {
             MassDiffDictionary.CarbonMass * 5,
-            MassDiffDictionary.HydrogenMass * 14,
+            MassDiffDictionary.HydrogenMass * 5,
             MassDiffDictionary.NitrogenMass,
             MassDiffDictionary.OxygenMass * 4,
             MassDiffDictionary.PhosphorusMass,
-            MassDiffDictionary.HydrogenMass * 9,
+            MassDiffDictionary.Hydrogen2Mass * 9,
         }.Sum();
         private static readonly double C3D9N = new[] {
             MassDiffDictionary.CarbonMass * 3,
-            MassDiffDictionary.HydrogenMass * 9,
+            MassDiffDictionary.Hydrogen2Mass * 9,
             MassDiffDictionary.NitrogenMass,
-            MassDiffDictionary.HydrogenMass * 9,
         }.Sum();
         private static readonly double H2O = new[]
         {
