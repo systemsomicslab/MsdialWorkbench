@@ -1306,7 +1306,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return LipidMsmsCharacterization.JudgeIfCholesterylEster(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, adduct);
                 case LbmClass.CAR:
-                    return LipidMsmsCharacterization.JudgeIfAcylcarnitine(msScanProp, ms2tol, refMz,
+                    return LipidEieioMsmsCharacterization.JudgeIfAcylcarnitine(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, adduct);
 
                 case LbmClass.DG:
@@ -1370,7 +1370,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
 
                 case LbmClass.EtherPE:
-                    return LipidMsmsCharacterization.JudgeIfEtherpe(msScanProp, ms2tol, refMz,
+                    return LipidEieioMsmsCharacterization.JudgeIfEtherpe(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
 
                 case LbmClass.EtherLPC:
