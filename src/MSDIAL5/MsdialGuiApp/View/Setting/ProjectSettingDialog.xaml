@@ -53,7 +53,13 @@
                 <DataTemplate DataType="{x:Type vm:DataCollectionSettingViewModel}">
                     <Label Content="Data collection" IsEnabled="{Binding IsEnabled.Value}"/>
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:GcmsDataCollectionSettingViewModel}">
+                    <Label Content="Data collection" IsEnabled="{Binding IsEnabled.Value}"/>
+                </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:PeakDetectionSettingViewModel}">
+                    <Label Content="Peak detection" IsEnabled="{Binding IsEnabled.Value}"/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:GcmsPeakDetectionSettingViewModel}">
                     <Label Content="Peak detection" IsEnabled="{Binding IsEnabled.Value}"/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:DeconvolutionSettingViewModel}">
@@ -62,10 +68,16 @@
                 <DataTemplate DataType="{x:Type vm:IdentifySettingViewModel}">
                     <Label Content="Identification" IsEnabled="{Binding IsEnabled.Value}"/>
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:GcmsIdentificationSettingViewModel}">
+                    <Label Content="Identification" IsEnabled="{Binding IsEnabled.Value}"/>
+                </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:AdductIonSettingViewModel}">
                     <Label Content="Adduct ion" IsEnabled="{Binding IsEnabled.Value}"/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:AlignmentParameterSettingViewModel}">
+                    <Label Content="Alignment parameters" IsEnabled="{Binding IsEnabled.Value}"/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:GcmsAlignmentParameterSettingViewModel}">
                     <Label Content="Alignment parameters" IsEnabled="{Binding IsEnabled.Value}"/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:MobilitySettingViewModel}">
@@ -130,9 +142,20 @@
                             <local:DataCollectionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
                         </ScrollViewer>
                     </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:GcmsDataCollectionSettingViewModel}">
+                        <ScrollViewer IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                            <local:GcmsDataCollectionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                        </ScrollViewer>
+                    </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:PeakDetectionSettingViewModel}">
                         <ScrollViewer IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
                             <local:PeakDetectionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                        </ScrollViewer>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:GcmsPeakDetectionSettingViewModel}">
+                        <ScrollViewer IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                            <!--<local:GcmsPeakDetectionSettingView IsEnabled="{Binding IsEnabled.Value}"/>-->
+                            <Label Content="Gcms peak detection"/>
                         </ScrollViewer>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:DeconvolutionSettingViewModel}">
@@ -145,6 +168,12 @@
                             <local:IdentifySettingView IsEnabled="{Binding IsEnabled.Value}"/>
                         </ContentControl>
                     </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:GcmsIdentificationSettingViewModel}">
+                        <ContentControl IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                            <!--<local:GcmsIdentificationSettingView IsEnabled="{Binding IsEnabled.Value}"/>-->
+                            <Label Content="Gcms identification"/>
+                        </ContentControl>
+                    </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:AdductIonSettingViewModel}">
                         <ContentControl IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
                             <local:AdductIonSettingView IsEnabled="{Binding IsEnabled.Value}"/>
@@ -153,6 +182,12 @@
                     <DataTemplate DataType="{x:Type vm:AlignmentParameterSettingViewModel}">
                         <ScrollViewer>
                             <local:AlignmentParameterSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                        </ScrollViewer>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:GcmsAlignmentParameterSettingViewModel}">
+                        <ScrollViewer>
+                            <!--<local:AlignmentParameterSettingView IsEnabled="{Binding IsEnabled.Value}"/>-->
+                            <Label Content="Gcms alignment"/>
                         </ScrollViewer>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:MobilitySettingViewModel}">
