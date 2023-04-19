@@ -14,6 +14,7 @@ using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -34,7 +35,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 CreateDataCollectionSettingViewModel(model.DataCollectionSettingModel, isEnabled).AddTo(Disposables),
                 CreatePeakDetectionSettingViewModel(model.PeakDetectionSettingModel, isEnabled).AddTo(Disposables),
                 CreateDeconvolutionSettingViewModel(model.DeconvolutionSettingModel, model.Storage.Parameter.ProjectParam.MachineCategory, isEnabled).AddTo(Disposables),
-                new IdentifySettingViewModel(model.IdentifySettingModel, CreateAnnotatorViewModelFactory(model.Storage), isEnabled).AddTo(Disposables),
+                CreateIdentificationSettingModel(model.IdentifySettingModel, model.Storage, MessageBroker.Default, isEnabled).AddTo(Disposables),
                 new AdductIonSettingViewModel(model.AdductIonSettingModel, isEnabled).AddTo(Disposables),
                 new AlignmentParameterSettingViewModel(model.AlignmentParameterSettingModel, isEnabled).AddTo(Disposables),
                 model.MobilitySettingModel is null ? null : new MobilitySettingViewModel(model.MobilitySettingModel, isEnabled).AddTo(Disposables),
@@ -157,6 +158,17 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                     return new GcmsDeconvolutionSettingViewModel(model, isEnabled);
                 default:
                     return new DeconvolutionSettingViewModel(model, isEnabled);
+            }
+        }
+
+        private static ISettingViewModel CreateIdentificationSettingModel(IIdentificationSettingModel model, IMsdialDataStorage<ParameterBase> storage, IMessageBroker broker, IObservable<bool> isEnabled) {
+            switch (model) {
+                case GcmsIdentificationSettingModel gism:
+                    return new GcmsIdentificationSettingViewModel(gism, broker, isEnabled);
+                case IdentifySettingModel ism:
+                    return new IdentifySettingViewModel(ism, CreateAnnotatorViewModelFactory(storage), isEnabled);
+                default:
+                    return null;
             }
         }
     }

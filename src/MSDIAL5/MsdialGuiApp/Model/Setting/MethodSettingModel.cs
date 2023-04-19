@@ -53,7 +53,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public DeconvolutionSettingModel DeconvolutionSettingModel { get; }
 
-        public IdentifySettingModel IdentifySettingModel { get; }
+        public IIdentificationSettingModel IdentifySettingModel { get; }
 
         public AdductIonSettingModel AdductIonSettingModel { get; }
 

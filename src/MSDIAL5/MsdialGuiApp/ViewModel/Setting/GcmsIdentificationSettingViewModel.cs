@@ -11,14 +11,51 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.IO;
+using System.ComponentModel.DataAnnotations;
+using Accord.Math;
+using CompMs.App.Msdial.Model.Service;
+using Reactive.Bindings.Notifiers;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
+    public sealed class RiDictionaryViewModel : ViewModelBase {
+        private readonly RiDictionaryModel _model;
+        private readonly IMessageBroker _broker;
+        private readonly Subject<string> _fileSelect;
+
+        public RiDictionaryViewModel(RiDictionaryModel model, IMessageBroker broker) {
+            _model = model;
+            _broker = broker;
+            _fileSelect = new Subject<string>().AddTo(Disposables);
+            SelectDictionaryCommand = new ReactiveCommand().WithSubscribe(SelectFile).AddTo(Disposables);
+            DictionaryPath = model.ToReactivePropertyAsSynchronized(
+                m => m.DictionaryPath,
+                op => op.Merge(_fileSelect),
+                op => op,
+                ignoreValidationErrorValue: true
+            ).AddTo(Disposables);
+        }
+
+        public string FilePath => _model.File;
+        public string FileName => Path.GetFileName(_model.File);
+        [Required(ErrorMessage = "Dictionary file is required")]
+        [PathExists(ErrorMessage = "Dictionary file does not exist.", IsFile = true)]
+        public ReactiveProperty<string> DictionaryPath { get; }
+
+        public ReactiveCommand SelectDictionaryCommand { get; }
+
+        private void SelectFile() {
+            var request = new OpenFileRequest(_fileSelect.OnNext);
+            _broker.Publish(request);
+        }
+    }
+    
     public sealed class GcmsIdentificationSettingViewModel : ViewModelBase, ISettingViewModel
     {
-        private Subject<Unit> _decide;
+        private readonly Subject<Unit> _decide;
 
-        public GcmsIdentificationSettingViewModel(GcmsIdentificationSettingModel model, IObservable<bool> isEnabled) {
+        public GcmsIdentificationSettingViewModel(GcmsIdentificationSettingModel model, IMessageBroker broker, IObservable<bool> isEnabled) {
             UseRI = model.ToReactivePropertySlimAsSynchronized(
                 m => m.RetentionType,
                 op => op.Select(p => p == RetentionType.RI),
@@ -30,7 +67,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 op => op.Where(p => p).ToConstant(RetentionType.RT)
             ).AddTo(Disposables);
 
-            IsIndexImported = Observable.Return(false).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            RetentionIndexFiles = model.RetentionIndexFiles.ToReadOnlyReactiveCollection(m => new RiDictionaryViewModel(m, broker)).AddTo(Disposables);
+            IsIndexImported = RetentionIndexFiles.Select(ri => ri.ObserveErrorInfo(vm => vm.DictionaryPath).ToUnit().StartWith(Unit.Default).Select(_ => ri.ContainsError(nameof(RiDictionaryViewModel.DictionaryPath))))
+                .CombineLatestValuesAreAllFalse()
+                .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             UseAlkanes = model.ToReactivePropertySlimAsSynchronized(
                 m => m.CompoundType,
                 op => op.Select(p => p == RiCompoundType.Alkanes),
@@ -94,6 +134,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReactivePropertySlim<bool> UseRI { get; }
         public ReactivePropertySlim<bool> UseRT { get; }
+        public ReadOnlyReactiveCollection<RiDictionaryViewModel> RetentionIndexFiles { get; }
         public ReadOnlyReactivePropertySlim<bool> IsIndexImported { get; }
         public ReactivePropertySlim<bool> UseAlkanes { get; }
         public ReactivePropertySlim<bool> UseFAMEs { get; }

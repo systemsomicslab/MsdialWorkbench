@@ -63,6 +63,14 @@ namespace CompMs.App.Msdial.Model.DataObj
         public ReadOnlyReactivePropertySlim<bool> ContainsQualityCheck { get; }
         public ReadOnlyReactivePropertySlim<bool> AreFirstAndLastQualityCheck { get; }
 
+        public AnalysisFileBeanModel FindById(int fileId) {
+            var file = AnalysisFiles.FirstOrDefault(f => f.AnalysisFileId == fileId);
+            if (file is null) {
+                throw new KeyNotFoundException($"Id {fileId} does not exist in current analysis files.");
+            }
+            return file;
+        }
+
         private static bool AreAnalyticalOrdersUnique(IEnumerable<AnalysisFileBeanModel> files) {
             return files.GroupBy(file_ => file_.AnalysisBatch).All(files_ => files_.Select(f => f.AnalysisFileAnalyticalOrder).Distinct().Count() == files_.Count());
         }
