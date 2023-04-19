@@ -6,6 +6,7 @@ using CompMs.Common.Enum;
 using CompMs.Common.Parameter;
 using CompMs.Common.Parser;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.Chart;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -15,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
@@ -33,23 +35,104 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private string _dictionaryPath = string.Empty;
 
-        public bool IsValid() {
-            throw new NotImplementedException();
+        public List<RiDictionaryError> Validate(RiCompoundType compoundType) {
+            var dictionary = RiDictionaryInfo.FromDictionaryFile(DictionaryPath);
+            var result = new List<RiDictionaryError>();
+            if (dictionary.IsIncorrectFormat) {
+                result.Add(RiDictionaryError.Incorrect(DictionaryPath));
+            }
+            if (compoundType == RiCompoundType.Fames && !dictionary.IsFamesContents) {
+                result.Add(RiDictionaryError.IsFamesContents(DictionaryPath));
+            }
+            if (!dictionary.IsSequentialCarbonRtOrdering) {
+                result.Add(RiDictionaryError.IsSequencialOrder(DictionaryPath));
+            }
+            return result;
         }
 
         public void Commit() {
-            _dictionaryInfo.DictionaryFilePath = DictionaryPath;
+            var dictionary = RiDictionaryInfo.FromDictionaryFile(DictionaryPath);
+            _dictionaryInfo.DictionaryFilePath = dictionary.DictionaryFilePath;
+            _dictionaryInfo.RiDictionary = dictionary.RiDictionary;
+        }
+
+        public class RiDictionaryError {
+            private readonly string[] _files;
+            private readonly string _message;
+
+            private RiDictionaryError(string file, string message) {
+                _files = new[] { file };
+                _message = message;
+            }
+
+            private RiDictionaryError(string[] files, string message) {
+                _files = files;
+                _message = message;
+            }
+
+            public void PrintError(Action<string> handler) {
+                handler?.Invoke(string.Join("\r\n", _files) + "\r\n\r\n" + _message);
+            }
+
+            public static List<RiDictionaryError> MergeErrors(List<RiDictionaryError> errors) {
+                return errors.GroupBy(e => e._message).Select(group => new RiDictionaryError(group.SelectMany(e => e._files).ToArray(), group.Key)).ToList();
+            }
+
+            public static RiDictionaryError Incorrect(string file) {
+                const string message = "Invalid RI information. Please confirm your file and prepare the following information.\r\n"
+                    + "Carbon number\tRT(min)\r\n"
+                    + "10\t4.72\r\n"
+                    + "11\t5.63\r\n"
+                    + "12\t6.81\r\n"
+                    + "13\t8.08\r\n"
+                    + "14\t9.12\r\n"
+                    + "15\t10.33\r\n"
+                    + "16\t11.91\r\n"
+                    + "18\t14.01\r\n"
+                    + "20\t16.15\r\n"
+                    + "22\t18.28\r\n"
+                    + "24\t20.33\r\n"
+                    + "26\t22.17\r\n"
+                    + "\r\nThis information should be required for RI calculation.";
+                return new RiDictionaryError(file, message);
+            }
+
+            public static RiDictionaryError IsFamesContents(string file) {
+                const string message = "If you use the FAMEs RI, you have to decide the retention times as minute for \r\n"
+                    + "C8, C9, C10, C12, C14, C16, C18, C20, C22, C24, C26, C28, C30.";
+                return new RiDictionaryError(file, message);
+            }
+
+            public static RiDictionaryError IsSequencialOrder(string file) {
+                const string message = "Invalid carbon-rt sequence: incorrect ordering of retention times.\r\n"
+                    + "Carbon number\tRT(min)\r\n"
+                    + "10\t4.72\r\n"
+                    + "11\t5.63\r\n"
+                    + "12\t6.81\r\n"
+                    + "13\t8.08\r\n"
+                    + "14\t9.12\r\n"
+                    + "15\t10.33\r\n"
+                    + "16\t11.91\r\n"
+                    + "18\t14.01\r\n"
+                    + "20\t16.15\r\n"
+                    + "22\t18.28\r\n"
+                    + "24\t20.33\r\n"
+                    + "26\t22.17\r\n"
+                    + "\r\nThis information should be required for RI calculation.";
+                return new RiDictionaryError(file, message);
+            }
         }
     }
 
     public sealed class RiDictionarySettingModel : BindableBase {
         private readonly IMessageBroker _broker;
 
-        public RiDictionarySettingModel(AnalysisFileBeanModelCollection files, Dictionary<int, RiDictionaryInfo> fileIdToRiInfo, IMessageBroker broker) {
+        public RiDictionarySettingModel(AnalysisFileBeanModelCollection files, Dictionary<int, RiDictionaryInfo> fileIdToRiInfo, RiCompoundType compountType, IMessageBroker broker) {
             var dictionaries = fileIdToRiInfo.Select(kvp => new RiDictionaryModel(files.FindById(kvp.Key).AnalysisFilePath, kvp.Value));
             RetentionIndexFiles = new ObservableCollection<RiDictionaryModel>(dictionaries);
+            CompoundType = compountType;
             _broker = broker;
-            IsImported = RetentionIndexFiles.All(file => file.IsValid());
+            IsImported = false;
         }
 
         public ObservableCollection<RiDictionaryModel> RetentionIndexFiles { get; }
@@ -59,6 +142,12 @@ namespace CompMs.App.Msdial.Model.Setting
             set => SetProperty(ref _selectedRetentionIndexFile, value);
         }
         private RiDictionaryModel _selectedRetentionIndexFile;
+
+        public RiCompoundType CompoundType {
+            get => _compoundType;
+            set => SetProperty(ref _compoundType, value);
+        }
+        private RiCompoundType _compoundType;
 
         public bool IsImported {
             get => _isImported;
@@ -76,40 +165,31 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public bool TrySet() {
-            if (RetentionIndexFiles.All(file => file.IsValid())) {
+            var errors = RetentionIndexFiles.SelectMany(file => file.Validate(CompoundType)).ToList();
+            errors = RiDictionaryModel.RiDictionaryError.MergeErrors(errors);
+            if (errors.Any()) {
+                foreach (var error in errors) {
+                    error.PrintError(message => {
+                        var request = new ErrorMessageBoxRequest
+                        {
+                            Content = message,
+                        };
+                        _broker?.Publish(request);
+                    });
+                }
+                return false;
+            }
+            else {
                 IsImported = true;
                 return true;
             }
-            else {
-                var request = new ErrorMessageBoxRequest
-                {
-                    Content = string.Join("\n",
-                        "Invalid RI information. Please confirm your file and prepare the following information.",
-                        "Carbon number\tRT(min)",
-                        "10\t4.72",
-                        "11\t5.63",
-                        "12\t6.81",
-                        "13\t8.08",
-                        "14\t9.12",
-                        "15\t10.33",
-                        "16\t11.91",
-                        "18\t14.01",
-                        "20\t16.15",
-                        "22\t18.28",
-                        "24\t20.33",
-                        "26\t22.17",
-                        "",
-                        "This information should be required for RI calculation."),
-                };
-                _broker?.Publish(request);
-                return false;
-            }
         }
 
-        public bool TryCommit() {
+        public bool TryCommit(MsdialGcmsParameter parameter) {
             foreach (var file in RetentionIndexFiles) {
                 file.Commit();
             }
+            parameter.RiCompoundType = CompoundType;
             return true;
         }
     }
@@ -124,9 +204,8 @@ namespace CompMs.App.Msdial.Model.Setting
                 : new MsRefSearchParameterBase(parameter.RefSpecMatchBaseParam.MspSearchParam);
             IsReadOnly = (process & ProcessOption.Identification) == 0;
             RetentionType = parameter.RetentionType;
-            RiDictionarySettingModel = new RiDictionarySettingModel(files, parameter.RefSpecMatchBaseParam.FileIdRiInfoDictionary, broker);
+            RiDictionarySettingModel = new RiDictionarySettingModel(files, parameter.RefSpecMatchBaseParam.FileIdRiInfoDictionary, parameter.RiCompoundType, broker);
             RetentionIndexFiles = RiDictionarySettingModel.RetentionIndexFiles;
-            CompoundType = parameter.RiCompoundType;
             MspFilePath = parameter.ReferenceFileParam.MspFilePath;
             UseQuantmassDefinedInLibrary = parameter.IsReplaceQuantmassByUserDefinedValue;
             OnlyReportTopHit = parameter.RefSpecMatchBaseParam.OnlyReportTopHitInMspSearch;
@@ -145,12 +224,6 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public ObservableCollection<RiDictionaryModel> RetentionIndexFiles { get; }
         public RiDictionarySettingModel RiDictionarySettingModel { get; }
-
-        public RiCompoundType CompoundType {
-            get => _compoundType;
-            set => SetProperty(ref _compoundType, value);
-        }
-        private RiCompoundType _compoundType;
 
         public string MspFilePath {
             get => _mspFilePath;
@@ -189,11 +262,10 @@ namespace CompMs.App.Msdial.Model.Setting
                 return false;
             }
 
-            if (!RiDictionarySettingModel.TryCommit()) {
+            if (!RiDictionarySettingModel.TryCommit(_parameter)) {
                 return false;
             }
             _parameter.RetentionType = RetentionType;
-            _parameter.RiCompoundType = CompoundType;
             _parameter.ReferenceFileParam.MspFilePath = MspFilePath;
             _parameter.RefSpecMatchBaseParam.MspSearchParam = SearchParameter;
             _parameter.IsReplaceQuantmassByUserDefinedValue = UseQuantmassDefinedInLibrary;
@@ -206,7 +278,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 return;
             }
             RetentionType = parameter.RetentionType;
-            CompoundType = parameter.RiCompoundType;
+            RiDictionarySettingModel.CompoundType = parameter.RiCompoundType;
             MspFilePath = parameter.ReferenceFileParam.MspFilePath;
             SearchParameter.RiTolerance = parameter.RefSpecMatchBaseParam.MspSearchParam.RiTolerance;
             SearchParameter.RtTolerance = parameter.RefSpecMatchBaseParam.MspSearchParam.RtTolerance;

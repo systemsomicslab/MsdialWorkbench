@@ -310,6 +310,7 @@ namespace CompMs.App.Msdial.View.Core
                     ApplyCommand = viewmodel.ApplyCommand,
                     FinishCommand = viewmodel.ApplyCommand,
                 };
+                dialog.ShowDialog();
             });
         }
 

@@ -5,15 +5,34 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:common="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
              mc:Ignorable="d" 
+             d:Background="White"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance Type={x:Type vm:RiDictionarySettingViewModel}}">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <ui:LabeledContent PrependLabel="Index type:" Grid.Row="0">
+            <StackPanel Orientation="Horizontal" Margin="0">
+                <StackPanel.Resources>
+                    <Style TargetType="RadioButton">
+                        <Setter Property="Margin" Value="8,0"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                    </Style>
+                </StackPanel.Resources>
+                <RadioButton Content="Alkanes" IsChecked="{Binding UseAlkanes.Value}" d:IsChecked="True"/>
+                <RadioButton Content="FAMEs" IsChecked="{Binding UseFAMEs.Value}"/>
+            </StackPanel>
+        </ui:LabeledContent>
         <DataGrid ItemsSource="{Binding Path=RetentionIndexFiles}"
                   SelectedItem="{Binding Path=SelectedRetentionIndexFile.Value}"
                   ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" 
                   VerticalAlignment="Stretch" AutoGenerateColumns="False" SelectionMode="Extended" SelectionUnit="CellOrRowHeader" CanUserAddRows="False" 
-                  CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" ClipboardCopyMode="IncludeHeader">
+                  CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" ClipboardCopyMode="IncludeHeader"
+                  Grid.Row="1">
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="HorizontalContentAlignment" Value="Center"/>

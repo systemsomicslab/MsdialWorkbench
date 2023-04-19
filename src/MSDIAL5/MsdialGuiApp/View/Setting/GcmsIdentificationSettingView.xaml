@@ -67,12 +67,6 @@
                             </TextBlock>
                         </StackPanel>
                     </ui:LabeledContent>
-                    <ui:LabeledContent PrependLabel="Index type:">
-                        <StackPanel Orientation="Horizontal" Margin="0">
-                            <RadioButton Content="Alkanes" IsChecked="{Binding UseAlkanes.Value}" d:IsChecked="True"/>
-                            <RadioButton Content="FAMEs" IsChecked="{Binding UseFAMEs.Value}"/>
-                        </StackPanel>
-                    </ui:LabeledContent>
                 </StackPanel>
             </GroupBox>
 
@@ -110,19 +104,19 @@
                     </ui:LabeledContent>
                     <ui:LabeledContent PrependLabel="Use retention information for scoring:"
                                        ToolTip="If unchecked, RT similarity is not used in total score.">
-                        <CheckBox IsChecked="{Binding SearchParameter.IsUseTimeForAnnotationScoring.Value}" IsEnabled="{Binding IsReadOnly, Mode=OneTime}"/>
+                        <CheckBox IsChecked="{Binding SearchParameter.IsUseTimeForAnnotationScoring.Value}"/>
                     </ui:LabeledContent>
                     <ui:LabeledContent PrependLabel="Use retention information for filtering:"
                                        ToolTip="If checked, RT is used for filtering candidates out.">
-                        <CheckBox IsChecked="{Binding SearchParameter.IsUseTimeForAnnotationFiltering.Value}" IsEnabled="{Binding IsReadOnly, Mode=OneTime}"/>
+                        <CheckBox IsChecked="{Binding SearchParameter.IsUseTimeForAnnotationFiltering.Value}"/>
                     </ui:LabeledContent>
                     <ui:LabeledContent PrependLabel="Use quant masses defined in MSP format file:"
                                        ToolTip="If checked, the quant mass of identified metabolites was calculated by the information of 'QUANTMASS: ' field in MSP.">
-                        <CheckBox IsChecked="{Binding UseQuantMassesDefinedInMsp.Value}" IsEnabled="{Binding IsReadOnly, Mode=OneTime}"/>
+                        <CheckBox IsChecked="{Binding UseQuantMassesDefinedInMsp.Value}"/>
                     </ui:LabeledContent>
                     <ui:LabeledContent PrependLabel="Only report the top hit:"
                                        ToolTip="One result having the top score will be reported as a result of the post identification process.">
-                        <CheckBox IsChecked="{Binding OnlyReportTopHit.Value}" IsEnabled="{Binding IsReadOnly, Mode=OneTime}"/>
+                        <CheckBox IsChecked="{Binding OnlyReportTopHit.Value}"/>
                     </ui:LabeledContent>
                 </StackPanel>
             </GroupBox>

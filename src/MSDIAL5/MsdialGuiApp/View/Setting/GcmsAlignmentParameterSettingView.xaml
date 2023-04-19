@@ -66,7 +66,8 @@
                     </StackPanel>
                 </ui:LabeledContent>
 
-                <ui:LabeledContent PrependLabel="Retention index tolerance:">
+                <ui:LabeledContent PrependLabel="Retention index tolerance:"
+                                   IsEnabled="{Binding UseRI.Value}">
                     <TextBox Text="{Binding RiEqualityParameterSetting.Tolerance.Value}"
                              IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"
                              ToolTip="In Kovats, 10-20 is better. In Fiehn 2000-3000 is better."
@@ -76,7 +77,8 @@
                              HorizontalContentAlignment="Right"/>
                 </ui:LabeledContent>
                 <ui:LabeledContent PrependLabel="Retention time tolerance:"
-                                   AppendLabel="min">
+                                   AppendLabel="min"
+                                   IsEnabled="{Binding UseRT.Value}">
                     <TextBox Text="{Binding RtEqualityParameterSetting.Tolerance.Value}"
                              IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"
                              ToolTip="At least for DB5 column, 0.05-0.1 is better."
@@ -232,7 +234,8 @@
                 </StackPanel.Resources>
 
                 <ui:LabeledContent PrependLabel="Retention time factor:"
-                                   AppendLabel="(0-1)">
+                                   AppendLabel="(0-1)"
+                                   Visibility="{Binding UseRT.Value, Converter={StaticResource BooleanToVisibility}}">
                     <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
                              Text="{Binding RtEqualityParameterSetting.Factor.Value}"
                              d:Text="0.5"
@@ -244,7 +247,8 @@
                 </ui:LabeledContent>
 
                 <ui:LabeledContent PrependLabel="Retention index factor:"
-                                   AppendLabel="(0-1)">
+                                   AppendLabel="(0-1)"
+                                   Visibility="{Binding UseRI.Value, Converter={StaticResource BooleanToVisibility}}">
                     <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
                              Text="{Binding RiEqualityParameterSetting.Factor.Value}"
                              d:Text="0.5"
