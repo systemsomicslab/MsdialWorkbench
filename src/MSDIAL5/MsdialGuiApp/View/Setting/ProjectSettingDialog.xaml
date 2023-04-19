@@ -154,8 +154,7 @@
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:GcmsPeakDetectionSettingViewModel}">
                         <ScrollViewer IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
-                            <!--<local:GcmsPeakDetectionSettingView IsEnabled="{Binding IsEnabled.Value}"/>-->
-                            <Label Content="Gcms peak detection"/>
+                            <local:GcmsPeakDetectionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
                         </ScrollViewer>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:DeconvolutionSettingViewModel}">
