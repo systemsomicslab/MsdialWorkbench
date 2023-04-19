@@ -23,37 +23,54 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             _model = model ?? throw new ArgumentNullException(nameof(model));
             IsReadOnly = model.IsReadOnly;
 
-            AlignmentResultFileName = _model.ToReactivePropertyAsSynchronized(m => m.AlignmentResultFileName, ignoreValidationErrorValue: true)
+            AlignmentResultFileName = model.ToReactivePropertyAsSynchronized(m => m.AlignmentResultFileName, ignoreValidationErrorValue: true)
                 .SetValidateAttribute(() => AlignmentResultFileName)
                 .AddTo(Disposables);
-            ReferenceFile = _model.ToReactivePropertyAsSynchronized(m => m.ReferenceFile, ignoreValidationErrorValue: true)
+            ReferenceFile = model.ToReactivePropertyAsSynchronized(m => m.ReferenceFile, ignoreValidationErrorValue: true)
                 .SetValidateAttribute(() => ReferenceFile)
                 .AddTo(Disposables);
             RtEqualityParameterSetting = PeakEqualityParameterSettingViewModelFactory.Create(model.RtEqualityParameter).AddTo(Disposables);
             RiEqualityParameterSetting = PeakEqualityParameterSettingViewModelFactory.Create(model.RiEqualityParameter).AddTo(Disposables);
             EiEqualityParameterSetting = PeakEqualityParameterSettingViewModelFactory.Create(model.EiEqualityParameter).AddTo(Disposables);
-            PeakCountFilter = _model.ToReactivePropertyAsSynchronized(
+            PeakCountFilter = model.ToReactivePropertyAsSynchronized(
                 m => m.PeakCountFilter,
                 m => (m * 100).ToString(),
                 vm => float.Parse(vm) / 100,
                 ignoreValidationErrorValue: true)
                 .SetValidateAttribute(() => PeakCountFilter)
                 .AddTo(Disposables);
-            IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = _model.ToReactivePropertySlimAsSynchronized(m => m.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange).AddTo(Disposables);
-            BlankFiltering = _model.ToReactivePropertySlimAsSynchronized(m => m.BlankFiltering).AddTo(Disposables);
-            FoldChangeForBlankFiltering = _model.ToReactivePropertyAsSynchronized(
+            NPercentDetectedInOneGroup = model.ToReactivePropertyAsSynchronized(
+                m => m.NPercentDetectedInOneGroup,
+                m => (m * 100).ToString(),
+                vm => float.Parse(vm) / 100,
+                ignoreValidationErrorValue: true)
+                .SetValidateAttribute(() => NPercentDetectedInOneGroup)
+                .AddTo(Disposables);
+            IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = model.ToReactivePropertySlimAsSynchronized(m => m.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange).AddTo(Disposables);
+            BlankFiltering = model.ToReactivePropertySlimAsSynchronized(m => m.BlankFiltering).AddTo(Disposables);
+            FoldChangeForBlankFiltering = model.ToReactivePropertyAsSynchronized(
                 m => m.FoldChangeForBlankFiltering,
                 m => m.ToString(),
                 vm => float.Parse(vm),
                 ignoreValidationErrorValue: true)
                 .SetValidateAttribute(() => FoldChangeForBlankFiltering)
                 .AddTo(Disposables);
-            IsKeepRefMatchedMetaboliteFeatures = _model.ToReactivePropertySlimAsSynchronized(m => m.IsKeepRefMatchedMetaboliteFeatures).AddTo(Disposables);
-            IsKeepRemovableFeaturesAndAssignedTagForChecking = _model.ToReactivePropertySlimAsSynchronized(m => m.IsKeepRemovableFeaturesAndAssignedTagForChecking).AddTo(Disposables);
-            IsForceInsertForGapFilling = _model.ToReactivePropertySlimAsSynchronized(m => m.IsForceInsertForGapFilling).AddTo(Disposables);
-            ShouldRunAlignment = _model.ToReactivePropertySlimAsSynchronized(m => m.ShouldRunAlignment).AddTo(Disposables);
+            IsKeepRefMatchedMetaboliteFeatures = model.ToReactivePropertySlimAsSynchronized(m => m.IsKeepRefMatchedMetaboliteFeatures).AddTo(Disposables);
+            IsKeepRemovableFeaturesAndAssignedTagForChecking = model.ToReactivePropertySlimAsSynchronized(m => m.IsKeepRemovableFeaturesAndAssignedTagForChecking).AddTo(Disposables);
+            IsForceInsertForGapFilling = model.ToReactivePropertySlimAsSynchronized(m => m.IsForceInsertForGapFilling).AddTo(Disposables);
+            ShouldRunAlignment = model.ToReactivePropertySlimAsSynchronized(m => m.ShouldRunAlignment).AddTo(Disposables);
 
             IndexType = model.ToReactivePropertySlimAsSynchronized(m => m.IndexType).AddTo(Disposables);
+            UseRI = model.ToReactivePropertySlimAsSynchronized(
+                m => m.IndexType,
+                op => op.Select(p => p == AlignmentIndexType.RI),
+                op => op.Where(p => p).ToConstant(AlignmentIndexType.RI)
+            ).AddTo(Disposables);
+            UseRT = model.ToReactivePropertySlimAsSynchronized(
+                m => m.IndexType,
+                op => op.Select(p => p == AlignmentIndexType.RT),
+                op => op.Where(p => p).ToConstant(AlignmentIndexType.RT)
+            ).AddTo(Disposables);
             IsIdentificationOnlyPerformedForAlignmentFile = model.ToReactivePropertySlimAsSynchronized(m => m.IsIdentificationOnlyPerformedForAlignmentFile).AddTo(Disposables);
             IsRepresentativeQuantMassBasedOnBasePeakMz = model.ToReactivePropertySlimAsSynchronized(m => m.IsRepresentativeQuantMassBasedOnBasePeakMz).AddTo(Disposables);
 
@@ -110,6 +127,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReactiveProperty<AnalysisFileBeanModel> ReferenceFile { get; }
 
         public ReactivePropertySlim<AlignmentIndexType> IndexType { get; }
+        public ReactivePropertySlim<bool> UseRI { get; }
+        public ReactivePropertySlim<bool> UseRT { get; }
 
         public PeakEqualityParameterSettingViewModel RtEqualityParameterSetting { get; }
         public PeakEqualityParameterSettingViewModel RiEqualityParameterSetting { get; }
@@ -120,6 +139,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         [Range(0, 100, ErrorMessage = "Filter value should be positive value.")]
         public ReactiveProperty<string> PeakCountFilter { get; }
 
+        [Required(ErrorMessage = "N% detected threshold required.")]
+        [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid format.")]
+        [Range(0, 100, ErrorMessage = "Threshold should be positive value.")]
+        public ReactiveProperty<string> NPercentDetectedInOneGroup { get; }
         public ReactivePropertySlim<bool> IsRemoveFeatureBasedOnBlankPeakHeightFoldChange { get; }
 
         public ReactivePropertySlim<BlankFiltering> BlankFiltering { get; }

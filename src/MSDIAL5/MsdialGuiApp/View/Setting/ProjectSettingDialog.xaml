@@ -184,8 +184,7 @@
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:GcmsAlignmentParameterSettingViewModel}">
                         <ScrollViewer>
-                            <!--<local:AlignmentParameterSettingView IsEnabled="{Binding IsEnabled.Value}"/>-->
-                            <Label Content="Gcms alignment"/>
+                            <local:GcmsAlignmentParameterSettingView IsEnabled="{Binding IsEnabled.Value}"/>
                         </ScrollViewer>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:MobilitySettingViewModel}">

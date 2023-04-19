@@ -37,6 +37,7 @@ namespace CompMs.App.Msdial.Model.Setting
             RiEqualityParameter = new RetentionIndexEqualityParameterSetting(parameter);
             EiEqualityParameter = new Ms1EqualityParameterSetting(parameter.AlignmentBaseParam);
             PeakCountFilter = parameter.PostProcessBaseParam.PeakCountFilter;
+            NPercentDetectedInOneGroup = parameter.PostProcessBaseParam.NPercentDetectedInOneGroup;
             BlankFiltering = parameter.PostProcessBaseParam.BlankFiltering;
             IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = parameter.PostProcessBaseParam.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange;
             FoldChangeForBlankFiltering = parameter.PostProcessBaseParam.FoldChangeForBlankFiltering;
@@ -118,6 +119,12 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private float _peakCountFilter;
 
+        public float NPercentDetectedInOneGroup {
+            get => _nPercentDetectedInOneGroup;
+            set => SetProperty(ref _nPercentDetectedInOneGroup, value);
+        }
+        private float _nPercentDetectedInOneGroup;
+
         public bool IsRemoveFeatureBasedOnBlankPeakHeightFoldChange {
             get => _isRemoveFeatureBasedOnBlankPeakHeightFoldChange;
             set => SetProperty(ref _isRemoveFeatureBasedOnBlankPeakHeightFoldChange, value);
@@ -189,6 +196,7 @@ namespace CompMs.App.Msdial.Model.Setting
             _parameter.AlignmentBaseParam.AlignmentReferenceFileID = ReferenceFile.AnalysisFileId;
             var postProcessParameter = _parameter.PostProcessBaseParam;
             postProcessParameter.PeakCountFilter = PeakCountFilter;
+            postProcessParameter.NPercentDetectedInOneGroup = NPercentDetectedInOneGroup;
             postProcessParameter.BlankFiltering = BlankFiltering;
             postProcessParameter.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = IsRemoveFeatureBasedOnBlankPeakHeightFoldChange;
             postProcessParameter.FoldChangeForBlankFiltering = FoldChangeForBlankFiltering;
@@ -215,6 +223,7 @@ namespace CompMs.App.Msdial.Model.Setting
             EiEqualityParameter.Update(parameter);
 
             PeakCountFilter = parameter.PostProcessBaseParam.PeakCountFilter;
+            NPercentDetectedInOneGroup = parameter.PostProcessBaseParam.NPercentDetectedInOneGroup;
             BlankFiltering = parameter.PostProcessBaseParam.BlankFiltering;
             IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = parameter.PostProcessBaseParam.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange;
             FoldChangeForBlankFiltering = parameter.PostProcessBaseParam.FoldChangeForBlankFiltering;
