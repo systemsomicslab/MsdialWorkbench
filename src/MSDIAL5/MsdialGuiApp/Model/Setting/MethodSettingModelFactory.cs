@@ -32,7 +32,7 @@ namespace CompMs.App.Msdial.Model.Setting
         IDataCollectionSettingModel CreateDataCollectionSetting();
         IPeakDetectionSettingModel CreatePeakDetectionSetting();
         DeconvolutionSettingModel CreateDeconvolutionSetting();
-        IdentifySettingModel CreateIdentifySetting();
+        IIdentificationSettingModel CreateIdentifySetting();
         AdductIonSettingModel CreateAdductIonSetting();
         AlignmentParameterSettingModel CreateAlignmentParameterSetting();
         MobilitySettingModel CreateMobilitySetting();
@@ -76,7 +76,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public AlignmentParameterSettingModel CreateAlignmentParameterSetting() => factoryImpl.CreateAlignmentParameterSetting();
         public IDataCollectionSettingModel CreateDataCollectionSetting() => factoryImpl.CreateDataCollectionSetting();
         public DeconvolutionSettingModel CreateDeconvolutionSetting() => factoryImpl.CreateDeconvolutionSetting();
-        public IdentifySettingModel CreateIdentifySetting() => factoryImpl.CreateIdentifySetting();
+        public IIdentificationSettingModel CreateIdentifySetting() => factoryImpl.CreateIdentifySetting();
         public IsotopeTrackSettingModel CreateIsotopeTrackSetting() => factoryImpl.CreateIsotopeTrackSetting();
         public MobilitySettingModel CreateMobilitySetting() => factoryImpl.CreateMobilitySetting();
         public IPeakDetectionSettingModel CreatePeakDetectionSetting() => factoryImpl.CreatePeakDetectionSetting();
@@ -117,7 +117,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new DeconvolutionSettingModel(storage.Parameter.ChromDecBaseParam, process);
         }
 
-        public IdentifySettingModel CreateIdentifySetting() {
+        public IIdentificationSettingModel CreateIdentifySetting() {
             var parameter = storage.Parameter;
             var model = new IdentifySettingModel(parameter, new DimsAnnotatorSettingModelFactory(parameter), process, _messageBroker, storage.DataBases);
 
@@ -214,7 +214,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new DeconvolutionSettingModel(storage.Parameter.ChromDecBaseParam, process);
         }
 
-        public IdentifySettingModel CreateIdentifySetting() {
+        public IIdentificationSettingModel CreateIdentifySetting() {
             var parameter = storage.Parameter;
             var model = new IdentifySettingModel(storage.Parameter, new LcmsAnnotatorSettingFactory(parameter), process, _broker, storage.DataBases);
 
@@ -303,7 +303,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new DeconvolutionSettingModel(storage.Parameter.ChromDecBaseParam, process);
         }
 
-        public IdentifySettingModel CreateIdentifySetting() {
+        public IIdentificationSettingModel CreateIdentifySetting() {
             var parameter = storage.Parameter;
             var model = new IdentifySettingModel(storage.Parameter, new ImmsAnnotatorSettingModelFactory(parameter), process, _broker, storage.DataBases);
 
@@ -391,7 +391,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new DeconvolutionSettingModel(storage.Parameter.ChromDecBaseParam, process);
         }
 
-        public IdentifySettingModel CreateIdentifySetting() {
+        public IIdentificationSettingModel CreateIdentifySetting() {
             var parameter = storage.Parameter;
             var model = new IdentifySettingModel(storage.Parameter, new LcimmsAnnotatorSettingFactory(parameter), process, _broker, storage.DataBases);
 
@@ -479,7 +479,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new DeconvolutionSettingModel(storage.Parameter.ChromDecBaseParam, process);
         }
 
-        public IdentifySettingModel CreateIdentifySetting() {
+        public IIdentificationSettingModel CreateIdentifySetting() {
             var parameter = storage.Parameter;
             var model = new IdentifySettingModel(storage.Parameter, new ImmsAnnotatorSettingModelFactory(parameter), process, _broker, storage.DataBases);
 
@@ -578,43 +578,8 @@ namespace CompMs.App.Msdial.Model.Setting
             return new DeconvolutionSettingModel(storage.Parameter.ChromDecBaseParam, process);
         }
 
-        public IdentifySettingModel CreateIdentifySetting() {
-            var parameter = storage.Parameter;
-            // TODO: use lcms settings temporary.
-            var model = new IdentifySettingModel(storage.Parameter, new LcmsAnnotatorSettingFactory(parameter), process, _broker, storage.DataBases);
-
-            if (parameter.TargetOmics == TargetOmics.Lipidomics) {
-                if (model.DataBaseModels.Count == 0) {
-                    if (parameter.CollistionType == CollisionType.EIEIO
-                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EieioLipid)) {
-                        var databaseModel = model.AddDataBase();
-                        databaseModel.DBSource = DataBaseSource.EieioLipid;
-                    }
-
-                    if (parameter.CollistionType == CollisionType.OAD
-                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.OadLipid)) {
-                        var databaseModel = model.AddDataBase();
-                        databaseModel.DBSource = DataBaseSource.OadLipid;
-                    }
-
-                    if (parameter.CollistionType == CollisionType.EID
-                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EidLipid)) {
-                        var databaseModel = model.AddDataBase();
-                        databaseModel.DBSource = DataBaseSource.EidLipid;
-                    }
-
-                    string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                    var lbmFiles = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
-                    var lbmFile = lbmFiles.FirstOrDefault();
-                    if (!(lbmFile is null)
-                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.Msp)) {
-                        var databaseModel = model.AddDataBase();
-                        databaseModel.DataBasePath = lbmFile;
-                    }
-                }
-            }
-            
-            return model;
+        public IIdentificationSettingModel CreateIdentifySetting() {
+            return new GcmsIdentificationSettingModel(storage.Parameter, _analysisFileBeanModelCollection, process);
         }
 
         public IsotopeTrackSettingModel CreateIsotopeTrackSetting() {
