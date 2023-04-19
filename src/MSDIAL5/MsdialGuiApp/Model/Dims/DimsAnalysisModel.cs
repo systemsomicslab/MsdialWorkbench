@@ -165,7 +165,8 @@ namespace CompMs.App.Msdial.Model.Dims
                 Observable.Return(lowerSpecBrush),
                 Observable.Return(spectraExporter),
                 Observable.Return(spectraExporter),
-                Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
+                Observable.Return((ISpectraExporter)null),
+                MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers)).AddTo(Disposables);
 
             // Ms2 chromatogram
             Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawLoader, provider, parameter, analysisFileModel.AcquisitionType).AddTo(Disposables);
@@ -217,7 +218,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public FocusNavigatorModel FocusNavigatorModel { get; }
 
         public ICompoundSearchModel BuildCompoundSearchModel() {
-            return new CompoundSearchModel(AnalysisFileModel, Target.Value, MsdecResult.Value, _compoundSearchers.Items, _undoManager);
+            return new CompoundSearchModel(AnalysisFileModel, Target.Value, MsdecResult.Value, _compoundSearchers, _undoManager);
         }
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));

@@ -204,6 +204,7 @@ namespace CompMs.App.Msdial.Model.Setting
             projectParameter.Comment = Comment;
 
             parameter.ProteomicsParam.CollisionType = CollisionType;
+            if (projectParameter.TargetOmics == TargetOmics.Proteomics) parameter.ProteomicsParam.IsDoAndromedaMs2Deconvolution = true;
 
             var storage = CreateDataStorage(parameter);
             storage.AnalysisFiles = fileSettingModel.IncludedFileModels.Select(f => f.File).ToList();

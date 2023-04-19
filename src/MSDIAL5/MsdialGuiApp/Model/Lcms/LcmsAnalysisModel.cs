@@ -37,6 +37,8 @@ namespace CompMs.App.Msdial.Model.Lcms
 {
     internal sealed class LcmsAnalysisModel : AnalysisModelBase {
         private readonly IDataProvider _provider;
+        private readonly CompoundSearcherCollection _compoundSearchers;
+
 
         public LcmsAnalysisModel(
             AnalysisFileBeanModel analysisFileModel,
@@ -66,7 +68,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             _provider = provider;
             DataBaseMapper = mapper;
             Parameter = parameter;
-            CompoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper).Items;
+            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper);
             _undoManager = new UndoManager().AddTo(Disposables);
 
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
@@ -190,7 +192,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Observable.Return(lowerSpecBrush),
                 Observable.Return(spectraExporter),
                 Observable.Return(spectraExporter),
-                Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
+                Observable.Return((ISpectraExporter)null),
+                MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers)).AddTo(Disposables);
             
 
             // Raw vs Purified spectrum model
@@ -285,8 +288,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         public DataBaseMapper DataBaseMapper { get; }
         public ParameterBase Parameter { get; }
 
-        public IReadOnlyList<CompoundSearcher> CompoundSearchers { get; }
-
         public EicLoader EicLoader { get; }
 
         public AnalysisPeakPlotModel PlotModel { get; }
@@ -314,7 +315,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 return null;
             }
 
-            return new LcmsCompoundSearchModel(AnalysisFileModel, Target.Value, MsdecResult.Value, CompoundSearchers, _undoManager);
+            return new LcmsCompoundSearchModel(AnalysisFileModel, Target.Value, MsdecResult.Value, _compoundSearchers.Items, _undoManager);
         }
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
