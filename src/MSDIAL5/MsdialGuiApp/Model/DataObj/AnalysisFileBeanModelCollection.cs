@@ -1,13 +1,13 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.Common.Enum;
+using CompMs.Common.Extension;
+using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Helpers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Reactive.Linq;
 using System.Linq;
-using CompMs.Common.Enum;
-using CompMs.Common.Extension;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
@@ -62,6 +62,8 @@ namespace CompMs.App.Msdial.Model.DataObj
         public ReadOnlyReactivePropertySlim<bool> IsAnalyticalOrderUnique { get; }
         public ReadOnlyReactivePropertySlim<bool> ContainsQualityCheck { get; }
         public ReadOnlyReactivePropertySlim<bool> AreFirstAndLastQualityCheck { get; }
+
+        public int Count => AnalysisFiles.Count;
 
         public AnalysisFileBeanModel FindById(int fileId) {
             var file = AnalysisFiles.FirstOrDefault(f => f.AnalysisFileId == fileId);

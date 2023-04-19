@@ -174,8 +174,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         private static ISettingViewModel CreateAlignmentParameterSettingViewModel(IAlignmentParameterSettingModel model, IObservable<bool> isEnabled) {
             switch (model) {
-                //case GcmsAlignmentParameterSettingModel gasm:
-                //return GcmsAlignmentParameterSettingViewModel(gasm, )
+                case GcmsAlignmentParameterSettingModel gasm:
+                    return new GcmsAlignmentParameterSettingViewModel(gasm, isEnabled);
                 case AlignmentParameterSettingModel apsm:
                     return new AlignmentParameterSettingViewModel(apsm, isEnabled);
                 default:

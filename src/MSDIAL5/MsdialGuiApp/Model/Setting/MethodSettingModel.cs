@@ -57,7 +57,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public AdductIonSettingModel AdductIonSettingModel { get; }
 
-        public AlignmentParameterSettingModel AlignmentParameterSettingModel { get; }
+        public IAlignmentParameterSettingModel AlignmentParameterSettingModel { get; }
 
         public MobilitySettingModel MobilitySettingModel { get; }
 

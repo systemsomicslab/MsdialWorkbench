@@ -34,7 +34,7 @@ namespace CompMs.App.Msdial.Model.Setting
         DeconvolutionSettingModel CreateDeconvolutionSetting();
         IIdentificationSettingModel CreateIdentifySetting();
         AdductIonSettingModel CreateAdductIonSetting();
-        AlignmentParameterSettingModel CreateAlignmentParameterSetting();
+        IAlignmentParameterSettingModel CreateAlignmentParameterSetting();
         MobilitySettingModel CreateMobilitySetting();
         IsotopeTrackSettingModel CreateIsotopeTrackSetting();
         IMethodModel BuildMethod();
@@ -73,7 +73,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public IMethodModel BuildMethod() => factoryImpl.BuildMethod();
         public AdductIonSettingModel CreateAdductIonSetting() => factoryImpl.CreateAdductIonSetting();
-        public AlignmentParameterSettingModel CreateAlignmentParameterSetting() => factoryImpl.CreateAlignmentParameterSetting();
+        public IAlignmentParameterSettingModel CreateAlignmentParameterSetting() => factoryImpl.CreateAlignmentParameterSetting();
         public IDataCollectionSettingModel CreateDataCollectionSetting() => factoryImpl.CreateDataCollectionSetting();
         public DeconvolutionSettingModel CreateDeconvolutionSetting() => factoryImpl.CreateDeconvolutionSetting();
         public IIdentificationSettingModel CreateIdentifySetting() => factoryImpl.CreateIdentifySetting();
@@ -105,7 +105,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new AdductIonSettingModel(storage.Parameter, process);
         }
 
-        public AlignmentParameterSettingModel CreateAlignmentParameterSetting() {
+        public IAlignmentParameterSettingModel CreateAlignmentParameterSetting() {
             return new AlignmentParameterSettingModel(storage.Parameter, DateTime.Now, storage.AnalysisFiles, _alignmentFileBeanModelCollection, process);
         }
 
@@ -202,7 +202,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new AdductIonSettingModel(storage.Parameter, process);
         }
 
-        public AlignmentParameterSettingModel CreateAlignmentParameterSetting() {
+        public IAlignmentParameterSettingModel CreateAlignmentParameterSetting() {
             return new AlignmentParameterSettingModel(storage.Parameter, DateTime.Now, storage.AnalysisFiles, _alignmentFileBeanModelCollection, process);
         }
 
@@ -291,7 +291,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new AdductIonSettingModel(storage.Parameter, process);
         }
 
-        public AlignmentParameterSettingModel CreateAlignmentParameterSetting() {
+        public IAlignmentParameterSettingModel CreateAlignmentParameterSetting() {
             return new AlignmentParameterSettingModel(storage.Parameter, DateTime.Now, storage.AnalysisFiles, _alignmentFileBeanModelCollection, process);
         }
 
@@ -379,7 +379,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new AdductIonSettingModel(storage.Parameter, process);
         }
 
-        public AlignmentParameterSettingModel CreateAlignmentParameterSetting() {
+        public IAlignmentParameterSettingModel CreateAlignmentParameterSetting() {
             return new AlignmentParameterSettingModel(storage.Parameter, DateTime.Now, storage.AnalysisFiles, _alignmentFileBeanModelCollection, process);
         }
 
@@ -467,7 +467,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new AdductIonSettingModel(storage.Parameter, process);
         }
 
-        public AlignmentParameterSettingModel CreateAlignmentParameterSetting() {
+        public IAlignmentParameterSettingModel CreateAlignmentParameterSetting() {
             return new AlignmentParameterSettingModel(storage.Parameter, DateTime.Now, storage.AnalysisFiles, _alignmentFileBeanModelCollection, process);
         }
 
@@ -566,8 +566,8 @@ namespace CompMs.App.Msdial.Model.Setting
             return new AdductIonSettingModel(storage.Parameter, process);
         }
 
-        public AlignmentParameterSettingModel CreateAlignmentParameterSetting() {
-            return new AlignmentParameterSettingModel(storage.Parameter, DateTime.Now, storage.AnalysisFiles, _alignmentFileBeanModelCollection, process);
+        public IAlignmentParameterSettingModel CreateAlignmentParameterSetting() {
+            return new GcmsAlignmentParameterSettingModel(storage.Parameter, DateTime.Now, _analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, process, _broker);
         }
 
         public IDataCollectionSettingModel CreateDataCollectionSetting() {

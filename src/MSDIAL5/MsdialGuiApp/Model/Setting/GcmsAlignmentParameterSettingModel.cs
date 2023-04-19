@@ -8,7 +8,6 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialGcMsApi.Parameter;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -21,7 +20,7 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly AlignmentFileBeanModelCollection _alignmentFiles;
         private readonly IMessageBroker _broker;
 
-        public GcmsAlignmentParameterSettingModel(MsdialGcmsParameter parameter, DateTime now, List<AnalysisFileBeanModel> files, AlignmentFileBeanModelCollection alignmentFiles, ProcessOption processOption, IMessageBroker broker) {
+        public GcmsAlignmentParameterSettingModel(MsdialGcmsParameter parameter, DateTime now, AnalysisFileBeanModelCollection files, AlignmentFileBeanModelCollection alignmentFiles, ProcessOption processOption, IMessageBroker broker) {
             if (files is null) {
                 throw new ArgumentNullException(nameof(files));
             }
@@ -32,8 +31,8 @@ namespace CompMs.App.Msdial.Model.Setting
             IsReadOnly = (processOption & ProcessOption.Alignment) == 0;
 
             AlignmentResultFileName = $"AlignmentResult_{now:yyyy_MM_dd_HH_mm_ss}";
-            AnalysisFiles = files.AsReadOnly();
-            ReferenceFile = files.FirstOrDefault(f => f.AnalysisFileId == parameter.AlignmentBaseParam.AlignmentReferenceFileID);
+            AnalysisFiles = files.AnalysisFiles;
+            ReferenceFile = files.FindById(parameter.AlignmentBaseParam.AlignmentReferenceFileID);
             RtEqualityParameter = new RetentionTimeEqualityParameterSetting(parameter.AlignmentBaseParam);
             RiEqualityParameter = new RetentionIndexEqualityParameterSetting(parameter);
             EiEqualityParameter = new Ms1EqualityParameterSetting(parameter.AlignmentBaseParam);
