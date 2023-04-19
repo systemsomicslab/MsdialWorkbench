@@ -56,12 +56,13 @@
                               VerticalContentAlignment="Center" />
                 </ui:LabeledContent>
 
-                <ui:LabeledContent PrependLabel="RI or RT:">
+                <ui:LabeledContent PrependLabel="Use RI or RT:">
                     <StackPanel Orientation="Horizontal">
-                        <CheckBox Content="Use retention index (RI)"
-                                  IsChecked="{Binding UseRI.Value}"/>
-                        <CheckBox Content="Use retention time (min)"
-                                  IsChecked="{Binding UseRT.Value}"/>
+                        <RadioButton Content="Retention index (RI)"
+                                     IsChecked="{Binding UseRI.Value}"/>
+                        <RadioButton Content="Retention time (min)"
+                                     IsChecked="{Binding UseRT.Value}"
+                                     Margin="8,0"/>
                     </StackPanel>
                 </ui:LabeledContent>
 

@@ -39,7 +39,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 new AdductIonSettingViewModel(model.AdductIonSettingModel, isEnabled).AddTo(Disposables),
                 CreateAlignmentParameterSettingViewModel(model.AlignmentParameterSettingModel, isEnabled).AddTo(Disposables),
                 model.MobilitySettingModel is null ? null : new MobilitySettingViewModel(model.MobilitySettingModel, isEnabled).AddTo(Disposables),
-                new IsotopeTrackSettingViewModel(model.IsotopeTrackSettingModel, isEnabled).AddTo(Disposables),
+                model.IsotopeTrackSettingModel is null ? null : new IsotopeTrackSettingViewModel(model.IsotopeTrackSettingModel, isEnabled).AddTo(Disposables),
             };
             SettingViewModels = new ObservableCollection<ISettingViewModel>(vms.Where(vm => vm != null));
 

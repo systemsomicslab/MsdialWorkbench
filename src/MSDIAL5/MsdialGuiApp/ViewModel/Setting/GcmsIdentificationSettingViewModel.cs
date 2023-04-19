@@ -85,6 +85,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
     public sealed class GcmsIdentificationSettingViewModel : ViewModelBase, ISettingViewModel
     {
         private readonly Subject<Unit> _decide;
+        private readonly IMessageBroker _broker;
 
         public GcmsIdentificationSettingViewModel(GcmsIdentificationSettingModel model, IMessageBroker broker, IObservable<bool> isEnabled) {
             IsReadOnly = model.IsReadOnly;
@@ -162,6 +163,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             }.Merge()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
+            _broker = broker;
         }
 
         public bool IsReadOnly { get; }
@@ -191,6 +193,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 Filter = filter,
                 RestoreDirectory = true,
             };
+            _broker.Publish(request);
         }
 
         public IObservable<bool> ObserveHasErrors { get; }
