@@ -36,6 +36,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             ).AddTo(Disposables);
         }
 
+        public RiDictionaryModel Model => _model;
+
         public string FilePath => _model.File;
         public string FileName => Path.GetFileName(_model.File);
         [Required(ErrorMessage = "Dictionary file is required")]
@@ -47,6 +49,36 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         private void SelectFile() {
             var request = new OpenFileRequest(_fileSelect.OnNext);
             _broker.Publish(request);
+        }
+    }
+
+    public sealed class RiDictionarySettingViewModel : ViewModelBase {
+        private readonly RiDictionarySettingModel _model;
+
+        public RiDictionarySettingViewModel(RiDictionarySettingModel model, IMessageBroker broker) {
+            _model = model;
+            RetentionIndexFiles = model.RetentionIndexFiles.ToReadOnlyReactiveCollection(m => new RiDictionaryViewModel(m, broker)).AddTo(Disposables);
+            SelectedRetentionIndexFile = model.ToReactivePropertySlimAsSynchronized(
+                m => m.SelectedRetentionIndexFile,
+                op => op.Select(p => RetentionIndexFiles.FirstOrDefault(f => f.Model == p)),
+                op => op.Select(p => p?.Model)).AddTo(Disposables);
+            IsImported = model.ObserveProperty(m => m.IsImported).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            ApplyCommand = RetentionIndexFiles.Select(ri => ri.ErrorsChangedAsObservable().ToUnit().StartWith(Unit.Default).Select(_ => ri.HasValidationErrors))
+                .CombineLatestValuesAreAllFalse()
+                .ToReactiveCommand().WithSubscribe(Apply).AddTo(Disposables);
+            AutoFillCommand = new ReactiveCommand().WithSubscribe(model.AutoFill).AddTo(Disposables);
+        }
+
+        public ReadOnlyReactiveCollection<RiDictionaryViewModel> RetentionIndexFiles { get; }
+        public ReactivePropertySlim<RiDictionaryViewModel> SelectedRetentionIndexFile { get; }
+        public ReadOnlyReactivePropertySlim<bool> IsImported { get; }
+
+        public ReactiveCommand AutoFillCommand { get; }
+
+        public ReactiveCommand ApplyCommand { get; }
+
+        private void Apply() {
+            _model.TrySet();
         }
     }
     
@@ -67,11 +99,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 op => op.Where(p => p).ToConstant(RetentionType.RT)
             ).AddTo(Disposables);
 
-            IndexFileSetCommand = UseRI.ToReactiveCommand().AddTo(Disposables);
-            RetentionIndexFiles = model.RetentionIndexFiles.ToReadOnlyReactiveCollection(m => new RiDictionaryViewModel(m, broker)).AddTo(Disposables);
-            IsIndexImported = RetentionIndexFiles.Select(ri => ri.ObserveErrorInfo(vm => vm.DictionaryPath).ToUnit().StartWith(Unit.Default).Select(_ => ri.ContainsError(nameof(RiDictionaryViewModel.DictionaryPath))))
-                .CombineLatestValuesAreAllFalse()
-                .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            RiDictionarySettingViewModel = new RiDictionarySettingViewModel(model.RiDictionarySettingModel, broker).AddTo(Disposables);
+            IndexFileSetCommand = UseRI.ToReactiveCommand().WithSubscribe(() => broker.Publish(RiDictionarySettingViewModel)).AddTo(Disposables);
             UseAlkanes = model.ToReactivePropertySlimAsSynchronized(
                 m => m.CompoundType,
                 op => op.Select(p => p == RiCompoundType.Alkanes),
@@ -93,6 +122,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             ObserveHasErrors = new[]
             {
+                RiDictionarySettingViewModel.IsImported,
                 MspFilePath.ObserveHasErrors,
                 SearchParameter.RiTolerance.ObserveHasErrors,
                 SearchParameter.RtTolerance.ObserveHasErrors,
@@ -108,7 +138,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             {
                 UseRI.ToUnit(),
                 UseRT.ToUnit(),
-                IsIndexImported.ToUnit(),
+                RiDictionarySettingViewModel.RetentionIndexFiles.Select(f => f.DictionaryPath.ToUnit()).Merge(),
                 UseAlkanes.ToUnit(),
                 UseFAMEs.ToUnit(),
                 MspFilePath.ToUnit(),
@@ -138,8 +168,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReactivePropertySlim<bool> UseRI { get; }
         public ReactivePropertySlim<bool> UseRT { get; }
         public ReactiveCommand IndexFileSetCommand { get; }
-        public ReadOnlyReactiveCollection<RiDictionaryViewModel> RetentionIndexFiles { get; }
-        public ReadOnlyReactivePropertySlim<bool> IsIndexImported { get; }
+        public RiDictionarySettingViewModel RiDictionarySettingViewModel { get; }
+        public ReadOnlyReactivePropertySlim<bool> IsIndexImported => RiDictionarySettingViewModel.IsImported;
         public ReactivePropertySlim<bool> UseAlkanes { get; }
         public ReactivePropertySlim<bool> UseFAMEs { get; }
 

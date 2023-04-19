@@ -48,7 +48,8 @@
                             <RadioButton Content="Use retention time (min)" IsChecked="{Binding UseRT.Value}" d:IsChecked="True"/>
                         </StackPanel>
                     </ui:LabeledContent>
-                    <ui:LabeledContent PrependLabel="Index file:">
+                    <ui:LabeledContent PrependLabel="Index file:"
+                                       ToolTip="Carbon number and retention time dictionaly for RI calculation">
                         <StackPanel Orientation="Horizontal" Margin="0">
                             <Button Content="Set" Command="{Binding Path=IndexFileSetCommand, Mode=OneTime}"
                                     Width="64"/>

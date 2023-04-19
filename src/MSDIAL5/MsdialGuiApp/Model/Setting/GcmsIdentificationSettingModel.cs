@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -9,6 +10,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialGcMsApi.Parameter;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -31,8 +33,84 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private string _dictionaryPath = string.Empty;
 
+        public bool IsValid() {
+            throw new NotImplementedException();
+        }
+
         public void Commit() {
             _dictionaryInfo.DictionaryFilePath = DictionaryPath;
+        }
+    }
+
+    public sealed class RiDictionarySettingModel : BindableBase {
+        private readonly IMessageBroker _broker;
+
+        public RiDictionarySettingModel(AnalysisFileBeanModelCollection files, Dictionary<int, RiDictionaryInfo> fileIdToRiInfo, IMessageBroker broker) {
+            var dictionaries = fileIdToRiInfo.Select(kvp => new RiDictionaryModel(files.FindById(kvp.Key).AnalysisFilePath, kvp.Value));
+            RetentionIndexFiles = new ObservableCollection<RiDictionaryModel>(dictionaries);
+            _broker = broker;
+            IsImported = RetentionIndexFiles.All(file => file.IsValid());
+        }
+
+        public ObservableCollection<RiDictionaryModel> RetentionIndexFiles { get; }
+
+        public RiDictionaryModel SelectedRetentionIndexFile {
+            get => _selectedRetentionIndexFile;
+            set => SetProperty(ref _selectedRetentionIndexFile, value);
+        }
+        private RiDictionaryModel _selectedRetentionIndexFile;
+
+        public bool IsImported {
+            get => _isImported;
+            private set => SetProperty(ref _isImported, value);
+        }
+        private bool _isImported;
+
+        public void AutoFill() {
+            if (SelectedRetentionIndexFile is null || string.IsNullOrEmpty(SelectedRetentionIndexFile.DictionaryPath)) {
+                return;
+            }
+            foreach (var file in RetentionIndexFiles) {
+                file.DictionaryPath = SelectedRetentionIndexFile.DictionaryPath;
+            }
+        }
+
+        public bool TrySet() {
+            if (RetentionIndexFiles.All(file => file.IsValid())) {
+                IsImported = true;
+                return true;
+            }
+            else {
+                var request = new ErrorMessageBoxRequest
+                {
+                    Content = string.Join("\n",
+                        "Invalid RI information. Please confirm your file and prepare the following information.",
+                        "Carbon number\tRT(min)",
+                        "10\t4.72",
+                        "11\t5.63",
+                        "12\t6.81",
+                        "13\t8.08",
+                        "14\t9.12",
+                        "15\t10.33",
+                        "16\t11.91",
+                        "18\t14.01",
+                        "20\t16.15",
+                        "22\t18.28",
+                        "24\t20.33",
+                        "26\t22.17",
+                        "",
+                        "This information should be required for RI calculation."),
+                };
+                _broker?.Publish(request);
+                return false;
+            }
+        }
+
+        public bool TryCommit() {
+            foreach (var file in RetentionIndexFiles) {
+                file.Commit();
+            }
+            return true;
         }
     }
 
@@ -40,14 +118,14 @@ namespace CompMs.App.Msdial.Model.Setting
     {
         private readonly MsdialGcmsParameter _parameter;
 
-        public GcmsIdentificationSettingModel(MsdialGcmsParameter parameter, AnalysisFileBeanModelCollection files, ProcessOption process) {
+        public GcmsIdentificationSettingModel(MsdialGcmsParameter parameter, AnalysisFileBeanModelCollection files, ProcessOption process, IMessageBroker broker) {
             SearchParameter = parameter.RefSpecMatchBaseParam.MspSearchParam is null
                 ?  new MsRefSearchParameterBase()
                 : new MsRefSearchParameterBase(parameter.RefSpecMatchBaseParam.MspSearchParam);
             IsReadOnly = (process & ProcessOption.Identification) == 0;
             RetentionType = parameter.RetentionType;
-            var dictionaries = parameter.RefSpecMatchBaseParam.FileIdRiInfoDictionary.Select(kvp => new RiDictionaryModel(files.FindById(kvp.Key).AnalysisFilePath, kvp.Value));
-            RetentionIndexFiles = new ObservableCollection<RiDictionaryModel>(dictionaries);
+            RiDictionarySettingModel = new RiDictionarySettingModel(files, parameter.RefSpecMatchBaseParam.FileIdRiInfoDictionary, broker);
+            RetentionIndexFiles = RiDictionarySettingModel.RetentionIndexFiles;
             CompoundType = parameter.RiCompoundType;
             MspFilePath = parameter.ReferenceFileParam.MspFilePath;
             UseQuantmassDefinedInLibrary = parameter.IsReplaceQuantmassByUserDefinedValue;
@@ -66,6 +144,7 @@ namespace CompMs.App.Msdial.Model.Setting
         private RetentionType _retentionType;
 
         public ObservableCollection<RiDictionaryModel> RetentionIndexFiles { get; }
+        public RiDictionarySettingModel RiDictionarySettingModel { get; }
 
         public RiCompoundType CompoundType {
             get => _compoundType;
@@ -110,15 +189,15 @@ namespace CompMs.App.Msdial.Model.Setting
                 return false;
             }
 
+            if (!RiDictionarySettingModel.TryCommit()) {
+                return false;
+            }
             _parameter.RetentionType = RetentionType;
             _parameter.RiCompoundType = CompoundType;
             _parameter.ReferenceFileParam.MspFilePath = MspFilePath;
             _parameter.RefSpecMatchBaseParam.MspSearchParam = SearchParameter;
             _parameter.IsReplaceQuantmassByUserDefinedValue = UseQuantmassDefinedInLibrary;
             _parameter.RefSpecMatchBaseParam.OnlyReportTopHitInMspSearch = OnlyReportTopHit;
-            foreach (var riFile in RetentionIndexFiles) {
-                riFile.Commit();
-            }
             return true;
         }
 

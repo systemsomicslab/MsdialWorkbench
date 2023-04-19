@@ -579,7 +579,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IIdentificationSettingModel CreateIdentifySetting() {
-            return new GcmsIdentificationSettingModel(storage.Parameter, _analysisFileBeanModelCollection, process);
+            return new GcmsIdentificationSettingModel(storage.Parameter, _analysisFileBeanModelCollection, process, _broker);
         }
 
         public IsotopeTrackSettingModel CreateIsotopeTrackSetting() {
