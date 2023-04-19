@@ -132,7 +132,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             //Do MS2Dec deconvolution
             if (sMs2Chromatograms.Count > 0) {
 
-                if (ms2ValuePeaksList[0].Length < ms1Peaklist.Count - 1) {
+                if (ms2ValuePeaksList[0].Length > 1 && ms2ValuePeaksList[0].Length < ms1Peaklist.Count - 1) {
                     var ms2peaklist = ms2ValuePeaksList[0];
                     startIndex = ms2peaklist[0].Id;
                     endIndex = ms2peaklist[ms2peaklist.Length - 1].Id;
