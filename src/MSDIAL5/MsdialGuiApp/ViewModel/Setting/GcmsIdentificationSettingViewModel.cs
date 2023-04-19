@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Setting;
+﻿using CompMs.App.Msdial.Model.Service;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Enum;
@@ -6,16 +7,14 @@ using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Validator;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.IO;
-using System.ComponentModel.DataAnnotations;
-using Accord.Math;
-using CompMs.App.Msdial.Model.Service;
-using Reactive.Bindings.Notifiers;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
@@ -56,6 +55,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         private readonly Subject<Unit> _decide;
 
         public GcmsIdentificationSettingViewModel(GcmsIdentificationSettingModel model, IMessageBroker broker, IObservable<bool> isEnabled) {
+            IsReadOnly = model.IsReadOnly;
             UseRI = model.ToReactivePropertySlimAsSynchronized(
                 m => m.RetentionType,
                 op => op.Select(p => p == RetentionType.RI),
@@ -67,6 +67,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 op => op.Where(p => p).ToConstant(RetentionType.RT)
             ).AddTo(Disposables);
 
+            IndexFileSetCommand = UseRI.ToReactiveCommand().AddTo(Disposables);
             RetentionIndexFiles = model.RetentionIndexFiles.ToReadOnlyReactiveCollection(m => new RiDictionaryViewModel(m, broker)).AddTo(Disposables);
             IsIndexImported = RetentionIndexFiles.Select(ri => ri.ObserveErrorInfo(vm => vm.DictionaryPath).ToUnit().StartWith(Unit.Default).Select(_ => ri.ContainsError(nameof(RiDictionaryViewModel.DictionaryPath))))
                 .CombineLatestValuesAreAllFalse()
@@ -83,6 +84,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             ).AddTo(Disposables);
             MspFilePath = model.ToReactivePropertyAsSynchronized(m => m.MspFilePath)
                 .SetValidateAttribute(() => MspFilePath).AddTo(Disposables);
+            BrowseMspCommand = new ReactiveCommand().WithSubscribe(Browse).AddTo(Disposables);
             SearchParameter = new MsRefSearchParameterBaseViewModel(model.SearchParameter).AddTo(Disposables);
             UseQuantMassesDefinedInMsp = model.ToReactivePropertySlimAsSynchronized(m => m.UseQuantmassDefinedInLibrary).AddTo(Disposables);
             OnlyReportTopHit = model.ToReactivePropertySlimAsSynchronized(m => m.OnlyReportTopHit).AddTo(Disposables);
@@ -132,8 +134,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             .AddTo(Disposables);
         }
 
+        public bool IsReadOnly { get; }
         public ReactivePropertySlim<bool> UseRI { get; }
         public ReactivePropertySlim<bool> UseRT { get; }
+        public ReactiveCommand IndexFileSetCommand { get; }
         public ReadOnlyReactiveCollection<RiDictionaryViewModel> RetentionIndexFiles { get; }
         public ReadOnlyReactivePropertySlim<bool> IsIndexImported { get; }
         public ReactivePropertySlim<bool> UseAlkanes { get; }
@@ -141,11 +145,23 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         [PathExists(ErrorMessage = "Msp file does not exist.", IsFile = true)]
         public ReactiveProperty<string> MspFilePath { get; }
+        public ReactiveCommand BrowseMspCommand { get; }
         public MsRefSearchParameterBaseViewModel SearchParameter { get; }
         public ReactivePropertySlim<bool> UseQuantMassesDefinedInMsp { get; }
         public ReactivePropertySlim<bool> OnlyReportTopHit { get; }
 
         public ReadOnlyReactivePropertySlim<bool> IsEnabled { get; }
+
+        private void Browse() {
+            var filter = "MSP file(*.msp)|*.msp?";
+
+            var request = new OpenFileRequest(file => MspFilePath.Value = file)
+            {
+                Title = "Import a library file",
+                Filter = filter,
+                RestoreDirectory = true,
+            };
+        }
 
         public IObservable<bool> ObserveHasErrors { get; }
 

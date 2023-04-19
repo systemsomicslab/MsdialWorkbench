@@ -169,8 +169,7 @@
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:GcmsIdentificationSettingViewModel}">
                         <ContentControl IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
-                            <!--<local:GcmsIdentificationSettingView IsEnabled="{Binding IsEnabled.Value}"/>-->
-                            <Label Content="Gcms identification"/>
+                            <local:GcmsIdentificationSettingView IsEnabled="{Binding IsEnabled.Value}"/>
                         </ContentControl>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:AdductIonSettingViewModel}">
