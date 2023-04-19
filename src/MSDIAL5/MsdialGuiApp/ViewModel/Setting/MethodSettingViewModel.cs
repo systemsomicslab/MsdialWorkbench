@@ -35,9 +35,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 CreateDataCollectionSettingViewModel(model.DataCollectionSettingModel, isEnabled).AddTo(Disposables),
                 CreatePeakDetectionSettingViewModel(model.PeakDetectionSettingModel, isEnabled).AddTo(Disposables),
                 CreateDeconvolutionSettingViewModel(model.DeconvolutionSettingModel, model.Storage.Parameter.ProjectParam.MachineCategory, isEnabled).AddTo(Disposables),
-                CreateIdentificationSettingModel(model.IdentifySettingModel, model.Storage, MessageBroker.Default, isEnabled).AddTo(Disposables),
+                CreateIdentificationSettingViewModel(model.IdentifySettingModel, model.Storage, MessageBroker.Default, isEnabled).AddTo(Disposables),
                 new AdductIonSettingViewModel(model.AdductIonSettingModel, isEnabled).AddTo(Disposables),
-                new AlignmentParameterSettingViewModel(model.AlignmentParameterSettingModel, isEnabled).AddTo(Disposables),
+                CreateAlignmentParameterSettingViewModel(model.AlignmentParameterSettingModel, isEnabled).AddTo(Disposables),
                 model.MobilitySettingModel is null ? null : new MobilitySettingViewModel(model.MobilitySettingModel, isEnabled).AddTo(Disposables),
                 new IsotopeTrackSettingViewModel(model.IsotopeTrackSettingModel, isEnabled).AddTo(Disposables),
             };
@@ -161,12 +161,23 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             }
         }
 
-        private static ISettingViewModel CreateIdentificationSettingModel(IIdentificationSettingModel model, IMsdialDataStorage<ParameterBase> storage, IMessageBroker broker, IObservable<bool> isEnabled) {
+        private static ISettingViewModel CreateIdentificationSettingViewModel(IIdentificationSettingModel model, IMsdialDataStorage<ParameterBase> storage, IMessageBroker broker, IObservable<bool> isEnabled) {
             switch (model) {
                 case GcmsIdentificationSettingModel gism:
                     return new GcmsIdentificationSettingViewModel(gism, broker, isEnabled);
                 case IdentifySettingModel ism:
                     return new IdentifySettingViewModel(ism, CreateAnnotatorViewModelFactory(storage), isEnabled);
+                default:
+                    return null;
+            }
+        }
+
+        private static ISettingViewModel CreateAlignmentParameterSettingViewModel(IAlignmentParameterSettingModel model, IObservable<bool> isEnabled) {
+            switch (model) {
+                //case GcmsAlignmentParameterSettingModel gasm:
+                //return GcmsAlignmentParameterSettingViewModel(gasm, )
+                case AlignmentParameterSettingModel apsm:
+                    return new AlignmentParameterSettingViewModel(apsm, isEnabled);
                 default:
                     return null;
             }

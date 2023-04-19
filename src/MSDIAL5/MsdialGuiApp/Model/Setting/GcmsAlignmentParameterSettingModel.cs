@@ -16,17 +16,20 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public sealed class GcmsAlignmentParameterSettingModel : BindableBase {
-        private MsdialGcmsParameter _parameter;
-        private readonly List<AnalysisFileBeanModel> _files;
+    public sealed class GcmsAlignmentParameterSettingModel : BindableBase, IAlignmentParameterSettingModel {
+        private readonly MsdialGcmsParameter _parameter;
         private readonly AlignmentFileBeanModelCollection _alignmentFiles;
         private readonly IMessageBroker _broker;
 
         public GcmsAlignmentParameterSettingModel(MsdialGcmsParameter parameter, DateTime now, List<AnalysisFileBeanModel> files, AlignmentFileBeanModelCollection alignmentFiles, ProcessOption processOption, IMessageBroker broker) {
+            if (files is null) {
+                throw new ArgumentNullException(nameof(files));
+            }
+
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
-            _files = files ?? throw new ArgumentNullException(nameof(files));
             _alignmentFiles = alignmentFiles ?? throw new ArgumentNullException(nameof(alignmentFiles));
             _broker = broker ?? throw new ArgumentNullException(nameof(broker));
+            IsReadOnly = (processOption & ProcessOption.Alignment) == 0;
 
             AlignmentResultFileName = $"AlignmentResult_{now:yyyy_MM_dd_HH_mm_ss}";
             AnalysisFiles = files.AsReadOnly();

@@ -20,7 +20,13 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public sealed class AlignmentParameterSettingModel : BindableBase
+    public interface IAlignmentParameterSettingModel {
+        bool ShouldRunAlignment { get; }
+        bool TryCommit();
+        void LoadParameter(ParameterBase parameter);
+    }
+
+    public sealed class AlignmentParameterSettingModel : BindableBase, IAlignmentParameterSettingModel
     {
         public AlignmentParameterSettingModel(ParameterBase parameter, DateTime now, List<AnalysisFileBean> files, AlignmentFileBeanModelCollection alignmentFiles, ProcessOption process) {
             IsReadOnly = (process & ProcessOption.Alignment) == 0;
