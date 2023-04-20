@@ -1354,16 +1354,16 @@ namespace CompMs.Common.Algorithm.Scoring {
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
 
                 case LbmClass.LPG:
-                    return LipidMsmsCharacterization.JudgeIfLysopg(msScanProp, ms2tol, refMz,
-                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                    return LipidEieioMsmsCharacterization.JudgeIfLysopg(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1DbBond, adduct);
 
                 case LbmClass.LPI:
-                    return LipidMsmsCharacterization.JudgeIfLysopi(msScanProp, ms2tol, refMz,
-                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                    return LipidEieioMsmsCharacterization.JudgeIfLysopi(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1DbBond, adduct);
 
                 case LbmClass.LPS:
-                    return LipidMsmsCharacterization.JudgeIfLysops(msScanProp, ms2tol, refMz,
-                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                    return LipidEieioMsmsCharacterization.JudgeIfLysops(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1DbBond, adduct);
 
                 case LbmClass.EtherPC:
                     return LipidMsmsCharacterization.JudgeIfEtherpc(msScanProp, ms2tol, refMz,
