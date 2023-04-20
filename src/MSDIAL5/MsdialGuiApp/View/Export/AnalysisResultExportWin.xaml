@@ -98,6 +98,16 @@
                               IsChecked="{Binding ShouldExport.Value}"
                               Margin="4"/>
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:SpectraTypeSelectableMsdialAnalysisExportViewModel}">
+                    <CheckBox IsChecked="{Binding ShouldExport.Value}"
+                              Margin="4">
+                        <StackPanel Orientation="Horizontal" IsEnabled="{Binding ShouldExport.Value}">
+                            <TextBlock Text="{Binding Label, Mode=OneTime}" Margin="4,0"/>
+                            <ComboBox ItemsSource="{Binding Types, Mode=OneTime}"
+                                      SelectedItem="{Binding SelectedType.Value}"/>
+                        </StackPanel>
+                    </CheckBox>
+                </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:MsdialAnalysisTableExportViewModel}">
                     <StackPanel Margin="4">
                         <CheckBox Content="Peak table" IsChecked="{Binding ShouldExport.Value}"/>
