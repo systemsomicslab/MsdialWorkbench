@@ -22,6 +22,9 @@ namespace CompMs.MsdialCore.Algorithm
 
     public static class DataProviderExtensions {
         public static RawSpectrum LoadMsSpectrumFromIndex(this IDataProvider provider, int index) {
+            if (index < 0) {
+                return null;
+            }
             return provider.LoadMsSpectrums()[index];
         }
 
