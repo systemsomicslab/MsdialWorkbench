@@ -23,6 +23,16 @@
     </UserControl.Resources>
 
     <Grid>
+        <Grid.Resources>
+            <Style TargetType="Canvas">
+                <Setter Property="Visibility" Value="Visible"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Resources>
         <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis, Mode=OneWay}"
                           VerticalAxis="{Binding VerticalAxis, Mode=OneWay}"
                           HorizontalTitle="{Binding HorizontalLabel.Value, Mode=OneWay}"
@@ -56,14 +66,14 @@
                     </MenuItem>
                 </ContextMenu>
             </chart:MultiChart.ContextMenu>
-            <chart:ScatterControlSlim x:Name="analysisScatter"
+            <chart:ScatterControlSlim x:Name="peakSelector"
                                       ItemsSource="{Binding ChromatogramPeaks, Mode=OneWay}"
+                                      SelectedItem="{Binding SelectedChromatogramPeak.Value, Mode=TwoWay}"
                                       DataType="{x:Type do:ChromatogramPeakFeatureModel}"
                                       HorizontalProperty="{Binding HorizontalProperty, Mode=OneWay}"
                                       VerticalProperty="{Binding VerticalProperty, Mode=OneWay}"
                                       PointBrush="{Binding Brush}"
-                                      Radius="5.5"
-                                      SelectedItem="{Binding SelectedChromatogramPeak.Value, Mode=TwoWay}">
+                                      Radius="5.5">
                 <chart:ScatterControlSlim.ToolTip>
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                         <StackPanel Orientation="Vertical">
@@ -82,7 +92,9 @@
                              HorizontalPropertyName="{Binding HorizontalProperty, Mode=OneWay}"
                              VerticalPropertyName="{Binding VerticalProperty, Mode=OneWay}"
                              LabelPropertyName="{Binding LabelProperty, Mode=OneWay}"/>
-            <chart:ScatterControl ItemsSource="{Binding Spectra, Mode=OneWay}"
+            <chart:ScatterControl x:Name="spectrumSelector"
+                                  ItemsSource="{Binding Spectra, Mode=OneWay}"
+                                  SelectedItem="{Binding SelectedSpectrum.Value}"
                                   HorizontalPropertyName="{Binding HorizontalProperty, Mode=OneWay}"
                                   VerticalPropertyName="{Binding HorizontalProperty, Mode=OneWay}"
                                   VerticalAxis="{x:Static axis:ConstantAxisManager.Instance}"
@@ -91,14 +103,32 @@
                                   Radius="8"
                                   Height="16"
                                   VerticalAlignment="Top"/>
-            <Canvas DataContext="{Binding SelectedPoint, ElementName=analysisScatter}"
-                    ClipToBounds="True">
+            <Canvas DataContext="{Binding SelectedPoint, ElementName=peakSelector}" ClipToBounds="True">
                 <Rectangle Fill="Red" VerticalAlignment="Stretch" IsHitTestVisible="False"
                            Width="1" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Canvas}}"
                            Canvas.Left="{Binding X}"/>
                 <Rectangle Fill="Red" HorizontalAlignment="Stretch" IsHitTestVisible="False"
                            Height="1" Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Canvas}}"
                            Canvas.Top="{Binding Y}"/>
+            </Canvas>
+            <Canvas DataContext="{Binding SelectedPoint, ElementName=spectrumSelector}" ClipToBounds="True">
+                <Rectangle Fill="Blue" VerticalAlignment="Stretch" IsHitTestVisible="False"
+                           Width="1" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Canvas}}"
+                           Canvas.Left="{Binding X}"/>
+                <Path Data="M -1,-1 H 1 L 0,1 Z" Fill="Red" Stretch="Uniform" Canvas.Left="{Binding X}" Height="16" Width="16"
+                      IsHitTestVisible="False">
+                    <Path.RenderTransform>
+                        <TranslateTransform X="-8"/>
+                    </Path.RenderTransform>
+                </Path>
+            </Canvas>
+            <Canvas DataContext="{Binding FocusedPoint, ElementName=spectrumSelector}" ClipToBounds="True">
+                <Path Data="M -1,-1 H 1 L 0,1 Z" Fill="Blue" Stretch="Uniform" Canvas.Left="{Binding X}" Height="16" Width="16"
+                      IsHitTestVisible="False">
+                    <Path.RenderTransform>
+                        <TranslateTransform X="-8"/>
+                    </Path.RenderTransform>
+                </Path>
             </Canvas>
         </chart:MultiChart>
     </Grid>
