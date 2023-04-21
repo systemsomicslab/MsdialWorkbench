@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Utility;
@@ -30,8 +31,8 @@ namespace CompMs.App.Msdial.Model.Information
         public ReactiveProperty<MsScanMatchResult> SelectedCandidate { get; }
         public ReadOnlyReactivePropertySlim<IList<MsScanMatchResult>> Candidates { get; }
 
-        public IObservable<List<SpectrumPeak>> LoadSpectrumObservable(IMsSpectrumLoader<MsScanMatchResult> loader) {
-            return SelectedCandidate.SelectSwitch(loader.LoadSpectrumAsObservable);
+        public IObservable<MsSpectrum> LoadMsSpectrumObservable(IMsSpectrumLoader<MsScanMatchResult> loader) {
+            return SelectedCandidate.SelectSwitch(loader.LoadSpectrumAsObservable).Select(s => new MsSpectrum(s));
         }
 
         public IObservable<Ms2ScanMatching> GetCandidatesScorer(CompoundSearcherCollection compoundSearcherCollection) {

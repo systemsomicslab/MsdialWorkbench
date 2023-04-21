@@ -74,8 +74,8 @@ namespace CompMs.App.Msdial.Model.Search
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             MsSpectrumModel = new MsSpectrumModel(
-                Observable.Return(_msdecResult.Spectrum),
-                referenceSpectrum,
+                Observable.Return(_msdecResult.Spectrum).Select(s => new MsSpectrum(s)),
+                referenceSpectrum.Select(s => new MsSpectrum(s)),
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Mass),
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity),
                 new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity)),

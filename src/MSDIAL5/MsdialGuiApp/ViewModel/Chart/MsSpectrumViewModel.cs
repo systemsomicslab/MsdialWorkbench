@@ -36,19 +36,19 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             UpperSpectraViewModel = model.UpperSpectraModel.ToReadOnlyReactiveCollection(m => new SingleSpectrumViewModel(m)).AddTo(Disposables);
             LowerSpectrumViewModel = new SingleSpectrumViewModel(model.LowerSpectrumModel).AddTo(Disposables);
 
-            HorizontalAxis = (horizontalAxisSource ?? model.UpperSpectrumModel.HorizontalAxis)
+            HorizontalAxis = (horizontalAxisSource ?? model.HorizontalAxis)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
             LowerVerticalAxis = (lowerVerticalAxisSource ?? model.LowerSpectrumModel.VerticalAxis)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            LowerVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel>(model.LowerVerticalAxisItemCollection);
+            LowerVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel<double>>(model.LowerVerticalAxisItemCollection);
 
             UpperVerticalAxis = (upperVerticalAxisSource ?? model.UpperSpectrumModel.VerticalAxis)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            UpperVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel>(model.UpperVerticalAxisItemCollection);
+            UpperVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel<double>>(model.UpperVerticalAxisItemCollection);
 
             UpperSpectrum = model.UpperSpectrumModel.Spectrum
                 .ToReadOnlyReactivePropertySlim()
@@ -128,11 +128,11 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<bool> ReferenceHasSpectrumInfomation { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> HorizontalAxis { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> UpperVerticalAxis { get; }
-        public ReactivePropertySlim<AxisItemModel> UpperVerticalAxisItem => _model.UpperVerticalAxisItem;
-        public ReadOnlyObservableCollection<AxisItemModel> UpperVerticalAxisItemCollection { get; }
+        public ReactivePropertySlim<AxisItemModel<double>> UpperVerticalAxisItem => _model.UpperVerticalAxisItem;
+        public ReadOnlyObservableCollection<AxisItemModel<double>> UpperVerticalAxisItemCollection { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> LowerVerticalAxis { get; }
-        public ReactivePropertySlim<AxisItemModel> LowerVerticalAxisItem => _model.LowerVerticalAxisItem;
-        public ReadOnlyObservableCollection<AxisItemModel> LowerVerticalAxisItemCollection { get; }
+        public ReactivePropertySlim<AxisItemModel<double>> LowerVerticalAxisItem => _model.LowerVerticalAxisItem;
+        public ReadOnlyObservableCollection<AxisItemModel<double>> LowerVerticalAxisItemCollection { get; }
 
         public ReadOnlyReactivePropertySlim<string> GraphTitle { get; }
 

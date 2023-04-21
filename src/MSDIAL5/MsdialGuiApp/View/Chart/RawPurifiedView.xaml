@@ -6,10 +6,12 @@
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+             xmlns:lcvm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
              xmlns:io="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              mc:Ignorable="d" 
              Name="RawPurePlot"
+             d:DataContext="{d:DesignInstance Type={x:Type lcvm:LcmsAnalysisViewModel}}"
              d:Background="White"
              d:DesignHeight="600" d:DesignWidth="370">
     <UserControl.Resources>

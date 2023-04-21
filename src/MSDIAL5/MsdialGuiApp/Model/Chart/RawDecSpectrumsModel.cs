@@ -9,7 +9,6 @@ using CompMs.MsdialCore.Export;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Chart
@@ -20,7 +19,7 @@ namespace CompMs.App.Msdial.Model.Chart
             IObservable<ChromatogramPeakFeatureModel> targetSource,
             MultiMsRawSpectrumLoader rawLoader,
             IMsSpectrumLoader<ChromatogramPeakFeatureModel> decLoader,
-            IObservable<List<SpectrumPeak>> refSpectrum,
+            IObservable<MsSpectrum> refMsSpectrum,
             PropertySelector<SpectrumPeak, double> horizontalPropertySelector,
             PropertySelector<SpectrumPeak, double> verticalPropertySelector,
             GraphLabels graphLabels,
@@ -34,36 +33,7 @@ namespace CompMs.App.Msdial.Model.Chart
             : this(targetSource,
                   (IMsSpectrumLoader<ChromatogramPeakFeatureModel>)rawLoader,
                   decLoader,
-                  refSpectrum,
-                  horizontalPropertySelector, verticalPropertySelector,
-                  graphLabels,
-                  hueProperty, upperSpectrumBrush, lowerSpectrumBrush,
-                  rawSpectraExporeter, deconvolutedSpectraExporter, referenceSpectraExporter,
-                  ms2ScanMatching) {
-            RawLoader = rawLoader;
-        }
-
-        public RawDecSpectrumsModel(
-            IObservable<ChromatogramPeakFeatureModel> targetSource,
-            MultiMsRawSpectrumLoader rawLoader,
-            IMsSpectrumLoader<ChromatogramPeakFeatureModel> decLoader,
-            IMsSpectrumLoader<ChromatogramPeakFeatureModel> refLoader,
-            PropertySelector<SpectrumPeak, double> horizontalPropertySelector,
-            PropertySelector<SpectrumPeak, double> verticalPropertySelector,
-            GraphLabels graphLabels,
-            string hueProperty,
-            IObservable<IBrushMapper> upperSpectrumBrush,
-            IObservable<IBrushMapper> lowerSpectrumBrush,
-            IObservable<ISpectraExporter> rawSpectraExporeter,
-            IObservable<ISpectraExporter> deconvolutedSpectraExporter,
-            IObservable<ISpectraExporter> referenceSpectraExporter,
-            IObservable<Ms2ScanMatching> ms2ScanMatching)
-            : this(targetSource,
-                  (IMsSpectrumLoader<ChromatogramPeakFeatureModel>)rawLoader,
-                  decLoader,
-                  targetSource.WithLatestFrom(Observable.Return(refLoader),
-                    (target, loader) => loader.LoadSpectrumAsObservable(target))
-                    .Switch(),
+                  refMsSpectrum,
                   horizontalPropertySelector, verticalPropertySelector,
                   graphLabels,
                   hueProperty, upperSpectrumBrush, lowerSpectrumBrush,
@@ -76,7 +46,7 @@ namespace CompMs.App.Msdial.Model.Chart
             IObservable<ChromatogramPeakFeatureModel> targetSource,
             IMsSpectrumLoader<ChromatogramPeakFeatureModel> rawLoader,
             IMsSpectrumLoader<ChromatogramPeakFeatureModel> decLoader,
-            IObservable<List<SpectrumPeak>> refSpectrum,
+            IObservable<MsSpectrum> refMsSpectrum,
             PropertySelector<SpectrumPeak, double> horizontalPropertySelector,
             PropertySelector<SpectrumPeak, double> verticalPropertySelector,
             GraphLabels graphLabels,
@@ -114,9 +84,9 @@ namespace CompMs.App.Msdial.Model.Chart
             .Throttle(TimeSpan.FromSeconds(.1d))
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
-
+            var refMsSpectrum_ = refMsSpectrum.Publish();
             RawRefSpectrumModels = new MsSpectrumModel(
-                rawSource, refSpectrum,
+                rawSource.Select(s => new MsSpectrum(s)), refMsSpectrum_,
                 horizontalPropertySelector,
                 verticalPropertySelector,
                 graphLabels,
@@ -128,7 +98,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 rawSpectrumLoaded,
                 ms2ScanMatching).AddTo(Disposables);
             DecRefSpectrumModels = new MsSpectrumModel(
-                decSource, refSpectrum,
+                decSource.Select(s => new MsSpectrum(s)), refMsSpectrum_,
                 horizontalPropertySelector,
                 verticalPropertySelector,
                 graphLabels,
@@ -139,6 +109,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 referenceSpectraExporter,
                 decSpectrumLoaded,
                 ms2ScanMatching).AddTo(Disposables);
+            Disposables.Add(refMsSpectrum_.Connect());
         }
 
 

@@ -47,8 +47,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReadOnlyReactivePropertySlim<List<MsSelectionItem>> Ms2IdList { get; }
         public ReactivePropertySlim<MsSelectionItem> SelectedMs2Id { get; }
-        public ReactivePropertySlim<AxisItemModel> LowerVerticalAxisItem => _model.DecRefSpectrumModels.LowerVerticalAxisItem;
-        public ObservableCollection<AxisItemModel> LowerVerticalAxisItemCollection => _model.DecRefSpectrumModels.LowerVerticalAxisItemCollection;
+        public ReactivePropertySlim<AxisItemModel<double>> LowerVerticalAxisItem => _model.DecRefSpectrumModels.LowerVerticalAxisItem;
+        public ObservableCollection<AxisItemModel<double>> LowerVerticalAxisItemCollection => _model.DecRefSpectrumModels.LowerVerticalAxisItemCollection;
 
         public Action FocusAction { get; }
         public ReadOnlyReactivePropertySlim<bool> IsFocused { get; }

@@ -100,7 +100,7 @@
                                                            ItemsSource="{Binding Spectrum.Value}"
                                                            DataType="{x:Type components:SpectrumPeak}"
                                                            HorizontalProperty="{Binding HorizontalProperty}"
-                                                           VerticalProperty="{Binding VerticalProperty}"
+                                                           VerticalProperty="{Binding SelectedVerticalAxisItem.Value.Property}"
                                                            LineBrush="{Binding Brush.Value}"
                                                            LineThickness="{Binding LineThickness.Value}"
                                                            HueProperty="SpectrumComment">
@@ -118,7 +118,7 @@
                             </chart:LineSpectrumControlSlim>
                             <chart:Annotator ItemsSource="{Binding Spectrum.Value}"
                                              HorizontalPropertyName="{Binding HorizontalProperty}"
-                                             VerticalPropertyName="{Binding VerticalProperty}"
+                                             VerticalPropertyName="{Binding SelectedVerticalAxisItem.Value.Property}"
                                              LabelPropertyName="{Binding DataContext.LabelProperty.Value, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                              OrderingPropertyName="{Binding DataContext.OrderingProperty.Value, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                              Brush="Black"
@@ -129,50 +129,6 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <!--
-            <Grid core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxis.Value}">
-                <StackPanel VerticalAlignment="Center">
-                    <StackPanel.Style>
-                        <Style TargetType="StackPanel">
-                            <Setter Property="Visibility" Value="Visible"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding SpectrumLoaded.Value, Mode=OneWay}" Value="True">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </StackPanel.Style>
-                    <TextBlock Text="Loading ..." HorizontalAlignment="Center" FontSize="16" Margin="16"/>
-                    <ProgressBar IsIndeterminate="True" HorizontalAlignment="Center" Width="160" Height="16"/>
-                </StackPanel>
-                <chart:LineSpectrumControlSlim x:Name="MS2Line"
-                                               ItemsSource="{Binding UpperSpectrum.Value}"
-                                               DataType="{x:Type components:SpectrumPeak}"
-                                               HorizontalProperty="{Binding HorizontalProperty.Value}"
-                                               VerticalProperty="{Binding VerticalProperty}"
-                                               LineBrush="{Binding UpperSpectrumBrushSource.Value}"
-                                               HueProperty="SpectrumComment">
-                    <chart:LineSpectrumControlSlim.ToolTip>
-                        <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="m/z: "/>
-                                <TextBlock Text="{Binding FocusedItem.Mass}"/>
-                                <TextBlock Text=" Intensity: "/>
-                                <TextBlock Text="{Binding FocusedItem.Intensity}"/>
-                            </StackPanel>
-                        </ToolTip>
-                    </chart:LineSpectrumControlSlim.ToolTip>
-                </chart:LineSpectrumControlSlim>
-                <chart:Annotator ItemsSource="{Binding UpperSpectrum.Value}"
-                                 HorizontalPropertyName="{Binding HorizontalProperty.Value}"
-                                 VerticalPropertyName="{Binding VerticalProperty.Value}"
-                                 LabelPropertyName="{Binding LabelProperty.Value}"
-                                 OrderingPropertyName="{Binding OrderingProperty.Value}"
-                                 Brush="Black"
-                                 Overlap="Horizontal, Direct"
-                                 ClipToBounds="True"/>
-            </Grid>
-            -->
 
             <Grid core:ChartBaseControl.FlippedY="False" core:ChartBaseControl.VerticalAxis="{Binding LowerVerticalAxis.Value}">
                 <TextBlock Text="No information" FontSize="24"

@@ -1,13 +1,12 @@
 ﻿using CompMs.Common.Components;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.Core.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    internal sealed class MsSpectrum : BindableBase
+    public sealed class MsSpectrum : BindableBase
     {
         private List<SpectrumPeak> _spectrum;
         
@@ -17,11 +16,11 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public List<SpectrumPeak> Spectrum => _spectrum;
 
-        public Range GetSpectrumRange(Func<SpectrumPeak, double> selector) {
+        public (double, double) GetSpectrumRange(Func<SpectrumPeak, double> selector) {
             if (_spectrum.Count == 0) {
-                return new Range(0, 1);
+                return (0d, 1d);
             }
-            return new Range(_spectrum.Min(selector), _spectrum.Max(selector));
+            return (_spectrum.Min(selector), _spectrum.Max(selector));
         }
 
         public MsSpectrum Difference(MsSpectrum other, double tolerance) {
