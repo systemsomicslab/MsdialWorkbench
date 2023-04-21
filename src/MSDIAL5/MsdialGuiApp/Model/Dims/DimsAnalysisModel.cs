@@ -71,38 +71,22 @@ namespace CompMs.App.Msdial.Model.Dims
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, status: ~(FilterEnableStatus.Rt | FilterEnableStatus.Dt)).AddTo(Disposables);
 
-            var ontologyBrush = new BrushMapData<ChromatogramPeakFeatureModel>(
-                    new KeyBrushMapper<ChromatogramPeakFeatureModel, string>(
-                        ChemOntologyColor.Ontology2RgbaBrush,
-                        peak => peak?.Ontology ?? string.Empty,
-                        Color.FromArgb(180, 181, 181, 181)),
-                    "Ontology");
-            var intensityBrush = new BrushMapData<ChromatogramPeakFeatureModel>(
-                    new DelegateBrushMapper<ChromatogramPeakFeatureModel>(
-                        peak => Color.FromArgb(
-                            180,
-                            (byte)(255 * peak.InnerModel.PeakShape.AmplitudeScoreValue),
-                            (byte)(255 * (1 - Math.Abs(peak.InnerModel.PeakShape.AmplitudeScoreValue - 0.5))),
-                            (byte)(255 - 255 * peak.InnerModel.PeakShape.AmplitudeScoreValue)),
-                        enableCache: true),
-                    "Intensity");
-            var brushes = new[] { intensityBrush, ontologyBrush, };
-            BrushMapData<ChromatogramPeakFeatureModel> selectedBrush;
+            BrushMapDataSelector<ChromatogramPeakFeatureModel> brushSelector;
             switch (parameter.TargetOmics) {
                 case TargetOmics.Lipidomics:
-                    selectedBrush = ontologyBrush;
+                    brushSelector = BrushMapDataSelector<ChromatogramPeakFeatureModel>.CreateLipidomicsBrushes();
                     break;
                 case TargetOmics.Metabolomics:
                 case TargetOmics.Proteomics:
                 default:
-                    selectedBrush = intensityBrush;
+                    brushSelector = BrushMapDataSelector<ChromatogramPeakFeatureModel>.CreateBrushes();
                     break;
             }
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             var vAxis = Observable.Return(new Range(-0.5, 0.5))
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
-            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.Mass, peak => peak.KMD, Target, labelSource, selectedBrush, brushes, new PeakLinkModel(Ms1Peaks), verticalAxis: vAxis)
+            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.Mass, peak => peak.KMD, Target, labelSource, brushSelector.SelectedBrush, brushSelector.Brushes, new PeakLinkModel(Ms1Peaks), verticalAxis: vAxis)
             {
                 VerticalTitle = "Kendrick mass defect",
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.KMD),

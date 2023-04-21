@@ -139,36 +139,20 @@ namespace CompMs.App.Msdial.Model.Lcimms
             peakSpotNavigator.AttachFilter(peakModels, peakFilterModel, status: FilterEnableStatus.All, evaluator: evaluator.Contramap<IFilterable, MsScanMatchResult>(filterable => filterable.MatchResults.Representative));
             PeakSpotNavigatorModel = peakSpotNavigator;
 
-            var ontologyBrush = new BrushMapData<ChromatogramPeakFeatureModel>(
-                    new KeyBrushMapper<ChromatogramPeakFeatureModel, string>(
-                        ChemOntologyColor.Ontology2RgbaBrush,
-                        peak => peak?.Ontology ?? string.Empty,
-                        Color.FromArgb(180, 181, 181, 181)),
-                    "Ontology");
-            var intensityBrush = new BrushMapData<ChromatogramPeakFeatureModel>(
-                    new DelegateBrushMapper<ChromatogramPeakFeatureModel>(
-                        peak => Color.FromArgb(
-                            180,
-                            (byte)(255 * peak.InnerModel.PeakShape.AmplitudeScoreValue),
-                            (byte)(255 * (1 - Math.Abs(peak.InnerModel.PeakShape.AmplitudeScoreValue - 0.5))),
-                            (byte)(255 - 255 * peak.InnerModel.PeakShape.AmplitudeScoreValue)),
-                        enableCache: true),
-                    "Intensity");
-            var brushes = new[] { intensityBrush, ontologyBrush, };
-            BrushMapData<ChromatogramPeakFeatureModel> selectedBrush;
+            BrushMapDataSelector<ChromatogramPeakFeatureModel> brushMapDataSelector;
             switch (parameter.TargetOmics) {
                 case TargetOmics.Lipidomics:
-                    selectedBrush = ontologyBrush;
+                    brushMapDataSelector = BrushMapDataSelector<ChromatogramPeakFeatureModel>.CreateLipidomicsBrushes();
                     break;
                 case TargetOmics.Metabolomics:
                 case TargetOmics.Proteomics:
                 default:
-                    selectedBrush = intensityBrush;
+                    brushMapDataSelector = BrushMapDataSelector<ChromatogramPeakFeatureModel>.CreateBrushes();
                     break;
             }
-            Brush = selectedBrush.Mapper;
+            Brush = brushMapDataSelector.SelectedBrush.Mapper;
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            RtMzPlotModel = new AnalysisPeakPlotModel(accumulatedPeakModels, peak => peak.ChromXValue ?? 0, peak => peak.Mass, accumulatedTarget, labelSource, selectedBrush, brushes, new PeakLinkModel(accumulatedPeakModels))
+            RtMzPlotModel = new AnalysisPeakPlotModel(accumulatedPeakModels, peak => peak.ChromXValue ?? 0, peak => peak.Mass, accumulatedTarget, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, new PeakLinkModel(accumulatedPeakModels))
             {
                 HorizontalTitle = "Retention time [min]",
                 VerticalTitle = "m/z",
@@ -190,7 +174,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 VerticalTitle = "Abundance",
             }.AddTo(Disposables);
 
-            DtMzPlotModel = new AnalysisPeakPlotModel(peakModels, peak => peak?.ChromXValue ?? 0d, peak => peak?.Mass ?? 0d, target, labelSource, selectedBrush, brushes, new PeakLinkModel(new ChromatogramPeakFeatureModel[0]), verticalAxis: RtMzPlotModel.VerticalAxis)
+            DtMzPlotModel = new AnalysisPeakPlotModel(peakModels, peak => peak?.ChromXValue ?? 0d, peak => peak?.Mass ?? 0d, target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, new PeakLinkModel(new ChromatogramPeakFeatureModel[0]), verticalAxis: RtMzPlotModel.VerticalAxis)
             {
                 HorizontalTitle = "Mobility [1/K0]",
                 VerticalTitle = "m/z",
@@ -304,27 +288,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
 
             PeakTableModel = new LcimmsAnalysisPeakTableModel(new ReadOnlyObservableCollection<ChromatogramPeakFeatureModel>(driftPeaks), target, PeakSpotNavigatorModel).AddTo(Disposables);
-
-            switch (parameter.TargetOmics) {
-                case TargetOmics.Lipidomics:
-                    Brush = new KeyBrushMapper<ChromatogramPeakFeatureModel, string>(
-                        ChemOntologyColor.Ontology2RgbaBrush,
-                        peak => peak?.Ontology ?? string.Empty,
-                        Color.FromArgb(180, 181, 181, 181));
-                    break;
-                case TargetOmics.Metabolomics:
-                    Brush = new DelegateBrushMapper<ChromatogramPeakFeatureModel>(
-                        peak => Color.FromArgb(
-                            180,
-                            (byte)(255 * peak.InnerModel.PeakShape.AmplitudeScoreValue),
-                            (byte)(255 * (1 - Math.Abs(peak.InnerModel.PeakShape.AmplitudeScoreValue - 0.5))),
-                            (byte)(255 - 255 * peak.InnerModel.PeakShape.AmplitudeScoreValue)),
-                        enableCache: true);
-                    break;
-                default:
-                    Brush = new ConstantBrushMapper<ChromatogramPeakFeatureModel>(Brushes.Black);
-                    break;
-            }
 
             var mzSpotFocus = new ChromSpotFocus(DtMzPlotModel.VerticalAxis, MZ_TOLELANCE, target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
             var rtSpotFocus = new ChromSpotFocus(RtMzPlotModel.HorizontalAxis, RT_TOLELANCE, accumulatedTarget.Select(t => t?.InnerModel.PeakFeature.ChromXsTop.RT.Value ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
