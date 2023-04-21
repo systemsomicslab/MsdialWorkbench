@@ -1500,8 +1500,8 @@ namespace CompMs.Common.Algorithm.Scoring {
 
 
                 case LbmClass.SHexCer:
-                    return LipidMsmsCharacterization.JudgeIfShexcer(msScanProp, ms2tol, refMz,
-                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct, totalOxidized);
+                    return LipidEieioMsmsCharacterization.JudgeIfShexcer(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct, totalOxidized);
 
                 case LbmClass.GM3:
                     return LipidMsmsCharacterization.JudgeIfGm3(msScanProp, ms2tol, refMz,
@@ -1512,7 +1512,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                         molecule.TotalCarbonCount, molecule.TotalDoubleBondCount, adduct);
 
                 case LbmClass.Sph:
-                    return LipidMsmsCharacterization.JudgeIfSphingosine(msScanProp, ms2tol, refMz,
+                    return LipidEieioMsmsCharacterization.JudgeIfSphingosine(msScanProp, ms2tol, refMz,
                         molecule.TotalCarbonCount, molecule.TotalDoubleBondCount, adduct);
 
                 case LbmClass.PhytoSph:
@@ -1612,8 +1612,9 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return LipidMsmsCharacterization.JudgeIfEtherDAG(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                 case LbmClass.PI_Cer:
-                    return LipidMsmsCharacterization.JudgeIfPicermide(msScanProp, ms2tol, refMz,
-                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct, totalOxidized);
+                    return LipidEieioMsmsCharacterization.JudgeIfPicermide(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct, totalOxidized);
+
                 case LbmClass.PE_Cer:
                     return LipidMsmsCharacterization.JudgeIfPecermide(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct, totalOxidized);
@@ -1645,7 +1646,7 @@ namespace CompMs.Common.Algorithm.Scoring {
 
                 case LbmClass.NAGly:
                     if (totalCarbon < 29) {
-                        return LipidMsmsCharacterization.JudgeIfNAcylGlyOxFa(msScanProp, ms2tol, refMz,
+                        return LipidEieioMsmsCharacterization.JudgeIfNAcylGlyOxFa(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, totalOxidized, adduct);
                     }
                     else {

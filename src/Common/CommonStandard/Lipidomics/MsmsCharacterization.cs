@@ -13576,6 +13576,11 @@ AdductIon adduct)
             { // Positive ion mode 
                 if (adduct.AdductIonName == "[M+H]+")
                 {
+                    // seek -2H2O 
+                    var threshold1 = 1.0;
+                    var diagnosticMz1 = theoreticalMz - H2O*2;
+                    var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
+                    if (isClassIon1Found) return null;
 
                     var candidates = new List<LipidMolecule>();
 
@@ -15721,9 +15726,12 @@ AdductIon adduct)
                     //  seek 76.039305(gly+)
                     var threshold = 10.0;
                     var diagnosticMz = 76.039305;
-
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
-                    if (isClassIonFound == false) return null;
+                    //  seek -CO2
+                    var threshold1 = 5.0;
+                    var diagnosticMz1 = theoreticalMz - (12 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass);
+                    var isClassIonFound1 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
+                    if (isClassIonFound == false|| isClassIonFound1 == false ) return null;
 
                     var candidates = new List<LipidMolecule>();
 
