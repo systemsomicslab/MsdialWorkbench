@@ -1,15 +1,20 @@
 ﻿using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
+using System;
 using System.ComponentModel;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class Ms1BasedSpectrumFeature : BindableBase
+    public sealed class Ms1BasedSpectrumFeature : BindableBase, IDisposable
     {
         private SpectrumFeature _spectrumFeature;
+        private bool _disposedValue;
 
         public Ms1BasedSpectrumFeature(SpectrumFeature spectrumFeature) {
             _spectrumFeature = spectrumFeature;
+            Molecule = new MoleculeModel(spectrumFeature.AnnotatedMSDecResult.Molecule);
+            Scan = new ScanModel(spectrumFeature.AnnotatedMSDecResult.MSDecResult);
+            MatchResults = new MsScanMatchResultContainerModel(spectrumFeature.AnnotatedMSDecResult.MatchResults);
         }
 
         public MoleculeModel Molecule { get; }
@@ -41,6 +46,21 @@ namespace CompMs.App.Msdial.Model.DataObj
             if (args.PropertyName == nameof(Comment)) {
                 _spectrumFeature.Comment = Comment;
             }
+        }
+
+        private void Dispose(bool disposing) {
+            if (!_disposedValue) {
+                if (disposing) {
+                    MatchResults?.Dispose();
+                }
+                _disposedValue = true;
+            }
+        }
+
+        public void Dispose() {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

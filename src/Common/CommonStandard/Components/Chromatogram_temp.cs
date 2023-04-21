@@ -254,16 +254,15 @@ namespace CompMs.Common.Components {
             for (int i = 0; i < _peaks.Count; i++) {
                 var peak = _peaks[i];
                 if (peak.Id >= startID && peak.Id <= endID) {
-                    datapoints.Add(new double[] { peak.Id, peak.Time, peak.Mz, peak.Intensity });
+                    datapoints.Add(new double[] { datapoints.Count, peak.Time, peak.Mz, peak.Intensity });
                     if (peak.Intensity > peaktopIntensity) {
                         peaktopIntensity = peak.Intensity;
-                        peakTopID = i;
+                        peakTopID = datapoints.Count - 1;
                     }
                 }
             }
 
-            var result = PeakDetection.GetPeakDetectionResult(datapoints, peakTopID);
-            return result;
+            return PeakDetection.GetPeakDetectionResult(datapoints, peakTopID);
         }
 
         public ChromatogramGlobalProperty_temp2 GetProperty(int noiseEstimateBin, int minNoiseWindowSize, double minNoiseLevel, double noiseFactor) {

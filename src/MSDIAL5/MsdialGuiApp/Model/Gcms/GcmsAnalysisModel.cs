@@ -20,7 +20,7 @@ namespace CompMs.App.Msdial.Model.Gcms
 
         public GcmsAnalysisModel(AnalysisFileBeanModel file) {
             _disposables = new CompositeDisposable();
-            _spectrumFeatures = file.LoadMs1BasedSpectrumFeatureCollection();
+            _spectrumFeatures = file.LoadMs1BasedSpectrumFeatureCollection().AddTo(_disposables);
             _peaks =  file.LoadChromatogramPeakFeatureModels();
             PeakPlotModel = new SpectrumFeaturePlotModel(_spectrumFeatures, _peaks).AddTo(_disposables);
         }

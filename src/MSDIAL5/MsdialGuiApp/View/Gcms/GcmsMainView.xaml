@@ -41,7 +41,7 @@
         <GridSplitter Margin="0,0,0,0" 
                     Width="2" ResizeDirection="Columns" ResizeBehavior="CurrentAndNext" 
                     VerticalAlignment="Stretch" HorizontalAlignment="Right" 
-                    Grid.Row="1" Grid.Column="0"/>
+                    Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"/>
         <GridSplitter Margin="0,0,0,0" 
                     Height="2" ResizeDirection="Rows" ResizeBehavior="CurrentAndNext" 
                     VerticalAlignment="Top" 

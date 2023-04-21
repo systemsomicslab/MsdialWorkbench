@@ -15,10 +15,10 @@ using System.Linq;
 namespace CompMs.MsdialGcMsApi.Algorithm
 {
     public class Annotation {
-        private readonly List<MoleculeMsReference> _mspDB;
+        private readonly IReadOnlyList<MoleculeMsReference> _mspDB;
         private readonly MsdialGcmsParameter _parameter;
 
-        public Annotation(List<MoleculeMsReference> mspDB, MsdialGcmsParameter parameter) {
+        public Annotation(IReadOnlyList<MoleculeMsReference> mspDB, MsdialGcmsParameter parameter) {
             _mspDB = mspDB;
             _parameter = parameter;
         }
@@ -41,7 +41,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                 foreach (var (decResult, index) in ms1DecResults.WithIndex()) {
                     var results = new MsScanMatchResultContainer();
                     results.AddResults(MspBasedProccess(decResult));
-                    if (results.Representative is MsScanMatchResult topHit) {
+                    if (results.Representative is MsScanMatchResult topHit && !topHit.IsUnknown) {
                         features[index] = new AnnotatedMSDecResult(decResult, results, _mspDB[topHit.LibraryID]);
                     }
                     else {

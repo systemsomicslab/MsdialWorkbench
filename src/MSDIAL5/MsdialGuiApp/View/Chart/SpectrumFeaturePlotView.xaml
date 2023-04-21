@@ -86,14 +86,13 @@
                                   HorizontalPropertyName="{Binding HorizontalProperty, Mode=OneWay}"
                                   VerticalPropertyName="{Binding HorizontalProperty, Mode=OneWay}"
                                   VerticalAxis="{x:Static axis:ConstantAxisManager.Instance}"
-                                  PointGeometry="M -1,1 H 1 L 0,-1 Z"
+                                  PointGeometry="M -1,-1 H 1 L 0,1 Z"
                                   PointBrush="Gray"
-                                  Radius="6"
-                                  Height="100"
+                                  Radius="8"
+                                  Height="16"
                                   VerticalAlignment="Top"/>
             <Canvas DataContext="{Binding SelectedPoint, ElementName=analysisScatter}"
-                    ClipToBounds="True"
-                    Visibility="{Binding HasValue, Converter={StaticResource BooleanToVisibility}}">
+                    ClipToBounds="True">
                 <Rectangle Fill="Red" VerticalAlignment="Stretch" IsHitTestVisible="False"
                            Width="1" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Canvas}}"
                            Canvas.Left="{Binding X}"/>

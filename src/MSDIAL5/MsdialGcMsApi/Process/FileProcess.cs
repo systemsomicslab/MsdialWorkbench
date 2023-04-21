@@ -6,6 +6,7 @@ using CompMs.MsdialGcMsApi.Algorithm;
 using CompMs.MsdialGcMsApi.Parameter;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -35,7 +36,7 @@ namespace CompMs.MsdialGcMsApi.Process
             _riDictionaryInfo = storage.Parameter.FileIdRiInfoDictionary;
             _peakSpotting = new PeakSpotting(storage.IupacDatabase, storage.Parameter);
             _ms1Deconvolution = new Ms1Dec(storage.Parameter);
-            _annotation = new Annotation(storage.MspDB, storage.Parameter);
+            _annotation = new Annotation(storage.DataBases.MetabolomicsDataBases.FirstOrDefault()?.DataBase.Database, storage.Parameter);
         }
 
         public async Task RunAsync(AnalysisFileBean analysisFile, Action<int> reportAction, CancellationToken token = default) {

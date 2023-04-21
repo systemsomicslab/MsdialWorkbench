@@ -61,11 +61,11 @@ namespace CompMs.Common.Interfaces
             public int Serialize(ref byte[] bytes, int offset, IMoleculeProperty value, IFormatterResolver formatterResolver) {
                 var currentOffset = offset;
                 currentOffset += MessagePackBinary.WriteArrayHeader(ref bytes, currentOffset, 5);
-                currentOffset += MessagePackBinary.WriteString(ref bytes, currentOffset, value.Name);
-                currentOffset += formatterResolver.GetFormatterWithVerify<Formula>().Serialize(ref bytes, currentOffset, value.Formula, formatterResolver);
-                currentOffset += MessagePackBinary.WriteString(ref bytes, currentOffset, value.Ontology);
-                currentOffset += MessagePackBinary.WriteString(ref bytes, currentOffset, value.SMILES);
-                currentOffset += MessagePackBinary.WriteString(ref bytes, currentOffset, value.InChIKey);
+                currentOffset += MessagePackBinary.WriteString(ref bytes, currentOffset, value?.Name);
+                currentOffset += formatterResolver.GetFormatterWithVerify<Formula>().Serialize(ref bytes, currentOffset, value?.Formula, formatterResolver);
+                currentOffset += MessagePackBinary.WriteString(ref bytes, currentOffset, value?.Ontology);
+                currentOffset += MessagePackBinary.WriteString(ref bytes, currentOffset, value?.SMILES);
+                currentOffset += MessagePackBinary.WriteString(ref bytes, currentOffset, value?.InChIKey);
                 return currentOffset - offset;
             }
         }
