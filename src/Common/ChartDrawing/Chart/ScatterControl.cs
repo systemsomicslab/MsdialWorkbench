@@ -259,8 +259,9 @@ namespace CompMs.Graphics.Chart
         public static readonly DependencyProperty SelectedItemProperty =
             DependencyProperty.Register(
                 nameof(SelectedItem), typeof(object), typeof(ScatterControl),
-                new PropertyMetadata(
+                new FrameworkPropertyMetadata(
                     null,
+                    FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
                     OnSelectedItemChanged));
 
         public object SelectedItem {
