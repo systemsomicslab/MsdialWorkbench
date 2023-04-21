@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using Reactive.Bindings.Extensions;
 using System;
@@ -18,11 +19,12 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly Ms1BasedSpectrumFeatureCollection _spectrumFeatures;
         private readonly ObservableCollection<ChromatogramPeakFeatureModel> _peaks;
 
-        public GcmsAnalysisModel(AnalysisFileBeanModel file) {
+        public GcmsAnalysisModel(AnalysisFileBeanModel file, TargetOmics targetOmics) {
             _disposables = new CompositeDisposable();
             _spectrumFeatures = file.LoadMs1BasedSpectrumFeatureCollection().AddTo(_disposables);
             _peaks =  file.LoadChromatogramPeakFeatureModels();
-            PeakPlotModel = new SpectrumFeaturePlotModel(_spectrumFeatures, _peaks).AddTo(_disposables);
+            var brushMapDataSelector = BrushMapDataSelectorFactory.CreatePeakFeatureBrushes(targetOmics);
+            PeakPlotModel = new SpectrumFeaturePlotModel(_spectrumFeatures, _peaks, brushMapDataSelector).AddTo(_disposables);
         }
 
         public SpectrumFeaturePlotModel PeakPlotModel { get; }

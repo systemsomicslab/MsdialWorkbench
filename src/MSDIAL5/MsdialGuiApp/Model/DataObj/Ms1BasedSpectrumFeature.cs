@@ -15,6 +15,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             Molecule = new MoleculeModel(spectrumFeature.AnnotatedMSDecResult.Molecule);
             Scan = new ScanModel(spectrumFeature.AnnotatedMSDecResult.MSDecResult);
             MatchResults = new MsScanMatchResultContainerModel(spectrumFeature.AnnotatedMSDecResult.MatchResults);
+            QuantifiedChromatogramPeak = spectrumFeature.QuantifiedChromatogramPeak;
         }
 
         public MoleculeModel Molecule { get; }

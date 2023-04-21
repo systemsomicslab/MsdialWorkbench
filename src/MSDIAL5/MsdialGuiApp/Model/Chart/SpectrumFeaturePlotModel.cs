@@ -12,8 +12,7 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class SpectrumFeaturePlotModel : DisposableModelBase
     {
-        public SpectrumFeaturePlotModel(Ms1BasedSpectrumFeatureCollection spectra, ObservableCollection<ChromatogramPeakFeatureModel> peaks)
-        {
+        public SpectrumFeaturePlotModel(Ms1BasedSpectrumFeatureCollection spectra, ObservableCollection<ChromatogramPeakFeatureModel> peaks, BrushMapDataSelector<ChromatogramPeakFeatureModel> brushMapDataSelector) {
             SpectraWrapper = new ReadOnlyObservableCollection<object>(new ObservableCollection<object>(spectra.Items.Select(item => new SpectrumWrapper(item))));
             SelectedSpectrumWrapper = new ReactivePropertySlim<object>().AddTo(Disposables);
 
@@ -39,6 +38,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
             VerticalAxis = ContinuousAxisManager<double>.Build(peaks, p => p.Mass).AddTo(Disposables);
             HorizontalAxis = ContinuousAxisManager<double>.Build(peaks, p => p.RT.Value).AddTo(Disposables);
+            BrushMapDataSelector = brushMapDataSelector;
         }
 
         public ReactivePropertySlim<object> SelectedSpectrumWrapper { get; }
@@ -53,6 +53,7 @@ namespace CompMs.App.Msdial.Model.Chart
         public ReactivePropertySlim<string> HorizontalLabel { get; }
         public ReactivePropertySlim<string> VerticalLabel { get; }
         public ReadOnlyReactivePropertySlim<string> Title { get; }
+        public BrushMapDataSelector<ChromatogramPeakFeatureModel> BrushMapDataSelector { get; }
 
         class SpectrumWrapper : BindableBase {
             public SpectrumWrapper(Ms1BasedSpectrumFeature feature) {

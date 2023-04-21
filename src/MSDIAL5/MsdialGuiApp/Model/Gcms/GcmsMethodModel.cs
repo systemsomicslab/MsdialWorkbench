@@ -130,7 +130,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 ((IDisposable)SelectedAnalysisModel).Dispose();
                 Disposables.Remove(SelectedAnalysisModel);
             }
-            return SelectedAnalysisModel = new GcmsAnalysisModel(analysisFile);
+            return SelectedAnalysisModel = new GcmsAnalysisModel(analysisFile, _storage.Parameter.ProjectParam.TargetOmics);
         }
     }
 }

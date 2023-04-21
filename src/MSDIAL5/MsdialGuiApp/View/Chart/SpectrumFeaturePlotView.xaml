@@ -19,6 +19,7 @@
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <StreamGeometry x:Key="SpectrumFocusMark">M -1,-1 H 1 L 0,1 Z</StreamGeometry>
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -72,7 +73,7 @@
                                       DataType="{x:Type do:ChromatogramPeakFeatureModel}"
                                       HorizontalProperty="{Binding HorizontalProperty, Mode=OneWay}"
                                       VerticalProperty="{Binding VerticalProperty, Mode=OneWay}"
-                                      PointBrush="{Binding Brush}"
+                                      PointBrush="{Binding BrushMapDataSelector.SelectedBrush.Mapper}"
                                       Radius="5.5">
                 <chart:ScatterControlSlim.ToolTip>
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
@@ -98,7 +99,7 @@
                                   HorizontalPropertyName="{Binding HorizontalProperty, Mode=OneWay}"
                                   VerticalPropertyName="{Binding HorizontalProperty, Mode=OneWay}"
                                   VerticalAxis="{x:Static axis:ConstantAxisManager.Instance}"
-                                  PointGeometry="M -1,-1 H 1 L 0,1 Z"
+                                  PointGeometry="{StaticResource SpectrumFocusMark}"
                                   PointBrush="Gray"
                                   Radius="8"
                                   Height="16"
@@ -115,7 +116,7 @@
                 <Rectangle Fill="Blue" VerticalAlignment="Stretch" IsHitTestVisible="False"
                            Width="1" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Canvas}}"
                            Canvas.Left="{Binding X}"/>
-                <Path Data="M -1,-1 H 1 L 0,1 Z" Fill="Red" Stretch="Uniform" Canvas.Left="{Binding X}" Height="16" Width="16"
+                <Path Data="{StaticResource SpectrumFocusMark}" Fill="Red" Stretch="Uniform" Canvas.Left="{Binding X}" Height="16" Width="16"
                       IsHitTestVisible="False">
                     <Path.RenderTransform>
                         <TranslateTransform X="-8"/>
@@ -123,7 +124,7 @@
                 </Path>
             </Canvas>
             <Canvas DataContext="{Binding FocusedPoint, ElementName=spectrumSelector}" ClipToBounds="True">
-                <Path Data="M -1,-1 H 1 L 0,1 Z" Fill="Blue" Stretch="Uniform" Canvas.Left="{Binding X}" Height="16" Width="16"
+                <Path Data="{StaticResource SpectrumFocusMark}" Fill="Blue" Stretch="Uniform" Canvas.Left="{Binding X}" Height="16" Width="16"
                       IsHitTestVisible="False">
                     <Path.RenderTransform>
                         <TranslateTransform X="-8"/>

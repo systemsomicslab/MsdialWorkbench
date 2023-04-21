@@ -3,10 +3,8 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
-using CompMs.Graphics.Design;
 using Reactive.Bindings;
 using System.Collections.ObjectModel;
-using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
@@ -23,8 +21,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReactivePropertySlim<ChromatogramPeakFeatureModel> SelectedChromatogramPeak => _model.SelectedChromatogramPeak;
         public ReadOnlyObservableCollection<ChromatogramPeakFeatureModel> ChromatogramPeaks => _model.ChromatogramPeaks;
 
-
-        public IBrushMapper Brush { get; } = new ConstantBrushMapper(Brushes.Pink);
+        public BrushMapDataSelector<ChromatogramPeakFeatureModel> BrushMapDataSelector => _model.BrushMapDataSelector;
         public string HorizontalProperty { get; } = nameof(ChromatogramPeakFeatureModel.ChromXValue);
         public string VerticalProperty { get; } = nameof(ChromatogramPeakFeatureModel.Mass);
         public string LabelProperty { get; } = nameof(ChromatogramPeakFeatureModel.MasterPeakID);
