@@ -139,33 +139,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
             InternalStandardSetModel = new InternalStandardSetModel(driftProps, TargetMsMethod.Lcimms).AddTo(Disposables);
             NormalizationSetModel = new NormalizationSetModel(Container, files, fileCollection, mapper, evaluator, InternalStandardSetModel, parameter, broker).AddTo(Disposables);
 
-            var ontologyBrush = new BrushMapData<AlignmentSpotPropertyModel>(
-                    new KeyBrushMapper<AlignmentSpotPropertyModel, string>(
-                        ChemOntologyColor.Ontology2RgbaBrush,
-                        spot => spot?.Ontology ?? string.Empty,
-                        Color.FromArgb(180, 181, 181, 181)),
-                    "Ontology");
-            var amplitudeBrush = new BrushMapData<AlignmentSpotPropertyModel>(
-                    new DelegateBrushMapper<AlignmentSpotPropertyModel>(
-                        spot => Color.FromArgb(
-                            180,
-                            (byte)(255 * spot.innerModel.RelativeAmplitudeValue),
-                            (byte)(255 * (1 - Math.Abs(spot.innerModel.RelativeAmplitudeValue - 0.5))),
-                            (byte)(255 - 255 * spot.innerModel.RelativeAmplitudeValue)),
-                        enableCache: true),
-                    "Amplitude");
-            Brushes = new List<BrushMapData<AlignmentSpotPropertyModel>> { amplitudeBrush, ontologyBrush, };
-            switch (parameter.TargetOmics) {
-                case TargetOmics.Lipidomics:
-                    SelectedBrush = ontologyBrush;
-                    break;
-                case TargetOmics.Proteomics:
-                case TargetOmics.Metabolomics:
-                default:
-                    SelectedBrush = amplitudeBrush;
-                    break;
-            }
-
+            var brushMapDataSelector = BrushMapDataSelectorFactory.CreateAlignmentSpotBrushes(parameter.TargetOmics);
+            Brushes = brushMapDataSelector.Brushes.ToList();
+            SelectedBrush = brushMapDataSelector.SelectedBrush;
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel);
             RtMzPlotModel = new AlignmentPeakPlotModel(new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(accumulatedPropModels), spot => spot.TimesCenter, spot => spot.MassCenter, accumulatedTarget, labelSource, SelectedBrush, Brushes)
             {

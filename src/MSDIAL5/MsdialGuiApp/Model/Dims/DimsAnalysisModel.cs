@@ -71,17 +71,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, status: ~(FilterEnableStatus.Rt | FilterEnableStatus.Dt)).AddTo(Disposables);
 
-            BrushMapDataSelector<ChromatogramPeakFeatureModel> brushSelector;
-            switch (parameter.TargetOmics) {
-                case TargetOmics.Lipidomics:
-                    brushSelector = BrushMapDataSelector<ChromatogramPeakFeatureModel>.CreateLipidomicsBrushes();
-                    break;
-                case TargetOmics.Metabolomics:
-                case TargetOmics.Proteomics:
-                default:
-                    brushSelector = BrushMapDataSelector<ChromatogramPeakFeatureModel>.CreateBrushes();
-                    break;
-            }
+            var brushSelector = BrushMapDataSelectorFactory.CreatePeakFeatureBrushes(parameter.TargetOmics);
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             var vAxis = Observable.Return(new Range(-0.5, 0.5))
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))

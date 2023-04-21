@@ -31,6 +31,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Security;
 using System.Windows;
 using System.Windows.Media;
 
@@ -89,40 +90,13 @@ namespace CompMs.App.Msdial.Model.Dims
             NormalizationSetModel = new NormalizationSetModel(Container, _files, _fileCollection, _dataBaseMapper, _matchResultEvaluator, InternalStandardSetModel, _parameter, _broker).AddTo(Disposables);
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator, status: ~(FilterEnableStatus.Rt | FilterEnableStatus.Dt)).AddTo(Disposables);
 
-            var ontologyBrush = new BrushMapData<AlignmentSpotPropertyModel>(
-                    new KeyBrushMapper<AlignmentSpotPropertyModel, string>(
-                        ChemOntologyColor.Ontology2RgbaBrush,
-                        spot => spot?.Ontology ?? string.Empty,
-                        Color.FromArgb(180, 181, 181, 181)),
-                    "Ontology");
-            var intensityBrush = new BrushMapData<AlignmentSpotPropertyModel>(
-                    new DelegateBrushMapper<AlignmentSpotPropertyModel>(
-                        spot => Color.FromArgb(
-                            180,
-                            (byte)(255 * spot.innerModel.RelativeAmplitudeValue),
-                            (byte)(255 * (1 - Math.Abs(spot.innerModel.RelativeAmplitudeValue - 0.5))),
-                            (byte)(255 - 255 * spot.innerModel.RelativeAmplitudeValue)),
-                        enableCache: true),
-                    "Amplitude");
-            var brushes = new List<BrushMapData<AlignmentSpotPropertyModel>> { ontologyBrush, intensityBrush };
-            BrushMapData<AlignmentSpotPropertyModel> selectedBrush = null;
-            switch (parameter.TargetOmics) {
-                case TargetOmics.Lipidomics:
-                    selectedBrush = ontologyBrush;
-                    break;
-                case TargetOmics.Proteomics:
-                case TargetOmics.Metabolomics:
-                default:
-                    selectedBrush = intensityBrush;
-                    break;
-            }
-
+            var brushMapDataSelector = BrushMapDataSelectorFactory.CreateAlignmentSpotBrushes(parameter.TargetOmics);
             var target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
             Target = target;
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.MassCenter, spot => spot.KMD, Target, labelSource, selectedBrush, brushes)
+            PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.MassCenter, spot => spot.KMD, Target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes.ToList())
             {
                 GraphTitle = ((IFileBean)_alignmentFile).FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),

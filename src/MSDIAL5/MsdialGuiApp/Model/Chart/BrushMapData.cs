@@ -1,5 +1,4 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.CommonMVVM;
+﻿using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
@@ -29,23 +28,22 @@ namespace CompMs.App.Msdial.Model.Chart
     }
 
     internal static class BrushMapData {
-        public static BrushMapData<ChromatogramPeakFeatureModel> CreateAmplitudeScoreBursh() {
+        public static BrushMapData<T> CreateOntologyBrush<T>(Func<T, string> ontologyGetter) {
+            var brush = new KeyBrushMapper<T, string>(
+                ChemOntologyColor.Ontology2RgbaBrush,
+                ontologyGetter,
+                Color.FromArgb(180, 181, 181, 181));
+            return new BrushMapData<T>(brush, "Ontology");
+        }
+
+        public static BrushMapData<T> CreateAmplitudeScoreBursh<T>(Func<T, double> scoreGetter) {
             DelegateBrushMapper<double> scoreBrush = new DelegateBrushMapper<double>(
                 score => Color.FromArgb(
                     180,
                     (byte)(255 * score),
                     (byte)(255 * (1 - Math.Abs(score - 0.5))),
                     (byte)(255 - 255 * score)));
-            var brush = scoreBrush.Contramap((ChromatogramPeakFeatureModel peak) => peak.InnerModel.PeakShape.AmplitudeScoreValue);
-            return new BrushMapData<ChromatogramPeakFeatureModel>(brush, "Intensity");
-        }
-
-        public static BrushMapData<ChromatogramPeakFeatureModel> CreateOntologyBrush() {
-            var brush = new KeyBrushMapper<ChromatogramPeakFeatureModel, string>(
-                ChemOntologyColor.Ontology2RgbaBrush,
-                peak => peak?.Ontology ?? string.Empty,
-                Color.FromArgb(180, 181, 181, 181));
-            return new BrushMapData<ChromatogramPeakFeatureModel>(brush, "Ontology");
+            return new BrushMapData<T>(scoreBrush.Contramap(scoreGetter), "Intensity");
         }
     }
 }

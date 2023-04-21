@@ -127,37 +127,14 @@ namespace CompMs.App.Msdial.Model.Statistics
 
             PointBrush = brushmaps.Select(bm => bm.Contramap((ComponentScoreViewModel csvm) => csvm.Model.Bean.AnalysisFileClass)).ToReactiveProperty();
 
-            var ontology = new BrushMapData<ComponentLoadingViewModel>(
-                new KeyBrushMapper<ComponentLoadingViewModel, string>(
-                    ChemOntologyColor.Ontology2RgbaBrush,
-                    loading => loading?.Model.Spot.Ontology ?? string.Empty,
-                    Color.FromArgb(180, 181, 181, 181)),
-                "Ontology");
-            var amplitude = new BrushMapData<ComponentLoadingViewModel>(
-                new DelegateBrushMapper<ComponentLoadingViewModel>(
-                    loading => Color.FromArgb(
-                        180,
-                        (byte)(255 * loading.Model.Spot.innerModel.RelativeAmplitudeValue),
-                        (byte)(255 * (1 - Math.Abs(loading.Model.Spot.innerModel.RelativeAmplitudeValue - 0.5))),
-                        (byte)(255 - 255 * loading.Model.Spot.innerModel.RelativeAmplitudeValue)),
-                    enableCache: true),
-                "Amplitude");
+            var brushMapDataSelectorFactory = new BrushMapDataSelectorFactory<ComponentLoadingViewModel>(
+                    vm => vm.Model.Spot.innerModel.RelativeAmplitudeValue,
+                    vm => vm.Model.Spot?.Ontology ?? string.Empty);
+            var brushMapDataSelector = brushMapDataSelectorFactory.CreateBrushes(parameter.TargetOmics);
+            Brushes = brushMapDataSelector.Brushes.ToList();
+            SelectedBrush = brushMapDataSelector.SelectedBrush;
 
-            Brushes = new List<BrushMapData<ComponentLoadingViewModel>>
-            {
-                amplitude, ontology,
-            };
-
-            if (parameter.TargetOmics == TargetOmics.Lipidomics) {
-                SelectedBrush = ontology;
-            }
-            else if (parameter.TargetOmics == TargetOmics.Proteomics || parameter.TargetOmics == TargetOmics.Metabolomics) {
-                SelectedBrush = amplitude;
-            }
-
-            PosnegBrush = new DelegateBrushMapper<ComponentLoadingViewModel>(
-                    loading => loading.ComponentX > 0 ? Colors.Red : Colors.Blue);
-
+            PosnegBrush = new DelegateBrushMapper<ComponentLoadingViewModel>(loading => loading.ComponentX > 0 ? Colors.Red : Colors.Blue);
         }
 
         public ObservableCollection<ComponentLoadingModel> Loadings { get; }

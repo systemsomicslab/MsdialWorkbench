@@ -72,34 +72,9 @@ namespace CompMs.App.Msdial.Model.Imms
             InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Imms).AddTo(Disposables);
             NormalizationSetModel = new NormalizationSetModel(Container, _files, fileCollection, _dataBaseMapper, MatchResultEvaluator, InternalStandardSetModel, _parameter, broker).AddTo(Disposables);
 
-            Brushes = new List<BrushMapData<AlignmentSpotPropertyModel>>
-            {
-                new BrushMapData<AlignmentSpotPropertyModel>(
-                    new KeyBrushMapper<AlignmentSpotPropertyModel, string>(
-                        ChemOntologyColor.Ontology2RgbaBrush,
-                        spot => spot?.Ontology ?? string.Empty,
-                        Color.FromArgb(180, 181, 181, 181)),
-                    "Ontology"),
-                new BrushMapData<AlignmentSpotPropertyModel>(
-                    new DelegateBrushMapper<AlignmentSpotPropertyModel>(
-                        spot => Color.FromArgb(
-                            180,
-                            (byte)(255 * spot.innerModel.RelativeAmplitudeValue),
-                            (byte)(255 * (1 - Math.Abs(spot.innerModel.RelativeAmplitudeValue - 0.5))),
-                            (byte)(255 - 255 * spot.innerModel.RelativeAmplitudeValue)),
-                        enableCache: true),
-                    "Amplitude"),
-            };
-            switch (parameter.TargetOmics) {
-                case TargetOmics.Lipidomics:
-                    SelectedBrush = Brushes[0];
-                    break;
-                case TargetOmics.Metabolomics:
-                case TargetOmics.Proteomics:
-                    SelectedBrush = Brushes[1];
-                    break;
-            }
-
+            var brushMapDataSelector = BrushMapDataSelectorFactory.CreateAlignmentSpotBrushes(parameter.TargetOmics);
+            Brushes = brushMapDataSelector.Brushes.ToList();
+            SelectedBrush = brushMapDataSelector.SelectedBrush;
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator, status: ~FilterEnableStatus.Rt).AddTo(Disposables);

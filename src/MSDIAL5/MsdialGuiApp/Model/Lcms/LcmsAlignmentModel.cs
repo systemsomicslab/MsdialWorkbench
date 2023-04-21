@@ -105,40 +105,11 @@ namespace CompMs.App.Msdial.Model.Lcms
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator, status: FilterEnableStatus.All & ~FilterEnableStatus.Dt).AddTo(Disposables);
 
             // Peak scatter plot
-            var ontologyBrush = new BrushMapData<AlignmentSpotPropertyModel>(
-                    new KeyBrushMapper<AlignmentSpotPropertyModel, string>(
-                        ChemOntologyColor.Ontology2RgbaBrush,
-                        spot => spot?.Ontology ?? string.Empty,
-                        Color.FromArgb(180, 181, 181, 181)),
-                    "Ontology");
-            var intensityBrush = new BrushMapData<AlignmentSpotPropertyModel>(
-                    new DelegateBrushMapper<AlignmentSpotPropertyModel>(
-                        spot => Color.FromArgb(
-                            180,
-                            (byte)(255 * spot.innerModel.RelativeAmplitudeValue),
-                            (byte)(255 * (1 - Math.Abs(spot.innerModel.RelativeAmplitudeValue - 0.5))),
-                            (byte)(255 - 255 * spot.innerModel.RelativeAmplitudeValue)),
-                        enableCache: true),
-                    "Amplitude");
-            var brushes = new List<BrushMapData<AlignmentSpotPropertyModel>>
-            {
-                ontologyBrush, intensityBrush,
-            };
-            BrushMapData<AlignmentSpotPropertyModel> selectedBrush = null;
-            switch (parameter.TargetOmics) {
-                case TargetOmics.Lipidomics:
-                    selectedBrush = ontologyBrush;
-                    break;
-                case TargetOmics.Metabolomics:
-                case TargetOmics.Proteomics:
-                default:
-                    selectedBrush = intensityBrush;
-                    break;
-            }
+            var brushMapDataSelector = BrushMapDataSelectorFactory.CreateAlignmentSpotBrushes(parameter.TargetOmics);
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, selectedBrush, brushes)
+            PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes)
             {
                 GraphTitle = ((IFileBean)_alignmentFile).FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),

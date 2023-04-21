@@ -139,17 +139,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             peakSpotNavigator.AttachFilter(peakModels, peakFilterModel, status: FilterEnableStatus.All, evaluator: evaluator.Contramap<IFilterable, MsScanMatchResult>(filterable => filterable.MatchResults.Representative));
             PeakSpotNavigatorModel = peakSpotNavigator;
 
-            BrushMapDataSelector<ChromatogramPeakFeatureModel> brushMapDataSelector;
-            switch (parameter.TargetOmics) {
-                case TargetOmics.Lipidomics:
-                    brushMapDataSelector = BrushMapDataSelector<ChromatogramPeakFeatureModel>.CreateLipidomicsBrushes();
-                    break;
-                case TargetOmics.Metabolomics:
-                case TargetOmics.Proteomics:
-                default:
-                    brushMapDataSelector = BrushMapDataSelector<ChromatogramPeakFeatureModel>.CreateBrushes();
-                    break;
-            }
+            var brushMapDataSelector = BrushMapDataSelectorFactory.CreatePeakFeatureBrushes(parameter.TargetOmics);
             Brush = brushMapDataSelector.SelectedBrush.Mapper;
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             RtMzPlotModel = new AnalysisPeakPlotModel(accumulatedPeakModels, peak => peak.ChromXValue ?? 0, peak => peak.Mass, accumulatedTarget, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, new PeakLinkModel(accumulatedPeakModels))

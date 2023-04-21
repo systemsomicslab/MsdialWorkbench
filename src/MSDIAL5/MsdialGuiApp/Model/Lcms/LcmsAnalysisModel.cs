@@ -81,17 +81,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, status: ~FilterEnableStatus.Dt).AddTo(Disposables);
 
             // Peak scatter plot
-            BrushMapDataSelector<ChromatogramPeakFeatureModel> brushSelector;
-            switch (Parameter.TargetOmics) {
-                case TargetOmics.Lipidomics:
-                    brushSelector = BrushMapDataSelector<ChromatogramPeakFeatureModel>.CreateLipidomicsBrushes();
-                    break;
-                case TargetOmics.Metabolomics:
-                case TargetOmics.Proteomics:
-                default:
-                    brushSelector = BrushMapDataSelector<ChromatogramPeakFeatureModel>.CreateBrushes();
-                    break;
-            }
+            var brushSelector = BrushMapDataSelectorFactory.CreatePeakFeatureBrushes(parameter.TargetOmics);
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelSource, brushSelector.SelectedBrush, brushSelector.Brushes, new PeakLinkModel(Ms1Peaks))
             {
