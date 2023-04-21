@@ -97,7 +97,7 @@
                                 <ProgressBar IsIndeterminate="True" HorizontalAlignment="Center" Width="160" Height="16"/>
                             </StackPanel>
                             <chart:LineSpectrumControlSlim x:Name="MS2Line"
-                                                           ItemsSource="{Binding Spectrum.Value}"
+                                                           ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
                                                            DataType="{x:Type components:SpectrumPeak}"
                                                            HorizontalProperty="{Binding HorizontalProperty}"
                                                            VerticalProperty="{Binding VerticalProperty}"
@@ -116,7 +116,7 @@
                                     </ToolTip>
                                 </chart:LineSpectrumControlSlim.ToolTip>
                             </chart:LineSpectrumControlSlim>
-                            <chart:Annotator ItemsSource="{Binding Spectrum.Value}"
+                            <chart:Annotator ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
                                              HorizontalPropertyName="{Binding HorizontalProperty}"
                                              VerticalPropertyName="{Binding VerticalProperty}"
                                              LabelPropertyName="{Binding Labels.AnnotationLabelProperty}"
@@ -147,7 +147,7 @@
                 </TextBlock>
                 <Grid DataContext="{Binding LowerSpectrumViewModel}">
                     <chart:LineSpectrumControlSlim x:Name="MS2Ref"
-                                                   ItemsSource="{Binding Spectrum.Value}"
+                                                   ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
                                                    DataType="{x:Type components:SpectrumPeak}"
                                                    HorizontalProperty="{Binding HorizontalProperty}"
                                                    VerticalProperty="{Binding VerticalProperty}"
@@ -167,7 +167,7 @@
                             </ToolTip>
                         </chart:LineSpectrumControlSlim.ToolTip>
                     </chart:LineSpectrumControlSlim>
-                    <chart:Annotator ItemsSource="{Binding Spectrum.Value}"
+                    <chart:Annotator ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
                                      HorizontalPropertyName="{Binding HorizontalProperty}"
                                      VerticalPropertyName="{Binding VerticalProperty}"
                                      LabelPropertyName="{Binding Labels.AnnotationLabelProperty}"

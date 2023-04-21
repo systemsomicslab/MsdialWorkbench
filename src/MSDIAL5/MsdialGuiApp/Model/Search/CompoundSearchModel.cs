@@ -1,4 +1,6 @@
-﻿using CompMs.App.Msdial.Model.Chart;
+﻿using Accord;
+using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
@@ -7,6 +9,8 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.AxisManager.Generic;
+using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
@@ -66,7 +70,7 @@ namespace CompMs.App.Msdial.Model.Search
 
             var referenceSpectrum = this.ObserveProperty(m => m.SelectedReference)
                 .SkipNull()
-                .Select(c => c.Spectrum)
+                .Select(c => new MsSpectrum(c.Spectrum))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             var scorer = this.ObserveProperty(m => m.SelectedCompoundSearcher)
@@ -74,19 +78,31 @@ namespace CompMs.App.Msdial.Model.Search
                 .Select(s => new Ms2ScanMatching(s.MsRefSearchParameter))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            MsSpectrumModel = new MsSpectrumModel(
-                Observable.Return(_msdecResult.Spectrum),
-                referenceSpectrum,
-                new PropertySelector<SpectrumPeak, double>(peak => peak.Mass),
-                new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity),
-                new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity)),
-                nameof(SpectrumPeak.SpectrumComment),
-                Observable.Return(MsSpectrumModel.GetBrush(Brushes.Blue)),
-                Observable.Return(MsSpectrumModel.GetBrush(Brushes.Red)),
-                Observable.Return((ISpectraExporter)null),
-                Observable.Return((ISpectraExporter)null),
-                null,
-                scorer).AddTo(Disposables);
+            GraphLabels msGraphLabels = new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
+            ObservableMsSpectrum upperObservableMsSpectrum = new ObservableMsSpectrum(Observable.Return(new MsSpectrum(msdecResult.Spectrum)), null, Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
+            ObservableMsSpectrum lowerObservableMsSpectrum = new ObservableMsSpectrum(referenceSpectrum, new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true)).AddTo(Disposables), Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
+            PropertySelector<SpectrumPeak, double> horizontalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Mass);
+            PropertySelector<SpectrumPeak, double> verticalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity);
+            ChartHueItem upperSpectrumHueItem = new ChartHueItem(nameof(SpectrumPeak.SpectrumComment), ChartBrushes.GetBrush(Brushes.Blue));
+            SingleSpectrumModel upperSpectrumModel = new SingleSpectrumModel(
+                upperObservableMsSpectrum,
+                upperObservableMsSpectrum.CreateAxisPropertySelectors(horizontalPropertySelector, "m/z", "m/z"),
+                upperObservableMsSpectrum.CreateAxisPropertySelectors2(verticalPropertySelector, "abundance"),
+                upperSpectrumHueItem,
+                msGraphLabels).AddTo(Disposables);
+            ChartHueItem lowerSpectrumHueItem = new ChartHueItem(nameof(SpectrumPeak.SpectrumComment), ChartBrushes.GetBrush(Brushes.Red));
+            SingleSpectrumModel lowerSpectrumModel = new SingleSpectrumModel(
+                lowerObservableMsSpectrum,
+                lowerObservableMsSpectrum.CreateAxisPropertySelectors(horizontalPropertySelector, "m/z", "m/z"),
+                lowerObservableMsSpectrum.CreateAxisPropertySelectors2(verticalPropertySelector, "abundance"),
+                lowerSpectrumHueItem,
+                msGraphLabels).AddTo(Disposables);
+            MsSpectrumModel = new MsSpectrumModel(upperSpectrumModel, lowerSpectrumModel, scorer)
+            {
+                GraphTitle = string.Empty,
+                HorizontalTitle = "m/z",
+                VerticalTitle = "Abundance",
+            }.AddTo(Disposables);
         }
 
         public IReadOnlyList<CompoundSearcher> CompoundSearchers { get; }

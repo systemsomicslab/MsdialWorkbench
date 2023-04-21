@@ -23,6 +23,10 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         }
 
+        public ContinuousAxisManager(Range range, IChartMargin margin, T lowBound, T highBound) : base(range, margin, new Range(Convert.ToDouble(lowBound), Convert.ToDouble(highBound))) {
+
+        }
+
         public ContinuousAxisManager(T low, T high)
             : base(new Range(Convert.ToDouble(low), Convert.ToDouble(high))) {
 
@@ -51,6 +55,11 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         public ContinuousAxisManager(T low, T high, IChartMargin margin, Range bounds)
             : base(new Range(Convert.ToDouble(low), Convert.ToDouble(high)), margin, bounds) {
+
+        }
+
+        public ContinuousAxisManager(T low, T high, IChartMargin margin, T lowBound, T highBound)
+            : base(new Range(Convert.ToDouble(low), Convert.ToDouble(high)), margin, new Range(Convert.ToDouble(lowBound), Convert.ToDouble(highBound))) {
 
         }
 

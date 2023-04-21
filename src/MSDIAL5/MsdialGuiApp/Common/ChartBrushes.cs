@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using CompMs.Common.Components;
+using CompMs.Graphics.Base;
+using CompMs.Graphics.Design;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Media;
@@ -7,6 +11,23 @@ namespace CompMs.App.Msdial.Common
 {
     public static class ChartBrushes
     {
+        private static readonly IReadOnlyDictionary<SpectrumComment, Brush> SPECTRUM_BRUSHES;
+
+        static ChartBrushes() {
+            SPECTRUM_BRUSHES = Enum.GetValues(typeof(SpectrumComment))
+                .Cast<SpectrumComment>()
+                .Where(comment => comment != SpectrumComment.none)
+                .Zip(solidColorBrushList, (comment, brush) => (comment, brush))
+                .ToDictionary(
+                    kvp => kvp.comment,
+                    kvp => (Brush)kvp.brush
+                );
+        }
+
+        public static IBrushMapper<SpectrumComment> GetBrush(Brush defaultBrush) {
+            return new KeyBrushMapper<SpectrumComment>(SPECTRUM_BRUSHES, defaultBrush);
+        }
+
         public static ReadOnlyCollection<SolidColorBrush> SolidColorBrushList => solidColorBrushList;
 
         private static readonly ReadOnlyCollection<SolidColorBrush> solidColorBrushList = new ReadOnlyCollection<SolidColorBrush> (
