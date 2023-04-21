@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.View.Statistics;
 using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.Common.Enum;

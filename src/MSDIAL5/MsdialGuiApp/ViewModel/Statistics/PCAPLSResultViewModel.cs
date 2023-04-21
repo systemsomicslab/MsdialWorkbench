@@ -1,4 +1,4 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
