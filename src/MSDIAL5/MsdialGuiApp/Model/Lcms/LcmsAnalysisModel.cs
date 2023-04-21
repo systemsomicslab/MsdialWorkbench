@@ -12,9 +12,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Proteomics.DataObj;
-using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Base;
-using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -87,36 +85,9 @@ namespace CompMs.App.Msdial.Model.Lcms
             PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
 
             // Peak scatter plot
-            var ontologyBrush = new BrushMapData<ChromatogramPeakFeatureModel>(
-                    new KeyBrushMapper<ChromatogramPeakFeatureModel, string>(
-                        ChemOntologyColor.Ontology2RgbaBrush,
-                        peak => peak?.Ontology ?? string.Empty,
-                        Color.FromArgb(180, 181, 181, 181)),
-                    "Ontology");
-            var intensityBrush = new BrushMapData<ChromatogramPeakFeatureModel>(
-                    new DelegateBrushMapper<ChromatogramPeakFeatureModel>(
-                        peak => Color.FromArgb(
-                            180,
-                            (byte)(255 * peak.InnerModel.PeakShape.AmplitudeScoreValue),
-                            (byte)(255 * (1 - Math.Abs(peak.InnerModel.PeakShape.AmplitudeScoreValue - 0.5))),
-                            (byte)(255 - 255 * peak.InnerModel.PeakShape.AmplitudeScoreValue)),
-                        enableCache: true),
-                    "Intensity");
-            var brushes = new[] { intensityBrush, ontologyBrush, };
-            BrushMapData<ChromatogramPeakFeatureModel> selectedBrush;
-            switch (parameter.TargetOmics) {
-                case TargetOmics.Lipidomics:
-                    selectedBrush = ontologyBrush;
-                    break;
-                case TargetOmics.Metabolomics:
-                case TargetOmics.Proteomics:
-                default:
-                    selectedBrush = intensityBrush;
-                    break;
-            }
-            Brush = selectedBrush.Mapper;
+            var brushSelector = BrushMapDataSelectorFactory.CreatePeakFeatureBrushes(parameter.TargetOmics);
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelSource, selectedBrush, brushes, new PeakLinkModel(Ms1Peaks))
+            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelSource, brushSelector.SelectedBrush, brushSelector.Brushes, new PeakLinkModel(Ms1Peaks))
             {
                 HorizontalTitle = "Retention time [min]",
                 VerticalTitle = "m/z",
@@ -156,28 +127,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             var decSpectrumLoader = new MsDecSpectrumLoader(decLoader, Ms1Peaks);
 
             // Ms2 spectrum
-            var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-               parameter.ProjectParam.SpectrumCommentToColorBytes
-               .ToDictionary(
-                   kvp => kvp.Key,
-                   kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-               ),
-               item => item.ToString(),
-               Colors.Blue);
-            Color mapToColor(SpectrumComment comment) {
-                var commentString = comment.ToString();
-                if (parameter.ProjectParam.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
-                    return Color.FromRgb(color[0], color[1], color[2]);
-                }
-                else if ((comment & SpectrumComment.doublebond) == SpectrumComment.doublebond
-                    && parameter.ProjectParam.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
-                    return Color.FromRgb(color[0], color[1], color[2]);
-                }
-                else {
-                    return Colors.Red;
-                }
-            }
-            var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(mapToColor, true);
+            var upperSpecBrush = BrushMapData.CreateSpectrumBrushes(parameter.ProjectParam.SpectrumCommentToColorBytes, Colors.Blue);
+            var lowerSpecBrush = BrushMapData.CreateSpectrumBrushes(parameter.ProjectParam.SpectrumCommentToColorBytes, Colors.Red);
             var spectraExporter = new NistSpectraExporter<ChromatogramPeakFeature>(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
             MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
@@ -195,38 +146,22 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity),
                 new GraphLabels("Measure vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity)),
                 nameof(SpectrumPeak.SpectrumComment),
-                Observable.Return(upperSpecBrush),
-                Observable.Return(lowerSpecBrush),
+                Observable.Return(upperSpecBrush.Mapper),
+                Observable.Return(lowerSpecBrush.Mapper),
                 Observable.Return(spectraExporter),
                 Observable.Return(spectraExporter),
                 Observable.Return(referenceExporter),
                 MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers)).AddTo(Disposables);
 
             // Raw vs Purified spectrum model
-            var purifiedSpecBrush = new DelegateBrushMapper<SpectrumComment>(
-                comment =>
-                {
-                    var commentString = comment.ToString();
-                    if (parameter.ProjectParam.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
-                        return Color.FromRgb(color[0], color[1], color[2]);
-                    }
-                    else if ((comment & SpectrumComment.doublebond) == SpectrumComment.doublebond
-                        && parameter.ProjectParam.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
-                        return Color.FromRgb(color[0], color[1], color[2]);
-                    }
-                    else {
-                        return Colors.Red;
-                    }
-                },
-                true);
             RawPurifiedSpectrumsModel = new RawPurifiedSpectrumsModel(
                 Target,
                 rawSpectrumLoader,
                 decSpectrumLoader,
                 peak => peak.Mass,
                 peak => peak.Intensity,
-                Observable.Return(upperSpecBrush),
-                Observable.Return(purifiedSpecBrush)) {
+                Observable.Return(upperSpecBrush.Mapper),
+                Observable.Return(lowerSpecBrush.Mapper)) {
                 GraphTitle = "Raw vs. Purified spectrum",
                 HorizontalTitle = "m/z",
                 VerticalTitle = "Absolute abundance",
@@ -326,8 +261,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         public SurveyScanModel SurveyScanModel { get; }
 
         public LcmsAnalysisPeakTableModel PeakTableModel { get; }
-
-        public IBrushMapper<ChromatogramPeakFeatureModel> Brush { get; }
 
         public FocusNavigatorModel FocusNavigatorModel { get; }
 
