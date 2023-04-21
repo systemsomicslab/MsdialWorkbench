@@ -65,6 +65,9 @@
                 <DataTemplate DataType="{x:Type vm:DeconvolutionSettingViewModel}">
                     <Label Content="Spectrum deconvolution" IsEnabled="{Binding IsEnabled.Value}"/>
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:GcmsDeconvolutionSettingViewModel}">
+                    <Label Content="Spectrum deconvolution" IsEnabled="{Binding IsEnabled.Value}"/>
+                </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:IdentifySettingViewModel}">
                     <Label Content="Identification" IsEnabled="{Binding IsEnabled.Value}"/>
                 </DataTemplate>
@@ -161,6 +164,11 @@
                         <DataTemplate DataType="{x:Type vm:DeconvolutionSettingViewModel}">
                             <ScrollViewer IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
                                 <local:DeconvolutionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                            </ScrollViewer>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:GcmsDeconvolutionSettingViewModel}">
+                            <ScrollViewer IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                                <local:GcmsDeconvolutionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
                             </ScrollViewer>
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type vm:IdentifySettingViewModel}">

@@ -58,10 +58,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public RiDictionarySettingViewModel(RiDictionarySettingModel model, IMessageBroker broker) {
             _model = model;
             RetentionIndexFiles = model.RetentionIndexFiles.ToReadOnlyReactiveCollection(m => new RiDictionaryViewModel(m, broker)).AddTo(Disposables);
-            SelectedRetentionIndexFile = model.ToReactivePropertySlimAsSynchronized(
-                m => m.SelectedRetentionIndexFile,
-                op => op.Select(p => RetentionIndexFiles.FirstOrDefault(f => f.Model == p)),
-                op => op.Select(p => p?.Model)).AddTo(Disposables);
             UseAlkanes = model.ToReactivePropertySlimAsSynchronized(
                 m => m.CompoundType,
                 op => op.Select(p => p == RiCompoundType.Alkanes),
@@ -76,16 +72,15 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             ApplyCommand = RetentionIndexFiles.Select(ri => ri.ErrorsChangedAsObservable().ToUnit().StartWith(Unit.Default).Select(_ => ri.HasValidationErrors))
                 .CombineLatestValuesAreAllFalse()
                 .ToReactiveCommand().WithSubscribe(Apply).AddTo(Disposables);
-            AutoFillCommand = new ReactiveCommand().WithSubscribe(model.AutoFill).AddTo(Disposables);
+            AutoFillCommand = new ReactiveCommand<RiDictionaryViewModel>().WithSubscribe(vm => model.AutoFill(vm.Model)).AddTo(Disposables);
         }
 
         public ReadOnlyReactiveCollection<RiDictionaryViewModel> RetentionIndexFiles { get; }
-        public ReactivePropertySlim<RiDictionaryViewModel> SelectedRetentionIndexFile { get; }
         public ReactivePropertySlim<bool> UseAlkanes { get; }
         public ReactivePropertySlim<bool> UseFAMEs { get; }
         public ReadOnlyReactivePropertySlim<bool> IsImported { get; }
 
-        public ReactiveCommand AutoFillCommand { get; }
+        public ReactiveCommand<RiDictionaryViewModel> AutoFillCommand { get; }
 
         public ReactiveCommand ApplyCommand { get; }
 
@@ -114,8 +109,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             RiDictionarySettingViewModel = new RiDictionarySettingViewModel(model.RiDictionarySettingModel, broker).AddTo(Disposables);
             IndexFileSetCommand = UseRI.ToReactiveCommand().WithSubscribe(() => broker.Publish(RiDictionarySettingViewModel)).AddTo(Disposables);
-            MspFilePath = model.ToReactivePropertyAsSynchronized(m => m.MspFilePath)
-                .SetValidateAttribute(() => MspFilePath).AddTo(Disposables);
+            MspFilePath = model.ToReactivePropertyAsSynchronized(m => m.MspFilePath).AddTo(Disposables);
             BrowseMspCommand = new ReactiveCommand().WithSubscribe(Browse).AddTo(Disposables);
             SearchParameter = new MsRefSearchParameterBaseViewModel(model.SearchParameter).AddTo(Disposables);
             UseQuantMassesDefinedInMsp = model.ToReactivePropertySlimAsSynchronized(m => m.UseQuantmassDefinedInLibrary).AddTo(Disposables);
@@ -125,14 +119,14 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             ObserveHasErrors = new[]
             {
-                RiDictionarySettingViewModel.IsImported,
+                UseRI.SelectSwitch(p => p ? RiDictionarySettingViewModel.IsImported.Inverse() : Observable.Return(false)),
                 MspFilePath.ObserveHasErrors,
                 SearchParameter.RiTolerance.ObserveHasErrors,
                 SearchParameter.RtTolerance.ObserveHasErrors,
                 SearchParameter.Ms1Tolerance.ObserveHasErrors,
                 SearchParameter.WeightedDotProductCutOff.ObserveHasErrors,
                 SearchParameter.TotalScoreCutoff.ObserveHasErrors,
-            }.CombineLatestValuesAreAllTrue()
+            }.CombineLatestValuesAreAllFalse()
             .Inverse()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
@@ -173,7 +167,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public RiDictionarySettingViewModel RiDictionarySettingViewModel { get; }
         public ReadOnlyReactivePropertySlim<bool> IsIndexImported => RiDictionarySettingViewModel.IsImported;
 
-        [PathExists(ErrorMessage = "Msp file does not exist.", IsFile = true)]
+        //[PathExists(ErrorMessage = "Msp file does not exist.", IsFile = true)]
         public ReactiveProperty<string> MspFilePath { get; }
         public ReactiveCommand BrowseMspCommand { get; }
         public MsRefSearchParameterBaseViewModel SearchParameter { get; }

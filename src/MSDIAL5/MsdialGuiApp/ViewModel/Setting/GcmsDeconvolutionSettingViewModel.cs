@@ -1,5 +1,5 @@
-﻿using CompMs.App.Msdial.Utility;
-using CompMs.App.Msdial.ViewModel.Setting;
+﻿using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Utility;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -9,14 +9,15 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
-namespace CompMs.App.Msdial.Model.Setting
+namespace CompMs.App.Msdial.ViewModel.Setting
 {
     public sealed class GcmsDeconvolutionSettingViewModel : ViewModelBase, ISettingViewModel
     {
         private readonly DeconvolutionSettingModel _model;
         private readonly Subject<Unit> _decide;
 
-        public GcmsDeconvolutionSettingViewModel(DeconvolutionSettingModel model, IObservable<bool> isEnabled) {
+        public GcmsDeconvolutionSettingViewModel(DeconvolutionSettingModel model, IObservable<bool> isEnabled)
+        {
             _model = model ?? throw new ArgumentNullException(nameof(model));
 
             SigmaWindowValue = model.ToReactivePropertyAsSynchronized(
@@ -81,7 +82,8 @@ namespace CompMs.App.Msdial.Model.Setting
         public ReadOnlyReactivePropertySlim<bool> ObserveChangeAfterDecision { get; }
         IObservable<bool> ISettingViewModel.ObserveChangeAfterDecision => ObserveChangeAfterDecision;
 
-        public ISettingViewModel Next(ISettingViewModel selected) {
+        public ISettingViewModel Next(ISettingViewModel selected)
+        {
             _decide.OnNext(Unit.Default);
             return null;
         }

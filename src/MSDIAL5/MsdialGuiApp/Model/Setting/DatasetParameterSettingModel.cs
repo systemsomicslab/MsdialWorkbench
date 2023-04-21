@@ -186,7 +186,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 DatasetFileName += ".mddata";
             }
 
-            var parameter = ParameterFactory.CreateParameter(Ionization, SeparationType);
+            var parameter = CreateParameter();
             var projectParameter = parameter.ProjectParam;
             fileSettingModel.CommitFileParameters(projectParameter);
             projectParameter.ProjectFileName = DatasetFileName;
@@ -214,6 +214,41 @@ namespace CompMs.App.Msdial.Model.Setting
 
             var dataset = new DatasetModel(storage, _broker);
             next?.Invoke(dataset);
+        }
+
+        private ParameterBase CreateParameter() {
+            if (SeparationType == (SeparationType.Imaging | SeparationType.IonMobility))
+                return new MsdialImmsParameter(isImaging: true, GlobalResources.Instance.IsLabPrivate);
+            if (Ionization == Ionization.EI && SeparationType == SeparationType.Chromatography) {
+                var parameter = new MsdialGcmsParameter(GlobalResources.Instance.IsLabPrivate);
+                parameter.PeakPickBaseParam.MassRangeEnd = 1000;
+                parameter.PeakPickBaseParam.CentroidMs1Tolerance = .025f;
+                parameter.PeakPickBaseParam.MinimumDatapoints = 20;
+                parameter.ChromDecBaseParam.AccuracyType = AccuracyType.IsNominal;
+                parameter.ChromDecBaseParam.AmplitudeCutoff = 10;
+                parameter.RetentionType = RetentionType.RI;
+                parameter.RefSpecMatchBaseParam.MspSearchParam.RiTolerance = 20;
+                parameter.RefSpecMatchBaseParam.MspSearchParam.RtTolerance = .5f;
+                parameter.RefSpecMatchBaseParam.MspSearchParam.Ms1Tolerance = .5f;
+                parameter.RefSpecMatchBaseParam.MspSearchParam.WeightedDotProductCutOff = .7f;
+                parameter.RefSpecMatchBaseParam.MspSearchParam.TotalScoreCutoff = .7f;
+                parameter.RefSpecMatchBaseParam.MspSearchParam.IsUseTimeForAnnotationScoring = true;
+                parameter.RefSpecMatchBaseParam.OnlyReportTopHitInMspSearch = true;
+                parameter.RefSpecMatchBaseParam.FileIdRiInfoDictionary = fileSettingModel.IncludedFileModels.ToDictionary(f => f.AnalysisFileId, _ => new RiDictionaryInfo());
+                parameter.RetentionIndexAlignmentTolerance = 20;
+                parameter.AlignmentBaseParam.RetentionTimeAlignmentTolerance = .075f;
+                parameter.AlignmentBaseParam.Ms1AlignmentTolerance = .7f;
+                return parameter;
+            }
+            if (Ionization == Ionization.ESI && SeparationType == SeparationType.Chromatography)
+                return new MsdialLcmsParameter(GlobalResources.Instance.IsLabPrivate);
+            if (Ionization == Ionization.ESI && SeparationType == (SeparationType.Chromatography | SeparationType.IonMobility))
+                return new MsdialLcImMsParameter(GlobalResources.Instance.IsLabPrivate);
+            if (Ionization == Ionization.ESI && SeparationType == SeparationType.Infusion)
+                return new MsdialDimsParameter(GlobalResources.Instance.IsLabPrivate);
+            if (Ionization == Ionization.ESI && SeparationType == (SeparationType.Infusion | SeparationType.IonMobility))
+                return new MsdialImmsParameter(isImaging: false, GlobalResources.Instance.IsLabPrivate);
+            throw new Exception("Not supported separation type is selected.");
         }
 
         // TODO: How can I remove direct dependency to each methods?

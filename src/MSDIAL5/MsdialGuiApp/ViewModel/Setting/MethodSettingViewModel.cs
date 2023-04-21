@@ -36,7 +36,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 CreatePeakDetectionSettingViewModel(model.PeakDetectionSettingModel, isEnabled).AddTo(Disposables),
                 CreateDeconvolutionSettingViewModel(model.DeconvolutionSettingModel, model.Storage.Parameter.ProjectParam.MachineCategory, isEnabled).AddTo(Disposables),
                 CreateIdentificationSettingViewModel(model.IdentifySettingModel, model.Storage, MessageBroker.Default, isEnabled).AddTo(Disposables),
-                new AdductIonSettingViewModel(model.AdductIonSettingModel, isEnabled).AddTo(Disposables),
+                model.AdductIonSettingModel is null ? null : new AdductIonSettingViewModel(model.AdductIonSettingModel, isEnabled).AddTo(Disposables),
                 CreateAlignmentParameterSettingViewModel(model.AlignmentParameterSettingModel, isEnabled).AddTo(Disposables),
                 model.MobilitySettingModel is null ? null : new MobilitySettingViewModel(model.MobilitySettingModel, isEnabled).AddTo(Disposables),
                 model.IsotopeTrackSettingModel is null ? null : new IsotopeTrackSettingViewModel(model.IsotopeTrackSettingModel, isEnabled).AddTo(Disposables),

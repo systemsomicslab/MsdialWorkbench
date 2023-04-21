@@ -727,7 +727,9 @@ namespace CompMs.MsdialCore.Parameter
         public bool IsFamesContents {
             get {
                 var fiehnFamesDictionary = RetentionIndexHandler.GetFiehnFamesDictionary();
-                if (fiehnFamesDictionary.Count != RiDictionary.Count) return false;
+                if (RiDictionary is null || fiehnFamesDictionary.Count != RiDictionary.Count) {
+                    return false;
+                }
                 return fiehnFamesDictionary.Keys.All(RiDictionary.ContainsKey);
             }
         }
@@ -735,8 +737,9 @@ namespace CompMs.MsdialCore.Parameter
         [IgnoreMember]
         public bool IsSequentialCarbonRtOrdering {
             get {
-                return RiDictionary.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value)
-                    .Aggregate((acc: true, rt: float.MinValue), (prev, rt) => (prev.acc && prev.rt < rt, rt)).acc;
+                return RiDictionary?.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value)
+                    .Aggregate((acc: true, rt: float.MinValue), (prev, rt) => (prev.acc && prev.rt < rt, rt)).acc
+                    ?? false;
             }
         }
 
@@ -744,7 +747,9 @@ namespace CompMs.MsdialCore.Parameter
             return new RiDictionaryInfo
             {
                 DictionaryFilePath = filePath,
-                RiDictionary = RetentionIndexHandler.GetRiDictionary(filePath),
+                RiDictionary = File.Exists(filePath)
+                    ? RetentionIndexHandler.GetRiDictionary(filePath)
+                    : new Dictionary<int, float>(0),
             };
         }
     }

@@ -10,6 +10,9 @@
              d:Background="White"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance Type={x:Type vm:RiDictionarySettingViewModel}}">
+    <UserControl.Resources>
+        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -28,7 +31,6 @@
             </StackPanel>
         </ui:LabeledContent>
         <DataGrid ItemsSource="{Binding Path=RetentionIndexFiles}"
-                  SelectedItem="{Binding Path=SelectedRetentionIndexFile.Value}"
                   ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" 
                   VerticalAlignment="Stretch" AutoGenerateColumns="False" SelectionMode="Extended" SelectionUnit="CellOrRowHeader" CanUserAddRows="False" 
                   CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" ClipboardCopyMode="IncludeHeader"
@@ -45,7 +47,7 @@
                 <DataGridTextColumn Binding="{Binding FilePath}" SortMemberPath="FilePath" Width="*" Header="File path" IsReadOnly="True"/>
                 <DataGridTextColumn Binding="{Binding FileName}" SortMemberPath="FileName" Width="*" Header="File name" IsReadOnly="True"/>
 
-                <DataGridTemplateColumn ClipboardContentBinding="{Binding DictionaryPath}" SortMemberPath="DictionaryPath" Width="2*" Header="Carbon-RT(min) dictionary file path" IsReadOnly="False">
+                <DataGridTemplateColumn SortMemberPath="DictionaryPath.Value" Width="2*" Header="Carbon-RT(min) dictionary file path" IsReadOnly="False">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Grid>
@@ -54,13 +56,14 @@
                                     <ColumnDefinition Width="15" />
                                 </Grid.ColumnDefinitions>
 
-                                <TextBox Name="TextBox_RiFilePath" 
-                                         Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
-                                         Text="{Binding Path=RiDictionaryFilePath.Value}" 
+                                <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
+                                         Text="{Binding Path=DictionaryPath.Value}" 
                                          VerticalContentAlignment="Center" IsReadOnly="False" HorizontalAlignment="Stretch" Grid.Column="0" >
                                     <TextBox.ContextMenu>
                                         <ContextMenu>
-                                            <MenuItem Header="Auto fill" Command="{Binding Path=Data.(vm:RiDictionarySettingViewModel.AutoFillCommand), Source={StaticResource RiDictionariesViewModel}, Mode=OneTime}"/>
+                                            <MenuItem Header="Auto fill"
+                                                      Command="{Binding Path=Data.AutoFillCommand, Source={StaticResource RiDictionariesViewModel}, Mode=OneWay}"
+                                                      CommandParameter="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                         </ContextMenu>
                                     </TextBox.ContextMenu>
                                 </TextBox>

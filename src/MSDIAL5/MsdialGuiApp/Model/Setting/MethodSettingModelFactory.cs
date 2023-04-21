@@ -563,7 +563,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public AdductIonSettingModel CreateAdductIonSetting() {
-            return new AdductIonSettingModel(storage.Parameter, process);
+            return null;
         }
 
         public IAlignmentParameterSettingModel CreateAlignmentParameterSetting() {

@@ -6,7 +6,6 @@ using CompMs.Common.Enum;
 using CompMs.Common.Parameter;
 using CompMs.Common.Parser;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.Chart;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -15,8 +14,8 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
-using System.Net;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
@@ -137,12 +136,6 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public ObservableCollection<RiDictionaryModel> RetentionIndexFiles { get; }
 
-        public RiDictionaryModel SelectedRetentionIndexFile {
-            get => _selectedRetentionIndexFile;
-            set => SetProperty(ref _selectedRetentionIndexFile, value);
-        }
-        private RiDictionaryModel _selectedRetentionIndexFile;
-
         public RiCompoundType CompoundType {
             get => _compoundType;
             set => SetProperty(ref _compoundType, value);
@@ -155,12 +148,12 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private bool _isImported;
 
-        public void AutoFill() {
-            if (SelectedRetentionIndexFile is null || string.IsNullOrEmpty(SelectedRetentionIndexFile.DictionaryPath)) {
+        public void AutoFill(RiDictionaryModel model) {
+            if (model is null || string.IsNullOrEmpty(model.DictionaryPath)) {
                 return;
             }
             foreach (var file in RetentionIndexFiles) {
-                file.DictionaryPath = SelectedRetentionIndexFile.DictionaryPath;
+                file.DictionaryPath = model.DictionaryPath;
             }
         }
 
@@ -248,37 +241,32 @@ namespace CompMs.App.Msdial.Model.Setting
             if (IsReadOnly) {
                 return result;
             }
-            var storage = DataBaseStorage.CreateEmpty();
-            var database = new MoleculeDataBase(MspFileParser.MspFileReader(MspFilePath), "0", DataBaseSource.Msp, SourceType.MspDB);
-            var annotator = new MassAnnotator(database, _parameter.RefSpecMatchBaseParam.MspSearchParam, TargetOmics.Metabolomics, SourceType.MspDB, "annotator_0", 0);
-            var pair = new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, _parameter.PeakPickBaseParam, _parameter.RefSpecMatchBaseParam.MspSearchParam));
-            storage.AddMoleculeDataBase(database, new List<IAnnotatorParameterPair<MoleculeDataBase>> { pair });
-            return result;
-        }
 
-
-        public bool TryCommit() {
-            if (IsReadOnly) {
-                return false;
-            }
-
-            if (!RiDictionarySettingModel.TryCommit(_parameter)) {
-                return false;
-            }
+            RiDictionarySettingModel.TryCommit(_parameter);
             _parameter.RetentionType = RetentionType;
             _parameter.ReferenceFileParam.MspFilePath = MspFilePath;
             _parameter.RefSpecMatchBaseParam.MspSearchParam = SearchParameter;
             _parameter.IsReplaceQuantmassByUserDefinedValue = UseQuantmassDefinedInLibrary;
             _parameter.RefSpecMatchBaseParam.OnlyReportTopHitInMspSearch = OnlyReportTopHit;
-            return true;
+
+            if (File.Exists(MspFilePath)) {
+                var database = new MoleculeDataBase(MspFileParser.MspFileReader(MspFilePath), "0", DataBaseSource.Msp, SourceType.MspDB);
+                var annotator = new MassAnnotator(database, _parameter.RefSpecMatchBaseParam.MspSearchParam, TargetOmics.Metabolomics, SourceType.MspDB, "annotator_0", 0);
+                var pair = new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, _parameter.PeakPickBaseParam, _parameter.RefSpecMatchBaseParam.MspSearchParam));
+                result.AddMoleculeDataBase(database, new List<IAnnotatorParameterPair<MoleculeDataBase>> { pair });
+            }
+            return result;
         }
 
-        public void LoadParameter(MsdialGcmsParameter parameter) {
+        public void LoadParameter(ParameterBase parameter) {
             if (IsReadOnly) {
                 return;
             }
-            RetentionType = parameter.RetentionType;
-            RiDictionarySettingModel.CompoundType = parameter.RiCompoundType;
+            if (parameter is MsdialGcmsParameter gcmsParameter) {
+                RetentionType = gcmsParameter.RetentionType;
+                RiDictionarySettingModel.CompoundType = gcmsParameter.RiCompoundType;
+                UseQuantmassDefinedInLibrary = gcmsParameter.IsReplaceQuantmassByUserDefinedValue;
+            }
             MspFilePath = parameter.ReferenceFileParam.MspFilePath;
             SearchParameter.RiTolerance = parameter.RefSpecMatchBaseParam.MspSearchParam.RiTolerance;
             SearchParameter.RtTolerance = parameter.RefSpecMatchBaseParam.MspSearchParam.RtTolerance;
@@ -287,7 +275,6 @@ namespace CompMs.App.Msdial.Model.Setting
             SearchParameter.TotalScoreCutoff = parameter.RefSpecMatchBaseParam.MspSearchParam.TotalScoreCutoff;
             SearchParameter.IsUseTimeForAnnotationScoring = parameter.RefSpecMatchBaseParam.MspSearchParam.IsUseTimeForAnnotationScoring;
             SearchParameter.IsUseTimeForAnnotationFiltering = parameter.RefSpecMatchBaseParam.MspSearchParam.IsUseTimeForAnnotationFiltering;
-            UseQuantmassDefinedInLibrary = parameter.IsReplaceQuantmassByUserDefinedValue;
             OnlyReportTopHit = parameter.RefSpecMatchBaseParam.OnlyReportTopHitInMspSearch;
         }
     }

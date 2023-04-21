@@ -6,12 +6,18 @@
              xmlns:enum="clr-namespace:CompMs.Common.Enum;assembly=Common"
              xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
+             xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type={x:Type vm:GcmsAlignmentParameterSettingViewModel}}"
              d:Background="White"
              d:DesignHeight="600" d:DesignWidth="800">
     <UserControl.Resources>
-        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <converter:ToPercentageConverter x:Key="ToPercent"/>
+        </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -89,7 +95,7 @@
                 </ui:LabeledContent>
                 <ui:LabeledContent PrependLabel="EI similarity tolerance:"
                                    AppendLabel="%">
-                    <TextBox Text="{Binding EiEqualityParameterSetting.Tolerance.Value}"
+                    <TextBox Text="{Binding EiEqualityParameterSetting.Tolerance.Value, Converter={StaticResource ToPercent}}"
                              IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"
                              ToolTip="70-80 is better."
                              Style="{StaticResource ResourceKey=ToolTipErrorStyle}"

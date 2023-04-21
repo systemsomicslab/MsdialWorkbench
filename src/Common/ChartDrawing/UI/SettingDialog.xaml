@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:common="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
         mc:Ignorable="d"
         d:Background="White"
         d:Height="450" d:Width="600">
@@ -35,9 +36,9 @@
                             </Style>
                             <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
                         </StackPanel.Resources>
-                        <Button Content="Apply" Command="{Binding ApplyCommand}"/>
-                        <Button Content="Finish" Command="{Binding FinishCommand}" Click="FinishClose"/>
-                        <Button Content="Cancel" Command="{Binding CancelCommand}" Click="CancelClose"/>
+                        <Button Content="Apply" Command="{Binding ApplyCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
+                        <Button Content="Finish" Command="{Binding FinishCommand, FallbackValue={x:Static common:IdentityCommand.Instance}}" Click="FinishClose"/>
+                        <Button Content="Cancel" Command="{Binding CancelCommand, FallbackValue={x:Static common:IdentityCommand.Instance}}" Click="CancelClose"/>
                     </StackPanel>
                 </Grid>
             </Border>

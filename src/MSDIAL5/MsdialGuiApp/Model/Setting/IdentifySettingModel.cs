@@ -17,6 +17,7 @@ namespace CompMs.App.Msdial.Model.Setting
     public interface IIdentificationSettingModel {
         bool IsReadOnly { get; }
         DataBaseStorage Create(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer);
+        void LoadParameter(ParameterBase parameter);
     }
 
     public class IdentifySettingModel : BindableBase, IIdentificationSettingModel
@@ -256,6 +257,10 @@ namespace CompMs.App.Msdial.Model.Setting
                     await Task.WhenAll(tasks).ConfigureAwait(false);
                 });
             _broker.Publish(request);
+        }
+
+        void IIdentificationSettingModel.LoadParameter(ParameterBase parameter) {
+
         }
     }
 }

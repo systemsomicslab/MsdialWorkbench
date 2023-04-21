@@ -8,6 +8,7 @@ using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -79,11 +80,13 @@ namespace CompMs.App.Msdial.Model.Setting
             }
             if (Option.HasFlag(ProcessOption.Identification)) {
                 if (!IdentifySettingModel.IsReadOnly) {
-                    Storage.DataBaseMapper = new DataBaseMapper();
-                    Storage.DataBases = IdentifySettingModel.Create(Storage.DataBaseMapper);
-                    Storage.DataBases.SetDataBaseMapper(Storage.DataBaseMapper);
+                    if (IdentifySettingModel != null) {
+                        Storage.DataBaseMapper = new DataBaseMapper();
+                        Storage.DataBases = IdentifySettingModel.Create(Storage.DataBaseMapper);
+                        Storage.DataBases.SetDataBaseMapper(Storage.DataBaseMapper);
+                    }
                 }
-                if (!AdductIonSettingModel.TryCommit()) {
+                if (!(AdductIonSettingModel is null || AdductIonSettingModel.TryCommit())) {
                     return false;
                 }
             }
@@ -95,7 +98,7 @@ namespace CompMs.App.Msdial.Model.Setting
                     Option &= ~ProcessOption.Alignment;
                 }
             }
-            IsotopeTrackSettingModel.Commit();
+            IsotopeTrackSettingModel?.Commit();
             if (MobilitySettingModel != null && !MobilitySettingModel.TryCommit()) {
                 return false;
             }
@@ -115,7 +118,8 @@ namespace CompMs.App.Msdial.Model.Setting
                         DataCollectionSettingModel.LoadParameter(parameter);
                         PeakDetectionSettingModel.LoadParameter(parameter.PeakPickBaseParam);
                         DeconvolutionSettingModel.LoadParameter(parameter.ChromDecBaseParam);
-                        AdductIonSettingModel.LoadParameter(parameter);
+                        IdentifySettingModel.LoadParameter(parameter);
+                        AdductIonSettingModel?.LoadParameter(parameter);
                         AlignmentParameterSettingModel.LoadParameter(parameter);
                         // MobilitySettingModel.LoadParameter();
                         // IsotopeTrackSettingModel.LoadParameter();
