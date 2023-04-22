@@ -70,6 +70,9 @@ namespace CompMs.App.Msdial.Model.Export
         private int _isotopeExportMax = 2;
 
         public void Export(string destinationFolder, AnalysisFileBeanModel fileBeanModel) {
+            if (!ShouldExport) {
+                return;
+            }
             var filename = Path.Combine(destinationFolder, fileBeanModel.AnalysisFileName + "." + SelectedFileFormat.Format);
             using (var stream = File.Open(filename, FileMode.Create, FileAccess.Write)) {
                 var provider = _providerFactory.Create(fileBeanModel);

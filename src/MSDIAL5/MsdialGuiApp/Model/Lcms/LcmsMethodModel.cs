@@ -332,7 +332,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             var models = new IMsdialAnalysisExport[]
             {
                 new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, _providerFactory.ContraMap((AnalysisFileBeanModel file) => file.File)),
-                new MsdialAnalysisExportModel(new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter))
+                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter> {
+                    [ExportspectraType.deconvoluted] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter),
+                    [ExportspectraType.centroid] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter, file => new CentroidMsScanPropertyLoader(_providerFactory.Create(file), _storage.Parameter.MS2DataType)),
+                })
                 {
                     FilePrefix = "Msp",
                     FileSuffix = "msp",
