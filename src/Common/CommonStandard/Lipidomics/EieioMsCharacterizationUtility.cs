@@ -526,7 +526,21 @@ namespace CompMs.Common.Lipidomics
             // check the dtected ion nudouble bond position
             var doublebondIons = matchedpeaks.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond)).ToList();
             var doublebondIons_matched = doublebondIons.Where(n => n.IsMatched).ToList();
-            var isDoublebondAdvancedFilter = StandardMsCharacterizationUtility.IsDiagnosticFragmentsExist(doublebondIons_matched, dIons4db);
+
+            var doublebondHighIons = 
+                ref_spectrum
+                .Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_high))
+                .Select(n => new DiagnosticIon() { Mz = n.Mass, IonAbundanceCutOff = 0.0000001, MzTolerance = tolerance })
+                .ToList();
+            var doublebondHighAndLowIons =
+               ref_spectrum
+               .Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_high) || n.SpectrumComment.HasFlag(SpectrumComment.doublebond_low))
+               .Select(n => new DiagnosticIon() { Mz = n.Mass, IonAbundanceCutOff = 0.0000001, MzTolerance = tolerance })
+               .ToList();
+
+            var isDoublebondAdvancedFilter = StandardMsCharacterizationUtility.IsDiagnosticFragmentsExist(doublebondIons_matched, doublebondHighIons);
+            //var isDoublebondAdvancedFilter = StandardMsCharacterizationUtility.IsDiagnosticFragmentsExist(doublebondIons_matched, doublebondHighAndLowIons);
+            //var isDoublebondAdvancedFilter = StandardMsCharacterizationUtility.IsDiagnosticFragmentsExist(doublebondIons_matched, dIons4db);
             var matchedCount = doublebondIons_matched.Count;
             var matchedPercent = matchedCount / (doublebondIons.Count + 1e-10);
             var matchedCoefficient = StandardMsCharacterizationUtility.GetMatchedCoefficient(doublebondIons_matched);
