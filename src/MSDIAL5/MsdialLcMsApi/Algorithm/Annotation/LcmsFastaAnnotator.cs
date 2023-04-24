@@ -31,7 +31,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
             string annotatorID, SourceType type, int priority) : base(reference, msrefSearchParameter, proteomicsParameter, annotatorID, priority, type) {
             Id = annotatorID;
             PeptideMsRef.Sort(comparer);
-            //DecoyPeptideMsRef.Sort(comparer);
+            DecoyPeptideMsRef.Sort(comparer);
             ReferObject = reference;
 
             //OriginalOrderedDecoyPeptideMsRef = reference.DecoyPeptideMsRef;
@@ -53,22 +53,40 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
             var proteomicsParam = query.ProteomicsParameter ?? ProteomicsParameter;
             var pepResults = FindCandidatesCore(query.Property, query.Scan, query.Isotopes, query.IonFeature, PeptideMsRef, parameter, proteomicsParam);
             if (pepResults.IsEmptyOrNull()) return new List<MsScanMatchResult>();
-
             var repForwardResult = pepResults[0];
             var repPeptide = Refer(repForwardResult);
-            var decoyPep = DecoyCreator.Convert2DecoyPeptide(repPeptide.Peptide);
-            //var repReverseRef = OriginalOrderedDecoyPeptideMsRef[repForwardResult.LibraryID];
-            var repReverseRef = new PeptideMsReference(decoyPep, null, -1, repPeptide.AdductType,
-                repPeptide.ScanID, repPeptide.MinMs2, repPeptide.MaxMs2, repPeptide.CollisionType);
 
-            var decoyResult = FindCandidatesCore(query.Property, query.Scan, query.Isotopes, query.IonFeature, repReverseRef, parameter, proteomicsParam);
-            if (decoyResult is null) return new List<MsScanMatchResult>();
-            else {
-                decoyResult.LibraryIDWhenOrdered = repForwardResult.LibraryIDWhenOrdered;
+            // try method 1
+            //var decoyPep = DecoyCreator.Convert2DecoyPeptide(repPeptide.Peptide);
+            //var repReverseRef = new PeptideMsReference(decoyPep, null, -1, repPeptide.AdductType,
+            //    repPeptide.ScanID, repPeptide.MinMs2, repPeptide.MaxMs2, repPeptide.CollisionType);
 
+            //var decoyResult = FindCandidatesCore(query.Property, query.Scan, query.Isotopes, query.IonFeature, repReverseRef, parameter, proteomicsParam);
+            //if (decoyResult is null) {
+            //    var repReverseResult = new MsScanMatchResult();
+            //    repReverseResult.IsDecoy = true;
+            //    return new List<MsScanMatchResult>() { repForwardResult, repReverseResult };
+            //}
+            //else {
+            //    decoyResult.LibraryIDWhenOrdered = repForwardResult.LibraryIDWhenOrdered;
+
+            //    repForwardResult.IsDecoy = false;
+            //    decoyResult.IsDecoy = true;
+            //    return new List<MsScanMatchResult>() { repForwardResult, decoyResult };
+            //}
+
+            var decoyResults = FindCandidatesCore(query.Property, query.Scan, query.Isotopes, query.IonFeature, DecoyPeptideMsRef, parameter, proteomicsParam);
+            if (decoyResults.IsEmptyOrNull()) {
                 repForwardResult.IsDecoy = false;
-                decoyResult.IsDecoy = true;
-                return new List<MsScanMatchResult>() { repForwardResult, decoyResult };
+                var repReverseResult = new MsScanMatchResult() { IsDecoy = true };
+
+                return new List<MsScanMatchResult>() { repForwardResult, repReverseResult };
+            }
+            else {
+                var repReverseResult = decoyResults[0];
+                repForwardResult.IsDecoy = false;
+                repReverseResult.IsDecoy = true;
+                return new List<MsScanMatchResult>() { repForwardResult, repReverseResult };
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Utility;
+using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Base;
@@ -28,7 +29,8 @@ namespace CompMs.App.Msdial.Model.Chart
             IObservable<IBrushMapper> lowerSpectrumBrush,
             IObservable<ISpectraExporter> rawSpectraExporeter,
             IObservable<ISpectraExporter> deconvolutedSpectraExporter,
-            IObservable<ISpectraExporter> referenceSpectraExporter)
+            IObservable<ISpectraExporter> referenceSpectraExporter,
+            IObservable<Ms2ScanMatching> ms2ScanMatching)
             : this(targetSource,
                   (IMsSpectrumLoader<ChromatogramPeakFeatureModel>)rawLoader,
                   decLoader,
@@ -36,7 +38,8 @@ namespace CompMs.App.Msdial.Model.Chart
                   horizontalPropertySelector, verticalPropertySelector,
                   graphLabels,
                   hueProperty, upperSpectrumBrush, lowerSpectrumBrush,
-                  rawSpectraExporeter, deconvolutedSpectraExporter, referenceSpectraExporter) {
+                  rawSpectraExporeter, deconvolutedSpectraExporter, referenceSpectraExporter,
+                  ms2ScanMatching) {
             RawLoader = rawLoader;
         }
 
@@ -53,7 +56,8 @@ namespace CompMs.App.Msdial.Model.Chart
             IObservable<IBrushMapper> lowerSpectrumBrush,
             IObservable<ISpectraExporter> rawSpectraExporeter,
             IObservable<ISpectraExporter> deconvolutedSpectraExporter,
-            IObservable<ISpectraExporter> referenceSpectraExporter)
+            IObservable<ISpectraExporter> referenceSpectraExporter,
+            IObservable<Ms2ScanMatching> ms2ScanMatching)
             : this(targetSource,
                   (IMsSpectrumLoader<ChromatogramPeakFeatureModel>)rawLoader,
                   decLoader,
@@ -63,7 +67,8 @@ namespace CompMs.App.Msdial.Model.Chart
                   horizontalPropertySelector, verticalPropertySelector,
                   graphLabels,
                   hueProperty, upperSpectrumBrush, lowerSpectrumBrush,
-                  rawSpectraExporeter, deconvolutedSpectraExporter, referenceSpectraExporter) {
+                  rawSpectraExporeter, deconvolutedSpectraExporter, referenceSpectraExporter,
+                  ms2ScanMatching) {
             RawLoader = rawLoader;
         }
 
@@ -80,7 +85,8 @@ namespace CompMs.App.Msdial.Model.Chart
             IObservable<IBrushMapper> lowerSpectrumBrush,
             IObservable<ISpectraExporter> rawSpectraExporeter,
             IObservable<ISpectraExporter> deconvolutedSpectraExporter,
-            IObservable<ISpectraExporter> referenceSpectraExporter) {
+            IObservable<ISpectraExporter> referenceSpectraExporter,
+            IObservable<Ms2ScanMatching> ms2ScanMatching) {
 
             var rawSource = targetSource.WithLatestFrom(Observable.Return(rawLoader),
                 (target, loader) => loader.LoadSpectrumAsObservable(target))
@@ -119,7 +125,8 @@ namespace CompMs.App.Msdial.Model.Chart
                 lowerSpectrumBrush,
                 rawSpectraExporeter,
                 referenceSpectraExporter,
-                rawSpectrumLoaded).AddTo(Disposables);
+                rawSpectrumLoaded,
+                ms2ScanMatching).AddTo(Disposables);
             DecRefSpectrumModels = new MsSpectrumModel(
                 decSource, refSpectrum,
                 horizontalPropertySelector,
@@ -130,7 +137,8 @@ namespace CompMs.App.Msdial.Model.Chart
                 lowerSpectrumBrush,
                 deconvolutedSpectraExporter,
                 referenceSpectraExporter,
-                decSpectrumLoaded).AddTo(Disposables);
+                decSpectrumLoaded,
+                ms2ScanMatching).AddTo(Disposables);
         }
 
 

@@ -1,13 +1,13 @@
-﻿using CompMs.MsdialCore.Algorithm.Annotation;
+﻿using CompMs.Common.Algorithm.Scoring;
+using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Search
 {
-    internal sealed class CompoundSearcherCollection
+    public sealed class CompoundSearcherCollection
     {
         private readonly IReadOnlyList<CompoundSearcher> _items;
 
@@ -20,6 +20,14 @@ namespace CompMs.App.Msdial.Model.Search
         }
 
         public IReadOnlyList<CompoundSearcher> Items => _items;
+
+        public Ms2ScanMatching GetMs2ScanMatching(MsScanMatchResult result) {
+            var searcher = _items.FirstOrDefault(item => item.Id == result?.AnnotatorID);
+            if (searcher is null) {
+                return null;
+            }
+            return new Ms2ScanMatching(searcher.MsRefSearchParameter);
+        }
 
         public static CompoundSearcherCollection BuildSearchers(DataBaseStorage databases, DataBaseMapper mapper) {
             var metabolomicsSearchers = databases

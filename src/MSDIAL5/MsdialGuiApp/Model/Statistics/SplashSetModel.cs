@@ -94,7 +94,7 @@ namespace CompMs.App.Msdial.Model.Statistics
         public void Find() {
             foreach (var lipid in SplashProduct.Lipids) {
                 foreach (var spot in _spots) {
-                    if (lipid.TrySetIdIfMatch(spot)) {
+                    if (spot.IsReferenceMatched(_evaluator) && lipid.TrySetIdIfMatch(spot)) {
                         break;
                     }
                 }

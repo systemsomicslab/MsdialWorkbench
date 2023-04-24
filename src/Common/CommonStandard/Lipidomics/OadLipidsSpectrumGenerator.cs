@@ -36,7 +36,6 @@ namespace CompMs.Common.Lipidomics
                             new[] {
                                 new SpectrumPeak(adduct.ConvertToMz(C5H14NO4P), 100d, "Header") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true }}
                         );
-
                     }
                     break;
                 case LbmClass.LPC:

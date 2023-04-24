@@ -57,6 +57,7 @@ namespace CompMs.MsdialCore.DataObj
             if (lipid.GenerateSpectrum(_lipidGenerator, adduct, baseReference) is MoleculeMsReference reference) {
                 lock (_syncObject) {
                     reference.ScanID = _references.Count;
+                    reference.ChromXs = baseReference.ChromXs;
                     _references.Add(reference);
                 }
                 return reference;

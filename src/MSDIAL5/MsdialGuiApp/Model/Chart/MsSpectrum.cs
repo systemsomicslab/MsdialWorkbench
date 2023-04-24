@@ -9,27 +9,29 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class MsSpectrum : BindableBase
     {
+        private List<SpectrumPeak> _spectrum;
+        
         public MsSpectrum(List<SpectrumPeak> spectrum) {
-            Spectrum = spectrum?.OrderBy(peak => peak.Mass).ToList() ?? new List<SpectrumPeak>(0);
+            _spectrum = spectrum?.OrderBy(peak => peak.Mass).ToList() ?? new List<SpectrumPeak>(0);
         }
 
-        public List<SpectrumPeak> Spectrum { get; }
+        public List<SpectrumPeak> Spectrum => _spectrum;
 
         public Range GetSpectrumRange(Func<SpectrumPeak, double> selector) {
-            if (Spectrum.Count == 0) {
+            if (_spectrum.Count == 0) {
                 return new Range(0, 1);
             }
-            return new Range(Spectrum.Min(selector), Spectrum.Max(selector));
+            return new Range(_spectrum.Min(selector), _spectrum.Max(selector));
         }
 
         public MsSpectrum Difference(MsSpectrum other, double tolerance) {
             var result = new List<SpectrumPeak>();
             var j = 0;
-            foreach (var peak in Spectrum) {
-                while (j < other.Spectrum.Count && other.Spectrum[j].Mass < peak.Mass - tolerance) {
+            foreach (var peak in _spectrum) {
+                while (j < other._spectrum.Count && other._spectrum[j].Mass < peak.Mass - tolerance) {
                     j++;
                 }
-                if (j < other.Spectrum.Count && Math.Abs(other.Spectrum[j].Mass - peak.Mass) <= tolerance) {
+                if (j < other._spectrum.Count && Math.Abs(other._spectrum[j].Mass - peak.Mass) <= tolerance) {
                     continue;
                 }
                 result.Add(peak);
@@ -40,11 +42,11 @@ namespace CompMs.App.Msdial.Model.Chart
         public MsSpectrum Product(MsSpectrum other, double tolerance) {
             var result = new List<SpectrumPeak>();
             var j = 0;
-            foreach (var peak in Spectrum) {
-                while (j < other.Spectrum.Count && other.Spectrum[j].Mass < peak.Mass - tolerance) {
+            foreach (var peak in _spectrum) {
+                while (j < other._spectrum.Count && other._spectrum[j].Mass < peak.Mass - tolerance) {
                     j++;
                 }
-                if (j < other.Spectrum.Count && Math.Abs(other.Spectrum[j].Mass - peak.Mass) <= tolerance) {
+                if (j < other._spectrum.Count && Math.Abs(other._spectrum[j].Mass - peak.Mass) <= tolerance) {
                     result.Add(peak);
                 }
             }

@@ -15,6 +15,9 @@ namespace CompMs.App.SpectrumViewer.Model
                 AdductIon.GetAdductIon("[M+H]+"),
                 AdductIon.GetAdductIon("[M+NH4]+"),
                 AdductIon.GetAdductIon("[M+Na]+"),
+                AdductIon.GetAdductIon("[M-H]-"),
+                AdductIon.GetAdductIon("[M+HCOO]-"),
+                AdductIon.GetAdductIon("[M+CH3COO]-"),
             }.AsReadOnly();
             Adduct = Adducts.First();
             Scans = new ObservableCollection<IMSScanProperty>();

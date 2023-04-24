@@ -7,7 +7,7 @@ using System.Text;
 
 namespace CompMs.MsdialCore.Export
 {
-    public interface IAnalysisExporter
+    public interface ILegacyAnalysisExporter
     {
         void Export(
             Stream stream,
@@ -18,7 +18,7 @@ namespace CompMs.MsdialCore.Export
             AnalysisFileBean analysisFile);
     }
 
-    public abstract class BaseAnalysisExporter : IAnalysisExporter
+    public abstract class BaseAnalysisExporter : ILegacyAnalysisExporter
     {
         public virtual void Export(Stream stream, IReadOnlyList<ChromatogramPeakFeature> features, IReadOnlyList<MSDecResult> msdecResults, IDataProvider provider, IAnalysisMetadataAccessor metaAccessor, AnalysisFileBean analysisFile) {
             using (var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 1024, leaveOpen: true)) {
@@ -35,5 +35,9 @@ namespace CompMs.MsdialCore.Export
 
         protected abstract void WriteHeader(StreamWriter sw, IReadOnlyList<string> headers);
         protected abstract void WriteContent(StreamWriter sw, ChromatogramPeakFeature features, MSDecResult result, IDataProvider provider, IReadOnlyList<string> headers, IAnalysisMetadataAccessor metaAccessor, AnalysisFileBean analysisFile);
+    }
+
+    public interface IAnalysisExporter {
+        void Export(Stream stream, AnalysisFileBean analysisFile, ChromatogramPeakFeatureCollection peakFeatureCollection);
     }
 }

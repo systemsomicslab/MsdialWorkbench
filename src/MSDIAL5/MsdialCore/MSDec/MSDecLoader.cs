@@ -1,10 +1,11 @@
-﻿using CompMs.MsdialCore.Parser;
+﻿using CompMs.Common.Interfaces;
+using CompMs.MsdialCore.Parser;
 using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace CompMs.MsdialCore.MSDec {
-    public sealed class MSDecLoader : IDisposable {
+    public sealed class MSDecLoader : IDisposable, IMsScanPropertyLoader<IChromatogramPeak> {
         private Stream _deconvolutionStream;
         private readonly int _version;
         private readonly List<long> _seekPointers;
@@ -62,6 +63,10 @@ namespace CompMs.MsdialCore.MSDec {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+
+        IMSScanProperty IMsScanPropertyLoader<IChromatogramPeak>.Load(IChromatogramPeak source) {
+            return LoadMSDecResult(source.ID);
         }
     }
 }

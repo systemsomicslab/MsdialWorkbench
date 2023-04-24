@@ -2847,7 +2847,7 @@ namespace CompMs.Common.Lipidomics
                  ? string.Empty
                  : oxidized == 1
                      ? ";O"
-                     : ";" + oxidized + "O";
+                     : ";O" + oxidized;
             return chainPrefix + carbon + ":" + rdbString + oxString;
         }
 
@@ -3942,7 +3942,26 @@ namespace CompMs.Common.Lipidomics
                 case LbmClass.NAPhe: return "NAPhe";
                 case LbmClass.NATau: return "NATau";
 
+                case LbmClass.LPC_d5: return "LPC_d5";
+                case LbmClass.LPE_d5: return "LPE_d5";
+                case LbmClass.LPG_d5: return "LPG_d5";
+                case LbmClass.LPI_d5: return "LPI_d5";
+                case LbmClass.LPS_d5: return "LPS_d5";
 
+                case LbmClass.PC_d5: return "PC_d5";
+                case LbmClass.PE_d5: return "PE_d5";
+                case LbmClass.PG_d5: return "PG_d5";
+                case LbmClass.PI_d5: return "PI_d5";
+                case LbmClass.PS_d5: return "PS_d5";
+
+                case LbmClass.DG_d5: return "DG_d5";
+                case LbmClass.TG_d5: return "TG_d5";
+
+                case LbmClass.CE_d7: return "CE_d7";
+                case LbmClass.Cer_NS_d7: return "Cer_NS_d7";
+                case LbmClass.SM_d9: return "SM_d9";
+
+                case LbmClass.bmPC: return "bmPC";
                 default: return "Undefined";
             }
         }
@@ -4386,6 +4405,27 @@ namespace CompMs.Common.Lipidomics
                 case "NGcGM3": return LbmClass.NGcGM3;
                 case "ST": return LbmClass.ST;
 
+                case "LPC_d5": return LbmClass.LPC_d5;
+                case "LPE_d5": return LbmClass.LPE_d5;
+                case "LPG_d5": return LbmClass.LPG_d5;
+                case "LPI_d5": return LbmClass.LPI_d5;
+                case "LPS_d5": return LbmClass.LPS_d5;
+
+                case "PC_d5": return LbmClass.PC_d5;
+                case "PE_d5": return LbmClass.PE_d5;
+                case "PG_d5": return LbmClass.PG_d5;
+                case "PI_d5": return LbmClass.PI_d5;
+                case "PS_d5": return LbmClass.PS_d5;
+
+                case "DG_d5": return LbmClass.DG_d5;
+                case "TG_d5": return LbmClass.TG_d5;
+
+                case "CE_d7": return LbmClass.CE_d7;
+                case "Cer_NS_d7": return LbmClass.Cer_NS_d7;
+                case "SM_d9": return LbmClass.SM_d9;
+
+                case "bmPC": return LbmClass.bmPC;
+
                 default: return LbmClass.Undefined;
             }
         }
@@ -4825,6 +4865,26 @@ namespace CompMs.Common.Lipidomics
                 case "GQ1b": return "Sphingolipids";
                 case "NGcGM3": return "Sphingolipids";
 
+                case "LPC_d5": return "Glycerophospholipids";
+                case "LPE_d5": return "Glycerophospholipids";
+                case "LPG_d5": return "Glycerophospholipids";
+                case "LPI_d5": return "Glycerophospholipids";
+                case "LPS_d5": return "Glycerophospholipids";
+
+                case "PC_d5": return "Glycerophospholipids";
+                case "PE_d5": return "Glycerophospholipids";
+                case "PG_d5": return "Glycerophospholipids";
+                case "PI_d5": return "Glycerophospholipids";
+                case "PS_d5": return "Glycerophospholipids";
+
+                case "DG_d5": return "Glycerolipids";
+                case "TG_d5": return "Glycerolipids";
+
+                case "CE_d7": return "SterolLipids";
+                case "Cer_NS_d7": return "Sphingolipids";
+                case "SM_d9": return "Sphingolipids";
+
+                case "bmPC": return "Glycerophospholipids";
                 default: return "Unassigned lipid";
             }
         }
