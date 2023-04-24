@@ -1310,8 +1310,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                         totalCarbon, totalDbBond, adduct);
 
                 case LbmClass.DG:
-                    return LipidMsmsCharacterization.JudgeIfDag(msScanProp, ms2tol, refMz,
-                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                    return LipidEieioMsmsCharacterization.JudgeIfDag(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
 
                 case LbmClass.MG:
                     return LipidMsmsCharacterization.JudgeIfMag(msScanProp, ms2tol, refMz,
