@@ -50,7 +50,8 @@ namespace CompMs.Common.Enum
         NATau, NAPhe,
         PT,
         DMEDFAHFA, DMEDFA, DMEDOxFA,
-        CE_d7, Cer_NS_d7, PC_d5, PE_d5, PG_d5, PS_d5, PI_d5, SM_d9, TG_d5, DG_d5, LPC_d5, LPE_d5, LPG_d5, LPS_d5, LPI_d5
+        CE_d7, Cer_NS_d7, PC_d5, PE_d5, PG_d5, PS_d5, PI_d5, SM_d9, TG_d5, DG_d5, LPC_d5, LPE_d5, LPG_d5, LPS_d5, LPI_d5,
+        bmPC
     }
 
     /// <summary>

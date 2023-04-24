@@ -2643,6 +2643,7 @@ namespace CompMs.Common.Ontology {
             { "PA", "rgb(218, 112, 214)" },
             { "PC", "rgb(50, 205, 50)" },
             { "PC_d5", "rgb(50, 205, 50)" },
+            { "bmPC", "rgb(50, 205, 50)" },
             { "PE", "rgb(128, 0, 128)" },
             { "PE_d5", "rgb(128, 0, 128)" },
             { "MMPE", "rgb(128, 0, 148)" },

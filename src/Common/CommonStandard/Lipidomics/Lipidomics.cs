@@ -874,6 +874,10 @@ namespace CompMs.Common.Lipidomics {
                         result = LipidMsmsCharacterization.JudgeIfCeramidensD7(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
                         break;
+                    //20230424
+                    case LbmClass.bmPC:
+                        return LipidMsmsCharacterization.JudgeIfBetaMethylPhosphatidylcholine(msScanProp, ms2tol, refMz,
+                            totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
 
 
                     default:

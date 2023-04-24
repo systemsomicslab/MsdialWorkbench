@@ -3961,6 +3961,7 @@ namespace CompMs.Common.Lipidomics
                 case LbmClass.Cer_NS_d7: return "Cer_NS_d7";
                 case LbmClass.SM_d9: return "SM_d9";
 
+                case LbmClass.bmPC: return "bmPC";
                 default: return "Undefined";
             }
         }
@@ -4423,6 +4424,7 @@ namespace CompMs.Common.Lipidomics
                 case "Cer_NS_d7": return LbmClass.Cer_NS_d7;
                 case "SM_d9": return LbmClass.SM_d9;
 
+                case "bmPC": return LbmClass.bmPC;
 
                 default: return LbmClass.Undefined;
             }
@@ -4882,6 +4884,7 @@ namespace CompMs.Common.Lipidomics
                 case "Cer_NS_d7": return "Sphingolipids";
                 case "SM_d9": return "Sphingolipids";
 
+                case "bmPC": return "Glycerophospholipids";
                 default: return "Unassigned lipid";
             }
         }

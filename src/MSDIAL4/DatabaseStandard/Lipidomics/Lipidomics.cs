@@ -878,6 +878,12 @@ namespace Riken.Metabolomics.Lipidomics
                         result = LipidMsmsCharacterization.JudgeIfCeramidensD7(spectrum, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
                         break;
+                    //20230424
+                    case LbmClass.bmPC:
+                        result = LipidMsmsCharacterization.JudgeIfBetaMethylPhosphatidylcholine(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+
                     default:
                         return null;
 
