@@ -1065,7 +1065,7 @@ namespace Msdial.Lcms.Dataprocess.Scoring
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                 //20230424
                 case LbmClass.bmPC:
-                    return LipidMsmsCharacterization.JudgeIfPhosphatidylcholineD5(spectrum, ms2tol, refMz,
+                    return LipidMsmsCharacterization.JudgeIfBetaMethylPhosphatidylcholine(spectrum, ms2tol, refMz,
                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
 
                 default:

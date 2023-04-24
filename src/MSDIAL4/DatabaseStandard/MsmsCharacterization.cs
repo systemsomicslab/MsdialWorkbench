@@ -15804,8 +15804,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                 //addMT
                 else if (adduct.AdductIonName == "[M+Na]+")
                 {
-                    // 198.07332 (C6H16NO4P)
                     var threshold = 5.0;
+                    // 198.07332 (C6H16NO4P)
                     var diagnosticMz = 12 * 6 + MassDiffDictionary.HydrogenMass * 16 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass;
                     // seek [M+Na -C6H16NO4P]+
                     var diagnosticMz2 = theoreticalMz - diagnosticMz;
