@@ -667,25 +667,43 @@ namespace CompMs.Common.Lipidomics
                     if (sphCarbon == 16 && sphDouble >= 3) return null;
                     if (acylCarbon < 8) return null;
 
-                    var C5H14NO4P = 183.066047;
                     var C2H2N = 40.018724;
 
-                    var diagnosChain1 = LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + C2H2N + MassDiffDictionary.HydrogenMass + Proton;
-                    var diagnosChain2 = diagnosChain1 + C5H14NO4P - MassDiffDictionary.HydrogenMass;
+                    var C5H14NO4P = new[] {
+                        MassDiffDictionary.CarbonMass * 5,
+                        MassDiffDictionary.HydrogenMass * 14,
+                        MassDiffDictionary.NitrogenMass,
+                        MassDiffDictionary.OxygenMass * 4,
+                        MassDiffDictionary.PhosphorusMass,
+                    }.Sum();
+
+                    //var diagnosChain1 = LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + C2H2N + MassDiffDictionary.HydrogenMass + Proton;
+                    //var diagnosChain2 = diagnosChain1 + C5H14NO4P - MassDiffDictionary.HydrogenMass;
+                    //var query = new List<SpectrumPeak> {
+                    //            new SpectrumPeak() { Mass = diagnosChain1, Intensity = 0.5 },
+                    //            new SpectrumPeak() { Mass = diagnosChain2, Intensity = 1.0 }
+                    //        };
+
+                    var diagnosticMz1 = C5H14NO4P + 12 * 2 + MassDiffDictionary.HydrogenMass * 3 + MassDiffDictionary.NitrogenMass + Proton;
+                    var diagnosticMz2 = C5H14NO4P + 12 * 3 + MassDiffDictionary.HydrogenMass * 3 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass + Proton;
                     var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = diagnosChain1, Intensity = 0.5 },
-                                new SpectrumPeak() { Mass = diagnosChain2, Intensity = 1.0 }
+                                new SpectrumPeak() { Mass = diagnosticMz1, Intensity = 1.0 },
+                                new SpectrumPeak() { Mass = diagnosticMz2, Intensity = 1.0 }
                             };
 
                     var foundCount = 0;
                     var averageIntensity = 0.0;
                     LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
 
-                    if (foundCount > 1)
+                    if (foundCount == 2) 
                     { // the diagnostic acyl ion must be observed for level 2 annotation
                         var molecule = LipidMsmsCharacterizationUtility.getCeramideMoleculeObjAsLevel2("SM", LbmClass.SM, "d", sphCarbon, sphDouble,
                             acylCarbon, acylDouble, averageIntensity);
                         candidates.Add(molecule);
+                    }
+                    else
+                    {
+                        return null;
                     }
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("SM", LbmClass.SM, "d", theoreticalMz, adduct,
@@ -715,11 +733,8 @@ namespace CompMs.Common.Lipidomics
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("SM", LbmClass.SM, "d", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
-
                 }
-
             }
-
             return null;
         }
 
@@ -2178,14 +2193,19 @@ namespace CompMs.Common.Lipidomics
                     if (sphCarbon <= 13) return null;
                     if (sphCarbon == 16 && sphDouble >= 3) return null;
                     if (acylCarbon < 8) return null;
-                    var C5H14NO4P = 183.066047 + MassDiffDictionary.HydrogenMass * 9;
-                    var C2H2N = 40.018724;
 
-                    var diagnosChain1 = LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + C2H2N + MassDiffDictionary.HydrogenMass + Proton;
-                    var diagnosChain2 = diagnosChain1 + C5H5D9NO4P - MassDiffDictionary.HydrogenMass;
+                    //var diagnosChain1 = LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + C2H2N + MassDiffDictionary.HydrogenMass + Proton;
+                    //var diagnosChain2 = diagnosChain1 + C5H5D9NO4P - MassDiffDictionary.HydrogenMass;
+                    //var query = new List<SpectrumPeak> {
+                    //            new SpectrumPeak() { Mass = diagnosChain1, Intensity = 0.5 },
+                    //            new SpectrumPeak() { Mass = diagnosChain2, Intensity = 1.0 }
+                    //        };
+
+                    var diagnosticMz1 = C5H5D9NO4P + 12 * 2 + MassDiffDictionary.HydrogenMass * 3 + MassDiffDictionary.NitrogenMass + Proton;
+                    var diagnosticMz2 = C5H5D9NO4P + 12 * 3 + MassDiffDictionary.HydrogenMass * 3 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass + Proton;
                     var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = diagnosChain1, Intensity = 0.5 },
-                                new SpectrumPeak() { Mass = diagnosChain2, Intensity = 1.0 }
+                                new SpectrumPeak() { Mass = diagnosticMz1, Intensity = 1.0 },
+                                new SpectrumPeak() { Mass = diagnosticMz2, Intensity = 1.0 }
                             };
 
 
