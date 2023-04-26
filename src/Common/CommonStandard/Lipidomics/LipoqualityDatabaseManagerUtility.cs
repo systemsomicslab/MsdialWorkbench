@@ -85,6 +85,9 @@ namespace CompMs.Common.Lipidomics {
                 case "PS_d5":
                     setDoubleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
                     break;
+                case "bmPC":
+                    setDoubleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
+                    break;
                 case "BMP":
                     setDoubleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
                     break;
@@ -622,6 +625,7 @@ namespace CompMs.Common.Lipidomics {
                 case "Cer_NS_d7": return "Cer_NS_d7";
                 case "SM_d9": return "SM_d9";
 
+                case "bmPC": return "bmPC";
                 default: return "Unassigned lipid";
             }
         }
@@ -725,6 +729,7 @@ namespace CompMs.Common.Lipidomics {
                 case "Cer_NS_d7": return "Sphingolipids";
                 case "SM_d9": return "Sphingolipids";
 
+                case "bmPC": return "Glycerophospholipids";
 
                 default: return "Unassigned lipid";
             }

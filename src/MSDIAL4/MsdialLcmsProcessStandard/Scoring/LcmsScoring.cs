@@ -1063,6 +1063,11 @@ namespace Msdial.Lcms.Dataprocess.Scoring
                 case LbmClass.Cer_NS_d7:
                     return LipidMsmsCharacterization.JudgeIfCeramidensD7(spectrum, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                //20230424
+                case LbmClass.bmPC:
+                    return LipidMsmsCharacterization.JudgeIfBetaMethylPhosphatidylcholine(spectrum, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
                 default:
                     return null;
             }
