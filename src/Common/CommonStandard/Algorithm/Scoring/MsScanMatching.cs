@@ -1366,12 +1366,12 @@ namespace CompMs.Common.Algorithm.Scoring {
                          totalCarbon, totalDbBond, sn1Carbon, sn1DbBond, adduct);
 
                 case LbmClass.EtherPC:
-                    return LipidMsmsCharacterization.JudgeIfEtherpc(msScanProp, ms2tol, refMz,
-                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                    return LipidEieioMsmsCharacterization.JudgeIfEtherpc(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
 
                 case LbmClass.EtherPE:
                     return LipidEieioMsmsCharacterization.JudgeIfEtherpe(msScanProp, ms2tol, refMz,
-                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                         totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
 
                 case LbmClass.EtherLPC:
                     return LipidMsmsCharacterization.JudgeIfEtherlysopc(msScanProp, ms2tol, refMz,
