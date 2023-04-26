@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.CommonMVVM;
-using CompMs.MsdialCore.Algorithm;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,9 +10,7 @@ namespace CompMs.App.Msdial.Model.Export
     {
         private readonly object _syncObject = new object();
 
-        public AnalysisResultExportModel(
-            AnalysisFileBeanModelCollection files,
-            params IMsdialAnalysisExport[] msdialAnalysisExports) {
+        public AnalysisResultExportModel(AnalysisFileBeanModelCollection files, string initialFolder, params IMsdialAnalysisExport[] msdialAnalysisExports) {
             if (files is null) {
                 throw new ArgumentNullException(nameof(files));
             }
@@ -25,6 +22,10 @@ namespace CompMs.App.Msdial.Model.Export
             AnalysisExports = msdialAnalysisExports;
             UnSelectedFiles = new ObservableCollection<AnalysisFileBeanModel>(files.AnalysisFiles);
             SelectedFiles = new ObservableCollection<AnalysisFileBeanModel>();
+
+            if (string.IsNullOrEmpty(DestinationFolder)) {
+                DestinationFolder = initialFolder;
+            }
         }
 
         public IMsdialAnalysisExport[] AnalysisExports { get; }

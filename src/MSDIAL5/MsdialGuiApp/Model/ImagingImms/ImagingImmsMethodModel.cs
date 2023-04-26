@@ -112,7 +112,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                 },
             };
 
-            return new AnalysisResultExportModel(AnalysisFileModelCollection, models);
+            return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, models);
         }
     }
 }

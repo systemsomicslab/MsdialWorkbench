@@ -342,7 +342,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     Label = "Nist format (*.msp)"
                 },
             };
-            return new AnalysisResultExportModel(AnalysisFileModelCollection, models);
+            return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, models);
         }
 
         public ChromatogramsModel ShowTIC() {
