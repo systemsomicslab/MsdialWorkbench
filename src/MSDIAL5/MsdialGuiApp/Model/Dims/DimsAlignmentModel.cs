@@ -135,7 +135,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
             IMsSpectrumLoader<AlignmentSpotPropertyModel> decSpecLoader = new AlignmentMSDecSpectrumLoader(_alignmentFile);
             Ms2SpectrumModel = new MsSpectrumModel(
-                Target.SelectSwitch(decSpecLoader.LoadSpectrumAsObservable).Select(s => new MsSpectrum(s)),
+                Target.SelectSwitch(decSpecLoader.LoadMsSpectrumAsObservable),
                 MatchResultCandidatesModel.LoadMsSpectrumObservable(refLoader),
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Mass), spot => spot.Mass),
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Intensity), spot => spot.Intensity),

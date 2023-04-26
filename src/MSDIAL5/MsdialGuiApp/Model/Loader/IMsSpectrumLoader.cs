@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
@@ -35,6 +36,10 @@ namespace CompMs.App.Msdial.Model.Loader
 
         public static IMsSpectrumLoader<U> Contramap<T, U>(this IMsSpectrumLoader<T> loader, Func<U, T> map) {
             return new ContramapImplLoader<T, U>(loader, u => Observable.Return(map(u)));
+        }
+
+        public static IObservable<MsSpectrum> LoadMsSpectrumAsObservable<T>(this IMsSpectrumLoader<T> loader, T target) {
+            return loader.LoadSpectrumAsObservable(target).Select(s => new MsSpectrum(s));
         }
 
         class ContramapImplLoader<T, U> : IMsSpectrumLoader<U> {

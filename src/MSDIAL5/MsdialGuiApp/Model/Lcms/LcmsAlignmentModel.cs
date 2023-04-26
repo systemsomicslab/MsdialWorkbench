@@ -150,7 +150,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
             IMsSpectrumLoader<AlignmentSpotPropertyModel> msDecSpectrumLoader = new AlignmentMSDecSpectrumLoader(_alignmentFile);
             Ms2SpectrumModel = new MsSpectrumModel(
-                Target.SelectSwitch(msDecSpectrumLoader.LoadSpectrumAsObservable).Select(s => new MsSpectrum(s)),
+                Target.SelectSwitch(msDecSpectrumLoader.LoadMsSpectrumAsObservable),
                 MatchResultCandidatesModel.LoadMsSpectrumObservable(refLoader),
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Mass), peak => peak.Mass),
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Intensity), peak => peak.Intensity),

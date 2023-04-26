@@ -32,7 +32,7 @@ namespace CompMs.App.Msdial.Model.Information
         public ReadOnlyReactivePropertySlim<IList<MsScanMatchResult>> Candidates { get; }
 
         public IObservable<MsSpectrum> LoadMsSpectrumObservable(IMsSpectrumLoader<MsScanMatchResult> loader) {
-            return SelectedCandidate.SelectSwitch(loader.LoadSpectrumAsObservable).Select(s => new MsSpectrum(s));
+            return SelectedCandidate.SelectSwitch(loader.LoadMsSpectrumAsObservable);
         }
 
         public IObservable<Ms2ScanMatching> GetCandidatesScorer(CompoundSearcherCollection compoundSearcherCollection) {

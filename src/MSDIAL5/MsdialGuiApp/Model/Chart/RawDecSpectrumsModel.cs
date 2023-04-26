@@ -59,7 +59,7 @@ namespace CompMs.App.Msdial.Model.Chart
             IObservable<Ms2ScanMatching> ms2ScanMatching) {
 
             var rawSource = targetSource.WithLatestFrom(Observable.Return(rawLoader),
-                (target, loader) => loader.LoadSpectrumAsObservable(target))
+                (target, loader) => loader.LoadMsSpectrumAsObservable(target))
                 .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -72,7 +72,7 @@ namespace CompMs.App.Msdial.Model.Chart
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
             var decSource = targetSource.WithLatestFrom(Observable.Return(decLoader),
-                (target, loader) => loader.LoadSpectrumAsObservable(target))
+                (target, loader) => loader.LoadMsSpectrumAsObservable(target))
                 .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -86,7 +86,7 @@ namespace CompMs.App.Msdial.Model.Chart
             .AddTo(Disposables);
             var refMsSpectrum_ = refMsSpectrum.Publish();
             RawRefSpectrumModels = new MsSpectrumModel(
-                rawSource.Select(s => new MsSpectrum(s)), refMsSpectrum_,
+                rawSource, refMsSpectrum_,
                 horizontalPropertySelector,
                 verticalPropertySelector,
                 graphLabels,
@@ -98,7 +98,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 rawSpectrumLoaded,
                 ms2ScanMatching).AddTo(Disposables);
             DecRefSpectrumModels = new MsSpectrumModel(
-                decSource.Select(s => new MsSpectrum(s)), refMsSpectrum_,
+                decSource, refMsSpectrum_,
                 horizontalPropertySelector,
                 verticalPropertySelector,
                 graphLabels,
