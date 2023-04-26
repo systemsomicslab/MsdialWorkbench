@@ -99,7 +99,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                     Label = "Nist format (*.msp)"
                 },
             };
-            var model = new AnalysisResultExportModel(_model.AnalysisFileModelCollection, models);
+            var model = new AnalysisResultExportModel(_model.AnalysisFileModelCollection, _model.Storage.Parameter.ProjectParam.ProjectFolderPath, models);
             using (var vm = new AnalysisResultExportViewModel(model)) {
                 _broker.Publish(vm);
             }

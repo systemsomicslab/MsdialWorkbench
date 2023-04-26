@@ -274,7 +274,7 @@ namespace CompMs.App.Msdial.Model.Imms
                     Label = "Nist format (*.msp)"
                 },
             };
-            return new AnalysisResultExportModel(AnalysisFileModelCollection, models);
+            return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, models);
         }
 
         public ChromatogramsModel PrepareTIC() {
