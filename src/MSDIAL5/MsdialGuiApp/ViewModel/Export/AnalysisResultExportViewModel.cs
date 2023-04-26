@@ -27,9 +27,13 @@ namespace CompMs.App.Msdial.ViewModel.Export
             SelectedFrom = model.UnSelectedFiles.ToReadOnlyReactiveCollection(file => new FileBeanSelection(file)).AddTo(Disposables);
             SelectedTo = model.SelectedFiles.ToReadOnlyReactiveCollection(file => new FileBeanSelection(file)).AddTo(Disposables);
 
-            var canExport = this.ErrorsChangedAsObservable().ToUnit().StartWith(Unit.Default).Select(_ => !HasValidationErrors);
             ExportPeakCommand = MsdialAnalysisExportViewModels.Select(vm => vm.CanExport)
-                .Append(canExport)
+                .Concat(new[]
+                {
+                    this.ErrorsChangedAsObservable().ToUnit().StartWith(Unit.Default).Select(_ => !HasValidationErrors),
+                    SelectedTo.CollectionChangedAsObservable().Select(_ => SelectedTo.Any()),
+                    MsdialAnalysisExportViewModels.Select(vm => vm.ShouldExport).CombineLatestValuesAreAllFalse().Inverse(),
+                })
                 .CombineLatestValuesAreAllTrue()
                 .ToAsyncReactiveCommand()
                 .WithSubscribe(ExportPeakAsync)
