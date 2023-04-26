@@ -62,7 +62,7 @@ namespace CompMs.Common.Lipidomics
                 var speccomment_radical = SpectrumComment.doublebond;
                 var speccomment_hgain = SpectrumComment.doublebond;
 
-                if (bondPositions.Contains(i - 1))
+                if (bondPositions.Contains(i - 1) && nlMass == 0)
                 { // in the case of 18:2(9,12), Radical is big, and H loss is next
                     factor = 4.0;
                     factorHLoss = 2.0;
