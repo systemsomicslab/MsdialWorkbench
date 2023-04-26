@@ -272,7 +272,7 @@
                                     Margin="8"/>
                 </Expander>
 
-                <Expander Header="Annotaion cut off" Margin="0,8"
+                <Expander Header="Annotation cut off" Margin="0,8"
                           Grid.Row="2">
                     <ContentControl Content="{Binding ParameterVM}"
                                     ContentTemplate="{StaticResource ResourceKey=Ms2ScoreCutOffSetting}"
