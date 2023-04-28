@@ -72,6 +72,7 @@ namespace CompMs.Common.Lipidomics
 
         IDoubleBond Add(params IDoubleBondInfo[] infos);
         IDoubleBond Decide(params IDoubleBondInfo[] infos);
+        IDoubleBond Indeterminate(DoubleBondIndeterminateState indeterminateState);
     }
 
     public sealed class DoubleBond : IDoubleBond
@@ -79,6 +80,10 @@ namespace CompMs.Common.Lipidomics
         public DoubleBond(int count, IList<IDoubleBondInfo> bonds) {
             Count = count;
             Bonds = new ReadOnlyCollection<IDoubleBondInfo>(bonds);
+        }
+
+        public DoubleBond(int count, IEnumerable<IDoubleBondInfo> bonds) : this(count, (bonds as IList<IDoubleBondInfo>) ?? bonds.ToArray()) {
+
         }
 
         public DoubleBond(int count, params IDoubleBondInfo[] bonds) : this(count, (IList<IDoubleBondInfo>)bonds) {
@@ -106,6 +111,10 @@ namespace CompMs.Common.Lipidomics
                 return null;
             }
             return new DoubleBond(Count, Bonds.Concat(infos).OrderBy(x => x.Position).ToArray());
+        }
+
+        public IDoubleBond Indeterminate(DoubleBondIndeterminateState indeterminateState) {
+            return new DoubleBond(Count, indeterminateState.Indeterminate(Bonds));
         }
 
         public static DoubleBond CreateFromPosition(params int[] positions) {
