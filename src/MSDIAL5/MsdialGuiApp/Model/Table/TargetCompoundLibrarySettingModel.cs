@@ -1,12 +1,10 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.Common.Components;
+﻿using CompMs.Common.Components;
 using CompMs.Common.Parser;
 using CompMs.CommonMVVM;
-using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Table
 {
@@ -14,9 +12,19 @@ namespace CompMs.App.Msdial.Model.Table
     {
         public ReadOnlyCollection<MoleculeMsReference> ReferenceMolecules {
             get => _referenceMolecules;
-            private set => SetProperty(ref _referenceMolecules, value);
+            private set {
+                if (SetProperty(ref _referenceMolecules, value)) {
+                    IsLoaded = value?.Any() ?? false;
+                }
+            }
         }
         private ReadOnlyCollection<MoleculeMsReference> _referenceMolecules;
+
+        public bool IsLoaded {
+            get => _isLoaded;
+            private set => SetProperty(ref _isLoaded, value);
+        }
+        private bool _isLoaded;
 
         public string TargetLibrary {
             get => _targetLibrary;
@@ -56,22 +64,6 @@ namespace CompMs.App.Msdial.Model.Table
                     LoadingError = "Unsupported library type.";
                     return;
             }
-        }
-
-        public List<MatchedSpotCandidate<AlignmentSpotPropertyModel>> Find(IReadOnlyList<AlignmentSpotPropertyModel> spots) {
-            if (ReferenceMolecules is null) {
-                return new List<MatchedSpotCandidate<AlignmentSpotPropertyModel>>(0);
-            }
-            var candidates = new List<MatchedSpotCandidate<AlignmentSpotPropertyModel>>();
-            foreach (var reference in ReferenceMolecules) {
-                foreach (var spot in spots) {
-                    var candidate = spot.IsMatchedWith(reference);
-                    if (candidate != null) {
-                        candidates.Add(candidate);
-                    }
-                }
-            }
-            return candidates;
         }
     }
 }
