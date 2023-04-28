@@ -750,12 +750,15 @@ namespace Msdial.Lcms.Dataprocess.Scoring
                 case LbmClass.CoQ:
                     return LipidMsmsCharacterization.JudgeIfCoenzymeq(spectrum, ms2tol, refMz,
                          totalCarbon, totalDbBond, adduct);
-                    
+
 
                 case LbmClass.Vitamin_E:
-                    return LipidMsmsCharacterization.JudgeIfVitaminmolecules(spectrum, ms2tol, refMz,
+                    return LipidMsmsCharacterization.JudgeIfVitaminEmolecules(spectrum, ms2tol, refMz,
                          totalCarbon, totalDbBond, adduct);
-                    
+                case LbmClass.Vitamin_D:
+                    return LipidMsmsCharacterization.JudgeIfVitaminDmolecules(spectrum, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+
 
                 case LbmClass.VAE:
                     return LipidMsmsCharacterization.JudgeIfVitaminaestermolecules(spectrum, ms2tol, refMz,

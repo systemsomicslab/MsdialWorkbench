@@ -543,7 +543,12 @@ namespace Riken.Metabolomics.Lipidomics
                         break;
 
                     case LbmClass.Vitamin_E:
-                        result = LipidMsmsCharacterization.JudgeIfVitaminmolecules(spectrum, ms2tol, refMz,
+                        result = LipidMsmsCharacterization.JudgeIfVitaminEmolecules(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, adduct);
+                        break;
+
+                    case LbmClass.Vitamin_D:
+                        result = LipidMsmsCharacterization.JudgeIfVitaminDmolecules(spectrum, ms2tol, refMz,
                              totalCarbon, totalDbBond, adduct);
                         break;
 
