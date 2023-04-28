@@ -10,8 +10,9 @@ namespace CompMs.MsdialCore.DataObj
         private static readonly double MASS_TOLERANCE = .01d; // TODO: temporary set
         private static readonly double RT_TOLERANCE = 1d; // TODO: temporary set
 
-        public MatchedSpotCandidate() {
-            
+        public MatchedSpotCandidate(T spot, MoleculeMsReference reference) {
+            Spot = spot;
+            Reference = reference;
         }
 
         public T Spot { get; }
@@ -49,6 +50,18 @@ namespace CompMs.MsdialCore.DataObj
                     default:
                         throw new NotImplementedException();
                 }
+            }
+        }
+    }
+
+    public static class MatchedSpotCandidate {
+        public static MatchedSpotCandidate<T> IsMatchedWith<T>(this T spot, MoleculeMsReference reference) where T: IAnnotatedObject, IChromatogramPeak {
+            var candidate = new MatchedSpotCandidate<T>(spot, reference);
+            if (candidate.IsAnnotated || candidate.IsSimilarWithTime || candidate.IsSimilarWithMz) {
+                return candidate;
+            }
+            else {
+                return null;
             }
         }
     }
