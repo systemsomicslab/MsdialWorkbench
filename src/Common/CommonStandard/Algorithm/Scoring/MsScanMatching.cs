@@ -1684,7 +1684,10 @@ namespace CompMs.Common.Algorithm.Scoring {
 
 
                 case LbmClass.Vitamin_E:
-                    return LipidMsmsCharacterization.JudgeIfVitaminmolecules(msScanProp, ms2tol, refMz,
+                    return LipidMsmsCharacterization.JudgeIfVitaminEmolecules(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+                case LbmClass.Vitamin_D:
+                    return LipidMsmsCharacterization.JudgeIfVitaminDmolecules(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, adduct);
 
 
@@ -2440,7 +2443,10 @@ namespace CompMs.Common.Algorithm.Scoring {
 
 
                 case LbmClass.Vitamin_E:
-                    return LipidMsmsCharacterization.JudgeIfVitaminmolecules(msScanProp, ms2tol, refMz,
+                    return LipidMsmsCharacterization.JudgeIfVitaminEmolecules(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+                case LbmClass.Vitamin_D:
+                    return LipidMsmsCharacterization.JudgeIfVitaminDmolecules(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, adduct);
 
 

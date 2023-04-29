@@ -542,7 +542,11 @@ namespace CompMs.Common.Lipidomics {
                         break;
 
                     case LbmClass.Vitamin_E:
-                        result = LipidMsmsCharacterization.JudgeIfVitaminmolecules(msScanProp, ms2tol, refMz,
+                        result = LipidMsmsCharacterization.JudgeIfVitaminEmolecules(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, adduct);
+                        break;
+                    case LbmClass.Vitamin_D:
+                        result = LipidMsmsCharacterization.JudgeIfVitaminDmolecules(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, adduct);
                         break;
 
