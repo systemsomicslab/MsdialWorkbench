@@ -88,10 +88,9 @@ namespace CompMs.Common.Lipidomics
                 {
                     if (bondPositions.Contains(i))
                     {
-                        factor = 4.0;
+                        factor = 3.0;
                         factorHLoss = 0.5;
                         factorHGain = 2.0;
-                        speccomment_radical |= SpectrumComment.doublebond_high;
                     }
                     else
                     {
