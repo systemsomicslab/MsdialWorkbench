@@ -55,11 +55,40 @@ namespace CompMs.Common.Lipidomics.Tests
         public static IEnumerable<object[]> IncludesTestData {
             get {
                 ITotalChain chains3600 = new TotalChain(36, 0, 0, 0, 0, 0), chains3610 = new TotalChain(36, 1, 0, 0, 0, 0), chains3601 = new TotalChain(36, 0, 1, 0, 0, 0),
-                    chains180_181 = new MolecularSpeciesLevelChains(new AcylChain(18, DoubleBond.CreateFromPosition(), Oxidized.CreateFromPosition()), new AcylChain(18, new DoubleBond(1), Oxidized.CreateFromPosition()));
+                    chains180_181 = new MolecularSpeciesLevelChains(new AcylChain(18, DoubleBond.CreateFromPosition(), Oxidized.CreateFromPosition()), new AcylChain(18, new DoubleBond(1), Oxidized.CreateFromPosition())),
+                    chains180181 = new PositionLevelChains(new AcylChain(18, DoubleBond.CreateFromPosition(), Oxidized.CreateFromPosition()), new AcylChain(18, new DoubleBond(1), Oxidized.CreateFromPosition())),
+                    chains181180 = new PositionLevelChains(new AcylChain(18, new DoubleBond(1), Oxidized.CreateFromPosition()), new AcylChain(18, DoubleBond.CreateFromPosition(), Oxidized.CreateFromPosition()));
+                    
                 yield return new object[] { chains3610, chains3610, true, };
                 yield return new object[] { chains3610, chains180_181, true, };
                 yield return new object[] { chains3600, chains3610, false, };
                 yield return new object[] { chains3600, chains3601, false, };
+
+                yield return new object[] { chains180_181, chains3610, false, };
+                yield return new object[] { chains180_181, chains180_181, true, };
+                yield return new object[] { chains180_181, chains180181, true, };
+                yield return new object[] { chains180_181, chains181180, true, };
+
+                yield return new object[] { chains180181, chains180181, true, };
+                yield return new object[] { chains180181, chains181180, false, };
+                yield return new object[] { chains180181, chains180_181, false, };
+                yield return new object[] { chains180181, chains3610, false, };
+
+                ITotalChain chains180_181_181 = new MolecularSpeciesLevelChains(
+                    new AcylChain(18, new DoubleBond(0), new Oxidized(0)),
+                    new AcylChain(18, new DoubleBond(1), new Oxidized(0)),
+                    new AcylChain(18, new DoubleBond(1), new Oxidized(0))),
+                chains180_180_182 = new MolecularSpeciesLevelChains(
+                    new AcylChain(18, new DoubleBond(0), new Oxidized(0)),
+                    new AcylChain(18, new DoubleBond(0), new Oxidized(0)),
+                    new AcylChain(18, new DoubleBond(2), new Oxidized(0))),
+                chains181181180 = new MolecularSpeciesLevelChains(
+                    new AcylChain(18, new DoubleBond(0), new Oxidized(0)),
+                    new AcylChain(18, new DoubleBond(1), new Oxidized(0)),
+                    new AcylChain(18, new DoubleBond(1), new Oxidized(0)));
+
+                yield return new object[] { chains180_181_181, chains181181180, true, };
+                yield return new object[] { chains180_181_181, chains180_180_182, false, };
             }
         }
 

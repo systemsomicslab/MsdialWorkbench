@@ -11,6 +11,7 @@ namespace CompMs.Common.Lipidomics
         int OxidizedCount { get; }
         double Mass { get; }
 
+        bool Includes(IChain chain);
         IEnumerable<IChain> GetCandidates(IChainGenerator generator);
     }
 }

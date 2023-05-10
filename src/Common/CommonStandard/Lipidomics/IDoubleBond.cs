@@ -13,6 +13,8 @@ namespace CompMs.Common.Lipidomics
 
         ReadOnlyCollection<IDoubleBondInfo> Bonds { get; }
 
+        bool Includes(IDoubleBond bond);
+
         IDoubleBond Add(params IDoubleBondInfo[] infos);
         IDoubleBond Decide(params IDoubleBondInfo[] infos);
     }
@@ -71,6 +73,10 @@ namespace CompMs.Common.Lipidomics
         public TResult Accept<TResult, TDecomposed>(IVisitor<TResult, TDecomposed> visitor, IDecomposer<TResult, IDoubleBond, TDecomposed> decomposer) {
             return decomposer.Decompose(visitor, this);
         }
+
+        public bool Includes(IDoubleBond bond) {
+            return Count == bond.Count && DecidedCount <= bond.DecidedCount && Bonds.All(bd => bond.Bonds.Any(bd.Includes));
+        }
     }
 
     public enum DoubleBondState
@@ -82,6 +88,7 @@ namespace CompMs.Common.Lipidomics
     {
         int Position { get; }
         DoubleBondState State { get; }
+        bool Includes(IDoubleBondInfo info);
     }
 
     public class DoubleBondInfo : IDoubleBondInfo
@@ -128,6 +135,10 @@ namespace CompMs.Common.Lipidomics
 
         public override int GetHashCode() {
             return (Position, State).GetHashCode();
+        }
+
+        public bool Includes(IDoubleBondInfo info) {
+            return Position == info.Position && (State == DoubleBondState.Unknown || State == info.State);
         }
     }
 }

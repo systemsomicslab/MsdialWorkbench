@@ -1,4 +1,5 @@
-﻿using CompMs.Common.FormulaGenerator.DataObj;
+﻿using CompMs.Common.DataStructure;
+using CompMs.Common.FormulaGenerator.DataObj;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -183,7 +184,19 @@ namespace CompMs.Common.Lipidomics
         }
 
         bool ITotalChain.Includes(ITotalChain chains) {
-            throw new System.NotImplementedException();
+            if (chains.ChainCount != ChainCount || !(chains is SeparatedChains sChains)) {
+                return false;
+            }
+
+            var matching = new BipartiteMatching(ChainCount + chains.ChainCount);
+            for (int i = 0; i < Chains.Count; i++) {
+                for (int j = 0; j < sChains.Chains.Count; j++) {
+                    if (Chains[i].Includes(sChains.Chains[j])) {
+                        matching.AddEdge(i, j + ChainCount);
+                    }
+                }
+            }
+            return matching.Match() == ChainCount;
         }
     }
 
@@ -202,7 +215,8 @@ namespace CompMs.Common.Lipidomics
         }
 
         bool ITotalChain.Includes(ITotalChain chains) {
-            throw new System.NotImplementedException();
+            return chains.ChainCount == ChainCount && chains is PositionLevelChains pChains
+                && Enumerable.Range(0, ChainCount).All(i => Chains[i].Includes(pChains.Chains[i]));
         }
     }
 }
