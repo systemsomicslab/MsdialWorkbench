@@ -14,6 +14,7 @@ namespace CompMs.Common.Lipidomics
         double Mass { get; }
         LipidDescription Description { get; }
 
+        bool Includes(ITotalChain chains);
         IEnumerable<ITotalChain> GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator);
     }
 
@@ -100,6 +101,12 @@ namespace CompMs.Common.Lipidomics
 
         private static readonly double SphingoGain = MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass;
 
+        bool ITotalChain.Includes(ITotalChain chains) {
+            return CarbonCount == chains.CarbonCount
+                && DoubleBondCount == chains.DoubleBondCount
+                && OxidizedCount == chains.OxidizedCount;
+        }
+
         IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator) {
             return totalChainGenerator.Separate(this);
         }
@@ -174,6 +181,10 @@ namespace CompMs.Common.Lipidomics
             }
             return string.Join("_", Chains.Select(c => c.ToString()));
         }
+
+        bool ITotalChain.Includes(ITotalChain chains) {
+            throw new System.NotImplementedException();
+        }
     }
 
     public class PositionLevelChains : SeparatedChains, ITotalChain
@@ -188,6 +199,10 @@ namespace CompMs.Common.Lipidomics
 
         public override string ToString() {
             return string.Join("/", Chains.Select(c => c.ToString()));
+        }
+
+        bool ITotalChain.Includes(ITotalChain chains) {
+            throw new System.NotImplementedException();
         }
     }
 }

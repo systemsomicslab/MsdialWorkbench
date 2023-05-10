@@ -45,6 +45,24 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual("34:1;2O", chains.ToString());
         }
 
+        [TestMethod]
+        [DynamicData(nameof(IncludesTestData), DynamicDataSourceType.Property)]
+        public void IncludesTest(ITotalChain chains1, ITotalChain chains2, bool expected) {
+            var actual = chains1.Includes(chains2);
+            Assert.AreEqual(expected, actual);
+        }
+
+        public static IEnumerable<object[]> IncludesTestData {
+            get {
+                ITotalChain chains3600 = new TotalChain(36, 0, 0, 0, 0, 0), chains3610 = new TotalChain(36, 1, 0, 0, 0, 0), chains3601 = new TotalChain(36, 0, 1, 0, 0, 0),
+                    chains180_181 = new MolecularSpeciesLevelChains(new AcylChain(18, DoubleBond.CreateFromPosition(), Oxidized.CreateFromPosition()), new AcylChain(18, new DoubleBond(1), Oxidized.CreateFromPosition()));
+                yield return new object[] { chains3610, chains3610, true, };
+                yield return new object[] { chains3610, chains180_181, true, };
+                yield return new object[] { chains3600, chains3610, false, };
+                yield return new object[] { chains3600, chains3601, false, };
+            }
+        }
+
         class FakeGenerator : ITotalChainVariationGenerator
         {
             public bool Called { get; private set; } = false;
