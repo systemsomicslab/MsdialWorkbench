@@ -40,7 +40,7 @@ namespace CompMs.App.Msdial.Model.Table
             var candidates = new List<MatchedSpotCandidate<AlignmentSpotPropertyModel>>();
             foreach (var reference in LibrarySettingModel.ReferenceMolecules) {
                 foreach (var spot in _spots) {
-                    var candidate = spot.IsMatchedWith(reference);
+                    var candidate = spot.IsMatchedWith(reference, .01d, 1d);
                     if (candidate != null) {
                         candidates.Add(candidate);
                     }

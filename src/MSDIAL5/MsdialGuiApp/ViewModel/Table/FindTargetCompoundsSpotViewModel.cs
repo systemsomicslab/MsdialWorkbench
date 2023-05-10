@@ -20,9 +20,10 @@ namespace CompMs.App.Msdial.ViewModel.Table
             _broker = broker ?? throw new ArgumentNullException(nameof(broker));
             SetLibraryCommand = new ReactiveCommand().WithSubscribe(OpenSetLibraryDialog).AddTo(Disposables);
             FindCommand = new ReactiveCommand().WithSubscribe(model.Find).AddTo(Disposables);
+            Candidates = model.ObserveProperty(m => m.Candidates).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
 
-        public ReadOnlyCollection<MatchedSpotCandidate<AlignmentSpotPropertyModel>> Candidates => _model.Candidates;
+        public ReadOnlyReactivePropertySlim<ReadOnlyCollection<MatchedSpotCandidate<AlignmentSpotPropertyModel>>> Candidates { get; }
 
         public ReactiveCommand FindCommand { get; }
 

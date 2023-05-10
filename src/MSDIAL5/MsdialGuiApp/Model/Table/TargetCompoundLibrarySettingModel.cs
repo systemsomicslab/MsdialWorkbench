@@ -47,7 +47,7 @@ namespace CompMs.App.Msdial.Model.Table
 
             LoadingError = string.Empty;
             switch (Path.GetExtension(TargetLibrary)) {
-                case "txt":
+                case ".txt":
                     var textdb = TextLibraryParser.TextLibraryReader(TargetLibrary, out string error);
                     if (string.IsNullOrEmpty(error)) {
                         ReferenceMolecules = textdb.AsReadOnly();
@@ -56,7 +56,7 @@ namespace CompMs.App.Msdial.Model.Table
                         LoadingError = error;
                     }
                     return;
-                case "msp":
+                case ".msp":
                     var mspdb = LibraryHandler.ReadMspLibrary(TargetLibrary);
                     ReferenceMolecules = mspdb.AsReadOnly();
                     return;

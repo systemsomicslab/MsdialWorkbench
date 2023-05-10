@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.Interfaces;
+using CompMs.Common.Lipidomics;
 using System;
 using System.Linq;
 
@@ -7,12 +8,14 @@ namespace CompMs.MsdialCore.DataObj
 {
     public sealed class MatchedSpotCandidate<T> where T: IAnnotatedObject, IChromatogramPeak
     {
-        private static readonly double MASS_TOLERANCE = .01d; // TODO: temporary set
-        private static readonly double RT_TOLERANCE = 1d; // TODO: temporary set
+        private readonly double _mzTolerance;
+        private readonly double _mainChromXTolerance;
 
-        public MatchedSpotCandidate(T spot, MoleculeMsReference reference) {
+        public MatchedSpotCandidate(T spot, MoleculeMsReference reference, double mzTolerance, double mainChromXTolerance) {
             Spot = spot;
             Reference = reference;
+            _mzTolerance = mzTolerance;
+            _mainChromXTolerance = mainChromXTolerance;
         }
 
         public T Spot { get; }
@@ -21,32 +24,29 @@ namespace CompMs.MsdialCore.DataObj
 
         public bool IsAnnotated {
             get {
-                return Spot.MatchResults.MatchResults.Any(result => result.Name == Reference.Name);
+                return Spot.MatchResults.MatchResults.Any(result => Reference.Name.Contains(result.Name));
             }
         }
 
-        public bool IsSimilarWithMz {
+        public bool IsSimilarWithMzAndTime {
             get {
-                var tolerance = Math.Max(Reference.MassTolerance, MASS_TOLERANCE);
-                return Math.Abs(Spot.Mass - Reference.PrecursorMz) < tolerance;
-            }
-        }
-
-        public bool IsSimilarWithTime {
-            get {
+                var mzTolerance = Math.Max(Reference.MassTolerance, _mzTolerance);
+                if (!(Math.Abs(Spot.Mass - Reference.PrecursorMz) < mzTolerance)) {
+                    return false;
+                }
                 var type = Spot.ChromXs.MainType;
                 var t = Spot.ChromXs.GetChromByType(type);
                 var s = Reference.ChromXs.GetChromByType(type);
+                var mainChromXTolerance = Math.Max(Reference.RetentionTimeTolerance, _mainChromXTolerance);
                 switch (type) {
                     case ChromXType.RT:
-                        var tolerance = Math.Max(Reference.RetentionTimeTolerance, RT_TOLERANCE);
-                        return Math.Abs(t.Value - s.Value) < tolerance;
+                        return Math.Abs(t.Value - s.Value) < mainChromXTolerance;
                     case ChromXType.RI:
-                    //    return Math.Abs(t.Value - s.Value) < tolerance;
+                        return Math.Abs(t.Value - s.Value) < mainChromXTolerance;
                     case ChromXType.Drift:
-                    //    return Math.Abs(t.Value - s.Value) < tolerance;
+                        return Math.Abs(t.Value - s.Value) < mainChromXTolerance;
                     case ChromXType.Mz:
-                    //    return Math.Abs(t.Value - s.Value) < tolerance;
+                        return Math.Abs(t.Value - s.Value) < mainChromXTolerance;
                     default:
                         throw new NotImplementedException();
                 }
@@ -55,9 +55,9 @@ namespace CompMs.MsdialCore.DataObj
     }
 
     public static class MatchedSpotCandidate {
-        public static MatchedSpotCandidate<T> IsMatchedWith<T>(this T spot, MoleculeMsReference reference) where T: IAnnotatedObject, IChromatogramPeak {
-            var candidate = new MatchedSpotCandidate<T>(spot, reference);
-            if (candidate.IsAnnotated || candidate.IsSimilarWithTime || candidate.IsSimilarWithMz) {
+        public static MatchedSpotCandidate<T> IsMatchedWith<T>(this T spot, MoleculeMsReference reference, double mzTolerance, double mainChromXTolerance) where T: IAnnotatedObject, IChromatogramPeak {
+            var candidate = new MatchedSpotCandidate<T>(spot, reference, mzTolerance, mainChromXTolerance);
+            if (candidate.IsAnnotated || candidate.IsSimilarWithMzAndTime) {
                 return candidate;
             }
             else {
