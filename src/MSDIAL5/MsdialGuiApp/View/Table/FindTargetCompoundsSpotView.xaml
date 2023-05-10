@@ -51,7 +51,7 @@
                 <DataGridTemplateColumn Header="Information" IsReadOnly="True" Width="64">
                     <DataGridTemplateColumn.CellStyle>
                         <Style TargetType="DataGridCell">
-                            <Setter Property="ToolTip" Value="Red: Annotated &#10;Blue: m/z and rt are matched"/>
+                            <Setter Property="ToolTip" Value="Red: Annotated &#10;Blue: m/z matched &#10;Green: Rt matched"/>
                         </Style>
                     </DataGridTemplateColumn.CellStyle>
                     <DataGridTemplateColumn.CellTemplate>
@@ -79,7 +79,8 @@
                                     </Style>
                                 </StackPanel.Resources>
                                 <CheckBox IsChecked="{Binding IsAnnotated, Mode=OneTime}" Foreground="OrangeRed"/>
-                                <CheckBox IsChecked="{Binding IsSimilarWithMzAndTime, Mode=OneTime}" Foreground="SkyBlue"/>
+                                <CheckBox IsChecked="{Binding IsSimilarWithMz, Mode=OneTime}" Foreground="SkyBlue"/>
+                                <CheckBox IsChecked="{Binding IsSimilarWithTime, Mode=OneTime}" Foreground="LightGreen"/>
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
