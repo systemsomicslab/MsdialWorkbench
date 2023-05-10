@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
+using System;
 using System.Collections.Generic;
 
 namespace CompMs.Common.Lipidomics
@@ -16,12 +17,13 @@ namespace CompMs.Common.Lipidomics
         int ChainCount { get; }
         ITotalChain Chains { get; }
 
+        bool Includes(ILipid lipid);
+
         IEnumerable<ILipid> Generate(ILipidGenerator generator);
         IMSScanProperty GenerateSpectrum(ILipidSpectrumGenerator generator, AdductIon adduct, IMoleculeProperty molecule = null); 
     }
 
-    public class Lipid : ILipid
-    {
+    public class Lipid : ILipid {
         public Lipid(LbmClass lipidClass, double mass, ITotalChain chains) {
             LipidClass = lipidClass;
             Mass = mass;
@@ -38,6 +40,13 @@ namespace CompMs.Common.Lipidomics
 
         public int ChainCount => Chains.CarbonCount;
         public ITotalChain Chains { get; }
+
+        public bool Includes(ILipid lipid) {
+            if (LipidClass != lipid.LipidClass || Math.Abs(Mass - lipid.Mass) >= 1e-6) {
+                return false;
+            }
+            throw new NotImplementedException();
+        }
 
         public IEnumerable<ILipid> Generate(ILipidGenerator generator) {
             return generator.Generate(this);
