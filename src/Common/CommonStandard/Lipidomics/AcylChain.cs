@@ -66,6 +66,13 @@ namespace CompMs.Common.Lipidomics
                 && DoubleBond.Includes(chain.DoubleBond)
                 && Oxidized.Includes(chain.Oxidized);
         }
+
+        public bool Equals(IChain other) {
+            return other is AcylChain
+                && CarbonCount == other.CarbonCount
+                && DoubleBond.Equals(other.DoubleBond)
+                && Oxidized.Equals(other.Oxidized);
+        }
     }
 
     public class AlkylChain : IChain, IVisitableElement<AlkylChain>
@@ -143,6 +150,13 @@ namespace CompMs.Common.Lipidomics
                 && DoubleBond.Includes(chain.DoubleBond)
                 && Oxidized.Includes(chain.Oxidized);
         }
+
+        public bool Equals(IChain other) {
+            return other is AlkylChain
+                && CarbonCount == other.CarbonCount
+                && DoubleBond.Equals(other.DoubleBond)
+                && Oxidized.Equals(other.Oxidized);
+        }
     }
 
     public class SphingoChain : IChain, IVisitableElement<SphingoChain>
@@ -201,6 +215,13 @@ namespace CompMs.Common.Lipidomics
                 && chain.OxidizedCount == OxidizedCount
                 && DoubleBond.Includes(chain.DoubleBond)
                 && Oxidized.Includes(chain.Oxidized);
+        }
+
+        public bool Equals(IChain other) {
+            return other is SphingoChain
+                && CarbonCount == other.CarbonCount
+                && DoubleBond.Equals(other.DoubleBond)
+                && Oxidized.Equals(other.Oxidized);
         }
     }
 }

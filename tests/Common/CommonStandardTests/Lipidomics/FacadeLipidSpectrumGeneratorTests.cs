@@ -68,6 +68,10 @@ namespace CompMs.Common.Lipidomics.Tests
 
         public ITotalChain Chains => throw new System.NotImplementedException();
 
+        public bool Equals(ILipid other) {
+            throw new System.NotImplementedException();
+        }
+
         public IEnumerable<ILipid> Generate(ILipidGenerator generator) {
             throw new System.NotImplementedException();
         }

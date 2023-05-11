@@ -1,11 +1,12 @@
 ﻿using CompMs.Common.DataStructure;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
-    public interface IOxidized : IVisitableElement<IOxidized>
+    public interface IOxidized : IVisitableElement<IOxidized>, IEquatable<IOxidized>
     {
         int Count { get; }
         int DecidedCount { get; }
@@ -63,6 +64,11 @@ namespace CompMs.Common.Lipidomics
 
         public bool Includes(IOxidized oxidized) {
             return Count == oxidized.Count && DecidedCount <= oxidized.DecidedCount && Oxidises.All(oxidized.Oxidises.Contains);
+        }
+
+        public bool Equals(IOxidized other) {
+            return Count == other.Count && DecidedCount == other.DecidedCount &&
+                Oxidises.All(ox => other.Oxidises.Any(ox.Equals));
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace CompMs.Common.Lipidomics
 {
     public enum LipidDescription { None = 0, Class = 1, Chain = 2, SnPosition = 4, DoubleBondPosition = 8, EZ = 16 }
-    public interface ILipid
+    public interface ILipid : IEquatable<ILipid>
     {
         string Name { get; }
         LbmClass LipidClass { get; }
@@ -72,6 +72,13 @@ namespace CompMs.Common.Lipidomics
                 default:
                     return 0;
             }
+        }
+
+        public bool Equals(ILipid other) {
+            return LipidClass == other.LipidClass
+                && AnnotationLevel == other.AnnotationLevel
+                && Description == other.Description
+                && Chains.Equals(other.Chains);
         }
     }
 }
