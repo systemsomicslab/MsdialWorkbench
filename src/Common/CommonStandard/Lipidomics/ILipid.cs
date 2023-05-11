@@ -42,10 +42,14 @@ namespace CompMs.Common.Lipidomics
         public ITotalChain Chains { get; }
 
         public bool Includes(ILipid lipid) {
-            if (LipidClass != lipid.LipidClass || Math.Abs(Mass - lipid.Mass) >= 1e-6) {
+            if (LipidClass != lipid.LipidClass
+                || Math.Abs(Mass - lipid.Mass) >= 1e-6
+                || (Description & lipid.Description) != Description
+                || AnnotationLevel > lipid.AnnotationLevel) {
                 return false;
             }
-            throw new NotImplementedException();
+
+            return Chains.Includes(lipid.Chains);
         }
 
         public IEnumerable<ILipid> Generate(ILipidGenerator generator) {
