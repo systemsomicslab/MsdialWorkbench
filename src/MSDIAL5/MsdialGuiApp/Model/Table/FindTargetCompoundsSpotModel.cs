@@ -21,6 +21,7 @@ namespace CompMs.App.Msdial.Model.Table
         private readonly IReadOnlyList<AlignmentSpotPropertyModel> _spots;
         private readonly IMessageBroker _broker;
         private readonly AlignmentMatchedSpotCandidateExporter _exporter;
+        private ObservableCollection<MatchedSpotCandidate<AlignmentSpotPropertyModel>> _editableCandidates;
 
         public FindTargetCompoundsSpotModel(IReadOnlyList<AlignmentSpotPropertyModel> spots, IReactiveProperty<AlignmentSpotPropertyModel> selectedSpot, IMessageBroker broker) {
             _spots = spots ?? throw new ArgumentNullException(nameof(spots));
@@ -31,11 +32,11 @@ namespace CompMs.App.Msdial.Model.Table
             SelectedCandidate.Where(candidate => candidate != null).Subscribe(candidate => selectedSpot.Value = candidate.Spot).AddTo(Disposables);
         }
 
-        public ReadOnlyCollection<MatchedSpotCandidate<AlignmentSpotPropertyModel>> Candidates {
+        public ReadOnlyObservableCollection<MatchedSpotCandidate<AlignmentSpotPropertyModel>> Candidates {
             get => _candidates;
             private set => SetProperty(ref _candidates, value);
         }
-        private ReadOnlyCollection<MatchedSpotCandidate<AlignmentSpotPropertyModel>> _candidates;
+        private ReadOnlyObservableCollection<MatchedSpotCandidate<AlignmentSpotPropertyModel>> _candidates;
 
         public ReactivePropertySlim<MatchedSpotCandidate<AlignmentSpotPropertyModel>> SelectedCandidate { get; }
 
@@ -53,7 +54,7 @@ namespace CompMs.App.Msdial.Model.Table
                 return;
             }
             FindMessage = string.Empty;
-            var candidates = new List<MatchedSpotCandidate<AlignmentSpotPropertyModel>>();
+            var candidates = new ObservableCollection<MatchedSpotCandidate<AlignmentSpotPropertyModel>>();
             foreach (var reference in LibrarySettingModel.ReferenceMolecules) {
                 foreach (var spot in _spots) {
                     var candidate = spot.IsMatchedWith(reference, .01d, 1d);
@@ -63,10 +64,17 @@ namespace CompMs.App.Msdial.Model.Table
                 }
             }
             if (candidates.Any()) {
-                Candidates = candidates.AsReadOnly();
+                _editableCandidates = candidates;
+                Candidates = new ReadOnlyObservableCollection<MatchedSpotCandidate<AlignmentSpotPropertyModel>>(candidates);
             }
             else {
                 FindMessage = "No target compounds found.";
+            }
+        }
+
+        public void Remove(MatchedSpotCandidate<AlignmentSpotPropertyModel> spot) {
+            if (_editableCandidates.Contains(spot)) {
+                _editableCandidates.Remove(spot);
             }
         }
 

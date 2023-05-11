@@ -6,6 +6,7 @@
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Table"
              xmlns:interface="clr-namespace:CompMs.Common.Interfaces;assembly=Common"
              mc:Ignorable="d" 
+             d:Background="White"
              d:DataContext="{d:DesignInstance Type={x:Type vm:FindTargetCompoundsSpotViewModel}}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -24,6 +25,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
                     Grid.Row="0">
@@ -33,6 +35,7 @@
         </StackPanel>
         <DataGrid ItemsSource="{Binding Source={StaticResource CandidatesView}}"
                   SelectedItem="{Binding SelectedCandidate.Value, Mode=OneWayToSource}"
+                  IsSynchronizedWithCurrentItem="True"
                   AutoGenerateColumns="False" CanUserAddRows="False"
                   Grid.Row="1">
             <DataGrid.Resources>
@@ -41,7 +44,17 @@
                 </Style>
             </DataGrid.Resources>
             <DataGrid.Columns>
+                <DataGridTemplateColumn Width="16">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="&#xE74D;" FontFamily="Segoe MDL2 Assets"
+                                    Command="{Binding DataContext.RemoveCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    CommandParameter="{Binding}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Name" Binding="{Binding Spot.Name, Mode=OneTime}" IsReadOnly="True" Width="*"/>
+                <DataGridTextColumn Header="Ontology" Binding="{Binding Spot.Ontology}" IsReadOnly="True" Width="80"/>
                 <DataGridTextColumn Header="Adduct" Binding="{Binding Spot.AdductIonName, Mode=OneTime}" IsReadOnly="True" Width="80"/>
                 <DataGridTextColumn Header="RT" Binding="{Binding Spot.RT, Mode=OneTime, StringFormat=F1}" IsReadOnly="True" Width="64"/>
                 <DataGridTextColumn Binding="{Binding Spot.Mass, Mode=OneTime, StringFormat=F5}" IsReadOnly="True" Width="64">
@@ -81,8 +94,8 @@
                                     </Style>
                                 </StackPanel.Resources>
                                 <CheckBox IsChecked="{Binding IsAnnotated, Mode=OneTime}" Foreground="OrangeRed"/>
-                                <CheckBox IsChecked="{Binding IsSimilarWithMz, Mode=OneTime}" Foreground="SkyBlue"/>
-                                <CheckBox IsChecked="{Binding IsSimilarWithTime, Mode=OneTime}" Foreground="LightGreen"/>
+                                <CheckBox IsChecked="{Binding IsSimilarByMz, Mode=OneTime}" Foreground="SkyBlue"/>
+                                <CheckBox IsChecked="{Binding IsSimilarByTime, Mode=OneTime}" Foreground="LightGreen"/>
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -118,5 +131,19 @@
                 </Style>
             </DataGrid.RowStyle>
         </DataGrid>
+        <GroupBox Header="Peak information" BorderThickness="0" Grid.Row="2">
+            <DataGrid ItemsSource="{Binding SelectedCandidate.Value.Spot.AlignedPeakPropertiesModelProperty.Value}"
+                      AutoGenerateColumns="False" CanUserAddRows="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="File" Binding="{Binding FileName, Mode=OneTime}" Width="*"/>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name, Mode=OneTime}" Width="*"/>
+                    <DataGridTextColumn Header="Adduct" Binding="{Binding Adduct, Mode=OneTime}" Width="64"/>
+                    <DataGridTextColumn Header="RT" Binding="{Binding ChromXsTop.RT.Value, StringFormat=F1, Mode=OneTime}" Width="64"/>
+                    <DataGridTextColumn Header="m/z" Binding="{Binding Mass, StringFormat=F5, Mode=OneTime}" Width="64"/>
+                    <DataGridTextColumn Header="Amplitude" Binding="{Binding PeakHeightTop, StringFormat=F0, Mode=OneTime}" Width="64"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+        <GridSplitter Height="2" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Top" Grid.Row="2"/>
     </Grid>
 </UserControl>

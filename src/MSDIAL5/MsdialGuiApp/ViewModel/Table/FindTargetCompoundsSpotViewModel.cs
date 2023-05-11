@@ -25,14 +25,16 @@ namespace CompMs.App.Msdial.ViewModel.Table
             FindCommand = new ReactiveCommand().WithSubscribe(model.Find).AddTo(Disposables);
             ExportCommand = new AsyncReactiveCommand().WithSubscribe(ExportAsync).AddTo(Disposables);
             Candidates = model.ObserveProperty(m => m.Candidates).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            RemoveCommand = new ReactiveCommand<MatchedSpotCandidate<AlignmentSpotPropertyModel>>().WithSubscribe(model.Remove).AddTo(Disposables);
         }
 
-        public ReadOnlyReactivePropertySlim<ReadOnlyCollection<MatchedSpotCandidate<AlignmentSpotPropertyModel>>> Candidates { get; }
+        public ReadOnlyReactivePropertySlim<ReadOnlyObservableCollection<MatchedSpotCandidate<AlignmentSpotPropertyModel>>> Candidates { get; }
 
         public ReactivePropertySlim<MatchedSpotCandidate<AlignmentSpotPropertyModel>> SelectedCandidate => _model.SelectedCandidate;
 
         public ReactiveCommand FindCommand { get; }
         public AsyncReactiveCommand ExportCommand { get; }
+        public ReactiveCommand<MatchedSpotCandidate<AlignmentSpotPropertyModel>> RemoveCommand { get; }
 
         public ReactiveCommand SetLibraryCommand { get; }
 
