@@ -23,18 +23,18 @@ namespace CompMs.MsdialCore.DataObj
 
         public bool IsAnnotated {
             get {
-                return Spot.MatchResults.MatchResults.Any(result => Reference.Name.Contains(result.Name));
+                return Spot.MatchResults.MatchResults.Where(result => result.Name != null).Any(result => Reference.Name.Contains(result.Name));
             }
         }
 
-        public bool IsSimilarWithMz {
+        public bool IsSimilarByMz {
             get {
                 var mzTolerance = Math.Max(Reference.MassTolerance, _mzTolerance);
                 return Math.Abs(Spot.Mass - Reference.PrecursorMz) < mzTolerance;
             }
         }
 
-        public bool IsSimilarWithTime {
+        public bool IsSimilarByTime {
             get {
                 var type = Spot.ChromXs.MainType;
                 var t = Spot.ChromXs.GetChromByType(type);
@@ -59,7 +59,7 @@ namespace CompMs.MsdialCore.DataObj
     public static class MatchedSpotCandidate {
         public static MatchedSpotCandidate<T> IsMatchedWith<T>(this T spot, MoleculeMsReference reference, double mzTolerance, double mainChromXTolerance) where T: IAnnotatedObject, IChromatogramPeak {
             var candidate = new MatchedSpotCandidate<T>(spot, reference, mzTolerance, mainChromXTolerance);
-            if (candidate.IsAnnotated || candidate.IsSimilarWithMz) {
+            if (candidate.IsAnnotated || candidate.IsSimilarByMz) {
                 return candidate;
             }
             else {

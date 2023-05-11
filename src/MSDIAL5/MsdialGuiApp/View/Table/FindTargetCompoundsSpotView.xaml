@@ -27,10 +27,12 @@
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
                     Grid.Row="0">
-            <Button Content="Set targets" Command="{Binding SetLibraryCommand, Mode=OneTime}" Margin="8,0"/>
-            <Button Content="Find peaks" Command="{Binding FindCommand, Mode=OneTime}"/>
+            <Button Content="Set targets" Command="{Binding SetLibraryCommand, Mode=OneTime}" Margin="4,0"/>
+            <Button Content="Find peaks" Command="{Binding FindCommand, Mode=OneTime}" Margin="4,0"/>
+            <Button Content="Export peaks" Command="{Binding ExportCommand, Mode=OneTime}"/>
         </StackPanel>
         <DataGrid ItemsSource="{Binding Source={StaticResource CandidatesView}}"
+                  SelectedItem="{Binding SelectedCandidate.Value, Mode=OneWayToSource}"
                   AutoGenerateColumns="False" CanUserAddRows="False"
                   Grid.Row="1">
             <DataGrid.Resources>

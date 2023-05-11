@@ -279,7 +279,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             MultivariateAnalysisSettingModel = new MultivariateAnalysisSettingModel(parameter, Ms1Spots, evaluator, files, classBrush);
 
-            FindTargetCompoundSpotModel = new FindTargetCompoundsSpotModel(spotsSource.Spots.Items);
+            FindTargetCompoundSpotModel = new FindTargetCompoundsSpotModel(spotsSource.Spots.Items, Target, messageBroker).AddTo(Disposables);
         }
 
         public UndoManager UndoManager => _undoManager;

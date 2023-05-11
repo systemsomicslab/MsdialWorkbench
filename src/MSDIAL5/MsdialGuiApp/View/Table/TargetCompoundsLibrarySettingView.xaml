@@ -37,7 +37,7 @@
                 <DataGridTextColumn Header="RT" Binding="{Binding ChromXs.RT.Value, StringFormat=F1, Mode=OneTime}" Width="40"/>
                 <DataGridTextColumn Header="m/z" Binding="{Binding PrecursorMz, StringFormat=F4, Mode=OneTime}" Width="40"/>
                 <DataGridTextColumn Header="Adduct" Binding="{Binding AdductType, Mode=OneTime}"/>
-                <DataGridTextColumn Header="Ontology" Binding="{Binding Ontology, Mode=OneTime}"/>
+                <DataGridTextColumn Header="Ontology" Binding="{Binding OntologyOrCompoundClass, Mode=OneTime}"/>
                 <DataGridTextColumn Header="Formula" Binding="{Binding Formula.FormulaString, Mode=OneTime}"/>
                 <DataGridTextColumn Header="InChIKey" Binding="{Binding InChIKey, Mode=OneTime}"/>
                 <DataGridTextColumn Header="Comment" Binding="{Binding Comment, Mode=OneTime}" Width="*"/>

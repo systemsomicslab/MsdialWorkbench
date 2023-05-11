@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 
@@ -16,6 +17,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public string FileName => innerModel.FileName;
         public int PeakID => innerModel.PeakID;
         public double TotalScore => innerModel.MatchResults.Representative.TotalScore;
+        public AdductIon Adduct => innerModel.PeakCharacter.AdductType;
         public double Mass => innerModel.Mass;
         public double Time => ChromXsTop.Value;
 

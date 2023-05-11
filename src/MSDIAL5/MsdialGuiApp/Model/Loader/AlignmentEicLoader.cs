@@ -35,7 +35,7 @@ namespace CompMs.App.Msdial.Model.Loader
             if (target != null) {
                 var spotinfo = _chromatogramSpotSerializer.DeserializeAtFromFile(_eicFile, target.MasterAlignmentID);
                 var ps = Enumerable.Range(0, _fileChromatograms.Count)
-                    .Select(i => target.AlignedPeakPropertiesModelAsObservable.Select(peaks => peaks?[i]));
+                    .Select(i => target.AlignedPeakPropertiesModelProperty.Select(peaks => peaks?[i]));
                 return _fileChromatograms.Zip(ps, spotinfo.PeakInfos, (fileChromatogram, p, info) => fileChromatogram.GetChromatogram(target, p, info))
                     .CombineLatest()
                     .Throttle(TimeSpan.FromSeconds(.05d))

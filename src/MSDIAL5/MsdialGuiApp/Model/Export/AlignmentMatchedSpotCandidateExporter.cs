@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -27,13 +28,15 @@ namespace CompMs.App.Msdial.Model.Export
             var spot = await ToXmlElement(candidate.Spot).ConfigureAwait(false);
             var reference = ToXmlElement(candidate.Reference);
             var annotated = new XElement("Annotated", candidate.IsAnnotated);
-            var similarWithMz = new XElement("SimilarWithMz", candidate.IsSimilarWithMz);
-            var similarWithChrom = new XElement("SimilarWithTime", candidate.IsSimilarWithTime);
+            var similarWithMz = new XElement("SimilarByMz", candidate.IsSimilarByMz);
+            var similarWithChrom = new XElement("SimilarByTime", candidate.IsSimilarByTime);
             return new XElement("MatchedSpot", reference, spot, annotated, similarWithMz, similarWithChrom);
         }
 
         private XElement ToXmlElement(MoleculeMsReference reference) {
-            var referenceElement = new XElement("Reference", new XElement("Name", reference.Name));
+            var referenceElement = new XElement("Reference",
+                new XElement("Name", reference.Name),
+                new XElement("Adduct", reference.AdductType.AdductIonName));
             if (reference.PrecursorMz > 0) {
                 referenceElement.Add(new XElement("Mz", reference.PrecursorMz));
             }
@@ -44,12 +47,17 @@ namespace CompMs.App.Msdial.Model.Export
         }
 
         private async Task<XElement> ToXmlElement(AlignmentSpotPropertyModel spot) {
-            var spotElement = new XElement("Aligned spot",
+            var spotElement = new XElement("AlignedSpot",
                 new XElement("SpotId", spot.MasterAlignmentID),
                 new XElement("Name", spot.Name),
+                new XElement("Adduct", spot.AdductIonName),
                 new XElement("Mz", spot.Mass),
                 ToXmlElement(((IChromatogramPeak)spot).ChromXs));
-            var peaks = await spot.AlignedPeakPropertiesModelAsObservable;
+            var task = spot.AlignedPeakPropertiesModelProperty.ToTask();
+            var peaks = spot.AlignedPeakPropertiesModelProperty.Value;
+            if (peaks is null) {
+                peaks = await task.ConfigureAwait(false);
+            }
             foreach (var peak in peaks) {
                 spotElement.Add(ToXml(peak));
             }
@@ -60,6 +68,7 @@ namespace CompMs.App.Msdial.Model.Export
             var peakElement = new XElement("Peak");
             peakElement.Add(new XElement("File", peak.FileName));
             peakElement.Add(new XElement("Name", peak.Name));
+            peakElement.Add(new XElement("Adduct", peak.Adduct.AdductIonName));
             peakElement.Add(new XElement("Mz", peak.Mass));
             peakElement.Add(ToXmlElement(peak.ChromXsTop));
             peakElement.Add(new XElement("PeakHeight", peak.PeakHeightTop));
@@ -73,16 +82,16 @@ namespace CompMs.App.Msdial.Model.Export
             var time = new XElement("Time");
             switch (chrom.MainType) {
                 case ChromXType.RT:
-                    time.Add("Type", "RetentionTime");
+                    time.Add(new XElement("Type", "RetentionTime"));
                     break;
                 case ChromXType.RI:
-                    time.Add("Type", "RetentionIndex");
+                    time.Add(new XElement("Type", "RetentionIndex"));
                     break;
                 case ChromXType.Drift:
-                    time.Add("Type", "DriftTime");
+                    time.Add(new XElement("Type", "DriftTime"));
                     break;
                 case ChromXType.Mz:
-                    time.Add("Type", "Mz");
+                    time.Add(new XElement("Type", "Mz"));
                     break;
             }
             if (chrom.RT.Value > 0) {

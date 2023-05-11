@@ -60,7 +60,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
             var isSelected = model.Select(m => m != null).ToReactiveProperty().AddTo(Disposables);
             IsSelected = isSelected;
-            var isLoaded = model.SkipNull().SelectSwitch(m => m.AlignedPeakPropertiesModelAsObservable).Select(props => props?.Any() ?? false);
+            var isLoaded = model.SkipNull().SelectSwitch(m => m.AlignedPeakPropertiesModelProperty).Select(props => props?.Any() ?? false);
             IsPeakLoaded = new[]
             {
                 isSelected,
@@ -72,7 +72,7 @@ namespace CompMs.App.Msdial.Model.Chart
             CanShow = modelAndChromatogram.Select(mc =>
                 new[]
                 {
-                    mc.First?.AlignedPeakPropertiesModelAsObservable.Select(features => features?.Any() ?? false)
+                    mc.First?.AlignedPeakPropertiesModelProperty.Select(features => features?.Any() ?? false)
                         ?? Observable.Return(false),
                     Observable.Return(mc.Second?.Any() ?? false),
                 }.CombineLatestValuesAreAllTrue().StartWith(false)
