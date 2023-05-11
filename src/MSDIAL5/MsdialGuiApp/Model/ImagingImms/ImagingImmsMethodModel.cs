@@ -6,10 +6,12 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
+using CompMs.MsdialCore.Parser;
 using CompMs.MsdialImmsCore.Export;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Process;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -99,7 +101,10 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             var models = new IMsdialAnalysisExport[]
             {
                 new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, _providerFactory),
-                new MsdialAnalysisExportModel(new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter))
+                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter> {
+                    [ExportspectraType.deconvoluted] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter),
+                    [ExportspectraType.centroid] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter, file => new CentroidMsScanPropertyLoader(_storage.Parameter.ProviderFactoryParameter.Create().Create(file.LoadRawMeasurement(true, true, 5, 5000)), _storage.Parameter.MS2DataType)),
+                })
                 {
                     FilePrefix = "Msp",
                     FileSuffix = "msp",
@@ -107,7 +112,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                 },
             };
 
-            return new AnalysisResultExportModel(AnalysisFileModelCollection, models);
+            return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, models);
         }
     }
 }

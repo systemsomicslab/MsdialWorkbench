@@ -39,25 +39,25 @@ namespace CompMs.Common.Lipidomics
 
         private static readonly double Gly_C = new[] { 
             MassDiffDictionary.CarbonMass * 8,
-            MassDiffDictionary.HydrogenMass * 18,
+            MassDiffDictionary.HydrogenMass * 13,
             MassDiffDictionary.NitrogenMass,
             MassDiffDictionary.OxygenMass * 4,
             MassDiffDictionary.PhosphorusMass,
-            MassDiffDictionary.HydrogenMass * 5,
+            MassDiffDictionary.Hydrogen2Mass * 5,
         }.Sum();
 
         private static readonly double Gly_O = new[] {
             MassDiffDictionary.CarbonMass * 7,
-            MassDiffDictionary.HydrogenMass * 16,
+            MassDiffDictionary.HydrogenMass * 13,
             MassDiffDictionary.NitrogenMass,
             MassDiffDictionary.OxygenMass * 5,
             MassDiffDictionary.PhosphorusMass,
-            MassDiffDictionary.HydrogenMass * 3,
+            MassDiffDictionary.Hydrogen2Mass * 3,
         }.Sum();
 
         private static readonly double CD2 = new[]
         {
-            MassDiffDictionary.HydrogenMass * 4,
+            MassDiffDictionary.Hydrogen2Mass * 2,
             MassDiffDictionary.CarbonMass,
         }.Sum();
 

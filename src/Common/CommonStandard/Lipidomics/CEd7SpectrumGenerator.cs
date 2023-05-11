@@ -16,10 +16,14 @@ namespace CompMs.Common.Lipidomics
         {
             MassDiffDictionary.CarbonMass * 27,
             MassDiffDictionary.HydrogenMass * 46,
-            MassDiffDictionary.HydrogenMass * 7,
             MassDiffDictionary.OxygenMass * 1,
         }.Sum();
 
+       private static readonly double massBalanceD7 = new[]
+       {
+            MassDiffDictionary.Hydrogen2Mass * 7,
+            - MassDiffDictionary.HydrogenMass * 7,
+        }.Sum();
 
         private static readonly double H2O = new[]
         {
@@ -31,7 +35,7 @@ namespace CompMs.Common.Lipidomics
         {
             spectrumGenerator = new SpectrumPeakGenerator();
         }
-
+ 
         public CEd7SpectrumGenerator(ISpectrumPeakGenerator spectrumGenerator)
         {
             this.spectrumGenerator = spectrumGenerator ?? throw new ArgumentNullException(nameof(spectrumGenerator));
@@ -97,8 +101,9 @@ namespace CompMs.Common.Lipidomics
                 spectrum.AddRange(
                     new[]
                     {
-                        new SpectrumPeak(skelton-H2O+MassDiffDictionary.ProtonMass , 500d, "skelton") { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true }, //172
-                        new SpectrumPeak(lipid.Mass+MassDiffDictionary.ProtonMass , 50d, "[M+H]+"){ SpectrumComment = SpectrumComment.metaboliteclass },
+                        new SpectrumPeak(skelton+massBalanceD7-H2O+MassDiffDictionary.ProtonMass , 500d, "skelton") { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true }, //172
+                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass)-H2O , 50d, "Precursor -H2O"){ SpectrumComment = SpectrumComment.metaboliteclass },
+                        //new SpectrumPeak(lipid.Mass+MassDiffDictionary.ProtonMass , 50d, "[M+H]+"){ SpectrumComment = SpectrumComment.metaboliteclass },
                     }
                 );
             }

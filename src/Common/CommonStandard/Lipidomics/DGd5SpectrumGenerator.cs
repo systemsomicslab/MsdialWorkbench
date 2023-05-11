@@ -14,13 +14,18 @@ namespace CompMs.Common.Lipidomics
 
         private static readonly double CD2 = new[]
         {
-            MassDiffDictionary.HydrogenMass * 4,
+            MassDiffDictionary.Hydrogen2Mass * 2,
             MassDiffDictionary.CarbonMass,
         }.Sum();
 
         private static readonly double H2O = new[]
         {
             MassDiffDictionary.HydrogenMass * 2,
+            MassDiffDictionary.OxygenMass,
+        }.Sum();
+        private static readonly double D2O = new[]
+        {
+            MassDiffDictionary.Hydrogen2Mass * 2,
             MassDiffDictionary.OxygenMass,
         }.Sum();
 
@@ -102,7 +107,7 @@ namespace CompMs.Common.Lipidomics
                 (
                      new[]
                      {
-                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass) - H2O, 150d, "Precursor-H2O"){ SpectrumComment = SpectrumComment.metaboliteclass },
+                        //new SpectrumPeak(adduct.ConvertToMz(lipid.Mass) - D2O, 150d, "Precursor-D2O"){ SpectrumComment = SpectrumComment.metaboliteclass },
                         new SpectrumPeak(lipid.Mass + MassDiffDictionary.ProtonMass, 150d, "[M+H]+"){ SpectrumComment = SpectrumComment.metaboliteclass },
                         new SpectrumPeak(lipid.Mass + MassDiffDictionary.ProtonMass-H2O, 150d, "[M+H]+ -H2O"){ SpectrumComment = SpectrumComment.metaboliteclass },
                      }
@@ -114,7 +119,7 @@ namespace CompMs.Common.Lipidomics
                 (
                      new[]
                      {
-                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass) - H2O, 100d, "Precursor-H2O"){ SpectrumComment = SpectrumComment.metaboliteclass },
+                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass) - D2O, 100d, "Precursor-D2O"){ SpectrumComment = SpectrumComment.metaboliteclass },
                      }
                 );
             }
@@ -166,7 +171,7 @@ namespace CompMs.Common.Lipidomics
             var chainMass = acylChain.Mass - MassDiffDictionary.HydrogenMass;
             return new[]
             {
-                new SpectrumPeak(lipidMass - chainMass  - H2O - CD2 , 100d, "-CH2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
+                new SpectrumPeak(lipidMass - chainMass  - H2O - CD2 , 100d, "-CD2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
             };
         }
 

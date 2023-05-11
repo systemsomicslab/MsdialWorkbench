@@ -29,23 +29,23 @@ namespace CompMs.Common.Lipidomics
 
         private static readonly double Gly_C = new[] {
             MassDiffDictionary.CarbonMass * 9,
-            MassDiffDictionary.HydrogenMass * 17,
+            MassDiffDictionary.HydrogenMass * 12,
             MassDiffDictionary.OxygenMass * 9,
             MassDiffDictionary.PhosphorusMass,
-            MassDiffDictionary.HydrogenMass * 5,
+            MassDiffDictionary.Hydrogen2Mass * 5,
         }.Sum();
 
         private static readonly double Gly_O = new[] {
             MassDiffDictionary.CarbonMass * 8,
-            MassDiffDictionary.HydrogenMass * 15,
+            MassDiffDictionary.HydrogenMass * 12,
             MassDiffDictionary.OxygenMass * 10,
             MassDiffDictionary.PhosphorusMass,
-            MassDiffDictionary.HydrogenMass * 3,
+            MassDiffDictionary.Hydrogen2Mass * 3,
         }.Sum();
 
         private static readonly double CD2 = new[]
         {
-            MassDiffDictionary.HydrogenMass * 4,
+            MassDiffDictionary.Hydrogen2Mass * 2,
             MassDiffDictionary.CarbonMass,
         }.Sum();
 
@@ -205,8 +205,8 @@ namespace CompMs.Common.Lipidomics
 
             return new[]
             {
-                new SpectrumPeak(lipidMass - chainMass -H2O - CD2 , 100d, "-CH2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
-                new SpectrumPeak(lipidMass - chainMass - C6H13O9P-H2O - CD2 , 100d, "-Header -CH2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
+                new SpectrumPeak(lipidMass - chainMass -H2O - CD2 , 100d, "-CD2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
+                new SpectrumPeak(lipidMass - chainMass - C6H13O9P-H2O - CD2 , 100d, "-Header -CD2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
             };
         }
 

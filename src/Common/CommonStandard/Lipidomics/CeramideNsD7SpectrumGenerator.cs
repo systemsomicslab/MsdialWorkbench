@@ -48,9 +48,14 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.OxygenMass *1,
         }.Sum();
         private static readonly double CH2 = new[]
-{
+        {
             MassDiffDictionary.HydrogenMass * 2,
             MassDiffDictionary.CarbonMass,
+        }.Sum();
+        private static readonly double sphD7MassBalance = new[]
+        {       
+            MassDiffDictionary.Hydrogen2Mass * 7,
+            - MassDiffDictionary.HydrogenMass * 7,
         }.Sum();
 
         public CerNSd7SpectrumGenerator()
@@ -91,7 +96,7 @@ namespace CompMs.Common.Lipidomics
                 if (plChains.Chains[1] is AcylChain acyl)
                 {
                     spectrum.AddRange(GetAcylSpectrum(lipid, acyl, adduct));
-                    spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlmass - MassDiffDictionary.HydrogenMass * 7, 30d));
+                    spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlmass - sphD7MassBalance, 30d));
                 }
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
@@ -104,7 +109,7 @@ namespace CompMs.Common.Lipidomics
         {
             return new MoleculeMsReference
             {
-                PrecursorMz = adduct.ConvertToMz(lipid.Mass + MassDiffDictionary.HydrogenMass * 7),
+                PrecursorMz = adduct.ConvertToMz(lipid.Mass + sphD7MassBalance),
                 IonMode = adduct.IonMode,
                 Spectrum = spectrum,
                 Name = lipid.Name,
@@ -120,7 +125,7 @@ namespace CompMs.Common.Lipidomics
 
         private SpectrumPeak[] GetCerNSd7Spectrum(ILipid lipid, AdductIon adduct)
         {
-            var lipidD7mass = lipid.Mass + MassDiffDictionary.HydrogenMass * 7;
+            var lipidD7mass = lipid.Mass + sphD7MassBalance;
             var spectrum = new List<SpectrumPeak>
             {
                 new SpectrumPeak(adduct.ConvertToMz(lipidD7mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
@@ -142,7 +147,7 @@ namespace CompMs.Common.Lipidomics
                      new[]
                      {
                         new SpectrumPeak(adduct.ConvertToMz(lipidD7mass) - H2O, 200d, "Precursor-H2O") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
-                        new SpectrumPeak(lipidD7mass + MassDiffDictionary.ProtonMass - CH6O2, 100d, "[M+H]+ -CH6O2") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
+                        new SpectrumPeak(lipidD7mass + MassDiffDictionary.ProtonMass - CH6O2, 100d, "[M+H]+ -CH6O2") { SpectrumComment = SpectrumComment.metaboliteclass },
                      }
                 );
                 if (adduct.AdductIonName == "[M+H]+")
@@ -161,7 +166,7 @@ namespace CompMs.Common.Lipidomics
 
         private SpectrumPeak[] GetSphingoSpectrum(ILipid lipid, SphingoChain sphingo, AdductIon adduct)
         {
-            var chainMass = sphingo.Mass + MassDiffDictionary.HydrogenMass + MassDiffDictionary.HydrogenMass * 7;
+            var chainMass = sphingo.Mass + MassDiffDictionary.HydrogenMass + sphD7MassBalance;
             var spectrum = new List<SpectrumPeak>();
             if (adduct.AdductIonName != "[M+Na]+")
             {
@@ -179,13 +184,13 @@ namespace CompMs.Common.Lipidomics
         }
         public IEnumerable<SpectrumPeak> GetSphingoDoubleBondSpectrum(ILipid lipid, SphingoChain sphingo, AdductIon adduct, double nlMass, double abundance)
         {
-            var sphingoD7mass = sphingo.Mass + MassDiffDictionary.HydrogenMass * 7;
+            var sphingoD7mass = sphingo.Mass + sphD7MassBalance;
             if (sphingo.DoubleBond.UnDecidedCount != 0 || sphingo.CarbonCount == 0 || sphingo.Oxidized.UnDecidedCount != 0)
             {
                 return Enumerable.Empty<SpectrumPeak>();
             }
 
-            var chainLoss = (lipid.Mass + MassDiffDictionary.HydrogenMass * 7) - sphingoD7mass - nlMass
+            var chainLoss = (lipid.Mass + sphD7MassBalance) - sphingoD7mass - nlMass
                 + MassDiffDictionary.NitrogenMass
                 + 12 * 2
                 + MassDiffDictionary.OxygenMass * (sphingo.OxidizedCount > 2 ? 2 : sphingo.OxidizedCount)
@@ -222,13 +227,62 @@ namespace CompMs.Common.Lipidomics
             }
 
             var peaks = new List<SpectrumPeak>();
+            var bondPositions = new List<int>();
             for (int i = 2; i < sphingo.CarbonCount - 1; i++)
             {
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), abundance * 0.5, $"{sphingo} C{i + 1}-H") { SpectrumComment = SpectrumComment.doublebond });
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i]), abundance, $"{sphingo} C{i + 1}") { SpectrumComment = SpectrumComment.doublebond });
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), abundance * 0.5, $"{sphingo} C{i + 1}+H") { SpectrumComment = SpectrumComment.doublebond });
-            }
+                var speccomment = SpectrumComment.doublebond;
+                var factor = 1.0;
+                var factorHLoss = 0.5;
+                var factorHGain = 0.2;
 
+                if (bondPositions.Contains(i - 1))
+                { // in the case of 18:2(9,12), Radical is big, and H loss is next
+                    factor = 4.0;
+                    factorHLoss = 2.0;
+                    speccomment |= SpectrumComment.doublebond_high;
+                }
+                else if (bondPositions.Contains(i))
+                {
+                    // now no modification
+                }
+                else if (bondPositions.Contains(i + 1))
+                {
+                    factor = 0.25;
+                    factorHLoss = 0.5;
+                    factorHGain = 0.05;
+                    speccomment |= SpectrumComment.doublebond_low;
+                }
+                else if (bondPositions.Contains(i + 2))
+                {
+                    // now no modification
+                }
+                else if (bondPositions.Contains(i + 3))
+                {
+                    if (bondPositions.Contains(i))
+                    {
+                        factor = 4.0;
+                        factorHLoss = 0.5;
+                        factorHGain = 2.0;
+                    }
+                    else
+                    {
+                        factorHLoss = 4.0;
+                        speccomment |= SpectrumComment.doublebond_high;
+                    }
+                    speccomment |= SpectrumComment.doublebond_high;
+                }
+
+                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), factorHLoss * abundance, $"{sphingo} C{i + 1}-H") { SpectrumComment = speccomment });
+                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i]), factor * abundance, $"{sphingo} C{i + 1}") { SpectrumComment = speccomment });
+                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), factorHGain * abundance, $"{sphingo} C{i + 1}+H") { SpectrumComment = speccomment });
+
+                //    for (int i = 2; i < sphingo.CarbonCount - 1; i++)
+                //{
+                //    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), abundance * 0.5, $"{sphingo} C{i + 1}-H") { SpectrumComment = SpectrumComment.doublebond });
+                //    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i]), abundance, $"{sphingo} C{i + 1}") { SpectrumComment = SpectrumComment.doublebond });
+                //    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), abundance * 0.5, $"{sphingo} C{i + 1}+H") { SpectrumComment = SpectrumComment.doublebond });
+                //}
+            }
             return peaks;
         }
 

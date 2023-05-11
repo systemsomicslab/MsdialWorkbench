@@ -2646,6 +2646,7 @@ namespace CompMs.CommonMVVM.ChemView {
             { "PA", Color.FromArgb(180, 218, 112, 214) },
             { "PC", Color.FromArgb(180, 50, 205, 50) },
             { "PC_d5", Color.FromArgb(180, 50, 205, 50) },
+            { "bmPC", Color.FromArgb(180, 50, 205, 50) },
             { "PE", Color.FromArgb(180, 128, 0, 128) },
             { "PE_d5", Color.FromArgb(180, 128, 0, 128) },
             { "MMPE", Color.FromArgb(180, 128, 0, 148) },

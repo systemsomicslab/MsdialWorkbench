@@ -89,6 +89,12 @@ namespace CompMs.Common.FormulaGenerator.Parser.Tests
                     "[13C]10H24O12[13C]2 ",
                     new Formula(new Dictionary<string, int> { { "[13C]", 12 }, { "H", 24 }, { "O", 12 }, })
                 };
+                // add 20230414
+                yield return new object[]
+                 {
+                    "C41H77[2H]5NO8P ",
+                    new Formula(new Dictionary<string, int> { { "C", 41 }, { "H", 77 }, { "[2H]", 5 }, { "N", 1 }, { "O", 8 }, { "P", 1 }, })
+                 };
             }
         }
 

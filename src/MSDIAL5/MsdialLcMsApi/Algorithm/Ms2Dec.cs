@@ -66,9 +66,9 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             MsdialLcmsParameter param, ChromatogramPeaksDataSummary summary,
             IupacDatabase iupac, double targetCE = -1) { // targetCE is used in multiple CEs option
 
-            if (Math.Abs(chromPeakFeature.PeakFeature.ChromXsTop.RT.Value - 9.795) < 0.01 && Math.Abs(chromPeakFeature.Mass - 609.59631) < 0.01) {
-                Console.WriteLine();
-            }
+            //if (Math.Abs(chromPeakFeature.PeakFeature.ChromXsTop.RT.Value - 9.795) < 0.01 && Math.Abs(chromPeakFeature.Mass - 609.59631) < 0.01) {
+            //    Console.WriteLine();
+            //}
 
             // check target CE ID
             var targetSpecID = DataAccess.GetTargetCEIndexForMS2RawSpectrum(chromPeakFeature, targetCE);
@@ -132,7 +132,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             //Do MS2Dec deconvolution
             if (sMs2Chromatograms.Count > 0) {
 
-                if (ms2ValuePeaksList[0].Length < ms1Peaklist.Count - 1) {
+                if (ms2ValuePeaksList[0].Length > 1 && ms2ValuePeaksList[0].Length < ms1Peaklist.Count - 1) {
                     var ms2peaklist = ms2ValuePeaksList[0];
                     startIndex = ms2peaklist[0].Id;
                     endIndex = ms2peaklist[ms2peaklist.Length - 1].Id;
