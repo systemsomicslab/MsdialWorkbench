@@ -45,6 +45,25 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual("34:1;2O", chains.ToString());
         }
 
+        [DataTestMethod()]
+        [DynamicData(nameof(EquatableTestData), DynamicDataSourceType.Property)]
+        public void EquatableTest(ITotalChain chains, ITotalChain other, bool expected) {
+            Assert.AreEqual(expected, chains.Equals(other));
+        }
+
+        public static IEnumerable<object[]> EquatableTestData {
+            get {
+                ITotalChain chains1 = new TotalChain(34, 1, 0, 2, 0, 0),
+                    chains2 = new TotalChain(34, 1, 0, 2, 0, 0),
+                    chains3 = new TotalChain(34, 1, 0, 1, 1, 0),
+                    chains4 = new TotalChain(34, 1, 0, 1, 0, 1);
+                yield return new object[] { chains1, chains1, true, };
+                yield return new object[] { chains1, chains2, true, };
+                yield return new object[] { chains1, chains3, false, };
+                yield return new object[] { chains1, chains4, false, };
+            }
+        }
+
         class FakeGenerator : ITotalChainVariationGenerator
         {
             public bool Called { get; private set; } = false;

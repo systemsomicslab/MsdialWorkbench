@@ -1,11 +1,12 @@
 ﻿using CompMs.Common.DataStructure;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
-    public interface IDoubleBond : IVisitableElement<IDoubleBond>
+    public interface IDoubleBond : IVisitableElement<IDoubleBond>, IEquatable<IDoubleBond>
     {
         int Count { get; }
         int DecidedCount { get; }
@@ -71,6 +72,11 @@ namespace CompMs.Common.Lipidomics
         public TResult Accept<TResult, TDecomposed>(IVisitor<TResult, TDecomposed> visitor, IDecomposer<TResult, IDoubleBond, TDecomposed> decomposer) {
             return decomposer.Decompose(visitor, this);
         }
+
+        public bool Equals(IDoubleBond other) {
+            return Count == other.Count && DecidedCount == other.DecidedCount
+                && Bonds.All(bond => other.Bonds.Any(bond.Equals));
+        }
     }
 
     public enum DoubleBondState
@@ -78,7 +84,7 @@ namespace CompMs.Common.Lipidomics
         Unknown, E, Z,
     }
 
-    public interface IDoubleBondInfo
+    public interface IDoubleBondInfo : IEquatable<IDoubleBondInfo>
     {
         int Position { get; }
         DoubleBondState State { get; }
@@ -128,6 +134,10 @@ namespace CompMs.Common.Lipidomics
 
         public override int GetHashCode() {
             return (Position, State).GetHashCode();
+        }
+
+        public bool Equals(IDoubleBondInfo other) {
+            return Position == other.Position && State == other.State;
         }
     }
 }
