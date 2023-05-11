@@ -57,6 +57,13 @@ namespace CompMs.Common.Lipidomics
         public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, AcylChain, TDecomposed> decomposer) {
             return decomposer.Decompose(visitor, this);
         }
+
+        public bool Equals(IChain other) {
+            return other is AcylChain
+                && CarbonCount == other.CarbonCount
+                && DoubleBond.Equals(other.DoubleBond)
+                && Oxidized.Equals(other.Oxidized);
+        }
     }
 
     public class AlkylChain : IChain, IVisitableElement<AlkylChain>
@@ -125,6 +132,13 @@ namespace CompMs.Common.Lipidomics
         public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, AlkylChain, TDecomposed> decomposer) {
             return decomposer.Decompose(visitor, this);
         }
+
+        public bool Equals(IChain other) {
+            return other is AlkylChain
+                && CarbonCount == other.CarbonCount
+                && DoubleBond.Equals(other.DoubleBond)
+                && Oxidized.Equals(other.Oxidized);
+        }
     }
 
     public class SphingoChain : IChain, IVisitableElement<SphingoChain>
@@ -174,6 +188,13 @@ namespace CompMs.Common.Lipidomics
 
         public override string ToString() {
             return $"{CarbonCount}:{DoubleBond}{Oxidized}";
+        }
+
+        public bool Equals(IChain other) {
+            return other is SphingoChain
+                && CarbonCount == other.CarbonCount
+                && DoubleBond.Equals(other.DoubleBond)
+                && Oxidized.Equals(other.Oxidized);
         }
     }
 }
