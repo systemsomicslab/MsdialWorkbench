@@ -16,6 +16,8 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public List<SpectrumPeak> Spectrum => _spectrum;
 
+        public bool HasSpectrum => _spectrum.Count > 0;
+
         public (double, double) GetSpectrumRange(Func<SpectrumPeak, double> selector) {
             if (_spectrum.Count == 0) {
                 return (0d, 1d);

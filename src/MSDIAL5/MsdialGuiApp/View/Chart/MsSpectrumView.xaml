@@ -87,7 +87,7 @@
                                     <Style TargetType="StackPanel">
                                         <Setter Property="Visibility" Value="Visible"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding DataContext.SpectrumLoaded.Value, Mode=OneWay, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Value="True">
+                                            <DataTrigger Binding="{Binding SpectrumLoaded.Value, Mode=OneWay}" Value="True">
                                                 <Setter Property="Visibility" Value="Collapsed"/>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -97,7 +97,7 @@
                                 <ProgressBar IsIndeterminate="True" HorizontalAlignment="Center" Width="160" Height="16"/>
                             </StackPanel>
                             <chart:LineSpectrumControlSlim x:Name="MS2Line"
-                                                           ItemsSource="{Binding Spectrum.Value}"
+                                                           ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
                                                            DataType="{x:Type components:SpectrumPeak}"
                                                            HorizontalProperty="{Binding HorizontalProperty}"
                                                            VerticalProperty="{Binding SelectedVerticalAxisItem.Value.Property}"
@@ -116,7 +116,7 @@
                                     </ToolTip>
                                 </chart:LineSpectrumControlSlim.ToolTip>
                             </chart:LineSpectrumControlSlim>
-                            <chart:Annotator ItemsSource="{Binding Spectrum.Value}"
+                            <chart:Annotator ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
                                              HorizontalPropertyName="{Binding HorizontalProperty}"
                                              VerticalPropertyName="{Binding SelectedVerticalAxisItem.Value.Property}"
                                              LabelPropertyName="{Binding DataContext.LabelProperty.Value, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
@@ -130,27 +130,28 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
-            <Grid core:ChartBaseControl.FlippedY="False" core:ChartBaseControl.VerticalAxis="{Binding LowerVerticalAxis.Value}">
+            <Grid core:ChartBaseControl.FlippedY="False" DataContext="{Binding LowerSpectrumViewModel}" core:ChartBaseControl.VerticalAxis="{Binding VerticalAxis.Value}">
                 <TextBlock Text="No information" FontSize="24"
                            HorizontalAlignment="Center"
-                           VerticalAlignment="Center">
+                           VerticalAlignment="Center"
+                           DataContext="{Binding MsSpectrum.Value}">
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
-                            <Setter Property="Visibility" Value="Visible"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ReferenceHasSpectrumInfomation.Value, Mode=OneWay}" Value="True">
+                                <DataTrigger Binding="{Binding HasSpectrum, Mode=OneTime}" Value="True">
                                     <Setter Property="Visibility" Value="Collapsed"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </TextBlock.Style>
                 </TextBlock>
+
                 <chart:LineSpectrumControlSlim x:Name="MS2Ref"
-                                               ItemsSource="{Binding LowerSpectrum.Value}"
+                                               ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
                                                DataType="{x:Type components:SpectrumPeak}"
-                                               HorizontalProperty="{Binding HorizontalProperty.Value}"
-                                               VerticalProperty="{Binding VerticalProperty.Value}"
-                                               LineBrush="{Binding LowerSpectrumBrushSource.Value}"
+                                               HorizontalProperty="{Binding HorizontalProperty}"
+                                               VerticalProperty="{Binding SelectedVerticalAxisItem.Value.Property}"
+                                               LineBrush="{Binding Brush.Value}"
                                                HueProperty="SpectrumComment">
                     <chart:LineSpectrumControlSlim.ToolTip>
                         <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
@@ -166,11 +167,11 @@
                         </ToolTip>
                     </chart:LineSpectrumControlSlim.ToolTip>
                 </chart:LineSpectrumControlSlim>
-                <chart:Annotator ItemsSource="{Binding LowerSpectrum.Value}"
-                                 HorizontalPropertyName="{Binding HorizontalProperty.Value}"
-                                 VerticalPropertyName="{Binding VerticalProperty.Value}"
-                                 LabelPropertyName="{Binding LabelProperty.Value}"
-                                 OrderingPropertyName="{Binding OrderingProperty.Value}"
+                <chart:Annotator ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
+                                 HorizontalPropertyName="{Binding HorizontalProperty}"
+                                 VerticalPropertyName="{Binding SelectedVerticalAxisItem.Value.Property}"
+                                 LabelPropertyName="{Binding Labels.AnnotationLabelProperty}"
+                                 OrderingPropertyName="{Binding Labels.AnnotationOrderProperty}"
                                  ContentAlignment="BottomCenter"
                                  Brush="Black"
                                  Overlap="Horizontal, Direct"

@@ -28,16 +28,17 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 Ms2IdList = model.RawLoader.Ms2List.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
                 SelectedMs2Id = model.RawLoader.Ms2IdSelector;
             }
+            var lowerVerticalAxis = model.DecRefSpectrumModels.LowerVerticalAxis;
 
             RawRefSpectrumViewModels = new MsSpectrumViewModel(
                 model.RawRefSpectrumModels,
-                lowerVerticalAxisSource: _model.DecRefSpectrumModels.LowerVerticalAxis,
+                lowerVerticalAxisSource: lowerVerticalAxis,
                 focusAction: focusAction,
                 isFocused: isFocused);
 
             DecRefSpectrumViewModels = new MsSpectrumViewModel(
                 model.DecRefSpectrumModels,
-                lowerVerticalAxisSource: _model.DecRefSpectrumModels.LowerVerticalAxis,
+                lowerVerticalAxisSource: lowerVerticalAxis,
                 focusAction: focusAction,
                 isFocused: isFocused);
         }

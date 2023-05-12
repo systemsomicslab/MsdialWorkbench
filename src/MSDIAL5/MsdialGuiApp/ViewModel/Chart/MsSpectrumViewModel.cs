@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.ViewModel.Service;
-using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
@@ -8,7 +7,6 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Reactive.Linq;
@@ -30,9 +28,6 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 throw new ArgumentNullException(nameof(model));
             }
 
-            SpectrumLoaded = model.SpectrumLoaded;
-            ReferenceHasSpectrumInfomation = model.ReferenceHasSpectrumInfomation;
-
             UpperSpectraViewModel = model.UpperSpectraModel.ToReadOnlyReactiveCollection(m => new SingleSpectrumViewModel(m)).AddTo(Disposables);
             LowerSpectrumViewModel = new SingleSpectrumViewModel(model.LowerSpectrumModel).AddTo(Disposables);
 
@@ -45,16 +40,16 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .AddTo(Disposables);
             LowerVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel<double>>(model.LowerVerticalAxisItemCollection);
 
-            UpperVerticalAxis = (upperVerticalAxisSource ?? model.UpperSpectrumModel.VerticalAxis)
+            UpperVerticalAxis = (upperVerticalAxisSource ?? model.UpperVerticalAxis)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             UpperVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel<double>>(model.UpperVerticalAxisItemCollection);
 
-            UpperSpectrum = model.UpperSpectrumModel.Spectrum
+            UpperMsSpectrum = model.UpperSpectrumModel.MsSpectrum
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            LowerSpectrum = model.LowerSpectrumModel.Spectrum
+            LowerMsSpectrum = model.LowerSpectrumModel.MsSpectrum
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -67,14 +62,6 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .AddTo(Disposables);
 
             VerticalTitle = Observable.Return(model.GraphLabels.VerticalTitle)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
-            HorizontalProperty = Observable.Return(model.HorizontalPropertySelector.Property)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
-            VerticalProperty = Observable.Return(model.VerticalPropertySelector.Property)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -121,11 +108,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactiveCollection<SingleSpectrumViewModel> UpperSpectraViewModel { get; }
         public SingleSpectrumViewModel LowerSpectrumViewModel { get; }
 
-        public ReadOnlyReactivePropertySlim<List<SpectrumPeak>> UpperSpectrum { get; }
+        public ReadOnlyReactivePropertySlim<MsSpectrum> UpperMsSpectrum { get; }
+        public ReadOnlyReactivePropertySlim<MsSpectrum> LowerMsSpectrum { get; }
 
-        public ReadOnlyReactivePropertySlim<List<SpectrumPeak>> LowerSpectrum { get; }
-        public ReadOnlyReactivePropertySlim<bool> SpectrumLoaded { get; }
-        public ReadOnlyReactivePropertySlim<bool> ReferenceHasSpectrumInfomation { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> HorizontalAxis { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> UpperVerticalAxis { get; }
         public ReactivePropertySlim<AxisItemModel<double>> UpperVerticalAxisItem => _model.UpperVerticalAxisItem;
@@ -139,10 +124,6 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<string> HorizontalTitle { get; }
 
         public ReadOnlyReactivePropertySlim<string> VerticalTitle { get; }
-
-        public ReadOnlyReactivePropertySlim<string> HorizontalProperty { get; }
-
-        public ReadOnlyReactivePropertySlim<string> VerticalProperty { get; }
 
         public ReadOnlyReactivePropertySlim<string> LabelProperty { get; }
 

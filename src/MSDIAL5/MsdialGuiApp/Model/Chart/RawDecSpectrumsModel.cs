@@ -35,38 +35,19 @@ namespace CompMs.App.Msdial.Model.Chart
             RawLoader = rawLoader;
 
             (var rawMsSpectrum, var rawSpectrumLoaded, var rawDisposable) = Load(targetSource, rawLoader, Disposables);
+            SingleSpectrumModel rawSpectrumModel = new SingleSpectrumModel(rawMsSpectrum, horizontalPropertySelector, verticalPropertySelector, upperSpectrumBrush, hueProperty, graphLabels, rawSpectraExporeter, rawSpectrumLoaded).AddTo(Disposables);
             Disposables.Add(rawDisposable);
 
             (var decMsSpectrum, var decSpectrumLoaded, var decDisposable) = Load(targetSource, decLoader, Disposables);
+            SingleSpectrumModel decSpectrumModel = new SingleSpectrumModel(decMsSpectrum, horizontalPropertySelector, verticalPropertySelector, upperSpectrumBrush, hueProperty, graphLabels, deconvolutedSpectraExporter, decSpectrumLoaded).AddTo(Disposables);
             Disposables.Add(decDisposable);
 
             var refMsSpectrum_ = refMsSpectrum.Publish();
-            RawRefSpectrumModels = new MsSpectrumModel(
-                rawMsSpectrum, refMsSpectrum_,
-                horizontalPropertySelector,
-                verticalPropertySelector,
-                graphLabels,
-                hueProperty,
-                upperSpectrumBrush,
-                lowerSpectrumBrush,
-                rawSpectraExporeter,
-                referenceSpectraExporter,
-                rawSpectrumLoaded,
-                ms2ScanMatching).AddTo(Disposables);
-            DecRefSpectrumModels = new MsSpectrumModel(
-                decMsSpectrum, refMsSpectrum_,
-                horizontalPropertySelector,
-                verticalPropertySelector,
-                graphLabels,
-                hueProperty,
-                upperSpectrumBrush,
-                lowerSpectrumBrush,
-                deconvolutedSpectraExporter,
-                referenceSpectraExporter,
-                decSpectrumLoaded,
-                ms2ScanMatching).AddTo(Disposables);
-
+            SingleSpectrumModel referenceSpectrumModel = new SingleSpectrumModel(refMsSpectrum_, horizontalPropertySelector, verticalPropertySelector, lowerSpectrumBrush, hueProperty, graphLabels, referenceSpectraExporter, new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true)).AddTo(Disposables)).AddTo(Disposables);
             Disposables.Add(refMsSpectrum_.Connect());
+
+            RawRefSpectrumModels = new MsSpectrumModel(rawSpectrumModel, referenceSpectrumModel, graphLabels, ms2ScanMatching).AddTo(Disposables);
+            DecRefSpectrumModels = new MsSpectrumModel(decSpectrumModel, referenceSpectrumModel, graphLabels, ms2ScanMatching).AddTo(Disposables);
         }
 
         public MsSpectrumModel RawRefSpectrumModels { get; }

@@ -231,23 +231,26 @@ namespace CompMs.App.Msdial.Model.Lcimms
             IMsSpectrumLoader<AlignmentSpotPropertyModel> decLoader = new AlignmentMSDecSpectrumLoader(_alignmentFileBean);
             var decMsSpectrum = Target.SelectSwitch(decLoader.LoadMsSpectrumAsObservable).Publish();
             var refMsSpectrum = MatchResultCandidatesModel.LoadMsSpectrumObservable(refLoader).Publish();
-            Ms2SpectrumModel = new MsSpectrumModel(
-                decMsSpectrum, refMsSpectrum,
-                new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Mass), spot => spot.Mass),
-                new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Intensity), spot => spot.Intensity),
-                new GraphLabels(
-                    "Representation vs. Reference",
-                    "m/z",
-                    "Relative abundance",
-                    nameof(SpectrumPeak.Mass),
-                    nameof(SpectrumPeak.Intensity)),
-                nameof(SpectrumPeak.SpectrumComment),
+            GraphLabels ms2GraphLabels = new GraphLabels("Representation vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
+            SingleSpectrumModel upperSpectrumModel = new SingleSpectrumModel(
+                decMsSpectrum,
+                new PropertySelector<SpectrumPeak, double>(spot => spot.Mass),
+                new PropertySelector<SpectrumPeak, double>(spot => spot.Intensity),
                 Observable.Return(upperSpecBrush),
+                nameof(SpectrumPeak.SpectrumComment),
+                ms2GraphLabels,
+                Observable.Return<ISpectraExporter>(null),
+                null).AddTo(Disposables);
+            SingleSpectrumModel lowerSpectrumModel = new SingleSpectrumModel(
+                refMsSpectrum,
+                new PropertySelector<SpectrumPeak, double>(spot => spot.Mass),
+                new PropertySelector<SpectrumPeak, double>(spot => spot.Intensity),
                 Observable.Return(lowerSpecBrush),
+                nameof(SpectrumPeak.SpectrumComment),
+                ms2GraphLabels,
                 Observable.Return<ISpectraExporter>(null),
-                Observable.Return<ISpectraExporter>(null),
-                null,
-                MatchResultCandidatesModel.GetCandidatesScorer(searcherCollection)).AddTo(Disposables);
+                new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true)).AddTo(Disposables)).AddTo(Disposables);
+            Ms2SpectrumModel = new MsSpectrumModel(upperSpectrumModel, lowerSpectrumModel, ms2GraphLabels, MatchResultCandidatesModel.GetCandidatesScorer(searcherCollection)).AddTo(Disposables);
             Disposables.Add(decMsSpectrum.Connect());
             Disposables.Add(refMsSpectrum.Connect());
 

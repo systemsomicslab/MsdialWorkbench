@@ -73,19 +73,26 @@ namespace CompMs.App.Msdial.Model.Search
                 .Select(s => new Ms2ScanMatching(s.MsRefSearchParameter))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            MsSpectrumModel = new MsSpectrumModel(
+            GraphLabels msGraphLabels = new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
+            SingleSpectrumModel upperSpectrumModel = new SingleSpectrumModel(
                 Observable.Return(new MsSpectrum(msdecResult.Spectrum)),
+                new PropertySelector<SpectrumPeak, double>(peak => peak.Mass),
+                new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity),
+                Observable.Return(MsSpectrumModel.GetBrush(Brushes.Blue)),
+                nameof(SpectrumPeak.SpectrumComment),
+                msGraphLabels,
+                Observable.Return((ISpectraExporter)null),
+                null).AddTo(Disposables);
+            SingleSpectrumModel lowerSpectrumModel = new SingleSpectrumModel(
                 referenceSpectrum,
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Mass),
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity),
-                new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity)),
-                nameof(SpectrumPeak.SpectrumComment),
-                Observable.Return(MsSpectrumModel.GetBrush(Brushes.Blue)),
                 Observable.Return(MsSpectrumModel.GetBrush(Brushes.Red)),
+                nameof(SpectrumPeak.SpectrumComment),
+                msGraphLabels,
                 Observable.Return((ISpectraExporter)null),
-                Observable.Return((ISpectraExporter)null),
-                null,
-                scorer).AddTo(Disposables);
+                new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true)).AddTo(Disposables)).AddTo(Disposables);
+            MsSpectrumModel = new MsSpectrumModel(upperSpectrumModel, lowerSpectrumModel, msGraphLabels, scorer).AddTo(Disposables);
         }
 
         public IReadOnlyList<CompoundSearcher> CompoundSearchers { get; }
