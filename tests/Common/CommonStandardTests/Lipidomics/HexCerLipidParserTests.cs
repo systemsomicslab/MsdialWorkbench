@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Enum;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace CompMs.Common.Lipidomics.Tests
 {
@@ -33,4 +34,20 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(LbmClass.HexCer_NDS, lipid.LipidClass);
         }
     }
+    [TestClass()]
+    public class Hex2CerParserTests
+    {
+        [TestMethod()]
+        public void Hex2CerParseTest()
+        {
+            var parser = new Hex2CerLipidParser();
+            //Hex2Cer 18:1;O2/18:0  O=C(NC(COC1OC(CO)C(OC2OC(CO)C(O)C(O)C2O)C(O)C1O)C(O)C=CCCCCCCCCCCCCC)CCCCCCCCCCCCCCCCC
+            var lipid = parser.Parse("Hex2Cer 18:1;O2/18:0");
+            Console.WriteLine(lipid.Name+" "+lipid.Mass);
+            Assert.AreEqual(889.6563, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.Hex2Cer, lipid.LipidClass);
+
+        }
+    }
+
 }

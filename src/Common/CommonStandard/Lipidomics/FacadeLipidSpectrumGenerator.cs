@@ -73,6 +73,7 @@ namespace CompMs.Common.Lipidomics
                     //generator.Add(LbmClass.Cer_HS, new CeramideSpectrumGenerator());
                     //generator.Add(LbmClass.Cer_HDS, new CeramideSpectrumGenerator());
                     generator.Add(LbmClass.HexCer_NS, new HexCerSpectrumGenerator());
+                    generator.Add(LbmClass.Hex2Cer, new Hex2CerSpectrumGenerator());
                     generator.Add(LbmClass.DGTA, new DGTASpectrumGenerator());
                     generator.Add(LbmClass.DGTS, new DGTSSpectrumGenerator());
                     generator.Add(LbmClass.LDGTA, new LDGTASpectrumGenerator());
