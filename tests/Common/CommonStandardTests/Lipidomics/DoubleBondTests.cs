@@ -75,5 +75,25 @@ namespace CompMs.Common.Lipidomics.Tests
             yield return new object[] { DoubleBond.CreateFromPosition(1).Accept(visitor, decomposer), 1, 0, 1, "1", };
             yield return new object[] { DoubleBond.CreateFromPosition(9, 11).Accept(visitor, decomposer), 2, 1, 1, "2(9)", };
         }
+
+        [TestMethod()]
+        [DataTestMethod]
+        [DynamicData(nameof(EqualityTestData), DynamicDataSourceType.Property)]
+        public void EqualityTest(IDoubleBond db, IDoubleBond other, bool expected) {
+            Assert.AreEqual(expected, db.Equals(other));
+        }
+
+        public static IEnumerable<object[]> EqualityTestData {
+            get {
+                IDoubleBond b1 = new DoubleBond(0), b2 = new DoubleBond(1),
+                    b3 = DoubleBond.CreateFromPosition(1), b4 = DoubleBond.CreateFromPosition(2),
+                    b5 = new DoubleBond(0);
+                yield return new object[] { b1, b5, true, };
+                yield return new object[] { b1, b1, true, };
+                yield return new object[] { b1, b2, false, };
+                yield return new object[] { b2, b3, false, };
+                yield return new object[] { b3, b4, false, };
+            }
+        }
     }
 }

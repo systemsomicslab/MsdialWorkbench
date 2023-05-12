@@ -57,6 +57,22 @@ namespace CompMs.Common.Lipidomics
         public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, AcylChain, TDecomposed> decomposer) {
             return decomposer.Decompose(visitor, this);
         }
+
+        public bool Includes(IChain chain) {
+            return chain is AcylChain
+                && chain.CarbonCount == CarbonCount
+                && chain.DoubleBondCount == DoubleBondCount
+                && chain.OxidizedCount == OxidizedCount
+                && DoubleBond.Includes(chain.DoubleBond)
+                && Oxidized.Includes(chain.Oxidized);
+        }
+
+        public bool Equals(IChain other) {
+            return other is AcylChain
+                && CarbonCount == other.CarbonCount
+                && DoubleBond.Equals(other.DoubleBond)
+                && Oxidized.Equals(other.Oxidized);
+        }
     }
 
     public class AlkylChain : IChain, IVisitableElement<AlkylChain>
@@ -125,6 +141,22 @@ namespace CompMs.Common.Lipidomics
         public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, AlkylChain, TDecomposed> decomposer) {
             return decomposer.Decompose(visitor, this);
         }
+
+        public bool Includes(IChain chain) {
+            return chain is AlkylChain
+                && chain.CarbonCount == CarbonCount
+                && chain.DoubleBondCount == DoubleBondCount
+                && chain.OxidizedCount == OxidizedCount
+                && DoubleBond.Includes(chain.DoubleBond)
+                && Oxidized.Includes(chain.Oxidized);
+        }
+
+        public bool Equals(IChain other) {
+            return other is AlkylChain
+                && CarbonCount == other.CarbonCount
+                && DoubleBond.Equals(other.DoubleBond)
+                && Oxidized.Equals(other.Oxidized);
+        }
     }
 
     public class SphingoChain : IChain, IVisitableElement<SphingoChain>
@@ -174,6 +206,22 @@ namespace CompMs.Common.Lipidomics
 
         public override string ToString() {
             return $"{CarbonCount}:{DoubleBond}{Oxidized}";
+        }
+
+        public bool Includes(IChain chain) {
+            return chain is SphingoChain
+                && chain.CarbonCount == CarbonCount
+                && chain.DoubleBondCount == DoubleBondCount
+                && chain.OxidizedCount == OxidizedCount
+                && DoubleBond.Includes(chain.DoubleBond)
+                && Oxidized.Includes(chain.Oxidized);
+        }
+
+        public bool Equals(IChain other) {
+            return other is SphingoChain
+                && CarbonCount == other.CarbonCount
+                && DoubleBond.Equals(other.DoubleBond)
+                && Oxidized.Equals(other.Oxidized);
         }
     }
 }

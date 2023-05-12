@@ -68,12 +68,20 @@ namespace CompMs.Common.Lipidomics.Tests
 
         public ITotalChain Chains => throw new System.NotImplementedException();
 
+        public bool Equals(ILipid other) {
+            throw new System.NotImplementedException();
+        }
+
         public IEnumerable<ILipid> Generate(ILipidGenerator generator) {
             throw new System.NotImplementedException();
         }
 
         public IMSScanProperty GenerateSpectrum(ILipidSpectrumGenerator generator, AdductIon adduct, IMoleculeProperty molecule = null) {
             return generator.Generate(new Lipid(LipidClass, 0, new TotalChain(0, 0, 0, 0, 0, 0)), adduct);
+        }
+
+        bool ILipid.Includes(ILipid lipid) {
+            throw new System.NotImplementedException();
         }
     }
 

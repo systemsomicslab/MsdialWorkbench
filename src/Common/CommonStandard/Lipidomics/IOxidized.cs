@@ -1,17 +1,20 @@
 ﻿using CompMs.Common.DataStructure;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
-    public interface IOxidized : IVisitableElement<IOxidized>
+    public interface IOxidized : IVisitableElement<IOxidized>, IEquatable<IOxidized>
     {
         int Count { get; }
         int DecidedCount { get; }
         int UnDecidedCount { get; }
 
         ReadOnlyCollection<int> Oxidises { get; }
+
+        bool Includes(IOxidized oxidized);
     }
 
     public sealed class Oxidized : IOxidized
@@ -57,6 +60,15 @@ namespace CompMs.Common.Lipidomics
 
         public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, IOxidized, TDecomposed> decomposer) {
             return decomposer.Decompose(visitor, this);
+        }
+
+        public bool Includes(IOxidized oxidized) {
+            return Count == oxidized.Count && DecidedCount <= oxidized.DecidedCount && Oxidises.All(oxidized.Oxidises.Contains);
+        }
+
+        public bool Equals(IOxidized other) {
+            return Count == other.Count && DecidedCount == other.DecidedCount &&
+                Oxidises.All(ox => other.Oxidises.Any(ox.Equals));
         }
     }
 }

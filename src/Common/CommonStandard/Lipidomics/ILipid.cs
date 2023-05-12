@@ -1,12 +1,13 @@
 ﻿using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
+using System;
 using System.Collections.Generic;
 
 namespace CompMs.Common.Lipidomics
 {
     public enum LipidDescription { None = 0, Class = 1, Chain = 2, SnPosition = 4, DoubleBondPosition = 8, EZ = 16 }
-    public interface ILipid
+    public interface ILipid : IEquatable<ILipid>
     {
         string Name { get; }
         LbmClass LipidClass { get; }
@@ -16,12 +17,13 @@ namespace CompMs.Common.Lipidomics
         int ChainCount { get; }
         ITotalChain Chains { get; }
 
+        bool Includes(ILipid lipid);
+
         IEnumerable<ILipid> Generate(ILipidGenerator generator);
         IMSScanProperty GenerateSpectrum(ILipidSpectrumGenerator generator, AdductIon adduct, IMoleculeProperty molecule = null); 
     }
 
-    public class Lipid : ILipid
-    {
+    public class Lipid : ILipid {
         public Lipid(LbmClass lipidClass, double mass, ITotalChain chains) {
             LipidClass = lipidClass;
             Mass = mass;
@@ -38,6 +40,17 @@ namespace CompMs.Common.Lipidomics
 
         public int ChainCount => Chains.CarbonCount;
         public ITotalChain Chains { get; }
+
+        public bool Includes(ILipid lipid) {
+            if (LipidClass != lipid.LipidClass
+                || Math.Abs(Mass - lipid.Mass) >= 1e-6
+                || (Description & lipid.Description) != Description
+                || AnnotationLevel > lipid.AnnotationLevel) {
+                return false;
+            }
+
+            return Chains.Includes(lipid.Chains);
+        }
 
         public IEnumerable<ILipid> Generate(ILipidGenerator generator) {
             return generator.Generate(this);
@@ -63,6 +76,13 @@ namespace CompMs.Common.Lipidomics
                 default:
                     return 0;
             }
+        }
+
+        public bool Equals(ILipid other) {
+            return LipidClass == other.LipidClass
+                && AnnotationLevel == other.AnnotationLevel
+                && Description == other.Description
+                && Chains.Equals(other.Chains);
         }
     }
 }
