@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.Interfaces;
+using CompMs.Common.Lipidomics;
 using System;
 
 namespace CompMs.MsdialCore.DataObj
@@ -24,7 +25,7 @@ namespace CompMs.MsdialCore.DataObj
 
         public bool IsAnnotated {
             get {
-                return Reference.Name.Contains(Spot.MatchResults.Representative.Name);
+                return Spot.MatchResults.Representative.Name != null && Reference.Name.Contains(Spot.MatchResults.Representative.Name);
             }
         }
 
@@ -59,6 +60,45 @@ namespace CompMs.MsdialCore.DataObj
         public bool IsStrongerThanThreshold {
             get {
                 return Spot.Intensity >= _amplitudeThreshold;
+            }
+        }
+
+        public bool IsLipidReference {
+            get {
+                return FacadeLipidParser.Default.Parse(Reference.Name) != null;
+            }
+        }
+
+        public bool IsExactlyReference {
+            get {
+                if (Reference.Name is null || Spot.MatchResults.Representative.Name is null) {
+                    return false;
+                }
+                var refLipid = FacadeLipidParser.Default.Parse(Reference.Name);
+                var spotLipid = FacadeLipidParser.Default.Parse(Spot.MatchResults.Representative.Name);
+                return spotLipid != null && refLipid != null && spotLipid.Equals(refLipid);
+            }
+        }
+
+        public bool IsSubgroupOfReference {
+            get {
+                if (Reference.Name is null || Spot.MatchResults.Representative.Name is null) {
+                    return false;
+                }
+                var refLipid = FacadeLipidParser.Default.Parse(Reference.Name);
+                var spotLipid = FacadeLipidParser.Default.Parse(Spot.MatchResults.Representative.Name);
+                return spotLipid != null && refLipid != null && refLipid.Includes(spotLipid);
+            }
+        }
+
+        public bool IsSupergroupOfReference {
+            get {
+                if (Reference.Name is null || Spot.MatchResults.Representative.Name is null) {
+                    return false;
+                }
+                var refLipid = FacadeLipidParser.Default.Parse(Reference.Name);
+                var spotLipid = FacadeLipidParser.Default.Parse(Spot.MatchResults.Representative.Name);
+                return spotLipid != null && refLipid != null && spotLipid.Includes(refLipid);
             }
         }
     }

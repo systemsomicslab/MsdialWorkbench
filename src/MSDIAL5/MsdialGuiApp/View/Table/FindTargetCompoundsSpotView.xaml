@@ -105,7 +105,7 @@
                 <DataGridTemplateColumn Header="Information" IsReadOnly="True" Width="64">
                     <DataGridTemplateColumn.CellStyle>
                         <Style TargetType="DataGridCell">
-                            <Setter Property="ToolTip" Value="Red: Annotated &#10;Blue: m/z matched &#10;Green: Rt matched"/>
+                            <Setter Property="ToolTip" Value="Red: Annotated &#10;Blue: Subgroup of reference &#10;Green: Supergroup of reference"/>
                         </Style>
                     </DataGridTemplateColumn.CellStyle>
                     <DataGridTemplateColumn.CellTemplate>
@@ -132,9 +132,20 @@
                                         </Setter>
                                     </Style>
                                 </StackPanel.Resources>
-                                <CheckBox IsChecked="{Binding IsAnnotated, Mode=OneTime}" Foreground="OrangeRed"/>
-                                <CheckBox IsChecked="{Binding IsSimilarByMz, Mode=OneTime}" Foreground="SkyBlue"/>
-                                <CheckBox IsChecked="{Binding IsSimilarByTime, Mode=OneTime}" Foreground="LightGreen"/>
+                                <CheckBox IsChecked="{Binding IsAnnotated, Mode=OneTime}" Foreground="OrangeRed">
+                                    <CheckBox.Style>
+                                        <Style TargetType="CheckBox">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsLipidReference}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </CheckBox.Style>
+                                </CheckBox>
+                                <CheckBox IsChecked="{Binding IsExactlyReference, Mode=OneTime}" Foreground="OrangeRed" Visibility="{Binding IsLipidReference, Converter={StaticResource BooleanToVisibility}}"/>
+                                <CheckBox IsChecked="{Binding IsSubgroupOfReference, Mode=OneTime}" Foreground="SkyBlue" Visibility="{Binding IsLipidReference, Converter={StaticResource BooleanToVisibility}}"/>
+                                <CheckBox IsChecked="{Binding IsSupergroupOfReference, Mode=OneTime}" Foreground="LightGreen" Visibility="{Binding IsLipidReference, Converter={StaticResource BooleanToVisibility}}"/>
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -211,6 +222,54 @@
                             </Style>
                         </DataGridTextColumn.CellStyle>
                     </DataGridTextColumn>
+                    <DataGridTemplateColumn Header="Information" IsReadOnly="True" Width="64">
+                        <DataGridTemplateColumn.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="ToolTip" Value="Red: Annotated &#10;Blue: Subgroup of reference &#10;Green: Supergroup of reference"/>
+                            </Style>
+                        </DataGridTemplateColumn.CellStyle>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="CheckBox">
+                                            <Setter Property="IsHitTestVisible" Value="False"/>
+                                            <Setter Property="IsTabStop" Value="False"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="CheckBox">
+                                                        <Border BorderThickness="1" BorderBrush="LightGray" Padding="1"
+                                                                Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}">
+                                                            <Viewbox Stretch="Uniform">
+                                                                <Rectangle x:Name="Box"
+                                                                           Fill="{TemplateBinding Foreground}"
+                                                                           Visibility="{TemplateBinding IsChecked, Converter={StaticResource BooleanToVisibility}}"
+                                                                           Height="10" Width="10"/>
+                                                            </Viewbox>
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </StackPanel.Resources>
+                                    <CheckBox IsChecked="{Binding IsAnnotated, Mode=OneTime}" Foreground="OrangeRed">
+                                        <CheckBox.Style>
+                                            <Style TargetType="CheckBox">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsLipidReference}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </CheckBox.Style>
+                                    </CheckBox>
+                                    <CheckBox IsChecked="{Binding IsExactlyReference, Mode=OneTime}" Foreground="OrangeRed" Visibility="{Binding IsLipidReference, Converter={StaticResource BooleanToVisibility}}"/>
+                                    <CheckBox IsChecked="{Binding IsSubgroupOfReference, Mode=OneTime}" Foreground="SkyBlue" Visibility="{Binding IsLipidReference, Converter={StaticResource BooleanToVisibility}}"/>
+                                    <CheckBox IsChecked="{Binding IsSupergroupOfReference, Mode=OneTime}" Foreground="LightGreen" Visibility="{Binding IsLipidReference, Converter={StaticResource BooleanToVisibility}}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </GroupBox>

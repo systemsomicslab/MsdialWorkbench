@@ -106,9 +106,12 @@ namespace CompMs.App.Msdial.Model.Table
         }
 
         public async Task ExportAsync(Stream stream) {
+            if (_currentCalculator is null) {
+                return;
+            }
             var task = TaskNotification.Start("Exporting library matched spots");
             _broker.Publish(task);
-            await _exporter.ExportAsync(stream, Candidates).ConfigureAwait(false);
+            await _exporter.ExportAsync(stream, Candidates, _currentCalculator).ConfigureAwait(false);
             _broker.Publish(task.End());
         }
     }

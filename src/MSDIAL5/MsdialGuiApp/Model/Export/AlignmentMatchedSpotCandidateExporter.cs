@@ -14,9 +14,9 @@ namespace CompMs.App.Msdial.Model.Export
 {
     internal sealed class AlignmentMatchedSpotCandidateExporter
     {
-        public async Task ExportAsync(Stream stream, IReadOnlyList<MatchedSpotCandidate<AlignmentSpotPropertyModel>> candidates) {
+        public async Task ExportAsync(Stream stream, IReadOnlyList<MatchedSpotCandidate<AlignmentSpotPropertyModel>> candidates, MatchedSpotCandidateCalculator calculator) {
             var doc = new XElement("MatchedSpots");
-            var tasks = candidates.Select(ToXmlElement).ToArray();
+            var tasks = candidates.Select(candidate => ToXmlElement(candidate, calculator)).ToArray();
             var elements = await Task.WhenAll(tasks).ConfigureAwait(false);
             foreach (var element in elements) {
                 doc.Add(element);
@@ -24,14 +24,23 @@ namespace CompMs.App.Msdial.Model.Export
             doc.Save(stream);
         }
 
-        private async Task<XElement> ToXmlElement(MatchedSpotCandidate<AlignmentSpotPropertyModel> candidate) {
-            var spot = await ToXmlElement(candidate.Spot).ConfigureAwait(false);
+        private async Task<XElement> ToXmlElement(MatchedSpotCandidate<AlignmentSpotPropertyModel> candidate, MatchedSpotCandidateCalculator calculator) {
+            var spot = await ToXmlElement(candidate.Spot, candidate.Reference, calculator).ConfigureAwait(false);
             var reference = ToXmlElement(candidate.Reference);
-            var annotated = new XElement("Annotated", candidate.IsAnnotated);
-            var similarWithMz = new XElement("SimilarByMz", candidate.IsSimilarByMz);
-            var similarWithChrom = new XElement("SimilarByTime", candidate.IsSimilarByTime);
-            var strongerThanThreshold = new XElement("StrongerThanThreshold", candidate.IsStrongerThanThreshold);
-            return new XElement("MatchedSpot", reference, spot, annotated, similarWithMz, similarWithChrom, strongerThanThreshold);
+            var result = new XElement("MatchedSpot", spot, reference);
+
+            if (candidate.IsLipidReference) {
+                result.Add(new XElement("IsExactlyReference", candidate.IsExactlyReference));
+                result.Add(new XElement("IsSubgroupOfReference", candidate.IsSubgroupOfReference));
+                result.Add(new XElement("IsSupergroupOfReference", candidate.IsSupergroupOfReference));
+            }
+            else {
+                result.Add(new XElement("Annotated", candidate.IsAnnotated));
+            }
+            result.Add(new XElement("SimilarByMz", candidate.IsSimilarByMz));
+            result.Add(new XElement("SimilarByTime", candidate.IsSimilarByTime));
+            result.Add(new XElement("StrongerThanThreshold", candidate.IsStrongerThanThreshold));
+            return result;
         }
 
         private XElement ToXmlElement(MoleculeMsReference reference) {
@@ -47,7 +56,7 @@ namespace CompMs.App.Msdial.Model.Export
             return referenceElement;
         }
 
-        private async Task<XElement> ToXmlElement(AlignmentSpotPropertyModel spot) {
+        private async Task<XElement> ToXmlElement(AlignmentSpotPropertyModel spot, MoleculeMsReference reference, MatchedSpotCandidateCalculator calculator) {
             var spotElement = new XElement("AlignedSpot",
                 new XElement("SpotId", spot.MasterAlignmentID),
                 new XElement("Name", spot.Name),
@@ -60,22 +69,33 @@ namespace CompMs.App.Msdial.Model.Export
                 peaks = await task.ConfigureAwait(false);
             }
             foreach (var peak in peaks) {
-                spotElement.Add(ToXml(peak));
+                spotElement.Add(ToXml(calculator.Score(peak, reference)));
             }
             return spotElement;
         }
 
-        private XElement ToXml(AlignmentChromPeakFeatureModel peak) {
+        private XElement ToXml(MatchedSpotCandidate<AlignmentChromPeakFeatureModel> candidate) {
             var peakElement = new XElement("Peak");
-            peakElement.Add(new XElement("File", peak.FileName));
-            peakElement.Add(new XElement("Name", peak.Name));
-            peakElement.Add(new XElement("Adduct", peak.Adduct.AdductIonName));
-            peakElement.Add(new XElement("Mz", peak.Mass));
-            peakElement.Add(ToXmlElement(peak.ChromXsTop));
-            peakElement.Add(new XElement("PeakHeight", peak.PeakHeightTop));
-            if (peak.NormalizedPeakHeight > 0) {
-                peakElement.Add(new XElement("NormalizedPeakHeight", peak.NormalizedPeakHeight));
+            peakElement.Add(new XElement("File", candidate.Spot.FileName));
+            peakElement.Add(new XElement("Name", candidate.Spot.Name));
+            peakElement.Add(new XElement("Adduct", candidate.Spot.Adduct.AdductIonName));
+            peakElement.Add(new XElement("Mz", candidate.Spot.Mass));
+            peakElement.Add(ToXmlElement(candidate.Spot.ChromXsTop));
+            peakElement.Add(new XElement("PeakHeight", candidate.Spot.PeakHeightTop));
+            if (candidate.Spot.NormalizedPeakHeight > 0) {
+                peakElement.Add(new XElement("NormalizedPeakHeight", candidate.Spot.NormalizedPeakHeight));
             }
+            if (candidate.IsLipidReference) {
+                peakElement.Add(new XElement("IsExactlyReference", candidate.IsExactlyReference));
+                peakElement.Add(new XElement("IsSubgroupOfReference", candidate.IsSubgroupOfReference));
+                peakElement.Add(new XElement("IsSupergroupOfReference", candidate.IsSupergroupOfReference));
+            }
+            else {
+                peakElement.Add(new XElement("Annotated", candidate.IsAnnotated));
+            }
+            peakElement.Add(new XElement("SimilarByMz", candidate.IsSimilarByMz));
+            peakElement.Add(new XElement("SimilarByTime", candidate.IsSimilarByTime));
+            peakElement.Add(new XElement("StrongerThanThreshold", candidate.IsStrongerThanThreshold));
             return peakElement;
         }
 
