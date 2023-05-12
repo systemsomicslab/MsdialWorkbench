@@ -27,11 +27,20 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
-                    Grid.Row="0">
-            <Button Content="Set targets" Command="{Binding SetLibraryCommand, Mode=OneTime}" Margin="4,0"/>
-            <Button Content="Find peaks" Command="{Binding FindCommand, Mode=OneTime}" Margin="4,0"/>
-            <Button Content="Export peaks" Command="{Binding ExportCommand, Mode=OneTime}"/>
+        <StackPanel Grid.Row="0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Set targets" Command="{Binding SetLibraryCommand, Mode=OneTime}" Margin="4,0"/>
+                <Button Content="Find peaks" Command="{Binding FindCommand, Mode=OneTime}" Margin="4,0"/>
+                <Button Content="Export peaks" Command="{Binding ExportCommand, Mode=OneTime}" Margin="4,0"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock Text="m/z tolerance:"/>
+                <TextBox Text="{Binding MzTolerance.Value}" Margin="8,0" Width="64"/>
+                <TextBlock Text="RT tolerance:"/>
+                <TextBox Text="{Binding MainChromXTolerance.Value}" Margin="8,0" Width="64"/>
+                <TextBlock Text="Amplitude threshold:"/>
+                <TextBox Text="{Binding AmplitudeThreshold.Value}" Margin="8,0" Width="64"/>
+            </StackPanel>
         </StackPanel>
         <DataGrid ItemsSource="{Binding Source={StaticResource CandidatesView}}"
                   SelectedItem="{Binding SelectedCandidate.Value, Mode=OneWayToSource}"
@@ -56,13 +65,43 @@
                 <DataGridTextColumn Header="Name" Binding="{Binding Spot.Name, Mode=OneTime}" IsReadOnly="True" Width="*"/>
                 <DataGridTextColumn Header="Ontology" Binding="{Binding Spot.Ontology}" IsReadOnly="True" Width="80"/>
                 <DataGridTextColumn Header="Adduct" Binding="{Binding Spot.AdductIonName, Mode=OneTime}" IsReadOnly="True" Width="80"/>
-                <DataGridTextColumn Header="RT" Binding="{Binding Spot.RT, Mode=OneTime, StringFormat=F1}" IsReadOnly="True" Width="64"/>
+                <DataGridTextColumn Header="RT" Binding="{Binding Spot.RT, Mode=OneTime, StringFormat=F1}" IsReadOnly="True" Width="64">
+                    <DataGridTextColumn.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsSimilarByTime}" Value="True">
+                                    <Setter Property="Background" Value="#FFD0D0"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTextColumn.CellStyle>
+                </DataGridTextColumn>
                 <DataGridTextColumn Binding="{Binding Spot.Mass, Mode=OneTime, StringFormat=F5}" IsReadOnly="True" Width="64">
                     <DataGridTextColumn.Header>
                         <TextBlock Text="m/z" FontStyle="Italic"/>
                     </DataGridTextColumn.Header>
+                    <DataGridTextColumn.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsSimilarByMz}" Value="True">
+                                    <Setter Property="Background" Value="#FFD0D0"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTextColumn.CellStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="Amplitude" Binding="{Binding Spot.(interface:ISpectrumPeak.Intensity), Mode=OneTime, StringFormat=F0}" IsReadOnly="True" Width="64"/>
+                <DataGridTextColumn Header="Amplitude" Binding="{Binding Spot.(interface:ISpectrumPeak.Intensity), Mode=OneTime, StringFormat=F0}" IsReadOnly="True" Width="64">
+                    <DataGridTextColumn.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="Background" Value="#D0D0FF"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsStrongerThanThreshold}" Value="True">
+                                    <Setter Property="Background" Value="#FFD0D0"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTextColumn.CellStyle>
+                </DataGridTextColumn>
                 <DataGridTemplateColumn Header="Information" IsReadOnly="True" Width="64">
                     <DataGridTemplateColumn.CellStyle>
                         <Style TargetType="DataGridCell">
@@ -132,15 +171,46 @@
             </DataGrid.RowStyle>
         </DataGrid>
         <GroupBox Header="Peak information" BorderThickness="0" Grid.Row="2">
-            <DataGrid ItemsSource="{Binding SelectedCandidate.Value.Spot.AlignedPeakPropertiesModelProperty.Value}"
+            <DataGrid ItemsSource="{Binding SelectedCandidatePeaks.Value}"
                       AutoGenerateColumns="False" CanUserAddRows="False">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="File" Binding="{Binding FileName, Mode=OneTime}" Width="*"/>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name, Mode=OneTime}" Width="*"/>
-                    <DataGridTextColumn Header="Adduct" Binding="{Binding Adduct, Mode=OneTime}" Width="64"/>
-                    <DataGridTextColumn Header="RT" Binding="{Binding ChromXsTop.RT.Value, StringFormat=F1, Mode=OneTime}" Width="64"/>
-                    <DataGridTextColumn Header="m/z" Binding="{Binding Mass, StringFormat=F5, Mode=OneTime}" Width="64"/>
-                    <DataGridTextColumn Header="Amplitude" Binding="{Binding PeakHeightTop, StringFormat=F0, Mode=OneTime}" Width="64"/>
+                    <DataGridTextColumn Header="File" Binding="{Binding Spot.FileName, Mode=OneTime}" Width="192"/>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Spot.Name, Mode=OneTime}" Width="*"/>
+                    <DataGridTextColumn Header="Adduct" Binding="{Binding Spot.Adduct, Mode=OneTime}" Width="96"/>
+                    <DataGridTextColumn Header="RT" Binding="{Binding Spot.(interface:IChromatogramPeak.ChromXs).RT.Value, StringFormat=F1, Mode=OneTime}" Width="80">
+                        <DataGridTextColumn.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsSimilarByTime}" Value="True">
+                                        <Setter Property="Background" Value="#FFD0D0"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="m/z" Binding="{Binding Spot.(interface:ISpectrumPeak.Mass), StringFormat=F5, Mode=OneTime}" Width="80">
+                        <DataGridTextColumn.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsSimilarByMz}" Value="True">
+                                        <Setter Property="Background" Value="#FFD0D0"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Amplitude" Binding="{Binding Spot.(interface:ISpectrumPeak.Intensity), StringFormat=F0, Mode=OneTime}" Width="80">
+                        <DataGridTextColumn.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="Background" Value="#D0D0FF"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsStrongerThanThreshold}" Value="True">
+                                        <Setter Property="Background" Value="#FFD0D0"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </GroupBox>

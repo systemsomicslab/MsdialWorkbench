@@ -30,7 +30,8 @@ namespace CompMs.App.Msdial.Model.Export
             var annotated = new XElement("Annotated", candidate.IsAnnotated);
             var similarWithMz = new XElement("SimilarByMz", candidate.IsSimilarByMz);
             var similarWithChrom = new XElement("SimilarByTime", candidate.IsSimilarByTime);
-            return new XElement("MatchedSpot", reference, spot, annotated, similarWithMz, similarWithChrom);
+            var strongerThanThreshold = new XElement("StrongerThanThreshold", candidate.IsStrongerThanThreshold);
+            return new XElement("MatchedSpot", reference, spot, annotated, similarWithMz, similarWithChrom, strongerThanThreshold);
         }
 
         private XElement ToXmlElement(MoleculeMsReference reference) {

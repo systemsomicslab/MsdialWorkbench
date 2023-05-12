@@ -1,7 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.Interfaces;
 using System;
-using System.Linq;
 
 namespace CompMs.MsdialCore.DataObj
 {
@@ -9,12 +8,14 @@ namespace CompMs.MsdialCore.DataObj
     {
         private readonly double _mzTolerance;
         private readonly double _mainChromXTolerance;
+        private readonly double _amplitudeThreshold;
 
-        public MatchedSpotCandidate(T spot, MoleculeMsReference reference, double mzTolerance, double mainChromXTolerance) {
+        public MatchedSpotCandidate(T spot, MoleculeMsReference reference, double mzTolerance, double mainChromXTolerance, double amplitudeThreshold) {
             Spot = spot;
             Reference = reference;
             _mzTolerance = mzTolerance;
             _mainChromXTolerance = mainChromXTolerance;
+            _amplitudeThreshold = amplitudeThreshold;
         }
 
         public T Spot { get; }
@@ -23,7 +24,7 @@ namespace CompMs.MsdialCore.DataObj
 
         public bool IsAnnotated {
             get {
-                return Spot.MatchResults.MatchResults.Where(result => result.Name != null).Any(result => Reference.Name.Contains(result.Name));
+                return Reference.Name.Contains(Spot.MatchResults.Representative.Name);
             }
         }
 
@@ -54,17 +55,44 @@ namespace CompMs.MsdialCore.DataObj
                 }
             }
         }
+
+        public bool IsStrongerThanThreshold {
+            get {
+                return Spot.Intensity >= _amplitudeThreshold;
+            }
+        }
     }
 
-    public static class MatchedSpotCandidate {
-        public static MatchedSpotCandidate<T> IsMatchedWith<T>(this T spot, MoleculeMsReference reference, double mzTolerance, double mainChromXTolerance) where T: IAnnotatedObject, IChromatogramPeak {
-            var candidate = new MatchedSpotCandidate<T>(spot, reference, mzTolerance, mainChromXTolerance);
-            if (candidate.IsAnnotated || candidate.IsSimilarByMz) {
+    public sealed class MatchedSpotCandidateCalculator {
+        private readonly double _mzTolerance;
+        private readonly double _mainChromXTolerance;
+        private readonly double _amplitudeThreshold;
+
+        public MatchedSpotCandidateCalculator(double mzTolerance, double mainChromXTolerance, double amplitudeThreshold) {
+            _mzTolerance = mzTolerance;
+            _mainChromXTolerance = mainChromXTolerance;
+            _amplitudeThreshold = amplitudeThreshold;
+        }
+
+        public MatchedSpotCandidate<T> Score<T>(T spot, MoleculeMsReference reference) where T: IAnnotatedObject, IChromatogramPeak {
+            return new MatchedSpotCandidate<T>(spot, reference, _mzTolerance, _mainChromXTolerance, _amplitudeThreshold);
+        }
+
+        public MatchedSpotCandidate<T> Match<T>(T spot, MoleculeMsReference reference) where T: IAnnotatedObject, IChromatogramPeak {
+            var candidate = Score(spot, reference);
+            if (candidate.IsSimilarByMz) {
                 return candidate;
             }
             else {
                 return null;
             }
+        }
+    }
+
+    public static class MatchedSpotCandidate {
+        public static MatchedSpotCandidate<T> IsMatchedWith<T>(this T spot, MoleculeMsReference reference, double mzTolerance, double mainChromXTolerance, double amplitudeThreshold) where T: IAnnotatedObject, IChromatogramPeak {
+            var calculator = new MatchedSpotCandidateCalculator(mzTolerance, mainChromXTolerance, amplitudeThreshold);
+            return calculator.Match(spot, reference);
         }
     }
 }

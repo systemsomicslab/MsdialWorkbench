@@ -25,12 +25,19 @@ namespace CompMs.App.Msdial.ViewModel.Table
             FindCommand = new ReactiveCommand().WithSubscribe(model.Find).AddTo(Disposables);
             ExportCommand = new AsyncReactiveCommand().WithSubscribe(ExportAsync).AddTo(Disposables);
             Candidates = model.ObserveProperty(m => m.Candidates).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            MzTolerance = model.ToReactivePropertySlimAsSynchronized(m => m.MzTolerance).AddTo(Disposables);
+            MainChromXTolerance = model.ToReactivePropertySlimAsSynchronized(m => m.MainChromXTolerance).AddTo(Disposables);
+            AmplitudeThreshold = model.ToReactivePropertySlimAsSynchronized(m => m.AmplitudeThreshold).AddTo(Disposables);
             RemoveCommand = new ReactiveCommand<MatchedSpotCandidate<AlignmentSpotPropertyModel>>().WithSubscribe(model.Remove).AddTo(Disposables);
         }
 
         public ReadOnlyReactivePropertySlim<ReadOnlyObservableCollection<MatchedSpotCandidate<AlignmentSpotPropertyModel>>> Candidates { get; }
+        public ReactivePropertySlim<double> MzTolerance { get; }
+        public ReactivePropertySlim<double> MainChromXTolerance { get; }
+        public ReactivePropertySlim<double> AmplitudeThreshold { get; }
 
         public ReactivePropertySlim<MatchedSpotCandidate<AlignmentSpotPropertyModel>> SelectedCandidate => _model.SelectedCandidate;
+        public ReadOnlyReactivePropertySlim<ReadOnlyCollection<MatchedSpotCandidate<AlignmentChromPeakFeatureModel>>> SelectedCandidatePeaks => _model.SelectedCandidatePeaks;
 
         public ReactiveCommand FindCommand { get; }
         public AsyncReactiveCommand ExportCommand { get; }
