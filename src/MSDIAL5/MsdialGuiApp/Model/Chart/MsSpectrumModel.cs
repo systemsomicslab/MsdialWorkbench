@@ -57,25 +57,27 @@ namespace CompMs.App.Msdial.Model.Chart
                 throw new ArgumentNullException(nameof(lowerMsSpectrum));
             }
 
-            UpperSpectrumModel = SingleSpectrumModel.Create(upperMsSpectrum, horizontalPropertySelector, verticalPropertySelector, upperSpectrumBrush, hueProperty, graphLabels, upperSpectraExporter).AddTo(Disposables);
+            UpperSpectrumModel = new SingleSpectrumModel(upperMsSpectrum, horizontalPropertySelector, verticalPropertySelector, upperSpectrumBrush, hueProperty, graphLabels, upperSpectraExporter).AddTo(Disposables);
             UpperVerticalAxisItem = UpperSpectrumModel.VerticalAxisItemSelector.ToReactivePropertySlimAsSynchronized(selector => selector.SelectedAxisItem).AddTo(Disposables);
             UpperVerticalAxis = UpperSpectrumModel.VerticalAxis;
 
-            LowerSpectrumModel = SingleSpectrumModel.Create(lowerMsSpectrum, horizontalPropertySelector, verticalPropertySelector, lowerSpectrumBrush, hueProperty, graphLabels, lowerSpectraExporter).AddTo(Disposables);
+            LowerSpectrumModel = new SingleSpectrumModel(lowerMsSpectrum, horizontalPropertySelector, verticalPropertySelector, lowerSpectrumBrush, hueProperty, graphLabels, lowerSpectraExporter).AddTo(Disposables);
             LowerVerticalAxisItem = LowerSpectrumModel.VerticalAxisItemSelector.ToReactivePropertySlimAsSynchronized(selector => selector.SelectedAxisItem).AddTo(Disposables);
             LowerVerticalAxis = LowerSpectrumModel.VerticalAxis;
 
-            var productMsSpectrum = upperMsSpectrum.CombineLatest(lowerMsSpectrum, (upper, lower) => upper.Product(lower, 0.05d));
-            var upperProductSpectrumModel = SingleSpectrumModel.Create(productMsSpectrum, horizontalPropertySelector, verticalPropertySelector, upperSpectrumBrush, hueProperty, graphLabels, upperSpectraExporter).AddTo(Disposables);
+            var productMsSpectrum = upperMsSpectrum.CombineLatest(lowerMsSpectrum, (upper, lower) => upper?.Product(lower, 0.05d)).Publish();
+            var upperProductSpectrumModel = new SingleSpectrumModel(productMsSpectrum, horizontalPropertySelector, verticalPropertySelector, upperSpectrumBrush, hueProperty, graphLabels, upperSpectraExporter).AddTo(Disposables);
             upperProductSpectrumModel.IsVisible.Value = false;
             upperProductSpectrumModel.LineThickness.Value = 3d;
             UpperProductSpectrumModel = upperProductSpectrumModel;
+            Disposables.Add(productMsSpectrum.Connect());
 
-            var differenceMsSpectrum = upperMsSpectrum.CombineLatest(lowerMsSpectrum, (upper, lower) => upper.Difference(lower, 0.05d));
-            var upperDifferenceSpectrumModel = SingleSpectrumModel.Create(differenceMsSpectrum, horizontalPropertySelector, verticalPropertySelector, upperSpectrumBrush, hueProperty, graphLabels, upperSpectraExporter).AddTo(Disposables);
+            var differenceMsSpectrum = upperMsSpectrum.CombineLatest(lowerMsSpectrum, (upper, lower) => upper?.Difference(lower, 0.05d)).Publish();
+            var upperDifferenceSpectrumModel = new SingleSpectrumModel(differenceMsSpectrum, horizontalPropertySelector, verticalPropertySelector, upperSpectrumBrush, hueProperty, graphLabels, upperSpectraExporter).AddTo(Disposables);
             upperDifferenceSpectrumModel.IsVisible.Value = false;
             upperDifferenceSpectrumModel.LineThickness.Value = 1d;
             UpperDifferenceSpectrumModel = upperDifferenceSpectrumModel;
+            Disposables.Add(differenceMsSpectrum.Connect());
 
             UpperSpectraModel = new ReactiveCollection<SingleSpectrumModel>
             {
@@ -86,8 +88,8 @@ namespace CompMs.App.Msdial.Model.Chart
 
             var horizontalRangeSource = new[]
             {
-                upperMsSpectrum.Select(msSpectrum => msSpectrum.GetSpectrumRange(spec => horizontalPropertySelector.Selector(spec))),
-                lowerMsSpectrum.Select(msSpectrum => msSpectrum.GetSpectrumRange(spec => horizontalPropertySelector.Selector(spec))),
+                upperMsSpectrum.Select(msSpectrum => msSpectrum?.GetSpectrumRange(spec => horizontalPropertySelector.Selector(spec)) ?? (0d, 1d)),
+                lowerMsSpectrum.Select(msSpectrum => msSpectrum?.GetSpectrumRange(spec => horizontalPropertySelector.Selector(spec)) ?? (0d, 1d)),
             }.CombineLatest(xs => xs.Aggregate((x, y) => (Math.Min(x.Item1, y.Item1), Math.Max(x.Item2, x.Item2))));
             var horizontalAxis = horizontalRangeSource.ToReactiveContinuousAxisManager(new ConstantMargin(40)).AddTo(Disposables);
             HorizontalAxis = Observable.Return(horizontalAxis);

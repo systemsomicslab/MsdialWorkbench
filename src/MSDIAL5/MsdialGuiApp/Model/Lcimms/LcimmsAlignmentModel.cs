@@ -229,9 +229,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
             IMsSpectrumLoader<AlignmentSpotPropertyModel> decLoader = new AlignmentMSDecSpectrumLoader(_alignmentFileBean);
+            var decMsSpectrum = Target.SelectSwitch(decLoader.LoadMsSpectrumAsObservable).Publish();
+            var refMsSpectrum = MatchResultCandidatesModel.LoadMsSpectrumObservable(refLoader).Publish();
             Ms2SpectrumModel = new MsSpectrumModel(
-                Target.SelectSwitch(decLoader.LoadMsSpectrumAsObservable),
-                MatchResultCandidatesModel.LoadMsSpectrumObservable(refLoader),
+                decMsSpectrum, refMsSpectrum,
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Mass), spot => spot.Mass),
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Intensity), spot => spot.Intensity),
                 new GraphLabels(
@@ -247,6 +248,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 Observable.Return<ISpectraExporter>(null),
                 null,
                 MatchResultCandidatesModel.GetCandidatesScorer(searcherCollection)).AddTo(Disposables);
+            Disposables.Add(decMsSpectrum.Connect());
+            Disposables.Add(refMsSpectrum.Connect());
 
             var classBrush = new KeyBrushMapper<BarItem, string>(classToColor, item => item.Class, Colors.Blue);
             var fileIdToClassNameAsObservable = projectBaseParameter.ObserveProperty(p => p.FileIdToClassName).ToReadOnlyReactivePropertySlim().AddTo(Disposables);

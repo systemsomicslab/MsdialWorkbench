@@ -149,9 +149,10 @@ namespace CompMs.App.Msdial.Model.Lcms
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
             IMsSpectrumLoader<AlignmentSpotPropertyModel> msDecSpectrumLoader = new AlignmentMSDecSpectrumLoader(_alignmentFile);
+            var decMsSpectrum = Target.SelectSwitch(msDecSpectrumLoader.LoadMsSpectrumAsObservable).Publish();
+            var refMsSpectrum = MatchResultCandidatesModel.LoadMsSpectrumObservable(refLoader).Publish();
             Ms2SpectrumModel = new MsSpectrumModel(
-                Target.SelectSwitch(msDecSpectrumLoader.LoadMsSpectrumAsObservable),
-                MatchResultCandidatesModel.LoadMsSpectrumObservable(refLoader),
+                decMsSpectrum, refMsSpectrum,
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Mass), peak => peak.Mass),
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Intensity), peak => peak.Intensity),
                 new GraphLabels("Representative vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity)),
@@ -162,6 +163,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Observable.Return((ISpectraExporter)null),
                 null,
                 MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers)).AddTo(Disposables);
+            Disposables.Add(decMsSpectrum.Connect());
+            Disposables.Add(refMsSpectrum.Connect());
 
             // Class intensity bar chart
             var classBrush = projectBaseParameter.ClassProperties

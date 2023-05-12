@@ -66,7 +66,7 @@ namespace CompMs.App.Msdial.Model.Search
 
             var referenceSpectrum = this.ObserveProperty(m => m.SelectedReference)
                 .SkipNull()
-                .Select(c => c.Spectrum)
+                .Select(c => new MsSpectrum(c.Spectrum))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             var scorer = this.ObserveProperty(m => m.SelectedCompoundSearcher)
@@ -74,8 +74,8 @@ namespace CompMs.App.Msdial.Model.Search
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             MsSpectrumModel = new MsSpectrumModel(
-                Observable.Return(_msdecResult.Spectrum).Select(s => new MsSpectrum(s)),
-                referenceSpectrum.Select(s => new MsSpectrum(s)),
+                Observable.Return(new MsSpectrum(msdecResult.Spectrum)),
+                referenceSpectrum,
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Mass),
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity),
                 new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity)),
