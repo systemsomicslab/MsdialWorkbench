@@ -1,4 +1,5 @@
-﻿using CompMs.Common.FormulaGenerator.DataObj;
+﻿using CompMs.Common.DataStructure;
+using CompMs.Common.FormulaGenerator.DataObj;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,6 +16,7 @@ namespace CompMs.Common.Lipidomics
         double Mass { get; }
         LipidDescription Description { get; }
 
+        bool Includes(ITotalChain chains);
         IEnumerable<ITotalChain> GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator);
     }
 
@@ -100,6 +102,12 @@ namespace CompMs.Common.Lipidomics
         private static readonly double AlkylGain = 0d;
 
         private static readonly double SphingoGain = MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass;
+
+        bool ITotalChain.Includes(ITotalChain chains) {
+            return CarbonCount == chains.CarbonCount
+                && DoubleBondCount == chains.DoubleBondCount
+                && OxidizedCount == chains.OxidizedCount;
+        }
 
         IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator) {
             return totalChainGenerator.Separate(this);
@@ -190,6 +198,22 @@ namespace CompMs.Common.Lipidomics
             return string.Join("_", Chains.Select(c => c.ToString()));
         }
 
+        bool ITotalChain.Includes(ITotalChain chains) {
+            if (chains.ChainCount != ChainCount || !(chains is SeparatedChains sChains)) {
+                return false;
+            }
+
+            var matching = new BipartiteMatching(ChainCount + chains.ChainCount);
+            for (int i = 0; i < Chains.Count; i++) {
+                for (int j = 0; j < sChains.Chains.Count; j++) {
+                    if (Chains[i].Includes(sChains.Chains[j])) {
+                        matching.AddEdge(i, j + ChainCount);
+                    }
+                }
+            }
+            return matching.Match() == ChainCount;
+        }
+
         public bool Equals(ITotalChain other) {
             return other is MolecularSpeciesLevelChains mChains
                 && ChainCount == other.ChainCount
@@ -234,6 +258,11 @@ namespace CompMs.Common.Lipidomics
 
         public override string ToString() {
             return string.Join("/", Chains.Select(c => c.ToString()));
+        }
+
+        bool ITotalChain.Includes(ITotalChain chains) {
+            return chains.ChainCount == ChainCount && chains is PositionLevelChains pChains
+                && Enumerable.Range(0, ChainCount).All(i => Chains[i].Includes(pChains.Chains[i]));
         }
 
         public bool Equals(ITotalChain other) {
