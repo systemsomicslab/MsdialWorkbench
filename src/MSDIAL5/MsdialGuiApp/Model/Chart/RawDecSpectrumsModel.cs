@@ -16,7 +16,7 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class RawDecSpectrumsModel : DisposableModelBase
     {
-        public RawDecSpectrumsModel(MsSpectrumModel rawRefSpectrumModels, MsSpectrumModel decRefSpectrumModels, MultiMsRawSpectrumLoader loader) {
+        public RawDecSpectrumsModel(MsSpectrumModel rawRefSpectrumModels, MsSpectrumModel decRefSpectrumModels, MultiMsmsRawSpectrumLoader loader) {
             RawRefSpectrumModels = rawRefSpectrumModels ?? throw new ArgumentNullException(nameof(rawRefSpectrumModels));
             DecRefSpectrumModels = decRefSpectrumModels ?? throw new ArgumentNullException(nameof(decRefSpectrumModels));
             RawLoader = loader;
@@ -24,7 +24,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public MsSpectrumModel RawRefSpectrumModels { get; }
         public MsSpectrumModel DecRefSpectrumModels { get; }
-        public MultiMsRawSpectrumLoader RawLoader { get; }
+        public MultiMsmsRawSpectrumLoader RawLoader { get; }
 
         public static RawDecSpectrumsModel Create<T>(
             IObservable<T> targetSource,
@@ -57,7 +57,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
             var rawRefSpectrumModels = new MsSpectrumModel(rawSpectrumModel, referenceSpectrumModel, graphLabels, ms2ScanMatching).AddTo(disposables);
             var decRefSpectrumModels = new MsSpectrumModel(decSpectrumModel, referenceSpectrumModel, graphLabels, ms2ScanMatching).AddTo(disposables);
-            var result = new RawDecSpectrumsModel(rawRefSpectrumModels, decRefSpectrumModels, rawLoader as MultiMsRawSpectrumLoader);
+            var result = new RawDecSpectrumsModel(rawRefSpectrumModels, decRefSpectrumModels, rawLoader as MultiMsmsRawSpectrumLoader);
             result.Disposables.Add(disposables);
             return result;
         }

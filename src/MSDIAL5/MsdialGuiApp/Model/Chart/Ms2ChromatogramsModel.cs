@@ -50,7 +50,7 @@ namespace CompMs.App.Msdial.Model.Chart
                     "Abundance"));
             var bothChromatograms = deconvolutedChromatograms.CombineLatest(rawChromatograms, (dec, raw) => dec.Merge(raw));
 
-            Loader = loader as MultiMsRawSpectrumLoader;
+            Loader = loader as MultiMsmsRawSpectrumLoader;
 
             var isSwath = acquisitionType == CompMs.Common.Enum.AcquisitionType.SWATH ||
                 acquisitionType == CompMs.Common.Enum.AcquisitionType.AIF;
@@ -85,6 +85,6 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public ReactiveProperty<int> NumberOfChromatograms { get; }
 
-        public MultiMsRawSpectrumLoader Loader { get; }
+        public MultiMsmsRawSpectrumLoader Loader { get; }
     }
 }

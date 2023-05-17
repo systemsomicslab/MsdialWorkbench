@@ -118,7 +118,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            var rawSpectrumLoader = new MultiMsRawSpectrumLoader(provider, parameter).AddTo(Disposables);
+            var rawSpectrumLoader = new MultiMsmsRawSpectrumLoader(provider, parameter).AddTo(Disposables);
             _rawSpectrumLoader = rawSpectrumLoader;
             var decSpectrumLoader = new MsDecSpectrumLoader(decLoader, Ms1Peaks);
 

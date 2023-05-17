@@ -221,7 +221,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             _msdecResult = msdecResult;
 
             var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper);
-            var rawLoader = new MultiMsRawSpectrumLoader(spectrumProvider, parameter);
+            var rawLoader = new MultiMsmsRawSpectrumLoader(spectrumProvider, parameter);
             var decSpecLoader = new MsDecSpectrumLoader(decLoader, Ms1Peaks);
             MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
