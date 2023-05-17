@@ -77,7 +77,7 @@ namespace CompMs.Common.Parser
                 }
 
                 var reference = new MoleculeMsReference() { ScanID = counter - 1 };
-                reference.Name = lineArray[0];
+                reference.Name = lineArray[0].Trim('"');
                 if (double.TryParse(lineArray[1], out double mz))
                 {
                     if (mz < 0)
@@ -174,7 +174,7 @@ namespace CompMs.Common.Parser
         public static List<MoleculeMsReference> TextLibraryReader(string filePath, out string error)
         {
             List<MoleculeMsReference> result = null;
-            using (StreamReader sr = new StreamReader(filePath, Encoding.ASCII))
+            using (StreamReader sr = new StreamReader(File.Open(filePath, FileMode.Open, FileAccess.Read), Encoding.ASCII))
             {
                 result = TextLibraryReader(sr, out error);
             }
