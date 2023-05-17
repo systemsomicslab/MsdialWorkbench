@@ -135,11 +135,18 @@ namespace CompMs.Common.Lipidomics
                 spectrum.AddRange(
                     new[] {
                     new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - H2O), 100d, "Precursor -H2O") { SpectrumComment = SpectrumComment.metaboliteclass },
-                    new SpectrumPeak(lipid.Mass + MassDiffDictionary.ProtonMass, 200d, "[M+H]+")
+                    new SpectrumPeak(lipid.Mass + MassDiffDictionary.ProtonMass, 200d, "[M+H]+") { SpectrumComment = SpectrumComment.metaboliteclass },
                     }
                 );
             }
-
+            else if (adduct.AdductIonName == "[M+Na]+")
+            {
+                spectrum.AddRange(
+                    new[] {
+                   new SpectrumPeak(adduct.ConvertToMz(lipid.Mass)/2, 50d, "Precursor2+") { SpectrumComment = SpectrumComment.precursor },
+                    }
+                );
+            }
             return spectrum.ToArray();
         }
 
