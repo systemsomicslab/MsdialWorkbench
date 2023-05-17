@@ -227,7 +227,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
-            Ms2SpectrumModel = new RawDecSpectrumsModel(
+            Ms2SpectrumModel = RawDecSpectrumsModel.Create(
                 target,
                 rawLoader,
                 decSpecLoader,

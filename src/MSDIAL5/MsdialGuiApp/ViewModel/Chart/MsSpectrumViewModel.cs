@@ -40,10 +40,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .AddTo(Disposables);
             LowerVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel<double>>(model.LowerVerticalAxisItemCollection);
 
-            UpperVerticalAxis = (upperVerticalAxisSource ?? model.UpperVerticalAxis)
+            UpperVerticalAxis = (upperVerticalAxisSource ?? model.UpperSpectrumModel.VerticalAxis)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            UpperVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel<double>>(model.UpperVerticalAxisItemCollection);
+            UpperVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel<double>>(model.UpperSpectrumModel.VerticalAxisItemSelector.AxisItems);
 
             UpperMsSpectrum = model.UpperSpectrumModel.MsSpectrum
                 .ToReadOnlyReactivePropertySlim()

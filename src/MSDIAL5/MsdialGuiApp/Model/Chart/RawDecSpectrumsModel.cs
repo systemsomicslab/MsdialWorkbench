@@ -16,10 +16,20 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class RawDecSpectrumsModel : DisposableModelBase
     {
-        public RawDecSpectrumsModel(
-            IObservable<ChromatogramPeakFeatureModel> targetSource,
-            MultiMsRawSpectrumLoader rawLoader,
-            IMsSpectrumLoader<ChromatogramPeakFeatureModel> decLoader,
+        public RawDecSpectrumsModel(MsSpectrumModel rawRefSpectrumModels, MsSpectrumModel decRefSpectrumModels, MultiMsRawSpectrumLoader loader) {
+            RawRefSpectrumModels = rawRefSpectrumModels ?? throw new ArgumentNullException(nameof(rawRefSpectrumModels));
+            DecRefSpectrumModels = decRefSpectrumModels ?? throw new ArgumentNullException(nameof(decRefSpectrumModels));
+            RawLoader = loader;
+        }
+
+        public MsSpectrumModel RawRefSpectrumModels { get; }
+        public MsSpectrumModel DecRefSpectrumModels { get; }
+        public MultiMsRawSpectrumLoader RawLoader { get; }
+
+        public static RawDecSpectrumsModel Create<T>(
+            IObservable<T> targetSource,
+            IMsSpectrumLoader<T> rawLoader,
+            IMsSpectrumLoader<T> decLoader,
             IObservable<MsSpectrum> refMsSpectrum,
             PropertySelector<SpectrumPeak, double> horizontalPropertySelector,
             PropertySelector<SpectrumPeak, double> verticalPropertySelector,
@@ -32,29 +42,27 @@ namespace CompMs.App.Msdial.Model.Chart
             IObservable<ISpectraExporter> referenceSpectraExporter,
             IObservable<Ms2ScanMatching> ms2ScanMatching) {
 
-            RawLoader = rawLoader;
+            var disposables = new DisposableCollection();
+            (var rawMsSpectrum, var rawSpectrumLoaded, var rawDisposable) = Load(targetSource, rawLoader, disposables);
+            SingleSpectrumModel rawSpectrumModel = new SingleSpectrumModel(rawMsSpectrum, horizontalPropertySelector, verticalPropertySelector, upperSpectrumBrush, hueProperty, graphLabels, rawSpectraExporeter, rawSpectrumLoaded).AddTo(disposables);
+            disposables.Add(rawDisposable);
 
-            (var rawMsSpectrum, var rawSpectrumLoaded, var rawDisposable) = Load(targetSource, rawLoader, Disposables);
-            SingleSpectrumModel rawSpectrumModel = new SingleSpectrumModel(rawMsSpectrum, horizontalPropertySelector, verticalPropertySelector, upperSpectrumBrush, hueProperty, graphLabels, rawSpectraExporeter, rawSpectrumLoaded).AddTo(Disposables);
-            Disposables.Add(rawDisposable);
-
-            (var decMsSpectrum, var decSpectrumLoaded, var decDisposable) = Load(targetSource, decLoader, Disposables);
-            SingleSpectrumModel decSpectrumModel = new SingleSpectrumModel(decMsSpectrum, horizontalPropertySelector, verticalPropertySelector, upperSpectrumBrush, hueProperty, graphLabels, deconvolutedSpectraExporter, decSpectrumLoaded).AddTo(Disposables);
-            Disposables.Add(decDisposable);
+            (var decMsSpectrum, var decSpectrumLoaded, var decDisposable) = Load(targetSource, decLoader, disposables);
+            SingleSpectrumModel decSpectrumModel = new SingleSpectrumModel(decMsSpectrum, horizontalPropertySelector, verticalPropertySelector, upperSpectrumBrush, hueProperty, graphLabels, deconvolutedSpectraExporter, decSpectrumLoaded).AddTo(disposables);
+            disposables.Add(decDisposable);
 
             var refMsSpectrum_ = refMsSpectrum.Publish();
-            SingleSpectrumModel referenceSpectrumModel = new SingleSpectrumModel(refMsSpectrum_, horizontalPropertySelector, verticalPropertySelector, lowerSpectrumBrush, hueProperty, graphLabels, referenceSpectraExporter, new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true)).AddTo(Disposables)).AddTo(Disposables);
-            Disposables.Add(refMsSpectrum_.Connect());
+            SingleSpectrumModel referenceSpectrumModel = new SingleSpectrumModel(refMsSpectrum_, horizontalPropertySelector, verticalPropertySelector, lowerSpectrumBrush, hueProperty, graphLabels, referenceSpectraExporter, new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true)).AddTo(disposables)).AddTo(disposables);
+            disposables.Add(refMsSpectrum_.Connect());
 
-            RawRefSpectrumModels = new MsSpectrumModel(rawSpectrumModel, referenceSpectrumModel, graphLabels, ms2ScanMatching).AddTo(Disposables);
-            DecRefSpectrumModels = new MsSpectrumModel(decSpectrumModel, referenceSpectrumModel, graphLabels, ms2ScanMatching).AddTo(Disposables);
+            var rawRefSpectrumModels = new MsSpectrumModel(rawSpectrumModel, referenceSpectrumModel, graphLabels, ms2ScanMatching).AddTo(disposables);
+            var decRefSpectrumModels = new MsSpectrumModel(decSpectrumModel, referenceSpectrumModel, graphLabels, ms2ScanMatching).AddTo(disposables);
+            var result = new RawDecSpectrumsModel(rawRefSpectrumModels, decRefSpectrumModels, rawLoader as MultiMsRawSpectrumLoader);
+            result.Disposables.Add(disposables);
+            return result;
         }
 
-        public MsSpectrumModel RawRefSpectrumModels { get; }
-        public MsSpectrumModel DecRefSpectrumModels { get; }
-        public MultiMsRawSpectrumLoader RawLoader { get; }
-
-        private static (ReadOnlyReactivePropertySlim<MsSpectrum>, ReadOnlyReactivePropertySlim<bool>, IDisposable) Load(IObservable<ChromatogramPeakFeatureModel> targetSource, IMsSpectrumLoader<ChromatogramPeakFeatureModel> rawLoader, DisposableCollection disposables) {
+        private static (ReadOnlyReactivePropertySlim<MsSpectrum>, ReadOnlyReactivePropertySlim<bool>, IDisposable) Load<T>(IObservable<T> targetSource, IMsSpectrumLoader<T> rawLoader, DisposableCollection disposables) {
             var pairs = targetSource.SelectSwitch(t => rawLoader.LoadMsSpectrumAsObservable(t).Select(s => (s, true)).StartWith((null, false))).Publish();
             var msSpectrum = pairs.Select(p => p.Item1).ToReadOnlyReactivePropertySlim().AddTo(disposables);
             var loaded = pairs.Select(p => p.Item2).ToReadOnlyReactivePropertySlim().AddTo(disposables);

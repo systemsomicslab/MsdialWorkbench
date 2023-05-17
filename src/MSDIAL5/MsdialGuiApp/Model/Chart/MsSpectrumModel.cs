@@ -93,9 +93,7 @@ namespace CompMs.App.Msdial.Model.Chart
         public ReactivePropertySlim<AxisItemModel<double>> LowerVerticalAxisItem { get; }
         public ObservableCollection<AxisItemModel<double>> LowerVerticalAxisItemCollection => LowerSpectrumModel.VerticalAxisItemSelector.AxisItems;
 
-        public IObservable<IAxisManager<double>> UpperVerticalAxis => UpperSpectrumModel.VerticalAxis;
         public ReactivePropertySlim<AxisItemModel<double>> UpperVerticalAxisItem { get; }
-        public ObservableCollection<AxisItemModel<double>> UpperVerticalAxisItemCollection => UpperSpectrumModel.VerticalAxisItemSelector.AxisItems;
 
         public GraphLabels GraphLabels { get; }
 

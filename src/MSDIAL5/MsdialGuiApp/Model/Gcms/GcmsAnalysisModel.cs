@@ -25,6 +25,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             _peaks =  file.LoadChromatogramPeakFeatureModels();
             var brushMapDataSelector = BrushMapDataSelectorFactory.CreatePeakFeatureBrushes(targetOmics);
             PeakPlotModel = new SpectrumFeaturePlotModel(_spectrumFeatures, _peaks, brushMapDataSelector).AddTo(_disposables);
+            //RawDecSpectrumsModel.Create()
         }
 
         public SpectrumFeaturePlotModel PeakPlotModel { get; }

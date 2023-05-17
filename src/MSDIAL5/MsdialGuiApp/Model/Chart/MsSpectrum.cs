@@ -41,6 +41,9 @@ namespace CompMs.App.Msdial.Model.Chart
         }
 
         public MsSpectrum Product(MsSpectrum other, double tolerance) {
+            if (other is null) {
+                return new MsSpectrum(new List<SpectrumPeak>(0));
+            }
             var result = new List<SpectrumPeak>();
             var j = 0;
             foreach (var peak in _spectrum) {

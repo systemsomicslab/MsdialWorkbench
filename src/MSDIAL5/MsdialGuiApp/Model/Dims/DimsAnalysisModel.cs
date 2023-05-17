@@ -124,7 +124,7 @@ namespace CompMs.App.Msdial.Model.Dims
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
-            Ms2SpectrumModel = new RawDecSpectrumsModel(
+            Ms2SpectrumModel = RawDecSpectrumsModel.Create(
                 Target,
                 rawLoader,
                 new MsDecSpectrumLoader(decLoader, Ms1Peaks),
