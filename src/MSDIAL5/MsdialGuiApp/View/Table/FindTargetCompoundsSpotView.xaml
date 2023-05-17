@@ -135,6 +135,23 @@
                                 <CheckBox IsChecked="{Binding IsAnnotated, Mode=OneTime}" Foreground="OrangeRed">
                                     <CheckBox.Style>
                                         <Style TargetType="CheckBox">
+                                            <Setter Property="IsHitTestVisible" Value="False"/>
+                                            <Setter Property="IsTabStop" Value="False"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="CheckBox">
+                                                        <Border BorderThickness="1" BorderBrush="LightGray" Padding="1"
+                                                                Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}">
+                                                            <Viewbox Stretch="Uniform">
+                                                                <Rectangle x:Name="Box"
+                                                                           Fill="{TemplateBinding Foreground}"
+                                                                           Visibility="{TemplateBinding IsChecked, Converter={StaticResource BooleanToVisibility}}"
+                                                                           Height="10" Width="10"/>
+                                                            </Viewbox>
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding IsLipidReference}" Value="True">
                                                     <Setter Property="Visibility" Value="Collapsed"/>
