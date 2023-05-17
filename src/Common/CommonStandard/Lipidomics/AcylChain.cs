@@ -58,6 +58,15 @@ namespace CompMs.Common.Lipidomics
             return decomposer.Decompose(visitor, this);
         }
 
+        public bool Includes(IChain chain) {
+            return chain is AcylChain
+                && chain.CarbonCount == CarbonCount
+                && chain.DoubleBondCount == DoubleBondCount
+                && chain.OxidizedCount == OxidizedCount
+                && DoubleBond.Includes(chain.DoubleBond)
+                && Oxidized.Includes(chain.Oxidized);
+        }
+
         public bool Equals(IChain other) {
             return other is AcylChain
                 && CarbonCount == other.CarbonCount
@@ -133,6 +142,15 @@ namespace CompMs.Common.Lipidomics
             return decomposer.Decompose(visitor, this);
         }
 
+        public bool Includes(IChain chain) {
+            return chain is AlkylChain
+                && chain.CarbonCount == CarbonCount
+                && chain.DoubleBondCount == DoubleBondCount
+                && chain.OxidizedCount == OxidizedCount
+                && DoubleBond.Includes(chain.DoubleBond)
+                && Oxidized.Includes(chain.Oxidized);
+        }
+
         public bool Equals(IChain other) {
             return other is AlkylChain
                 && CarbonCount == other.CarbonCount
@@ -188,6 +206,15 @@ namespace CompMs.Common.Lipidomics
 
         public override string ToString() {
             return $"{CarbonCount}:{DoubleBond}{Oxidized}";
+        }
+
+        public bool Includes(IChain chain) {
+            return chain is SphingoChain
+                && chain.CarbonCount == CarbonCount
+                && chain.DoubleBondCount == DoubleBondCount
+                && chain.OxidizedCount == OxidizedCount
+                && DoubleBond.Includes(chain.DoubleBond)
+                && Oxidized.Includes(chain.Oxidized);
         }
 
         public bool Equals(IChain other) {

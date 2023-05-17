@@ -12,7 +12,7 @@ namespace CompMs.Common.Lipidomics
 
             var defaultResult = EieioMsCharacterizationUtility.GetDefaultScore(
                     scan, reference, tolerance, mzBegin, mzEnd, 2, 1, 1, 0.5);
-            return StandardMsCharacterizationUtility.GetDefaultCharacterizationResultForSingleAcylChainLipid(molecule, defaultResult);
+            return StandardMsCharacterizationUtility.GetDefaultCharacterizationResultForGlycerophospholipid(molecule, defaultResult);
         }
     }
 }

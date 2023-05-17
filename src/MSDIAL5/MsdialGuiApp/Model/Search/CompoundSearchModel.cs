@@ -70,6 +70,7 @@ namespace CompMs.App.Msdial.Model.Search
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             var scorer = this.ObserveProperty(m => m.SelectedCompoundSearcher)
+                .SkipNull()
                 .Select(s => new Ms2ScanMatching(s.MsRefSearchParameter))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);

@@ -430,6 +430,9 @@ LPE_d5	[M-H]-	Negative	FALSE
 LPS_d5	[M-H]-	Negative	FALSE
 LPG_d5	[M-H]-	Negative	FALSE
 LPI_d5	[M-H]-	Negative	FALSE
+LPS_d5	[M+H]+	Positive	FALSE
+LPG_d5	[M+H]+	Positive	FALSE
+LPI_d5	[M+H]+	Positive	FALSE
 bmPC	[M+H]+	Positive	FALSE
 bmPC	[M+Na]+	Positive	FALSE
 bmPC	[M+CH3COO]-	Negative	FALSE
