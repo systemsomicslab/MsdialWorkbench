@@ -259,7 +259,7 @@ namespace CompMs.Common.Lipidomics
             }
         }
 
-        public static (ILipid, double[]) GetDefaultCharacterizationResultForSingleAcylChainLipid( // MG, CAR, steroidal ether etc.
+        public static (ILipid, double[]) GetDefaultCharacterizationResultForSingleAcylChainLipid( // CAR, steroidal ether etc.
             ILipid molecule, LipidMsCharacterizationResult result)
         {
             var chains = molecule.Chains;
