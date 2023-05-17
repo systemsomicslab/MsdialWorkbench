@@ -28,6 +28,14 @@ namespace CompMs.MsdialCore.Algorithm
             return provider.LoadMsSpectrums()[index];
         }
 
+        public static async Task<RawSpectrum> LoadMsSpectrumFromIndexAsync(this IDataProvider provider, int index, CancellationToken token) {
+            if (index < 0) {
+                return null;
+            }
+            var spectra = await provider.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
+            return spectra[index];
+        }
+
         public static RawSpectrum LoadMs1SpectrumFromIndex(this IDataProvider provider, int index) {
             return provider.LoadMs1Spectrums()[index];
         }
