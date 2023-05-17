@@ -182,7 +182,7 @@
                                     <chart:Ms2ChromatogramsView/>
                                 </DataTemplate>
                                 <DataTemplate DataType="{x:Type chartvm:RawPurifiedSpectrumsViewModel}">
-                                    <chart:RawPurifiedView DataContext="{Binding DataContext.AnalysisViewModel.Value, ElementName=TabControl_MS2Viewer}"/>
+                                    <chart:RawPurifiedView/>
                                 </DataTemplate>
                                 <DataTemplate DataType="{x:Type chartvm:MsSpectrumViewModel}">
                                     <chart:RepRefView DataContext="{Binding DataContext.AlignmentViewModel.Value, ElementName=TabControl_MS2Viewer}"

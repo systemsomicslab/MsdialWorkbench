@@ -6,12 +6,13 @@
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
-             xmlns:lcvm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
              xmlns:io="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:com="clr-namespace:CompMs.Common.Components;assembly=Common"
+             xmlns:mvvm="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
              mc:Ignorable="d" 
              Name="RawPurePlot"
-             d:DataContext="{d:DesignInstance Type={x:Type lcvm:LcmsAnalysisViewModel}}"
+             d:DataContext="{d:DesignInstance vm:RawPurifiedSpectrumsViewModel}"
              d:Background="White"
              d:DesignHeight="600" d:DesignWidth="370">
     <UserControl.Resources>
@@ -20,116 +21,166 @@
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <DataTemplate x:Key="ChartTemplate">
-                <Grid>
-                    <!--<TextBlock Text="Raw spectrum" FontStyle="Italic" FontFamily="Calibri"
-                       VerticalAlignment="Top" HorizontalAlignment="Left" />-->
-                    <StackPanel VerticalAlignment="Center">
-                        <StackPanel.Style>
-                            <Style TargetType="StackPanel">
-                                <Setter Property="Visibility" Value="Visible"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsLoaded.Value, Mode=OneWay}" Value="True">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </StackPanel.Style>
-                        <TextBlock Text="Loading ..." HorizontalAlignment="Center" FontSize="16" Margin="16"/>
-                        <ProgressBar IsIndeterminate="True" HorizontalAlignment="Center" Width="160" Height="16"/>
-                    </StackPanel>
+            <DataTemplate DataType="{x:Type vm:SingleSpectrumViewModel}" x:Key="NormalTemplate">
+                <Grid core:ChartBaseControl.VerticalAxis="{Binding VerticalAxis.Value}"
+                      core:ChartBaseControl.HorizontalAxis="{Binding HorizontalAxis.Value}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="15"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="15"/>
+                        <ColumnDefinition Width="40"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
 
-                    <chart:LineSpectrumControl x:Name="MS2Line"
-                                               ItemsSource="{Binding Spectrum.Value}"
-                                               HorizontalPropertyName="{Binding HorizontalProperty.Value}"
-                                               VerticalPropertyName="{Binding VerticalProperty}"
-                                               BrushMapper="{Binding BrushSource.Value}"
-                                               HueProperty="SpectrumComment">
-                        <chart:LineSpectrumControl.ToolTip>
-                            <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="m/z: "/>
-                                    <TextBlock Text="{Binding FocusedItem.Mass}"/>
-                                    <TextBlock Text=" Intensity: "/>
-                                    <TextBlock Text="{Binding FocusedItem.Intensity}"/>
-                                </StackPanel>
-                            </ToolTip>
-                        </chart:LineSpectrumControl.ToolTip>
-                    </chart:LineSpectrumControl>
-                    <chart:Annotator ItemsSource="{Binding Spectrum.Value}"
-                                     HorizontalPropertyName="{Binding HorizontalProperty.Value}"
-                                     VerticalPropertyName="{Binding VerticalProperty.Value}"
-                                     LabelPropertyName="{Binding LabelProperty.Value}"
-                                     OrderingPropertyName="{Binding OrderingProperty.Value}"
-                                     Brush="Black"
-                                     Overlap="Horizontal, Direct"
-                                     ClipToBounds="True"/>
+                    <TextBlock Text="{Binding Labels.GraphTitle}" Style="{StaticResource GraphTitle}" Grid.Row="0" Grid.Column="2"/>
+                    <Border BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ContentControl}}"
+                            BorderThickness="1,0,0,1"
+                            Background="{Binding Background, RelativeSource={RelativeSource AncestorType=ContentControl}}"
+                            behavior:ZoomByDragBehavior.IsEnabled="True"
+                            behavior:ZoomByWheelBehavior.IsEnabled="True"
+                            behavior:MoveByDragBehavior.IsEnabled="True"
+                            behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True"
+                            Grid.Column="2" Grid.Row="1">
+                        <Grid>
+                            <StackPanel VerticalAlignment="Center">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SpectrumLoaded.Value, Mode=OneWay}" Value="True">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <TextBlock Text="Loading ..." HorizontalAlignment="Center" FontSize="16" Margin="16"/>
+                                <ProgressBar IsIndeterminate="True" HorizontalAlignment="Center" Width="160" Height="16"/>
+                            </StackPanel>
+
+                            <chart:LineSpectrumControlSlim ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
+                                                           DataType="{x:Type com:SpectrumPeak}"
+                                                           HorizontalProperty="{Binding HorizontalProperty}"
+                                                           VerticalProperty="{Binding SelectedVerticalAxisItem.Value.Property}"
+                                                           LineBrush="{Binding Brush.Value}"
+                                                           HueProperty="{Binding HueProperty}">
+                                <chart:LineSpectrumControlSlim.ToolTip>
+                                    <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="m/z: "/>
+                                            <TextBlock Text="{Binding (chart:LineSpectrumControlSlim.FocusedItem).(com:SpectrumPeak.Mass)}"/>
+                                            <TextBlock Text=" Intensity: "/>
+                                            <TextBlock Text="{Binding (chart:LineSpectrumControlSlim.FocusedItem).(com:SpectrumPeak.Intensity)}"/>
+                                        </StackPanel>
+                                    </ToolTip>
+                                </chart:LineSpectrumControlSlim.ToolTip>
+                            </chart:LineSpectrumControlSlim>
+                            <chart:Annotator ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
+                                             HorizontalPropertyName="{Binding HorizontalProperty}"
+                                             VerticalPropertyName="{Binding SelectedVerticalAxisItem.Value.Property}"
+                                             LabelPropertyName="{Binding Labels.AnnotationLabelProperty}"
+                                             OrderingPropertyName="{Binding Labels.AnnotationOrderProperty}"
+                                             Brush="Black"
+                                             Overlap="Horizontal, Direct"
+                                             ClipToBounds="True"/>
+                        </Grid>
+                    </Border>
+                    <chart:VerticalAxisControl HorizontalAxis="{x:Null}"
+                                               Margin="0,0,0,1"
+                                               Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1"/>
+                    <chart:HorizontalAxisControl VerticalAxis="{x:Null}"
+                                                 Margin="1,0,0,0"
+                                                 Grid.Column="2" Grid.Row="2" Grid.RowSpan="2"/>
+                    <TextBlock Text="{Binding Labels.HorizontalTitle}"
+                               Style="{StaticResource AxisTitle}"
+                               IsHitTestVisible="False"
+                               Grid.Row="3" Grid.Column="2"/>
+                    <TextBlock Text="{Binding Labels.VerticalTitle}"
+                               Style="{StaticResource AxisTitle}"
+                               IsHitTestVisible="False"
+                               Grid.Row="1" Grid.Column="0">
+                        <TextBlock.LayoutTransform>
+                            <RotateTransform Angle="-90" CenterX="0.5" CenterY="0.5"/>
+                        </TextBlock.LayoutTransform>
+                    </TextBlock>
                 </Grid>
             </DataTemplate>
-            <Style x:Key="FormalStyle" TargetType="ContentControl">
+            <DataTemplate DataType="{x:Type vm:SingleSpectrumViewModel}" x:Key="FormalTemplate">
+                <Grid core:ChartBaseControl.VerticalAxis="{Binding VerticalAxis.Value}"
+                      core:ChartBaseControl.HorizontalAxis="{Binding HorizontalAxis.Value}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="15"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="15"/>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ContentControl}}"
+                            BorderThickness="1.5,0,0,1.5"
+                            Background="{Binding Background, RelativeSource={RelativeSource AncestorType=ContentControl}}"
+                            Grid.Column="2" Grid.Row="0">
+                        <Grid>
+                            <chart:LineSpectrumControlSlim ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
+                                                           DataType="{x:Type com:SpectrumPeak}"
+                                                           HorizontalProperty="{Binding HorizontalProperty}"
+                                                           VerticalProperty="{Binding SelectedVerticalAxisItem.Value.Property}"
+                                                           LineBrush="{Binding Brush.Value}"
+                                                           HueProperty="{Binding HueProperty}"/>
+                            <chart:Annotator ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
+                                             HorizontalPropertyName="{Binding HorizontalProperty}"
+                                             VerticalPropertyName="{Binding SelectedVerticalAxisItem.Value.Property}"
+                                             LabelPropertyName="{Binding Labels.AnnotationLabelProperty}"
+                                             OrderingPropertyName="{Binding Labels.AnnotationOrderProperty}"
+                                             Brush="Black"
+                                             Overlap="Horizontal, Direct"
+                                             FontSize="17"/>
+                        </Grid>
+                    </Border>
+                    <chart:VerticalAxisControl HorizontalAxis="{x:Null}"
+                                               ShortTickSize="0"
+                                               LabelSize="17"
+                                               Margin="0,0,0,1.5"
+                                               Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"/>
+                    <chart:HorizontalAxisControl VerticalAxis="{x:Null}"
+                                                 ShortTickSize="0"
+                                                 LabelSize="17"
+                                                 Margin="1.5,0,0,0"
+                                                 Grid.Column="2" Grid.Row="1" Grid.RowSpan="2"/>
+                    <TextBlock Text="{Binding Labels.HorizontalTitle}"
+                               Style="{StaticResource FormalItalicAxisTitle}"
+                               Grid.Row="2" Grid.Column="2"/>
+                    <TextBlock Text="{Binding Labels.VerticalTitle}"
+                               Style="{StaticResource FormalAxisTitle}"
+                               Grid.Row="0" Grid.Column="0">
+                        <TextBlock.LayoutTransform>
+                            <RotateTransform Angle="-90" CenterX="0.5" CenterY="0.5"/>
+                        </TextBlock.LayoutTransform>
+                    </TextBlock>
+                </Grid>
+            </DataTemplate>
+            <Style TargetType="ContentControl">
+                <Setter Property="Background" Value="WhiteSmoke"/>
+                <Setter Property="BorderBrush" Value="Black"/>
+                <Setter Property="ContentTemplate" Value="{StaticResource NormalTemplate}"/>
+            </Style>
+            <Style TargetType="ContentControl" x:Key="FormalStyle">
                 <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="BorderBrush" Value="Black"/>
-                <Setter Property="ContentTemplate">
-                    <Setter.Value>
-                        <DataTemplate>
-                            <Grid core:ChartBaseControl.VerticalAxis="{Binding VerticalAxis}">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition Height="30"/>
-                                    <RowDefinition Height="15"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="15"/>
-                                    <ColumnDefinition Width="60"/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-
-                                <Border BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ContentControl}}"
-                                        BorderThickness="1.5,0,0,1.5"
-                                        Background="{Binding Background, RelativeSource={RelativeSource AncestorType=ContentControl}}"
-                                        Grid.Column="2" Grid.Row="0">
-                                    <ContentPresenter Content="{Binding}"
-                                                      ContentTemplate="{StaticResource ChartTemplate}">
-                                        <ContentPresenter.Resources>
-                                            <Style TargetType="chart:Annotator">
-                                                <Setter Property="FontSize" Value="17"/>
-                                            </Style>
-                                        </ContentPresenter.Resources>
-                                    </ContentPresenter>
-                                </Border>
-                                <chart:VerticalAxisControl HorizontalAxis="{x:Null}"
-                                                           ShortTickSize="0"
-                                                           LabelSize="17"
-                                                           Margin="0,0,0,1.5"
-                                                           Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"/>
-                                <chart:HorizontalAxisControl VerticalAxis="{x:Null}"
-                                                             ShortTickSize="0"
-                                                             LabelSize="17"
-                                                             Margin="1.5,0,0,0"
-                                                             Grid.Column="2" Grid.Row="1" Grid.RowSpan="2"/>
-                                <TextBlock Name="HorizontalTitle"
-                                           Text="{Binding HorizontalTitle, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
-                                           Style="{StaticResource FormalItalicAxisTitle}"
-                                           Grid.Row="2" Grid.Column="2"/>
-                                <TextBlock Name="VerticalTitle"
-                                           Text="{Binding VerticalTitle, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
-                                           Style="{StaticResource FormalAxisTitle}"
-                                           Grid.Row="0" Grid.Column="0">
-                                    <TextBlock.LayoutTransform>
-                                        <RotateTransform Angle="-90" CenterX="0.5" CenterY="0.5"/>
-                                    </TextBlock.LayoutTransform>
-                                </TextBlock>
-                            </Grid>
-                        </DataTemplate>
-                    </Setter.Value>
-                </Setter>
+                <Setter Property="ContentTemplate" Value="{StaticResource FormalTemplate}"/>
             </Style>
             <io:StyleFormatter x:Key="FormattedChartFormatter" Style="{StaticResource FormalStyle}"/>
             <io:SaveImageAsCommand x:Key="SaveFormattedChartCommand" Formatter="{StaticResource FormattedChartFormatter}" Format="Emf"/>
             <io:CopyImageAsCommand x:Key="CopyFormattedChartCommand" Formatter="{StaticResource FormattedChartFormatter}" Format="Emf"/>
-            <ContextMenu x:Key="ChartContextMenu">
+            <ContextMenu x:Key="ChartContextMenu" d:DataContext="{d:DesignInstance Type={x:Type vm:RawPurifiedSpectrumsViewModel}}">
                 <MenuItem Header="Save spectra table as.."
-                          Command="{Binding SaveMs2SpectrumCommand}"/>
+                          Command="{Binding SaveMs2SpectrumCommand, FallbackValue={x:Static mvvm:NeverCommand.Instance}}"/>
                 <MenuItem Header="Save image as...">
                     <MenuItem Header="Save formatted image"
                               Command="{StaticResource SaveFormattedChartCommand}"
@@ -141,9 +192,11 @@
                               Command="{x:Static io:SaveImageAsCommand.PngInstance}"
                               CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                 </MenuItem>
+                <!--
                 <MenuItem Header="Save image using dialog"
                           Command="{x:Static io:SaveImageAsWithDialogCommand.Instance}"
                           CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                          -->
                 <MenuItem Header="Copy image as...">
                     <MenuItem Header="Copy formatted image"
                               Command="{StaticResource CopyFormattedChartCommand}"
@@ -155,87 +208,22 @@
                               Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
                               CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                 </MenuItem>
+                <!--
                 <MenuItem Header="Copy image using dialog"
                           Command="{x:Static io:CopyImageAsWithDialogCommand.Instance}"
                           CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                          -->
             </ContextMenu>
-            <Style TargetType="ContentControl" x:Key="NormalStyle">
-                <Setter Property="Background" Value="WhiteSmoke"/>
-                <Setter Property="BorderBrush" Value="Black"/>
-                <Setter Property="ContentTemplate">
-                    <Setter.Value>
-                        <DataTemplate>
-                            <Grid core:ChartBaseControl.VerticalAxis="{Binding VerticalAxis}">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition Height="30"/>
-                                    <RowDefinition Height="15"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="15"/>
-                                    <ColumnDefinition Width="40"/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-
-                                <Border BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ContentControl}}"
-                                        BorderThickness="1,0,0,1"
-                                        Background="{Binding Background, RelativeSource={RelativeSource AncestorType=ContentControl}}"
-                                        behavior:ZoomByDragBehavior.IsEnabled="True"
-                                        behavior:ZoomByWheelBehavior.IsEnabled="True"
-                                        behavior:MoveByDragBehavior.IsEnabled="True"
-                                        behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True"
-                                        Grid.Column="2" Grid.Row="0">
-                                    <ContentPresenter Content="{Binding}"
-                                                      ContentTemplate="{StaticResource ChartTemplate}"/>
-                                </Border>
-                                <chart:VerticalAxisControl HorizontalAxis="{x:Null}"
-                                                           Margin="0,0,0,1"
-                                                           Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"/>
-                                <chart:HorizontalAxisControl VerticalAxis="{x:Null}"
-                                                             Margin="1,0,0,0"
-                                                             Grid.Column="2" Grid.Row="1" Grid.RowSpan="2"/>
-                                <TextBlock Name="HorizontalTitle"
-                                           Text="{Binding HorizontalTitle, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
-                                           Style="{StaticResource AxisTitle}"
-                                           IsHitTestVisible="False"
-                                           Grid.Row="2" Grid.Column="2"/>
-                                <TextBlock Name="VerticalTitle"
-                                           Text="{Binding VerticalTitle, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
-                                           Style="{StaticResource AxisTitle}"
-                                           IsHitTestVisible="False"
-                                           Grid.Row="0" Grid.Column="0">
-                                    <TextBlock.LayoutTransform>
-                                        <RotateTransform Angle="-90" CenterX="0.5" CenterY="0.5"/>
-                                    </TextBlock.LayoutTransform>
-                                </TextBlock>
-                            </Grid>
-                        </DataTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-            <Style x:Key="Ms2SpectraStyle"
-                   TargetType="{x:Type chart:MultiChart}"
-                   BasedOn="{StaticResource VerticalAlignedChart}">
-                <Setter Property="ItemTemplate">
-                    <Setter.Value>
-                        <DataTemplate>
-                            <ContentControl core:ChartBaseControl.VerticalAxis="{Binding VerticalAxis}"
-                                            Style="{StaticResource NormalStyle}"
-                                            ContextMenu="{StaticResource ChartContextMenu}"
-                                            Content="{Binding}"/>
-                        </DataTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid DataContext="{Binding RawPurifiedSpectrumsViewModel}"
-          d:DataContext="{d:DesignInstance vm:RawPurifiedSpectrumsViewModel}">
-        <chart:MultiChart ItemsSource="{Binding Items}"
-                          HorizontalAxis="{Binding HorizontalAxis}"
-                          GraphTitle="{Binding GraphTitle.Value}"
-                          HorizontalTitle="{Binding HorizontalTitle.Value}"
-                          VerticalTitle="{Binding VerticalTitle.Value}"
-                          Style="{StaticResource Ms2SpectraStyle}"/>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <ContentControl Content="{Binding RawSpectrumViewModel}" Grid.Row="0"
+                        ContextMenu="{StaticResource ChartContextMenu}"/>
+        <ContentControl Content="{Binding DecSpectrumViewModel}" Grid.Row="1"
+                        ContextMenu="{StaticResource ChartContextMenu}"/>
     </Grid>
 </UserControl>

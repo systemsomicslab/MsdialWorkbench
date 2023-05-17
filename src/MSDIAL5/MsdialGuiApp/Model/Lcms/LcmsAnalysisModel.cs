@@ -173,7 +173,9 @@ namespace CompMs.App.Msdial.Model.Lcms
                 rawSpectrumLoader,
                 decSpectrumLoader,
                 peak => peak.Mass,
-                peak => peak.Intensity) {
+                peak => peak.Intensity,
+                Observable.Return(upperSpecBrush),
+                Observable.Return(upperSpecBrush)) {
                 GraphTitle = "Raw vs. Purified spectrum",
                 HorizontalTitle = "m/z",
                 VerticalTitle = "Absolute abundance",

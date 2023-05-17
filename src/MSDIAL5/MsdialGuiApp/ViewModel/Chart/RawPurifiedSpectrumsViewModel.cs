@@ -17,7 +17,21 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    class RawPurifiedSpectrumsViewModel : ViewModelBase {
+    internal sealed class RawPurifiedSpectrumsViewModel : ViewModelBase {
+
+        private static readonly IReadOnlyDictionary<SpectrumComment, Brush> SPECTRUM_BRUSHES;
+
+        static RawPurifiedSpectrumsViewModel() {
+            SPECTRUM_BRUSHES = Enum.GetValues(typeof(SpectrumComment))
+                .Cast<SpectrumComment>()
+                .Where(comment => comment != SpectrumComment.none)
+                .Zip(ChartBrushes.SolidColorBrushList, (comment, brush) => (comment, brush))
+                .ToDictionary(
+                    kvp => kvp.comment,
+                    kvp => (Brush)kvp.brush
+                );
+        }
+
         public RawPurifiedSpectrumsViewModel(
            RawPurifiedSpectrumsModel model,
            IAxisManager<double> horizontalAxis = null,
@@ -90,28 +104,21 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .AddTo(Disposables);
 
             if (upperSpectrumBrushSource is null) {
-                upperSpectrumBrushSource = model.UpperSpectrumBrush ?? Observable.Return(new KeyBrushMapper<SpectrumComment>(SpectrumBrushes, Brushes.Blue));
+                upperSpectrumBrushSource = model.UpperSpectrumBrush ?? Observable.Return(new KeyBrushMapper<SpectrumComment>(SPECTRUM_BRUSHES, Brushes.Blue));
             }
             UpperSpectrumBrushSource = upperSpectrumBrushSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             if (lowerSpectrumBrushSource is null) {
-                lowerSpectrumBrushSource = model.LowerSpectrumBrush ?? Observable.Return(new KeyBrushMapper<SpectrumComment>(SpectrumBrushes, Brushes.Red));
+                lowerSpectrumBrushSource = model.LowerSpectrumBrush ?? Observable.Return(new KeyBrushMapper<SpectrumComment>(SPECTRUM_BRUSHES, Brushes.Red));
             }
             LowerSpectrumBrushSource = lowerSpectrumBrushSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            RawSpectrumViewModel = new SingleSpectrumViewModel(model.RawSpectrumModel).AddTo(Disposables);
+            DecSpectrumViewModel = new SingleSpectrumViewModel(model.DecSpectrumModel).AddTo(Disposables);
         }
 
-        static RawPurifiedSpectrumsViewModel() {
-            SpectrumBrushes = Enum.GetValues(typeof(SpectrumComment))
-                .Cast<SpectrumComment>()
-                .Where(comment => comment != SpectrumComment.none)
-                .Zip(ChartBrushes.SolidColorBrushList, (comment, brush) => (comment, brush))
-                .ToDictionary(
-                    kvp => kvp.comment,
-                    kvp => (Brush)kvp.brush
-                );
-        }
-
-        private static readonly IReadOnlyDictionary<SpectrumComment, Brush> SpectrumBrushes;
+        public SingleSpectrumViewModel RawSpectrumViewModel { get; }
+        public SingleSpectrumViewModel DecSpectrumViewModel { get; }
 
 
         public ReadOnlyReactivePropertySlim<List<SpectrumPeak>> UpperSpectrum { get; }

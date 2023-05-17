@@ -66,7 +66,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             }
             var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(mapToColor, true);
             RawDecSpectrumModel = RawDecSpectrumsModel.Create(
-                PeakPlotModel.SelectedSpectrum,
+                selectedSpectrum,
                 rawSpectrumLoader.Contramap((Ms1BasedSpectrumFeature feature) => feature?.QuantifiedChromatogramPeak),
                 decSpectrumLoader,
                 matchResultCandidatesModel.LoadMsSpectrumObservable(refLoader),
@@ -80,6 +80,24 @@ namespace CompMs.App.Msdial.Model.Gcms
                 Observable.Return((ISpectraExporter)null),
                 Observable.Return((ISpectraExporter)null),
                 matchResultCandidatesModel.GetCandidatesScorer(compoundSearchers)).AddTo(_disposables);
+
+            // Raw vs Purified spectrum model
+            /*
+            var rawPurifiedSpectrumsModel = new RawPurifiedSpectrumsModel(
+                selectedSpectrum,
+                rawSpectrumLoader,
+                decSpectrumLoader,
+                peak => peak.Mass,
+                peak => peak.Intensity) {
+                GraphTitle = "Raw vs. Purified spectrum",
+                HorizontalTitle = "m/z",
+                VerticalTitle = "Absolute abundance",
+                HorizontalProperty = nameof(SpectrumPeak.Mass),
+                VerticalProperty = nameof(SpectrumPeak.Intensity),
+                LabelProperty = nameof(SpectrumPeak.Mass),
+                OrderingProperty = nameof(SpectrumPeak.Intensity),
+            }.AddTo(_disposables);
+            */
         }
 
         public SpectrumFeaturePlotModel PeakPlotModel { get; }

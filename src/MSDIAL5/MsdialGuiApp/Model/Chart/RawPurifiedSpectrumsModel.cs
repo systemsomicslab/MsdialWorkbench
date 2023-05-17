@@ -5,6 +5,7 @@ using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
+using CompMs.MsdialCore.Export;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -14,7 +15,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    class RawPurifiedSpectrumsModel : DisposableModelBase {
+    internal sealed class RawPurifiedSpectrumsModel : DisposableModelBase {
         
         public RawPurifiedSpectrumsModel(
             IObservable<ChromatogramPeakFeatureModel> targetSource,
@@ -55,7 +56,7 @@ namespace CompMs.App.Msdial.Model.Chart
             UpperSpectrumLoaded = new[]
             {
                 targetSource.ToConstant(false),
-                UpperSpectrumSource.Delay(TimeSpan.FromSeconds(.05d)).ToConstant(true),
+                upperSpectrum.Delay(TimeSpan.FromSeconds(.05d)).ToConstant(true),
             }.Merge()
             .Throttle(TimeSpan.FromSeconds(.1d))
             .ToReadOnlyReactivePropertySlim()
@@ -94,54 +95,90 @@ namespace CompMs.App.Msdial.Model.Chart
 
             UpperSpectrumBrush = upperSpectrumBrush;
             LowerSpectrumBrush = lowerSpectrumBrush;
+
+
+            // temporary
+            GraphTitle = "Raw vs. Purified spectrum";
+            HorizontalTitle = "m/z";
+            VerticalTitle = "Absolute abundance";
+            HorizontalProperty = nameof(SpectrumPeak.Mass);
+            VerticalProperty = nameof(SpectrumPeak.Intensity);
+            LabelProperty = nameof(SpectrumPeak.Mass);
+            OrderingProperty = nameof(SpectrumPeak.Intensity);
+
+            var rawMsSpectrum = targetSource.SelectSwitch(rawLoader.LoadMsSpectrumAsObservable).Publish();
+            SingleSpectrumModel rawSpectrumModel = new SingleSpectrumModel(
+                rawMsSpectrum,
+                new PropertySelector<SpectrumPeak, double>(HorizontalProperty, horizontalSelector),
+                new PropertySelector<SpectrumPeak, double>(VerticalProperty, verticalSelector),
+                upperSpectrumBrush, nameof(SpectrumPeak.SpectrumComment),
+                new GraphLabels("Raw EI spectrum", HorizontalTitle, VerticalTitle, LabelProperty, OrderingProperty),
+                Observable.Return((ISpectraExporter)null),
+                UpperSpectrumLoaded).AddTo(Disposables);
+            Disposables.Add(rawMsSpectrum.Connect());
+            RawSpectrumModel = rawSpectrumModel;
+
+            var decMsSpectrum = targetSource.SelectSwitch(decLoader.LoadMsSpectrumAsObservable).Publish();
+            SingleSpectrumModel decSpectrumModel = new SingleSpectrumModel(
+                decMsSpectrum,
+                new PropertySelector<SpectrumPeak, double>(HorizontalProperty, horizontalSelector),
+                new PropertySelector<SpectrumPeak, double>(VerticalProperty, verticalSelector),
+                lowerSpectrumBrush, nameof(SpectrumPeak.SpectrumComment),
+                new GraphLabels("Deconvoluted EI spectrum", HorizontalTitle, VerticalTitle, LabelProperty, OrderingProperty),
+                Observable.Return((ISpectraExporter)null),
+                LowerSpectrumLoaded).AddTo(Disposables);
+            Disposables.Add(decMsSpectrum.Connect());
+            DecSpectrumModel = decSpectrumModel;
         }
 
-        public IObservable<List<SpectrumPeak>> UpperSpectrumSource { get; }
+        public SingleSpectrumModel RawSpectrumModel { get; }
+        public SingleSpectrumModel DecSpectrumModel { get; }
 
+        public IObservable<List<SpectrumPeak>> UpperSpectrumSource { get; }
         public IObservable<List<SpectrumPeak>> LowerSpectrumSource { get; }
         public ReadOnlyReactivePropertySlim<bool> UpperSpectrumLoaded { get; }
         public ReadOnlyReactivePropertySlim<bool> LowerSpectrumLoaded { get; }
         public string GraphTitle {
-            get => graphTitle;
-            set => SetProperty(ref graphTitle, value);
+            get => _graphTitle;
+            set => SetProperty(ref _graphTitle, value);
         }
-        private string graphTitle;
+        private string _graphTitle;
 
         public string HorizontalTitle {
-            get => horizontalTitle;
-            set => SetProperty(ref horizontalTitle, value);
+            get => _horizontalTitle;
+            set => SetProperty(ref _horizontalTitle, value);
         }
-        private string horizontalTitle;
+        private string _horizontalTitle;
 
         public string VerticalTitle {
-            get => verticalTitle;
-            set => SetProperty(ref verticalTitle, value);
+            get => _verticalTitle;
+            set => SetProperty(ref _verticalTitle, value);
         }
-        private string verticalTitle;
+        private string _verticalTitle;
 
         public string HorizontalProperty {
-            get => horizontalProperty;
-            set => SetProperty(ref horizontalProperty, value);
+            get => _horizontalProperty;
+            set => SetProperty(ref _horizontalProperty, value);
         }
-        private string horizontalProperty;
+        private string _horizontalProperty;
 
         public string VerticalProperty {
-            get => verticalProperty;
-            set => SetProperty(ref verticalProperty, value);
+            get => _verticalProperty;
+            set => SetProperty(ref _verticalProperty, value);
         }
-        private string verticalProperty;
+        private string _verticalProperty;
 
         public string LabelProperty {
-            get => labelProperty;
-            set => SetProperty(ref labelProperty, value);
+            get => _labelProperty;
+            set => SetProperty(ref _labelProperty, value);
         }
-        private string labelProperty;
+        private string _labelProperty;
 
         public string OrderingProperty {
-            get => orderingProperty;
-            set => SetProperty(ref orderingProperty, value);
+            get => _orderingProperty;
+            set => SetProperty(ref _orderingProperty, value);
         }
-        private string orderingProperty;
+        private string _orderingProperty;
 
         public Func<SpectrumPeak, double> HorizontalSelector { get; }
         public Func<SpectrumPeak, double> VerticalSelector { get; }

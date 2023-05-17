@@ -254,7 +254,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 peak => peak.Mass,
                 peak => peak.Intensity,
                 Observable.Return(upperSpecBrush),
-                Observable.Return(lowerSpecBrush)) {
+                Observable.Return(upperSpecBrush)) {
                 GraphTitle = "Raw vs. Purified spectrum",
                 HorizontalTitle = "m/z",
                 VerticalTitle = "Absolute abundance",
