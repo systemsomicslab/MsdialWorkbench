@@ -46,12 +46,13 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
                 observer.OnNext(model.SelectedAnalysisModel);
                 return model.ObserveProperty(m => m.SelectedAnalysisModel, isPushCurrentValueAtFirst: false).Subscribe(observer);
             }).Where(m => m != null)
-            .Select(m => new GcmsAnalysisViewModel(m))
+            .Select(m => new GcmsAnalysisViewModel(m, focusControlManager))
             .ToReactiveProperty<IAnalysisResultViewModel>();
             var alignmentAsObservable = new ReactivePropertySlim<IAlignmentResultViewModel>();
 
             var tmpSwitcher = new ViewModelSwitcher(Observable.Return<ViewModelBase>(null), Observable.Return<ViewModelBase>(null));
-            return new GcmsMethodViewModel(model, analysisAsObservable, alignmentAsObservable, tmpSwitcher, tmpSwitcher, broker, focusControlManager);
+            var massSpectrumSwitcher = new ViewModelSwitcher(Observable.Return<ViewModelBase>(null), Observable.Return<ViewModelBase>(null), analysisAsObservable.Select(m => m?.RawDecSpectrumsViewModel));
+            return new GcmsMethodViewModel(model, analysisAsObservable, alignmentAsObservable, tmpSwitcher, massSpectrumSwitcher, broker, focusControlManager);
         }
     }
 }

@@ -2,10 +2,10 @@
 using CompMs.App.Msdial.Model.Gcms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
+using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using Reactive.Bindings.Extensions;
-using System;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Gcms
@@ -14,20 +14,24 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
     {
         private readonly GcmsAnalysisModel _model;
 
-        public GcmsAnalysisViewModel(GcmsAnalysisModel model) {
+        public GcmsAnalysisViewModel(GcmsAnalysisModel model, FocusControlManager focusControlManager) {
             _model = model;
             PeakPlotViewModel = new SpectrumFeaturePlotViewModel(model.PeakPlotModel).AddTo(Disposables);
+            var (rawDecSpectraViewFocusAction, rawDecSpectraViewFocused) = focusControlManager.Request();
+            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(model.RawDecSpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused).AddTo(Disposables);
+            var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
+            PeakDetailViewModels = new ViewModelBase[] { matchResultCandidatesViewModel, };
         }
 
         public SpectrumFeaturePlotViewModel PeakPlotViewModel { get; }
 
-        public RawDecSpectrumsViewModel RawDecSpectrumsViewModel => null;
+        public RawDecSpectrumsViewModel RawDecSpectrumsViewModel { get; }
 
         public Ms2ChromatogramsViewModel Ms2ChromatogramsViewModel => null;
 
         public IResultModel Model => _model;
 
-        public ViewModelBase[] PeakDetailViewModels => new ViewModelBase[0];
+        public ViewModelBase[] PeakDetailViewModels { get; }
 
         public ICommand ShowIonTableCommand => null;
 
