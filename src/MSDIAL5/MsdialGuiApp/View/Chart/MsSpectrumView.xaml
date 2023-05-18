@@ -73,7 +73,7 @@
                 </ContextMenu>
             </chart:MultiChart.ContextMenu>
             <ItemsControl ItemsSource="{Binding UpperSpectraViewModel}"
-                          core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxis.Value}">
+                          core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxisItem.Value.AxisManager}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Grid/>
@@ -119,8 +119,8 @@
                             <chart:Annotator ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
                                              HorizontalPropertyName="{Binding HorizontalProperty}"
                                              VerticalPropertyName="{Binding SelectedVerticalAxisItem.Value.Property}"
-                                             LabelPropertyName="{Binding DataContext.LabelProperty.Value, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                             OrderingPropertyName="{Binding DataContext.OrderingProperty.Value, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                             LabelPropertyName="{Binding Labels.AnnotationLabelProperty}"
+                                             OrderingPropertyName="{Binding Labels.AnnotationOrderProperty}"
                                              Brush="Black"
                                              Overlap="Horizontal, Direct"
                                              Format="F4"

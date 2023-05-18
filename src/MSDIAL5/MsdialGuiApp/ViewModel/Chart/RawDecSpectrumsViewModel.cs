@@ -1,7 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -28,19 +27,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 Ms2IdList = model.RawLoader.Ms2List.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
                 SelectedMs2Id = model.RawLoader.Ms2IdSelector;
             }
-            var lowerVerticalAxis = model.DecRefSpectrumModels.LowerVerticalAxis;
 
-            RawRefSpectrumViewModels = new MsSpectrumViewModel(
-                model.RawRefSpectrumModels,
-                lowerVerticalAxisSource: lowerVerticalAxis,
-                focusAction: focusAction,
-                isFocused: isFocused);
-
-            DecRefSpectrumViewModels = new MsSpectrumViewModel(
-                model.DecRefSpectrumModels,
-                lowerVerticalAxisSource: lowerVerticalAxis,
-                focusAction: focusAction,
-                isFocused: isFocused);
+            RawRefSpectrumViewModels = new MsSpectrumViewModel(model.RawRefSpectrumModels, focusAction: focusAction, isFocused: isFocused).AddTo(Disposables);
+            DecRefSpectrumViewModels = new MsSpectrumViewModel(model.DecRefSpectrumModels, focusAction: focusAction, isFocused: isFocused).AddTo(Disposables);
         }
 
         public MsSpectrumViewModel RawRefSpectrumViewModels { get; }
@@ -53,17 +42,5 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public Action FocusAction { get; }
         public ReadOnlyReactivePropertySlim<bool> IsFocused { get; }
-    }
-
-    public class AxisItemViewModel : BindableBase
-    {
-        public AxisItemViewModel(IAxisManager<double> axisManager, string label) {
-            AxisManager = axisManager;
-            Label = label;
-        }
-
-        public IAxisManager<double> AxisManager { get; }
-
-        public string Label { get; }
     }
 }

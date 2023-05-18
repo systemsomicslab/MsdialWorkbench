@@ -247,22 +247,14 @@ namespace CompMs.App.Msdial.Model.Lcimms
             Ms2ChromatogramsModel = new Ms2ChromatogramsModel(target, target.Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation)), rawLoader, spectrumProvider, parameter, analysisFileModel.AcquisitionType).AddTo(Disposables);
 
             // Raw vs Purified spectrum model
-            RawPurifiedSpectrumsModel = new RawPurifiedSpectrumsModel(
+            RawPurifiedSpectrumsModel = RawPurifiedSpectrumsModel.Create(
                 target,
                 rawLoader,
                 decSpecLoader,
                 peak => peak.Mass,
                 peak => peak.Intensity,
                 Observable.Return(upperSpecBrush),
-                Observable.Return(upperSpecBrush)) {
-                GraphTitle = "Raw vs. Purified spectrum",
-                HorizontalTitle = "m/z",
-                VerticalTitle = "Absolute abundance",
-                HorizontalProperty = nameof(SpectrumPeak.Mass),
-                VerticalProperty = nameof(SpectrumPeak.Intensity),
-                LabelProperty = nameof(SpectrumPeak.Mass),
-                OrderingProperty = nameof(SpectrumPeak.Intensity),
-            }.AddTo(Disposables);
+                Observable.Return(upperSpecBrush)).AddTo(Disposables);
 
             var surveyScanSpectrum = new SurveyScanSpectrum(target, t => Observable.FromAsync(token => LoadMsSpectrumAsync(t, token)))
                 .AddTo(Disposables);

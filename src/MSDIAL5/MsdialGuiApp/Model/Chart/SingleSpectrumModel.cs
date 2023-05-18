@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Utility;
+﻿using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager;
@@ -12,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
@@ -123,6 +125,26 @@ namespace CompMs.App.Msdial.Model.Chart
             var upperDifferenceSpectrumModel = new SingleSpectrumModel(differenceMsSpectrum, _horizontalPropertySelector, _verticalPropertySelector, Brush, HueProperty, Labels, _spectraExporter, SpectrumLoaded);
             upperDifferenceSpectrumModel.Disposables.Add(differenceMsSpectrum.Connect());
             return upperDifferenceSpectrumModel;
+        }
+
+        public static SingleSpectrumModel Create<T>(
+            IObservable<T> targetSource,
+            IMsSpectrumLoader<T> loader,
+            PropertySelector<SpectrumPeak, double> horizontalPropertySelector,
+            PropertySelector<SpectrumPeak, double> verticalPropertySelector,
+            IObservable<IBrushMapper> brush,
+            string hueProperty,
+            GraphLabels graphLabels,
+            IObservable<ISpectraExporter> spectraExporter) {
+
+            var disposables = new CompositeDisposable();
+            var pairs = targetSource.SelectSwitch(t => loader.LoadMsSpectrumAsObservable(t).Select(s => (spectrum: s, loaded: true)).StartWith((null, false))).Publish();
+            var msSpectrum = pairs.Select(p => p.spectrum).ToReadOnlyReactivePropertySlim().AddTo(disposables);
+            var loaded = pairs.Select(p => p.loaded).ToReadOnlyReactivePropertySlim().AddTo(disposables);
+            SingleSpectrumModel spectrumModel = new SingleSpectrumModel(msSpectrum, horizontalPropertySelector, verticalPropertySelector, brush, hueProperty, graphLabels, spectraExporter, loaded);
+            disposables.Add(pairs.Connect());
+            spectrumModel.Disposables.Add(disposables);
+            return spectrumModel;
         }
     }
 }

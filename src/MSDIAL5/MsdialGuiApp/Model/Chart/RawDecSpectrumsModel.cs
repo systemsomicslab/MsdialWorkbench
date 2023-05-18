@@ -1,15 +1,14 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Loader;
-using CompMs.App.Msdial.Utility;
+﻿using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
-using CompMs.CommonMVVM.Common;
 using CompMs.Graphics.Base;
+using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Export;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Chart
@@ -42,17 +41,13 @@ namespace CompMs.App.Msdial.Model.Chart
             IObservable<ISpectraExporter> referenceSpectraExporter,
             IObservable<Ms2ScanMatching> ms2ScanMatching) {
 
-            var disposables = new DisposableCollection();
-            (var rawMsSpectrum, var rawSpectrumLoaded, var rawDisposable) = Load(targetSource, rawLoader, disposables);
-            SingleSpectrumModel rawSpectrumModel = new SingleSpectrumModel(rawMsSpectrum, horizontalPropertySelector, verticalPropertySelector, upperSpectrumBrush, hueProperty, graphLabels, rawSpectraExporeter, rawSpectrumLoaded).AddTo(disposables);
-            disposables.Add(rawDisposable);
-
-            (var decMsSpectrum, var decSpectrumLoaded, var decDisposable) = Load(targetSource, decLoader, disposables);
-            SingleSpectrumModel decSpectrumModel = new SingleSpectrumModel(decMsSpectrum, horizontalPropertySelector, verticalPropertySelector, upperSpectrumBrush, hueProperty, graphLabels, deconvolutedSpectraExporter, decSpectrumLoaded).AddTo(disposables);
-            disposables.Add(decDisposable);
+            var disposables = new CompositeDisposable();
+            SingleSpectrumModel rawSpectrumModel = SingleSpectrumModel.Create(targetSource, rawLoader, horizontalPropertySelector, verticalPropertySelector, upperSpectrumBrush, hueProperty, graphLabels, rawSpectraExporeter).AddTo(disposables);
+            SingleSpectrumModel decSpectrumModel = SingleSpectrumModel.Create(targetSource, decLoader, horizontalPropertySelector, verticalPropertySelector, upperSpectrumBrush, hueProperty, graphLabels, deconvolutedSpectraExporter).AddTo(disposables);
 
             var refMsSpectrum_ = refMsSpectrum.Publish();
-            SingleSpectrumModel referenceSpectrumModel = new SingleSpectrumModel(refMsSpectrum_, horizontalPropertySelector, verticalPropertySelector, lowerSpectrumBrush, hueProperty, graphLabels, referenceSpectraExporter, new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true)).AddTo(disposables)).AddTo(disposables);
+            ReadOnlyReactivePropertySlim<bool> spectrumLoaded = new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true)).AddTo(disposables);
+            SingleSpectrumModel referenceSpectrumModel = new SingleSpectrumModel(refMsSpectrum_, horizontalPropertySelector, verticalPropertySelector, lowerSpectrumBrush, hueProperty, graphLabels, referenceSpectraExporter, spectrumLoaded).AddTo(disposables);
             disposables.Add(refMsSpectrum_.Connect());
 
             var rawRefSpectrumModels = new MsSpectrumModel(rawSpectrumModel, referenceSpectrumModel, graphLabels, ms2ScanMatching).AddTo(disposables);
@@ -60,14 +55,6 @@ namespace CompMs.App.Msdial.Model.Chart
             var result = new RawDecSpectrumsModel(rawRefSpectrumModels, decRefSpectrumModels, rawLoader as MultiMsmsRawSpectrumLoader);
             result.Disposables.Add(disposables);
             return result;
-        }
-
-        private static (ReadOnlyReactivePropertySlim<MsSpectrum>, ReadOnlyReactivePropertySlim<bool>, IDisposable) Load<T>(IObservable<T> targetSource, IMsSpectrumLoader<T> rawLoader, DisposableCollection disposables) {
-            var pairs = targetSource.SelectSwitch(t => rawLoader.LoadMsSpectrumAsObservable(t).Select(s => (s, true)).StartWith((null, false))).Publish();
-            var msSpectrum = pairs.Select(p => p.Item1).ToReadOnlyReactivePropertySlim().AddTo(disposables);
-            var loaded = pairs.Select(p => p.Item2).ToReadOnlyReactivePropertySlim().AddTo(disposables);
-            disposables.Add(pairs.Connect());
-            return (msSpectrum, loaded, pairs.Connect());
         }
     }
 }

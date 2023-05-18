@@ -82,22 +82,14 @@ namespace CompMs.App.Msdial.Model.Gcms
                 matchResultCandidatesModel.GetCandidatesScorer(compoundSearchers)).AddTo(_disposables);
 
             // Raw vs Purified spectrum model
-            /*
-            var rawPurifiedSpectrumsModel = new RawPurifiedSpectrumsModel(
+            var rawPurifiedSpectrumsModel = RawPurifiedSpectrumsModel.Create(
                 selectedSpectrum,
-                rawSpectrumLoader,
+                rawSpectrumLoader.Contramap((Ms1BasedSpectrumFeature feature) => feature?.QuantifiedChromatogramPeak),
                 decSpectrumLoader,
                 peak => peak.Mass,
-                peak => peak.Intensity) {
-                GraphTitle = "Raw vs. Purified spectrum",
-                HorizontalTitle = "m/z",
-                VerticalTitle = "Absolute abundance",
-                HorizontalProperty = nameof(SpectrumPeak.Mass),
-                VerticalProperty = nameof(SpectrumPeak.Intensity),
-                LabelProperty = nameof(SpectrumPeak.Mass),
-                OrderingProperty = nameof(SpectrumPeak.Intensity),
-            }.AddTo(_disposables);
-            */
+                peak => peak.Intensity,
+                Observable.Return(upperSpecBrush),
+                Observable.Return(upperSpecBrush)).AddTo(_disposables);
         }
 
         public SpectrumFeaturePlotModel PeakPlotModel { get; }

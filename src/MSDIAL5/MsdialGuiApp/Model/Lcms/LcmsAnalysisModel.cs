@@ -168,22 +168,14 @@ namespace CompMs.App.Msdial.Model.Lcms
             
 
             // Raw vs Purified spectrum model
-            RawPurifiedSpectrumsModel = new RawPurifiedSpectrumsModel(
+            RawPurifiedSpectrumsModel = RawPurifiedSpectrumsModel.Create(
                 Target,
                 rawSpectrumLoader,
                 decSpectrumLoader,
                 peak => peak.Mass,
                 peak => peak.Intensity,
                 Observable.Return(upperSpecBrush),
-                Observable.Return(upperSpecBrush)) {
-                GraphTitle = "Raw vs. Purified spectrum",
-                HorizontalTitle = "m/z",
-                VerticalTitle = "Absolute abundance",
-                HorizontalProperty = nameof(SpectrumPeak.Mass),
-                VerticalProperty = nameof(SpectrumPeak.Intensity),
-                LabelProperty = nameof(SpectrumPeak.Mass),
-                OrderingProperty = nameof(SpectrumPeak.Intensity),
-            }.AddTo(Disposables);
+                Observable.Return(upperSpecBrush)).AddTo(Disposables);
 
             // Ms2 chromatogram
             Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawSpectrumLoader, provider, Parameter, analysisFileModel.AcquisitionType).AddTo(Disposables);

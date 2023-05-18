@@ -22,8 +22,7 @@
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <DataTemplate DataType="{x:Type vm:SingleSpectrumViewModel}" x:Key="NormalTemplate">
-                <Grid core:ChartBaseControl.VerticalAxis="{Binding VerticalAxis.Value}"
-                      core:ChartBaseControl.HorizontalAxis="{Binding HorizontalAxis.Value}">
+                <Grid core:ChartBaseControl.VerticalAxis="{Binding VerticalAxis.Value}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"/>
                         <RowDefinition/>
@@ -109,8 +108,7 @@
                 </Grid>
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:SingleSpectrumViewModel}" x:Key="FormalTemplate">
-                <Grid core:ChartBaseControl.VerticalAxis="{Binding VerticalAxis.Value}"
-                      core:ChartBaseControl.HorizontalAxis="{Binding HorizontalAxis.Value}">
+                <Grid core:ChartBaseControl.VerticalAxis="{Binding VerticalAxis.Value}">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition Height="30"/>
@@ -216,7 +214,7 @@
             </ContextMenu>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
+    <Grid core:ChartBaseControl.HorizontalAxis="{Binding HorizontalAxis, Mode=OneTime}">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition/>
