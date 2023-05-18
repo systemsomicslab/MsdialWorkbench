@@ -157,7 +157,7 @@ namespace CompMs.Common.Lipidomics
         }
     }
 
-    internal class DoubleBondShorthandNotation : IVisitor<IDoubleBond, IDoubleBond>
+    internal sealed class DoubleBondShorthandNotation : IVisitor<IDoubleBond, IDoubleBond>
     {
         private readonly int[] _excludes;
 
@@ -165,7 +165,7 @@ namespace CompMs.Common.Lipidomics
 
         public static DoubleBondShorthandNotation AllForPlasmalogen { get; } = new DoubleBondShorthandNotation(1);
 
-        private DoubleBondShorthandNotation(params int[] excludes) {
+        public DoubleBondShorthandNotation(params int[] excludes) {
             _excludes = excludes;
         }
 
@@ -204,7 +204,7 @@ namespace CompMs.Common.Lipidomics
 
         public static OxidizedShorthandNotation AllForCeramide { get; } = new OxidizedShorthandNotation(1);
 
-        private OxidizedShorthandNotation(params int[] excludes) {
+        public OxidizedShorthandNotation(params int[] excludes) {
             _excludes = excludes;
         }
 
