@@ -35,7 +35,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 );
         }
 
-        public MsSpectrumModel(SingleSpectrumModel upperSpectrumModel, SingleSpectrumModel lowerSpectrumModel, GraphLabels graphLabels, IObservable<Ms2ScanMatching> ms2ScanMatching) {
+        public MsSpectrumModel(SingleSpectrumModel upperSpectrumModel, SingleSpectrumModel lowerSpectrumModel, IObservable<Ms2ScanMatching> ms2ScanMatching) {
             UpperSpectrumModel = upperSpectrumModel ?? throw new ArgumentNullException(nameof(upperSpectrumModel));
             LowerSpectrumModel = lowerSpectrumModel ?? throw new ArgumentNullException(nameof(lowerSpectrumModel));
 
@@ -67,7 +67,6 @@ namespace CompMs.App.Msdial.Model.Chart
             .ToReactiveContinuousAxisManager(new ConstantMargin(40))
             .AddTo(Disposables);
             HorizontalAxis = Observable.Return(horizontalAxis);
-            GraphLabels = graphLabels;
             _ms2ScanMatching = ms2ScanMatching?.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             _upperSpectrum = upperSpectrumModel.MsSpectrum.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -95,7 +94,21 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public ReactivePropertySlim<AxisItemModel<double>> UpperVerticalAxisItem { get; }
 
-        public GraphLabels GraphLabels { get; }
+        public string GraphTitle {
+            get => _graphTitle;
+            set => SetProperty(ref _graphTitle, value);
+        }
+        private string _graphTitle;
+        public string HorizontalTitle {
+            get => _horizontalTitle;
+            set => SetProperty(ref _horizontalTitle, value);
+        }
+        private string _horizontalTitle;
+        public string VerticalTitle {
+            get => _verticalTitle;
+            set => SetProperty(ref _verticalTitle, value);
+        }
+        private string _verticalTitle;
 
         public IObservable<bool> CanSaveMatchedSpectrum { get; }
 

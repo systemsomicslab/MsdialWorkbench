@@ -93,7 +93,12 @@ namespace CompMs.App.Msdial.Model.Search
                 msGraphLabels,
                 Observable.Return((ISpectraExporter)null),
                 new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true)).AddTo(Disposables)).AddTo(Disposables);
-            MsSpectrumModel = new MsSpectrumModel(upperSpectrumModel, lowerSpectrumModel, msGraphLabels, scorer).AddTo(Disposables);
+            MsSpectrumModel = new MsSpectrumModel(upperSpectrumModel, lowerSpectrumModel, scorer)
+            {
+                GraphTitle = msGraphLabels.GraphTitle,
+                HorizontalTitle = msGraphLabels.HorizontalTitle,
+                VerticalTitle = msGraphLabels.VerticalTitle,
+            }.AddTo(Disposables);
         }
 
         public IReadOnlyList<CompoundSearcher> CompoundSearchers { get; }

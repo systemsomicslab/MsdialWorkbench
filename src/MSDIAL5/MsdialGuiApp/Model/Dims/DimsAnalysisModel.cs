@@ -12,7 +12,6 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Proteomics.DataObj;
-using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
@@ -24,12 +23,9 @@ using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Windows;
 using System.Windows.Media;
 
@@ -118,27 +114,32 @@ namespace CompMs.App.Msdial.Model.Dims
                     }
                 },
                 true);
+            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
+
+            PropertySelector<SpectrumPeak, double> horizontalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Mass);
+            PropertySelector<SpectrumPeak, double> verticalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity);
+
             var spectraExporter = new NistSpectraExporter(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
             var rawLoader = new MultiMsmsRawSpectrumLoader(provider, parameter).AddTo(Disposables);
-            MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
+            var rawGraphLabels = new GraphLabels("Raw spectrum", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
+            SingleSpectrumModel rawSpectrumModel = SingleSpectrumModel.Create(Target, rawLoader, horizontalPropertySelector, verticalPropertySelector, Observable.Return(upperSpecBrush), nameof(SpectrumPeak.SpectrumComment), rawGraphLabels, Observable.Return(spectraExporter)).AddTo(Disposables);
+
+            var decLoader_ = new MsDecSpectrumLoader(decLoader, Ms1Peaks);
+            var decGraphLabels = new GraphLabels("Deconvoluted spectrum", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
+            SingleSpectrumModel decSpectrumModel = SingleSpectrumModel.Create(Target, decLoader_, horizontalPropertySelector, verticalPropertySelector, Observable.Return(upperSpecBrush), nameof(SpectrumPeak.SpectrumComment), decGraphLabels, Observable.Return(spectraExporter)).AddTo(Disposables);
+
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
-            Ms2SpectrumModel = RawDecSpectrumsModel.Create(
-                Target,
-                rawLoader,
-                new MsDecSpectrumLoader(decLoader, Ms1Peaks),
-                MatchResultCandidatesModel.LoadMsSpectrumObservable(refLoader),
-                new PropertySelector<SpectrumPeak, double>(peak => peak.Mass),
-                new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity),
-                new GraphLabels("Measure vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity)),
-                nameof(SpectrumPeak.SpectrumComment),
-                Observable.Return(upperSpecBrush),
-                Observable.Return(lowerSpecBrush),
-                Observable.Return(spectraExporter),
-                Observable.Return(spectraExporter),
-                Observable.Return((ISpectraExporter)null),
-                MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers)).AddTo(Disposables);
+            var refMsSpectrum = MatchResultCandidatesModel.LoadMsSpectrumObservable(refLoader).Publish();
+            ReadOnlyReactivePropertySlim<bool> spectrumLoaded = new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true)).AddTo(Disposables);
+            var refGraphLabels = new GraphLabels("Reference spectrum", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
+            SingleSpectrumModel referenceSpectrumModel = new SingleSpectrumModel(refMsSpectrum, horizontalPropertySelector, verticalPropertySelector, Observable.Return(lowerSpecBrush), nameof(SpectrumPeak.SpectrumComment), refGraphLabels, Observable.Return((ISpectraExporter)null), spectrumLoaded).AddTo(Disposables);
+            Disposables.Add(refMsSpectrum.Connect());
+
+            var ms2ScanMatching = MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers).Publish();
+            Ms2SpectrumModel = new RawDecSpectrumsModel(rawSpectrumModel, decSpectrumModel, referenceSpectrumModel, ms2ScanMatching, rawLoader).AddTo(Disposables);
+            Disposables.Add(ms2ScanMatching.Connect());
 
             // Ms2 chromatogram
             Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawLoader, provider, parameter, analysisFileModel.AcquisitionType).AddTo(Disposables);

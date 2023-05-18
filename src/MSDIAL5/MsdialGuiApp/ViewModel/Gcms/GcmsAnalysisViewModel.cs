@@ -19,6 +19,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             PeakPlotViewModel = new SpectrumFeaturePlotViewModel(model.PeakPlotModel).AddTo(Disposables);
             var (rawDecSpectraViewFocusAction, rawDecSpectraViewFocused) = focusControlManager.Request();
             RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(model.RawDecSpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused).AddTo(Disposables);
+            RawPurifiedSpectrumsViewModel = new RawPurifiedSpectrumsViewModel(model.RawPurifiedSpectrumsModel).AddTo(Disposables);
             var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
             PeakDetailViewModels = new ViewModelBase[] { matchResultCandidatesViewModel, };
         }
@@ -26,6 +27,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         public SpectrumFeaturePlotViewModel PeakPlotViewModel { get; }
 
         public RawDecSpectrumsViewModel RawDecSpectrumsViewModel { get; }
+        public RawPurifiedSpectrumsViewModel RawPurifiedSpectrumsViewModel { get; }
 
         public Ms2ChromatogramsViewModel Ms2ChromatogramsViewModel => null;
 

@@ -26,17 +26,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             UpperVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel<double>>(model.UpperSpectrumModel.VerticalAxisItemSelector.AxisItems);
             LowerVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel<double>>(model.LowerVerticalAxisItemCollection);
 
-            GraphTitle = Observable.Return(model.GraphLabels.GraphTitle)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
-            HorizontalTitle = Observable.Return(model.GraphLabels.HorizontalTitle)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
-            VerticalTitle = Observable.Return(model.GraphLabels.VerticalTitle)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
+            GraphTitle = model.ObserveProperty(m => m.GraphTitle).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            HorizontalTitle = model.ObserveProperty(m => m.HorizontalTitle).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            VerticalTitle = model.ObserveProperty(m => m.VerticalTitle).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             SaveMatchedSpectrumCommand = model.CanSaveMatchedSpectrum.ToReactiveCommand()
                 .WithSubscribe(SaveSpectrum(model.SaveMatchedSpectrum,  filter: "tab separated values(*.txt)|*.txt"))

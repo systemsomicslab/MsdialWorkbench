@@ -20,7 +20,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         private readonly IMessageBroker _broker;
         private readonly FocusControlManager _focusControl;
 
-        public GcmsMethodViewModel(GcmsMethodModel model, ReactiveProperty<IAnalysisResultViewModel> analysisFileViewModel, ReactivePropertySlim<IAlignmentResultViewModel> alignmentFileViewModel, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels, IMessageBroker broker, FocusControlManager focusControl)
+        public GcmsMethodViewModel(GcmsMethodModel model, ReactiveProperty<GcmsAnalysisViewModel> analysisFileViewModel, ReactivePropertySlim<IAlignmentResultViewModel> alignmentFileViewModel, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels, IMessageBroker broker, FocusControlManager focusControl)
             : base(model, analysisFileViewModel, alignmentFileViewModel, chromatogramViewModels, massSpectrumViewModels) {
             _model = model;
             _broker = broker;
@@ -47,11 +47,11 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
                 return model.ObserveProperty(m => m.SelectedAnalysisModel, isPushCurrentValueAtFirst: false).Subscribe(observer);
             }).Where(m => m != null)
             .Select(m => new GcmsAnalysisViewModel(m, focusControlManager))
-            .ToReactiveProperty<IAnalysisResultViewModel>();
+            .ToReactiveProperty();
             var alignmentAsObservable = new ReactivePropertySlim<IAlignmentResultViewModel>();
 
             var tmpSwitcher = new ViewModelSwitcher(Observable.Return<ViewModelBase>(null), Observable.Return<ViewModelBase>(null));
-            var massSpectrumSwitcher = new ViewModelSwitcher(Observable.Return<ViewModelBase>(null), Observable.Return<ViewModelBase>(null), analysisAsObservable.Select(m => m?.RawDecSpectrumsViewModel));
+            var massSpectrumSwitcher = new ViewModelSwitcher(Observable.Return<ViewModelBase>(null), Observable.Return<ViewModelBase>(null), analysisAsObservable.Select(m => m?.RawDecSpectrumsViewModel), analysisAsObservable.Select(m => m?.RawPurifiedSpectrumsViewModel));
             return new GcmsMethodViewModel(model, analysisAsObservable, alignmentAsObservable, tmpSwitcher, massSpectrumSwitcher, broker, focusControlManager);
         }
     }

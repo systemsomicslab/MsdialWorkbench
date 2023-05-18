@@ -170,7 +170,12 @@ namespace CompMs.App.Msdial.Model.Lcms
                 ms2GraphLabels,
                 Observable.Return((ISpectraExporter)null),
                 new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true)).AddTo(Disposables)).AddTo(Disposables);
-            Ms2SpectrumModel = new MsSpectrumModel(upperSpectrumModel, lowerSpectrumModel, ms2GraphLabels, MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers)).AddTo(Disposables);
+            Ms2SpectrumModel = new MsSpectrumModel(upperSpectrumModel, lowerSpectrumModel, MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers))
+            {
+                GraphTitle = ms2GraphLabels.GraphTitle,
+                HorizontalTitle = ms2GraphLabels.HorizontalTitle,
+                VerticalTitle = ms2GraphLabels.VerticalTitle,
+            }.AddTo(Disposables);
             Disposables.Add(decMsSpectrum.Connect());
             Disposables.Add(refMsSpectrum.Connect());
 
