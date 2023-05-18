@@ -52,7 +52,7 @@ namespace CompMs.Common.Lipidomics
                         if (i <= 0) continue;
                         var n = i - ((dbPosition - 1) - 2);
                         var diffMass = i == (dbPosition - 1) ? diffs[i] : i >= (dbPosition - 1) ? diffs[i] + MassDiffDictionary.HydrogenMass : diffs[i] - MassDiffDictionary.HydrogenMass;
-                        peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffMass), intensity * intArray[n], $"{chain} db{dbPosition} EID specific(c{i + 1})") { SpectrumComment = SpectrumComment.acylchain });
+                        peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffMass), intensity * intArray[n], $"{chain} db{dbPosition} EID specific(c{i + 1})") { SpectrumComment = SpectrumComment.doublebond });
                     }
                 }
             }
@@ -62,19 +62,19 @@ namespace CompMs.Common.Lipidomics
                 if (bondPositions.Count == 4)
                 {
                     var spectrum = new List<SpectrumPeak>{
-                        new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1 - 2] + MassDiffDictionary.HydrogenMass), intensity * 0.5, $"{chain} EID specific") { SpectrumComment = SpectrumComment.acylchain } ,
-                        new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1 - 1]) , intensity * 0.5, $"{chain} EID specific") { SpectrumComment = SpectrumComment.acylchain } ,
-                        new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1]), intensity * 0.75, $"{chain} EID specific") { SpectrumComment = SpectrumComment.acylchain } ,
-                        new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1 + 1]) + MassDiffDictionary.HydrogenMass, intensity * 1, $"{chain} EID specific") { SpectrumComment = SpectrumComment.acylchain } ,
-                        new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1 + 2]) + MassDiffDictionary.HydrogenMass, intensity * 0.5, $"{chain} EID specific") { SpectrumComment = SpectrumComment.acylchain } ,
+                        new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1 - 2] + MassDiffDictionary.HydrogenMass), intensity * 0.5, $"{chain} EID specific") { SpectrumComment = SpectrumComment.doublebond } ,
+                        new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1 - 1]) , intensity * 0.5, $"{chain} EID specific") { SpectrumComment = SpectrumComment.doublebond } ,
+                        new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1]), intensity * 0.75, $"{chain} EID specific") { SpectrumComment = SpectrumComment.doublebond } ,
+                        new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1 + 1]) + MassDiffDictionary.HydrogenMass, intensity * 1, $"{chain} EID specific") { SpectrumComment = SpectrumComment.doublebond } ,
+                        new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1 + 2]) + MassDiffDictionary.HydrogenMass, intensity * 0.5, $"{chain} EID specific") { SpectrumComment = SpectrumComment.doublebond } ,
                     };
                     peaks.AddRange(spectrum);
                 }
                 else
                 {
                     var spectrum = new List<SpectrumPeak>{
-                        new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1]), intensity * 0.25, $"{chain} EID specific") { SpectrumComment = SpectrumComment.acylchain } ,
-                        new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1 + 1] + MassDiffDictionary.HydrogenMass), intensity * 1, $"{chain} EID specific") { SpectrumComment = SpectrumComment.acylchain } ,
+                        new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1]), intensity * 0.25, $"{chain} EID specific") { SpectrumComment = SpectrumComment.doublebond } ,
+                        new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[dbPosition -1 + 1] + MassDiffDictionary.HydrogenMass), intensity * 1, $"{chain} EID specific") { SpectrumComment = SpectrumComment.doublebond } ,
                     };
                     peaks.AddRange(spectrum);
                 }
@@ -82,7 +82,7 @@ namespace CompMs.Common.Lipidomics
             if (bondPositions.Contains(5) && bondPositions.Contains(8) && bondPositions.Contains(11))
             {
                 peaks.Add(
-                    new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[2] - MassDiffDictionary.HydrogenMass), intensity * 0.5, $"{chain} C3 specific") { SpectrumComment = SpectrumComment.acylchain }
+                    new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[2] - MassDiffDictionary.HydrogenMass), intensity * 0.5, $"{chain} C3 specific") { SpectrumComment = SpectrumComment.doublebond }
                     );
             }
             return peaks.ToArray();

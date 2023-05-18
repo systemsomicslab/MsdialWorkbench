@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace CompMs.Common.Lipidomics
 {
-    public interface IDoubleBondInfo
+    public interface IDoubleBondInfo : IEquatable<IDoubleBondInfo>
     {
         int Position { get; }
         DoubleBondState State { get; }
         bool Determined { get; }
+        bool Includes(IDoubleBondInfo info);
     }
 
     public enum DoubleBondState
@@ -60,6 +62,14 @@ namespace CompMs.Common.Lipidomics
 
         public override int GetHashCode() {
             return (Position, State).GetHashCode();
+        }
+
+        public bool Includes(IDoubleBondInfo info) {
+            return Position == info.Position && (State == DoubleBondState.Unknown || State == info.State);
+        }
+
+        public bool Equals(IDoubleBondInfo other) {
+            return Position == other.Position && State == other.State;
         }
     }
 }

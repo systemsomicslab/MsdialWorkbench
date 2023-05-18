@@ -43,6 +43,33 @@ namespace CompMs.Common.Lipidomics.Tests
 
         }
 
+        [DataTestMethod]
+        [DynamicData(nameof(EquatableTestData), DynamicDataSourceType.Property)]
+        public void EquatableTest(IChain chain, IChain other, bool expected) {
+            Assert.AreEqual(expected, chain.Equals(other));
+        }
+
+        public static IEnumerable<object[]> EquatableTestData {
+            get {
+                IChain chain1 = new AcylChain(18, new DoubleBond(2), new Oxidized(1)),
+                    chain2 = new AcylChain(18, new DoubleBond(2), new Oxidized(1)),
+                    chain3 = new AcylChain(16, new DoubleBond(2), new Oxidized(1)),
+                    chain4 = new AcylChain(18, new DoubleBond(1), new Oxidized(1)),
+                    chain5 = new AcylChain(18, DoubleBond.CreateFromPosition(9, 12), new Oxidized(1)),
+                    chain6 = new AcylChain(18, DoubleBond.CreateFromPosition(12, 15), new Oxidized(1)),
+                    chain7 = new AcylChain(18, new DoubleBond(2), Oxidized.CreateFromPosition(1)),
+                    chain8 = new AcylChain(18, new DoubleBond(2), Oxidized.CreateFromPosition(2));
+                yield return new object[] { chain1, chain1, true, };
+                yield return new object[] { chain1, chain2, true, };
+                yield return new object[] { chain1, chain3, false, };
+                yield return new object[] { chain1, chain4, false, };
+                yield return new object[] { chain1, chain5, false, };
+                yield return new object[] { chain5, chain6, false, };
+                yield return new object[] { chain1, chain7, false, };
+                yield return new object[] { chain7, chain8, false, };
+            }
+        }
+
         class MockGenerator : IChainGenerator
         {
             public bool Called { get; private set; } = false;

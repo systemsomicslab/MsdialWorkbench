@@ -186,6 +186,9 @@
                           IsEnabled="True"
                           Command="{Binding ShowMassqlSearchSettingCommand}"
                           KeyTip="T"/>
+            <RibbonButton Label="Find target compounds"
+                          Command="{Binding AlignmentViewModel.Value.ShowFindCompoundSpotViewCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                          KeyTip="C"/>
         </RibbonGroup>
     </RibbonTab>
     <RibbonTab Header="View"

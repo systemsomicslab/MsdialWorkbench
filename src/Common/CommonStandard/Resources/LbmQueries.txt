@@ -3,6 +3,9 @@ CAR	[M+H]+	Positive	TRUE
 LPC	[M+H]+	Positive	TRUE
 LPC	[M+Na]+	Positive	TRUE
 LPE	[M+H]+	Positive	TRUE
+LPS	[M+H]+	Positive	FALSE
+LPG	[M+H]+	Positive	FALSE
+LPI	[M+H]+	Positive	FALSE
 PC	[M+H]+	Positive	TRUE
 PC	[M+Na]+	Positive	TRUE
 PE	[M+H]+	Positive	TRUE
@@ -423,6 +426,9 @@ LPE_d5	[M+H]+	Positive	FALSE
 LPC_d5	[M+CH3COO]-	Negative	FALSE
 LPC_d5	[M+HCOO]-	Negative	FALSE
 LPE_d5	[M-H]-	Negative	FALSE
+LPS_d5	[M+H]+	Positive	FALSE
+LPG_d5	[M+H]+	Positive	FALSE
+LPI_d5	[M+H]+	Positive	FALSE
 LPS_d5	[M-H]-	Negative	FALSE
 LPG_d5	[M-H]-	Negative	FALSE
 LPI_d5	[M-H]-	Negative	FALSE
