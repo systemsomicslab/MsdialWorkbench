@@ -135,7 +135,15 @@ namespace CompMs.Common.Lipidomics
                 spectrum.AddRange(
                     new[] {
                     new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - H2O), 100d, "Precursor -H2O") { SpectrumComment = SpectrumComment.metaboliteclass },
-                    new SpectrumPeak(lipid.Mass + MassDiffDictionary.ProtonMass, 200d, "[M+H]+")
+                    new SpectrumPeak(lipid.Mass + MassDiffDictionary.ProtonMass, 200d, "[M+H]+") { SpectrumComment = SpectrumComment.metaboliteclass },
+                    }
+                );
+            }
+            else if (adduct.AdductIonName == "[M+Na]+")
+            {
+                spectrum.AddRange(
+                    new[] {
+                   new SpectrumPeak(adduct.ConvertToMz(lipid.Mass)/2, 50d, "Precursor2+") { SpectrumComment = SpectrumComment.precursor },
                     }
                 );
             }
@@ -184,7 +192,7 @@ namespace CompMs.Common.Lipidomics
             {
                 new SpectrumPeak(lipidMass - chainMass - H2O - CD2 , 100d, "-CD2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
                 new SpectrumPeak(lipidMass - chainMass - H2O *2 - CD2 , 100d, "-H2O -CD2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
-                //new SpectrumPeak(lipidMass - chainMass - C3H9O6P - H2O - CD2 , 100d, "-Header -CD2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
+                new SpectrumPeak(lipidMass - chainMass - C3H9O6P - H2O - CD2 , 100d, "-Header -CD2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
             };
         }
 
