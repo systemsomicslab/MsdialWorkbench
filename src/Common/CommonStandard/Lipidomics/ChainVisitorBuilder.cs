@@ -1,7 +1,6 @@
 ﻿using CompMs.Common.DataStructure;
-using CompMs.Common.Lipidomics;
 
-namespace CommonStandardTests.Lipidomics
+namespace CompMs.Common.Lipidomics
 {
     internal sealed class ChainVisitorBuilder : ILipidomicsVisitorBuilder
     {

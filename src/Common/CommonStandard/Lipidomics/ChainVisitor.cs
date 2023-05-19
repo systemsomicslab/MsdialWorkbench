@@ -1,8 +1,7 @@
 ﻿using CompMs.Common.DataStructure;
-using CompMs.Common.Lipidomics;
 using System;
 
-namespace CommonStandardTests.Lipidomics
+namespace CompMs.Common.Lipidomics
 {
     internal sealed class ChainVisitor : IVisitor<AcylChain, AcylChain>, IVisitor<AlkylChain, AlkylChain>, IVisitor<SphingoChain, SphingoChain> {
         private readonly IVisitor<AcylChain, AcylChain> _acylVisitor;
