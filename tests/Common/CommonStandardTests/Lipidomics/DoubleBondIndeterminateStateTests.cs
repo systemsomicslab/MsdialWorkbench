@@ -29,8 +29,11 @@ namespace CompMs.Common.Lipidomics.Tests
                 yield return new object[] { infos, DoubleBondIndeterminateState.Positions(9, 12, 15), no_db, };
                 yield return new object[] { infos, DoubleBondIndeterminateState.Positions(12, 15), only_9, };
                 yield return new object[] { infos, DoubleBondIndeterminateState.Positions(13), infos, };
+                yield return new object[] { infos, DoubleBondIndeterminateState.PositionsExclude(9), only_9, };
                 yield return new object[] { infos, DoubleBondIndeterminateState.CisTransIsomer(9), no_isomer, };
                 yield return new object[] { infos, DoubleBondIndeterminateState.CisTransIsomer(10), infos, };
+                yield return new object[] { infos, DoubleBondIndeterminateState.CisTransIsomerExclude(9), infos, };
+                yield return new object[] { infos, DoubleBondIndeterminateState.CisTransIsomerExclude(10), no_isomer, };
             }
         }
     }
