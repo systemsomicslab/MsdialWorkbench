@@ -139,7 +139,7 @@ namespace CompMs.Common.Lipidomics
             nlMass = chains[0].Mass + C3H9O6P - MassDiffDictionary.HydrogenMass + adduct.AdductIonAccurateMass - MassDiffDictionary.ProtonMass;
             spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, chains[1], adduct, nlMass, 10d));
             spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, chains[2], adduct, nlMass, 10d));
-            nlMass = chains[1].Mass + chains[2].Mass + C3H9O6P - MassDiffDictionary.HydrogenMass + adduct.AdductIonAccurateMass - MassDiffDictionary.ProtonMass;
+            nlMass = chains[1].Mass + chains[2].Mass + C3H6O2 - MassDiffDictionary.HydrogenMass + adduct.AdductIonAccurateMass - MassDiffDictionary.ProtonMass;
             spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, chains[0], adduct, nlMass, 10d));
             return spectrum.ToArray();
         }
@@ -195,7 +195,7 @@ namespace CompMs.Common.Lipidomics
 
             var spectrum = new List<SpectrumPeak>
             {
-                new SpectrumPeak(lipidMass - chainMass - H2O - CH2 , 100d, "-CH2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
+                new SpectrumPeak(lipidMass - chainMass - H2O - CH2 , 50d, "-CH2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
             };
             return spectrum.ToArray();
         }
