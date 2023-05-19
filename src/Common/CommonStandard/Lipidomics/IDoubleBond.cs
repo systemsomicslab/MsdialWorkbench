@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
-    public interface IDoubleBond : IVisitableElement<IDoubleBond>, IEquatable<IDoubleBond>
+    public interface IDoubleBond : IVisitableElement, IEquatable<IDoubleBond>
     {
         int Count { get; }
         int DecidedCount { get; }
@@ -76,12 +76,11 @@ namespace CompMs.Common.Lipidomics
             }
         }
 
-        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, IDoubleBond, TDecomposed> decomposer) {
-            return decomposer.Decompose(visitor, this);
-        }
-
-        public TResult Accept<TResult, TDecomposed>(IVisitor<TResult, TDecomposed> visitor, IDecomposer<TResult, IDoubleBond, TDecomposed> decomposer) {
-            return decomposer.Decompose(visitor, this);
+        public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
+            if (decomposer is IDecomposer<TResult, DoubleBond> concrete) {
+                return concrete.Decompose(visitor, this);
+            }
+            return default;
         }
 
         public bool Includes(IDoubleBond bond) {

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace CompMs.Common.Lipidomics
 {
     public enum LipidDescription { None = 0, Class = 1, Chain = 2, SnPosition = 4, DoubleBondPosition = 8, EZ = 16 }
-    public interface ILipid : IEquatable<ILipid>, IVisitableElement<ILipid>
+    public interface ILipid : IEquatable<ILipid>, IVisitableElement
     {
         string Name { get; }
         LbmClass LipidClass { get; }
@@ -86,8 +86,11 @@ namespace CompMs.Common.Lipidomics
                 && Chains.Equals(other.Chains);
         }
 
-        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, ILipid, TDecomposed> decomposer) {
-            return decomposer.Decompose(visitor, this);
+        public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
+            if (decomposer is IDecomposer<TResult, ILipid> decomposer_) {
+                return decomposer_.Decompose(visitor, this);
+            }
+            return default;
         }
     }
 }

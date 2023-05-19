@@ -10,8 +10,8 @@ namespace CompMs.Common.DataStructure.Tests
         [TestMethod()]
         public void VisitorTest() {
             var visitor = new IntToStringVisitor();
-            var intDecomposer = new IntDecomposer();
-            var intListDecomposer = new IntListDecomposer();
+            IAcyclicDecomposer<string> intDecomposer = new IntDecomposer();
+            IAcyclicDecomposer<string> intListDecomposer = new IntListDecomposer();
 
             var item1 = new Visitable<int>(100);
             Assert.AreEqual("100", item1.Accept(visitor, intDecomposer));
@@ -21,7 +21,7 @@ namespace CompMs.Common.DataStructure.Tests
         }
     }
 
-    internal class IntDecomposer : IDecomposer<string, int, int>
+    internal class IntDecomposer : IDecomposer<string, int>
     {
         public string Decompose(IAcyclicVisitor visitor, int element) {
             if (visitor is IVisitor<string, int> vis) {
@@ -31,7 +31,7 @@ namespace CompMs.Common.DataStructure.Tests
         }
     }
 
-    internal class IntListDecomposer : IDecomposer<string, List<int>, int>
+    internal class IntListDecomposer : IDecomposer<string, List<int>>
     {
         public string Decompose(IAcyclicVisitor visitor, List<int> element) {
             if (visitor is IVisitor<string, int> vis) {
@@ -48,7 +48,7 @@ namespace CompMs.Common.DataStructure.Tests
         }
     }
 
-    internal class Visitable<TElement> : IVisitableElement<TElement>
+    internal class Visitable<TElement> : IVisitableElement
     {
         private readonly TElement _element;
 
@@ -56,12 +56,11 @@ namespace CompMs.Common.DataStructure.Tests
             _element = element;
         }
 
-        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, TElement, TDecomposed> decomposer) {
-            return decomposer.Decompose(visitor, _element);
-        }
-
-        public TResult Accept<TResult, TDecomposed>(IVisitor<TResult, TDecomposed> visitor, IDecomposer<TResult, TElement, TDecomposed> decomposer) {
-            return decomposer.Decompose(visitor, _element);
+        public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
+            if (decomposer is IDecomposer<TResult, TElement> concrete) {
+                return concrete.Decompose(visitor, _element);
+            }
+            return default;
         }
     }
 }

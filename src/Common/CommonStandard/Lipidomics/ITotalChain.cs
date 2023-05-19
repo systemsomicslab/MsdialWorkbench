@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
-    public interface ITotalChain : IEquatable<ITotalChain>, IVisitableElement<ITotalChain>
+    public interface ITotalChain : IEquatable<ITotalChain>, IVisitableElement
     {
         int CarbonCount { get; }
         int DoubleBondCount { get; }
@@ -154,8 +154,11 @@ namespace CompMs.Common.Lipidomics
                 && SphingoChainCount == tChains.SphingoChainCount;
         }
 
-        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, ITotalChain, TDecomposed> decomposer) {
-            return decomposer.Decompose(visitor, this);
+        public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
+            if (decomposer is IDecomposer<TResult, ITotalChain> decomposer_) {
+                return decomposer_.Decompose(visitor, this);
+            }
+            return default;
         }
     }
 
@@ -229,8 +232,11 @@ namespace CompMs.Common.Lipidomics
                 && Chains.Zip(mChains.Chains, (a, b) => a.Equals(b)).All(p => p);
         }
 
-        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, ITotalChain, TDecomposed> decomposer) {
-            return decomposer.Decompose(visitor, this);
+        public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
+            if (decomposer is IDecomposer<TResult, ITotalChain> decomposer_) {
+                return decomposer_.Decompose(visitor, this);
+            }
+            return default;
         }
 
         class ChainComparer : IComparer<IChain> {
@@ -284,8 +290,11 @@ namespace CompMs.Common.Lipidomics
                 && Chains.Zip(pChains.Chains, (a, b) => a.Equals(b)).All(p => p);
         }
 
-        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, ITotalChain, TDecomposed> decomposer) {
-            return decomposer.Decompose(visitor, this);
+        public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
+            if (decomposer is IDecomposer<TResult, ITotalChain> decomposer_) {
+                return decomposer_.Decompose(visitor, this);
+            }
+            return default;
         }
     }
 }

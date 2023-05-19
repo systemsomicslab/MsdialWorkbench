@@ -4,7 +4,7 @@ using System;
 
 namespace CommonStandardTests.Lipidomics
 {
-    internal sealed class ChainVisitor : IVisitor<IChain, IChain>, IVisitor<AcylChain, AcylChain>, IVisitor<AlkylChain, AlkylChain>, IVisitor<SphingoChain, SphingoChain> {
+    internal sealed class ChainVisitor : IVisitor<AcylChain, AcylChain>, IVisitor<AlkylChain, AlkylChain>, IVisitor<SphingoChain, SphingoChain> {
         private readonly IVisitor<AcylChain, AcylChain> _acylVisitor;
         private readonly IVisitor<AlkylChain, AlkylChain> _alkylVisitor;
         private readonly IVisitor<SphingoChain, SphingoChain> _sphingosineVisitor;
@@ -13,19 +13,6 @@ namespace CommonStandardTests.Lipidomics
             _acylVisitor = acylVisitor;
             _alkylVisitor = alkylVisitor;
             _sphingosineVisitor = sphingosineVisitor;
-        }
-
-        public IChain Visit(IChain item) {
-            switch (item) {
-                case AcylChain acyl:
-                    return _acylVisitor.Visit(acyl);
-                case AlkylChain alkyl:
-                    return _alkylVisitor.Visit(alkyl);
-                case SphingoChain sphingosine:
-                    return _sphingosineVisitor.Visit(sphingosine);
-                default:
-                    return item;
-            }
         }
 
         AcylChain IVisitor<AcylChain, AcylChain>.Visit(AcylChain item) => _acylVisitor.Visit(item);
@@ -91,4 +78,5 @@ namespace CommonStandardTests.Lipidomics
             }
             return new SphingoChain(item.CarbonCount, db, ox);
         }
+    }
 }

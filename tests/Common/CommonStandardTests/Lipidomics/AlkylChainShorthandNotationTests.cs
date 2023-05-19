@@ -13,7 +13,7 @@ namespace CompMs.Common.Lipidomics.Tests
         public void VisitAllForPlasmalogenTest(AlkylChain chain, int decidedDoubleBondCount, int undecidedDoubleBondCount) {
             var visitor = AlkylChainShorthandNotation.Default;
             var decomposer = new IdentityDecomposer<AlkylChain, AlkylChain>();
-            var actual = chain.Accept(visitor, decomposer);
+            var actual = chain.Accept<AlkylChain>(visitor, decomposer);
             Assert.AreEqual(chain.CarbonCount, actual.CarbonCount);
             Assert.AreEqual(chain.DoubleBondCount, actual.DoubleBondCount);
             Assert.AreEqual(decidedDoubleBondCount, actual.DoubleBond.DecidedCount);

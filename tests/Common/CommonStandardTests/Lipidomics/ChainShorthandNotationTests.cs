@@ -10,7 +10,7 @@ namespace CompMs.Common.Lipidomics.Tests
         [DataTestMethod]
         [DynamicData(nameof(GetChainTypeTestData), DynamicDataSourceType.Method)]
         public void ChainTypeTest(IChain chain) {
-            var actual = chain.Accept(ChainShorthandNotation.Default, new ChainDecomposer<IChain>());
+            var actual = chain.Accept<IChain>(ChainShorthandNotation.Default, new ChainDecomposer<IChain>());
             Assert.AreEqual(chain.GetType(), actual.GetType());
         }
 

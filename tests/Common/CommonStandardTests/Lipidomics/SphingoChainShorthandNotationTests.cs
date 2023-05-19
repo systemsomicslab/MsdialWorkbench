@@ -13,7 +13,7 @@ namespace CompMs.Common.Lipidomics.Tests
         public void VisitTest(SphingoChain chain, int decidedOxidize, int undecidedOxidize) {
             var visitor = SphingoChainShorthandNotation.Default;
             var decomposer = new IdentityDecomposer<SphingoChain, SphingoChain>();
-            var actual = chain.Accept(visitor, decomposer);
+            var actual = chain.Accept<SphingoChain>(visitor, decomposer);
             Assert.AreEqual(chain.CarbonCount, actual.CarbonCount);
             Assert.AreEqual(chain.DoubleBondCount, actual.DoubleBondCount);
             Assert.AreEqual(0, actual.DoubleBond.DecidedCount);

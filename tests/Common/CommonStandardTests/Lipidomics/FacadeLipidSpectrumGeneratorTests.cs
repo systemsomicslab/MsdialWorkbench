@@ -69,7 +69,7 @@ namespace CompMs.Common.Lipidomics.Tests
 
         public ITotalChain Chains => throw new System.NotImplementedException();
 
-        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, ILipid, TDecomposed> decomposer) {
+        public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
             throw new System.NotImplementedException();
         }
 

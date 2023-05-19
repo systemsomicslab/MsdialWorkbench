@@ -13,7 +13,7 @@ namespace CompMs.Common.Lipidomics.Tests
         public void VisitTest(AcylChain chain) {
             var visitor = AcylChainShorthandNotation.Default;
             var decomposer = new IdentityDecomposer<AcylChain, AcylChain>();
-            var actual = chain.Accept(visitor, decomposer);
+            var actual = chain.Accept<AcylChain>(visitor, decomposer);
             Assert.AreEqual(chain.CarbonCount, actual.CarbonCount);
             Assert.AreEqual(chain.DoubleBondCount, actual.DoubleBondCount);
             Assert.AreEqual(0, actual.DoubleBond.DecidedCount);

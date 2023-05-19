@@ -27,10 +27,10 @@ namespace CompMs.Common.Lipidomics.Tests
 
             var visitor = OxidizedShorthandNotation.All;
             var decomposer = new IdentityDecomposer<IOxidized, IOxidized>();
-            yield return new object[] { ((IVisitableElement<IOxidized>)new Oxidized(0)).Accept(visitor, decomposer), 0, 0, 0, "", };
-            yield return new object[] { ((IVisitableElement<IOxidized>)new Oxidized(1)).Accept(visitor, decomposer), 1, 0, 1, ";O", };
-            yield return new object[] { ((IVisitableElement<IOxidized>)new Oxidized(2)).Accept(visitor, decomposer), 2, 0, 2, ";O2", };
-            yield return new object[] { ((IVisitableElement<IOxidized>)new Oxidized(2, 1, 3)).Accept(visitor, decomposer), 2, 0, 2, ";O2", };
+            yield return new object[] { ((IVisitableElement)new Oxidized(0)).Accept(visitor, decomposer), 0, 0, 0, "", };
+            yield return new object[] { ((IVisitableElement)new Oxidized(1)).Accept(visitor, decomposer), 1, 0, 1, ";O", };
+            yield return new object[] { ((IVisitableElement)new Oxidized(2)).Accept(visitor, decomposer), 2, 0, 2, ";O2", };
+            yield return new object[] { ((IVisitableElement)new Oxidized(2, 1, 3)).Accept(visitor, decomposer), 2, 0, 2, ";O2", };
         }
 
         [TestMethod()]

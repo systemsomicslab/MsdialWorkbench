@@ -8,7 +8,7 @@ namespace CommonStandardTests.Lipidomics
         private IVisitor<IDoubleBond, IDoubleBond> _acylDoubleBondVisitor, _alkylDoubleBondVisitor, _sphingoDoubleBondVisitor;
         private IVisitor<IOxidized, IOxidized> _acylOxidizedVisitor, _alkylOxidizedVisitor, _sphingoOxidizedVisitor;
 
-        public IVisitor<IChain, IChain> Create() {
+        public ChainVisitor Create() {
             var acylVisitor = new AcylChainVisitor(_acylDoubleBondVisitor, _acylOxidizedVisitor);
             var alkylVisitor = new AlkylChainVisitor(_alkylDoubleBondVisitor, _alkylOxidizedVisitor);
             var sphingoVisitor = new SphingosineChainVisitor(_sphingoDoubleBondVisitor, _sphingoOxidizedVisitor);
