@@ -3,7 +3,6 @@ using CompMs.Common.FormulaGenerator.DataObj;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics
@@ -14,6 +13,9 @@ namespace CompMs.Common.Lipidomics
         int DoubleBondCount { get; }
         int OxidizedCount { get; }
         int ChainCount { get; }
+        int AcylChainCount { get; }
+        int AlkylChainCount { get; }
+        int SphingoChainCount { get; }
         double Mass { get; }
         LipidDescription Description { get; }
 
@@ -177,6 +179,10 @@ namespace CompMs.Common.Lipidomics
         public int DoubleBondCount => Chains.Sum(c => c.DoubleBondCount);
 
         public int OxidizedCount => Chains.Sum(c => c.OxidizedCount);
+
+        public int AcylChainCount => Chains.OfType<AcylChain>().Count();
+        public int AlkylChainCount => Chains.OfType<AlkylChain>().Count();
+        public int SphingoChainCount => Chains.OfType<SphingoChain>().Count();
 
         public double Mass => Chains.Sum(c => c.Mass);
 

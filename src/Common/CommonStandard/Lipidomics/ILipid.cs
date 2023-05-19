@@ -7,6 +7,7 @@ using System.Collections.Generic;
 
 namespace CompMs.Common.Lipidomics
 {
+    [Flags]
     public enum LipidDescription { None = 0, Class = 1, Chain = 2, SnPosition = 4, DoubleBondPosition = 8, EZ = 16 }
     public interface ILipid : IEquatable<ILipid>, IVisitableElement
     {
