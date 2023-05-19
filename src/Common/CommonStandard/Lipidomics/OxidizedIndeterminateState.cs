@@ -41,7 +41,10 @@ namespace CompMs.Common.Lipidomics
         public OxidizedIndeterminateState Include(int position) {
             switch (_state) {
                 case State.PositionInclude:
-                    if (_positions != null && !_positions.Contains(position)) {
+                    if (_positions is null) {
+                        return new OxidizedIndeterminateState(_state, new[] { position, });
+                    }
+                    else if (!_positions.Contains(position)) {
                         return new OxidizedIndeterminateState(_state, _positions.Append(position).ToArray());
                     }
                     break;
@@ -62,7 +65,10 @@ namespace CompMs.Common.Lipidomics
                     }
                     break;
                 case State.PositionExclude:
-                    if (_positions != null && !_positions.Contains(position)) {
+                    if (_positions is null) {
+                        return new OxidizedIndeterminateState(_state, new[] { position, });
+                    }
+                    else if (_positions != null && !_positions.Contains(position)) {
                         return new OxidizedIndeterminateState(_state, _positions.Append(position).ToArray());
                     }
                     break;

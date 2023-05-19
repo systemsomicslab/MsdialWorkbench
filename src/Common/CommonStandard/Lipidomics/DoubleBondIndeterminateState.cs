@@ -55,7 +55,10 @@ namespace CompMs.Common.Lipidomics
             switch (_state) {
                 case State.PositionInclude:
                 case State.CisTransIsomerInclude:
-                    if (_positions != null && !_positions.Contains(position)) {
+                    if (_positions is null) {
+                        return new DoubleBondIndeterminateState(_state, new[] { position, });
+                    }
+                    if (!_positions.Contains(position)) {
                         return new DoubleBondIndeterminateState(_state, _positions.Append(position).ToArray());
                     }
                     break;
@@ -79,7 +82,10 @@ namespace CompMs.Common.Lipidomics
                     break;
                 case State.PositionExclude:
                 case State.CisTransIsomerExclude:
-                    if (_positions != null && !_positions.Contains(position)) {
+                    if (_positions is null) {
+                        return new DoubleBondIndeterminateState(_state, new[] { position, });
+                    }
+                    if (!_positions.Contains(position)) {
                         return new DoubleBondIndeterminateState(_state, _positions.Append(position).ToArray());
                     }
                     break;
