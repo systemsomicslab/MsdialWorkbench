@@ -11,16 +11,16 @@
 
         public void Construct() {
             // for acyl
-            _builder.SetAcylDoubleBondVisitor(DoubleBondShorthandNotation.All);
-            _builder.SetAcylOxidizedVisitor(OxidizedShorthandNotation.All);
+            _builder.SetAcylOxidized(OxidizedIndeterminateState.AllPositions);
+            _builder.SetAcylDoubleBond(DoubleBondIndeterminateState.AllPositions);
 
             // for alkyl
-            _builder.SetAlkylDoubleBondVisitor(DoubleBondShorthandNotation.AllForPlasmalogen);
-            _builder.SetAlkylOxidizedVisitor(OxidizedShorthandNotation.All);
+            _builder.SetAlkylOxidized(OxidizedIndeterminateState.AllPositions);
+            _builder.SetAlkylDoubleBond(DoubleBondIndeterminateState.AllPositions.Exclude(1));
 
             // for sphingosine
-            _builder.SetSphingoDoubleBondVisitor(DoubleBondShorthandNotation.All);
-            _builder.SetSphingoOxidizedVisitor(OxidizedShorthandNotation.AllForCeramide);
+            _builder.SetSphingoOxidized(OxidizedIndeterminateState.AllPositions.Exclude(1));
+            _builder.SetSphingoDoubleBond(DoubleBondIndeterminateState.AllPositions);
         }
 
     }

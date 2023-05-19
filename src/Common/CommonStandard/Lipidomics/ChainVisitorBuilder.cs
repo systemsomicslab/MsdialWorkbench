@@ -1,24 +1,23 @@
-﻿using CompMs.Common.DataStructure;
-
-namespace CompMs.Common.Lipidomics
+﻿namespace CompMs.Common.Lipidomics
 {
-    internal sealed class ChainVisitorBuilder : ILipidomicsVisitorBuilder
-    {
-        private IVisitor<IDoubleBond, IDoubleBond> _acylDoubleBondVisitor, _alkylDoubleBondVisitor, _sphingoDoubleBondVisitor;
-        private IVisitor<IOxidized, IOxidized> _acylOxidizedVisitor, _alkylOxidizedVisitor, _sphingoOxidizedVisitor;
+    internal sealed class ChainVisitorBuilder : ILipidomicsVisitorBuilder {
+        private DoubleBondIndeterminateState _acylDoubleBondState, _alkylDoubleBondState, _sphingoDoubleBondState;
+        private OxidizedIndeterminateState _acylOxidizedState, _alkylOxidizedState, _sphingoOxidizedState;
 
         public ChainVisitor Create() {
-            var acylVisitor = new AcylChainVisitor(_acylDoubleBondVisitor, _acylOxidizedVisitor);
-            var alkylVisitor = new AlkylChainVisitor(_alkylDoubleBondVisitor, _alkylOxidizedVisitor);
-            var sphingoVisitor = new SphingosineChainVisitor(_sphingoDoubleBondVisitor, _sphingoOxidizedVisitor);
+            var acylVisitor = new AcylChainVisitor(_acylDoubleBondState.AsVisitor(), _acylOxidizedState.AsVisitor());
+            var alkylVisitor = new AlkylChainVisitor(_alkylDoubleBondState.AsVisitor(), _alkylOxidizedState.AsVisitor());
+            var sphingoVisitor = new SphingosineChainVisitor(_sphingoDoubleBondState.AsVisitor(), _sphingoOxidizedState.AsVisitor());
             return new ChainVisitor(acylVisitor, alkylVisitor, sphingoVisitor);
         }
 
-        void ILipidomicsVisitorBuilder.SetAcylDoubleBondVisitor(IVisitor<IDoubleBond, IDoubleBond> doubleBondVisitor) => _acylDoubleBondVisitor = doubleBondVisitor;
-        void ILipidomicsVisitorBuilder.SetAcylOxidizedVisitor(IVisitor<IOxidized, IOxidized> oxidizedVisitor) => _acylOxidizedVisitor = oxidizedVisitor;
-        void ILipidomicsVisitorBuilder.SetAlkylDoubleBondVisitor(IVisitor<IDoubleBond, IDoubleBond> doubleBondVisitor) => _alkylDoubleBondVisitor = doubleBondVisitor;
-        void ILipidomicsVisitorBuilder.SetAlkylOxidizedVisitor(IVisitor<IOxidized, IOxidized> oxidizedVisitor) => _alkylOxidizedVisitor = oxidizedVisitor;
-        void ILipidomicsVisitorBuilder.SetSphingoDoubleBondVisitor(IVisitor<IDoubleBond, IDoubleBond> doubleBondVisitor) => _sphingoDoubleBondVisitor = doubleBondVisitor;
-        void ILipidomicsVisitorBuilder.SetSphingoOxidizedVisitor(IVisitor<IOxidized, IOxidized> oxidizedVisitor) => _sphingoOxidizedVisitor = oxidizedVisitor;
+        void ILipidomicsVisitorBuilder.SetAcylDoubleBond(DoubleBondIndeterminateState state) => _acylDoubleBondState = state;
+        void ILipidomicsVisitorBuilder.SetAcylOxidized(OxidizedIndeterminateState state) => _acylOxidizedState = state;
+
+        void ILipidomicsVisitorBuilder.SetAlkylDoubleBond(DoubleBondIndeterminateState state) => _alkylDoubleBondState = state;
+        void ILipidomicsVisitorBuilder.SetAlkylOxidized(OxidizedIndeterminateState state) => _alkylOxidizedState = state;
+
+        void ILipidomicsVisitorBuilder.SetSphingoDoubleBond(DoubleBondIndeterminateState state) => _sphingoDoubleBondState = state;
+        void ILipidomicsVisitorBuilder.SetSphingoOxidized(OxidizedIndeterminateState state) => _sphingoOxidizedState = state;
     }
 }
