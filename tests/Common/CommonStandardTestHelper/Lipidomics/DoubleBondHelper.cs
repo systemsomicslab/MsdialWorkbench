@@ -9,7 +9,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(expected.Position, actual.Position);
         }
 
-        public static void AreEqual(this Assert assert, DoubleBond expected, DoubleBond actual) {
+        public static void AreEqual(this Assert assert, IDoubleBond expected, IDoubleBond actual) {
             Assert.AreEqual(expected.Count, actual.Count);
             Assert.AreEqual(expected.DecidedCount, actual.DecidedCount);
             Assert.AreEqual(expected.UnDecidedCount, actual.UnDecidedCount);

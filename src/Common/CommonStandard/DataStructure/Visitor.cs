@@ -13,14 +13,9 @@
         TResult Visit(TElement item);
     }
 
-    public interface IDecomposer<TResult, in TElement, out TDecomposed>
-    {
-        TResult Decompose(IAcyclicVisitor visitor, TElement element);
-    }
-
     public interface IDecomposer<out TResult, in TElement> : IAcyclicDecomposer<TResult>
     {
-        TResult Decompose(IAcyclicVisitor visitor, TElement element);
+        TResult Decompose<T>(IAcyclicVisitor visitor, T element) where T : TElement;
     }
 
     public interface IVisitableElement {
@@ -33,8 +28,8 @@
 
         public static IdentityDecomposer<TResult, TElement> Instance => _instance ?? (_instance = new IdentityDecomposer<TResult, TElement>());
 
-        TResult IDecomposer<TResult, TElement>.Decompose(IAcyclicVisitor visitor, TElement element) {
-            if (visitor is IVisitor<TResult, TElement> vis) {
+        TResult IDecomposer<TResult, TElement>.Decompose<T>(IAcyclicVisitor visitor, T element) {
+            if (visitor is IVisitor<TResult, T> vis) {
                 return vis.Visit(element);
             }
             return default;

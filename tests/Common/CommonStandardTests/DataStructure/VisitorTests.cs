@@ -23,8 +23,8 @@ namespace CompMs.Common.DataStructure.Tests
 
     internal class IntDecomposer : IDecomposer<string, int>
     {
-        public string Decompose(IAcyclicVisitor visitor, int element) {
-            if (visitor is IVisitor<string, int> vis) {
+        string IDecomposer<string, int>.Decompose<T>(IAcyclicVisitor visitor, T element) {
+            if (visitor is IVisitor<string, T> vis) {
                 return vis.Visit(element);
             }
             return string.Empty;
@@ -33,7 +33,7 @@ namespace CompMs.Common.DataStructure.Tests
 
     internal class IntListDecomposer : IDecomposer<string, List<int>>
     {
-        public string Decompose(IAcyclicVisitor visitor, List<int> element) {
+        string IDecomposer<string, List<int>>.Decompose<T>(IAcyclicVisitor visitor, T element) {
             if (visitor is IVisitor<string, int> vis) {
                 return string.Join(",", element.Select(vis.Visit));
             }

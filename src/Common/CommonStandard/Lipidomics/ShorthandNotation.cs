@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
-    internal class ChainShorthandNotation : IVisitor<IChain, (IChain, IDoubleBond, IOxidized)>
+    internal class ChainShorthandNotation : IVisitor<AcylChain, AcylChain>, IVisitor<AlkylChain, AlkylChain>, IVisitor<SphingoChain, SphingoChain>
     {
         private readonly AcylChainShorthandNotation _acyl;
         private readonly AlkylChainShorthandNotation _alkyl;
@@ -19,25 +19,20 @@ namespace CompMs.Common.Lipidomics
             _sphingosine = sphingosine ?? throw new ArgumentNullException(nameof(sphingosine));
         }
 
-        public IChain Visit((IChain, IDoubleBond, IOxidized) item) {
-            var (chain, db, ox) = item;
-            if (chain.DoubleBond == db && chain.Oxidized == ox) {
-                return chain;
-            }
-            switch (chain) {
-                case AcylChain acyl:
-                    return _acyl.Visit((acyl, db, ox));
-                case AlkylChain alkyl:
-                    return _alkyl.Visit((alkyl, db, ox));
-                case SphingoChain sphingo:
-                    return _sphingosine.Visit((sphingo, db, ox));
-                default:
-                    throw new NotSupportedException($"Chain {chain.GetType()} is not supported.");
-            }
+        public AcylChain Visit(AcylChain item) {
+            return ((IVisitor<AcylChain, AcylChain>)_acyl).Visit(item);
+        }
+
+        public AlkylChain Visit(AlkylChain item) {
+            return ((IVisitor<AlkylChain, AlkylChain>)_alkyl).Visit(item);
+        }
+
+        public SphingoChain Visit(SphingoChain item) {
+            return ((IVisitor<SphingoChain, SphingoChain>)_sphingosine).Visit(item);
         }
     }
 
-    internal class AcylChainShorthandNotation : IVisitor<AcylChain, AcylChain>, IVisitor<AcylChain, (AcylChain, IDoubleBond, IOxidized)>,  IVisitor<IDoubleBond, (AcylChain, IDoubleBond)>, IVisitor<IOxidized, (AcylChain, IOxidized)>
+    internal class AcylChainShorthandNotation : IVisitor<AcylChain, AcylChain>
     {
         private readonly DoubleBondShorthandNotation _doubleBondNotation;
         private readonly OxidizedShorthandNotation _oxidizedNotation;
@@ -49,35 +44,17 @@ namespace CompMs.Common.Lipidomics
             _oxidizedNotation = oxidizedNotation ?? throw new ArgumentNullException(nameof(oxidizedNotation));
         }
 
-        public AcylChain Visit(AcylChain item) {
-            var db = _doubleBondNotation.Visit(item.DoubleBond);
-            var ox = _oxidizedNotation.Visit(item.Oxidized);
-            if (db == item.DoubleBond && ox == item.Oxidized) {
-                return item;
-            }
-            return new AcylChain(item.CarbonCount, db, ox);
-        }
-
-        public AcylChain Visit((AcylChain, IDoubleBond, IOxidized) item) {
-            var (chain, db, ox) = item;
+        public AcylChain Visit(AcylChain chain) {
+            var db = _doubleBondNotation.Visit(chain.DoubleBond);
+            var ox = _oxidizedNotation.Visit(chain.Oxidized);
             if (chain.DoubleBond == db && chain.Oxidized == ox) {
                 return chain;
             }
             return new AcylChain(chain.CarbonCount, db, ox);
         }
-
-        public IDoubleBond Visit((AcylChain, IDoubleBond) item) {
-            var (_, db) = item;
-            return _doubleBondNotation.Visit(db);
-        }
-
-        public IOxidized Visit((AcylChain, IOxidized) item) {
-            var (_, ox) = item;
-            return _oxidizedNotation.Visit(ox);
-        }
     }
 
-    internal class AlkylChainShorthandNotation : IVisitor<AlkylChain, AlkylChain>, IVisitor<AlkylChain, (AlkylChain, IDoubleBond, IOxidized)>, IVisitor<IDoubleBond, (AlkylChain, IDoubleBond)>, IVisitor<IOxidized, (AlkylChain, IOxidized)>
+    internal class AlkylChainShorthandNotation : IVisitor<AlkylChain, AlkylChain>
     {
         private readonly DoubleBondShorthandNotation _doubleBondNotation;
         private readonly OxidizedShorthandNotation _oxidizedNotation;
@@ -89,35 +66,17 @@ namespace CompMs.Common.Lipidomics
             _oxidizedNotation = oxidizedNotation ?? throw new ArgumentNullException(nameof(oxidizedNotation));
         }
 
-        public AlkylChain Visit(AlkylChain item) {
-            var db = _doubleBondNotation.Visit(item.DoubleBond);
-            var ox = _oxidizedNotation.Visit(item.Oxidized);
-            if (db == item.DoubleBond && ox == item.Oxidized) {
-                return item;
-            }
-            return new AlkylChain(item.CarbonCount, db, ox);
-        }
-
-        public AlkylChain Visit((AlkylChain, IDoubleBond, IOxidized) item) {
-            var (chain, db, ox) = item;
+        public AlkylChain Visit(AlkylChain chain) {
+            var db = _doubleBondNotation.Visit(chain.DoubleBond);
+            var ox = _oxidizedNotation.Visit(chain.Oxidized);
             if (chain.DoubleBond == db && chain.Oxidized == ox) {
                 return chain;
             }
             return new AlkylChain(chain.CarbonCount, db, ox);
         }
-
-        public IDoubleBond Visit((AlkylChain, IDoubleBond) item) {
-            var (_, db) = item;
-            return _doubleBondNotation.Visit(db);
-        }
-
-        public IOxidized Visit((AlkylChain, IOxidized) item) {
-            var (_, ox) = item;
-            return _oxidizedNotation.Visit(ox);
-        }
     }
 
-    internal class SphingoChainShorthandNotation : IVisitor<SphingoChain, SphingoChain>, IVisitor<SphingoChain, (SphingoChain, IDoubleBond, IOxidized)>, IVisitor<IDoubleBond, (SphingoChain, IDoubleBond)>, IVisitor<IOxidized, (SphingoChain, IOxidized)>
+    internal class SphingoChainShorthandNotation : IVisitor<SphingoChain, SphingoChain>
     {
         private readonly DoubleBondShorthandNotation _doubleBondNotation;
         private readonly OxidizedShorthandNotation _oxidizedNotation;
@@ -129,31 +88,13 @@ namespace CompMs.Common.Lipidomics
             _oxidizedNotation = oxidizedNotation ?? throw new ArgumentNullException(nameof(oxidizedNotation));
         }
 
-        public SphingoChain Visit(SphingoChain item) {
-            var db = _doubleBondNotation.Visit(item.DoubleBond);
-            var ox = _oxidizedNotation.Visit(item.Oxidized);
-            if (db == item.DoubleBond && ox == item.Oxidized) {
-                return item;
-            }
-            return new SphingoChain(item.CarbonCount, db, ox);
-        }
-
-        public SphingoChain Visit((SphingoChain, IDoubleBond, IOxidized) item) {
-            var (chain, db, ox) = item;
+        public SphingoChain Visit(SphingoChain chain) {
+            var db = _doubleBondNotation.Visit(chain.DoubleBond);
+            var ox = _oxidizedNotation.Visit(chain.Oxidized);
             if (chain.DoubleBond == db && chain.Oxidized == ox) {
                 return chain;
             }
             return new SphingoChain(chain.CarbonCount, db, ox);
-        }
-
-        public IDoubleBond Visit((SphingoChain, IDoubleBond) item) {
-            var (_, db) = item;
-            return _doubleBondNotation.Visit(db);
-        }
-
-        public IOxidized Visit((SphingoChain, IOxidized) item) {
-            var (_, ox) = item;
-            return _oxidizedNotation.Visit(ox);
         }
     }
 

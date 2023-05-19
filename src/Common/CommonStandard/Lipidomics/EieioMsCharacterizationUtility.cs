@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
+using CompMs.Common.DataStructure;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using System;
@@ -59,8 +60,8 @@ namespace CompMs.Common.Lipidomics
                 }
                 else if (result.IsPositionIonsExisted)
                 { // chain existed expected: PC O-18:0/18:2
-                    var chain1 = deepChains.Chains[0].Accept<IChain>(ChainShorthandNotation.Default, new ChainDecomposer<IChain>());
-                    var chain2 = deepChains.Chains[1].Accept<IChain>(ChainShorthandNotation.Default, new ChainDecomposer<IChain>());
+                    var chain1 = deepChains.Chains[0].Accept<IChain>(ChainShorthandNotation.Default, IdentityDecomposer<IChain, IChain>.Instance);
+                    var chain2 = deepChains.Chains[1].Accept<IChain>(ChainShorthandNotation.Default, IdentityDecomposer<IChain, IChain>.Instance);
                     var obj = new Lipid(molecule.LipidClass, molecule.Mass, new PositionLevelChains(chain1, chain2));
                     return (obj, new double[2] { score, counter });
                 }
@@ -73,8 +74,8 @@ namespace CompMs.Common.Lipidomics
                 }
                 else
                 { // chain existed expected: PC O-18:0_18:2
-                    var chain1 = deepChains.Chains[0].Accept<IChain>(ChainShorthandNotation.Default, new ChainDecomposer<IChain>());
-                    var chain2 = deepChains.Chains[1].Accept<IChain>(ChainShorthandNotation.Default, new ChainDecomposer<IChain>());
+                    var chain1 = deepChains.Chains[0].Accept<IChain>(ChainShorthandNotation.Default, IdentityDecomposer<IChain, IChain>.Instance);
+                    var chain2 = deepChains.Chains[1].Accept<IChain>(ChainShorthandNotation.Default, IdentityDecomposer<IChain, IChain>.Instance);
                     var obj = new Lipid(molecule.LipidClass, molecule.Mass, new MolecularSpeciesLevelChains(chain1, chain2));
                     return (obj, new double[2] { score, counter });
                 }
@@ -102,7 +103,7 @@ namespace CompMs.Common.Lipidomics
                 //var sphingo = new SphingoChain(deepChains.Chains[0].CarbonCount,
                 //            new DoubleBond(deepChains.Chains[0].DoubleBondCount),
                 //            new Oxidized(deepChains.Chains[0].OxidizedCount));
-                var nacyl = deepChains.Chains[1].Accept<IChain>(ChainShorthandNotation.Default, new ChainDecomposer<IChain>());
+                var nacyl = deepChains.Chains[1].Accept<IChain>(ChainShorthandNotation.Default, IdentityDecomposer<IChain, IChain>.Instance);
                 obj = new Lipid(molecule.LipidClass, molecule.Mass, new PositionLevelChains(sphingo, nacyl));
             }
             return (obj, new double[2] { score, counter });
