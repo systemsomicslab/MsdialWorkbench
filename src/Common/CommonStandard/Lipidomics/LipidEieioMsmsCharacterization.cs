@@ -2067,7 +2067,11 @@ namespace CompMs.Common.Lipidomics
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C, threshold);
                     var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O, threshold);
-                    if (!isClassIonFound || !isClassIonFound2 || !isClassIonFound3) return null;
+                    if ((isClassIonFound ? 1 : 0) + (isClassIonFound2 ? 1 : 0) + (isClassIonFound3 ? 1 : 0) < 2)
+                    {
+                        return null;
+                    }
+                    //if (!isClassIonFound || !isClassIonFound2 || !isClassIonFound3) return null;
 
                     // reject EtherPE 
                     var sn1alkyl = (MassDiffDictionary.CarbonMass * snCarbon)
