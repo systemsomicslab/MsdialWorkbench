@@ -62,7 +62,7 @@ namespace CompMs.Common.Lipidomics
         {
             if (lipid.LipidClass == LbmClass.GM3)
             {
-                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+NH4]+")
+                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+NH4]+" || adduct.AdductIonName == "[M+Na]+")
                 {
                     return true;
                 }
@@ -73,7 +73,7 @@ namespace CompMs.Common.Lipidomics
         public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null)
         {
             var spectrum = new List<SpectrumPeak>();
-            var nlmass = adduct.AdductIonName == "[M+NH4]+" ? adduct.AdductIonAccurateMass :0.0;
+            var nlmass = adduct.AdductIonName == "[M+NH4]+" ? adduct.AdductIonAccurateMass : 0.0;
             spectrum.AddRange(GetGM3Spectrum(lipid, adduct));
             if (lipid.Chains is PositionLevelChains plChains)
             {
@@ -120,17 +120,26 @@ namespace CompMs.Common.Lipidomics
             {
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
                 new SpectrumPeak(h2oLossMass - MassDiffDictionary.HydrogenMass, 100d, "[M-H2O-H+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak(h2oLossMass - C11H15NO7 - C6H10O5-H2O, 150d, "[M-H2O-C17H27NO13+adduct]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak(C11H15NO7 + C6H10O5*2 +H2O*2 +C2H3N+ adductmass, 300d, "[C23H35NO17 +C2H3N +2H2O +adduct]+")  { SpectrumComment = SpectrumComment.metaboliteclass }, //675
+            };
+            if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+NH4]+")
+            {
+                spectrum.AddRange
+                (
+                     new[]
+                     {
                 new SpectrumPeak(h2oLossMass - C11H15NO7, 100d, "[M-H2O-C11H15NO7+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
                 new SpectrumPeak(h2oLossMass - C11H15NO7-H2O, 100d, "[M-H2O-C11H17NO8+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
                 new SpectrumPeak(h2oLossMass - C11H15NO7 - C6H10O5, 150d, "[M-H2O-C17H25NO12+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
-                new SpectrumPeak(h2oLossMass - C11H15NO7 - C6H10O5-H2O, 150d, "[M-H2O-C17H27NO13+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
                 new SpectrumPeak(h2oLossMass - C11H15NO7 - C6H10O5 *2, 150d, "[M-H2O-C23H35NO17+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
                 new SpectrumPeak(h2oLossMass - C11H15NO7 - C6H10O5 *2 -H2O, 300d, "[M-H2O-C23H37NO18+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true},//548
+                new SpectrumPeak(C11H15NO7 + C6H10O5 + H2O + adductmass, 300d, "[C17H27NO13+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true}, //454
                 new SpectrumPeak(C11H15NO7 + H2O + adductmass, 300d, "[C11H17NO8+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true}, //292
                 new SpectrumPeak(C11H15NO7 + adductmass, 300d, "[C11H15NO7+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass }, //274
-                new SpectrumPeak(C11H15NO7 + C6H10O5 + H2O + adductmass, 300d, "[C17H27NO13+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true}, //454
-                new SpectrumPeak(C11H15NO7 + C6H10O5*2 +H2O*2 +C2H3N+ adductmass, 300d, "[C23H35NO17 +C2H3N +2H2O  +H]+")  { SpectrumComment = SpectrumComment.metaboliteclass }, //675
-            };
+                     }
+                );
+            }
             if (adduct.AdductIonName == "[M+NH4]+")
             {
                 spectrum.AddRange
@@ -141,6 +150,21 @@ namespace CompMs.Common.Lipidomics
                      }
                 );
             }
+            else if (adduct.AdductIonName == "[M+Na]+")
+            {
+                spectrum.AddRange
+                (
+                     new[]
+                     {
+                new SpectrumPeak(h2oLossMass - C11H15NO7 - MassDiffDictionary.HydrogenMass*2, 100d, "[M-H2O-C11H17NO7+Na]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak(h2oLossMass - C11H15NO7-H2O + MassDiffDictionary.HydrogenMass, 100d, "[M-H2O-C11H16NO8+Na]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak(h2oLossMass - C11H15NO7 - C6H10O5 + MassDiffDictionary.CarbonMass + MassDiffDictionary.OxygenMass, 150d, "[M-H2O-C16H25NO11+Na]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak(adduct.ConvertToMz(C11H15NO7 + C6H10O5 + H2O + MassDiffDictionary.OxygenMass), 300d, "[C17H27NO14+Na]+")  { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true}, //454
+                new SpectrumPeak(adduct.ConvertToMz(C11H15NO7 -MassDiffDictionary.CarbonMass+ MassDiffDictionary.HydrogenMass*2), 500d, "[C10H17NO7+Na]+")  { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true}, //292
+                new SpectrumPeak(adduct.ConvertToMz(C11H15NO7 -MassDiffDictionary.CarbonMass+ MassDiffDictionary.HydrogenMass*2), 200d, "[C10H17NO7+Na]+")  { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true}, //292
+                     }
+                );
+            }
             return spectrum.ToArray();
         }
 
@@ -148,7 +172,7 @@ namespace CompMs.Common.Lipidomics
         {
             var chainMass = sphingo.Mass + MassDiffDictionary.HydrogenMass;
             var spectrum = new List<SpectrumPeak>();
-            if (adduct.AdductIonName == "[M+H]+")
+            if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+NH4]+")
             {
                 spectrum.AddRange
                 (

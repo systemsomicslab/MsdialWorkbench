@@ -124,8 +124,8 @@ namespace CompMs.Common.Lipidomics
             var spectrum = new List<SpectrumPeak>
             {
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
-                new SpectrumPeak(adduct.ConvertToMz(C5H14NO4P), 500d, "Header") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
-                new SpectrumPeak(adduct.ConvertToMz(Gly_C), 100d, "Gly-C")  { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak(adduct.ConvertToMz(C5H14NO4P), 300d, "Header") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
+                new SpectrumPeak(adduct.ConvertToMz(Gly_C), 150d, "Gly-C")  { SpectrumComment = SpectrumComment.metaboliteclass },
                 new SpectrumPeak(adduct.ConvertToMz(Gly_O), 100d, "Gly-O") { SpectrumComment = SpectrumComment.metaboliteclass },
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - C5H14NO4P - MassDiffDictionary.HydrogenMass*2), 25d, "Precursor-Header") { SpectrumComment = SpectrumComment.metaboliteclass },
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass)/2, 150d, "[Precursor]2+") { SpectrumComment = SpectrumComment.metaboliteclass },
@@ -136,8 +136,8 @@ namespace CompMs.Common.Lipidomics
                 (
                      new[]
                      {
-                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - C5H14NO4P), 100d, "Precursor-Header") { SpectrumComment = SpectrumComment.metaboliteclass },
-                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - C3H9N), 100d, "Precursor-C3H9N") { SpectrumComment = SpectrumComment.metaboliteclass },
+                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - C5H14NO4P), 300d, "Precursor-Header") { SpectrumComment = SpectrumComment.metaboliteclass },
+                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - C3H9N), 200d, "Precursor-C3H9N") { SpectrumComment = SpectrumComment.metaboliteclass },
                      }
                 );
             }

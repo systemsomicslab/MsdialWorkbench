@@ -197,7 +197,7 @@ namespace CompMs.Common.Lipidomics
                      {
                          new SpectrumPeak(lipid.Mass - chainMass + adductMass, 200d, $"-{acylChain}") { SpectrumComment = SpectrumComment.acylchain },
                          new SpectrumPeak(chainMass + MassDiffDictionary.ProtonMass, 100d, $"{acylChain} acyl") { SpectrumComment = SpectrumComment.acylchain },
-                         //new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chainMass - H2O), 100d, $"-{acylChain}-H2O") { SpectrumComment = SpectrumComment.acylchain },
+                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chainMass - H2O), 100d, $"-{acylChain}-H2O") { SpectrumComment = SpectrumComment.acylchain },
                      }
                 );
             }
