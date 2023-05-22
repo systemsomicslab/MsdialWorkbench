@@ -203,10 +203,11 @@ namespace CompMs.Common.Lipidomics
         {
             var lipidMass = lipid.Mass - MassDiffDictionary.HydrogenMass;
             var chainMass = acylChain.Mass;
+            var adductmass = adduct.AdductIonName == "[M+NH4]+" ? MassDiffDictionary.ProtonMass : adduct.AdductIonAccurateMass;
 
             return new[]
             {
-                new SpectrumPeak(adduct.ConvertToMz(lipidMass - chainMass - MassDiffDictionary.OxygenMass - CH2), 100d, "-CH2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
+                new SpectrumPeak(lipidMass - chainMass + adductmass - MassDiffDictionary.OxygenMass - CH2, 100d, "-CD2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
             };
         }
 

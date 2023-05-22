@@ -3,6 +3,7 @@ using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Interfaces;
+using MathNet.Numerics.Distributions;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -210,8 +211,8 @@ namespace CompMs.Common.Lipidomics
             var chainMass = acylChain.Mass;
             return new[]
             {
-                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chainMass - MassDiffDictionary.OxygenMass - CD2), 100d, "-CD2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
-                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chainMass - H2O - MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass - CD2), 100d, "-H2O -CD2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
+                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chainMass - MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass - CD2), 100d, "-CD2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
+                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chainMass - MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass - H2O - CD2), 100d, "-H2O -CD2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
             };
         }
 
