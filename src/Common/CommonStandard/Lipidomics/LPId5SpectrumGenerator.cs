@@ -27,7 +27,7 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.OxygenMass * 5,
         }.Sum();
 
-        private static readonly double C3H4D5O6P = new[] { // 172.013675 OCC(O)COP(O)(O)=O
+        private static readonly double C3H4D5O6P = new[] { //  OCC(O)COP(O)(O)=O
             MassDiffDictionary.CarbonMass * 3,
             MassDiffDictionary.HydrogenMass * 4,
             MassDiffDictionary.OxygenMass * 6,
@@ -196,7 +196,7 @@ namespace CompMs.Common.Lipidomics
                          new SpectrumPeak(lipidMass - chainMass, 150d, $"-{acylChain}") { SpectrumComment = SpectrumComment.acylchain },
                          new SpectrumPeak(lipidMass - chainMass - H2O, 100d, $"-{acylChain} -H2O") { SpectrumComment = SpectrumComment.acylchain },
                           new SpectrumPeak(chainMass + MassDiffDictionary.ProtonMass, 100d, $"{acylChain} acyl+") { SpectrumComment = SpectrumComment.acylchain },
-                        }
+                         }
                     );
             }
             return spectrum.ToArray();
@@ -206,10 +206,11 @@ namespace CompMs.Common.Lipidomics
         {
             var lipidMass = lipid.Mass - MassDiffDictionary.HydrogenMass;
             var chainMass = acylChain.Mass;
+            var adductmass = adduct.AdductIonName == "[M+NH4]+" ? MassDiffDictionary.ProtonMass : adduct.AdductIonAccurateMass;
 
             return new[]
             {
-                new SpectrumPeak(adduct.ConvertToMz(lipidMass - chainMass - MassDiffDictionary.OxygenMass - CD2), 100d, "-CD2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
+                new SpectrumPeak(lipidMass - chainMass + adductmass - MassDiffDictionary.OxygenMass - CD2, 100d, "-CD2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
             };
         }
 
