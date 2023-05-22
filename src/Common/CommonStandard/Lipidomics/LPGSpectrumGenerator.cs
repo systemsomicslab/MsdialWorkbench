@@ -87,7 +87,7 @@ namespace CompMs.Common.Lipidomics
             if (lipid.Chains is PositionLevelChains plChains)
             {
                 spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.Chains, adduct));
-                //spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.Chains[0], adduct));
+                spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.Chains[0], adduct));
                 spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.Chains.OfType<AcylChain>(), adduct));
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
@@ -197,7 +197,7 @@ namespace CompMs.Common.Lipidomics
                      {
                          new SpectrumPeak(lipid.Mass - chainMass + adductMass, 200d, $"-{acylChain}") { SpectrumComment = SpectrumComment.acylchain },
                          new SpectrumPeak(chainMass + MassDiffDictionary.ProtonMass, 100d, $"{acylChain} acyl") { SpectrumComment = SpectrumComment.acylchain },
-                         //new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chainMass - H2O), 100d, $"-{acylChain}-H2O") { SpectrumComment = SpectrumComment.acylchain },
+                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chainMass - H2O), 100d, $"-{acylChain}-H2O") { SpectrumComment = SpectrumComment.acylchain },
                      }
                 );
             }
