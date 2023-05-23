@@ -207,6 +207,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.CAR:
                 case LbmClass.DMEDFA:
                 case LbmClass.DMEDOxFA:
+                case LbmClass.CE:
                 case LbmClass.CE_d7:
                     return EidDefaultCharacterization.Characterize4SingleAcylChain(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.SM:

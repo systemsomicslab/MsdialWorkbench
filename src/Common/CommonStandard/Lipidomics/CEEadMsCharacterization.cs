@@ -11,7 +11,7 @@ namespace CompMs.Common.Lipidomics
         {
 
             var defaultResult = EieioMsCharacterizationUtility.GetDefaultScore(
-                    scan, reference, tolerance, mzBegin, mzEnd, 1, 1, 0, 0.5);
+                    scan, reference, tolerance, mzBegin, mzEnd, 1, 1, 0, 2); // doublebond position cannot be determined
             return StandardMsCharacterizationUtility.GetDefaultCharacterizationResultForSingleAcylChainLipid(molecule, defaultResult);
         }
     }
