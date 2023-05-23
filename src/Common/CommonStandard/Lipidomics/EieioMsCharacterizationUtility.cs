@@ -273,7 +273,13 @@ namespace CompMs.Common.Lipidomics
                         new DoubleBond(deepChains.Chains[0].DoubleBondCount),
                         new Oxidized(deepChains.Chains[0].OxidizedCount));
             }
-            var obj = new Lipid(molecule.LipidClass, molecule.Mass, new MolecularSpeciesLevelChains(acyl1));
+            var obj = new Lipid(molecule.LipidClass, molecule.Mass, new TotalChain(chains.CarbonCount, chains.DoubleBondCount, chains.OxidizedCount, 3, 0, 0));
+            if (result.IsDoubleBondIonsExisted)
+            { // chain existed expected:TG 16:0_18:1(11)_18:2(9,12)
+                var acyls = deepChains.Chains.OrderBy(n => n.DoubleBondCount).ThenBy(n => n.CarbonCount).ToList();
+                obj = new Lipid(molecule.LipidClass, molecule.Mass, new MolecularSpeciesLevelChains(acyl1)); ;
+                return (obj, new double[2] { score, counter });
+            }
             return (obj, new double[2] { score, counter });
         }
 
