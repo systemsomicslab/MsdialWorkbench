@@ -120,6 +120,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             var notification = TaskNotification.Start("Loading alignment results...");
             broker.Publish(notification);
             model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => broker.Publish(TaskNotification.End(notification)));
+
+            var findTargetCompoundsSpotViewModel = new FindTargetCompoundsSpotViewModel(model.FindTargetCompoundSpotModel, broker).AddTo(Disposables);
+            ShowFindCompoundSpotViewCommand = new ReactiveCommand().WithSubscribe(() => _broker.Publish(findTargetCompoundsSpotViewModel)).AddTo(Disposables);
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
@@ -173,6 +176,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 _peakSpotTableService.Show(AlignmentSpotTableViewModel);
             }
         }
+
+        public ReactiveCommand ShowFindCompoundSpotViewCommand { get; }
 
         public DelegateCommand SaveSpectraCommand => _saveSpectraCommand ?? (_saveSpectraCommand = new DelegateCommand(SaveSpectra, _model.CanSaveSpectra));
         private DelegateCommand _saveSpectraCommand;
