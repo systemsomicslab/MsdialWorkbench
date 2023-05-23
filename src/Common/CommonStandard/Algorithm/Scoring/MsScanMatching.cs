@@ -112,6 +112,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.GM3:
                     return GM3EadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
 
+                case LbmClass.CE:
+                    return CEEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.MG:
                     return MGEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.CAR:
@@ -140,7 +142,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.TG_d5:
                     return TGEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.CE_d7:
-                    return MGEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                    return CEEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.DG_d5:
                     return DGEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.LPC_d5:
