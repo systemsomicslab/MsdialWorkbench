@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Search;
-using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
@@ -45,7 +44,7 @@ namespace CompMs.App.Msdial.Model.Export
             if (!IsSelected) {
                 return;
             }
-            var filename = $"{alignmentFile.FileName}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}.xml";
+            var filename = $"SpectrumAndReference_{alignmentFile.FileName}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}.xml";
             notification?.Invoke($"Export {filename}");
             var spots = _peakSpotSupplyer.Supply(alignmentFile, default); // TODO: cancellation
             var doc = new XElement("Result");
@@ -78,6 +77,16 @@ namespace CompMs.App.Msdial.Model.Export
                     var pair = matchingCalculator.GetMatchedSpectrum(result.Spectrum, reference.Spectrum);
                     Write(peakElement, pair);
                 }
+            }
+            var filesElement = new XElement("Files");
+            doc.Add(filesElement);
+            foreach (var analysisFile in _analysisFiles) {
+                var fileElement = new XElement("File",
+                    new XElement("Id", analysisFile.AnalysisFileId),
+                    new XElement("Name", analysisFile.AnalysisFileName),
+                    new XElement("Class", analysisFile.AnalysisFileClass),
+                    new XElement("Type", analysisFile.AnalysisFileType));
+                filesElement.Add(fileElement);
             }
             doc.Save(Path.Combine(exportDirectory, filename));
             ClearLoaders();
