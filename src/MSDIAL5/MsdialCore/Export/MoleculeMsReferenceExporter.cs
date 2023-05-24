@@ -19,8 +19,9 @@ namespace CompMs.MsdialCore.Export
         }
 
         public void Save(Stream stream) {
-            var writer = new StreamWriter(stream, encoding: Encoding.UTF8, bufferSize: 1024, leaveOpen: true);
-            MspFileParser.WriteMspFields(_cache, writer);
+            using (var writer = new StreamWriter(stream, encoding: Encoding.UTF8, bufferSize: 1024, leaveOpen: true)) {
+                MspFileParser.WriteMspFields(_cache, writer);
+            }
         }
 
         public void Dispose() {
