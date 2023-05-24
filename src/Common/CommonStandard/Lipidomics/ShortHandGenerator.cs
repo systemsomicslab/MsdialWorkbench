@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
@@ -13,14 +12,8 @@ namespace CompMs.Common.Lipidomics
             yield return Short(chains);
         }
 
-        private TotalChain Short(SeparatedChains chains) {
-            return new TotalChain(
-                chains.CarbonCount,
-                chains.DoubleBondCount,
-                chains.OxidizedCount,
-                chains.Chains.OfType<AcylChain>().Count(),
-                chains.Chains.OfType<AlkylChain>().Count(),
-                chains.Chains.OfType<SphingoChain>().Count()); 
+        private ITotalChain Short(ITotalChain chains) {
+            return ChainsIndeterminateState.SpeciesLevel.Indeterminate(chains);
         }
 
         public IEnumerable<ITotalChain> Separate(TotalChain chain) {
