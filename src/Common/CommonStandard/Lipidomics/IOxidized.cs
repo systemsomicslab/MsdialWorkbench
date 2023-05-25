@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
-    public interface IOxidized : IVisitableElement<IOxidized>, IEquatable<IOxidized>
+    public interface IOxidized : IVisitableElement, IEquatable<IOxidized>
     {
         int Count { get; }
         int DecidedCount { get; }
@@ -58,8 +58,11 @@ namespace CompMs.Common.Lipidomics
             return new Oxidized(oxidises.Length, oxidises);
         }
 
-        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, IOxidized, TDecomposed> decomposer) {
-            return decomposer.Decompose(visitor, this);
+        public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
+            if (decomposer is IDecomposer<TResult, Oxidized> concrete) {
+                return concrete.Decompose(visitor, this);
+            }
+            return default;
         }
 
         public bool Includes(IOxidized oxidized) {
