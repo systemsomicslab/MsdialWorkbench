@@ -45,8 +45,8 @@ namespace CompMs.App.Msdial.Model.Export
 
         private XElement ToXmlElement(MoleculeMsReference reference) {
             var referenceElement = new XElement("Reference",
-                new XElement("Name", reference.Name),
                 new XElement("Adduct", reference.AdductType.AdductIonName));
+            AddIfContentIsNotEmpty(referenceElement, "Name", reference.Name);
             if (reference.PrecursorMz > 0) {
                 referenceElement.Add(new XElement("Mz", reference.PrecursorMz));
             }
@@ -59,10 +59,10 @@ namespace CompMs.App.Msdial.Model.Export
         private async Task<XElement> ToXmlElement(AlignmentSpotPropertyModel spot, MoleculeMsReference reference, MatchedSpotCandidateCalculator calculator) {
             var spotElement = new XElement("AlignedSpot",
                 new XElement("SpotId", spot.MasterAlignmentID),
-                new XElement("Name", spot.Name),
                 new XElement("Adduct", spot.AdductIonName),
                 new XElement("Mz", spot.Mass),
                 ToXmlElement(((IChromatogramPeak)spot).ChromXs));
+            AddIfContentIsNotEmpty(spotElement, "Name", spot.Name);
             var task = spot.AlignedPeakPropertiesModelProperty.ToTask();
             var peaks = spot.AlignedPeakPropertiesModelProperty.Value;
             if (peaks is null) {
@@ -77,7 +77,7 @@ namespace CompMs.App.Msdial.Model.Export
         private XElement ToXml(MatchedSpotCandidate<AlignmentChromPeakFeatureModel> candidate) {
             var peakElement = new XElement("Peak");
             peakElement.Add(new XElement("File", candidate.Spot.FileName));
-            peakElement.Add(new XElement("Name", candidate.Spot.Name));
+            AddIfContentIsNotEmpty(peakElement, "Name", candidate.Spot.Name);
             peakElement.Add(new XElement("Adduct", candidate.Spot.Adduct.AdductIonName));
             peakElement.Add(new XElement("Mz", candidate.Spot.Mass));
             peakElement.Add(ToXmlElement(candidate.Spot.ChromXsTop));
@@ -128,6 +128,12 @@ namespace CompMs.App.Msdial.Model.Export
                 time.Add(new XElement("Mz", chrom.Mz.Value));
             }
             return time;
+        }
+
+        private void AddIfContentIsNotEmpty(XElement element, string xName, string content) {
+            if (!string.IsNullOrEmpty(content)) {
+                element.Add(new XElement(xName, content));
+            }
         }
     }
 }

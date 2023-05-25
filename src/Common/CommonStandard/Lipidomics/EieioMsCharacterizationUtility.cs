@@ -163,10 +163,14 @@ namespace CompMs.Common.Lipidomics
 
         public static (ILipid, double[]) GetDefaultCharacterizationResultForSingleAcylChainLipid(ILipid molecule, LipidMsCharacterizationResult result) // CAR, steroidal ether etc.
         {
-            var converter = MOLECULAR_SPECIES_AND_DOUBLEBOND_LEVEL;
-            if (molecule.Chains.OxidizedCount > 0) //TBC
+            var converter = SPECIES_LEVEL;
+            if (result.IsDoubleBondIonsExisted)
             {
-                converter = MOLECULAR_SPECIES_LEVEL;
+                converter = MOLECULAR_SPECIES_AND_DOUBLEBOND_LEVEL;
+                if (molecule.Chains.OxidizedCount > 0) //TBC
+                {
+                    converter = MOLECULAR_SPECIES_LEVEL;
+                }
             }
             return (molecule.Accept(converter, IdentityDecomposer<ILipid, ILipid>.Instance), new double[2] { result.TotalScore, result.TotalMatchedIonCount });
         }

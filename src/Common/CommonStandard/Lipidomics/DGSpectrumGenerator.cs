@@ -95,6 +95,7 @@ namespace CompMs.Common.Lipidomics
             var spectrum = new List<SpectrumPeak>
             {
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
+                //new SpectrumPeak(adduct.ConvertToMz(lipid.Mass)/2, 50d, $"[precursor]2+") { SpectrumComment = SpectrumComment.precursor },
             };
             if (adduct.AdductIonName == "[M+NH4]+")
             {
@@ -139,6 +140,7 @@ namespace CompMs.Common.Lipidomics
                 (
                      new[]
                      {
+                        new SpectrumPeak(adduct.ConvertToMz(chainMass + H2O), 50d, $"{acylChain}+O") { SpectrumComment = SpectrumComment.acylchain },
                         new SpectrumPeak(lipidMass - chainMass - MassDiffDictionary.HydrogenMass * 2, 50d, $"-{acylChain}") { SpectrumComment = SpectrumComment.acylchain },
                         new SpectrumPeak(lipidMass - chainMass - MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass, 200d, $"-{acylChain}-O") { SpectrumComment = SpectrumComment.acylchain },
                      }
