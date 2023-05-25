@@ -97,6 +97,10 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildDialog<AnalysisResultExportWin>);
             broker.ToObservable<AlignmentResultExportViewModel>()
                 .Subscribe(ShowChildDialog<AlignmentResultExportWin>);
+            broker.ToObservable<TargetCompoundLibrarySettingViewModel>()
+                .Subscribe(OpenTargetCompoundLibrarySettingView);
+            broker.ToObservable<FindTargetCompoundsSpotViewModel>()
+                .Subscribe(ShowFindTargetCompoundsSpotView);
 #if RELEASE
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
 #elif DEBUG
@@ -249,6 +253,42 @@ namespace CompMs.App.Msdial.View.Core
                 CancelCommand = viewmodel.CancelCommand,
             };
             dialog.Show();
+        }
+
+        private void ShowFindTargetCompoundsSpotView(FindTargetCompoundsSpotViewModel viewmodel) {
+            var dialog = new SettingDialog
+            {
+                Height = 800, Width = 400,
+                Title = "Find match peak spots",
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Content = new FindTargetCompoundsSpotView
+                {
+                    DataContext = viewmodel,
+                },
+                ApplyCommand = CommonMVVM.NeverCommand.Instance,
+                FinishCommand = CommonMVVM.IdentityCommand.Instance,
+                CancelCommand = CommonMVVM.NeverCommand.Instance,
+            };
+            dialog.Show();
+        }
+
+        private void OpenTargetCompoundLibrarySettingView(TargetCompoundLibrarySettingViewModel viewmodel) {
+            var dialog = new SettingDialog
+            {
+                Height = 600, Width = 400,
+                Title = "Select library file",
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Content = new TargetCompoundsLibrarySettingView
+                {
+                    DataContext = viewmodel,
+                },
+                ApplyCommand = CommonMVVM.NeverCommand.Instance,
+                FinishCommand = CommonMVVM.IdentityCommand.Instance,
+                CancelCommand = CommonMVVM.NeverCommand.Instance,
+            };
+            dialog.ShowDialog();
         }
 
         private void OpenPCAPLSResultView(PCAPLSResultViewModel viewmodel) {

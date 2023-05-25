@@ -57,6 +57,11 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.Hydrogen2Mass * 7,
             - MassDiffDictionary.HydrogenMass * 7,
         }.Sum();
+        private static readonly double CD2 = new[]
+        {
+            MassDiffDictionary.Hydrogen2Mass * 2,
+            MassDiffDictionary.CarbonMass,
+        }.Sum();
 
         public CerNSd7SpectrumGenerator()
         {
@@ -91,7 +96,7 @@ namespace CompMs.Common.Lipidomics
                 if (plChains.Chains[0] is SphingoChain sphingo)
                 {
                     spectrum.AddRange(GetSphingoSpectrum(lipid, sphingo, adduct));
-                    spectrum.AddRange(GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlmass, 30d));
+                    spectrum.AddRange(GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlmass, 100d));
                 }
                 if (plChains.Chains[1] is AcylChain acyl)
                 {
@@ -200,6 +205,10 @@ namespace CompMs.Common.Lipidomics
             {
                 diffs[i] = CH2;
             }
+            //for (int i = sphingo.CarbonCount - 3; i < sphingo.CarbonCount; i++)
+            //{
+            //    diffs[i] = CD2;
+            //}
 
             if (sphingo.Oxidized != null)
             {
@@ -223,7 +232,7 @@ namespace CompMs.Common.Lipidomics
             }
             for (int i = sphingo.CarbonCount - 3; i < sphingo.CarbonCount; i++)
             {
-                diffs[i] = diffs[i] + (MassDiffDictionary.HydrogenMass * 2)*(i - sphingo.CarbonCount +4);
+                diffs[i] = diffs[i] + (MassDiffDictionary.Hydrogen2Mass * 2 - MassDiffDictionary.HydrogenMass * 2)*(i - sphingo.CarbonCount +4);
             }
 
             var peaks = new List<SpectrumPeak>();

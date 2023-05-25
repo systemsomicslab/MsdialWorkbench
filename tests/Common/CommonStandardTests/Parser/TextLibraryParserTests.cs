@@ -409,6 +409,20 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
             StringAssert.Contains(message, expected);
             Assert.IsNull(result);
         }
+
+        [TestMethod()]
+        public void TextLibraryReaderRemoveQuatationTest()
+        {
+            string data = string.Join("\r\n", new string[]
+            {
+                "NAME\tMZ",
+                "\"PC 36:2|PC 18:0_18:2(9,12)\"\t753.6134",
+            });
+
+            var sr = new StringReader(data);
+            var results = TextLibraryParser.TextLibraryReader(sr, out _);
+            Assert.AreEqual("PC 36:2|PC 18:0_18:2(9,12)", results[0].Name);
+        }
     }
 
 }

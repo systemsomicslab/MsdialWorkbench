@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
+using CompMs.Common.DataStructure;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Parser;
@@ -67,6 +68,10 @@ namespace CompMs.Common.Lipidomics.Tests
         public LipidDescription Description => LipidDescription.None;
 
         public ITotalChain Chains => throw new System.NotImplementedException();
+
+        public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
+            throw new System.NotImplementedException();
+        }
 
         public bool Equals(ILipid other) {
             throw new System.NotImplementedException();

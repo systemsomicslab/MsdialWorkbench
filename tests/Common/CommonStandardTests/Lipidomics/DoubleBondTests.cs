@@ -56,24 +56,25 @@ namespace CompMs.Common.Lipidomics.Tests
         [TestMethod()]
         [DataTestMethod]
         [DynamicData(nameof(GetAcceptTestData), DynamicDataSourceType.Method)]
-        public void DoubleBondAcceptTest(DoubleBond db, int count, int decidedCount, int undecidedCount, string repr) {
-            Assert.AreEqual(count, db.Count);
-            Assert.AreEqual(decidedCount, db.DecidedCount);
-            Assert.AreEqual(undecidedCount, db.UnDecidedCount);
-            Assert.AreEqual(repr, db.ToString());
+        public void DoubleBondAcceptTest(DoubleBond db) {
+            var visitor = new FakeVisitor();
+            var decomposer = new IdentityDecomposer<IDoubleBond, IDoubleBond>();
+            var actual = db.Accept(visitor, decomposer);
+            Assert.AreEqual(visitor.Expected, actual);
         }
 
         public static IEnumerable<object[]> GetAcceptTestData() {
-            var visitor = DoubleBondShorthandNotation.All;
-            var decomposer = new IdentityDecomposer<IDoubleBond, IDoubleBond>();
-            yield return new object[] { DoubleBond.CreateFromPosition().Accept(visitor, decomposer), 0, 0, 0, "0", };
-            yield return new object[] { DoubleBond.CreateFromPosition(1).Accept(visitor, decomposer), 1, 0, 1, "1", };
-            yield return new object[] { DoubleBond.CreateFromPosition(9, 11).Accept(visitor, decomposer), 2, 0, 2, "2", };
+            yield return new object[] { DoubleBond.CreateFromPosition(), };
+            yield return new object[] { DoubleBond.CreateFromPosition(1), };
+            yield return new object[] { DoubleBond.CreateFromPosition(9, 11), };
+        }
 
-            visitor = DoubleBondShorthandNotation.CreateExcludes(9);
-            yield return new object[] { DoubleBond.CreateFromPosition().Accept(visitor, decomposer), 0, 0, 0, "0", };
-            yield return new object[] { DoubleBond.CreateFromPosition(1).Accept(visitor, decomposer), 1, 0, 1, "1", };
-            yield return new object[] { DoubleBond.CreateFromPosition(9, 11).Accept(visitor, decomposer), 2, 1, 1, "2(9)", };
+        class FakeVisitor : IVisitor<DoubleBond, DoubleBond>
+        {
+            public DoubleBond Expected { get; private set; }
+            DoubleBond IVisitor<DoubleBond, DoubleBond>.Visit(DoubleBond item) {
+                return Expected = item;
+            }
         }
 
         [TestMethod()]

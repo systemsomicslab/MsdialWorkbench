@@ -103,6 +103,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 ms2GraphLabels,
                 Observable.Return<ISpectraExporter>(null)).AddTo(Disposables);
             ChartHueItem referenceSpectrumHueItem = new ChartHueItem(projectBaseParameter, Colors.Red);
+            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             SingleSpectrumModel lowerSpectrumModel = SingleSpectrumModel.Create(
                 MatchResultCandidatesModel.SelectedCandidate,
                 refLoader,
@@ -110,7 +111,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 new PropertySelector<SpectrumPeak, double>(spot => spot.Intensity),
                 referenceSpectrumHueItem,
                 ms2GraphLabels,
-                Observable.Return<ISpectraExporter>(null)).AddTo(Disposables);
+                Observable.Return(referenceExporter)).AddTo(Disposables);
             Ms2SpectrumModel = new MsSpectrumModel(upperSpectrumModel, lowerSpectrumModel, MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers))
             {
                 GraphTitle = ms2GraphLabels.GraphTitle,

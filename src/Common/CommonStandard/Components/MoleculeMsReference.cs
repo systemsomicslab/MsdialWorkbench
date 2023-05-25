@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace CompMs.Common.Components {
     [MessagePackObject]
-    public class MoleculeMsReference: IMoleculeMsProperty {
+    public class MoleculeMsReference : IMoleculeMsProperty {
         public MoleculeMsReference() {
             ChromXs = new ChromXs();
             Spectrum = new List<SpectrumPeak>();
@@ -108,5 +108,8 @@ namespace CompMs.Common.Components {
         public void AddPeak(double mass, double intensity, string comment = null) {
             Spectrum.Add(new SpectrumPeak(mass, intensity, comment));
         }
+
+        [IgnoreMember]
+        public string OntologyOrCompoundClass => string.IsNullOrEmpty(Ontology) ? CompoundClass : Ontology;
     }
 }
