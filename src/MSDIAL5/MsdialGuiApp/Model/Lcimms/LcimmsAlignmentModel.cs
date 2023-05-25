@@ -202,35 +202,31 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
             IMsSpectrumLoader<AlignmentSpotPropertyModel> decLoader = new AlignmentMSDecSpectrumLoader(_alignmentFileBean);
-            var decMsSpectrum = Target.SelectSwitch(decLoader.LoadMsSpectrumAsObservable).Publish();
-            var refMsSpectrum = MatchResultCandidatesModel.LoadMsSpectrumObservable(refLoader).Publish();
             GraphLabels ms2GraphLabels = new GraphLabels("Representation vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
             ChartHueItem deconvolutedSpectrumHueItem = new ChartHueItem(projectBaseParameter, Colors.Blue);
-            SingleSpectrumModel upperSpectrumModel = new SingleSpectrumModel(
-                decMsSpectrum,
+            SingleSpectrumModel upperSpectrumModel = SingleSpectrumModel.Create(
+                Target,
+                decLoader,
                 new PropertySelector<SpectrumPeak, double>(spot => spot.Mass),
                 new PropertySelector<SpectrumPeak, double>(spot => spot.Intensity),
                 deconvolutedSpectrumHueItem,
                 ms2GraphLabels,
-                Observable.Return<ISpectraExporter>(null),
-                null).AddTo(Disposables);
+                Observable.Return<ISpectraExporter>(null)).AddTo(Disposables);
             ChartHueItem referenceSpectrumHueItem = new ChartHueItem(projectBaseParameter, Colors.Red);
-            SingleSpectrumModel lowerSpectrumModel = new SingleSpectrumModel(
-                refMsSpectrum,
+            SingleSpectrumModel lowerSpectrumModel = SingleSpectrumModel.Create(
+                MatchResultCandidatesModel.SelectedCandidate,
+                refLoader,
                 new PropertySelector<SpectrumPeak, double>(spot => spot.Mass),
                 new PropertySelector<SpectrumPeak, double>(spot => spot.Intensity),
                 referenceSpectrumHueItem,
                 ms2GraphLabels,
-                Observable.Return<ISpectraExporter>(null),
-                new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true)).AddTo(Disposables)).AddTo(Disposables);
+                Observable.Return<ISpectraExporter>(null)).AddTo(Disposables);
             Ms2SpectrumModel = new MsSpectrumModel(upperSpectrumModel, lowerSpectrumModel, MatchResultCandidatesModel.GetCandidatesScorer(searcherCollection))
             {
                 GraphTitle = ms2GraphLabels.GraphTitle,
                 HorizontalTitle = ms2GraphLabels.HorizontalTitle,
                 VerticalTitle = ms2GraphLabels.VerticalTitle,
             }.AddTo(Disposables);
-            Disposables.Add(decMsSpectrum.Connect());
-            Disposables.Add(refMsSpectrum.Connect());
 
             var classBrush = new KeyBrushMapper<BarItem, string>(classToColor, item => item.Class, Colors.Blue);
             var fileIdToClassNameAsObservable = projectBaseParameter.ObserveProperty(p => p.FileIdToClassName).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
