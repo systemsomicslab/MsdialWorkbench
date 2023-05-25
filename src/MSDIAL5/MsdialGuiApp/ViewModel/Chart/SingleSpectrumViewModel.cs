@@ -19,7 +19,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             MsSpectrum = model.MsSpectrum.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             HorizontalAxis = model.HorizontalAxis.Cast<IAxisManager>().ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             VerticalAxis = model.VerticalAxis.Cast<IAxisManager>().ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            Brush = model.Brush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            Brush = Observable.Return(model.Brush).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             LineThickness = model.LineThickness;
             IsVisible = model.IsVisible;
             SelectedVerticalAxisItem = model.VerticalAxisItemSelector.GetAxisItemAsObservable().SkipNull().ToReadOnlyReactivePropertySlim().AddTo(Disposables);

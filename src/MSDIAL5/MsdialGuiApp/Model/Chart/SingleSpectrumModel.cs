@@ -24,18 +24,17 @@ namespace CompMs.App.Msdial.Model.Chart
         private readonly Subject<Stream> _saveAsObservable;
         private readonly PropertySelector<SpectrumPeak, double> _horizontalPropertySelector;
         private readonly PropertySelector<SpectrumPeak, double> _verticalPropertySelector;
+        private readonly ChartHueItem _hueItem;
         private readonly IObservable<ISpectraExporter> _spectraExporter;
 
         public SingleSpectrumModel(
             IObservable<MsSpectrum> msSpectrum,
             PropertySelector<SpectrumPeak, double> horizontalPropertySelector,
             PropertySelector<SpectrumPeak, double> verticalPropertySelector,
-            IObservable<IBrushMapper> spectrumBrush,
-            string hueProperty,
+            ChartHueItem hueItem,
             GraphLabels graphLabels,
             IObservable<ISpectraExporter> spectraExporter,
             ReadOnlyReactivePropertySlim<bool> spectrumLoaded) {
-
             var horizontalAxis = msSpectrum
                 .Select(s => s?.GetSpectrumRange(horizontalPropertySelector.Selector) ?? (0d, 1d))
                 .ToReactiveContinuousAxisManager(new ConstantMargin(40))
@@ -63,6 +62,7 @@ namespace CompMs.App.Msdial.Model.Chart
             MsSpectrum = msSpectrum;
             _horizontalPropertySelector = horizontalPropertySelector;
             _verticalPropertySelector = verticalPropertySelector;
+            _hueItem = hueItem;
             HorizontalAxis = Observable.Return(horizontalAxis);
             Labels = graphLabels;
             _spectraExporter = spectraExporter;
@@ -70,8 +70,6 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalProperty = horizontalPropertySelector.Property;
             VerticalAxis = verticalAxisSelector.GetAxisItemAsObservable().SkipNull().Select(item => item.AxisManager).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             VerticalAxisItemSelector = verticalAxisSelector;
-            Brush = spectrumBrush;
-            HueProperty = hueProperty;
 
             var save = new Subject<Stream>().AddTo(Disposables);
             save.Where(s => s != null && s.CanWrite)
@@ -96,8 +94,8 @@ namespace CompMs.App.Msdial.Model.Chart
         public string HorizontalProperty { get; }
         public IObservable<IAxisManager<double>> VerticalAxis { get; }
         public AxisItemSelector<double> VerticalAxisItemSelector { get; }
-        public IObservable<IBrushMapper> Brush { get; }
-        public string HueProperty { get; }
+        public IBrushMapper Brush => _hueItem.Brush;
+        public string HueProperty => _hueItem.Property;
         public GraphLabels Labels { get; }
         public ReadOnlyReactivePropertySlim<bool> SpectrumLoaded { get; }
         public ReactivePropertySlim<bool> IsVisible { get; }
@@ -115,14 +113,14 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public SingleSpectrumModel Product(SingleSpectrumModel other) {
             var productMsSpectrum = MsSpectrum.CombineLatest(other.MsSpectrum, (upper, lower) => upper?.Product(lower, 0.05d)).Publish();
-            var upperProductSpectrumModel = new SingleSpectrumModel(productMsSpectrum, _horizontalPropertySelector, _verticalPropertySelector, Brush, HueProperty, Labels, _spectraExporter, SpectrumLoaded);
+            var upperProductSpectrumModel = new SingleSpectrumModel(productMsSpectrum, _horizontalPropertySelector, _verticalPropertySelector, _hueItem, Labels, _spectraExporter, SpectrumLoaded);
             upperProductSpectrumModel.Disposables.Add(productMsSpectrum.Connect());
             return upperProductSpectrumModel;
         }
 
         public SingleSpectrumModel Difference(SingleSpectrumModel other) {
             var differenceMsSpectrum = MsSpectrum.CombineLatest(other.MsSpectrum, (upper, lower) => upper?.Difference(lower, 0.05d)).Publish();
-            var upperDifferenceSpectrumModel = new SingleSpectrumModel(differenceMsSpectrum, _horizontalPropertySelector, _verticalPropertySelector, Brush, HueProperty, Labels, _spectraExporter, SpectrumLoaded);
+            var upperDifferenceSpectrumModel = new SingleSpectrumModel(differenceMsSpectrum, _horizontalPropertySelector, _verticalPropertySelector, _hueItem, Labels, _spectraExporter, SpectrumLoaded);
             upperDifferenceSpectrumModel.Disposables.Add(differenceMsSpectrum.Connect());
             return upperDifferenceSpectrumModel;
         }
@@ -132,16 +130,14 @@ namespace CompMs.App.Msdial.Model.Chart
             IMsSpectrumLoader<T> loader,
             PropertySelector<SpectrumPeak, double> horizontalPropertySelector,
             PropertySelector<SpectrumPeak, double> verticalPropertySelector,
-            IObservable<IBrushMapper> brush,
-            string hueProperty,
+            ChartHueItem hueItem,
             GraphLabels graphLabels,
             IObservable<ISpectraExporter> spectraExporter) {
-
             var disposables = new CompositeDisposable();
             var pairs = targetSource.SelectSwitch(t => loader.LoadMsSpectrumAsObservable(t).Select(s => (spectrum: s, loaded: true)).StartWith((null, false))).Publish();
             var msSpectrum = pairs.Select(p => p.spectrum).ToReadOnlyReactivePropertySlim().AddTo(disposables);
             var loaded = pairs.Select(p => p.loaded).ToReadOnlyReactivePropertySlim().AddTo(disposables);
-            SingleSpectrumModel spectrumModel = new SingleSpectrumModel(msSpectrum, horizontalPropertySelector, verticalPropertySelector, brush, hueProperty, graphLabels, spectraExporter, loaded);
+            SingleSpectrumModel spectrumModel = new SingleSpectrumModel(msSpectrum, horizontalPropertySelector, verticalPropertySelector, hueItem, graphLabels, spectraExporter, loaded);
             disposables.Add(pairs.Connect());
             spectrumModel.Disposables.Add(disposables);
             return spectrumModel;

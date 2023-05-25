@@ -152,21 +152,21 @@ namespace CompMs.App.Msdial.Model.Lcms
             var decMsSpectrum = Target.SelectSwitch(msDecSpectrumLoader.LoadMsSpectrumAsObservable).Publish();
             var refMsSpectrum = MatchResultCandidatesModel.LoadMsSpectrumObservable(refLoader).Publish();
             GraphLabels ms2GraphLabels = new GraphLabels("Representative vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
+            ChartHueItem deconvolutedSpectrumHueItem = new ChartHueItem(nameof(SpectrumPeak.SpectrumComment), upperSpecBrush);
             SingleSpectrumModel upperSpectrumModel = new SingleSpectrumModel(
                 decMsSpectrum,
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Mass),
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity),
-                Observable.Return(upperSpecBrush),
-                nameof(SpectrumPeak.SpectrumComment),
+                deconvolutedSpectrumHueItem,
                 ms2GraphLabels,
                 Observable.Return((ISpectraExporter)null),
                 null).AddTo(Disposables);
+            ChartHueItem referenceSpectrumHueItem = new ChartHueItem(nameof(SpectrumPeak.SpectrumComment), lowerSpecBrush);
             SingleSpectrumModel lowerSpectrumModel = new SingleSpectrumModel(
                 refMsSpectrum,
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Mass),
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity),
-                Observable.Return(lowerSpecBrush),
-                nameof(SpectrumPeak.SpectrumComment),
+                referenceSpectrumHueItem,
                 ms2GraphLabels,
                 Observable.Return((ISpectraExporter)null),
                 new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true)).AddTo(Disposables)).AddTo(Disposables);
