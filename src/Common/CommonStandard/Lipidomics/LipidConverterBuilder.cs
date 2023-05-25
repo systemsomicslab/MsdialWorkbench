@@ -6,7 +6,7 @@
         private OxidizedIndeterminateState _acylOxidizedState, _alkylOxidizedState, _sphingosineOxidizedState;
         private ChainsIndeterminateState _chainsIndeterminate;
 
-        public LipidAnnotationLevelConverter Construct() {
+        public LipidAnnotationLevelConverter Create() {
             var acylVisitor = new AcylChainVisitor(_acylDoubleBondState.AsVisitor(), _acylOxidizedState.AsVisitor());
             var alkylVisitor = new AlkylChainVisitor(_alkylDoubleBondState.AsVisitor(), _alkylOxidizedState.AsVisitor());
             var sphingosineVisitor = new SphingosineChainVisitor(_sphingosineDoubleBondState.AsVisitor(), _sphingosineOxidizedState.AsVisitor());
