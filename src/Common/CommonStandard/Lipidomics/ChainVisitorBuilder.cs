@@ -11,6 +11,8 @@
             return new ChainVisitor(acylVisitor, alkylVisitor, sphingoVisitor);
         }
 
+        void ILipidomicsVisitorBuilder.SetChainsState(ChainsIndeterminateState state) { }
+
         void ILipidomicsVisitorBuilder.SetAcylDoubleBond(DoubleBondIndeterminateState state) => _acylDoubleBondState = state;
         void ILipidomicsVisitorBuilder.SetAcylOxidized(OxidizedIndeterminateState state) => _acylOxidizedState = state;
 

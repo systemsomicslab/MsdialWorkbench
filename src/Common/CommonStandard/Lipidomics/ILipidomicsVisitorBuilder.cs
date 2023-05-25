@@ -2,6 +2,7 @@
 {
     public interface ILipidomicsVisitorBuilder
     {
+        void SetChainsState(ChainsIndeterminateState state);
         void SetAcylDoubleBond(DoubleBondIndeterminateState state);
         void SetAcylOxidized(OxidizedIndeterminateState state);
         void SetAlkylDoubleBond(DoubleBondIndeterminateState state);

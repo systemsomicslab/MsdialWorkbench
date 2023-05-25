@@ -23,6 +23,7 @@ namespace CompMs.Common.Lipidomics.Tests
             public DoubleBondIndeterminateState AcylDoubleBondState, AlkylDoubleBondState, SphingosineDoubleBondState;
             public OxidizedIndeterminateState AcylOxidizedState, AlkylOxidizedState, SphingosineOxidizedState;
 
+            void ILipidomicsVisitorBuilder.SetChainsState(ChainsIndeterminateState state) { }
             void ILipidomicsVisitorBuilder.SetAcylDoubleBond(DoubleBondIndeterminateState state) => AcylDoubleBondState = state;
             void ILipidomicsVisitorBuilder.SetAcylOxidized(OxidizedIndeterminateState state) => AcylOxidizedState = state;
             void ILipidomicsVisitorBuilder.SetAlkylDoubleBond(DoubleBondIndeterminateState state) => AlkylDoubleBondState = state;
