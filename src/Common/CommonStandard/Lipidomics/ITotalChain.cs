@@ -157,7 +157,7 @@ namespace CompMs.Common.Lipidomics
         }
 
         public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
-            if (decomposer is IDecomposer<TResult, ITotalChain> decomposer_) {
+            if (decomposer is IDecomposer<TResult, TotalChain> decomposer_) {
                 return decomposer_.Decompose(visitor, this);
             }
             return default;
@@ -239,7 +239,7 @@ namespace CompMs.Common.Lipidomics
         }
 
         public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
-            if (decomposer is IDecomposer<TResult, ITotalChain> decomposer_) {
+            if (decomposer is IDecomposer<TResult, MolecularSpeciesLevelChains> decomposer_) {
                 return decomposer_.Decompose(visitor, this);
             }
             return default;
@@ -297,7 +297,7 @@ namespace CompMs.Common.Lipidomics
         }
 
         public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
-            if (decomposer is IDecomposer<TResult, ITotalChain> decomposer_) {
+            if (decomposer is IDecomposer<TResult, PositionLevelChains> decomposer_) {
                 return decomposer_.Decompose(visitor, this);
             }
             return default;
