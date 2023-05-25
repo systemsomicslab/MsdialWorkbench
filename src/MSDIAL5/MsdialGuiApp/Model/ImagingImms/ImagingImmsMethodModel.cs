@@ -22,12 +22,14 @@ namespace CompMs.App.Msdial.Model.ImagingImms
     internal sealed class ImagingImmsMethodModel : MethodModelBase, IMethodModel
     {
         private readonly IMsdialDataStorage<MsdialImmsParameter> _storage;
+        private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly FacadeMatchResultEvaluator _evaluator;
         private readonly IDataProviderFactory<AnalysisFileBeanModel> _providerFactory;
 
         public ImagingImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter)
             : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, projectBaseParameter) {
             _storage = storage;
+            _projectBaseParameter = projectBaseParameter;
             _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             _providerFactory = storage.Parameter.ProviderFactoryParameter.Create().ContraMap((AnalysisFileBeanModel file) => file.File.LoadRawMeasurement(true, true, 5, 5000));
             ImageModels = new ObservableCollection<ImagingImmsImageModel>();
@@ -48,7 +50,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                 var processor = new FileProcess(_storage, null, null, _evaluator);
                 await processor.RunAllAsync(files.Select(file => file.File), files.Select(_providerFactory.Create), Enumerable.Repeat<Action<int>>(null, files.Count), 2, null).ConfigureAwait(false);
                 foreach (var file in files) {
-                    ImageModels.Add(new ImagingImmsImageModel(file, _storage, _evaluator, _providerFactory));
+                    ImageModels.Add(new ImagingImmsImageModel(file, _storage, _evaluator, _providerFactory, _projectBaseParameter));
                 }
             }
             else if (option.HasFlag(ProcessOption.Identification)) {
@@ -56,14 +58,14 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                 var processor = new FileProcess(_storage, null, null, _evaluator);
                 await processor.AnnotateAllAsync(files.Select(file => file.File), files.Select(_providerFactory.Create), Enumerable.Repeat<Action<int>>(null, files.Count), 2, null).ConfigureAwait(false);
                 foreach (var file in files) {
-                    ImageModels.Add(new ImagingImmsImageModel(file, _storage, _evaluator, _providerFactory));
+                    ImageModels.Add(new ImagingImmsImageModel(file, _storage, _evaluator, _providerFactory, _projectBaseParameter));
                 }
             }
         }
 
         public override Task LoadAsync(CancellationToken token) {
             foreach (var file in AnalysisFileModelCollection.AnalysisFiles) {
-                ImageModels.Add(new ImagingImmsImageModel(file, _storage, _evaluator, _providerFactory));
+                ImageModels.Add(new ImagingImmsImageModel(file, _storage, _evaluator, _providerFactory, _projectBaseParameter));
             }
             var analysisFile = AnalysisFileModelCollection.IncludedAnalysisFiles.FirstOrDefault();
             if (!(analysisFile is null)) {

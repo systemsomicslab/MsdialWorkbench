@@ -140,7 +140,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 Storage.DataBaseMapper,
                 Storage.Parameter,
                 PeakFilterModel,
-                AccumulatedPeakFilterModel)
+                AccumulatedPeakFilterModel,
+                _projectBaseParameter)
             .AddTo(Disposables);
         }
 

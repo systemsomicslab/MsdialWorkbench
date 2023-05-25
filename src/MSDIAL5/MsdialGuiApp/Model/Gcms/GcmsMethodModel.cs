@@ -21,6 +21,7 @@ namespace CompMs.App.Msdial.Model.Gcms
     internal sealed class GcmsMethodModel : MethodModelBase
     {
         private readonly IMsdialDataStorage<MsdialGcmsParameter> _storage;
+        private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly FacadeMatchResultEvaluator _evaluator;
         private readonly IMessageBroker _broker;
         private readonly StandardDataProviderFactory _providerFactory;
@@ -32,6 +33,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         }
         public GcmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFiles, IMsdialDataStorage<MsdialGcmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker) : base(analysisFileBeanModelCollection, alignmentFiles, projectBaseParameter) {
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
+            _projectBaseParameter = projectBaseParameter;
             _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             _broker = broker;
             _providerFactory = new StandardDataProviderFactory(retry: 5, isGuiProcess: true);
@@ -131,7 +133,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 Disposables.Remove(SelectedAnalysisModel);
             }
             var providerFactory = _providerFactory.ContraMap((AnalysisFileBeanModel fileModel) => fileModel.File);
-            return SelectedAnalysisModel = new GcmsAnalysisModel(analysisFile, providerFactory, _storage.Parameter.ProjectParam, _storage.Parameter.ChromDecBaseParam, _storage.DataBaseMapper, _storage.DataBases);
+            return SelectedAnalysisModel = new GcmsAnalysisModel(analysisFile, providerFactory, _storage.Parameter.ProjectParam, _storage.Parameter.ChromDecBaseParam, _storage.DataBaseMapper, _storage.DataBases, _projectBaseParameter);
         }
     }
 }

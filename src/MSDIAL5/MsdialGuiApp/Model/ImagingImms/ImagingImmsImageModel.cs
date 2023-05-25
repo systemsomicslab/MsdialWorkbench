@@ -21,13 +21,13 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         private readonly SemaphoreSlim _semaphoreSlim;
         private int _roiId = 0;
 
-        public ImagingImmsImageModel(AnalysisFileBeanModel file, IMsdialDataStorage<MsdialImmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBeanModel> providerFactory) {
+        public ImagingImmsImageModel(AnalysisFileBeanModel file, IMsdialDataStorage<MsdialImmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBeanModel> providerFactory, ProjectBaseParameterModel projectBaseParameterModel) {
             File = file ?? throw new ArgumentNullException(nameof(file));
             _semaphoreSlim = new SemaphoreSlim(1, 1).AddTo(Disposables);
             var maldiFrames = new MaldiFrames(file.File.GetMaldiFrames());
             var wholeRoi = new RoiModel(file, _roiId, maldiFrames, ChartBrushes.GetChartBrush(_roiId).Color);
             ++_roiId;
-            var imageResult = new WholeImageResultModel(file, maldiFrames, wholeRoi, storage, evaluator, providerFactory).AddTo(Disposables);
+            var imageResult = new WholeImageResultModel(file, maldiFrames, wholeRoi, storage, evaluator, providerFactory, projectBaseParameterModel).AddTo(Disposables);
             ImageResult = imageResult;
 
             ImagingRoiModels = new ObservableCollection<ImagingRoiModel>

@@ -10,7 +10,6 @@ using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
-using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore;
 using CompMs.MsdialDimsCore.Algorithm.Alignment;
@@ -20,7 +19,6 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -221,7 +219,8 @@ namespace CompMs.App.Msdial.Model.Dims
                 Storage.DataBases,
                 Storage.DataBaseMapper,
                 Storage.Parameter,
-                PeakFilterModel).AddTo(Disposables);
+                PeakFilterModel,
+                _projectBaseParameter).AddTo(Disposables);
         }
 
         protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBeanModel alignmentFileModel) {

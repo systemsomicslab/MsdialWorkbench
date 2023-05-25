@@ -1,39 +1,21 @@
-﻿using CompMs.App.Msdial.Common;
-using CompMs.Common.Algorithm.Scoring;
-using CompMs.Common.Components;
+﻿using CompMs.Common.Algorithm.Scoring;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
-using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
-using CompMs.Graphics.Design;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
     public class MsSpectrumModel : DisposableModelBase {
-        private static readonly IReadOnlyDictionary<SpectrumComment, Brush> SPECTRUM_BRUSHES;
         private readonly ReadOnlyReactivePropertySlim<MsSpectrum> _upperSpectrum;
         private readonly ReadOnlyReactivePropertySlim<MsSpectrum> _lowerSpectrum;
         private readonly ReadOnlyReactivePropertySlim<Ms2ScanMatching> _ms2ScanMatching;
-
-        static MsSpectrumModel() {
-            SPECTRUM_BRUSHES = Enum.GetValues(typeof(SpectrumComment))
-                .Cast<SpectrumComment>()
-                .Where(comment => comment != SpectrumComment.none)
-                .Zip(ChartBrushes.SolidColorBrushList, (comment, brush) => (comment, brush))
-                .ToDictionary(
-                    kvp => kvp.comment,
-                    kvp => (Brush)kvp.brush
-                );
-        }
 
         public MsSpectrumModel(SingleSpectrumModel upperSpectrumModel, SingleSpectrumModel lowerSpectrumModel, IObservable<Ms2ScanMatching> ms2ScanMatching) {
             UpperSpectrumModel = upperSpectrumModel ?? throw new ArgumentNullException(nameof(upperSpectrumModel));
@@ -141,10 +123,6 @@ namespace CompMs.App.Msdial.Model.Chart
             UpperSpectrumModel.IsVisible.Value = false;
             UpperDifferenceSpectrumModel.IsVisible.Value = true;
             UpperProductSpectrumModel.IsVisible.Value = true;
-        }
-
-        public static IBrushMapper<SpectrumComment> GetBrush(Brush defaultBrush) {
-            return new KeyBrushMapper<SpectrumComment>(SPECTRUM_BRUSHES, defaultBrush);
         }
     }
 }

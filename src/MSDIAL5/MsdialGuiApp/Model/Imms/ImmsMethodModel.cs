@@ -10,7 +10,6 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
-using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialImmsCore.Algorithm.Alignment;
 using CompMs.MsdialImmsCore.Export;
@@ -221,7 +220,8 @@ namespace CompMs.App.Msdial.Model.Imms
                 _storage.DataBases,
                 _storage.DataBaseMapper,
                 _storage.Parameter,
-                PeakFilterModel)
+                PeakFilterModel,
+                _projectBaseParameter)
             .AddTo(Disposables);
             return AnalysisModel;
         }

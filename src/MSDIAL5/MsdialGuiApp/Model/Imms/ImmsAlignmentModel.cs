@@ -13,7 +13,6 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Proteomics.DataObj;
-using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -30,7 +29,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Imms
@@ -89,31 +87,6 @@ namespace CompMs.App.Msdial.Model.Imms
                 VerticalTitle = "m/z",
             }.AddTo(Disposables);
 
-            var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-               _parameter.ProjectParam.SpectrumCommentToColorBytes
-               .ToDictionary(
-                   kvp => kvp.Key,
-                   kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-               ),
-               item => item.ToString(),
-               Colors.Blue);
-            var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(
-                comment =>
-                {
-                    var commentString = comment.ToString();
-                    var projectParameter = _parameter.ProjectParam;
-                    if (projectParameter.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
-                        return Color.FromRgb(color[0], color[1], color[2]);
-                    }
-                    else if ((comment & SpectrumComment.doublebond) == SpectrumComment.doublebond
-                        && projectParameter.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
-                        return Color.FromRgb(color[0], color[1], color[2]);
-                    }
-                    else {
-                        return Colors.Red;
-                    }
-                },
-                true);
             MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
@@ -122,7 +95,7 @@ namespace CompMs.App.Msdial.Model.Imms
             var decMsSpectrum = Target.SelectSwitch(decLoader.LoadMsSpectrumAsObservable).Publish();
             var refMsSpectrum = MatchResultCandidatesModel.LoadMsSpectrumObservable(refLoader).Publish();
             GraphLabels ms2GraphLabels = new GraphLabels("Representation vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
-            ChartHueItem deconvolutedSpectrumHueItem = new ChartHueItem(nameof(SpectrumPeak.SpectrumComment), upperSpecBrush);
+            ChartHueItem deconvolutedSpectrumHueItem = new ChartHueItem(projectBaseParameter, Colors.Blue);
             SingleSpectrumModel upperSpectrumModel = new SingleSpectrumModel(
                 decMsSpectrum,
                 new PropertySelector<SpectrumPeak, double>(spot => spot.Mass),
@@ -131,7 +104,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 ms2GraphLabels,
                 Observable.Return<ISpectraExporter>(null),
                 null).AddTo(Disposables);
-            ChartHueItem referenceSpectrumHueItem = new ChartHueItem(nameof(SpectrumPeak.SpectrumComment), lowerSpecBrush);
+            ChartHueItem referenceSpectrumHueItem = new ChartHueItem(projectBaseParameter, Colors.Red);
             SingleSpectrumModel lowerSpectrumModel = new SingleSpectrumModel(
                 refMsSpectrum,
                 new PropertySelector<SpectrumPeak, double>(spot => spot.Mass),

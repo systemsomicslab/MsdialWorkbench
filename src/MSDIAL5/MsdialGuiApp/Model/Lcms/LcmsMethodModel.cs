@@ -4,7 +4,6 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
-using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -140,7 +139,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 _storage.DataBaseMapper,
                 _matchResultEvaluator,
                 _storage.Parameter,
-                PeakFilterModel)
+                PeakFilterModel,
+                _projectBaseParameter)
             .AddTo(Disposables);
         }
 

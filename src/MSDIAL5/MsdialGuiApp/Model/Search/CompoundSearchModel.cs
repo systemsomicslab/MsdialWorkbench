@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Chart;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
@@ -75,7 +76,7 @@ namespace CompMs.App.Msdial.Model.Search
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             GraphLabels msGraphLabels = new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
-            ChartHueItem upperSpectrumHueItem = new ChartHueItem(nameof(SpectrumPeak.SpectrumComment), MsSpectrumModel.GetBrush(Brushes.Blue));
+            ChartHueItem upperSpectrumHueItem = new ChartHueItem(nameof(SpectrumPeak.SpectrumComment), ChartBrushes.GetBrush(Brushes.Blue));
             SingleSpectrumModel upperSpectrumModel = new SingleSpectrumModel(
                 Observable.Return(new MsSpectrum(msdecResult.Spectrum)),
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Mass),
@@ -84,7 +85,7 @@ namespace CompMs.App.Msdial.Model.Search
                 msGraphLabels,
                 Observable.Return((ISpectraExporter)null),
                 null).AddTo(Disposables);
-            ChartHueItem lowerSpectrumHueItem = new ChartHueItem(nameof(SpectrumPeak.SpectrumComment), MsSpectrumModel.GetBrush(Brushes.Red));
+            ChartHueItem lowerSpectrumHueItem = new ChartHueItem(nameof(SpectrumPeak.SpectrumComment), ChartBrushes.GetBrush(Brushes.Red));
             SingleSpectrumModel lowerSpectrumModel = new SingleSpectrumModel(
                 referenceSpectrum,
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Mass),
