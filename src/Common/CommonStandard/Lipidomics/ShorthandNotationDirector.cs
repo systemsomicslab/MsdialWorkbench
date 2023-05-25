@@ -55,15 +55,15 @@
         }
 
         public void SetOxidizedPositionLevel() {
-            _builder.SetAcylDoubleBond(DoubleBondIndeterminateState.Identity);
-            _builder.SetAlkylDoubleBond(DoubleBondIndeterminateState.Identity);
-            _builder.SetSphingoDoubleBond(DoubleBondIndeterminateState.Identity);
+            _builder.SetAcylOxidized(OxidizedIndeterminateState.Identity);
+            _builder.SetAlkylOxidized(OxidizedIndeterminateState.Identity);
+            _builder.SetSphingoOxidized(OxidizedIndeterminateState.Identity);
         }
 
         public void SetOxidizedNumberLevel() {
-            _builder.SetAcylDoubleBond(DoubleBondIndeterminateState.AllPositions);
-            _builder.SetAlkylDoubleBond(DoubleBondIndeterminateState.AllPositions);
-            _builder.SetSphingoDoubleBond(DoubleBondIndeterminateState.AllPositions.Exclude(1));
+            _builder.SetAcylOxidized(OxidizedIndeterminateState.AllPositions);
+            _builder.SetAlkylOxidized(OxidizedIndeterminateState.AllPositions);
+            _builder.SetSphingoOxidized(OxidizedIndeterminateState.AllPositions.Exclude(1));
         }
     }
 }
