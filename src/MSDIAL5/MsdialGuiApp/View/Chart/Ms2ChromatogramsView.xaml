@@ -8,6 +8,7 @@
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
+             xmlns:commonmvvm="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
              mc:Ignorable="d" 
              behavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding FocusAction, Mode=OneWay}"
              d:DataContext="{d:DesignInstance Type={x:Type vm:Ms2ChromatogramsViewModel}}"
@@ -42,6 +43,8 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
+            <commonmvvm:BindingProxy x:Key="SaveAsTableCommandProxy" Data="{Binding SaveAsTableCommand, Mode=OneTime}"/>
+            <commonmvvm:BindingProxy x:Key="CopyAsTableCommandProxy" Data="{Binding CopyAsTableCommand, Mode=OneTime}"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -77,6 +80,10 @@
                           Grid.Row="1">
             <chart:MultiChart.ContextMenu>
                 <ContextMenu>
+                    <MenuItem Header="Save chromatograms as table"
+                              Command="{Binding Data, Source={StaticResource SaveAsTableCommandProxy}}"/>
+                    <MenuItem Header="Copy chromatograms as table"
+                              Command="{Binding Data, Source={StaticResource CopyAsTableCommandProxy}}"/>
                     <MenuItem Header="Save image using dialog"
                               Command="{x:Static graphio:SaveImageAsWithDialogCommand.Instance}"
                               CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>

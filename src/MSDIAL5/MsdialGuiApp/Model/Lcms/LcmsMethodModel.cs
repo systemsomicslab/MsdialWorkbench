@@ -141,7 +141,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 _storage.DataBaseMapper,
                 _matchResultEvaluator,
                 _storage.Parameter,
-                PeakFilterModel)
+                PeakFilterModel,
+                _broker)
             .AddTo(Disposables);
         }
 

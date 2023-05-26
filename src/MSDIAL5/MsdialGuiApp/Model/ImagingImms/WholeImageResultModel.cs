@@ -13,6 +13,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialImmsCore.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -28,10 +29,9 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         private readonly ObservableCollection<IntensityImageModel> _intensities;
         private readonly List<Raw2DElement> _elements;
 
-        public WholeImageResultModel(AnalysisFileBeanModel file, MaldiFrames maldiFrames, RoiModel wholeRoi, IMsdialDataStorage<MsdialImmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBeanModel> providerFactory)
-        {
+        public WholeImageResultModel(AnalysisFileBeanModel file, MaldiFrames maldiFrames, RoiModel wholeRoi, IMsdialDataStorage<MsdialImmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBeanModel> providerFactory, IMessageBroker broker) {
             var peakFilter = new PeakFilterModel(DisplayFilter.All);
-            var analysisModel = new ImmsAnalysisModel(file, providerFactory.Create(file), evaluator, storage.DataBases, storage.DataBaseMapper, storage.Parameter, peakFilter).AddTo(Disposables);
+            var analysisModel = new ImmsAnalysisModel(file, providerFactory.Create(file), evaluator, storage.DataBases, storage.DataBaseMapper, storage.Parameter, peakFilter, broker).AddTo(Disposables);
             _analysisModel = analysisModel;
 
             _elements = analysisModel.Ms1Peaks.Select(item => new Raw2DElement(item.Mass, item.Drift.Value)).ToList();
