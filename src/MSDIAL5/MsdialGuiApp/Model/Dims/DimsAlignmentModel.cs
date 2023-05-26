@@ -13,6 +13,8 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Proteomics.DataObj;
+using CompMs.Graphics.AxisManager.Generic;
+using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -109,18 +111,22 @@ namespace CompMs.App.Msdial.Model.Dims
             IMsSpectrumLoader<AlignmentSpotPropertyModel> decSpecLoader = new AlignmentMSDecSpectrumLoader(_alignmentFile);
             GraphLabels ms2GraphLabels = new GraphLabels("Representation vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
             ChartHueItem upperSpectrumHueItem = new ChartHueItem(projectBaseParameter, Colors.Blue);
+            ObservableMsSpectrum upperObservableMsSpectrum = ObservableMsSpectrum.Create(Target, decSpecLoader, null).AddTo(Disposables);
+            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
+            ObservableMsSpectrum lowerObservableMsSpectrum = ObservableMsSpectrum.Create(MatchResultCandidatesModel.SelectedCandidate, refLoader, referenceExporter).AddTo(Disposables);
+            PropertySelector<SpectrumPeak, double> horizontalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Mass);
+            PropertySelector<SpectrumPeak, double> verticalPropertySelector = new PropertySelector<SpectrumPeak, double>(spot => spot.Intensity);
             SingleSpectrumModel upperSpectrumModel = new SingleSpectrumModel(
-                ObservableMsSpectrum.Create(Target, decSpecLoader, Observable.Return<ISpectraExporter>(null)).AddTo(Disposables),
-                new PropertySelector<SpectrumPeak, double>(spot => spot.Mass),
-                new PropertySelector<SpectrumPeak, double>(spot => spot.Intensity),
+                upperObservableMsSpectrum,
+                upperObservableMsSpectrum.CreateAxisPropertySelectors(horizontalPropertySelector, "m/z", "m/z"),
+                upperObservableMsSpectrum.CreateAxisPropertySelectors2(verticalPropertySelector, "abundance"),
                 upperSpectrumHueItem,
                 ms2GraphLabels).AddTo(Disposables);
             ChartHueItem lowerSpectrumHueItem = new ChartHueItem(projectBaseParameter, Colors.Red);
-            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             SingleSpectrumModel lowerSpectrumModel = new SingleSpectrumModel(
-                ObservableMsSpectrum.Create(MatchResultCandidatesModel.SelectedCandidate, refLoader, Observable.Return(referenceExporter)).AddTo(Disposables),
-                new PropertySelector<SpectrumPeak, double>(spot => spot.Mass),
-                new PropertySelector<SpectrumPeak, double>(spot => spot.Intensity),
+                lowerObservableMsSpectrum,
+                lowerObservableMsSpectrum.CreateAxisPropertySelectors(horizontalPropertySelector, "m/z", "m/z"),
+                lowerObservableMsSpectrum.CreateAxisPropertySelectors2(verticalPropertySelector, "abundance"),
                 lowerSpectrumHueItem,
                 ms2GraphLabels).AddTo(Disposables);
             Ms2SpectrumModel = new MsSpectrumModel(upperSpectrumModel, lowerSpectrumModel, MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers))

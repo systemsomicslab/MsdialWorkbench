@@ -100,7 +100,7 @@
                                                            ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
                                                            DataType="{x:Type components:SpectrumPeak}"
                                                            HorizontalProperty="{Binding HorizontalProperty}"
-                                                           VerticalProperty="{Binding SelectedVerticalAxisItem.Value.Property}"
+                                                           VerticalProperty="{Binding VerticalProperty}"
                                                            LineBrush="{Binding Brush.Value}"
                                                            LineThickness="{Binding LineThickness.Value}"
                                                            HueProperty="SpectrumComment">
@@ -118,7 +118,7 @@
                             </chart:LineSpectrumControlSlim>
                             <chart:Annotator ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
                                              HorizontalPropertyName="{Binding HorizontalProperty}"
-                                             VerticalPropertyName="{Binding SelectedVerticalAxisItem.Value.Property}"
+                                             VerticalPropertyName="{Binding VerticalProperty}"
                                              LabelPropertyName="{Binding Labels.AnnotationLabelProperty}"
                                              OrderingPropertyName="{Binding Labels.AnnotationOrderProperty}"
                                              Brush="Black"
@@ -150,7 +150,7 @@
                                                ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
                                                DataType="{x:Type components:SpectrumPeak}"
                                                HorizontalProperty="{Binding HorizontalProperty}"
-                                               VerticalProperty="{Binding SelectedVerticalAxisItem.Value.Property}"
+                                               VerticalProperty="{Binding VerticalProperty}"
                                                LineBrush="{Binding Brush.Value}"
                                                HueProperty="SpectrumComment">
                     <chart:LineSpectrumControlSlim.ToolTip>
@@ -169,7 +169,7 @@
                 </chart:LineSpectrumControlSlim>
                 <chart:Annotator ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
                                  HorizontalPropertyName="{Binding HorizontalProperty}"
-                                 VerticalPropertyName="{Binding SelectedVerticalAxisItem.Value.Property}"
+                                 VerticalPropertyName="{Binding VerticalProperty}"
                                  LabelPropertyName="{Binding Labels.AnnotationLabelProperty}"
                                  OrderingPropertyName="{Binding Labels.AnnotationOrderProperty}"
                                  ContentAlignment="BottomCenter"

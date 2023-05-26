@@ -31,6 +31,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public string HorizontalProperty => _model.HorizontalProperty;
         public ReadOnlyReactivePropertySlim<IAxisManager> VerticalAxis { get; }
         public ReadOnlyReactivePropertySlim<AxisItemModel<double>> SelectedVerticalAxisItem { get; }
+        public string VerticalProperty => _model.VerticalProperty;
         public ReadOnlyReactivePropertySlim<IBrushMapper> Brush { get; }
         public string HueProperty => _model.HueProperty;
         public ReadOnlyReactivePropertySlim<bool> SpectrumLoaded => _model.SpectrumLoaded;

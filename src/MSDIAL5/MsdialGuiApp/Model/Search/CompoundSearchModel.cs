@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Common;
+﻿using Accord;
+using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Service;
@@ -8,6 +9,8 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.AxisManager.Generic;
+using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
@@ -76,18 +79,22 @@ namespace CompMs.App.Msdial.Model.Search
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             GraphLabels msGraphLabels = new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
+            ObservableMsSpectrum upperObservableMsSpectrum = new ObservableMsSpectrum(Observable.Return(new MsSpectrum(msdecResult.Spectrum)), null, Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
+            ObservableMsSpectrum lowerObservableMsSpectrum = new ObservableMsSpectrum(referenceSpectrum, new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true)).AddTo(Disposables), Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
+            PropertySelector<SpectrumPeak, double> horizontalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Mass);
+            PropertySelector<SpectrumPeak, double> verticalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity);
             ChartHueItem upperSpectrumHueItem = new ChartHueItem(nameof(SpectrumPeak.SpectrumComment), ChartBrushes.GetBrush(Brushes.Blue));
             SingleSpectrumModel upperSpectrumModel = new SingleSpectrumModel(
-                new ObservableMsSpectrum(Observable.Return(new MsSpectrum(msdecResult.Spectrum)), null, Observable.Return((ISpectraExporter)null)).AddTo(Disposables),
-                new PropertySelector<SpectrumPeak, double>(peak => peak.Mass),
-                new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity),
+                upperObservableMsSpectrum,
+                upperObservableMsSpectrum.CreateAxisPropertySelectors(horizontalPropertySelector, "m/z", "m/z"),
+                upperObservableMsSpectrum.CreateAxisPropertySelectors2(verticalPropertySelector, "abundance"),
                 upperSpectrumHueItem,
                 msGraphLabels).AddTo(Disposables);
             ChartHueItem lowerSpectrumHueItem = new ChartHueItem(nameof(SpectrumPeak.SpectrumComment), ChartBrushes.GetBrush(Brushes.Red));
             SingleSpectrumModel lowerSpectrumModel = new SingleSpectrumModel(
-                new ObservableMsSpectrum(referenceSpectrum, new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true)).AddTo(Disposables), Observable.Return((ISpectraExporter)null)).AddTo(Disposables),
-                new PropertySelector<SpectrumPeak, double>(peak => peak.Mass),
-                new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity),
+                lowerObservableMsSpectrum,
+                lowerObservableMsSpectrum.CreateAxisPropertySelectors(horizontalPropertySelector, "m/z", "m/z"),
+                lowerObservableMsSpectrum.CreateAxisPropertySelectors2(verticalPropertySelector, "abundance"),
                 lowerSpectrumHueItem,
                 msGraphLabels).AddTo(Disposables);
             MsSpectrumModel = new MsSpectrumModel(upperSpectrumModel, lowerSpectrumModel, scorer)
