@@ -6,8 +6,11 @@ using CompMs.Graphics.Core.Base;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
@@ -59,6 +62,20 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public ChromatogramsModel Merge(ChromatogramsModel other) {
             return new ChromatogramsModel($"{Name} and {other.Name}", DisplayChromatograms.Concat(other.DisplayChromatograms).ToList(), $"{GraphTitle} and {other.GraphTitle}", HorizontalTitle, VerticalTitle);
+        }
+
+        public async Task ExportAsync(Stream stream, string separator) {
+            using (var writer = new StreamWriter(stream, encoding: Encoding.UTF8, bufferSize: 1024, leaveOpen: true)) {
+                await writer.WriteLineAsync(string.Format("Chromatogram{0}Time{0}Intensity", separator)).ConfigureAwait(false);
+                for (int i = 0; i < DisplayChromatograms.Count; i++) {
+                    var chromatogram = DisplayChromatograms[i];
+                    var builder = new StringBuilder();
+                    foreach (var peak in chromatogram.ChromatogramPeaks) {
+                        builder.AppendLine(string.Format("{1}{0}{2}{0}{3}", separator, chromatogram.Name, peak.Time, peak.Intensity));
+                    }
+                    await writer.WriteAsync(builder.ToString()).ConfigureAwait(false);
+                }
+            }
         }
     }
 }
