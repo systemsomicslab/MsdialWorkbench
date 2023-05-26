@@ -23,15 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\..\packages\NCDK.1.5.6\runtimes\win-x64\native\libinchi.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\..\packages\NCDK.1.5.6\runtimes\win-x64\native\libinchi.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Resources\Parser\msp_same_name.msp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
