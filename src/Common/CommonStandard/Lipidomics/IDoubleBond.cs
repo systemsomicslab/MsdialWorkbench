@@ -1,11 +1,12 @@
 ﻿using CompMs.Common.DataStructure;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
-    public interface IDoubleBond : IVisitableElement<IDoubleBond>
+    public interface IDoubleBond : IVisitableElement, IEquatable<IDoubleBond>
     {
         int Count { get; }
         int DecidedCount { get; }
@@ -13,8 +14,11 @@ namespace CompMs.Common.Lipidomics
 
         ReadOnlyCollection<IDoubleBondInfo> Bonds { get; }
 
+        bool Includes(IDoubleBond bond);
+
         IDoubleBond Add(params IDoubleBondInfo[] infos);
         IDoubleBond Decide(params IDoubleBondInfo[] infos);
+        IDoubleBond Indeterminate(DoubleBondIndeterminateState indeterminateState);
     }
 
     public sealed class DoubleBond : IDoubleBond
@@ -22,6 +26,10 @@ namespace CompMs.Common.Lipidomics
         public DoubleBond(int count, IList<IDoubleBondInfo> bonds) {
             Count = count;
             Bonds = new ReadOnlyCollection<IDoubleBondInfo>(bonds);
+        }
+
+        public DoubleBond(int count, IEnumerable<IDoubleBondInfo> bonds) : this(count, (bonds as IList<IDoubleBondInfo>) ?? bonds.ToArray()) {
+
         }
 
         public DoubleBond(int count, params IDoubleBondInfo[] bonds) : this(count, (IList<IDoubleBondInfo>)bonds) {
@@ -51,6 +59,10 @@ namespace CompMs.Common.Lipidomics
             return new DoubleBond(Count, Bonds.Concat(infos).OrderBy(x => x.Position).ToArray());
         }
 
+        public IDoubleBond Indeterminate(DoubleBondIndeterminateState indeterminateState) {
+            return new DoubleBond(Count, indeterminateState.Indeterminate(Bonds));
+        }
+
         public static DoubleBond CreateFromPosition(params int[] positions) {
             return new DoubleBond(positions.Length, positions.Select(p => DoubleBondInfo.Create(p)).ToArray());
         }
@@ -64,70 +76,20 @@ namespace CompMs.Common.Lipidomics
             }
         }
 
-        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, IDoubleBond, TDecomposed> decomposer) {
-            return decomposer.Decompose(visitor, this);
-        }
-
-        public TResult Accept<TResult, TDecomposed>(IVisitor<TResult, TDecomposed> visitor, IDecomposer<TResult, IDoubleBond, TDecomposed> decomposer) {
-            return decomposer.Decompose(visitor, this);
-        }
-    }
-
-    public enum DoubleBondState
-    {
-        Unknown, E, Z,
-    }
-
-    public interface IDoubleBondInfo
-    {
-        int Position { get; }
-        DoubleBondState State { get; }
-    }
-
-    public class DoubleBondInfo : IDoubleBondInfo
-    {
-        private DoubleBondInfo(int position, DoubleBondState state) {
-            Position = position;
-            State = state;
-        }
-
-        public int Position { get; }
-        public DoubleBondState State { get; }
-
-        static readonly Dictionary<(int, DoubleBondState), DoubleBondInfo> cache = new Dictionary<(int, DoubleBondState), DoubleBondInfo>();
-        private static readonly object lockobj = new object();
-
-        public static DoubleBondInfo Create(int position, DoubleBondState state = DoubleBondState.Unknown) {
-            DoubleBondInfo info;
-            lock (lockobj) {
-                if (!cache.TryGetValue((position, state), out info)) {
-                    return cache[(position, state)] = new DoubleBondInfo(position, state);
-                }
+        public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
+            if (decomposer is IDecomposer<TResult, DoubleBond> concrete) {
+                return concrete.Decompose(visitor, this);
             }
-            return info;
+            return default;
         }
 
-        public static DoubleBondInfo E(int position) => Create(position, DoubleBondState.E);
-
-        public static DoubleBondInfo Z(int position) => Create(position, DoubleBondState.Z);
-
-        public override string ToString() {
-            switch (State) {
-                case DoubleBondState.E:
-                case DoubleBondState.Z:
-                    return $"{Position}{State}";
-                case DoubleBondState.Unknown:
-                default:
-                    return $"{Position}";
-            }
+        public bool Includes(IDoubleBond bond) {
+            return Count == bond.Count && DecidedCount <= bond.DecidedCount && Bonds.All(bd => bond.Bonds.Any(bd.Includes));
         }
 
-        public override bool Equals(object obj) {
-            return obj is DoubleBondInfo info && Position == info.Position && State == info.State;
-        }
-
-        public override int GetHashCode() {
-            return (Position, State).GetHashCode();
+        public bool Equals(IDoubleBond other) {
+            return Count == other.Count && DecidedCount == other.DecidedCount
+                && Bonds.All(bond => other.Bonds.Any(bond.Equals));
         }
     }
 }

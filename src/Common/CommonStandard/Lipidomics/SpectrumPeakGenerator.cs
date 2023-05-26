@@ -57,22 +57,42 @@ namespace CompMs.Common.Lipidomics
             {
                 var factor = 1.0;
                 var factorHLoss = 0.5;
-                var factorHGain = 0.2;
+                var factorHGain = 0.05;
                 var speccomment_hloss = SpectrumComment.doublebond;
                 var speccomment_radical = SpectrumComment.doublebond;
                 var speccomment_hgain = SpectrumComment.doublebond;
 
+                // in the case of 18:2(9,12)
+                // i=10 means i-1=9=C9 and C11 in chain obj and C7 from omega terminal
+                // i=13 means i-1=12=C12 in bondPositions and C14 in chain obj and C4 from omega terminal
+                // in the case of 20:4(5,8,11,14)
+                // i=6 means i-1=5=C5 in bondPositions and C7 in chain obj and C13 from omega terminal
+                // i=9 means i-1=8=C8 in bondPositions and C10 in chain obj and C10 from omega terminal
+                // i=12 means i-1=11=C11 in bondPositions and C13 in chain obj and C7 from omega terminal
+                // i=15 means i-1=14=C14 in bondPositions and C16 in chain obj and C4 from omega terminal
                 if (bondPositions.Contains(i - 1))
                 { // in the case of 18:2(9,12), Radical is big, and H loss is next
-                    factor = 4.0;
-                    factorHLoss = 2.0;
-                    speccomment_radical |= SpectrumComment.doublebond_high;
-
+                    if (nlMass < 0.001) {
+                        factor = 4.0;
+                        factorHLoss = 2.0;
+                        factorHGain = 0.05;
+                        speccomment_radical |= SpectrumComment.doublebond_high;
+                    }
                 }
-                else if (bondPositions.Contains(i))
+                else if (bondPositions.Contains(i) && bondPositions.Contains(i + 3) && bondPositions.Contains(i + 6))
                 {
+                    factorHGain = 4.0;
+                    speccomment_hgain |= SpectrumComment.doublebond_high;
                     // now no modification
                 }
+                // in the case of 18:2(9,12)
+                // i=8 means i+1=9=C9 and C9 in chain obj and C9 from omega terminal
+                // i=11 means i+1=12=C12 in bondPositions and C12 in chain obj and C6 from omega terminal
+                // in the case of 20:4(5,8,11,14)
+                // i=4 means i+1=5=C5 in bondPositions and C5 in chain obj and C15 from omega terminal
+                // i=7 means i+1=8=C8 in bondPositions and C8 in chain obj and C12 from omega terminal
+                // i=10 means i+1=11=C11 in bondPositions and C11 in chain obj and C9 from omega terminal
+                // i=13 means i+1=14=C14 in bondPositions and C14 in chain obj and C6 from omega terminal
                 else if (bondPositions.Contains(i + 1))
                 {
                     factor = 0.5;
@@ -84,21 +104,33 @@ namespace CompMs.Common.Lipidomics
                 {
                     // now no modification
                 }
+                // in the case of 18:2(9,12)
+                // i=6 means i+3=9=C9 and C7 in chain obj and C11 from omega terminal
+                // i=9 means i+3=12=C12 in bondPositions and C10 in chain obj and C8 from omega terminal
+                // in the case of 20:4(5,8,11,14)
+                // i=2 means i+3=5=C5 in bondPositions and C3 in chain obj and C17 from omega terminal
+                // i=5 means i+3=8=C8 in bondPositions and C6 in chain obj and C14 from omega terminal
+                // i=8 means i+3=11=C11 in bondPositions and C9 in chain obj and C11 from omega terminal
+                // i=11 means i+3=14=C14 in bondPositions and C12 in chain obj and C8 from omega terminal
                 else if (bondPositions.Contains(i + 3))
                 {
-                    if (bondPositions.Contains(i))
-                    {
-                        factor = 4.0;
-                        factorHLoss = 0.5;
-                        factorHGain = 2.0;
-                        speccomment_radical |= SpectrumComment.doublebond_high;
-                    }
-                    else
-                    {
-                        factorHLoss = 4.0;
-                        speccomment_hloss |= SpectrumComment.doublebond_high;
+                    factorHLoss = 4.0;
+                    factor = 2.0;
+                    factorHGain = 0.05;
+                    speccomment_hloss |= SpectrumComment.doublebond_high;
 
-                    }
+                    //if (bondPositions.Contains(i))
+                    //{
+                    //    factor = 3.0;
+                    //    factorHLoss = 0.5;
+                    //    factorHGain = 2.0;
+                    //}
+                    //else
+                    //{
+                    //    factorHLoss = 4.0;
+                    //    speccomment_hloss |= SpectrumComment.doublebond_high;
+
+                    //}
                 }
 
                 if (i == 2)

@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
-    public class AcylChain : IChain, IVisitableElement<AcylChain>
+    public class AcylChain : IChain
     {
         public AcylChain(int carbonCount, IDoubleBond doubleBond, IOxidized oxidized) {
             CarbonCount = carbonCount;
@@ -50,16 +50,31 @@ namespace CompMs.Common.Lipidomics
             return carbon * MassDiffDictionary.CarbonMass + (2 * carbon - 2 * doubleBond - 1) * MassDiffDictionary.HydrogenMass + (1 + oxidize) * MassDiffDictionary.OxygenMass;
         }
 
-        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, IChain, TDecomposed> decomposer) {
-            return decomposer.Decompose(visitor, this);
+        public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
+            if (decomposer is IDecomposer<TResult, AcylChain> concrete) {
+                return concrete.Decompose(visitor, this);
+            }
+            return default;
         }
 
-        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, AcylChain, TDecomposed> decomposer) {
-            return decomposer.Decompose(visitor, this);
+        public bool Includes(IChain chain) {
+            return chain is AcylChain
+                && chain.CarbonCount == CarbonCount
+                && chain.DoubleBondCount == DoubleBondCount
+                && chain.OxidizedCount == OxidizedCount
+                && DoubleBond.Includes(chain.DoubleBond)
+                && Oxidized.Includes(chain.Oxidized);
+        }
+
+        public bool Equals(IChain other) {
+            return other is AcylChain
+                && CarbonCount == other.CarbonCount
+                && DoubleBond.Equals(other.DoubleBond)
+                && Oxidized.Equals(other.Oxidized);
         }
     }
 
-    public class AlkylChain : IChain, IVisitableElement<AlkylChain>
+    public class AlkylChain : IChain
     {
         public AlkylChain(int carbonCount, IDoubleBond doubleBond, IOxidized oxidized) {
             CarbonCount = carbonCount;
@@ -118,16 +133,31 @@ namespace CompMs.Common.Lipidomics
             }
         }
 
-        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, IChain, TDecomposed> decomposer) {
-            return decomposer.Decompose(visitor, this);
+        public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
+            if (decomposer is IDecomposer<TResult, AlkylChain> concrete) {
+                return concrete.Decompose(visitor, this);
+            }
+            return default;
         }
 
-        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, AlkylChain, TDecomposed> decomposer) {
-            return decomposer.Decompose(visitor, this);
+        public bool Includes(IChain chain) {
+            return chain is AlkylChain
+                && chain.CarbonCount == CarbonCount
+                && chain.DoubleBondCount == DoubleBondCount
+                && chain.OxidizedCount == OxidizedCount
+                && DoubleBond.Includes(chain.DoubleBond)
+                && Oxidized.Includes(chain.Oxidized);
+        }
+
+        public bool Equals(IChain other) {
+            return other is AlkylChain
+                && CarbonCount == other.CarbonCount
+                && DoubleBond.Equals(other.DoubleBond)
+                && Oxidized.Equals(other.Oxidized);
         }
     }
 
-    public class SphingoChain : IChain, IVisitableElement<SphingoChain>
+    public class SphingoChain : IChain
     {
         public SphingoChain(int carbonCount, IDoubleBond doubleBond, IOxidized oxidized) {
             if (oxidized is null) {
@@ -164,16 +194,31 @@ namespace CompMs.Common.Lipidomics
             return generator.Generate(this);
         }
 
-        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, IChain, TDecomposed> decomposer) {
-            return decomposer.Decompose(visitor, this);
-        }
-
-        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, SphingoChain, TDecomposed> decomposer) {
-            return decomposer.Decompose(visitor, this);
+        public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
+            if (decomposer is IDecomposer<TResult, SphingoChain> concrete) {
+                return concrete.Decompose(visitor, this);
+            }
+            return default;
         }
 
         public override string ToString() {
             return $"{CarbonCount}:{DoubleBond}{Oxidized}";
+        }
+
+        public bool Includes(IChain chain) {
+            return chain is SphingoChain
+                && chain.CarbonCount == CarbonCount
+                && chain.DoubleBondCount == DoubleBondCount
+                && chain.OxidizedCount == OxidizedCount
+                && DoubleBond.Includes(chain.DoubleBond)
+                && Oxidized.Includes(chain.Oxidized);
+        }
+
+        public bool Equals(IChain other) {
+            return other is SphingoChain
+                && CarbonCount == other.CarbonCount
+                && DoubleBond.Equals(other.DoubleBond)
+                && Oxidized.Equals(other.Oxidized);
         }
     }
 }

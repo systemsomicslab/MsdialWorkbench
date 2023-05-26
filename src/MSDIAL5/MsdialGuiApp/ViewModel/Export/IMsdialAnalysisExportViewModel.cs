@@ -12,6 +12,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
 {
     internal interface IMsdialAnalysisExportViewModel : INotifyDataErrorInfo, IDisposable {
         IObservable<bool> CanExport { get; }
+        IObservable<bool> ShouldExport { get; }
     }
 
     internal static class MsdialAnalysisExportViewModelFactory {
@@ -42,6 +43,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
         public ReactivePropertySlim<bool> ShouldExport { get; }
 
         IObservable<bool> IMsdialAnalysisExportViewModel.CanExport => Observable.Return(true);
+        IObservable<bool> IMsdialAnalysisExportViewModel.ShouldExport => ShouldExport;
     }
 
     internal sealed class SpectraTypeSelectableMsdialAnalysisExportViewModel : ViewModelBase, IMsdialAnalysisExportViewModel {
@@ -61,5 +63,6 @@ namespace CompMs.App.Msdial.ViewModel.Export
         public ReactivePropertySlim<bool> ShouldExport { get; }
 
         IObservable<bool> IMsdialAnalysisExportViewModel.CanExport => Observable.Return(true);
+        IObservable<bool> IMsdialAnalysisExportViewModel.ShouldExport => ShouldExport;
     }
 }

@@ -14227,7 +14227,44 @@ AdductIon adduct)
             return null;
         }
 
-        public static LipidMolecule JudgeIfVitaminmolecules(IMSScanProperty msScanProp, double ms2Tolerance,
+        public static LipidMolecule JudgeIfVitaminEmolecules(IMSScanProperty msScanProp, double ms2Tolerance,
+                double theoreticalMz, int totalCarbon, int totalDoubleBond, // 
+                AdductIon adduct)
+        {
+            var spectrum = msScanProp.Spectrum;
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (adduct.IonMode == IonMode.Positive)
+            { // positive ion mode 
+                if (adduct.AdductIonName == "[M-H]-" || adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
+                    adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "[M+CH3COO]-")
+                {
+                    // calc [M-H]-
+                    //var threshold = 10.0;
+                    var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
+                        adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
+                        theoreticalMz - MassDiffDictionary.HydrogenMass - 59.013864 : theoreticalMz - MassDiffDictionary.HydrogenMass - 44.998214;
+                    // vitamin E
+                    var vitamineMz = 429.3738044;
+                    var threshold = 1;
+
+                    var isVitamindFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, vitamineMz, threshold);
+                    if (isVitamindFound == true)
+                    {
+                        var threshold1 = 10.0;
+                        var diagnosticMz1 = 163.0753564; //[C10H11O2]-
+                        var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
+                        if (isClassIon1Found != true) return null;
+
+                        //
+                        var candidates = new List<LipidMolecule>();
+                        return LipidMsmsCharacterizationUtility.returnAnnotationNoChainResult("alpha-Tocopherol", LbmClass.Vitamin_E, "", theoreticalMz, adduct,
+                           totalCarbon, totalDoubleBond, 0, candidates, 0);
+                    }
+                }
+            }
+            return null;
+        }
+        public static LipidMolecule JudgeIfVitaminDmolecules(IMSScanProperty msScanProp, double ms2Tolerance,
                 double theoreticalMz, int totalCarbon, int totalDoubleBond, // 
                 AdductIon adduct)
         {
@@ -14256,37 +14293,7 @@ AdductIon adduct)
 
                         //
                         var candidates = new List<LipidMolecule>();
-                        return LipidMsmsCharacterizationUtility.returnAnnotationNoChainResult("25-hydroxycholecalciferol", LbmClass.Vitamin_E, "", theoreticalMz, adduct,
-                           totalCarbon, totalDoubleBond, 0, candidates, 0);
-                    }
-                }
-                return null;
-            }
-            else
-            {
-                if (adduct.AdductIonName == "[M-H]-" || adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
-                    adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "[M+CH3COO]-")
-                {
-                    // calc [M-H]-
-                    //var threshold = 10.0;
-                    var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
-                        adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.HydrogenMass - 59.013864 : theoreticalMz - MassDiffDictionary.HydrogenMass - 44.998214;
-                    // vitamin E
-                    var vitamineMz = 429.3738044;
-                    var threshold = 1;
-
-                    var isVitamindFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, vitamineMz, threshold);
-                    if (isVitamindFound == true)
-                    {
-                        var threshold1 = 10.0;
-                        var diagnosticMz1 = 163.0753564; //[C10H11O2]-
-                        var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
-                        if (isClassIon1Found != true) return null;
-
-                        //
-                        var candidates = new List<LipidMolecule>();
-                        return LipidMsmsCharacterizationUtility.returnAnnotationNoChainResult("alpha-Tocopherol", LbmClass.Vitamin_E, "", theoreticalMz, adduct,
+                        return LipidMsmsCharacterizationUtility.returnAnnotationNoChainResult("25-hydroxycholecalciferol", LbmClass.Vitamin_D, "", theoreticalMz, adduct,
                            totalCarbon, totalDoubleBond, 0, candidates, 0);
                     }
                 }

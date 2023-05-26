@@ -84,5 +84,6 @@ namespace CompMs.App.Msdial.ViewModel.Export
         private int _isotopeExportMax = 2;
 
         IObservable<bool> IMsdialAnalysisExportViewModel.CanExport => _canExport;
+        IObservable<bool> IMsdialAnalysisExportViewModel.ShouldExport => ShouldExport;
     }
 }

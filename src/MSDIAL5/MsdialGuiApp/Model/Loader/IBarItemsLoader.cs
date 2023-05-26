@@ -34,11 +34,11 @@ namespace CompMs.App.Msdial.Model.Loader
             var selector = expression.Compile();
             var includes = files.AnalysisFiles.Select(file => file.ObserveProperty(f => f.AnalysisFileIncluded)).CombineLatest();
             BarItemCollection LoadBarItemsAsObservable(AlignmentSpotPropertyModel target) {
-                var loading = target.AlignedPeakPropertiesModelAsObservable.Select(props => props is null);
+                var loading = target.AlignedPeakPropertiesModelProperty.Select(props => props is null);
                 var propertiesAsObserable = new[]
                 {
-                    target.AlignedPeakPropertiesModelAsObservable.TakeNull().Select(_ => Enumerable.Empty<AlignmentChromPeakFeatureModel>()),
-                    target.AlignedPeakPropertiesModelAsObservable.SkipNull().CombineLatest(includes, (props, includes_) => props.Zip(includes_, (prop, include) => (prop, include)).Where(p => p.include).Select(p => p.prop)),
+                    target.AlignedPeakPropertiesModelProperty.TakeNull().Select(_ => Enumerable.Empty<AlignmentChromPeakFeatureModel>()),
+                    target.AlignedPeakPropertiesModelProperty.SkipNull().CombineLatest(includes, (props, includes_) => props.Zip(includes_, (prop, include) => (prop, include)).Where(p => p.include).Select(p => p.prop)),
                 }.Merge();
 
                 var barItems = Observable.CombineLatest(

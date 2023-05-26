@@ -204,7 +204,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
             var classnameToBytes = parameter.ClassnameToColorBytes;
             var classnameToBrushes = ChartBrushes.ConvertToSolidBrushDictionary(classnameToBytes);
             return alignmentProp.Select(prop => {
-                var observablePeaks = prop?.AlignedPeakPropertiesModelAsObservable ?? Observable.Never<ReadOnlyCollection<AlignmentChromPeakFeatureModel>>();
+                var observablePeaks = prop?.AlignedPeakPropertiesModelProperty ?? Observable.Never<ReadOnlyCollection<AlignmentChromPeakFeatureModel>>();
                 return observablePeaks.CombineLatest(chromatogramSource, (peaks, chromatograms) => {
                     var chromatograms_ = chromatograms ?? Enumerable.Empty<Chromatogram>();
                     var peaks_ = peaks ?? Enumerable.Empty<AlignmentChromPeakFeatureModel>();

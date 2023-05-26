@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
+using CompMs.Common.DataStructure;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Parser;
@@ -68,12 +69,24 @@ namespace CompMs.Common.Lipidomics.Tests
 
         public ITotalChain Chains => throw new System.NotImplementedException();
 
+        public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
+            throw new System.NotImplementedException();
+        }
+
+        public bool Equals(ILipid other) {
+            throw new System.NotImplementedException();
+        }
+
         public IEnumerable<ILipid> Generate(ILipidGenerator generator) {
             throw new System.NotImplementedException();
         }
 
         public IMSScanProperty GenerateSpectrum(ILipidSpectrumGenerator generator, AdductIon adduct, IMoleculeProperty molecule = null) {
             return generator.Generate(new Lipid(LipidClass, 0, new TotalChain(0, 0, 0, 0, 0, 0)), adduct);
+        }
+
+        bool ILipid.Includes(ILipid lipid) {
+            throw new System.NotImplementedException();
         }
     }
 

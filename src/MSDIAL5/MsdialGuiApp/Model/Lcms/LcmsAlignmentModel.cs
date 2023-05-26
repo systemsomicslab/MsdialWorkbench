@@ -7,6 +7,7 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Statistics;
+using CompMs.App.Msdial.Model.Table;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
@@ -180,6 +181,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             IConnectableObservable<List<SpectrumPeak>> refSpectrum = MatchResultCandidatesModel.LoadSpectrumObservable(refLoader).Publish();
             Disposables.Add(refSpectrum.Connect());
             IMsSpectrumLoader<AlignmentSpotPropertyModel> msDecSpectrumLoader = new AlignmentMSDecSpectrumLoader(_alignmentFile);
+            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             Ms2SpectrumModel = new MsSpectrumModel(
                 Target.SelectSwitch(msDecSpectrumLoader.LoadSpectrumAsObservable),
                 refSpectrum,
@@ -190,7 +192,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Observable.Return(upperSpecBrush),
                 Observable.Return(lowerSpecBrush),
                 Observable.Return((ISpectraExporter)null),
-                Observable.Return((ISpectraExporter)null),
+                Observable.Return(referenceExporter),
                 null,
                 MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers)).AddTo(Disposables);
 
@@ -277,6 +279,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
 
             MultivariateAnalysisSettingModel = new MultivariateAnalysisSettingModel(parameter, Ms1Spots, evaluator, files, classBrush);
+
+            FindTargetCompoundSpotModel = new FindTargetCompoundsSpotModel(spotsSource.Spots.Items, Target, messageBroker).AddTo(Disposables);
         }
 
         public UndoManager UndoManager => _undoManager;
@@ -295,7 +299,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public LcmsAlignmentSpotTableModel AlignmentSpotTableModel { get; private set; }
         public NormalizationSetModel NormalizationSetModel { get; }
         public MultivariateAnalysisSettingModel MultivariateAnalysisSettingModel { get; }
-
+        public FindTargetCompoundsSpotModel FindTargetCompoundSpotModel { get; }
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
         public PeakInformationAlignmentModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }

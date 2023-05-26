@@ -42,6 +42,33 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual("O-18:2;O2", chain.ToString());
         }
 
+        [DataTestMethod]
+        [DynamicData(nameof(EquatableTestData), DynamicDataSourceType.Property)]
+        public void EquatableTest(IChain chain, IChain other, bool expected) {
+            Assert.AreEqual(expected, chain.Equals(other));
+        }
+
+        public static IEnumerable<object[]> EquatableTestData {
+            get {
+                IChain chain1 = new AlkylChain(18, new DoubleBond(2), new Oxidized(1)),
+                    chain2 = new AlkylChain(18, new DoubleBond(2), new Oxidized(1)),
+                    chain3 = new AlkylChain(16, new DoubleBond(2), new Oxidized(1)),
+                    chain4 = new AlkylChain(18, new DoubleBond(1), new Oxidized(1)),
+                    chain5 = new AlkylChain(18, DoubleBond.CreateFromPosition(9, 12), new Oxidized(1)),
+                    chain6 = new AlkylChain(18, DoubleBond.CreateFromPosition(12, 15), new Oxidized(1)),
+                    chain7 = new AlkylChain(18, new DoubleBond(2), Oxidized.CreateFromPosition(1)),
+                    chain8 = new AlkylChain(18, new DoubleBond(2), Oxidized.CreateFromPosition(2));
+                yield return new object[] { chain1, chain1, true, };
+                yield return new object[] { chain1, chain2, true, };
+                yield return new object[] { chain1, chain3, false, };
+                yield return new object[] { chain1, chain4, false, };
+                yield return new object[] { chain1, chain5, false, };
+                yield return new object[] { chain5, chain6, false, };
+                yield return new object[] { chain1, chain7, false, };
+                yield return new object[] { chain7, chain8, false, };
+            }
+        }
+
         class MockGenerator : IChainGenerator
         {
             public bool Called { get; private set; } = false;
