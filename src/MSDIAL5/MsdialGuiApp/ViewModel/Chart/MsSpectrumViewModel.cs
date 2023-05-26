@@ -12,7 +12,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    public sealed class MsSpectrumViewModel : ViewModelBase
+    internal sealed class MsSpectrumViewModel : ViewModelBase
     {
         private readonly MsSpectrumModel _model;
 

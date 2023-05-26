@@ -12,7 +12,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    public class MsSpectrumModel : DisposableModelBase {
+    internal class MsSpectrumModel : DisposableModelBase {
         private readonly ReadOnlyReactivePropertySlim<MsSpectrum> _upperSpectrum;
         private readonly ReadOnlyReactivePropertySlim<MsSpectrum> _lowerSpectrum;
         private readonly ReadOnlyReactivePropertySlim<Ms2ScanMatching> _ms2ScanMatching;

@@ -13,7 +13,6 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
-using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.ObjectModel;
@@ -55,15 +54,15 @@ namespace CompMs.App.Msdial.Model.Gcms
             var rawSpectrumLoader_ = rawSpectrumLoader.Contramap((Ms1BasedSpectrumFeature feature) => feature?.QuantifiedChromatogramPeak);
             var rawGraphLabels = new GraphLabels("Raw EI spectrum", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
             ChartHueItem measuredHueItem = new ChartHueItem(projectBaseParameterModel, Colors.Blue);
-            SingleSpectrumModel rawSpectrumModel = SingleSpectrumModel.Create(selectedSpectrum, rawSpectrumLoader_, horizontalPropertySelector, verticalPropertySelector, measuredHueItem, rawGraphLabels, Observable.Return((ISpectraExporter)null)).AddTo(_disposables);
+            SingleSpectrumModel rawSpectrumModel = new SingleSpectrumModel(ObservableMsSpectrum.Create(selectedSpectrum, rawSpectrumLoader_, Observable.Return((ISpectraExporter)null)).AddTo(_disposables), horizontalPropertySelector, verticalPropertySelector, measuredHueItem, rawGraphLabels).AddTo(_disposables);
 
             var decLoader_ = decSpectrumLoader;
             var decGraphLabels = new GraphLabels("Deconvoluted EI spectrum", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
-            SingleSpectrumModel decSpectrumModel = SingleSpectrumModel.Create(selectedSpectrum, decLoader_, horizontalPropertySelector, verticalPropertySelector, measuredHueItem, decGraphLabels, Observable.Return((ISpectraExporter)null)).AddTo(_disposables);
+            SingleSpectrumModel decSpectrumModel = new SingleSpectrumModel(ObservableMsSpectrum.Create(selectedSpectrum, decLoader_, Observable.Return((ISpectraExporter)null)).AddTo(_disposables), horizontalPropertySelector, verticalPropertySelector, measuredHueItem, decGraphLabels).AddTo(_disposables);
 
             var refGraphLabels = new GraphLabels("Reference EI spectrum", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
             ChartHueItem referenceSpectrumHueItem = new ChartHueItem(projectBaseParameterModel, Colors.Red);
-            SingleSpectrumModel referenceSpectrumModel = SingleSpectrumModel.Create(MatchResultCandidatesModel.SelectedCandidate, refLoader, horizontalPropertySelector, verticalPropertySelector, referenceSpectrumHueItem, refGraphLabels, Observable.Return((ISpectraExporter)null)).AddTo(_disposables);
+            SingleSpectrumModel referenceSpectrumModel = new SingleSpectrumModel(ObservableMsSpectrum.Create(MatchResultCandidatesModel.SelectedCandidate, refLoader, Observable.Return((ISpectraExporter)null)).AddTo(_disposables), horizontalPropertySelector, verticalPropertySelector, referenceSpectrumHueItem, refGraphLabels).AddTo(_disposables);
 
             var ms2ScanMatching = MatchResultCandidatesModel.GetCandidatesScorer(compoundSearchers).Publish();
             _disposables.Add(ms2ScanMatching.Connect());

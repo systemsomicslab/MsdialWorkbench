@@ -10,7 +10,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    public class SingleSpectrumViewModel : ViewModelBase
+    internal class SingleSpectrumViewModel : ViewModelBase
     {
         private readonly SingleSpectrumModel _model;
 

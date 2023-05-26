@@ -34,14 +34,14 @@ namespace CompMs.App.Msdial.Model.Chart
             RawRefSpectrumModels = new MsSpectrumModel(rawSpectrumModel, referenceSpectrumModel, ms2ScanMatching)
             {
                 GraphTitle = "Measure vs. Reference",
-                HorizontalTitle = rawSpectrumModel.Labels.HorizontalTitle,
-                VerticalTitle = rawSpectrumModel.Labels.VerticalTitle,
+                HorizontalTitle = "m/z",
+                VerticalTitle = "Relative abundance",
             }.AddTo(Disposables);
             DecRefSpectrumModels = new MsSpectrumModel(decSpectrumModel, referenceSpectrumModel, ms2ScanMatching)
             {
-                GraphTitle =  "Measure vs. Reference",
-                HorizontalTitle = decSpectrumModel.Labels.HorizontalTitle,
-                VerticalTitle = decSpectrumModel.Labels.VerticalTitle,
+                GraphTitle =  "Deconvolution vs. Reference",
+                HorizontalTitle = "m/z",
+                VerticalTitle = "Relative abundacne",
             }.AddTo(Disposables);
             RawLoader = loader;
         }
