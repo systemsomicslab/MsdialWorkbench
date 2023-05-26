@@ -5,7 +5,6 @@ using CompMs.CommonMVVM.Validator;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reactive;
@@ -18,25 +17,28 @@ namespace CompMs.App.Msdial.ViewModel.Export
     {
         private readonly AnalysisResultExportModel _model;
 
+        public IMsdialAnalysisExportViewModel[] MsdialAnalysisExportViewModels { get; }
+
         public AnalysisResultExportViewModel(AnalysisResultExportModel model) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
+
+            MsdialAnalysisExportViewModels = model.AnalysisExports.Select(m => MsdialAnalysisExportViewModelFactory.Create(m).AddTo(Disposables)).ToArray();
 
             SelectedFrom = model.UnSelectedFiles.ToReadOnlyReactiveCollection(file => new FileBeanSelection(file)).AddTo(Disposables);
             SelectedTo = model.SelectedFiles.ToReadOnlyReactiveCollection(file => new FileBeanSelection(file)).AddTo(Disposables);
 
-            ExportSpectraTypes = new ReadOnlyObservableCollection<SpectraType>(model.ExportSpectraTypes);
-            ExportSpectraFileFormats = new ReadOnlyObservableCollection<SpectraFormat>(model.ExportSpectraFileFormats);
-
-            model.ObserveProperty(m => m.SelectedSpectraType).Subscribe(t => SelectedSpectraType = t).AddTo(Disposables);
-            model.ObserveProperty(m => m.SelectedFileFormat).Subscribe(f => SelectedFileFormat = f).AddTo(Disposables);
-            model.ObserveProperty(m => m.IsotopeExportMax).Subscribe(m => IsotopeExportMax = m).AddTo(Disposables);
-
-            ExportPeakCommand = this.ErrorsChangedAsObservable().ToUnit()
-                .StartWith(Unit.Default)
-                .Select(_ => !HasValidationErrors)
+            ExportPeakCommand = MsdialAnalysisExportViewModels.Select(vm => vm.CanExport)
+                .Concat(new[]
+                {
+                    this.ErrorsChangedAsObservable().ToUnit().StartWith(Unit.Default).Select(_ => !HasValidationErrors),
+                    SelectedTo.CollectionChangedAsObservable().Select(_ => SelectedTo.Any()),
+                    MsdialAnalysisExportViewModels.Select(vm => vm.ShouldExport).CombineLatestValuesAreAllFalse().Inverse(),
+                })
+                .CombineLatestValuesAreAllTrue()
                 .ToAsyncReactiveCommand()
                 .WithSubscribe(ExportPeakAsync)
                 .AddTo(Disposables);
+            DestinationFolder = model.DestinationFolder;
         }
 
         public AsyncReactiveCommand ExportPeakCommand { get; }
@@ -101,56 +103,6 @@ namespace CompMs.App.Msdial.ViewModel.Export
                 DestinationFolder = fbd.SelectedPath;
             }
         }
-
-        public ReadOnlyObservableCollection<SpectraType> ExportSpectraTypes { get; }
-
-        [Required(ErrorMessage = "Choose a spectra type.")]
-        public SpectraType SelectedSpectraType {
-            get {
-                return _selectedSpectraType;
-            }
-
-            set {
-                if (SetProperty(ref _selectedSpectraType, value)) {
-                    if (!ContainsError(nameof(SelectedSpectraType))) {
-                        _model.SelectedSpectraType = _selectedSpectraType;
-                    }
-                }
-            }
-        }
-        private SpectraType _selectedSpectraType;
-
-        public ReadOnlyObservableCollection<SpectraFormat> ExportSpectraFileFormats { get; }
-
-        [Required(ErrorMessage = "Choose a spectra format.")]
-        public SpectraFormat SelectedFileFormat {
-            get {
-                return _selectedFileFormat;
-            }
-
-            set {
-                if (SetProperty(ref _selectedFileFormat, value)) {
-                    if (!ContainsError(nameof(SelectedFileFormat))) {
-                        _model.SelectedFileFormat = _selectedFileFormat;
-                    }
-                }
-            }
-        }
-        private SpectraFormat _selectedFileFormat;
-
-        public int IsotopeExportMax {
-            get {
-                return _isotopeExportMax;
-            }
-            set {
-                if (SetProperty(ref _isotopeExportMax, value)) {
-                    if (!ContainsError(nameof(IsotopeExportMax))) {
-                        _model.IsotopeExportMax = _isotopeExportMax;
-                    }
-                }
-            }
-        }
-        private int _isotopeExportMax = 2;
     }
 
     internal sealed class FileBeanSelection : ViewModelBase

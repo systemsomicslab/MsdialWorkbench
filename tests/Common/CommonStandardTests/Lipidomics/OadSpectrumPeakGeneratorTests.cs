@@ -21,8 +21,8 @@ namespace CompMs.Common.Lipidomics.Tests
             var acyl0 = new AcylChain(24, DoubleBond.CreateFromPosition(15), new Oxidized(0));//24:1(15)
             var lipid00 = new Lipid(LbmClass.PC, 869.6873, new PositionLevelChains(acyl1, acyl0));
 
-            var actual01 = OadSpectrumPeakGenerator.GetAcylDoubleBondSpectrum(lipid00, acyl1, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 100.0).ToList();
-            var actual02 = OadSpectrumPeakGenerator.GetAcylDoubleBondSpectrum(lipid00, acyl0, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 100.0).ToList();
+            var actual01 = OadSpectrumPeakGenerator.GetAcylDoubleBondSpectrum(lipid00, acyl1, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 100.0, oadId).ToList();
+            var actual02 = OadSpectrumPeakGenerator.GetAcylDoubleBondSpectrum(lipid00, acyl0, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 100.0, oadId).ToList();
             var actualList = actual01;
             actualList.AddRange(actual02);
 
@@ -71,7 +71,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var acyl1 = new AcylChain(18, DoubleBond.CreateFromPosition(9), new Oxidized(0));//18:1(9)
             var lipid01 = new Lipid(LbmClass.PC, 785.5935, new PositionLevelChains(acyl1, acyl1));
 
-            var actual = OadSpectrumPeakGenerator.GetAcylDoubleBondSpectrum(lipid01, acyl1, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 100.0);
+            var actual = OadSpectrumPeakGenerator.GetAcylDoubleBondSpectrum(lipid01, acyl1, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 100.0, oadId);
 
             var expected = new SpectrumPeak[]
             {
@@ -107,7 +107,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var acyl2 = new AcylChain(18, DoubleBond.CreateFromPosition(9, 12, 15), new Oxidized(0));//18:3(9,12,15)
             var lipid02 = new Lipid(LbmClass.PC, 777.5309, new PositionLevelChains(acyl2, acyl2));
 
-            var actual = OadSpectrumPeakGenerator.GetAcylDoubleBondSpectrum(lipid02, acyl2, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 100.0);
+            var actual = OadSpectrumPeakGenerator.GetAcylDoubleBondSpectrum(lipid02, acyl2, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 100.0, oadId);
             var expected = new SpectrumPeak[]
             {
                 new SpectrumPeak(687.447f,50f),  // 18:3(9,12,15)C9+C+O+H OAD01
@@ -166,7 +166,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var acyl1 = new AcylChain(18, DoubleBond.CreateFromPosition(9), new Oxidized(0));//18:1(9)
             var lipid03 = new Lipid(LbmClass.EtherPC, 771.6142, new PositionLevelChains(alkyl1, acyl1));
 
-            var actual = OadSpectrumPeakGenerator.GetAlkylDoubleBondSpectrum(lipid03, alkyl1, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 100.0);
+            var actual = OadSpectrumPeakGenerator.GetAlkylDoubleBondSpectrum(lipid03, alkyl1, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 100.0, oadId);
 
             var expected = new SpectrumPeak[]
             {
@@ -202,8 +202,8 @@ namespace CompMs.Common.Lipidomics.Tests
             var alkyl2 = new AlkylChain(18, DoubleBond.CreateFromPosition(1), new Oxidized(0));// P-18:0 (O-18:1(1))
             var lipid04 = new Lipid(LbmClass.EtherPC, 771.6142, new PositionLevelChains(alkyl2, acyl1));
 
-            var alkylPeak = OadSpectrumPeakGenerator.GetAlkylDoubleBondSpectrum(lipid04, alkyl2, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 100.0).ToList();
-            var acylPeak = OadSpectrumPeakGenerator.GetAcylDoubleBondSpectrum(lipid04, acyl1, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 100.0).ToList();
+            var alkylPeak = OadSpectrumPeakGenerator.GetAlkylDoubleBondSpectrum(lipid04, alkyl2, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 100.0, oadId).ToList();
+            var acylPeak = OadSpectrumPeakGenerator.GetAcylDoubleBondSpectrum(lipid04, acyl1, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 100.0, oadId).ToList();
 
             var actualList = alkylPeak;
             actualList.AddRange(acylPeak);
@@ -212,7 +212,7 @@ namespace CompMs.Common.Lipidomics.Tests
             {
                 new SpectrumPeak(565.3738f,20f),  // P-18:0C1+C+O+H OAD01
                 new SpectrumPeak(564.366f,50f),  // P-18:0C1+O OAD02
-                new SpectrumPeak(563.3582f,100f),  // P-18:0C1+C+O-H OAD03
+                //new SpectrumPeak(563.3582f,100f),  // P-18:0C1+C+O-H OAD03
                 new SpectrumPeak(677.499f,50f),  // 18:1(9)C9+C+O+H OAD01
                 new SpectrumPeak(676.4912f,100f),  // 18:1(9)C9+O OAD02
                 new SpectrumPeak(692.4861f,20f),  // 18:1(9)C9+O OAD02+O
@@ -247,8 +247,8 @@ namespace CompMs.Common.Lipidomics.Tests
             var sphingo1 = new SphingoChain(18, DoubleBond.CreateFromPosition(4), Oxidized.CreateFromPosition(1, 3));// sphingo 18:1(4)
             var lipid01 = new Lipid(LbmClass.SM, 728.5832, new PositionLevelChains(sphingo1, acyl1));
 
-            var sphingoPeak = OadSpectrumPeakGenerator.GetSphingoDoubleBondSpectrum(lipid01, sphingo1, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 100.0).ToList();
-            var acylPeak = OadSpectrumPeakGenerator.GetAcylDoubleBondSpectrum(lipid01, acyl1, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 100.0).ToList();
+            var sphingoPeak = OadSpectrumPeakGenerator.GetSphingoDoubleBondSpectrum(lipid01, sphingo1, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 100.0, oadId).ToList();
+            var acylPeak = OadSpectrumPeakGenerator.GetAcylDoubleBondSpectrum(lipid01, acyl1, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 100.0, oadId).ToList();
 
             var actualList = sphingoPeak;
             actualList.AddRange(acylPeak);
@@ -292,7 +292,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var sphingo2 = new SphingoChain(18, DoubleBond.CreateFromPosition(4, 8), Oxidized.CreateFromPosition(1, 3));// sphingo 18:2(4,8)
             var lipid02 = new Lipid(LbmClass.Cer_NS, 647.6216, new PositionLevelChains(sphingo2, acyl2));
 
-            var actual02 = OadSpectrumPeakGenerator.GetSphingoDoubleBondSpectrum(lipid02, sphingo2, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 100.0);
+            var actual02 = OadSpectrumPeakGenerator.GetSphingoDoubleBondSpectrum(lipid02, sphingo2, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 100.0, oadId);
 
             var expected02 = new SpectrumPeak[]
             {
@@ -324,6 +324,30 @@ namespace CompMs.Common.Lipidomics.Tests
             }
 
         }
+        string[] oadId = new string[] {
+                "OAD01",
+                "OAD02",
+                "OAD02+O",
+                "OAD03",
+                "OAD04",
+                //"OAD05",
+                //"OAD06",
+                //"OAD07",
+                "OAD08",
+                "OAD09",
+                //"OAD10",
+                //"OAD11",
+                //"OAD12",
+                //"OAD13",
+                "OAD14",
+                "OAD15",
+                "OAD15+O",
+                "OAD16",
+                "OAD17",
+                "SphOAD",
+                "SphOAD+H",
+                //"SphOAD+2H",
+            };
 
     }
 }

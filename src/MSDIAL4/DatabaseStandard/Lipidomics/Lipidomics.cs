@@ -543,7 +543,12 @@ namespace Riken.Metabolomics.Lipidomics
                         break;
 
                     case LbmClass.Vitamin_E:
-                        result = LipidMsmsCharacterization.JudgeIfVitaminmolecules(spectrum, ms2tol, refMz,
+                        result = LipidMsmsCharacterization.JudgeIfVitaminEmolecules(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, adduct);
+                        break;
+
+                    case LbmClass.Vitamin_D:
+                        result = LipidMsmsCharacterization.JudgeIfVitaminDmolecules(spectrum, ms2tol, refMz,
                              totalCarbon, totalDbBond, adduct);
                         break;
 
@@ -816,6 +821,76 @@ namespace Riken.Metabolomics.Lipidomics
                         result = LipidMsmsCharacterization.JudgeIfPhosphatidylThreonine(spectrum, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
                         break;
+                    //20230407
+                    case LbmClass.PC_d5:
+                        result = LipidMsmsCharacterization.JudgeIfPhosphatidylcholineD5(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.PE_d5:
+                        result = LipidMsmsCharacterization.JudgeIfPhosphatidylethanolamineD5(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.PS_d5:
+                        result = LipidMsmsCharacterization.JudgeIfPhosphatidylserineD5(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.PG_d5:
+                        result = LipidMsmsCharacterization.JudgeIfPhosphatidylglycerolD5(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.PI_d5:
+                        result = LipidMsmsCharacterization.JudgeIfPhosphatidylinositolD5(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.LPC_d5:
+                        result = LipidMsmsCharacterization.JudgeIfLysopcD5(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.LPE_d5:
+                        result = LipidMsmsCharacterization.JudgeIfLysopeD5(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.LPG_d5:
+                        result = LipidMsmsCharacterization.JudgeIfLysopgD5(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.LPI_d5:
+                        result = LipidMsmsCharacterization.JudgeIfLysopiD5(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.LPS_d5:
+                        result = LipidMsmsCharacterization.JudgeIfLysopsD5(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.TG_d5:
+                        result = LipidMsmsCharacterization.JudgeIfTriacylglycerolD5(spectrum, ms2tol, refMz,
+                            totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond,
+                            sn2MinCarbon, sn2MaxCarbon, sn2MinDbBond, sn2MaxDbBond, adduct);
+                        break;
+                    case LbmClass.DG_d5:
+                        result = LipidMsmsCharacterization.JudgeIfDagD5(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.SM_d9:
+                        result = LipidMsmsCharacterization.JudgeIfSphingomyelinD9(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.CE_d7:
+                        result = LipidMsmsCharacterization.JudgeIfCholesterylEsterD7(spectrum, ms2tol, refMz,
+                            totalCarbon, totalDbBond, adduct);
+                        break;
+                    case LbmClass.Cer_NS_d7:
+                        result = LipidMsmsCharacterization.JudgeIfCeramidensD7(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    //20230424
+                    case LbmClass.bmPC:
+                        result = LipidMsmsCharacterization.JudgeIfBetaMethylPhosphatidylcholine(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+
+                    default:
+                        return null;
 
                 }
 

@@ -87,6 +87,17 @@ namespace CompMs.Common.DataObj.Property
             return mass;
         }
 
+        public static double GetExactMass(int cnum, int hnum, int nnum, int onum, int pnum, int snum, int fnum, int clnum, int brnum, int inum, int sinum,
+           int c13num, int h2num)
+        {
+            var mass = MassDiffDictionary.HydrogenMass * (double)hnum + MassDiffDictionary.CarbonMass * (double)cnum
+                + MassDiffDictionary.NitrogenMass * (double)nnum + MassDiffDictionary.OxygenMass * (double)onum
+                + MassDiffDictionary.PhosphorusMass * (double)pnum + MassDiffDictionary.SulfurMass * (double)snum + MassDiffDictionary.FluorideMass * (double)fnum
+                + MassDiffDictionary.ChlorideMass * (double)clnum + MassDiffDictionary.BromineMass * (double)brnum
+                + MassDiffDictionary.SiliconMass * (double)sinum + MassDiffDictionary.IodineMass * (double)inum
+                + MassDiffDictionary.Hydrogen2Mass * (double)h2num + MassDiffDictionary.Carbon13Mass * (double)c13num;
+            return mass;
+        }
 
         public static string GetFormulaString(int cnum, int hnum, int nnum, int onum, int pnum,
             int snum, int fnum, int clnum, int brnum, int inum, int sinum,
@@ -122,8 +133,9 @@ namespace CompMs.Common.DataObj.Property
             return formulaString;
         }
 
-        public static string GetFormulaString(int cnum, int hnum, int nnum, int onum, int pnum, int snum, int fnum, int clnum, int brnum, int inum, int sinum, 
-            int c13num, int h2num, int n15num, int o18num, int s34num, int cl37num, int br81num, int senum) {
+        public static string GetFormulaString(int cnum, int hnum, int nnum, int onum, int pnum, int snum, int fnum, int clnum, int brnum, int inum, int sinum,
+            int c13num, int h2num, int n15num, int o18num, int s34num, int cl37num, int br81num, int senum)
+        {
             var formula = string.Empty;
 
             formula += cnum == 1 ? "C" : cnum > 1 ? "C" + cnum : cnum < 0 ? "C(" + cnum + ")" : string.Empty;
@@ -145,6 +157,30 @@ namespace CompMs.Common.DataObj.Property
             formula += s34num == 1 ? "[34S]" : s34num > 1 ? "[34S]" + s34num : s34num < 0 ? "C(" + s34num + ")" : string.Empty;
             formula += sinum == 1 ? "Si" : sinum > 1 ? "Si" + sinum : sinum < 0 ? "C(" + sinum + ")" : string.Empty;
             formula += senum == 1 ? "Se" : senum > 1 ? "Se" + senum : senum < 0 ? "C(" + senum + ")" : string.Empty;
+
+            return formula;
+        }
+        public static string GetFormulaString(int cnum, int hnum, int nnum, int onum, int pnum, int snum, int fnum, int clnum, int brnum, int inum, int sinum,
+             int c13num, int h2num, int tmsCount = 0, int meoxCount = 0)
+        {
+            var formula = string.Empty;
+
+            formula += cnum == 1 ? "C" : cnum > 1 ? "C" + cnum : cnum < 0 ? "C(" + cnum + ")" : string.Empty;
+            formula += c13num == 1 ? "[13C]" : c13num > 1 ? "[13C]" + c13num : c13num < 0 ? "C(" + c13num + ")" : string.Empty;
+            formula += hnum == 1 ? "H" : hnum > 1 ? "H" + hnum : hnum < 0 ? "C(" + hnum + ")" : string.Empty;
+            formula += h2num == 1 ? "[2H]" : h2num > 1 ? "[2H]" + h2num : h2num < 0 ? "C(" + h2num + ")" : string.Empty;
+            formula += brnum == 1 ? "Br" : brnum > 1 ? "Br" + brnum : brnum < 0 ? "C(" + brnum + ")" : string.Empty;
+            formula += clnum == 1 ? "Cl" : clnum > 1 ? "Cl" + clnum : clnum < 0 ? "C(" + clnum + ")" : string.Empty;
+            formula += fnum == 1 ? "F" : fnum > 1 ? "F" + fnum : fnum < 0 ? "C(" + fnum + ")" : string.Empty;
+            formula += inum == 1 ? "I" : inum > 1 ? "I" + inum : inum < 0 ? "C(" + inum + ")" : string.Empty;
+            formula += nnum == 1 ? "N" : nnum > 1 ? "N" + nnum : nnum < 0 ? "C(" + nnum + ")" : string.Empty;
+            formula += onum == 1 ? "O" : onum > 1 ? "O" + onum : onum < 0 ? "C(" + onum + ")" : string.Empty;
+            formula += pnum == 1 ? "P" : pnum > 1 ? "P" + pnum : pnum < 0 ? "C(" + pnum + ")" : string.Empty;
+            formula += snum == 1 ? "S" : snum > 1 ? "S" + snum : snum < 0 ? "C(" + snum + ")" : string.Empty;
+            formula += sinum == 1 ? "Si" : sinum > 1 ? "Si" + sinum : sinum < 0 ? "C(" + sinum + ")" : string.Empty;
+
+            if (tmsCount > 0) formula += "_" + tmsCount + "TMS";
+            if (meoxCount > 0) formula += "_" + meoxCount + "MEOX";
 
             return formula;
         }
@@ -218,7 +254,28 @@ namespace CompMs.Common.DataObj.Property
                 cLabelMass, hLabelMass, nLabelMass, oLabelMass, pLabelMass, sLabelMass, fLabelMass, clLabelMass, brLabelMass, iLabelMass, siLabelMass);
             FormulaString = FormulaCalculateUtility.GetFormulaString(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum, 0, 0);
         }
-        
+
+        public Formula(int cnum, int hnum, int nnum, int onum, int pnum, int snum, int fnum, int clnum, int brnum, int inum, int sinum,
+            int c13num, int h2num, int tmsCount = 0, int meoxCount = 0)
+        {
+            Cnum = cnum;
+            Hnum = hnum;
+            Nnum = nnum;
+            Onum = onum;
+            Pnum = pnum;
+            Snum = snum;
+            Fnum = fnum;
+            Clnum = clnum;
+            Brnum = brnum;
+            Inum = inum;
+            Sinum = sinum;
+            C13num = c13num;
+            H2num = h2num;
+
+            Mass = FormulaCalculateUtility.GetExactMass(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum, c13num, h2num);
+            FormulaString = FormulaCalculateUtility.GetFormulaString(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum, c13num, h2num, tmsCount, meoxCount);
+        }
+
         public Formula(Dictionary<string, int> elem2count) {
             Element2Count = elem2count;
             Mass = FormulaCalculateUtility.GetExactMass(elem2count);

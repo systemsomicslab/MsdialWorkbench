@@ -79,17 +79,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             
             AlignmentSpotTableViewModel = new LcimmsAlignmentSpotTableViewModel(
                 model.AlignmentSpotTableModel,
-                PeakSpotNavigatorViewModel.MzLowerValue,
-                PeakSpotNavigatorViewModel.MzUpperValue,
-                PeakSpotNavigatorViewModel.RtLowerValue,
-                PeakSpotNavigatorViewModel.RtUpperValue,
-                PeakSpotNavigatorViewModel.DtLowerValue,
-                PeakSpotNavigatorViewModel.DtUpperValue,
-                PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
-                PeakSpotNavigatorViewModel.CommentFilterKeyword,
-                PeakSpotNavigatorViewModel.OntologyFilterKeyword,
-                PeakSpotNavigatorViewModel.AdductFilterKeyword,
-                PeakSpotNavigatorViewModel.IsEditting,
+                PeakSpotNavigatorViewModel,
                 SetUnknownCommand,
                 UndoManagerViewModel)
                 .AddTo(Disposables);

@@ -44,6 +44,7 @@ namespace CompMs.Common.Parser
                         while (sr.Peek() > -1) {
                             wkstr = sr.ReadLine();
                             if (wkstr.StartsWith("#")) continue;
+                            if (wkstr == string.Empty) continue;
                             ReadMspField(wkstr, out string fieldName, out string fieldValue);
                             var isSpecRetrieved = SetMspField(mspField, fieldName, fieldValue, sr);
                             if (isSpecRetrieved) break;
@@ -151,6 +152,7 @@ namespace CompMs.Common.Parser
                         }
 
                         if (queryCheck(mspField, tQueries, ionMode, solventType, collisionType)) {
+                            mspField.ScanID = counter;
                             mspDB.Add(mspField);
                             counter++;
                         }

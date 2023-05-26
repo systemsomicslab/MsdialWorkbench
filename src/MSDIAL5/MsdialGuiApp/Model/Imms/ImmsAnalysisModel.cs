@@ -44,7 +44,7 @@ namespace CompMs.App.Msdial.Model.Imms
         private readonly UndoManager _undoManager;
         private readonly IDataProvider _provider;
         private readonly DataBaseMapper _dataBaseMapper;
-        private readonly IReadOnlyList<CompoundSearcher> _compoundSearchers;
+        private readonly CompoundSearcherCollection _compoundSearchers;
 
         public ImmsAnalysisModel(
             AnalysisFileBeanModel analysisFileModel,
@@ -61,7 +61,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             _provider = provider;
             _dataBaseMapper = mapper;
-            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper).Items;
+            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper);
             _parameter = parameter;
             _undoManager = new UndoManager().AddTo(Disposables);
 
@@ -150,6 +150,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
             IConnectableObservable<List<SpectrumPeak>> refSpectrum = MatchResultCandidatesModel.LoadSpectrumObservable(refLoader).Publish();
             Disposables.Add(refSpectrum.Connect());
+            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 Target,
                 rawLoader,
@@ -163,7 +164,8 @@ namespace CompMs.App.Msdial.Model.Imms
                 Observable.Return(lowerSpecBrush),
                 Observable.Return(spectraExporter),
                 Observable.Return(spectraExporter),
-                Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
+                Observable.Return(referenceExporter),
+                MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers)).AddTo(Disposables);
 
             // Ms2 chromatogram
             Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawLoader, provider, parameter, analysisFileModel.AcquisitionType).AddTo(Disposables);
@@ -179,7 +181,7 @@ namespace CompMs.App.Msdial.Model.Imms
             SurveyScanModel.Elements.HorizontalProperty = nameof(SpectrumPeakWrapper.Mass);
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
 
-            PeakTableModel = new ImmsAnalysisPeakTableModel(new ReadOnlyObservableCollection<ChromatogramPeakFeatureModel>(Ms1Peaks), Target).AddTo(Disposables);
+            PeakTableModel = new ImmsAnalysisPeakTableModel(new ReadOnlyObservableCollection<ChromatogramPeakFeatureModel>(Ms1Peaks), Target, PeakSpotNavigatorModel).AddTo(Disposables);
 
             var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, MZ_TOLELANCE, Target.Select(t => t?.Mass ?? 0d), "F5", "m/z", isItalic: true).AddTo(Disposables);
             var dtSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, DT_TOLELANCE, Target.Select(t => t?.ChromXValue ?? 0d), "F4", "Mobility[1/k0]", isItalic: false).AddTo(Disposables);
@@ -259,7 +261,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 AnalysisFileModel,
                 Target.Value,
                 MsdecResult.Value,
-                _compoundSearchers,
+                _compoundSearchers.Items,
                 _undoManager);
         }
 

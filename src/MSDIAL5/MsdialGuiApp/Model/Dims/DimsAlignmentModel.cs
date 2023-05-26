@@ -162,6 +162,7 @@ namespace CompMs.App.Msdial.Model.Dims
             IConnectableObservable<List<SpectrumPeak>> refSpectrum = MatchResultCandidatesModel.LoadSpectrumObservable(refLoader).Publish();
             Disposables.Add(refSpectrum.Connect());
             IMsSpectrumLoader<AlignmentSpotPropertyModel> decSpecLoader = new AlignmentMSDecSpectrumLoader(_alignmentFile);
+            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             Ms2SpectrumModel = new MsSpectrumModel(
                 Target.SelectSwitch(decSpecLoader.LoadSpectrumAsObservable),
                 refSpectrum,
@@ -175,7 +176,11 @@ namespace CompMs.App.Msdial.Model.Dims
                     nameof(SpectrumPeak.Intensity)),
                 nameof(SpectrumPeak.SpectrumComment),
                 Observable.Return(upperSpecBrush),
-                Observable.Return(lowerSpecBrush)).AddTo(Disposables);
+                Observable.Return(lowerSpecBrush),
+                Observable.Return<ISpectraExporter>(null),
+                Observable.Return(referenceExporter),
+                null,
+                MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers)).AddTo(Disposables);
 
             var classBrush = new KeyBrushMapper<BarItem, string>(
                 _parameter.ProjectParam.ClassnameToColorBytes
@@ -218,7 +223,7 @@ namespace CompMs.App.Msdial.Model.Dims
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
             var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
-            AlignmentSpotTableModel = new DimsAlignmentSpotTableModel(Ms1Spots, Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderProperty).AddTo(Disposables);
+            AlignmentSpotTableModel = new DimsAlignmentSpotTableModel(Ms1Spots, Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderProperty, PeakSpotNavigatorModel).AddTo(Disposables);
 
             _msdecResult = Target.SkipNull()
                 .Select(t => _alignmentFile.LoadMSDecResultByIndexAsync(t.MasterAlignmentID))
@@ -282,7 +287,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
         public ICompoundSearchModel BuildCompoundSearchModel() {
-            return new CompoundSearchModel(_files[Target.Value.RepresentativeFileID], Target.Value, _msdecResult.Value, _compoundSearchers.Items, _undoManager);
+            return new CompoundSearchModel(_files[Target.Value.RepresentativeFileID], Target.Value, _msdecResult.Value, _compoundSearchers, _undoManager);
         }
 
         public InternalStandardSetModel InternalStandardSetModel { get; }

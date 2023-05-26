@@ -1,9 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
-using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Validator;
-using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -114,6 +112,8 @@ namespace CompMs.App.Msdial.ViewModel.Export
                     return new ProteinGroupExportViewModel(m);
                 case AlignmentSpectraExportGroupModel m:
                     return new AlignmentSpectraExportGroupViewModel(m);
+                case AlignmentMatchedSpectraExportModel m:
+                    return new AlignmentMatchedSpectraExportViewModel(m);
                 default:
                     throw new NotSupportedException(model.GetType().FullName);
             }

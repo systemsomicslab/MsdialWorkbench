@@ -7,6 +7,7 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Statistics;
+using CompMs.App.Msdial.Model.Table;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
@@ -51,7 +52,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private readonly AlignmentFileBeanModel _alignmentFile;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly List<AnalysisFileBean> _files;
-        private readonly IReadOnlyList<CompoundSearcher> _compoundSearchers;
+        private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly UndoManager _undoManager;
         private readonly ReadOnlyReactivePropertySlim<MSDecResult> _msdecResult;
 
@@ -80,7 +81,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             Parameter = parameter;
             _files = files ?? throw new ArgumentNullException(nameof(files));
             _dataBaseMapper = mapper;
-            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper).Items;
+            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper);
             _undoManager = new UndoManager().AddTo(Disposables);
 
             var spotsSource = new AlignmentSpotSource(alignmentFileBean, Container, CHROMATOGRAM_SPOT_SERIALIZER).AddTo(Disposables);
@@ -180,6 +181,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             IConnectableObservable<List<SpectrumPeak>> refSpectrum = MatchResultCandidatesModel.LoadSpectrumObservable(refLoader).Publish();
             Disposables.Add(refSpectrum.Connect());
             IMsSpectrumLoader<AlignmentSpotPropertyModel> msDecSpectrumLoader = new AlignmentMSDecSpectrumLoader(_alignmentFile);
+            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             Ms2SpectrumModel = new MsSpectrumModel(
                 Target.SelectSwitch(msDecSpectrumLoader.LoadSpectrumAsObservable),
                 refSpectrum,
@@ -190,8 +192,9 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Observable.Return(upperSpecBrush),
                 Observable.Return(lowerSpecBrush),
                 Observable.Return((ISpectraExporter)null),
-                Observable.Return((ISpectraExporter)null),
-                null).AddTo(Disposables);
+                Observable.Return(referenceExporter),
+                null,
+                MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers)).AddTo(Disposables);
 
             // Class intensity bar chart
             var classBrush = projectBaseParameter.ClassProperties
@@ -234,7 +237,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
             var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
-            AlignmentSpotTableModel = new LcmsAlignmentSpotTableModel(Ms1Spots, Target, barBrush, projectBaseParameter.ClassProperties, barItemsLoaderProperty).AddTo(Disposables);
+            AlignmentSpotTableModel = new LcmsAlignmentSpotTableModel(Ms1Spots, Target, PeakSpotNavigatorModel, barBrush, projectBaseParameter.ClassProperties, barItemsLoaderProperty).AddTo(Disposables);
 
             CanSearchCompound = new[]
             {
@@ -276,6 +279,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
 
             MultivariateAnalysisSettingModel = new MultivariateAnalysisSettingModel(parameter, Ms1Spots, evaluator, files, classBrush);
+
+            FindTargetCompoundSpotModel = new FindTargetCompoundsSpotModel(spotsSource.Spots.Items, Target, messageBroker).AddTo(Disposables);
         }
 
         public UndoManager UndoManager => _undoManager;
@@ -294,7 +299,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public LcmsAlignmentSpotTableModel AlignmentSpotTableModel { get; private set; }
         public NormalizationSetModel NormalizationSetModel { get; }
         public MultivariateAnalysisSettingModel MultivariateAnalysisSettingModel { get; }
-
+        public FindTargetCompoundsSpotModel FindTargetCompoundSpotModel { get; }
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
         public PeakInformationAlignmentModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
@@ -306,7 +311,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
         public ICompoundSearchModel CreateCompoundSearchModel() {
-            return new LcmsCompoundSearchModel(_files[Target.Value.RepresentativeFileID], Target.Value, _msdecResult.Value, _compoundSearchers, _undoManager);
+            return new LcmsCompoundSearchModel(_files[Target.Value.RepresentativeFileID], Target.Value, _msdecResult.Value, _compoundSearchers.Items, _undoManager);
         }
 
         public void SaveSpectra(string filename) {

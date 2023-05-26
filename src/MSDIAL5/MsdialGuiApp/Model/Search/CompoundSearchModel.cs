@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
+using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
@@ -50,6 +51,11 @@ namespace CompMs.App.Msdial.Model.Search
         private readonly UndoManager _undoManager;
         private readonly IPeakSpotModel _peakSpot;
 
+        public CompoundSearchModel(IFileBean fileBean, IPeakSpotModel peakSpot, MSDecResult msdecResult, CompoundSearcherCollection compoundSearchers, UndoManager undoManager)
+            : this(fileBean, peakSpot, msdecResult, compoundSearchers.Items, undoManager) {
+
+        }
+
         public CompoundSearchModel(IFileBean fileBean, IPeakSpotModel peakSpot, MSDecResult msdecResult, IReadOnlyList<CompoundSearcher> compoundSearchers, UndoManager undoManager) {
             File = fileBean ?? throw new ArgumentNullException(nameof(fileBean));
             _peakSpot = peakSpot ?? throw new ArgumentNullException(nameof(peakSpot));
@@ -63,6 +69,11 @@ namespace CompMs.App.Msdial.Model.Search
                 .Select(c => c.Spectrum)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+            var scorer = this.ObserveProperty(m => m.SelectedCompoundSearcher)
+                .SkipNull()
+                .Select(s => new Ms2ScanMatching(s.MsRefSearchParameter))
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
             MsSpectrumModel = new MsSpectrumModel(
                 Observable.Return(_msdecResult.Spectrum),
                 referenceSpectrum,
@@ -74,7 +85,8 @@ namespace CompMs.App.Msdial.Model.Search
                 Observable.Return(MsSpectrumModel.GetBrush(Brushes.Red)),
                 Observable.Return((ISpectraExporter)null),
                 Observable.Return((ISpectraExporter)null),
-                null).AddTo(Disposables);
+                null,
+                scorer).AddTo(Disposables);
         }
 
         public IReadOnlyList<CompoundSearcher> CompoundSearchers { get; }

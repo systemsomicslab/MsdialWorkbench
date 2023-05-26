@@ -314,7 +314,7 @@
                                 <Setter Property="LabelWidth" Value="104"/>
                             </Style>
                         </StackPanel.Resources>
-                        <ui:LabeledBar Label="Instrument trype:">
+                        <ui:LabeledBar Label="Instrument type:">
                             <TextBox Name="TextBox_InstrumentType" 
                                      Text="{Binding InstrumentType.Value, UpdateSourceTrigger=PropertyChanged}"
                                      d:Text="Instrument type"

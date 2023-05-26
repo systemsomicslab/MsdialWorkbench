@@ -246,6 +246,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 .AddTo(Disposables);
             _msdecResult = msdecResult;
 
+            var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper);
             var rawLoader = new MultiMsRawSpectrumLoader(spectrumProvider, parameter);
             var decSpecLoader = new MsDecSpectrumLoader(decLoader, Ms1Peaks);
             MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
@@ -254,6 +255,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
             IConnectableObservable<List<SpectrumPeak>> refSpectrum = MatchResultCandidatesModel.LoadSpectrumObservable(refLoader).Publish();
             Disposables.Add(refSpectrum.Connect());
+            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 target,
                 rawLoader,
@@ -267,7 +269,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 Observable.Return(lowerSpecBrush),
                 Observable.Return(spectraExporter),
                 Observable.Return(spectraExporter),
-                Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
+                Observable.Return(referenceExporter),
+                MatchResultCandidatesModel.GetCandidatesScorer(searcherCollection)).AddTo(Disposables);
 
             // Ms2 chromatogram
             Ms2ChromatogramsModel = new Ms2ChromatogramsModel(target, target.Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation)), rawLoader, spectrumProvider, parameter, analysisFileModel.AcquisitionType).AddTo(Disposables);
@@ -301,7 +304,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             SurveyScanModel.Elements.HorizontalProperty = nameof(SpectrumPeakWrapper.Mass);
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
 
-            PeakTableModel = new LcimmsAnalysisPeakTableModel(new ReadOnlyObservableCollection<ChromatogramPeakFeatureModel>(driftPeaks), target).AddTo(Disposables);
+            PeakTableModel = new LcimmsAnalysisPeakTableModel(new ReadOnlyObservableCollection<ChromatogramPeakFeatureModel>(driftPeaks), target, PeakSpotNavigatorModel).AddTo(Disposables);
 
             switch (parameter.TargetOmics) {
                 case TargetOmics.Lipidomics:
@@ -358,7 +361,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
             MoleculeStructureModel = moleculeStructureModel;
             target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
 
-            var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper);
             CompoundSearchModel = target
                 .CombineLatest(msdecResult, (t, r) => t is null || r is null ? null : new LcimmsCompoundSearchModel(analysisFileModel, t, r, searcherCollection.Items, _undoManager))
                 .DisposePreviousValue()

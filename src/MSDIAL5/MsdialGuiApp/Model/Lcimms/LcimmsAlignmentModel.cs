@@ -18,6 +18,7 @@ using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
@@ -246,6 +247,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     }
                 },
                 true);
+            var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper);
             MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
@@ -253,6 +255,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             IConnectableObservable<List<SpectrumPeak>> refSpectrum = MatchResultCandidatesModel.LoadSpectrumObservable(refLoader).Publish();
             Disposables.Add(refSpectrum.Connect());
             IMsSpectrumLoader<AlignmentSpotPropertyModel> decLoader = new AlignmentMSDecSpectrumLoader(_alignmentFileBean);
+            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             Ms2SpectrumModel = new MsSpectrumModel(
                 Target.SelectSwitch(decLoader.LoadSpectrumAsObservable),
                 refSpectrum,
@@ -266,7 +269,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     nameof(SpectrumPeak.Intensity)),
                 nameof(SpectrumPeak.SpectrumComment),
                 Observable.Return(upperSpecBrush),
-                Observable.Return(lowerSpecBrush)).AddTo(Disposables);
+                Observable.Return(lowerSpecBrush),
+                Observable.Return<ISpectraExporter>(null),
+                Observable.Return(referenceExporter),
+                null,
+                MatchResultCandidatesModel.GetCandidatesScorer(searcherCollection)).AddTo(Disposables);
 
             var classBrush = new KeyBrushMapper<BarItem, string>(classToColor, item => item.Class, Colors.Blue);
             var fileIdToClassNameAsObservable = projectBaseParameter.ObserveProperty(p => p.FileIdToClassName).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -286,7 +293,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
             Disposables.Add(peakSpotAxisLabelAsObservable.Connect());
             RtBarChartModel = new BarChartModel(accumulatedTarget, barItemsLoaderDataProperty, barItemLoaderDatas, Observable.Return(classBrush), projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
             DtBarChartModel = new BarChartModel(target, barItemsLoaderDataProperty, barItemLoaderDatas, Observable.Return(classBrush), projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
-            AlignmentSpotTableModel = new LcimmsAlignmentSpotTableModel(new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(driftProps), target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, Observable.Return(BarItemsLoader)).AddTo(Disposables);
+
+            var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
+            AlignmentSpotTableModel = new LcimmsAlignmentSpotTableModel(driftProps, target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderProperty, PeakSpotNavigatorModel).AddTo(Disposables);
 
             MsdecResult = target.SkipNull()
                 .Select(t => _alignmentFileBean.LoadMSDecResultByIndexAsync(t.MasterAlignmentID))
@@ -328,7 +337,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
             MoleculeStructureModel = moleculeStructureModel;
             Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
 
-            var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper);
             CompoundSearchModel = target
                 .CombineLatest(MsdecResult, (t, r) => t is null || r is null ? null : new LcimmsCompoundSearchModel(_files[t.RepresentativeFileID], t, r, searcherCollection.Items, _undoManager))
                 .DisposePreviousValue()

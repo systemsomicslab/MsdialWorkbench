@@ -43,7 +43,7 @@ namespace CompMs.App.Msdial.Model.Imms
         private readonly List<AnalysisFileBean> _files;
         private readonly ParameterBase _parameter;
         private readonly DataBaseMapper _dataBaseMapper;
-        private readonly IReadOnlyList<CompoundSearcher> _compoundSearchers;
+        private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly UndoManager _undoManager;
 
         public ImmsAlignmentModel(
@@ -64,7 +64,7 @@ namespace CompMs.App.Msdial.Model.Imms
             _files = files ?? throw new ArgumentNullException(nameof(files));
             _dataBaseMapper = mapper;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
-            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper).Items;
+            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper);
             _undoManager = new UndoManager().AddTo(Disposables);
 
             var spotsSource = new AlignmentSpotSource(alignmentFileModel, Container, CHROMATOGRAM_SPOT_SERIALIZER).AddTo(Disposables);
@@ -146,6 +146,7 @@ namespace CompMs.App.Msdial.Model.Imms
             IConnectableObservable<List<SpectrumPeak>> refSpectrum = MatchResultCandidatesModel.LoadSpectrumObservable(refLoader).Publish();
             Disposables.Add(refSpectrum.Connect());
             IMsSpectrumLoader<AlignmentSpotPropertyModel> decLoader = new AlignmentMSDecSpectrumLoader(_alignmentFile);
+            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             Ms2SpectrumModel = new MsSpectrumModel(
                 Target.SelectSwitch(decLoader.LoadSpectrumAsObservable),
                 refSpectrum,
@@ -159,7 +160,11 @@ namespace CompMs.App.Msdial.Model.Imms
                     nameof(SpectrumPeak.Intensity)),
                 nameof(SpectrumPeak.SpectrumComment),
                 Observable.Return(upperSpecBrush),
-                Observable.Return(lowerSpecBrush)).AddTo(Disposables);
+                Observable.Return(lowerSpecBrush),
+                Observable.Return<ISpectraExporter>(null),
+                Observable.Return(referenceExporter),
+                null,
+                MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers)).AddTo(Disposables);
 
             var classBrush = new KeyBrushMapper<BarItem, string>(
                 _parameter.ProjectParam.ClassnameToColorBytes
@@ -202,7 +207,7 @@ namespace CompMs.App.Msdial.Model.Imms
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
             var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
-            AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(Ms1Spots, Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderProperty).AddTo(Disposables);
+            AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(Ms1Spots, Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderProperty, PeakSpotNavigatorModel).AddTo(Disposables);
 
             MsdecResult = Target.SkipNull()
                 .Select(t => _alignmentFile.LoadMSDecResultByIndexAsync(t.MasterAlignmentID))
@@ -275,7 +280,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 _files[Target.Value.RepresentativeFileID],
                 Target.Value,
                 MsdecResult.Value,
-                _compoundSearchers,
+                _compoundSearchers.Items,
                 _undoManager);
         }
 

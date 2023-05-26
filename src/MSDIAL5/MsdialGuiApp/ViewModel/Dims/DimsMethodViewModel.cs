@@ -14,6 +14,7 @@ using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Export;
+using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore.Export;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -89,7 +90,20 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
             };
 
-            var model = new AnalysisResultExportModel(_model.AnalysisFileModelCollection, spectraTypes, spectraFormats, _model.ProviderFactory.ContraMap((AnalysisFileBeanModel file) => file.File));
+            var models = new IMsdialAnalysisExport[]
+            {
+                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, _model.ProviderFactory.ContraMap((AnalysisFileBeanModel file) => file.File)),
+                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter> {
+                    [ExportspectraType.deconvoluted] = new AnalysisMspExporter(container.DataBaseMapper, container.Parameter),
+                    [ExportspectraType.centroid] = new AnalysisMspExporter(container.DataBaseMapper, container.Parameter, file => new CentroidMsScanPropertyLoader(_model.ProviderFactory.Create(file), container.Parameter.MS2DataType))
+                })
+                {
+                    FilePrefix = "Msp",
+                    FileSuffix = "msp",
+                    Label = "Nist format (*.msp)"
+                },
+            };
+            var model = new AnalysisResultExportModel(_model.AnalysisFileModelCollection, _model.Storage.Parameter.ProjectParam.ProjectFolderPath, models);
             using (var vm = new AnalysisResultExportViewModel(model)) {
                 _broker.Publish(vm);
             }

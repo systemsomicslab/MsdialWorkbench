@@ -51,6 +51,13 @@ namespace CompMs.Common.Lipidomics {
                 case "LDGTA":
                     setSingleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
                     break;
+                case "LPC_d5":
+                case "LPE_d5":
+                case "LPG_d5":
+                case "LPI_d5":
+                case "LPS_d5":
+                    setSingleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
+                    break;
 
                 //Phospholipid
                 case "PC":
@@ -69,6 +76,16 @@ namespace CompMs.Common.Lipidomics {
                     setDoubleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
                     break;
                 case "PA":
+                    setDoubleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
+                    break;
+                case "PC_d5":
+                case "PE_d5":
+                case "PG_d5":
+                case "PI_d5":
+                case "PS_d5":
+                    setDoubleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
+                    break;
+                case "bmPC":
                     setDoubleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
                     break;
                 case "BMP":
@@ -151,6 +168,7 @@ namespace CompMs.Common.Lipidomics {
 
                 //Others
                 case "CE":
+                case "CE_d7":
                     setSingleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
                     break;
                 case "ACar":
@@ -169,6 +187,7 @@ namespace CompMs.Common.Lipidomics {
 
                 //Sphingomyelin
                 case "SM":
+                case "SM_d9":
                     setDoubleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
                     break;
 
@@ -195,6 +214,7 @@ namespace CompMs.Common.Lipidomics {
                     setDoubleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
                     break;
                 case "Cer_NS":
+                case "Cer_NS_d7":
                     setDoubleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
                     break;
                 case "Cer_NP":
@@ -586,6 +606,26 @@ namespace CompMs.Common.Lipidomics {
                 case "GM3": return "GM3";
                 case "GM3[NeuAc]": return "GM3";
 
+                case "LPC_d5": return "LPC_d5";
+                case "LPE_d5": return "LPE_d5";
+                case "LPG_d5": return "LPG_d5";
+                case "LPI_d5": return "LPI_d5";
+                case "LPS_d5": return "LPS_d5";
+
+                case "PC_d5": return "PC_d5";
+                case "PE_d5": return "PE_d5";
+                case "PG_d5": return "PG_d5";
+                case "PI_d5": return "PI_d5";
+                case "PS_d5": return "PS_d5";
+
+                case "DG_d5": return "DG_d5";
+                case "TG_d5": return "TG_d5";
+
+                case "CE_d7": return "CE_d7";
+                case "Cer_NS_d7": return "Cer_NS_d7";
+                case "SM_d9": return "SM_d9";
+
+                case "bmPC": return "bmPC";
                 default: return "Unassigned lipid";
             }
         }
@@ -669,6 +709,27 @@ namespace CompMs.Common.Lipidomics {
                 case "SHexCer": return "Sulfatide";
                 case "GM3": return "Ganglioside";
                 case "GM3[NeuAc]": return "Ganglioside";
+
+                case "LPC_d5": return "Glycerophospholipids";
+                case "LPE_d5": return "Glycerophospholipids";
+                case "LPG_d5": return "Glycerophospholipids";
+                case "LPI_d5": return "Glycerophospholipids";
+                case "LPS_d5": return "Glycerophospholipids";
+
+                case "PC_d5": return "Glycerophospholipids";
+                case "PE_d5": return "Glycerophospholipids";
+                case "PG_d5": return "Glycerophospholipids";
+                case "PI_d5": return "Glycerophospholipids";
+                case "PS_d5": return "Glycerophospholipids";
+
+                case "DG_d5": return "Glycerolipids";
+                case "TG_d5": return "Glycerolipids";
+
+                case "CE_d7": return "SterolLipids";
+                case "Cer_NS_d7": return "Sphingolipids";
+                case "SM_d9": return "Sphingolipids";
+
+                case "bmPC": return "Glycerophospholipids";
 
                 default: return "Unassigned lipid";
             }

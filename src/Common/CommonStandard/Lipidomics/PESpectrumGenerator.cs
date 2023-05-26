@@ -129,8 +129,8 @@ namespace CompMs.Common.Lipidomics
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - C2H8NO4P), 500d, "Precursor -C2H8NO4P") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true  },
                 new SpectrumPeak(adduct.ConvertToMz(C2H8NO4P), 100d, "Header") { SpectrumComment = SpectrumComment.metaboliteclass },
-                new SpectrumPeak(adduct.ConvertToMz(Gly_C), 100d, "Gly-C")  { SpectrumComment = SpectrumComment.metaboliteclass },
-                new SpectrumPeak(adduct.ConvertToMz(Gly_O), 100d, "Gly-O") { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak(adduct.ConvertToMz(Gly_C), 400d, "Gly-C")  { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak(adduct.ConvertToMz(Gly_O), 300d, "Gly-O") { SpectrumComment = SpectrumComment.metaboliteclass },
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass)/2, 100d, "[Precursor]2+") { SpectrumComment = SpectrumComment.metaboliteclass },
             };
             if (adduct.AdductIonName == "[M+Na]+")
@@ -140,8 +140,8 @@ namespace CompMs.Common.Lipidomics
                      new[]
                      {
                         new SpectrumPeak(lipid.Mass - C2H8NO4P + MassDiffDictionary.ProtonMass, 250d, "Precursor -C2H8NO4P") { SpectrumComment = SpectrumComment.metaboliteclass },
-                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - CH5N), 200d, "Precursor -CH5N") { SpectrumComment = SpectrumComment.metaboliteclass },
-                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - CH5N - CH2), 500d, "Precursor -CH5N -CH2") { SpectrumComment = SpectrumComment.metaboliteclass }
+                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - CH5N +MassDiffDictionary.HydrogenMass), 100d, "Precursor -CH4N") { SpectrumComment = SpectrumComment.metaboliteclass },
+                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - CH5N - MassDiffDictionary.CarbonMass), 300d, "Precursor -C2H5N") { SpectrumComment = SpectrumComment.metaboliteclass }
                      }
                 );
             }

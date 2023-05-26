@@ -26,7 +26,6 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -38,6 +37,8 @@ namespace CompMs.App.Msdial.Model.Lcms
 {
     internal sealed class LcmsAnalysisModel : AnalysisModelBase {
         private readonly IDataProvider _provider;
+        private readonly CompoundSearcherCollection _compoundSearchers;
+
 
         public LcmsAnalysisModel(
             AnalysisFileBeanModel analysisFileModel,
@@ -67,7 +68,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             _provider = provider;
             DataBaseMapper = mapper;
             Parameter = parameter;
-            CompoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper).Items;
+            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper);
             _undoManager = new UndoManager().AddTo(Disposables);
 
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
@@ -178,6 +179,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
             IConnectableObservable<List<SpectrumPeak>> refSpectrum = MatchResultCandidatesModel.LoadSpectrumObservable(refLoader).Publish();
             Disposables.Add(refSpectrum.Connect());
+            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 Target,
                 rawSpectrumLoader,
@@ -191,7 +193,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Observable.Return(lowerSpecBrush),
                 Observable.Return(spectraExporter),
                 Observable.Return(spectraExporter),
-                Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
+                Observable.Return(referenceExporter),
+                MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers)).AddTo(Disposables);
             
 
             // Raw vs Purified spectrum model
@@ -238,7 +241,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
 
             // Peak table
-            PeakTableModel = new LcmsAnalysisPeakTableModel(new ReadOnlyObservableCollection<ChromatogramPeakFeatureModel>(Ms1Peaks), Target).AddTo(Disposables);
+            PeakTableModel = new LcmsAnalysisPeakTableModel(Ms1Peaks, Target, PeakSpotNavigatorModel).AddTo(Disposables);
 
             var rtSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, RtTol, Target.Select(t => t?.ChromXValue ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
             var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, MzTol, Target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
@@ -286,8 +289,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         public DataBaseMapper DataBaseMapper { get; }
         public ParameterBase Parameter { get; }
 
-        public IReadOnlyList<CompoundSearcher> CompoundSearchers { get; }
-
         public EicLoader EicLoader { get; }
 
         public AnalysisPeakPlotModel PlotModel { get; }
@@ -315,7 +316,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 return null;
             }
 
-            return new LcmsCompoundSearchModel(AnalysisFileModel, Target.Value, MsdecResult.Value, CompoundSearchers, _undoManager);
+            return new LcmsCompoundSearchModel(AnalysisFileModel, Target.Value, MsdecResult.Value, _compoundSearchers.Items, _undoManager);
         }
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));

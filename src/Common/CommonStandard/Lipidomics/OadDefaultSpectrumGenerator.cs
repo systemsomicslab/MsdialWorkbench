@@ -12,13 +12,13 @@ namespace CompMs.Common.Lipidomics
 {
     public class OadDefaultSpectrumGenerator : ILipidSpectrumGenerator
     {
-        private readonly ISpectrumPeakGenerator spectrumGenerator;
+        private readonly IOadSpectrumPeakGenerator spectrumGenerator;
         public OadDefaultSpectrumGenerator()
         {
             spectrumGenerator = new OadSpectrumPeakGenerator();
         }
 
-        public OadDefaultSpectrumGenerator(ISpectrumPeakGenerator spectrumGenerator)
+        public OadDefaultSpectrumGenerator(IOadSpectrumPeakGenerator spectrumGenerator)
         {
             this.spectrumGenerator = spectrumGenerator ?? throw new ArgumentNullException(nameof(spectrumGenerator));
         }
@@ -29,7 +29,10 @@ namespace CompMs.Common.Lipidomics
                 adduct.AdductIonName == "[M+Na]+" ||
                 adduct.AdductIonName == "[M+NH4]+" ||
                 adduct.AdductIonName == "[M+H-H2O]+" ||
-                adduct.AdductIonName == "[M-H2O+H]+")
+                adduct.AdductIonName == "[M-H2O+H]+"||
+                adduct.AdductIonName == "[M-H]-" ||
+                adduct.AdductIonName == "[M+HCOO]-"||
+                adduct.AdductIonName == "[M+CH3COO]-")
             {
                 return true;
             }
@@ -44,6 +47,32 @@ namespace CompMs.Common.Lipidomics
             var oadClassFragment = oadLipidSpectrumGenerator.GetClassFragmentSpectrum(lipid, adduct);
             var spectrum = new List<SpectrumPeak>(oadClassFragment.spectrum);
             var nlMass = oadClassFragment.nlMass;
+            string[] oadId = new string[] {
+                "OAD01",
+                "OAD02",
+                "OAD02+O",
+                "OAD03",
+                "OAD04",
+                "OAD05",
+                "OAD06",
+                "OAD07",
+                "OAD08",
+                "OAD09",
+                "OAD10",
+                "OAD11",
+                "OAD12",
+                "OAD13",
+                "OAD14",
+                "OAD15",
+                "OAD15+O",
+                "OAD16",
+                "OAD17",
+                "OAD12+O",
+                "OAD12+O+H",
+                "OAD12+O+2H",
+                "OAD01+H"
+            };
+
 
             if (lipid.Chains is PositionLevelChains plChains)
             {
@@ -51,15 +80,15 @@ namespace CompMs.Common.Lipidomics
                 {
                     if (chain is AcylChain acyl)
                     {
-                        spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlMass, abundance));
+                        spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlMass, abundance, oadId));
                     }
                     else if (chain is AlkylChain alkyl)
                     {
-                        spectrum.AddRange(spectrumGenerator.GetAlkylDoubleBondSpectrum(lipid, alkyl, adduct, nlMass, abundance));
+                        spectrum.AddRange(spectrumGenerator.GetAlkylDoubleBondSpectrum(lipid, alkyl, adduct, nlMass, abundance, oadId));
                     }
                     if (chain is SphingoChain sphingo)
                     {
-                        spectrum.AddRange(spectrumGenerator.GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlMass, abundance));
+                        spectrum.AddRange(spectrumGenerator.GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlMass, abundance, oadId));
                     }
                 }
             }
@@ -90,11 +119,22 @@ namespace CompMs.Common.Lipidomics
 
         private static readonly IEqualityComparer<SpectrumPeak> comparer = new SpectrumEqualityComparer();
 
+        private readonly Dictionary<LbmClass, List<ILipidSpectrumGenerator>> map = new Dictionary<LbmClass, List<ILipidSpectrumGenerator>>();
+        public void Add(LbmClass lipidClass, ILipidSpectrumGenerator generator)
+        {
+            if (!map.ContainsKey(lipidClass))
+            {
+                map.Add(lipidClass, new List<ILipidSpectrumGenerator>());
+            }
+            map[lipidClass].Add(generator);
+        }
+
     }
     public class OadClassFragment
     {
         public double nlMass { get; set; }
         public List<SpectrumPeak> spectrum { get; set; }
     }
+
 }
 

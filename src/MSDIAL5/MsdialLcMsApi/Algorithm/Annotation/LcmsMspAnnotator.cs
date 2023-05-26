@@ -21,6 +21,14 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             evaluator = new MsScanMatchResultEvaluator(parameter);
         }
 
+        public LcmsMspAnnotator(MoleculeDataBase mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, CollisionType type, string annotatorID, int priority)
+            : base(mspDB.Database, parameter, annotatorID, priority, SourceType.MspDB) {
+            Id = annotatorID;
+            ReferObject = mspDB;
+            scorer = new MsReferenceScorer(annotatorID, priority, omics, SourceType.MspDB, type, true);
+            evaluator = new MsScanMatchResultEvaluator(parameter);
+        }
+
         public string Id { get; }
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> ReferObject;
         private readonly IReferenceScorer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> scorer;

@@ -152,6 +152,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
             IConnectableObservable<List<SpectrumPeak>> refSpectrum = MatchResultCandidatesModel.LoadSpectrumObservable(refLoader).Publish();
             Disposables.Add(refSpectrum.Connect());
+            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 Target,
                 rawLoader,
@@ -165,13 +166,14 @@ namespace CompMs.App.Msdial.Model.Dims
                 Observable.Return(lowerSpecBrush),
                 Observable.Return(spectraExporter),
                 Observable.Return(spectraExporter),
-                Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
+                Observable.Return(referenceExporter),
+                MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers)).AddTo(Disposables);
 
             // Ms2 chromatogram
             Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawLoader, provider, parameter, analysisFileModel.AcquisitionType).AddTo(Disposables);
 
             EicLoader = DimsEicLoader.BuildForPeakTable(analysisFileModel.File, provider, parameter);
-            PeakTableModel = new DimsAnalysisPeakTableModel(new ReadOnlyObservableCollection<ChromatogramPeakFeatureModel>(Ms1Peaks), Target).AddTo(Disposables);
+            PeakTableModel = new DimsAnalysisPeakTableModel(Ms1Peaks, Target, PeakSpotNavigatorModel).AddTo(Disposables);
 
             var mzSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, MZ_TOLERANCE, Target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
             var idSpotFocus = new IdSpotFocus<ChromatogramPeakFeatureModel>(
@@ -217,7 +219,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public FocusNavigatorModel FocusNavigatorModel { get; }
 
         public ICompoundSearchModel BuildCompoundSearchModel() {
-            return new CompoundSearchModel(AnalysisFileModel, Target.Value, MsdecResult.Value, _compoundSearchers.Items, _undoManager);
+            return new CompoundSearchModel(AnalysisFileModel, Target.Value, MsdecResult.Value, _compoundSearchers, _undoManager);
         }
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));

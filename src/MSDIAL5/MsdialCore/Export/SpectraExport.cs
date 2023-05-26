@@ -78,10 +78,10 @@ namespace CompMs.MsdialCore.Export
             string exportFilePath,
             ChromatogramPeakFeature chromPeakFeature,
             IEnumerable<ISpectrumPeak> massSpectra,
-            DataBaseMapper mapper,
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             ParameterBase parameter) {
             using (var file = File.Open(exportFilePath, FileMode.Create)) {
-                SaveSpectraTableAsNistFormat(file, chromPeakFeature, massSpectra, mapper, parameter);
+                SaveSpectraTableAsNistFormat(file, chromPeakFeature, massSpectra, refer, parameter);
             }
         }
 
