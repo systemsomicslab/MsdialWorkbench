@@ -26,7 +26,7 @@ namespace CompMs.MsdialCore.DataObj
             }
         }
 
-        public void SetRawMs1Id(Chromatogram_temp2 chromatogram) {
+        public void SetRawMs1Id(ExtractedIonChromatogram chromatogram) {
             foreach (var item in _items) {
                 var peakFeature = item.PeakFeature;
                 item.MS1RawSpectrumIdLeft = chromatogram.Id(peakFeature.ChromScanIdLeft);

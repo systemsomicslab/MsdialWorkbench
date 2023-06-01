@@ -67,7 +67,7 @@ namespace CompMs.MsdialCore.DataObj
             return new Chromatogram(results, ChromXType.Drift, _unit);
         }
 
-        public Chromatogram_temp2 GetMs1ExtractedChromatogram_temp2(double mz, double tolerance, double start, double end) {
+        public ExtractedIonChromatogram GetMs1ExtractedChromatogram_temp2(double mz, double tolerance, double start, double end) {
             var startIndex = _spectra.LowerBound(start, (spectrum, target) => spectrum.DriftTime.CompareTo(target));
             var endIndex = _spectra.UpperBound(end, startIndex, _spectra.Count, (spectrum, target) => spectrum.DriftTime.CompareTo(target));
             var results = new List<ValuePeak>();
@@ -80,10 +80,10 @@ namespace CompMs.MsdialCore.DataObj
                 var time = _idToDriftTime.GetOrAdd(i, j => new Lazy<DriftTime>(() => new DriftTime(_spectra[j].DriftTime)));
                 results.Add(new ValuePeak(_spectra[i].Index, time.Value.Value, basePeakMz, summedIntensity));
             }
-            return new Chromatogram_temp2(results, ChromXType.Drift, _unit, mz);
+            return new ExtractedIonChromatogram(results, ChromXType.Drift, _unit, mz);
         }
 
-        public IEnumerable<Chromatogram_temp2> GetMs1ExtractedChromatograms_temp2(IEnumerable<double> mzs, double tolerance, double start, double end) {
+        public IEnumerable<ExtractedIonChromatogram> GetMs1ExtractedChromatograms_temp2(IEnumerable<double> mzs, double tolerance, double start, double end) {
             var startIndex = _spectra.LowerBound(start, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
             var endIndex = _spectra.UpperBound(end, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
             var enumerables = new List<IEnumerable<(double, double, double)>>();
@@ -102,7 +102,7 @@ namespace CompMs.MsdialCore.DataObj
             }
             return enumerables.Sequence()
                 .Select(peaks => peaks.Zip(indexs, times, (peak, index, time) => new ValuePeak(index, time, peak.Item1, peak.Item3)).ToArray())
-                .Zip(mzs_, (peaks, mz) => new Chromatogram_temp2(peaks, ChromXType.Drift, _unit, mz));
+                .Zip(mzs_, (peaks, mz) => new ExtractedIonChromatogram(peaks, ChromXType.Drift, _unit, mz));
         }
 
         public Chromatogram GetMs1TotalIonChromatogram(double start, double end) {

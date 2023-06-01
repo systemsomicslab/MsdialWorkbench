@@ -79,7 +79,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 if (focusedMass < _parameter.MassRangeBegin) { focusedMass += massStep; continue; }
                 if (focusedMass > _parameter.MassRangeEnd) break;
 
-                Chromatogram_temp2 chromatogram = GetChromatogram(rawSpectra, focusedMass, chromatogramRange);
+                ExtractedIonChromatogram chromatogram = GetChromatogram(rawSpectra, focusedMass, chromatogramRange);
                 var chromPeakFeatures = GetChromatogramPeakFeatures_Temp2(provider, detector, chromatogram, file.AcquisitionType);
                 if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) {
                     focusedMass += massStep;
@@ -112,7 +112,7 @@ namespace CompMs.MsdialCore.Algorithm {
             var targetMasses = GetFocusedMassList(startMass, endMass, massStep, _parameter.MassRangeBegin, _parameter.MassRangeEnd);
             var chromPeakFeaturesArray = new List<ChromatogramPeakFeature>[targetMasses.Count];
 
-            using (var bc = new BlockingCollection<(Chromatogram_temp2, int)>()) {
+            using (var bc = new BlockingCollection<(ExtractedIonChromatogram, int)>()) {
                 numThreads = Math.Max(2, numThreads);
                 var counter = 0;
                 var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, file.AcquisitionType);
@@ -130,7 +130,7 @@ namespace CompMs.MsdialCore.Algorithm {
             return FinalizePeakSpottingResult(chromPeakFeaturesArray, massStep, provider, file.AcquisitionType);
         }
 
-        private Task ProduceChromatogramAsync(BlockingCollection<(Chromatogram_temp2, int)> bc, RawSpectra rawSpectra, ChromatogramRange range, IEnumerable<double> targetMasses, CancellationToken token) {
+        private Task ProduceChromatogramAsync(BlockingCollection<(ExtractedIonChromatogram, int)> bc, RawSpectra rawSpectra, ChromatogramRange range, IEnumerable<double> targetMasses, CancellationToken token) {
             return Task.Run(() =>
             {
                 foreach (var (chromatogram, index) in rawSpectra.GetMs1ExtractedChromatograms_temp2(targetMasses, _parameter.MassSliceWidth, range).WithIndex()) {
@@ -140,7 +140,7 @@ namespace CompMs.MsdialCore.Algorithm {
             }, token);
         }
 
-        private Task ConsumeChromatogramAsync(BlockingCollection<(Chromatogram_temp2, int)> bc, IDataProvider provider, PeakDetection detector, List<ChromatogramPeakFeature>[] chromPeakFeaturesArray, AcquisitionType type, Action report, CancellationToken token) {
+        private Task ConsumeChromatogramAsync(BlockingCollection<(ExtractedIonChromatogram, int)> bc, IDataProvider provider, PeakDetection detector, List<ChromatogramPeakFeature>[] chromPeakFeaturesArray, AcquisitionType type, Action report, CancellationToken token) {
             return Task.Run(() =>
             {
                 foreach (var (chromatogram, index) in bc.GetConsumingEnumerable(token)) {
@@ -160,7 +160,7 @@ namespace CompMs.MsdialCore.Algorithm {
             ConcurrentQueue<(float, int)> queue) {
             while (queue.TryDequeue(out var pair)) {
                 var (targetMass, index) = pair;
-                Chromatogram_temp2 chromatogram = GetChromatogram(rawSpectra, targetMass, range);
+                ExtractedIonChromatogram chromatogram = GetChromatogram(rawSpectra, targetMass, range);
                 var chromPeakFeatures = GetChromatogramPeakFeatures_Temp2(provider, detector, chromatogram, rawSpectra.AcquisitionType);
                 chromPeakFeaturesArray[index] = chromPeakFeatures;
                 report?.Invoke();
@@ -251,12 +251,12 @@ namespace CompMs.MsdialCore.Algorithm {
             return chromPeakFeatures;
         }
 
-        public Chromatogram_temp2 GetChromatogram(RawSpectra rawSpectra, float focusedMass, ChromatogramRange chromatogramRange) {
+        public ExtractedIonChromatogram GetChromatogram(RawSpectra rawSpectra, float focusedMass, ChromatogramRange chromatogramRange) {
             //get EIC chromatogram
             return rawSpectra.GetMs1ExtractedChromatogram_temp2(focusedMass, _parameter.MassSliceWidth, chromatogramRange);
         }
 
-        public List<ChromatogramPeakFeature> GetChromatogramPeakFeatures_Temp2(IDataProvider provider, PeakDetection detector, Chromatogram_temp2 chromatogram, AcquisitionType type) {
+        public List<ChromatogramPeakFeature> GetChromatogramPeakFeatures_Temp2(IDataProvider provider, PeakDetection detector, ExtractedIonChromatogram chromatogram, AcquisitionType type) {
             if (chromatogram.IsEmpty) return null;
 
             //get peak detection result
@@ -360,8 +360,8 @@ namespace CompMs.MsdialCore.Algorithm {
             return chromPeakFeatures;
         }
 
-        public List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(Chromatogram_temp2 chromatogram, PeakDetection detector) {
-            Chromatogram_temp2 smoothedChromatogram = chromatogram.ChromatogramSmoothing(_parameter.SmoothingMethod, _parameter.SmoothingLevel);
+        public List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(ExtractedIonChromatogram chromatogram, PeakDetection detector) {
+            ExtractedIonChromatogram smoothedChromatogram = chromatogram.ChromatogramSmoothing(_parameter.SmoothingMethod, _parameter.SmoothingLevel);
             var detectedPeaks = detector.PeakDetectionVS1(smoothedChromatogram);
             if (detectedPeaks == null || detectedPeaks.Count == 0) return null;
 
@@ -658,7 +658,7 @@ namespace CompMs.MsdialCore.Algorithm {
             return sPeakAreaList;
         }
 
-        public List<ChromatogramPeakFeature> GetBackgroundSubtractedPeaks(List<ChromatogramPeakFeature> chromPeakFeatures, Chromatogram_temp2 chromatogram) {
+        public List<ChromatogramPeakFeature> GetBackgroundSubtractedPeaks(List<ChromatogramPeakFeature> chromPeakFeatures, ExtractedIonChromatogram chromatogram) {
             var counterThreshold = 4;
             var sPeakAreaList = new List<ChromatogramPeakFeature>();
 

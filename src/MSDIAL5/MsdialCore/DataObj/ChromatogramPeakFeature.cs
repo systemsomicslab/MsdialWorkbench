@@ -387,7 +387,7 @@ namespace CompMs.MsdialCore.DataObj
             };
         }
 
-        public static ChromatogramPeakFeature FromPeakDetectionResult(PeakDetectionResult peakDetectionResult, Chromatogram_temp2 chromatogram, double mz, IonMode ionMode) {
+        public static ChromatogramPeakFeature FromPeakDetectionResult(PeakDetectionResult peakDetectionResult, ExtractedIonChromatogram chromatogram, double mz, IonMode ionMode) {
             if (peakDetectionResult == null) {
                 return null;
             }

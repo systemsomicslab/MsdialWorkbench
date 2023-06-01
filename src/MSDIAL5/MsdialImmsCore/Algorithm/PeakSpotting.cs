@@ -87,7 +87,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 return new List<ChromatogramPeakFeature>(0);
             }
 
-            Chromatogram_temp2 smoothedChromatogram = chromatogram.ChromatogramSmoothing(_parameter.PeakPickBaseParam.SmoothingMethod, _parameter.PeakPickBaseParam.SmoothingLevel);
+            ExtractedIonChromatogram smoothedChromatogram = chromatogram.ChromatogramSmoothing(_parameter.PeakPickBaseParam.SmoothingMethod, _parameter.PeakPickBaseParam.SmoothingLevel);
             var chromPeakFeatures = GetChromatogramPeakFeatures(chromatogram, peakDetector, smoothedChromatogram);
             var subtractedFeatures = GetBackgroundSubtractedPeaks(chromPeakFeatures, chromatogram);
             var collection = new ChromatogramPeakFeatureCollection(subtractedFeatures);
@@ -95,7 +95,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             return subtractedFeatures;
         }
 
-        private List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(Chromatogram_temp2 chromatogram, PeakDetection peakDetector, Chromatogram_temp2 smoothedChromatogram) {
+        private List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(ExtractedIonChromatogram chromatogram, PeakDetection peakDetector, ExtractedIonChromatogram smoothedChromatogram) {
             var detectedPeaks = peakDetector.PeakDetectionVS1(smoothedChromatogram);
             var chromPeakFeatures = new List<ChromatogramPeakFeature>();
             foreach (var result in detectedPeaks) {
@@ -170,7 +170,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
         }
 
         private const int SPIKE_COUNT_THRESHOLD = 4;
-        private static List<ChromatogramPeakFeature> GetBackgroundSubtractedPeaks(List<ChromatogramPeakFeature> chromPeakFeatures, Chromatogram_temp2 chromatogram) {
+        private static List<ChromatogramPeakFeature> GetBackgroundSubtractedPeaks(List<ChromatogramPeakFeature> chromPeakFeatures, ExtractedIonChromatogram chromatogram) {
             var sPeakAreaList = new List<ChromatogramPeakFeature>();
             foreach (var feature in chromPeakFeatures) {
                 var peakFeature = feature.PeakFeature;

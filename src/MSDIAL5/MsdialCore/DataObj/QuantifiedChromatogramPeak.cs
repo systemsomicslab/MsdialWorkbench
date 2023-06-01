@@ -18,7 +18,7 @@ namespace CompMs.MsdialCore.DataObj
             PeakShape = peakShape;
         }
 
-        public QuantifiedChromatogramPeak(IChromatogramPeakFeature peakFeature, ChromatogramPeakShape peakShape, PeakDetectionResult peakDetectionResult, Chromatogram_temp2 chromatogram)
+        public QuantifiedChromatogramPeak(IChromatogramPeakFeature peakFeature, ChromatogramPeakShape peakShape, PeakDetectionResult peakDetectionResult, ExtractedIonChromatogram chromatogram)
             : this(peakFeature, peakShape, chromatogram.Id(peakDetectionResult.ScanNumAtPeakTop), chromatogram.Id(peakDetectionResult.ScanNumAtLeftPeakEdge), chromatogram.Id(peakDetectionResult.ScanNumAtRightPeakEdge)) {
             
         }

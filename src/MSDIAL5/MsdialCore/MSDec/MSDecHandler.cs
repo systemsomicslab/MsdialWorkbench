@@ -690,7 +690,7 @@ namespace CompMs.MsdialCore.MSDec {
         //}
 
 
-        public static MSDecResult GetMSDecResult(List<Chromatogram_temp2> chromatogramList, ParameterBase param, int targetScanNumber,
+        public static MSDecResult GetMSDecResult(List<ExtractedIonChromatogram> chromatogramList, ParameterBase param, int targetScanNumber,
             ChromXType chromType = ChromXType.RT, ChromXUnit chromUnit = ChromXUnit.Min) {
             if (chromatogramList == null || chromatogramList.Count == 0) return null;
             //Peak detections in MS/MS chromatogras
@@ -762,7 +762,7 @@ namespace CompMs.MsdialCore.MSDec {
             return peakSpots;
         }
 
-        private static List<ChromatogramPeakFeature> getPeakSpots(List<Chromatogram_temp2> chromatogramList, ParameterBase param, ChromXType type, ChromXUnit unit) {
+        private static List<ChromatogramPeakFeature> getPeakSpots(List<ExtractedIonChromatogram> chromatogramList, ParameterBase param, ChromXType type, ChromXUnit unit) {
             var peakSpots = new List<ChromatogramPeakFeature>();
 
             var detector = new PeakDetection(param.MinimumDatapoints, param.MinimumAmplitude);
@@ -812,7 +812,7 @@ namespace CompMs.MsdialCore.MSDec {
         }
 
 
-        private static MsDecBin[] getMsDecBinArray(List<ChromatogramPeakFeature> peakSpots, Chromatogram_temp2 chromatogram) {
+        private static MsDecBin[] getMsDecBinArray(List<ChromatogramPeakFeature> peakSpots, ExtractedIonChromatogram chromatogram) {
 
             var ms2DecBins = new MsDecBin[chromatogram.Length];
 
@@ -933,7 +933,7 @@ namespace CompMs.MsdialCore.MSDec {
             return mPeaklist;
         }
 
-        private static List<ModelChromatogram_temp> getModelChromatograms(List<Chromatogram_temp2> chromatogramList, List<ChromatogramPeakFeature> peakSpots, MsDecBin[] msdecBins, double[] matchedFilterArray, ParameterBase param) {
+        private static List<ModelChromatogram_temp> getModelChromatograms(List<ExtractedIonChromatogram> chromatogramList, List<ChromatogramPeakFeature> peakSpots, MsDecBin[] msdecBins, double[] matchedFilterArray, ParameterBase param) {
             var regionMarkers = getRegionMarkers(matchedFilterArray);
             var modelChromatograms = new List<ModelChromatogram_temp>();
             //   Debug.WriteLine("Regions count: {regionMarkers.Count}");
@@ -962,7 +962,7 @@ namespace CompMs.MsdialCore.MSDec {
             return modelChromatograms;
         }
 
-        private static ModelChromatogram_temp getModelChromatogram(List<Chromatogram_temp2> chromatogramList, List<ChromatogramPeakFeature> peakAreas,
+        private static ModelChromatogram_temp getModelChromatogram(List<ExtractedIonChromatogram> chromatogramList, List<ChromatogramPeakFeature> peakAreas,
             MsDecBin[] msdecBins, ParameterBase param) {
             if (peakAreas == null || peakAreas.Count == 0) return null;
             var maxSharpnessValue = peakAreas.Max(n => n.PeakShape.ShapenessValue);
@@ -1024,7 +1024,7 @@ namespace CompMs.MsdialCore.MSDec {
             return peaksList;
         }
 
-        private static List<ValuePeak[]> getMs2Chromatograms(ModelChromVector modelChromVector, List<Chromatogram_temp2> chromatogramList, ParameterBase param) {
+        private static List<ValuePeak[]> getMs2Chromatograms(ModelChromVector modelChromVector, List<ExtractedIonChromatogram> chromatogramList, ParameterBase param) {
             var peaksList = new List<ValuePeak[]>();
             foreach (var chromatogram in chromatogramList) {
                 var peaks = chromatogram.TrimPeaks(modelChromVector.ChromScanList[0], modelChromVector.ChromScanList[modelChromVector.ChromScanList.Count - 1]);

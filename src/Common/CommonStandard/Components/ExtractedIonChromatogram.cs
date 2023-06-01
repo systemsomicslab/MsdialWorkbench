@@ -8,13 +8,13 @@ using System.Linq;
 
 namespace CompMs.Common.Components
 {
-    public sealed class Chromatogram_temp2 {
+    public sealed class ExtractedIonChromatogram {
         private readonly IReadOnlyList<ValuePeak> _peaks;
         private readonly ChromXType _type;
         private readonly ChromXUnit _unit;
         private readonly Algorithm.ChromSmoothing.Smoothing _smoother;
 
-        public Chromatogram_temp2(IEnumerable<ValuePeak> peaks, ChromXType type, ChromXUnit unit, double extractedMz) {
+        public ExtractedIonChromatogram(IEnumerable<ValuePeak> peaks, ChromXType type, ChromXUnit unit, double extractedMz) {
             _peaks = peaks as IReadOnlyList<ValuePeak> ?? peaks?.ToArray() ?? throw new ArgumentNullException(nameof(peaks));
             _type = type;
             _unit = unit;
@@ -22,7 +22,7 @@ namespace CompMs.Common.Components
             ExtractedMz = extractedMz;
         }
 
-        private Chromatogram_temp2(ValuePeak[] peaks, ChromXType type, ChromXUnit unit, Algorithm.ChromSmoothing.Smoothing smoother, double extractedMz) {
+        private ExtractedIonChromatogram(ValuePeak[] peaks, ChromXType type, ChromXUnit unit, Algorithm.ChromSmoothing.Smoothing smoother, double extractedMz) {
             _peaks = peaks;
             _type = type;
             _unit = unit;
@@ -221,31 +221,31 @@ namespace CompMs.Common.Components
             }
         }
 
-        public Chromatogram_temp2 Difference(Chromatogram_temp2 other) {
+        public ExtractedIonChromatogram Difference(ExtractedIonChromatogram other) {
             System.Diagnostics.Debug.Assert(_type == other._type);
             System.Diagnostics.Debug.Assert(_unit == other._unit);
             var peaks = new ValuePeak[_peaks.Count];
             for (int i = 0; i < peaks.Length; i++) {
                 peaks[i] = new ValuePeak(_peaks[i].Id, _peaks[i].Time, _peaks[i].Mz, Math.Max(0, _peaks[i].Intensity - other._peaks[i].Intensity));
             }
-            return new Chromatogram_temp2(peaks, _type, _unit, _smoother, ExtractedMz);
+            return new ExtractedIonChromatogram(peaks, _type, _unit, _smoother, ExtractedMz);
         }
 
-        public Chromatogram_temp2 ChromatogramSmoothing(SmoothingMethod method, int level) {
+        public ExtractedIonChromatogram ChromatogramSmoothing(SmoothingMethod method, int level) {
             switch (method) {
                 case SmoothingMethod.SimpleMovingAverage:
-                    return new Chromatogram_temp2(Algorithm.ChromSmoothing.Smoothing.SimpleMovingAverage(_peaks, level), _type, _unit, ExtractedMz);
+                    return new ExtractedIonChromatogram(Algorithm.ChromSmoothing.Smoothing.SimpleMovingAverage(_peaks, level), _type, _unit, ExtractedMz);
                 case SmoothingMethod.SavitzkyGolayFilter:
-                    return new Chromatogram_temp2(Algorithm.ChromSmoothing.Smoothing.SavitxkyGolayFilter(_peaks, level), _type, _unit, ExtractedMz);
+                    return new ExtractedIonChromatogram(Algorithm.ChromSmoothing.Smoothing.SavitxkyGolayFilter(_peaks, level), _type, _unit, ExtractedMz);
                 case SmoothingMethod.BinomialFilter:
-                    return new Chromatogram_temp2(Algorithm.ChromSmoothing.Smoothing.BinomialFilter(_peaks, level), _type, _unit, ExtractedMz);
+                    return new ExtractedIonChromatogram(Algorithm.ChromSmoothing.Smoothing.BinomialFilter(_peaks, level), _type, _unit, ExtractedMz);
                 case SmoothingMethod.LowessFilter:
-                    return new Chromatogram_temp2(Algorithm.ChromSmoothing.Smoothing.LowessFilter(_peaks, level), _type, _unit, ExtractedMz);
+                    return new ExtractedIonChromatogram(Algorithm.ChromSmoothing.Smoothing.LowessFilter(_peaks, level), _type, _unit, ExtractedMz);
                 case SmoothingMethod.LoessFilter:
-                    return new Chromatogram_temp2(Algorithm.ChromSmoothing.Smoothing.LoessFilter(_peaks, level), _type, _unit, ExtractedMz);
+                    return new ExtractedIonChromatogram(Algorithm.ChromSmoothing.Smoothing.LoessFilter(_peaks, level), _type, _unit, ExtractedMz);
                 case SmoothingMethod.LinearWeightedMovingAverage:
                 default:
-                    return new Chromatogram_temp2(_smoother.LinearWeightedMovingAverage(_peaks, level), _type, _unit, _smoother, ExtractedMz);
+                    return new ExtractedIonChromatogram(_smoother.LinearWeightedMovingAverage(_peaks, level), _type, _unit, _smoother, ExtractedMz);
             }
         }
 

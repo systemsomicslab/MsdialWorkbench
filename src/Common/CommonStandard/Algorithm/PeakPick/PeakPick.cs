@@ -40,7 +40,7 @@ namespace CompMs.Common.Algorithm.PeakPick
             return IntensityAtPeakTop <= 0 || peakheightFromEdge < maxIntensityAtPeaks * INTENSITY_FOLDCHANGE_THREASHOLD;
         }
 
-        public BaseChromatogramPeakFeature ConvertToPeakFeature(Chromatogram_temp2 chromatogram, double mz) {
+        public BaseChromatogramPeakFeature ConvertToPeakFeature(ExtractedIonChromatogram chromatogram, double mz) {
             return new BaseChromatogramPeakFeature
             {
                 ChromScanIdLeft = ScanNumAtLeftPeakEdge,
@@ -69,7 +69,7 @@ namespace CompMs.Common.Algorithm.PeakPick
             _minimumAmplitudeCriteria = minimumAmplitudeCriteria;
         }
 
-        public List<PeakDetectionResult> PeakDetectionVS1(Chromatogram_temp2 chromatogram) {
+        public List<PeakDetectionResult> PeakDetectionVS1(ExtractedIonChromatogram chromatogram) {
             // global parameter
             var noiseEstimateBin = 50;
             var minNoiseWindowSize = 10;
