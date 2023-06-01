@@ -131,8 +131,8 @@
                                     <TextBlock Text="Exp. vs.Rep."
                                                VerticalAlignment="Stretch"/>
                                 </DataTemplate>
-                                <DataTemplate DataType="{x:Type chartvm:Ms2ChromatogramsViewModel}">
-                                    <TextBlock Text="MS2 Chrom."
+                                <DataTemplate DataType="{x:Type chartvm:EiChromatogramsViewModel}">
+                                    <TextBlock Text="EI Chrom."
                                                VerticalAlignment="Stretch"/>
                                 </DataTemplate>
                                 <DataTemplate DataType="{x:Type chartvm:RawPurifiedSpectrumsViewModel}">
@@ -178,8 +178,8 @@
                                         </chart:ExpRefView.ContextMenu>
                                     </chart:ExpRefView>
                                 </DataTemplate>
-                                <DataTemplate DataType="{x:Type chartvm:Ms2ChromatogramsViewModel}">
-                                    <chart:Ms2ChromatogramsView/>
+                                <DataTemplate DataType="{x:Type chartvm:EiChromatogramsViewModel}">
+                                    <chart:EiChromatogramsView/>
                                 </DataTemplate>
                                 <DataTemplate DataType="{x:Type chartvm:RawPurifiedSpectrumsViewModel}">
                                     <chart:RawPurifiedView/>

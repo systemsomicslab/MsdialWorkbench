@@ -22,7 +22,7 @@ namespace CompMs.App.Msdial.Model.Chart
         public SelectableChromatogram Merge(SelectableChromatogram other) {
             var both = Chromatogram.CombineLatest(other.Chromatogram, (s, o) => s.Merge(o));
             var isSelected = new ReactivePropertySlim<bool>(false);
-            var isEnabled = IsEnabled.CombineLatest(other.IsEnabled, (s, o) => s && o).ToReadOnlyReactivePropertySlim();
+            var isEnabled = IsEnabled.CombineLatest(other.IsEnabled, (s, o) => s && o).StartWith(IsEnabled.Value && other.IsEnabled.Value).ToReadOnlyReactivePropertySlim();
             return new SelectableChromatogram(both, isSelected, isEnabled);
         }
 

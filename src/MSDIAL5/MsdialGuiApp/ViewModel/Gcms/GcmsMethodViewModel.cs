@@ -51,7 +51,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             var alignmentAsObservable = new ReactivePropertySlim<IAlignmentResultViewModel>();
 
             var tmpSwitcher = new ViewModelSwitcher(Observable.Return<ViewModelBase>(null), Observable.Return<ViewModelBase>(null));
-            var massSpectrumSwitcher = new ViewModelSwitcher(Observable.Return<ViewModelBase>(null), Observable.Return<ViewModelBase>(null), analysisAsObservable.Select(m => m?.RawDecSpectrumsViewModel), analysisAsObservable.Select(m => m?.RawPurifiedSpectrumsViewModel));
+            var massSpectrumSwitcher = new ViewModelSwitcher(Observable.Return<ViewModelBase>(null), Observable.Return<ViewModelBase>(null), analysisAsObservable.Select(m => m?.RawDecSpectrumsViewModel), analysisAsObservable.Select(m => m?.EiChromatogramsViewModel), analysisAsObservable.Select(m => m?.RawPurifiedSpectrumsViewModel));
             return new GcmsMethodViewModel(model, analysisAsObservable, alignmentAsObservable, tmpSwitcher, massSpectrumSwitcher, broker, focusControlManager);
         }
     }

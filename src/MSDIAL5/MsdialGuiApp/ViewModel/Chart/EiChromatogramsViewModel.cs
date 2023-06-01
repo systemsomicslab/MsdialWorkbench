@@ -10,11 +10,15 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    internal sealed class Ms2ChromatogramsViewModel : ViewModelBase {
-        public Ms2ChromatogramsViewModel(Ms2ChromatogramsModel model, Action focusAction, IObservable<bool> isFocused) {
+    internal sealed class EiChromatogramsViewModel : ViewModelBase
+    {
+        public EiChromatogramsViewModel(EiChromatogramsModel model, ReactivePropertySlim<int> numberOfEIChromatograms, MultiMsmsRawSpectrumLoaderViewModel loader, Action focusAction, IObservable<bool> isFocused) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
+
+            NumberOfEIChromatograms = numberOfEIChromatograms;
+            MultiMsRawSpectrumLoaderViewModel = loader;
 
             ChromatogramsViewModel = model.ChromatogramsModel
                 .Where(chromatograms => !(chromatograms is null))
@@ -29,8 +33,6 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             IsBothEnabled = model.IsBothEnabled;
             FocusAction = focusAction;
             IsFocused = isFocused.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            MultiMsRawSpectrumLoaderViewModel = new MultiMsmsRawSpectrumLoaderViewModel(model.Loader);
-            NumberOfChromatograms = model.NumberOfChromatograms.SetValidateAttribute(() => NumberOfChromatograms);
             CopyAsTableCommand = new ReactiveCommand().WithSubscribe(model.CopyAsTable).AddTo(Disposables);
             SaveAsTableCommand = new AsyncReactiveCommand().WithSubscribe(model.SaveAsTableAsync).AddTo(Disposables);
         }
@@ -46,11 +48,12 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<bool> IsBothEnabled { get; }
         public Action FocusAction { get; }
         public ReadOnlyReactivePropertySlim<bool> IsFocused { get; }
+
+        public ReactivePropertySlim<int> NumberOfEIChromatograms { get; }
         public MultiMsmsRawSpectrumLoaderViewModel MultiMsRawSpectrumLoaderViewModel { get; }
 
         [RegularExpression(@"\d+", ErrorMessage = "Invalid character is entered.")]
         [Range(0, int.MaxValue, ErrorMessage = "Invalid value is requested.")]
-        public ReactiveProperty<int> NumberOfChromatograms { get; }
 
         public ReactiveCommand CopyAsTableCommand { get; }
         public AsyncReactiveCommand SaveAsTableCommand { get; }
