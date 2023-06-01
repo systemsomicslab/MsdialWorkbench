@@ -20,6 +20,7 @@ using CompMs.MsdialCore.Utility;
 using CompMs.MsdialImmsCore.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -50,7 +51,8 @@ namespace CompMs.App.Msdial.Model.Imms
             DataBaseMapper mapper,
             MsdialImmsParameter parameter,
             PeakFilterModel peakFilterModel,
-            ProjectBaseParameterModel projectBaseParameterModel)
+            ProjectBaseParameterModel projectBaseParameterModel,
+            IMessageBroker broker)
             : base(analysisFileModel) {
             if (evaluator is null) {
                 throw new ArgumentNullException(nameof(evaluator));
@@ -119,7 +121,7 @@ namespace CompMs.App.Msdial.Model.Imms
             Disposables.Add(ms2ScanMatching.Connect());
 
             // Ms2 chromatogram
-            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawLoader, provider, parameter, analysisFileModel.AcquisitionType).AddTo(Disposables);
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawLoader, provider, parameter, analysisFileModel.AcquisitionType, broker).AddTo(Disposables);
 
             var surveyScanSpectrum = new SurveyScanSpectrum(Target, target => Observable.FromAsync(token => LoadMsSpectrumAsync(target, token)))
                 .AddTo(Disposables);

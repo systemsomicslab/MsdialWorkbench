@@ -222,7 +222,8 @@ namespace CompMs.App.Msdial.Model.Imms
                 _storage.DataBaseMapper,
                 _storage.Parameter,
                 PeakFilterModel,
-                _projectBaseParameter)
+                _projectBaseParameter,
+                _broker)
             .AddTo(Disposables);
             return AnalysisModel;
         }

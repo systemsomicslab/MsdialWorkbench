@@ -31,6 +31,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             IsFocused = isFocused.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             MultiMsRawSpectrumLoaderViewModel = new MultiMsRawSpectrumLoaderViewModel(model.Loader);
             NumberOfChromatograms = model.NumberOfChromatograms.SetValidateAttribute(() => NumberOfChromatograms);
+            CopyAsTableCommand = new ReactiveCommand().WithSubscribe(model.CopyAsTable).AddTo(Disposables);
+            SaveAsTableCommand = new AsyncReactiveCommand().WithSubscribe(model.SaveAsTableAsync).AddTo(Disposables);
         }
 
         public ReadOnlyReactivePropertySlim<ChromatogramsViewModel> ChromatogramsViewModel { get; }
@@ -49,5 +51,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         [RegularExpression(@"\d+", ErrorMessage = "Invalid character is entered.")]
         [Range(0, int.MaxValue, ErrorMessage = "Invalid value is requested.")]
         public ReactiveProperty<int> NumberOfChromatograms { get; }
+
+        public ReactiveCommand CopyAsTableCommand { get; }
+        public AsyncReactiveCommand SaveAsTableCommand { get; }
     }
 }
