@@ -207,8 +207,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
             var ms2ChromPeaksList = DataAccess.GetMs2ValuePeaks(provider, precursorMz, ms1Chromatogram.Peaks.First().ID, ms1Chromatogram.Peaks.Last().ID, productMz, parameter, type, targetCE, ChromXType.Drift, ChromXUnit.Msec);
 
             var smoothedMs2ChromPeaksList = new List<Chromatogram_temp2>(ms2ChromPeaksList.Count);
-            foreach (var chromPeaks in ms2ChromPeaksList) {
-                var sChromPeaks = new Chromatogram_temp2(chromPeaks, ChromXType.Drift, ChromXUnit.Msec).ChromatogramSmoothing(parameter.SmoothingMethod, parameter.SmoothingLevel);
+            foreach (var (chromPeaks, mz) in ms2ChromPeaksList.Zip(productMz)) {
+                var sChromPeaks = new Chromatogram_temp2(chromPeaks, ChromXType.Drift, ChromXUnit.Msec, mz).ChromatogramSmoothing(parameter.SmoothingMethod, parameter.SmoothingLevel);
                 smoothedMs2ChromPeaksList.Add(sChromPeaks);
             }
             return smoothedMs2ChromPeaksList;

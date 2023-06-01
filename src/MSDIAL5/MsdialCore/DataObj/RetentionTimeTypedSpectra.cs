@@ -92,7 +92,7 @@ namespace CompMs.MsdialCore.DataObj
                 var (basePeakMz, _, summedIntensity) = spectrum.RetrieveBin(mz, tolerance);
                 results[idc++] = new ValuePeak(_spectra[i].Index, _idToRetentionTime[i].Value, basePeakMz, summedIntensity);
             }
-            return new Chromatogram_temp2(results, ChromXType.RT, _unit);
+            return new Chromatogram_temp2(results, ChromXType.RT, _unit, mz);
         }
 
         public IEnumerable<Chromatogram_temp2> GetMs1ExtractedChromatograms_temp2(IEnumerable<double> mzs, double tolerance, double start, double end) {
@@ -116,7 +116,7 @@ namespace CompMs.MsdialCore.DataObj
             }
             return enumerables.Sequence()
                 .Select(peaks => peaks.Zip(indexs, times, (peak, index, time) => new ValuePeak(index, time, peak.Item1, peak.Item3)))
-                .Select(peaks => new Chromatogram_temp2(peaks, ChromXType.RT, _unit));
+                .Zip(mzs_, (peaks, mz) => new Chromatogram_temp2(peaks, ChromXType.RT, _unit, mz));
         }
 
         public Chromatogram GetMs1TotalIonChromatogram(double start, double end) {

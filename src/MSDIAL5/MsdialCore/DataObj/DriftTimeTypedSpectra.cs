@@ -80,7 +80,7 @@ namespace CompMs.MsdialCore.DataObj
                 var time = _idToDriftTime.GetOrAdd(i, j => new Lazy<DriftTime>(() => new DriftTime(_spectra[j].DriftTime)));
                 results.Add(new ValuePeak(_spectra[i].Index, time.Value.Value, basePeakMz, summedIntensity));
             }
-            return new Chromatogram_temp2(results, ChromXType.Drift, _unit);
+            return new Chromatogram_temp2(results, ChromXType.Drift, _unit, mz);
         }
 
         public IEnumerable<Chromatogram_temp2> GetMs1ExtractedChromatograms_temp2(IEnumerable<double> mzs, double tolerance, double start, double end) {
@@ -102,7 +102,7 @@ namespace CompMs.MsdialCore.DataObj
             }
             return enumerables.Sequence()
                 .Select(peaks => peaks.Zip(indexs, times, (peak, index, time) => new ValuePeak(index, time, peak.Item1, peak.Item3)).ToArray())
-                .Select(peaks => new Chromatogram_temp2(peaks, ChromXType.Drift, _unit));
+                .Zip(mzs_, (peaks, mz) => new Chromatogram_temp2(peaks, ChromXType.Drift, _unit, mz));
         }
 
         public Chromatogram GetMs1TotalIonChromatogram(double start, double end) {
