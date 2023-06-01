@@ -408,6 +408,13 @@ namespace CompMs.App.Msdial.Model.Lcms
             return new MassqlSettingModel(model, _storage.Parameter.AdvancedProcessOptionBaseParam);
         }
 
+        public MolecularNetworkingSettingModel ShowMolecularNetworkingSettingView() {
+            if (AlignmentModel is null) {
+                return null;
+            }
+            return new MolecularNetworkingSettingModel(_storage.Parameter);
+        }
+
         public MscleanrSettingModel ShowShowMscleanrFilterSettingView() {
             if (AlignmentModel is null) {
                 return null;

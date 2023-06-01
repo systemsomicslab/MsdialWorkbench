@@ -223,6 +223,32 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
         }
 
+        public DelegateCommand<Window> ShowMolecularNetworkingSettingCommand => _molecularNetworkingSettingCommand ??
+    (_molecularNetworkingSettingCommand = new DelegateCommand<Window>(MolecularNetworkingSettingMethod));
+        private DelegateCommand<Window> _molecularNetworkingSettingCommand;
+
+        private void MolecularNetworkingSettingMethod(Window owner)
+        {
+            if (SelectedViewModel.Value is IAlignmentResultViewModel)
+            {
+                var m = _model.ShowMolecularNetworkingSettingView();
+                var vm = new MolecularNetworkingSettingViewModel(m);
+                var dialog = new MolecularNetworkingSettingView()
+                {
+                    DataContext = vm,
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner
+                };
+                dialog.Show();
+            }
+            else
+            {
+                MessageBox.Show("Please select an alignment result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+                //Console.WriteLine("Please select an item in Alignment navigator!!");
+            }
+        }
+
         private static IReadOnlyReactiveProperty<LcmsAnalysisViewModel> ConvertToAnalysisViewModelAsObservable(
             LcmsMethodModel method,
             IWindowService<CompoundSearchVM> compoundSearchService,
