@@ -23,9 +23,9 @@ using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -51,7 +51,8 @@ namespace CompMs.App.Msdial.Model.Dims
             DataBaseStorage databaseStorage,
             DataBaseMapper mapper,
             ParameterBase parameter,
-            PeakFilterModel peakFilterModel)
+            PeakFilterModel peakFilterModel,
+            IMessageBroker broker)
             : base(analysisFileModel) {
             if (evaluator is null) {
                 throw new ArgumentNullException(nameof(evaluator));
@@ -144,7 +145,7 @@ namespace CompMs.App.Msdial.Model.Dims
                     }
                 },
                 true);
-            var spectraExporter = new NistSpectraExporter(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
+            var spectraExporter = new NistSpectraExporter<ChromatogramPeakFeature>(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
             var rawLoader = new MultiMsRawSpectrumLoader(provider, parameter).AddTo(Disposables);
             MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
@@ -170,7 +171,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers)).AddTo(Disposables);
 
             // Ms2 chromatogram
-            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawLoader, provider, parameter, analysisFileModel.AcquisitionType).AddTo(Disposables);
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawLoader, provider, parameter, analysisFileModel.AcquisitionType, broker).AddTo(Disposables);
 
             EicLoader = DimsEicLoader.BuildForPeakTable(analysisFileModel.File, provider, parameter);
             PeakTableModel = new DimsAnalysisPeakTableModel(Ms1Peaks, Target, PeakSpotNavigatorModel).AddTo(Disposables);

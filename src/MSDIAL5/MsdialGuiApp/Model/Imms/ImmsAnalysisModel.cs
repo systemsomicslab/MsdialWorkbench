@@ -18,11 +18,11 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
-using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialImmsCore.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -53,7 +53,8 @@ namespace CompMs.App.Msdial.Model.Imms
             DataBaseStorage databases,
             DataBaseMapper mapper,
             MsdialImmsParameter parameter,
-            PeakFilterModel peakFilterModel)
+            PeakFilterModel peakFilterModel,
+            IMessageBroker broker)
             : base(analysisFileModel) {
             if (evaluator is null) {
                 throw new ArgumentNullException(nameof(evaluator));
@@ -142,7 +143,7 @@ namespace CompMs.App.Msdial.Model.Imms
                     }
                 },
                 true);
-            var spectraExporter = new NistSpectraExporter(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
+            var spectraExporter = new NistSpectraExporter<ChromatogramPeakFeature>(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
             var rawLoader = new MultiMsRawSpectrumLoader(provider, parameter).AddTo(Disposables);
             MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
@@ -168,7 +169,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers)).AddTo(Disposables);
 
             // Ms2 chromatogram
-            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawLoader, provider, parameter, analysisFileModel.AcquisitionType).AddTo(Disposables);
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawLoader, provider, parameter, analysisFileModel.AcquisitionType, broker).AddTo(Disposables);
 
             var surveyScanSpectrum = new SurveyScanSpectrum(Target, target => Observable.FromAsync(token => LoadMsSpectrumAsync(target, token)))
                 .AddTo(Disposables);

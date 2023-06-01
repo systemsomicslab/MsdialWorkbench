@@ -222,7 +222,8 @@ namespace CompMs.App.Msdial.Model.Dims
                 Storage.DataBases,
                 Storage.DataBaseMapper,
                 Storage.Parameter,
-                PeakFilterModel).AddTo(Disposables);
+                PeakFilterModel,
+                _broker).AddTo(Disposables);
         }
 
         protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBeanModel alignmentFileModel) {
