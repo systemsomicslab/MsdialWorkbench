@@ -41,14 +41,7 @@ namespace CompMs.Common.Lipidomics
                     return new DoubleBond(dbnum, groups["dbpos"].Captures.Cast<Capture>().Select(c => ParseDoubleBondInfo(c.Value)).ToArray());
                 }
             }
-            else {
-                if (isPlasma) {
-                    return new DoubleBond(dbnum, DoubleBondInfo.Create(1));
-                }
-                else {
-                    return new DoubleBond(dbnum);
-                }
-            }
+            return new DoubleBond(dbnum);
         }
 
         private DoubleBondInfo ParseDoubleBondInfo(string bond) {
