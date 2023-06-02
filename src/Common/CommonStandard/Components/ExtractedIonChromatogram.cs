@@ -250,21 +250,20 @@ namespace CompMs.Common.Components
         }
 
         public PeakDetectionResult GetPeakDetectionResultFromRange(int startID, int endID) {
-            var peakTopID = 0;
             var datapoints = new List<double[]>();
+            var datapointsPeakTopIndex = 0;
             var peaktopIntensity = double.MinValue;
             for (int i = 0; i < _peaks.Count; i++) {
                 var peak = _peaks[i];
                 if (peak.Id >= startID && peak.Id <= endID) {
-                    datapoints.Add(new double[] { datapoints.Count, peak.Time, peak.Mz, peak.Intensity });
+                    datapoints.Add(new double[] { i, peak.Time, peak.Mz, peak.Intensity });
                     if (peak.Intensity > peaktopIntensity) {
                         peaktopIntensity = peak.Intensity;
-                        peakTopID = datapoints.Count - 1;
+                        datapointsPeakTopIndex = datapoints.Count - 1;
                     }
                 }
             }
-
-            return PeakDetection.GetPeakDetectionResult(datapoints, peakTopID);
+            return PeakDetection.GetPeakDetectionResult(datapoints, datapointsPeakTopIndex);
         }
 
         public ChromatogramGlobalProperty_temp2 GetProperty(int noiseEstimateBin, int minNoiseWindowSize, double minNoiseLevel, double noiseFactor) {
