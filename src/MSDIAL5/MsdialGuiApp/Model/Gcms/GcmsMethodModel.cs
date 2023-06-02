@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.Graphics.UI.ProgressBar;
@@ -41,7 +42,20 @@ namespace CompMs.App.Msdial.Model.Gcms
 
         public GcmsAnalysisModel SelectedAnalysisModel {
             get => _selectedAnalysisModel;
-            set => SetProperty(ref _selectedAnalysisModel, value);
+            private set {
+                var old = _selectedAnalysisModel;
+                if (SetProperty(ref _selectedAnalysisModel, value)) {
+                    if (value != null) {
+                        Disposables.Add(value);
+                    }
+                    if (old != null) {
+                        if (Disposables.Contains(old)) {
+                            Disposables.Remove(old);
+                        }
+                        Disposables.Remove(old);
+                    }
+                }
+            }
         }
         private GcmsAnalysisModel _selectedAnalysisModel;
 
@@ -128,10 +142,6 @@ namespace CompMs.App.Msdial.Model.Gcms
         }
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
-            if (SelectedAnalysisModel != null) {
-                ((IDisposable)SelectedAnalysisModel).Dispose();
-                Disposables.Remove(SelectedAnalysisModel);
-            }
             var providerFactory = _providerFactory.ContraMap((AnalysisFileBeanModel fileModel) => fileModel.File);
             return SelectedAnalysisModel = new GcmsAnalysisModel(analysisFile, providerFactory, _storage.Parameter.ProjectParam, _storage.Parameter.PeakPickBaseParam, _storage.Parameter.ChromDecBaseParam, _storage.DataBaseMapper, _storage.DataBases, _projectBaseParameter, _broker);
         }
