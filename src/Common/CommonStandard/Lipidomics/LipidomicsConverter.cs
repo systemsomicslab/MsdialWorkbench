@@ -3298,7 +3298,7 @@ namespace CompMs.Common.Lipidomics
             chainString = chainString.Replace("O-", "").Replace("P-", "").Replace("N-", "").Replace("e", "").Replace("p", "").Replace("m", "").Replace("n-", "").Replace("d", "").Replace("t", "");
 
             //remove double bond position  add 2023/06/02
-            chainString = Regex.Replace(chainString, @"\(\d+?(E|Z)*\)", string.Empty);
+            chainString = Regex.Replace(chainString, @"\([\d+?(E|Z)*,*]+\)", string.Empty);
 
             // for oxidized moiety parser
             if (chainString.Contains(";"))
@@ -3321,7 +3321,7 @@ namespace CompMs.Common.Lipidomics
             else if (chainString.Contains("+"))
             { //20:3+3O
                 var chain = chainString.Split('+')[0]; // 20:3
-                var expectedOxCount = chainString.Split('+')[1].Replace("O", ""); //2
+                var expectedOxCount = chainString.Split('+')[1].Replace("O", ""); //3
                 if (expectedOxCount == string.Empty || expectedOxCount == "")
                 {
                     expectedOxCount = "1";
@@ -3330,7 +3330,7 @@ namespace CompMs.Common.Lipidomics
                 chainString = chain;
             }
             else if (chainString.Contains("("))
-            { // e.g. 18:2(1OH,3OH), 18:2(2OH)
+            { // e.g. 18:1(1OH,3OH), 18:2(2OH)
                 var chain = chainString.Split('(')[0];
                 var oxidizedmoiety = chainString.Split('(')[1].Replace(")", string.Empty); //2OH 
                 ////modified by MT 2020/12/11 & 2021/01/12
