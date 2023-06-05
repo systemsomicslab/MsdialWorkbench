@@ -105,6 +105,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.EtherPC:
                     return EtherPCEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.EtherPE:
+
                     return EtherPEEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
 
                 case LbmClass.SHexCer:
