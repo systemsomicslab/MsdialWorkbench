@@ -376,22 +376,27 @@ namespace Rfx.Riken.OsakaUniv
             var filepath = rawData.RawdataFilePath;
             var filename = System.IO.Path.GetFileNameWithoutExtension(rawData.RawdataFilePath);
 
-            sw.Write(filepath + "\t");
-            sw.Write(filename + "\t");
-            sw.Write(rawData.Name + "\t");
-            sw.Write(rawData.Ms1PeakNumber + "\t");
-            sw.Write(rawData.Ms2PeakNumber + "\t");
-            sw.Write(rawData.PrecursorMz + "\t");
-            sw.Write(rawData.PrecursorType + "\t");
-
-            for (int i = 0; i < count; i++)
-            {
-                if (formulaResults.Count - 1 < i)
-                    sw.Write("" + "\t" + "" + "\t" + "" + "\t" + "" + "\t" + "" + "\t");
-                else
-                    sw.Write(formulaResults[i].Formula.FormulaString + "\t" + formulaResults[i].Formula.Mass + "\t" + formulaResults[i].MassDiff + "\t" + formulaResults[i].TotalScore + "\t" + formulaResults[i].ResourceNames + "\t");
+            int cnt = 0;
+            if (formulaResults.Count > count) {
+                cnt = count;
+            } else {
+                cnt = formulaResults.Count;
             }
-            sw.WriteLine();
+            for (int i = 0; i < cnt; i++) {
+                sw.Write(filepath + "\t");
+                sw.Write(filename + "\t");
+                sw.Write(rawData.Name + "\t");
+                sw.Write(rawData.Ms1PeakNumber + "\t");
+                sw.Write(rawData.Ms2PeakNumber + "\t");
+                sw.Write(rawData.PrecursorMz + "\t");
+                sw.Write(rawData.PrecursorType + "\t");
+                sw.Write(formulaResults[i].Formula.FormulaString + "\t");
+                sw.Write(formulaResults[i].Formula.Mass + "\t");
+                sw.Write(formulaResults[i].MassDiff + "\t");
+                sw.Write(formulaResults[i].TotalScore + "\t");
+                sw.Write(formulaResults[i].ResourceNames);
+                sw.WriteLine();
+            }            
         }
 
         private static void writeStructureResult(StreamWriter sw, RawData rawData, List<FragmenterResult> sfdResults, int count)
@@ -399,25 +404,29 @@ namespace Rfx.Riken.OsakaUniv
             var filepath = rawData.RawdataFilePath;
             var filename = System.IO.Path.GetFileNameWithoutExtension(rawData.RawdataFilePath);
 
-            sw.Write(filepath + "\t");
-            sw.Write(filename + "\t");
-            sw.Write(rawData.Name + "\t");
-            sw.Write(rawData.Ms1PeakNumber + "\t");
-            sw.Write(rawData.Ms2PeakNumber + "\t");
-            sw.Write(rawData.PrecursorMz + "\t");
-            sw.Write(rawData.PrecursorType + "\t");
-
-            for (int i = 0; i < count; i++)
-            {
-                if (sfdResults.Count - 1 < i)
-                    sw.Write("" + "\t" + "" + "\t" + "" + "\t" + "" + "\t" + "" + "\t" + "" + "\t" + "" + "\t");
-                else if (sfdResults[i].Title == null || sfdResults[i].Title == string.Empty)
-                    sw.Write("" + "\t" + "" + "\t" + "" + "\t" + "" + "\t" + "" + "\t" + "" + "\t" + "" + "\t");
-                else
-                    sw.Write(sfdResults[i].Title + "\t" + sfdResults[i].TotalScore + "\t" + sfdResults[i].Resources + "\t" +
-                        sfdResults[i].Formula + "\t" + sfdResults[i].Ontology + "\t" + sfdResults[i].Inchikey + "\t" + sfdResults[i].Smiles + "\t");
+            int cnt = 0;
+            if (sfdResults.Count > count) {
+                cnt = count;
+            } else {
+                cnt = sfdResults.Count;
             }
-            sw.WriteLine();
+            for (int i = 0; i < cnt; i++) {
+                sw.Write(filepath + "\t");
+                sw.Write(filename + "\t");
+                sw.Write(rawData.Name + "\t");
+                sw.Write(rawData.Ms1PeakNumber + "\t");
+                sw.Write(rawData.Ms2PeakNumber + "\t");
+                sw.Write(rawData.PrecursorMz + "\t");
+                sw.Write(rawData.PrecursorType + "\t");
+                sw.Write(sfdResults[i].Title + "\t");
+                sw.Write(sfdResults[i].TotalScore + "\t");
+                sw.Write(sfdResults[i].Resources + "\t");
+                sw.Write(sfdResults[i].Formula + "\t");
+                sw.Write(sfdResults[i].Ontology + "\t");
+                sw.Write(sfdResults[i].Inchikey + "\t");
+                sw.Write(sfdResults[i].Smiles);
+                sw.WriteLine();
+            }
         }
 
 
@@ -431,8 +440,12 @@ namespace Rfx.Riken.OsakaUniv
             sw.Write("PRECURSORMZ\t");
             sw.Write("PRECURSORTYPE\t");
 
-            for (int i = 1; i <= count; i++)
-                sw.Write("Formula rank " + i.ToString() + "\t" + "Theoretical mass" + "\t" + "Mass error" + "\t" + "Formula score" + "\t" + "Databases" + "\t");
+            sw.Write("Formula rank\t");
+            sw.Write("Theoretical mass\t");
+            sw.Write("Mass error\t");
+            sw.Write("Formula score\t");
+            sw.Write("Databases");
+            
             sw.WriteLine();
         }
 
@@ -446,8 +459,13 @@ namespace Rfx.Riken.OsakaUniv
             sw.Write("PRECURSORMZ\t");
             sw.Write("PRECURSORTYPE\t");
 
-            for (int i = 1; i <= count; i++)
-                sw.Write(string.Format("Structure rank {0}\tTotal score {0}\tDatabases {0}\tFormula {0}\tOntology {0}\tInChIKey {0}\tSMILES {0}\t", i));
+            sw.Write("Structure rank\t");
+            sw.Write("Total score\t");
+            sw.Write("Databases\t");
+            sw.Write("Formula\t");
+            sw.Write("Ontology\t");
+            sw.Write("InChIKey\t");
+            sw.Write("SMILES");
 
             sw.WriteLine();
         }
