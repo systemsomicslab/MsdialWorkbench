@@ -2632,15 +2632,16 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                 if (adduct.AdductIonName == "[M+H]+")
                 {
                     // seek 184.07332 (C5H15NO4P), 104.10699 (C5H12N+), 124.99982 (C2H5O4P + H+)
-                    var threshold = 5.0;
+                    var threshold = 20.0;
                     var diagnosticMz1 = 184.07332;
                     var diagnosticMz2 = 104.106990;
                     var diagnosticMz3 = 124.99982;
 
                     var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
-                    var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
-                    var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold);
-                    if (isClassIon1Found != true || isClassIon2Found != true || isClassIon3Found != true) return null;
+                    if (!isClassIon1Found) return null;
+                    //var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
+                    //var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold);
+                    //if (isClassIon2Found != true || isClassIon3Found != true) return null;
                     //
                     var candidates = new List<LipidMolecule>();
                     //var averageIntensity = 0.0;
@@ -2691,27 +2692,45 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             { // positive ion mode 
                 if (adduct.AdductIonName == "[M+H]+")
                 {
-                    // seek PreCursor -171([M-C3H10NO5P]+)
-                    var threshold = 70.0;
-                    var diagnosticMz = theoreticalMz - 171.0291124 - MassDiffDictionary.HydrogenMass;
-                    // seek PreCursor -189([M-C3H8NO4P]+)
-                    var threshold2 = 5.0;
-                    var diagnosticMz2 = diagnosticMz + H2O;
-
+                    var EtherFrag = "e";
+                    // case LPE P-
+                    // seek PreCursor -154
+                    var threshold = 5.0;
+                    var diagnosticMz = theoreticalMz - (12 * 3 + MassDiffDictionary.PhosphorusMass + MassDiffDictionary.OxygenMass * 5 + MassDiffDictionary.HydrogenMass * 7);
+                    // seek PreCursor -172
+                    var threshold2 = 50.0;
+                    var diagnosticMz2 = diagnosticMz - H2O;
                     var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
 
-                    if (isClassIon1Found == false && isClassIon2Found == false) return null;
+                    // case LPE O-
+                    // seek precursor -43
+                    var diagnosticMz3 = theoreticalMz - (12 * 2 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 5);
+                    var threshold3 = 5.0;
+                    var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
+                    // seek precursor -141
+                    var diagnosticMz4 = theoreticalMz - (12 * 2 + MassDiffDictionary.HydrogenMass * 8 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass);
+                    var threshold4 = 5.0;
+                    var isClassIon4Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz4, threshold4);
+
+                    if (isClassIon1Found == false && isClassIon2Found == false)
+                    {
+                        if (isClassIon3Found == false && isClassIon4Found == false)
+                        { return null; }
+                    }
                     //
+                    if (isClassIon1Found || isClassIon2Found)
+                    {
+                        EtherFrag = "p";
+                    }
 
                     var candidates = new List<LipidMolecule>();
                     //var averageIntensity = 0.0;
                     //var molecule = getSingleacylchainwithsuffixMoleculeObjAsLevel2("LPE", LbmClass.EtherLPE, totalCarbon,
                     //                totalDoubleBond, averageIntensity, "e");
                     //candidates.Add(molecule);
-                    return returnAnnotationResult("LPE", LbmClass.EtherLPE, "e", theoreticalMz, adduct,
+                    return returnAnnotationResult("LPE", LbmClass.EtherLPE, EtherFrag, theoreticalMz, adduct,
                        totalCarbon, totalDoubleBond, 0, candidates, 1);
-
                 }
             }
             else
