@@ -5,6 +5,7 @@ using CompMs.Common.Parser;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -3296,6 +3297,9 @@ namespace CompMs.Common.Lipidomics
             var isPlasmenyl = chainString.Contains("P-") ? true : false;
             chainString = chainString.Replace("O-", "").Replace("P-", "").Replace("N-", "").Replace("e", "").Replace("p", "").Replace("m", "").Replace("n-", "").Replace("d", "").Replace("t", "");
 
+            //remove double bond position  add 2023/06/02
+            chainString = Regex.Replace(chainString, @"\([\d+?(E|Z)*,*]+\)", string.Empty);
+
             // for oxidized moiety parser
             if (chainString.Contains(";"))
             { // e.g. 18:2;2O, 18:2;(2OH)
@@ -3317,7 +3321,7 @@ namespace CompMs.Common.Lipidomics
             else if (chainString.Contains("+"))
             { //20:3+3O
                 var chain = chainString.Split('+')[0]; // 20:3
-                var expectedOxCount = chainString.Split('+')[1].Replace("O", ""); //2
+                var expectedOxCount = chainString.Split('+')[1].Replace("O", ""); //3
                 if (expectedOxCount == string.Empty || expectedOxCount == "")
                 {
                     expectedOxCount = "1";
@@ -3326,20 +3330,22 @@ namespace CompMs.Common.Lipidomics
                 chainString = chain;
             }
             else if (chainString.Contains("("))
-            { // e.g. 18:2;2O, 18:2;(2OH)
+            { // e.g. 18:1(1OH,3OH), 18:2(2OH)
                 var chain = chainString.Split('(')[0];
-                var oxidizedmoiety = chainString.Split('(')[1]; //2OH)
-                //modified by MT 2020/12/11 & 2021/01/12
-                var expectedOxCount = oxidizedmoiety.Replace("O", string.Empty).Replace("H", string.Empty).Replace("(", string.Empty).Replace(")", string.Empty);
-                if (expectedOxCount == string.Empty || expectedOxCount == "")
-                {
-                    expectedOxCount = "1";
-                }
-                else if (oxidizedmoiety.Contains("2OH)") || oxidizedmoiety.Contains("3OH)"))
-                {
-                    expectedOxCount = "1";
-                }
-                int.TryParse(expectedOxCount, out oxidizedCount);
+                var oxidizedmoiety = chainString.Split('(')[1].Replace(")", string.Empty); //2OH 
+                ////modified by MT 2020/12/11 & 2021/01/12
+                //var expectedOxCount = oxidizedmoiety.Replace("O", string.Empty).Replace("H", string.Empty).Replace("(", string.Empty).Replace(")", string.Empty);
+                //if (expectedOxCount == string.Empty || expectedOxCount == "")
+                //{
+                //    expectedOxCount = "1";
+                //}
+                //else if (oxidizedmoiety.Contains("2OH)") || oxidizedmoiety.Contains("3OH)"))
+                //{
+                //    expectedOxCount = "1";
+                //}
+                //int.TryParse(expectedOxCount, out oxidizedCount);
+                oxidizedCount = oxidizedmoiety.Split(',').Length;
+
                 chainString = chain;
             }
 
