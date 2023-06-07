@@ -19,6 +19,10 @@ namespace CompMs.MsdialCore.DataObj
             return _selected.Contains(type);
         }
 
+        public bool IsSelected(AnnotationQualitySearchQuery query) {
+            return query.IsMatched(_selected);
+        }
+
         public void Select(AnnotationQualityType type) {
             if (!_selected.Contains(type)) {
                 _selected.Add(type);

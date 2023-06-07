@@ -4,6 +4,8 @@ namespace CompMs.MsdialCore.DataObj
 {
     public sealed class AnnotationQualityType
     {
+        private static Dictionary<int, AnnotationQualityType> ID_TO_TYPES = new Dictionary<int, AnnotationQualityType>();
+
         /*
          * When adding a new type, please be careful not to duplicate the ID.
          * When deleting a type, make sure that the ID is not used in the future.
@@ -13,8 +15,6 @@ namespace CompMs.MsdialCore.DataObj
         public static AnnotationQualityType COELUTION = new AnnotationQualityType("Coelution (mixed spectra)", 3);
         public static AnnotationQualityType OVERANNOTATION = new AnnotationQualityType("Overannotation", 4);
 
-        private static readonly Dictionary<int, AnnotationQualityType> ID_TO_TYPES = new Dictionary<int, AnnotationQualityType>();
-
         private AnnotationQualityType(string label, int id) {
             Label = label;
             Id = id;
@@ -23,6 +23,10 @@ namespace CompMs.MsdialCore.DataObj
 
         public string Label { get; }
         public int Id { get; }
+
+        public override string ToString() {
+            return Label;
+        }
 
         internal static AnnotationQualityType GetById(int id) {
             return ID_TO_TYPES.TryGetValue(id, out var type) ? type : null;
