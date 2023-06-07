@@ -19,7 +19,7 @@ namespace CompMs.MsdialCore.DataObj
             return _selected.Contains(type);
         }
 
-        public bool IsSelected(AnnotationQualitySearchQuery query) {
+        public bool IsSelected(PeakSpotTagSearchQuery query) {
             return query.IsMatched(_selected);
         }
 

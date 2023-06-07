@@ -3,12 +3,12 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.DataObj
 {
-    public sealed class AnnotationQualitySearchQuery
+    public sealed class PeakSpotTagSearchQuery
     {
         private readonly OrAnd _oa;
         private readonly AnnotationQualityType[] _types;
 
-        private AnnotationQualitySearchQuery(OrAnd oa, AnnotationQualityType[] types) {
+        private PeakSpotTagSearchQuery(OrAnd oa, AnnotationQualityType[] types) {
             _oa = oa;
             _types = types;
         }
@@ -47,20 +47,20 @@ namespace CompMs.MsdialCore.DataObj
             return string.Empty;
         }
 
-        public static AnnotationQualitySearchQuery Any(params AnnotationQualityType[] types) {
-            return new AnnotationQualitySearchQuery(OrAnd.Any, types);
+        public static PeakSpotTagSearchQuery Any(params AnnotationQualityType[] types) {
+            return new PeakSpotTagSearchQuery(OrAnd.Any, types);
         }
 
-        public static AnnotationQualitySearchQuery All(params AnnotationQualityType[] types) {
-            return new AnnotationQualitySearchQuery(OrAnd.All, types);
+        public static PeakSpotTagSearchQuery All(params AnnotationQualityType[] types) {
+            return new PeakSpotTagSearchQuery(OrAnd.All, types);
         }
 
-        public static AnnotationQualitySearchQuery None(params AnnotationQualityType[] types) {
-            return new AnnotationQualitySearchQuery(OrAnd.None, types);
+        public static PeakSpotTagSearchQuery None(params AnnotationQualityType[] types) {
+            return new PeakSpotTagSearchQuery(OrAnd.None, types);
         }
 
-        public static AnnotationQualitySearchQuery NotAll(params AnnotationQualityType[] types) {
-            return new AnnotationQualitySearchQuery(OrAnd.NotAll, types);
+        public static PeakSpotTagSearchQuery NotAll(params AnnotationQualityType[] types) {
+            return new PeakSpotTagSearchQuery(OrAnd.NotAll, types);
         }
 
         enum OrAnd {

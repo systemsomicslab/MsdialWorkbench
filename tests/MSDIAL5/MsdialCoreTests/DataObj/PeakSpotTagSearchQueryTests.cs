@@ -8,7 +8,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
     {
         [DataTestMethod()]
         [DynamicData(nameof(IsMatchedTestData), DynamicDataSourceType.Property)]
-        public void IsMatchedTest(List<AnnotationQualityType> types, AnnotationQualitySearchQuery query, bool expected) {
+        public void IsMatchedTest(List<AnnotationQualityType> types, PeakSpotTagSearchQuery query, bool expected) {
             var actual = query.IsMatched(types);
             Assert.AreEqual(expected, actual);
         }
@@ -19,14 +19,14 @@ namespace CompMs.MsdialCore.DataObj.Tests
                     lowQuality = new List<AnnotationQualityType> { AnnotationQualityType.LOW_QUALITY_SPECTRUM, },
                     misannotation = new List<AnnotationQualityType> { AnnotationQualityType.MISANNOTATION, },
                     both = new List<AnnotationQualityType> { AnnotationQualityType.LOW_QUALITY_SPECTRUM, AnnotationQualityType.MISANNOTATION, };
-                AnnotationQualitySearchQuery orSingle = AnnotationQualitySearchQuery.Any(AnnotationQualityType.LOW_QUALITY_SPECTRUM),
-                    andSingle = AnnotationQualitySearchQuery.All(AnnotationQualityType.LOW_QUALITY_SPECTRUM),
-                    or = AnnotationQualitySearchQuery.Any(AnnotationQualityType.LOW_QUALITY_SPECTRUM, AnnotationQualityType.MISANNOTATION),
-                    and = AnnotationQualitySearchQuery.All(AnnotationQualityType.LOW_QUALITY_SPECTRUM, AnnotationQualityType.MISANNOTATION),
-                    orEmpty = AnnotationQualitySearchQuery.Any(),
-                    andEmpty = AnnotationQualitySearchQuery.All(),
-                    none = AnnotationQualitySearchQuery.None(AnnotationQualityType.LOW_QUALITY_SPECTRUM, AnnotationQualityType.MISANNOTATION),
-                    notall = AnnotationQualitySearchQuery.NotAll(AnnotationQualityType.LOW_QUALITY_SPECTRUM, AnnotationQualityType.MISANNOTATION);
+                PeakSpotTagSearchQuery orSingle = PeakSpotTagSearchQuery.Any(AnnotationQualityType.LOW_QUALITY_SPECTRUM),
+                    andSingle = PeakSpotTagSearchQuery.All(AnnotationQualityType.LOW_QUALITY_SPECTRUM),
+                    or = PeakSpotTagSearchQuery.Any(AnnotationQualityType.LOW_QUALITY_SPECTRUM, AnnotationQualityType.MISANNOTATION),
+                    and = PeakSpotTagSearchQuery.All(AnnotationQualityType.LOW_QUALITY_SPECTRUM, AnnotationQualityType.MISANNOTATION),
+                    orEmpty = PeakSpotTagSearchQuery.Any(),
+                    andEmpty = PeakSpotTagSearchQuery.All(),
+                    none = PeakSpotTagSearchQuery.None(AnnotationQualityType.LOW_QUALITY_SPECTRUM, AnnotationQualityType.MISANNOTATION),
+                    notall = PeakSpotTagSearchQuery.NotAll(AnnotationQualityType.LOW_QUALITY_SPECTRUM, AnnotationQualityType.MISANNOTATION);
 
                 yield return new object[] { empty, orSingle, false, };
                 yield return new object[] { empty, andSingle, false, };
