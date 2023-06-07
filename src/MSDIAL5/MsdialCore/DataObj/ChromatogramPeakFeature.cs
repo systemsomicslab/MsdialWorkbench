@@ -340,6 +340,9 @@ namespace CompMs.MsdialCore.DataObj
         [Key(51)]
         public int MSDecResultIdUsed { get; set; } = -1;
 
+        [IgnoreMember]
+        public PeakSpotTagCollection TagCollection { get; } = new PeakSpotTagCollection();
+
         public static ChromatogramPeakFeature FromPeakDetectionResult(PeakDetectionResult peakDetectionResult, Chromatogram chromatogram, double mz) {
             if (peakDetectionResult == null) {
                 return null;
