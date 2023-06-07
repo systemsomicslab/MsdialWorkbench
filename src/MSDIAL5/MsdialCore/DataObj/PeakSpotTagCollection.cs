@@ -29,6 +29,11 @@ namespace CompMs.MsdialCore.DataObj
             }
         }
 
+        internal void Set(PeakSpotTag[] types) {
+            _selected.Clear();
+            _selected.AddRange(types);
+        }
+
         public void Deselect(PeakSpotTag type) {
             if (_selected.Contains(type)) {
                 _selected.Remove(type);
