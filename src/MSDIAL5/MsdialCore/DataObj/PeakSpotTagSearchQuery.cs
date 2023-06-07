@@ -6,14 +6,14 @@ namespace CompMs.MsdialCore.DataObj
     public sealed class PeakSpotTagSearchQuery
     {
         private readonly OrAnd _oa;
-        private readonly AnnotationQualityType[] _types;
+        private readonly PeakSpotTag[] _types;
 
-        private PeakSpotTagSearchQuery(OrAnd oa, AnnotationQualityType[] types) {
+        private PeakSpotTagSearchQuery(OrAnd oa, PeakSpotTag[] types) {
             _oa = oa;
             _types = types;
         }
 
-        public bool IsMatched(List<AnnotationQualityType> types) {
+        public bool IsMatched(List<PeakSpotTag> types) {
             if (_types.Length == 0) {
                 return true;
             }
@@ -47,19 +47,19 @@ namespace CompMs.MsdialCore.DataObj
             return string.Empty;
         }
 
-        public static PeakSpotTagSearchQuery Any(params AnnotationQualityType[] types) {
+        public static PeakSpotTagSearchQuery Any(params PeakSpotTag[] types) {
             return new PeakSpotTagSearchQuery(OrAnd.Any, types);
         }
 
-        public static PeakSpotTagSearchQuery All(params AnnotationQualityType[] types) {
+        public static PeakSpotTagSearchQuery All(params PeakSpotTag[] types) {
             return new PeakSpotTagSearchQuery(OrAnd.All, types);
         }
 
-        public static PeakSpotTagSearchQuery None(params AnnotationQualityType[] types) {
+        public static PeakSpotTagSearchQuery None(params PeakSpotTag[] types) {
             return new PeakSpotTagSearchQuery(OrAnd.None, types);
         }
 
-        public static PeakSpotTagSearchQuery NotAll(params AnnotationQualityType[] types) {
+        public static PeakSpotTagSearchQuery NotAll(params PeakSpotTag[] types) {
             return new PeakSpotTagSearchQuery(OrAnd.NotAll, types);
         }
 
