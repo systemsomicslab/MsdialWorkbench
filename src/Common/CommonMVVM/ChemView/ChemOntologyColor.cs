@@ -2740,6 +2740,7 @@ namespace CompMs.CommonMVVM.ChemView {
             { "HexCer_NDS", Color.FromArgb(180, 158, 0, 47) },
             { "HexCer_EOS", Color.FromArgb(180, 0, 0, 102) },
             { "AHexCer", Color.FromArgb(180, 10, 10, 92) },
+            { "ASHexCer", Color.FromArgb(180, 10, 30, 92) },
             { "SHexCer", Color.FromArgb(180, 255, 29, 0) },
             { "SL", Color.FromArgb(180, 245, 39, 10) },
             { "CoQ", Color.FromArgb(180, 235, 49, 20) },
