@@ -18,10 +18,14 @@ namespace CompMs.MsdialCore.DataObj
                 return true;
             }
             switch (_oa) {
-                case OrAnd.Or:
+                case OrAnd.Any:
                     return _types.Any(types.Contains);
-                case OrAnd.And:
+                case OrAnd.All:
                     return _types.All(types.Contains);
+                case OrAnd.None:
+                    return !_types.Any(types.Contains);
+                case OrAnd.NotAll:
+                    return !_types.All(types.Contains);
             }
             return false;
         }
@@ -31,25 +35,39 @@ namespace CompMs.MsdialCore.DataObj
                 return "empty";
             }
             switch (_oa) {
-                case OrAnd.Or:
+                case OrAnd.Any:
                     return string.Join(" or ", _types.Select(t => t.ToString()));
-                case OrAnd.And:
+                case OrAnd.All:
                     return string.Join(" and ", _types.Select(t => t.ToString()));
+                case OrAnd.None:
+                    return string.Join(" and ", _types.Select(t => $"not {t}"));
+                case OrAnd.NotAll:
+                    return string.Join(" or ", _types.Select(t => $"not {t}"));
             }
             return string.Empty;
         }
 
-        public static AnnotationQualitySearchQuery Or(params AnnotationQualityType[] types) {
-            return new AnnotationQualitySearchQuery(OrAnd.Or, types);
+        public static AnnotationQualitySearchQuery Any(params AnnotationQualityType[] types) {
+            return new AnnotationQualitySearchQuery(OrAnd.Any, types);
         }
 
-        public static AnnotationQualitySearchQuery And(params AnnotationQualityType[] types) {
-            return new AnnotationQualitySearchQuery(OrAnd.And, types);
+        public static AnnotationQualitySearchQuery All(params AnnotationQualityType[] types) {
+            return new AnnotationQualitySearchQuery(OrAnd.All, types);
+        }
+
+        public static AnnotationQualitySearchQuery None(params AnnotationQualityType[] types) {
+            return new AnnotationQualitySearchQuery(OrAnd.None, types);
+        }
+
+        public static AnnotationQualitySearchQuery NotAll(params AnnotationQualityType[] types) {
+            return new AnnotationQualitySearchQuery(OrAnd.NotAll, types);
         }
 
         enum OrAnd {
-            Or,
-            And
+            Any,
+            All,
+            None,
+            NotAll,
         }
     }
 }
