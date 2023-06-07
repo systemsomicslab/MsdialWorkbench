@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace CompMs.MsdialCore.DataObj.Tests
 {
     [TestClass()]
-    public class AnnotationQualitySearchQueryTests
+    public class PeakSpotTagSearchQueryTests
     {
         [DataTestMethod()]
         [DynamicData(nameof(IsMatchedTestData), DynamicDataSourceType.Property)]
