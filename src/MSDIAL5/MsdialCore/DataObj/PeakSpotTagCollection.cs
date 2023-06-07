@@ -3,11 +3,11 @@ using System.Collections.ObjectModel;
 
 namespace CompMs.MsdialCore.DataObj
 {
-    public sealed class AnnotationQualityLabel
+    public sealed class PeakSpotTagCollection
     {
         private readonly List<AnnotationQualityType> _selected;
 
-        public AnnotationQualityLabel()
+        public PeakSpotTagCollection()
         {
             _selected = new List<AnnotationQualityType>();
             Selected = _selected.AsReadOnly();
