@@ -200,6 +200,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         bool IFilterable.IsRsdFilteredByPostCurator => true;
 
         double IFilterable.RelativeAmplitudeValue => innerModel.PeakShape.AmplitudeScoreValue;
+        PeakSpotTagCollection IFilterable.TagCollection => innerModel.TagCollection;
 
         // IChromatogramPeak
         int IChromatogramPeak.ID => ((IChromatogramPeak)innerModel).ID;

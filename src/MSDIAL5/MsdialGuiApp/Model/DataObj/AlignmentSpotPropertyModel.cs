@@ -286,5 +286,6 @@ namespace CompMs.App.Msdial.Model.DataObj
         double ISpectrumPeak.Intensity { get => ((ISpectrumPeak)innerModel).Intensity; set => ((ISpectrumPeak)innerModel).Intensity = value; }
 
         double IFilterable.RelativeAmplitudeValue => innerModel.RelativeAmplitudeValue;
+        PeakSpotTagCollection IFilterable.TagCollection => new PeakSpotTagCollection();
     }
 }

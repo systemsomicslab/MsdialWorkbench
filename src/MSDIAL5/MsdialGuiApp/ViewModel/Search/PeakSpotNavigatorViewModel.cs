@@ -12,7 +12,7 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Search
 {
-    public sealed class PeakSpotNavigatorViewModel : ViewModelBase
+    internal sealed class PeakSpotNavigatorViewModel : ViewModelBase
     {
         private readonly PeakSpotNavigatorModel model;
 
@@ -22,6 +22,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
                 .ToReactivePropertySlimAsSynchronized(m => m.SelectedAnnotationLabel)
                 .AddTo(Disposables);
             PeakFilterViewModel = new PeakFilterViewModel(model.PeakFilters.ToArray()).AddTo(Disposables);
+            TagSearchBuilderViewModel = new PeakSpotTagSearchQueryBuilderViewModel(model.TagSearchQueryBuilder).AddTo(Disposables);
 
             AmplitudeLowerValue = model
                 .ToReactivePropertyAsSynchronized(m => m.AmplitudeLowerValue)
@@ -96,6 +97,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
             var needRefresh = new[]
             {
                 PeakFilterViewModel.CheckedFilter.ToUnit(),
+                TagSearchBuilderViewModel.ObserveChanged,
                 AmplitudeLowerValue.ToUnit(),
                 AmplitudeUpperValue.ToUnit(),
                 MzLowerValue.ToUnit(),
@@ -156,6 +158,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
         public ReactivePropertySlim<string> AdductFilterKeyword { get; }
 
         public PeakFilterViewModel PeakFilterViewModel { get; }
+        public PeakSpotTagSearchQueryBuilderViewModel TagSearchBuilderViewModel { get; }
 
         protected override void Dispose(bool disposing) {
             if (disposing) {
