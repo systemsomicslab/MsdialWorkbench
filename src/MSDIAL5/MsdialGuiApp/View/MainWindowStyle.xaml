@@ -432,6 +432,116 @@
         </Setter>
     </Style>
 
+    <Style TargetType="CheckBox" x:Key="IconCheckBox">
+        <Setter Property="FontWeight" Value="Heavy"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <ControlTemplate.Resources>
+                        <Style TargetType="TextBlock" x:Key="BaseTextBlock">
+                            <Setter Property="FontSize" Value="8"/>
+                            <Setter Property="Height" Value="10"/>
+                            <Setter Property="Width" Value="10"/>
+                            <Setter Property="TextAlignment" Value="Center"/>
+                            <Setter Property="VerticalAlignment" Value="Top"/>
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                        </Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlock}" x:Key="IfCheckedStyle">
+                            <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}"/>
+                            <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}"/>
+                        </Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlock}" x:Key="IfNotCheckedStyle">
+                            <Setter Property="Foreground" Value="Gray"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                        </Style>
+                    </ControlTemplate.Resources>
+                    <Border BorderThickness="1" BorderBrush="LightGray"
+                            Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                            VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <Viewbox Stretch="Uniform">
+                            <Grid>
+                                <TextBlock x:Name="CheckMark"
+                                           Text="{TemplateBinding Content}"
+                                           FontFamily="{TemplateBinding FontFamily}"
+                                           FontStyle="{TemplateBinding FontStyle}"
+                                           FontWeight="{TemplateBinding FontWeight}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="FontSize" Value="8"/>
+                                            <Setter Property="Height" Value="10"/>
+                                            <Setter Property="Width" Value="10"/>
+                                            <Setter Property="TextAlignment" Value="Center"/>
+                                            <Setter Property="VerticalAlignment" Value="Top"/>
+                                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                            <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}}" Value="False">
+                                                    <Setter Property="Foreground" Value="Gray"/>
+                                                    <Setter Property="Background" Value="Transparent"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <!--
+                                <TextBlock x:Name="UncheckMark"
+                                           Text="{TemplateBinding Content}"
+                                           FontFamily="{TemplateBinding FontFamily}"
+                                           FontStyle="{TemplateBinding FontStyle}"
+                                           FontWeight="{TemplateBinding FontWeight}"
+                                           Foreground="Gray"
+                                           Background="Transparent"/>
+                                           -->
+                            </Grid>
+                        </Viewbox>
+                        <!--
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal"/>
+                                <VisualState x:Name="MouseOver"/>
+                                <VisualState x:Name="Pressed"/>
+                                <VisualState x:Name="Disabled"/>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="CheckStates">
+                                <VisualState x:Name="Checked">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(TextBlock.Visibility)"
+                                                                       Storyboard.TargetName="CheckMark">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="{x:Static Visibility.Visible}"/>
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(TextBlock.Visibility)"
+                                                                       Storyboard.TargetName="UncheckMark">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="{x:Static Visibility.Collapsed}"/>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Unchecked">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(TextBlock.Visibility)"
+                                                                       Storyboard.TargetName="CheckMark">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="{x:Static Visibility.Collapsed}"/>
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(TextBlock.Visibility)"
+                                                                       Storyboard.TargetName="UncheckMark">
+                                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="{x:Static Visibility.Visible}"/>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Indeterminate"/>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        -->
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="RadioButton" x:Key="IconRadioButton">
         <Setter Property="Height" Value="32"/>
         <Setter Property="Width" Value="32"/>

@@ -177,6 +177,29 @@
                                     Binding="{Binding Path=Comment}"
                                     IsReadOnly="False"
                                     Width="2*" />
+                <DataGridTemplateColumn Header="Tag"
+                                        Width="Auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <ToolTipService.ToolTip>
+                                    <TextBlock TextAlignment="Left">
+                                        Check: Comfirmed<LineBreak/>
+                                        L: Low quality spectrum<LineBreak/>
+                                        M: Misannotation<LineBreak/>
+                                        C: Coelution(mixed spectra)<LineBreak/>
+                                        O: Overannotation
+                                    </TextBlock>
+                                </ToolTipService.ToolTip>
+                                <CheckBox IsChecked="{Binding Comfirmed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="&#xE73E;" FontFamily="Segoe MDL2 Assets" Foreground="White" Background="Green" Style="{StaticResource IconCheckBox}"/>
+                                <CheckBox IsChecked="{Binding LowQualitySpectrum, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="L" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
+                                <CheckBox IsChecked="{Binding Misannotation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="M" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
+                                <CheckBox IsChecked="{Binding Coelution, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="C" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
+                                <CheckBox IsChecked="{Binding Overannotation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="O" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Height"
                                     Binding="{Binding Path=Intensity, StringFormat=F3}"
                                     IsReadOnly="True"

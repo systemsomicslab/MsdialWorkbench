@@ -11,7 +11,7 @@ namespace CompMs.MsdialCore.Parser
     {
         public static void SaveChromatogramPeakFeatures(string file, List<ChromatogramPeakFeature> chromPeakFeatures) {
             MessagePackHandler.SaveToFile<List<ChromatogramPeakFeature>>(chromPeakFeatures, file);
-            var tagfile = Path.GetFileNameWithoutExtension(file) + "_tags.xml";
+            var tagfile = Path.Combine(Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file) + "_tags.xml");
             var defsElement = new XElement("Definitions");
             foreach (var tag in PeakSpotTag.AllTypes()) {
                 var tagElement = new XElement("Tag", new XElement("Id", tag.Id), new XElement("Label", tag.Label));
@@ -35,11 +35,11 @@ namespace CompMs.MsdialCore.Parser
 
         public static List<ChromatogramPeakFeature> LoadChromatogramPeakFeatures(string file) {
             var peaks = MessagePackHandler.LoadFromFile<List<ChromatogramPeakFeature>>(file);
-            var tagfile = Path.GetFileNameWithoutExtension(file) + "_tags.xml";
+            var tagfile = Path.Combine(Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file) + "_tags.xml");
             if (File.Exists(tagfile)) {
                 var doc = XElement.Load(tagfile);
                 var dic = new Dictionary<int, PeakSpotTag[]>();
-                foreach (var peakElement in doc.Elements("Peak")) {
+                foreach (var peakElement in doc.Descendants("Peak")) {
                     if (int.TryParse(peakElement.Attribute("Id").Value, out var id)) {
                         var tags = peakElement.Elements("Tag")
                             .Select(elem => int.TryParse(elem.Value, out var v) ? PeakSpotTag.GetById(v) : null)
@@ -58,7 +58,7 @@ namespace CompMs.MsdialCore.Parser
         }
 
         private static IEnumerable<ChromatogramPeakFeature> Flatten(ChromatogramPeakFeature peak) {
-            return peak.DriftChromFeatures.SelectMany(Flatten).Prepend(peak);
+            return (peak.DriftChromFeatures?.SelectMany(Flatten) ?? Enumerable.Empty<ChromatogramPeakFeature>()).Prepend(peak);
         }
     }
 }
