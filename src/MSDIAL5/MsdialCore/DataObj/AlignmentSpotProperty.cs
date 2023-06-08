@@ -319,6 +319,9 @@ namespace CompMs.MsdialCore.DataObj {
             }
         }
 
+        [IgnoreMember]
+        public PeakSpotTagCollection TagCollection { get; } = new PeakSpotTagCollection();
+
         public AlignmentSpotProperty Clone(ref int masterId, int alignmentId) {
             var driftSpots = new List<AlignmentSpotProperty>(AlignmentDriftSpotFeatures.Count);
             foreach (var driftSpot in AlignmentDriftSpotFeatures) {
