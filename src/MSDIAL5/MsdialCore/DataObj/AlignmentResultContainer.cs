@@ -57,7 +57,7 @@ namespace CompMs.MsdialCore.DataObj {
             }
             var peaksElement = new XElement("Peaks");
             foreach (var peak in AlignmentSpotProperties.SelectMany(Flatten)) {
-                if (peak.TagCollection.Selected.Count == 0) {
+                if (!peak.TagCollection.Any()) {
                     continue;
                 }
                 var peakElement = new XElement("Peak");

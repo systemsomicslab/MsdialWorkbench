@@ -19,7 +19,7 @@ namespace CompMs.MsdialCore.Parser
             }
             var peaksElement = new XElement("Peaks");
             foreach (var peak in chromPeakFeatures.SelectMany(Flatten)) {
-                if (peak.TagCollection.Selected.Count == 0) {
+                if (!peak.TagCollection.Any()) {
                     continue;
                 }
                 var peakElement = new XElement("Peak");
