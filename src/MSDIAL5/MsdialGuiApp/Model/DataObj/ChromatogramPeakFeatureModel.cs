@@ -245,7 +245,6 @@ namespace CompMs.App.Msdial.Model.DataObj
             DataAccess.SetMoleculeMsPropertyAsConfidence(innerModel, reference);
             MatchResultsModel.RemoveManuallyResults();
             MatchResultsModel.AddResult(result);
-            Confirmed = true;
             OnPropertyChanged(string.Empty);
         }
 
@@ -253,7 +252,6 @@ namespace CompMs.App.Msdial.Model.DataObj
             DataAccess.SetMoleculeMsPropertyAsUnsettled(innerModel, reference);
             MatchResultsModel.RemoveManuallyResults();
             MatchResultsModel.AddResult(result);
-            Confirmed = true;
             OnPropertyChanged(string.Empty);
         }
 
@@ -261,7 +259,6 @@ namespace CompMs.App.Msdial.Model.DataObj
         public void SetUnknown(UndoManager undoManager) {
             IDoCommand command = new SetUnknownDoCommand(this, MatchResultsModel);
             command.Do();
-            Confirmed = true;
             undoManager.Add(command);
         }
     }

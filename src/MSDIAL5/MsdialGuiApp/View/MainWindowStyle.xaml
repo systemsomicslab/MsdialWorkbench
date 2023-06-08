@@ -484,63 +484,52 @@
                                         </Style>
                                     </TextBlock.Style>
                                 </TextBlock>
-                                <!--
-                                <TextBlock x:Name="UncheckMark"
-                                           Text="{TemplateBinding Content}"
-                                           FontFamily="{TemplateBinding FontFamily}"
-                                           FontStyle="{TemplateBinding FontStyle}"
-                                           FontWeight="{TemplateBinding FontWeight}"
-                                           Foreground="Gray"
-                                           Background="Transparent"/>
-                                           -->
                             </Grid>
                         </Viewbox>
-                        <!--
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup x:Name="CommonStates">
-                                <VisualState x:Name="Normal"/>
-                                <VisualState x:Name="MouseOver"/>
-                                <VisualState x:Name="Pressed"/>
-                                <VisualState x:Name="Disabled"/>
-                            </VisualStateGroup>
-                            <VisualStateGroup x:Name="CheckStates">
-                                <VisualState x:Name="Checked">
-                                    <Storyboard>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(TextBlock.Visibility)"
-                                                                       Storyboard.TargetName="CheckMark">
-                                            <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{x:Static Visibility.Visible}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(TextBlock.Visibility)"
-                                                                       Storyboard.TargetName="UncheckMark">
-                                            <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{x:Static Visibility.Collapsed}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="Unchecked">
-                                    <Storyboard>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(TextBlock.Visibility)"
-                                                                       Storyboard.TargetName="CheckMark">
-                                            <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{x:Static Visibility.Collapsed}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(TextBlock.Visibility)"
-                                                                       Storyboard.TargetName="UncheckMark">
-                                            <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{x:Static Visibility.Visible}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="Indeterminate"/>
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
-                        -->
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
+
+    <DataTemplate x:Key="EditPeakSpotTag">
+        <StackPanel Orientation="Horizontal">
+            <ToolTipService.ToolTip>
+                <TextBlock TextAlignment="Left">
+                    Check: Confirmed<LineBreak/>
+                    L: Low quality spectrum<LineBreak/>
+                    M: Misannotation<LineBreak/>
+                    C: Coelution(mixed spectra)<LineBreak/>
+                    O: Overannotation
+                </TextBlock>
+            </ToolTipService.ToolTip>
+            <CheckBox IsChecked="{Binding Confirmed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="&#xE73E;" FontFamily="Segoe MDL2 Assets" Foreground="White" Background="Green" Style="{StaticResource IconCheckBox}"/>
+            <CheckBox IsChecked="{Binding LowQualitySpectrum, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="L" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
+            <CheckBox IsChecked="{Binding Misannotation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="M" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
+            <CheckBox IsChecked="{Binding Coelution, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="C" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
+            <CheckBox IsChecked="{Binding Overannotation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="O" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="FilteringPeakSpotTag" DataType="{x:Type searchVM:PeakSpotTagSearchQueryBuilderViewModel}"
+                  xmlns:searchVM="clr-namespace:CompMs.App.Msdial.ViewModel.Search">
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Tag filter:" FontSize="12" Margin="0,0,8,0"/>
+            <CheckBox IsChecked="{Binding Confirmed.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="&#xE73E;" FontFamily="Segoe MDL2 Assets" Foreground="White" Background="Green" Style="{StaticResource IconCheckBox}"/>
+            <CheckBox IsChecked="{Binding LowQualitySpectrum.Value, Mode=TwoWay}" Content="L" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
+            <CheckBox IsChecked="{Binding Misannotation.Value, Mode=TwoWay}" Content="M" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
+            <CheckBox IsChecked="{Binding Coelution.Value, Mode=TwoWay}" Content="C" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
+            <CheckBox IsChecked="{Binding Overannotation.Value, Mode=TwoWay}" Content="O" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
+
+            <CheckBox Content="Exclude tagged peaks" IsChecked="{Binding Excludes.Value, Mode=TwoWay}" Margin="8,0" VerticalAlignment="Center" FontSize="12"/>
+
+            <Button Content="Mark all as confirmed"
+                    IsEnabled="False"
+                    Margin="8,0"
+                    VerticalAlignment="Center" HorizontalAlignment="Left"
+                    Width="128"/>
+        </StackPanel>
+    </DataTemplate>
 
     <Style TargetType="RadioButton" x:Key="IconRadioButton">
         <Setter Property="Height" Value="32"/>
