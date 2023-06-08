@@ -221,6 +221,42 @@ namespace CompMs.App.Msdial.Model.DataObj
             }
         }
 
+        public bool Confirmed {
+            get => innerModel.TagCollection.IsSelected(PeakSpotTag.CONFIRMED);
+            set => SetPeakSpotTag(PeakSpotTag.CONFIRMED, value, nameof(Confirmed));
+        }
+        public bool LowQualitySpectrum {
+            get => innerModel.TagCollection.IsSelected(PeakSpotTag.LOW_QUALITY_SPECTRUM);
+            set => SetPeakSpotTag(PeakSpotTag.LOW_QUALITY_SPECTRUM, value, nameof(LowQualitySpectrum));
+        }
+        public bool Misannotation {
+            get => innerModel.TagCollection.IsSelected(PeakSpotTag.MISANNOTATION);
+            set => SetPeakSpotTag(PeakSpotTag.MISANNOTATION, value, nameof(Misannotation));
+        }
+        public bool Coelution {
+            get => innerModel.TagCollection.IsSelected(PeakSpotTag.COELUTION);
+            set => SetPeakSpotTag(PeakSpotTag.COELUTION, value, nameof(Coelution));
+        }
+        public bool Overannotation {
+            get => innerModel.TagCollection.IsSelected(PeakSpotTag.OVERANNOTATION);
+            set => SetPeakSpotTag(PeakSpotTag.OVERANNOTATION, value, nameof(Overannotation));
+        }
+
+        private bool SetPeakSpotTag(PeakSpotTag tag, bool value, string propertyname) {
+            if (value == innerModel.TagCollection.IsSelected(tag)) {
+                return false;
+            }
+            if (value) {
+                innerModel.TagCollection.Select(tag);
+            }
+            else {
+                innerModel.TagCollection.Deselect(tag);
+            }
+            OnPropertyChanged(propertyname);
+            return true;
+        }
+
+
         internal readonly AlignmentSpotProperty innerModel;
 
         public static readonly double KMIupacUnit;
