@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace CompMs.MsdialCore.DataObj
 {
@@ -38,6 +39,14 @@ namespace CompMs.MsdialCore.DataObj
             if (_selected.Contains(type)) {
                 _selected.Remove(type);
             }
+        }
+
+        public bool Any() {
+            return _selected.Count > 0;
+        }
+
+        public override string ToString() {
+            return string.Join("|", _selected.Select(t => t.Label));
         }
     }
 }
