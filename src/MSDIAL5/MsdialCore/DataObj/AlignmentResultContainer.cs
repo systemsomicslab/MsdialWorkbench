@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
@@ -47,6 +48,27 @@ namespace CompMs.MsdialCore.DataObj {
                 AlignmentSpotProperties[i].AlignedPeakProperties = peakProperty[i];
                 AlignmentSpotProperties[i].AlignmentDriftSpotFeatures = driftProperty[i];
             }
+
+            var tagfile = Path.Combine(Path.GetDirectoryName(file.FilePath), Path.GetFileNameWithoutExtension(file.FilePath) + "_tags.xml");
+            var defsElement = new XElement("Definitions");
+            foreach (var tag in PeakSpotTag.AllTypes()) {
+                var tagElement = new XElement("Tag", new XElement("Id", tag.Id), new XElement("Label", tag.Label));
+                defsElement.Add(tagElement);
+            }
+            var peaksElement = new XElement("Peaks");
+            foreach (var peak in AlignmentSpotProperties.SelectMany(Flatten)) {
+                if (peak.TagCollection.Selected.Count == 0) {
+                    continue;
+                }
+                var peakElement = new XElement("Peak");
+                peakElement.SetAttributeValue("Id", peak.MasterAlignmentID);
+                foreach (var tag in peak.TagCollection.Selected) {
+                    peakElement.Add(new XElement("Tag", tag.Id));
+                }
+                peaksElement.Add(peakElement);
+            }
+            var doc = new XElement("PeakSpotTags", defsElement, peaksElement);
+            doc.Save(tagfile);
         }
 
         public static AlignmentResultContainer Load(AlignmentFileBean file)
@@ -74,6 +96,26 @@ namespace CompMs.MsdialCore.DataObj {
                     var alignmentDriftSpotProperties = MessagePackDefaultHandler.LoadLargerListFromFile<List<AlignmentSpotProperty>>(driftSpotFile);
                     for (var i = 0; i < alignmentDriftSpotProperties.Count; i++) {
                         collection[i].AlignmentDriftSpotFeatures = alignmentDriftSpotProperties[i];
+                    }
+                }
+            }
+
+            var tagfile = Path.Combine(Path.GetDirectoryName(file.FilePath), Path.GetFileNameWithoutExtension(file.FilePath) + "_tags.xml");
+            if (File.Exists(tagfile)) {
+                var doc = XElement.Load(tagfile);
+                var dic = new Dictionary<int, PeakSpotTag[]>();
+                foreach (var peakElement in doc.Descendants("Peak")) {
+                    if (int.TryParse(peakElement.Attribute("Id").Value, out var id)) {
+                        var tags = peakElement.Elements("Tag")
+                            .Select(elem => int.TryParse(elem.Value, out var v) ? PeakSpotTag.GetById(v) : null)
+                            .Where(v => v != null)
+                            .ToArray();
+                        dic[id] = tags;
+                    }
+                }
+                foreach (var peak in collection.SelectMany(Flatten)) {
+                    if (dic.TryGetValue(peak.MasterAlignmentID, out var tags)) {
+                        peak.TagCollection.Set(tags);
                     }
                 }
             }
@@ -124,7 +166,31 @@ namespace CompMs.MsdialCore.DataObj {
                     result.LoadAlginedPeakPropertiesTask = allTaskCompleted;
                 }
             }
+
+            var tagfile = Path.Combine(Path.GetDirectoryName(file.FilePath), Path.GetFileNameWithoutExtension(file.FilePath) + "_tags.xml");
+            if (File.Exists(tagfile)) {
+                var doc = XElement.Load(tagfile);
+                var dic = new Dictionary<int, PeakSpotTag[]>();
+                foreach (var peakElement in doc.Descendants("Peak")) {
+                    if (int.TryParse(peakElement.Attribute("Id").Value, out var id)) {
+                        var tags = peakElement.Elements("Tag")
+                            .Select(elem => int.TryParse(elem.Value, out var v) ? PeakSpotTag.GetById(v) : null)
+                            .Where(v => v != null)
+                            .ToArray();
+                        dic[id] = tags;
+                    }
+                }
+                foreach (var peak in collection.SelectMany(Flatten)) {
+                    if (dic.TryGetValue(peak.MasterAlignmentID, out var tags)) {
+                        peak.TagCollection.Set(tags);
+                    }
+                }
+            }
             return result;
+        }
+
+        private static IEnumerable<AlignmentSpotProperty> Flatten(AlignmentSpotProperty spot) {
+            return (spot.AlignmentDriftSpotFeatures?.SelectMany(Flatten) ?? Enumerable.Empty<AlignmentSpotProperty>()).Prepend(spot);
         }
     }
 }
