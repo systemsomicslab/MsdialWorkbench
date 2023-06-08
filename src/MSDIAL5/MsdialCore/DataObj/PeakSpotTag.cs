@@ -10,7 +10,7 @@ namespace CompMs.MsdialCore.DataObj
          * When adding a new type, please be careful not to duplicate the ID.
          * When deleting a type, make sure that the ID is not used in the future.
          */
-        public static PeakSpotTag COMFIRMED { get; } = new PeakSpotTag("Comfirmed", 1);
+        public static PeakSpotTag CONFIRMED { get; } = new PeakSpotTag("Confirmed", 1);
         public static PeakSpotTag LOW_QUALITY_SPECTRUM { get; } = new PeakSpotTag("Low quality spectrum", 2);
         public static PeakSpotTag MISANNOTATION { get; } = new PeakSpotTag("Misannotation", 3);
         public static PeakSpotTag COELUTION { get; } = new PeakSpotTag("Coelution (mixed spectra)", 4);

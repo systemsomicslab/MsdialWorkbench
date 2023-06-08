@@ -139,9 +139,9 @@ namespace CompMs.App.Msdial.Model.DataObj
         public double AmplitudeScore => innerModel.PeakShape.AmplitudeScoreValue;
         public double AmplitudeOrderValue => innerModel.PeakShape.AmplitudeOrderValue;
 
-        public bool Comfirmed {
-            get => innerModel.TagCollection.IsSelected(PeakSpotTag.COMFIRMED);
-            set => SetPeakSpotTag(PeakSpotTag.COMFIRMED, value, nameof(Comfirmed));
+        public bool Confirmed {
+            get => innerModel.TagCollection.IsSelected(PeakSpotTag.CONFIRMED);
+            set => SetPeakSpotTag(PeakSpotTag.CONFIRMED, value, nameof(Confirmed));
         }
         public bool LowQualitySpectrum {
             get => innerModel.TagCollection.IsSelected(PeakSpotTag.LOW_QUALITY_SPECTRUM);
@@ -245,7 +245,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             DataAccess.SetMoleculeMsPropertyAsConfidence(innerModel, reference);
             MatchResultsModel.RemoveManuallyResults();
             MatchResultsModel.AddResult(result);
-            Comfirmed = true;
+            Confirmed = true;
             OnPropertyChanged(string.Empty);
         }
 
@@ -253,7 +253,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             DataAccess.SetMoleculeMsPropertyAsUnsettled(innerModel, reference);
             MatchResultsModel.RemoveManuallyResults();
             MatchResultsModel.AddResult(result);
-            Comfirmed = true;
+            Confirmed = true;
             OnPropertyChanged(string.Empty);
         }
 
@@ -261,7 +261,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public void SetUnknown(UndoManager undoManager) {
             IDoCommand command = new SetUnknownDoCommand(this, MatchResultsModel);
             command.Do();
-            Comfirmed = true;
+            Confirmed = true;
             undoManager.Add(command);
         }
     }

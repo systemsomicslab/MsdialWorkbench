@@ -10,11 +10,11 @@ namespace CompMs.App.Msdial.Model.Search
 {
     internal sealed class PeakSpotTagSearchQueryBuilderModel : BindableBase
     {
-        public bool Comfirmed {
-            get => _comfirmed;
-            set => SetProperty(ref _comfirmed, value);
+        public bool Confirmed {
+            get => _confirmed;
+            set => SetProperty(ref _confirmed, value);
         }
-        private bool _comfirmed;
+        private bool _confirmed;
 
         public bool LowQualitySpectrum {
             get => _lowQualitySpectrum;
@@ -48,8 +48,8 @@ namespace CompMs.App.Msdial.Model.Search
 
         public PeakSpotTagSearchQuery CreateQuery() {
             var tags = new List<PeakSpotTag>();
-            if (Comfirmed) {
-                tags.Add(PeakSpotTag.COMFIRMED);
+            if (Confirmed) {
+                tags.Add(PeakSpotTag.CONFIRMED);
             }
             if (LowQualitySpectrum) {
                 tags.Add(PeakSpotTag.LOW_QUALITY_SPECTRUM);

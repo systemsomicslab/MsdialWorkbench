@@ -14,7 +14,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
 
         public PeakSpotTagSearchQueryBuilderViewModel(PeakSpotTagSearchQueryBuilderModel model) {
             _model = model;
-            Comfirmed = model.ToReactivePropertySlimAsSynchronized(m => m.Comfirmed).AddTo(Disposables);
+            Confirmed = model.ToReactivePropertySlimAsSynchronized(m => m.Confirmed).AddTo(Disposables);
             LowQualitySpectrum = model.ToReactivePropertySlimAsSynchronized(m => m.LowQualitySpectrum).AddTo(Disposables);
             Misannotation = model.ToReactivePropertySlimAsSynchronized(m => m.Misannotation).AddTo(Disposables);
             Coelution = model.ToReactivePropertySlimAsSynchronized(m => m.Coelution).AddTo(Disposables);
@@ -22,7 +22,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
             Excludes = model.ToReactivePropertySlimAsSynchronized(m => m.Excludes).AddTo(Disposables);
             ObserveChanged = new[]
             {
-                Comfirmed,
+                Confirmed,
                 LowQualitySpectrum,
                 Misannotation,
                 Coelution,
@@ -31,7 +31,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
             }.Merge().ToUnit().Publish().RefCount();
         }
 
-        public ReactivePropertySlim<bool> Comfirmed { get; }
+        public ReactivePropertySlim<bool> Confirmed { get; }
         public ReactivePropertySlim<bool> LowQualitySpectrum { get; }
         public ReactivePropertySlim<bool> Misannotation { get; }
         public ReactivePropertySlim<bool> Coelution { get; }
