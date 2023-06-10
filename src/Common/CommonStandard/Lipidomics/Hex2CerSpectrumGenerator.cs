@@ -87,13 +87,11 @@ namespace CompMs.Common.Lipidomics
                 {
                     spectrum.AddRange(GetSphingoSpectrum(lipid, sphingo, adduct));
                     //spectrum.AddRange(spectrumGenerator.GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlmass, 30d));
-                    spectrum.AddRange(spectrumGenerator.GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlmass, 30d)); //-header
                 }
                 if (plChains.Chains[1] is AcylChain acyl)
                 {
                     spectrum.AddRange(GetAcylSpectrum(lipid, acyl, adduct));
                     //spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlmass, 30d));
-                    spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlmass, 30d)); //-header
                 }
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
