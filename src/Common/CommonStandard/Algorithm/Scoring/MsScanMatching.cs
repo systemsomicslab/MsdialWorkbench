@@ -2003,7 +2003,16 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.bmPC:
                     return LipidMsmsCharacterization.JudgeIfBetaMethylPhosphatidylcholine(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
-
+                //20230612
+                case LbmClass.NATrp:
+                    return LipidMsmsCharacterization.JudgeIfNAcylTrp(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
+                case LbmClass.NA5HT:
+                    return LipidMsmsCharacterization.JudgeIfNAcyl5HT(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
+                case LbmClass.WE:
+                    return LipidMsmsCharacterization.JudgeIfWaxEster(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
                 default:
                     return null;
             }
@@ -2761,7 +2770,17 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.bmPC:
                     return LipidMsmsCharacterization.JudgeIfBetaMethylPhosphatidylcholine(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
-
+                //20230612
+                case LbmClass.NATrp:
+                    return LipidMsmsCharacterization.JudgeIfNAcylTrp(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
+                case LbmClass.NA5HT:
+                    return LipidMsmsCharacterization.JudgeIfNAcyl5HT(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
+                case LbmClass.WE:
+                    return LipidMsmsCharacterization.JudgeIfWaxEster(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
+                     adduct);
 
                 default:
                     return null;

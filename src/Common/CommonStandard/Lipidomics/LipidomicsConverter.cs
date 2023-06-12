@@ -3889,6 +3889,10 @@ namespace CompMs.Common.Lipidomics
                 case LbmClass.NAGly: return "NAGly";
                 case LbmClass.NAGlySer: return "NAGlySer";
                 case LbmClass.NAOrn: return "NAOrn";
+                case LbmClass.NATrp: return "NATrp";
+                case LbmClass.NA5HT: return "NA5HT";
+                case LbmClass.WE: return "WE";
+
                 case LbmClass.FAHFA: return "FAHFA";
                 case LbmClass.DMEDFAHFA: return "DMEDFAHFA";
                 case LbmClass.PhytoSph: return "PhytoSph";
@@ -4321,6 +4325,9 @@ namespace CompMs.Common.Lipidomics
                 case "NAOrn": return LbmClass.NAOrn;
                 case "NAPhe": return LbmClass.NAPhe;
                 case "NATau": return LbmClass.NATau;
+                case "NATrp": return LbmClass.NATrp;
+                case "NA5HT": return LbmClass.NA5HT;
+                case "WE": return LbmClass.WE;
 
                 case "PhytoSph": return LbmClass.PhytoSph;
                 case "DHSph": return LbmClass.DHSph;
@@ -4639,6 +4646,9 @@ namespace CompMs.Common.Lipidomics
                 case "NAOrn": return "FattyAcyls";
                 case "NAPhe": return "FattyAcyls";
                 case "NATau": return "FattyAcyls";
+                case "NATrp": return "FattyAcyls";
+                case "NA5HT": return "FattyAcyls";
+                case "WE": return "FattyAcyls";
 
                 case "CAR": return "FattyAcyls";
                 case "FA": return "FattyAcyls";

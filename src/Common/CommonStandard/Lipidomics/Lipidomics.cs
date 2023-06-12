@@ -882,6 +882,19 @@ namespace CompMs.Common.Lipidomics {
                     case LbmClass.bmPC:
                         return LipidMsmsCharacterization.JudgeIfBetaMethylPhosphatidylcholine(msScanProp, ms2tol, refMz,
                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                    //20230612
+                    case LbmClass.NATrp:
+                        result = LipidMsmsCharacterization.JudgeIfNAcylTrp(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                        break;
+                    case LbmClass.NA5HT:
+                        result = LipidMsmsCharacterization.JudgeIfNAcyl5HT(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                        break;
+                    case LbmClass.WE:
+                        result = LipidMsmsCharacterization.JudgeIfWaxEster(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, totalOxidized, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
 
 
                     default:

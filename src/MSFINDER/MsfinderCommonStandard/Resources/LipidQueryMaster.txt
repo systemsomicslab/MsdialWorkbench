@@ -153,6 +153,9 @@ NATau	[M+H]+	Positive	TRUE
 NATau	[M+NH4]+	Positive	TRUE
 NAPhe	[M+H]+	Positive	TRUE
 NAPhe	[M-H]-	Negative	TRUE
+NATrp	[M+H]+	Positive	TRUE
+NA5HT	[M+H]+	Positive	TRUE
+WE	[M+NH4]+	Positive	TRUE
 SL	[M-H]-	Negative	TRUE
 SL	[M+H]+	Positive	TRUE
 SL	[M+NH4]+	Positive	TRUE
