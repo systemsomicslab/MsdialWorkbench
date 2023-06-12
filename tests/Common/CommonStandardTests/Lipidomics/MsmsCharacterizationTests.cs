@@ -148,8 +148,22 @@ namespace CompMs.Common.Lipidomics.Tests
                          sn3Carbon, sn3Carbon, sn3DbBond, sn3DbBond,
                          sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
                          adduct = new AdductIon() { AdductIonName = "[M-H]-", IonMode = IonMode.Negative });
+            //var result2 = LipidAnnotation.Characterize(1128.8693f, 0.025,
+            //             target, 
+            //             new List<LipidMolecule>() {
+            //                 new LipidMolecule() { 
+            //                     LipidName = "(O-16:0)18:1;O2/24:0" ,
+            //                     Adduct = new AdductIon() { AdductIonName = "[M-H]-", IonMode = IonMode.Negative } ,
+            //                     Mz =1128.8693f
+            //                 } 
+            //             },
+            //             IonMode.Negative,
+            //             0.01,0.025);
             Console.WriteLine($"{result.LipidName}");
             Console.WriteLine($"{result.AnnotationLevel}");
+        //    Console.WriteLine($"{result2.LipidName}");
+        //    Console.WriteLine($"{result.AnnotationLevel}");
+        //
         }
     }
 }
