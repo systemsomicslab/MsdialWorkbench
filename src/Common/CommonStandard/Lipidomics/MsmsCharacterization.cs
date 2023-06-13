@@ -11893,7 +11893,7 @@ AdductIon adduct)
             return null;
         }
 
-        public static LipidMolecule JudgeIfAcylhexceras(IMSScanProperty msScanProp, double ms2Tolerance,
+        public static LipidMolecule JudgeIfAcylhexcer(IMSScanProperty msScanProp, double ms2Tolerance,
             double theoreticalMz, int totalCarbon, int totalDoubleBond, int totalOxidized,// If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
             int minExtAcylCarbon, int maxExtAcylCarbon, int minExtAcylDoubleBond, int maxExtAcylDoubleBond,
             int minSphCarbon, int maxSphCarbon, int minSphDoubleBond, int maxSphDoubleBond,
@@ -12014,6 +12014,7 @@ AdductIon adduct)
 
                                     // eg. AHexCer 16:0/d18:1/22:0h
                                     var exAcylSugarIon = LipidMsmsCharacterizationUtility.acylCainMass(extCarbon, extDouble) + Sugar162 - Electron; // Hex 16:0, m/z 401
+                                    var exAcylSugarLossIon = theoreticalMz - exAcylSugarIon -H2O + Proton; // Hex 16:0, m/z 401
 
                                     var ceramideIon = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(extCarbon, extDouble) - Sugar162 + MassDiffDictionary.HydrogenMass;  // Cer d40:1h, m/z 638.6
                                     var ceramideIon_1WaterLoss = ceramideIon - H2O;
@@ -12028,7 +12029,8 @@ AdductIon adduct)
                                     //    exAcylSugarIon, ceramideIon, ceramideIon_1WaterLoss, ceramideIon_2WaterLoss, sphIon, sphIon_1H2OLoss, sphIon_CH2OLoss);
 
                                     var exAcylQuery = new List<SpectrumPeak>() {
-                                        new SpectrumPeak() { Mass = exAcylSugarIon, Intensity = 1 }
+                                        new SpectrumPeak() { Mass = exAcylSugarIon, Intensity = 1 },
+                                        new SpectrumPeak() { Mass = exAcylSugarLossIon, Intensity = 1 }
                                     };
 
                                     var ceramideQuery = new List<SpectrumPeak>() {

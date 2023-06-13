@@ -1586,7 +1586,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.AHexCer:
                     sn2Carbon = molecule.Sn2CarbonCount;
                     sn2DbBond = molecule.Sn2DoubleBondCount;
-                    return LipidMsmsCharacterization.JudgeIfAcylhexceras(msScanProp, ms2tol, refMz,
+                    return LipidMsmsCharacterization.JudgeIfAcylhexcer(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, totalOxidized, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, adduct);
  
                 case LbmClass.ASHexCer:
@@ -2350,7 +2350,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.AHexCer:
                     sn2Carbon = molecule.Sn2CarbonCount;
                     sn2DbBond = molecule.Sn2DoubleBondCount;
-                    return LipidMsmsCharacterization.JudgeIfAcylhexceras(msScanProp, ms2tol, refMz,
+                    return LipidMsmsCharacterization.JudgeIfAcylhexcer(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, totalOxidized, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, adduct);
 
                 case LbmClass.ASHexCer:
