@@ -273,9 +273,9 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
             progress = 0;
             using (var sw = new StreamWriter(this.outputFormulaPath, false, Encoding.ASCII)) {
 
-                sw.WriteLine("File path\tFile name\tMS1 count\tMSMS count\t" +
-                    "Precursor mz\tPrecursor type\tRank\tFormula\tTheoretical mass\t" +
-                    "Mass error\tScore\tDatabase");
+                sw.WriteLine("File path\tFile name\tTitle\tMS1 count\tMSMS count\t" +
+                    "Precursor mz\tPrecursor type\tFormula\tTheoretical mass\t" +
+                    "Mass error\tFormula score\tDatabases");
 
                 foreach (var rawfile in this.queryFiles) {
                     var rawData = RawDataParcer.RawDataFileReader(rawfile.RawDataFilePath, param);
@@ -305,9 +305,8 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
             Console.WriteLine("Writing structure prediction results...");
             progress = 0;
             using (var sw = new StreamWriter(this.outputStructurePath, false, Encoding.ASCII)) {
-                sw.WriteLine("File path\tFile name\tMS1 count\tMSMS count\t" +
-                    "Precursor mz\tPrecursor type\tRank\tInChIKey\tSMILES\t" +
-                    "Score\tDatabase");
+                sw.WriteLine("File path\tFile name\tTitle\tMS1 count\tMSMS count\t" +
+                    "Precursor mz\tPrecursor type\tStructure rank\tTotal score\tDatabases\tFormula\tOntology\tInChIKey\tSMILES");
 
                 foreach (var rawfile in this.queryFiles) {
                     var rawData = RawDataParcer.RawDataFileReader(rawfile.RawDataFilePath, param);
@@ -390,12 +389,13 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
                 if (result.TotalScore <= 0) continue;
                 sw.Write(filepath + "\t");
                 sw.Write(filename + "\t");
+                sw.Write(rawData.Name + "\t");
                 sw.Write(rawData.Ms1PeakNumber + "\t");
                 sw.Write(rawData.Ms2PeakNumber + "\t");
                 sw.Write(rawData.PrecursorMz + "\t");
                 sw.Write(rawData.PrecursorType + "\t");
 
-                sw.WriteLine(counter + "\t" + 
+                sw.WriteLine(
                     result.Formula.FormulaString + "\t" +
                     result.Formula.Mass + "\t" +
                     result.MassDiff + "\t" +
