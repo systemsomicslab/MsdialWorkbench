@@ -254,6 +254,7 @@ namespace Rfx.Riken.OsakaUniv
             { "HexCer_NDS", "rgb(158, 0, 47)" },
             { "HexCer_EOS", "rgb(0, 0, 102)" },
             { "AHexCer", "rgb(10, 10, 92)" },
+            { "ASHexCer", "rgb(10, 30, 92)" },
             { "SHexCer", "rgb(255, 29, 0)" },
             { "SL", "rgb(245, 39, 10)" },
             { "CoQ", "rgb(235, 49, 20)" },

@@ -3934,6 +3934,7 @@ namespace CompMs.Common.Lipidomics
                 case LbmClass.Ac4PIM2: return "Ac4PIM2";
                 case LbmClass.Cer_EBDS: return "Cer-EBDS";
                 case LbmClass.AHexCer: return "AHexCer";
+                case LbmClass.ASHexCer: return "ASHexCer";
                 case LbmClass.ASM: return "ASM";
                 case LbmClass.EtherSMGDG: return "EtherSMGDG";
                 case LbmClass.SMGDG: return "SMGDG";
@@ -4402,6 +4403,7 @@ namespace CompMs.Common.Lipidomics
                 case "Cer_EBDS": return LbmClass.Cer_EBDS;
                 case "Cer-EBDS": return LbmClass.Cer_EBDS;
                 case "AHexCer": return LbmClass.AHexCer;
+                case "ASHexCer": return LbmClass.ASHexCer;
                 case "ASM": return LbmClass.ASM;
 
                 case "GPNAE": return LbmClass.GPNAE;
@@ -4847,6 +4849,7 @@ namespace CompMs.Common.Lipidomics
                 case "Cer_EBDS": return "Sphingolipids";
                 case "Cer-EBDS": return "Sphingolipids";
                 case "AHexCer": return "Sphingolipids";
+                case "ASHexCer": return "Sphingolipids";
                 case "ASM": return "Sphingolipids";
 
                 case "PI-Cer": return "Sphingolipids";
