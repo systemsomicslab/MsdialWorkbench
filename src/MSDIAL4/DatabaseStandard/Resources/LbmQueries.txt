@@ -324,6 +324,8 @@ AHexCer	[M+HCOO]-	Negative	FALSE
 AHexCer	[M+CH3COO]-	Negative	FALSE
 AHexCer	[M+H]+	Positive	FALSE
 AHexCer	[M+H-H2O]+	Positive	FALSE
+ASHexCer	[M-H]-	Negative	FALSE
+ASHexCer	[M+H]+	Positive	FALSE
 ASM	[M+H]+	Positive	FALSE
 ASM	[M+HCOO]-	Negative	FALSE
 ASM	[M+CH3COO]-	Negative	FALSE
