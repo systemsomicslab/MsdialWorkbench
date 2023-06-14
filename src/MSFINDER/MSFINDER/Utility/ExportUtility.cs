@@ -437,10 +437,10 @@ namespace Rfx.Riken.OsakaUniv
             sw.Write("Title\t");
             sw.Write("MS1 count\t");
             sw.Write("MSMS count\t");
-            sw.Write("PRECURSORMZ\t");
-            sw.Write("PRECURSORTYPE\t");
+            sw.Write("Precursor mz\t");
+            sw.Write("Precursor type\t");
 
-            sw.Write("Formula rank\t");
+            sw.Write("Formula\t");
             sw.Write("Theoretical mass\t");
             sw.Write("Mass error\t");
             sw.Write("Formula score\t");
@@ -456,10 +456,10 @@ namespace Rfx.Riken.OsakaUniv
             sw.Write("Title\t");
             sw.Write("MS1 count\t");
             sw.Write("MSMS count\t");
-            sw.Write("PRECURSORMZ\t");
-            sw.Write("PRECURSORTYPE\t");
+            sw.Write("Precursor mz\t");
+            sw.Write("Precursor type\t");
 
-            sw.Write("Structure rank\t");
+            sw.Write("Structure\t");
             sw.Write("Total score\t");
             sw.Write("Databases\t");
             sw.Write("Formula\t");
