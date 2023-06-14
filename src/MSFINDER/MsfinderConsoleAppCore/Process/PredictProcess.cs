@@ -355,16 +355,20 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
 
                 sw.Write(filepath + "\t");
                 sw.Write(filename + "\t");
+                sw.Write(rawData.Name + "\t");
                 sw.Write(rawData.Ms1PeakNumber + "\t");
                 sw.Write(rawData.Ms2PeakNumber + "\t");
                 sw.Write(rawData.PrecursorMz + "\t");
                 sw.Write(rawData.PrecursorType + "\t");
 
-                sw.WriteLine(counter + "\t" +
+                sw.WriteLine(
+                    result.Title + "\t" +
+                    result.TotalScore + "\t" +
+                    result.Resources + "\t" +
+                    result.Formula + "\t" +
+                    result.Ontology + "\t" +
                     result.Inchikey + "\t" +
-                    result.Smiles + "\t" +
-                    result.TotalScore + "\t" + 
-                    result.Resources);
+                    result.Smiles);
 
                 counter++;
             }
