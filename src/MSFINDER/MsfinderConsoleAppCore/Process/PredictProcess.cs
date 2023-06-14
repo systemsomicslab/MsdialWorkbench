@@ -322,7 +322,8 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
 
                             foreach (var sfdFile in sfdFiles) {
                                 var sfdResult = FragmenterResultParcer.FragmenterResultReader(sfdFile);
-                                sfdResultMerge(sfdResults, sfdResult);
+                                var formulaString = System.IO.Path.GetFileNameWithoutExtension(sfdFile);
+                                sfdResultMerge(sfdResults, sfdResult, formulaString);
                             }
                             sfdResults = sfdResults.OrderByDescending(n => n.TotalScore).ToList();
                             writeStructureResult(sw, rawData, sfdResults);
@@ -375,10 +376,11 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
             
         }
 
-        private static void sfdResultMerge(List<FragmenterResult> mergedList, List<FragmenterResult> results) {
+        private static void sfdResultMerge(List<FragmenterResult> mergedList, List<FragmenterResult> results, string formulaString="") {
             if (results == null || results.Count == 0) return;
 
             foreach (var result in results) {
+                result.Formula = formulaString;
                 mergedList.Add(result);
             }
         }
