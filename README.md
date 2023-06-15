@@ -6,7 +6,7 @@ The program supports data processings for any type of chromatography / scan type
 ## MS-FINDER - software for structure elucidation of unknown spectra with hydrogen rearrangement (HR) rules
 The program supports molecular formula prediction, metabolie class prediction, and structure elucidation for EI-MS and MS/MS spectra, and the assembly is licensed under the CC-BY 4.0.
 
-## From email to GitHub (for open science)
+## From e-mail to GitHub (for open science)
 If you would like to discuss with us (for feedback, bug reports, and questions),
 we would appreciate it if you could do it on
 https://github.com/systemsomicslab/MsdialWorkbench/issues
