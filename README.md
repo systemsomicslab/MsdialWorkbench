@@ -33,7 +33,9 @@ However, if the discussion is something that cannot be done openly by any means,
 
 # Developers
 Lead developer: Hiroshi Tsugawa (TUAT/RIKEN) 
+
 Current main developers: Hiroshi Tsugawa (TUAT/RIKEN), Mikiko Takahashi (RIKEN), and Yuki Matsuzawa (TUAT)
+
 Past developers: Diego Pedrosa (UC Davis), Ipputa Tada (SOKENDAI)
 
 # Usage
