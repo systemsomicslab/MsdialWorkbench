@@ -22,5 +22,7 @@ namespace CompMs.App.Msdial.Model.Search
         string AdductIonName { get; }
 
         double RelativeAmplitudeValue { get; }
+
+        PeakSpotTagCollection TagCollection { get; }
     }
 }

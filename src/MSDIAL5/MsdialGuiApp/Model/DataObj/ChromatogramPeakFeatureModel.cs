@@ -10,13 +10,11 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
 using Reactive.Bindings.Extensions;
 using System;
-using System.ComponentModel;
 using System.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class ChromatogramPeakFeatureModel : DisposableModelBase, IPeakSpotModel, IFilterable, IChromatogramPeak, IAnnotatedObject
-    {
+    public sealed class ChromatogramPeakFeatureModel : DisposableModelBase, IPeakSpotModel, IFilterable, IChromatogramPeak, IAnnotatedObject {
         #region Property
         public int MasterPeakID => innerModel.MasterPeakID;
         public double? ChromXValue => innerModel.ChromXs.Value;
@@ -141,6 +139,41 @@ namespace CompMs.App.Msdial.Model.DataObj
         public double AmplitudeScore => innerModel.PeakShape.AmplitudeScoreValue;
         public double AmplitudeOrderValue => innerModel.PeakShape.AmplitudeOrderValue;
 
+        public bool Confirmed {
+            get => innerModel.TagCollection.IsSelected(PeakSpotTag.CONFIRMED);
+            set => SetPeakSpotTag(PeakSpotTag.CONFIRMED, value, nameof(Confirmed));
+        }
+        public bool LowQualitySpectrum {
+            get => innerModel.TagCollection.IsSelected(PeakSpotTag.LOW_QUALITY_SPECTRUM);
+            set => SetPeakSpotTag(PeakSpotTag.LOW_QUALITY_SPECTRUM, value, nameof(LowQualitySpectrum));
+        }
+        public bool Misannotation {
+            get => innerModel.TagCollection.IsSelected(PeakSpotTag.MISANNOTATION);
+            set => SetPeakSpotTag(PeakSpotTag.MISANNOTATION, value, nameof(Misannotation));
+        }
+        public bool Coelution {
+            get => innerModel.TagCollection.IsSelected(PeakSpotTag.COELUTION);
+            set => SetPeakSpotTag(PeakSpotTag.COELUTION, value, nameof(Coelution));
+        }
+        public bool Overannotation {
+            get => innerModel.TagCollection.IsSelected(PeakSpotTag.OVERANNOTATION);
+            set => SetPeakSpotTag(PeakSpotTag.OVERANNOTATION, value, nameof(Overannotation));
+        }
+
+        private bool SetPeakSpotTag(PeakSpotTag tag, bool value, string propertyname) {
+            if (value == innerModel.TagCollection.IsSelected(tag)) {
+                return false;
+            }
+            if (value) {
+                innerModel.TagCollection.Select(tag);
+            }
+            else {
+                innerModel.TagCollection.Deselect(tag);
+            }
+            OnPropertyChanged(propertyname);
+            return true;
+        }
+
         public static readonly double KMIupacUnit;
         public static readonly double KMNominalUnit;
         public double KM => Mass / KMIupacUnit * KMNominalUnit;
@@ -167,6 +200,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         bool IFilterable.IsRsdFilteredByPostCurator => true;
 
         double IFilterable.RelativeAmplitudeValue => innerModel.PeakShape.AmplitudeScoreValue;
+        PeakSpotTagCollection IFilterable.TagCollection => innerModel.TagCollection;
 
         // IChromatogramPeak
         int IChromatogramPeak.ID => ((IChromatogramPeak)innerModel).ID;

@@ -79,17 +79,18 @@ namespace CompMs.MsdialCore.Export
             MoleculeMsReference reference,
             MsScanMatchResult matchResult){
 
-            var comment = spot.Comment;
-            if (!string.IsNullOrEmpty(comment)) {
-                comment += "; ";
+            IEnumerable<string> comments = Enumerable.Empty<string>();
+            if (!string.IsNullOrEmpty(spot.Comment)) {
+                comments = comments.Append(spot.Comment);
             }
-            comment += $"Normalized unit: {spot.IonAbundanceUnit}";
-            if (matchResult.AnyMatched) {
-                if (!string.IsNullOrEmpty(comment)) {
-                    comment += "; ";
-                }
-                comment += $"Annotation method: {matchResult.AnnotatorID}";
+            comments = comments.Append($"Normalized unit: {spot.IonAbundanceUnit}");
+            if (matchResult?.AnyMatched ?? false) {
+                comments = comments.Append($"Annotation method: {matchResult.AnnotatorID}");
             }
+            if (spot.TagCollection.Any()) {
+                comments = comments.Append($"Tag: {spot.TagCollection}");
+            }
+            var comment = string.Join("; ", comments);
             return new Dictionary<string, string>
             {
                 { "Alignment ID" ,spot.MasterAlignmentID.ToString() },
