@@ -283,6 +283,8 @@ PI_Cer	[M+H]+	Positive	TRUE
 AHexCer	[M+HCOO]-	Negative	FALSE
 AHexCer	[M+CH3COO]-	Negative	TRUE
 AHexCer	[M+H]+	Positive	TRUE
+ASHexCer	[M+H]+	Positive	TRUE
+ASHexCer	[M-H]-	Negative	TRUE
 ASM	[M+H]+	Positive	TRUE
 ASM	[M+HCOO]-	Negative	FALSE
 ASM	[M+CH3COO]-	Negative	TRUE
