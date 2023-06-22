@@ -74,7 +74,7 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         public static async Task<ChromatogramPeakFeatureCollection> LoadAsync(string inputFile, CancellationToken token = default) {
-            var peaks = await Task.Run(() => MessagePackHandler.LoadFromFile<List<ChromatogramPeakFeature>>(inputFile), token).ConfigureAwait(false);
+            var peaks = await Task.Run(() => MsdialPeakSerializer.LoadChromatogramPeakFeatures(inputFile), token).ConfigureAwait(false);
             return new ChromatogramPeakFeatureCollection(peaks);
         }
     }

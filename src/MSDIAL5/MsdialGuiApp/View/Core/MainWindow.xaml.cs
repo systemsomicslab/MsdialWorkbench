@@ -70,7 +70,7 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<OpenFileRequest>()
                 .Subscribe(OpenFileDialog);
             broker.ToObservable<ErrorMessageBoxRequest>()
-                .Subscribe(ShowErrorComfirmationMessage);
+                .Subscribe(ShowErrorConfirmationMessage);
             broker.ToObservable<RiDictionarySettingViewModel>()
                 .Subscribe(ShowRiDictionarySettingDialog);
             broker.ToObservable<AlignedChromatogramModificationViewModelLegacy>()
@@ -329,7 +329,7 @@ namespace CompMs.App.Msdial.View.Core
             }
         }
 
-        private void ShowErrorComfirmationMessage(ErrorMessageBoxRequest request) {
+        private void ShowErrorConfirmationMessage(ErrorMessageBoxRequest request) {
             Dispatcher.Invoke(() =>
             {
                 var result = MessageBox.Show(request.Content, request.Caption, request.ButtonType, MessageBoxImage.Error);

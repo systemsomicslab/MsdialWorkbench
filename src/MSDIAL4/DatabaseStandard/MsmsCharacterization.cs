@@ -2632,15 +2632,16 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                 if (adduct.AdductIonName == "[M+H]+")
                 {
                     // seek 184.07332 (C5H15NO4P), 104.10699 (C5H12N+), 124.99982 (C2H5O4P + H+)
-                    var threshold = 5.0;
+                    var threshold = 20.0;
                     var diagnosticMz1 = 184.07332;
                     var diagnosticMz2 = 104.106990;
                     var diagnosticMz3 = 124.99982;
 
                     var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
-                    var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
-                    var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold);
-                    if (isClassIon1Found != true || isClassIon2Found != true || isClassIon3Found != true) return null;
+                    if (!isClassIon1Found) return null;
+                    //var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
+                    //var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold);
+                    //if (isClassIon2Found != true || isClassIon3Found != true) return null;
                     //
                     var candidates = new List<LipidMolecule>();
                     //var averageIntensity = 0.0;
@@ -2691,27 +2692,45 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             { // positive ion mode 
                 if (adduct.AdductIonName == "[M+H]+")
                 {
-                    // seek PreCursor -171([M-C3H10NO5P]+)
-                    var threshold = 70.0;
-                    var diagnosticMz = theoreticalMz - 171.0291124 - MassDiffDictionary.HydrogenMass;
-                    // seek PreCursor -189([M-C3H8NO4P]+)
-                    var threshold2 = 5.0;
-                    var diagnosticMz2 = diagnosticMz + H2O;
-
+                    var EtherFrag = "e";
+                    // case LPE P-
+                    // seek PreCursor -154
+                    var threshold = 5.0;
+                    var diagnosticMz = theoreticalMz - (12 * 3 + MassDiffDictionary.PhosphorusMass + MassDiffDictionary.OxygenMass * 5 + MassDiffDictionary.HydrogenMass * 7);
+                    // seek PreCursor -172
+                    var threshold2 = 50.0;
+                    var diagnosticMz2 = diagnosticMz - H2O;
                     var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
 
-                    if (isClassIon1Found == false && isClassIon2Found == false) return null;
+                    // case LPE O-
+                    // seek precursor -43
+                    var diagnosticMz3 = theoreticalMz - (12 * 2 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 5);
+                    var threshold3 = 5.0;
+                    var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
+                    // seek precursor -141
+                    var diagnosticMz4 = theoreticalMz - (12 * 2 + MassDiffDictionary.HydrogenMass * 8 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass);
+                    var threshold4 = 5.0;
+                    var isClassIon4Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz4, threshold4);
+
+                    if (isClassIon1Found == false && isClassIon2Found == false)
+                    {
+                        if (isClassIon3Found == false && isClassIon4Found == false)
+                        { return null; }
+                    }
                     //
+                    if (isClassIon1Found || isClassIon2Found)
+                    {
+                        EtherFrag = "p";
+                    }
 
                     var candidates = new List<LipidMolecule>();
                     //var averageIntensity = 0.0;
                     //var molecule = getSingleacylchainwithsuffixMoleculeObjAsLevel2("LPE", LbmClass.EtherLPE, totalCarbon,
                     //                totalDoubleBond, averageIntensity, "e");
                     //candidates.Add(molecule);
-                    return returnAnnotationResult("LPE", LbmClass.EtherLPE, "e", theoreticalMz, adduct,
+                    return returnAnnotationResult("LPE", LbmClass.EtherLPE, EtherFrag, theoreticalMz, adduct,
                        totalCarbon, totalDoubleBond, 0, candidates, 1);
-
                 }
             }
             else
@@ -9889,7 +9908,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
         }
 
         public static LipidMolecule JudgeIfAcylhexceras(ObservableCollection<double[]> spectrum, double ms2Tolerance,
-            double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
+            double theoreticalMz, int totalCarbon, int totalDoubleBond, int totalOxidized, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
             int minExtAcylCarbon, int maxExtAcylCarbon, int minExtAcylDoubleBond, int maxExtAcylDoubleBond,
             int minSphCarbon, int maxSphCarbon, int minSphDoubleBond, int maxSphDoubleBond,
             AdductIon adduct)
@@ -9899,6 +9918,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
             if (maxExtAcylCarbon > totalCarbon) maxExtAcylCarbon = totalCarbon;
             if (maxExtAcylDoubleBond > totalDoubleBond) maxExtAcylDoubleBond = totalDoubleBond;
+            var sphOxidized = 2;
+            var acylOxidized = totalOxidized - sphOxidized;
 
             if (adduct.IonMode == IonMode.Negative)
             { // negative ion mode 
@@ -9968,7 +9989,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                                     if (foundCount >= 4)
                                     {
                                         var molecule = getAcylhexceramideMoleculeObjAsLevel2("AHexCer", LbmClass.AHexCer, "d", sphCarbon, sphDouble,
-                                        acylCarbon, acylDouble, extCarbon, extDouble, averageIntensity, "+O");
+                                        acylCarbon, acylDouble, extCarbon, extDouble, averageIntensity, acylOxidized);
                                         candidates.Add(molecule);
                                     }
                                 }
@@ -10051,13 +10072,13 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                                     if (sphQueryFoundCount >= 1 && ceramideQueryFoundCount >= 1 && exAcylQueryFoundCount == 1)
                                     {
                                         var molecule = getAcylhexceramideMoleculeObjAsLevel2("AHexCer", LbmClass.AHexCer, "d", sphCarbon, sphDouble,
-                                        acylCarbon, acylDouble, extCarbon, extDouble, exAcylQueryAverageInt + ceramideQueryAverageInt + sphQueryAverageInt, "+O");
+                                        acylCarbon, acylDouble, extCarbon, extDouble, exAcylQueryAverageInt + ceramideQueryAverageInt + sphQueryAverageInt, acylOxidized);
                                         candidates.Add(molecule);
                                     }
                                     else if (ceramideQueryFoundCount >= 1 && exAcylQueryFoundCount == 1)
                                     {
                                         var molecule = getAcylhexceramideMoleculeObjAsLevel2_0("AHexCer", LbmClass.AHexCer, "d", sphCarbon + acylCarbon, sphDouble + acylDouble,
-                                        extCarbon, extDouble, exAcylQueryAverageInt + ceramideQueryAverageInt, "+O");
+                                        extCarbon, extDouble, exAcylQueryAverageInt + ceramideQueryAverageInt, acylOxidized);
                                         candidates.Add(molecule);
                                     }
                                     //else if (sphQueryFoundCount >= 1)
@@ -10073,6 +10094,180 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                     if (candidates.Count == 0) return null;
                     return returnAnnotationResult("AHexCer", LbmClass.AHexCer, "d", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 1, candidates, 3);
+                }
+            }
+            return null;
+        }
+        public static LipidMolecule JudgeIfAshexcer(ObservableCollection<double[]> spectrum, double ms2Tolerance,
+    double theoreticalMz, int totalCarbon, int totalDoubleBond, int totalOxidized,// If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
+    int minExtAcylCarbon, int maxExtAcylCarbon, int minExtAcylDoubleBond, int maxExtAcylDoubleBond,
+    int minSphCarbon, int maxSphCarbon, int minSphDoubleBond, int maxSphDoubleBond,
+    AdductIon adduct)
+        {
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (maxSphCarbon > totalCarbon) maxSphCarbon = totalCarbon;
+            if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
+            var sphOxidized = 2;
+            var acylOxidized = totalOxidized - sphOxidized;
+            var hydrogenString = "d";
+            if (adduct.IonMode == IonMode.Positive)
+            { // positive ion mode 
+                if (adduct.AdductIonName == "[M+H]+")
+                {
+                    // seek [M-SO3-H2O+H]+
+                    var threshold = 1.0;
+                    var diagnosticMz1 = theoreticalMz - MassDiffDictionary.SulfurMass - 3 * MassDiffDictionary.OxygenMass - H2O - Electron;
+
+                    var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
+                    if (!isClassIon1Found) return null;
+
+                    // from here, acyl level annotation is executed.
+                    var candidates = new List<LipidMolecule>();
+                    for (int sphCarbon = minSphCarbon; sphCarbon <= maxSphCarbon; sphCarbon++)
+                    {
+                        for (int sphDouble = minSphDoubleBond; sphDouble <= maxSphDoubleBond; sphDouble++)
+                        {
+                            for (int extCarbon = minExtAcylCarbon; extCarbon <= maxExtAcylCarbon; extCarbon++)
+                            {
+                                for (int extDouble = minExtAcylDoubleBond; extDouble <= maxExtAcylDoubleBond; extDouble++)
+                                {
+                                    var acylCarbon = totalCarbon - sphCarbon - extCarbon;
+                                    var acylDouble = totalDoubleBond - sphDouble - extDouble;
+
+                                    // eg. ASHexCer 16:0/18:1;O2/24:1(or 24:0;O etc)
+                                    var exAcylSulfoSugar = acylCainMass(extCarbon, extDouble)
+                                        + Sugar162
+                                        + (MassDiffDictionary.OxygenMass * 3 + MassDiffDictionary.SulfurMass); // Hex 16:0, 
+
+                                    var ceramideIon = theoreticalMz - exAcylSulfoSugar + MassDiffDictionary.HydrogenMass;  // Cer d40:1h, m/z 638.6
+                                    var ceramideIon_1WaterLoss = ceramideIon - H2O;
+                                    var ceramideIon_2WaterLoss = ceramideIon_1WaterLoss - H2O;
+
+                                    var sphIon = SphingoChainMass(sphCarbon, sphDouble) - MassDiffDictionary.OxygenMass + 2.0 * MassDiffDictionary.HydrogenMass; // Sph d18:1 -H2O, m/z 282;
+                                    var sphIon_1H2OLoss = sphIon - H2O; // Sph d18:1 -2H2O, m/z 264;
+                                    var sphIon_CH2OLoss = sphIon_1H2OLoss - 12; // Sph d18:1 -CH2O, m/z 252;
+
+
+                                    //var exAcylQuery = new List<SpectrumPeak>() {
+                                    //    new SpectrumPeak() { Mass = exAcylSulfoSugar-Electron, Intensity = 1 }
+                                    //};
+
+                                    var ceramideQuery = new List<Peak>() {
+                                        new Peak() { Mz = ceramideIon, Intensity = 1 },
+                                        new Peak() { Mz = ceramideIon_1WaterLoss, Intensity = 1 },
+                                        new Peak() { Mz = ceramideIon_2WaterLoss, Intensity = 1 }
+                                    };
+
+                                    var sphQuery = new List<Peak>() {
+                                        new Peak() { Mz = sphIon, Intensity = 1 },
+                                        new Peak() { Mz = sphIon_1H2OLoss, Intensity = 1 },
+                                        new Peak() { Mz = sphIon_CH2OLoss, Intensity = 1 }
+                                    };
+
+                                    //var exAcylQueryFoundCount = 0;
+                                    //var exAcylQueryAverageInt = 0.0;
+
+                                    var ceramideQueryFoundCount = 0;
+                                    var ceramideQueryAverageInt = 0.0;
+
+                                    var sphQueryFoundCount = 0;
+                                    var sphQueryAverageInt = 0.0;
+
+                                    countFragmentExistence(spectrum, ceramideQuery, ms2Tolerance, out ceramideQueryFoundCount, out ceramideQueryAverageInt);
+                                    countFragmentExistence(spectrum, sphQuery, ms2Tolerance, out sphQueryFoundCount, out sphQueryAverageInt);
+
+                                    if (sphQueryFoundCount >= 1 && ceramideQueryFoundCount >= 1)
+                                    {
+                                        var molecule = getAcylhexceramideMoleculeObjAsLevel2("ASHexCer", LbmClass.ASHexCer, hydrogenString, sphCarbon, sphDouble,
+                                        acylCarbon, acylDouble, extCarbon, extDouble, ceramideQueryAverageInt + sphQueryAverageInt, acylOxidized);
+                                        candidates.Add(molecule);
+                                    }
+                                    else if (ceramideQueryFoundCount >= 1)
+                                    {
+                                        var molecule = getAcylhexceramideMoleculeObjAsLevel2_0("ASHexCer", LbmClass.ASHexCer, hydrogenString, sphCarbon + acylCarbon, sphDouble + acylDouble,
+                                        extCarbon, extDouble, ceramideQueryAverageInt, acylOxidized);
+                                        candidates.Add(molecule);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (candidates.Count == 0) return null;
+                    return returnAnnotationResult("ASHexCer", LbmClass.ASHexCer, hydrogenString, theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, 1, candidates, 3);
+                }
+            }
+            else
+            {
+                if (adduct.AdductIonName == "[M-H]-")
+                {
+                    // seek [H2SO4-H]-
+                    var threshold = 0.1;
+                    var diagnosticMz = MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.SulfurMass - Proton;
+
+                    var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    if (isClassIonFound != true) return null;
+
+                    // from here, acyl level annotation is executed.
+                    //   may be not found fragment to define sphingo and acyl chain
+                    var candidates = new List<LipidMolecule>();
+                    for (int sphCarbon = minSphCarbon; sphCarbon <= maxSphCarbon; sphCarbon++)
+                    {
+                        for (int sphDouble = minSphDoubleBond; sphDouble <= maxSphDoubleBond; sphDouble++)
+                        {
+                            var remainCarbon = totalCarbon - sphCarbon;
+                            var remainDouble = totalDoubleBond - sphDouble;
+                            //var carbonLimit = Math.Min(remainCarbon, maxExtAcylCarbon);   // use to Brute force calc
+                            //var doubleLimit = Math.Min(remainDouble, maxExtAcylDoubleBond); // use to Brute force calc
+
+                            var carbonLimit = maxExtAcylCarbon;
+                            var doubleLimit = maxExtAcylDoubleBond;
+
+                            for (int extCarbon = minExtAcylCarbon; extCarbon <= carbonLimit; extCarbon++)
+                            {
+                                for (int extDouble = minExtAcylDoubleBond; extDouble <= doubleLimit; extDouble++)
+                                {
+                                    var acylCarbon = totalCarbon - sphCarbon - extCarbon;
+                                    var acylDouble = totalDoubleBond - sphDouble - extDouble;
+
+                                    var extAcylFa = fattyacidProductIon(extCarbon, extDouble);
+                                    var sphLoss = theoreticalMz - ((sphCarbon - 2) * 12 + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2) - sphDouble * 2);  //[M-Sph+C2H6NO]-
+                                    var sphLoss2 = sphLoss - H2O;      //[M-Sph+C2H4N]-
+                                    var queryExtAcyl = new List<Peak> {
+                                        new Peak() { Mz = extAcylFa, Intensity = 1.0 },
+                                    };
+                                    var querySph = new List<Peak> {
+                                        new Peak() { Mz = sphLoss, Intensity = 0.1 },
+                                        new Peak() { Mz = sphLoss2, Intensity = 0.1 },
+                                    };
+                                    countFragmentExistence(spectrum, queryExtAcyl, ms2Tolerance, out int queryExtAcylFoundCount, out double queryExtAcylAverageInt);
+                                    countFragmentExistence(spectrum, querySph, ms2Tolerance, out int querySphFoundCount, out double querySphAverageInt);
+
+                                    if (queryExtAcylFoundCount > 0)
+                                    {
+                                        if (querySphFoundCount > 0)
+                                        {
+                                            var molecule = getAcylhexceramideMoleculeObjAsLevel2("ASHexCer", LbmClass.ASHexCer, hydrogenString,
+                                                sphCarbon, sphDouble,
+                                            acylCarbon, acylDouble, extCarbon, extDouble, queryExtAcylAverageInt + querySphAverageInt, acylOxidized);
+                                            candidates.Add(molecule);
+                                        }
+                                        else
+                                        {
+                                            var molecule = getAcylhexceramideMoleculeObjAsLevel2_0("ASHexCer", LbmClass.ASHexCer, hydrogenString,
+                                                sphCarbon + acylCarbon, sphDouble + acylDouble,
+                                            extCarbon, extDouble, queryExtAcylAverageInt, acylOxidized);
+                                            candidates.Add(molecule);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (candidates.Count == 0) return null;
+
+                    return returnAnnotationResult("ASHexCer", LbmClass.ASHexCer, hydrogenString, theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, acylOxidized, candidates, 3);
                 }
             }
             return null;
@@ -16751,7 +16946,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
         private static LipidMolecule getAcylhexceramideMoleculeObjAsLevel2(string lipidClass, LbmClass lbmClass,
             string hydroxyString, //d: 2*OH, t: 3*OH    AHexCer
-            int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, int esterCarbon, int esterDouble, double score, string acylHydroString)
+            int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, int esterCarbon, int esterDouble, double score, int acylOxidizedCount)
         {
             var sphHydroxyCount = 0;
             switch (hydroxyString)
@@ -16767,21 +16962,16 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                     break;
             }
 
+            var acylOxString = acylOxidizedCount > 1 ? ";O" + acylOxidizedCount.ToString() : acylOxidizedCount == 1 ? ";O" : "";
             var totalCarbon = sphCarbon + acylCarbon + esterCarbon;
             var totalDB = sphDouble + acylDouble + esterDouble;
             var totalString = totalCarbon + ":" + totalDB;
-            //var totalName = lipidClass + " " + hydroxyString + totalString + acylHydroString;
-            var totalName = lipidClass + " " + totalString + ";O" + (sphHydroxyCount + 1).ToString();
+            var totalName = lipidClass + " " + totalString + ";O" + (sphHydroxyCount + acylOxidizedCount).ToString();
 
-
-            //var sphChainString = hydroxyString.ToString() + sphCarbon.ToString() + ":" + sphDouble;
             var sphChainString = sphCarbon.ToString() + ":" + sphDouble + ";O" + sphHydroxyCount.ToString();
-            var acylChainString = acylCarbon + ":" + acylDouble + ";O";
-            //var esterChainString = esterCarbon + ":" + esterDouble;
+            var acylChainString = acylCarbon + ":" + acylDouble + acylOxString;
             var esterChainString = "(O-" + esterCarbon + ":" + esterDouble + ")";
 
-
-            //var chainString = esterChainString + "/" + sphChainString + "/" + acylChainString;
             var chainString = esterChainString + sphChainString + "/" + acylChainString;
             var lipidName = lipidClass + " " + chainString;
 
@@ -16809,7 +16999,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
         private static LipidMolecule getAcylhexceramideMoleculeObjAsLevel2_0(string lipidClass, LbmClass lbmClass,
             string hydroxyString, //d: 2*OH, t: 3*OH
-            int ceramideCarbon, int ceramideDouble, int esterCarbon, int esterDouble, double score, string acylHydroString)
+            int ceramideCarbon, int ceramideDouble, int esterCarbon, int esterDouble, double score, int acylOxidizedCount)
         {
             var sphHydroxyCount = 0;
             switch (hydroxyString)
@@ -16828,12 +17018,9 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             var totalCarbon = ceramideCarbon + esterCarbon;
             var totalDB = ceramideDouble + esterDouble;
             var totalString = totalCarbon + ":" + totalDB;
-            //var totalName = lipidClass + " " + hydroxyString + totalString + acylHydroString;
-            var totalName = lipidClass + " " + totalString + ";O" + (sphHydroxyCount + 1).ToString();
+            var totalName = lipidClass + " " + totalString + ";O" + (sphHydroxyCount + acylOxidizedCount).ToString();
 
-            //var ceramideString = hydroxyString.ToString() + ceramideCarbon + ":" + ceramideDouble + acylHydroString;
-            //var esterChainString = esterCarbon + ":" + esterDouble;
-            var ceramideString = ceramideCarbon + ":" + ceramideDouble + ";O" + (sphHydroxyCount + 1).ToString();
+            var ceramideString = ceramideCarbon + ":" + ceramideDouble + ";O" + (sphHydroxyCount + acylOxidizedCount).ToString();
             var esterChainString = "(O-" + esterCarbon + ":" + esterDouble + ")";
 
             //var chainString = esterChainString + "/" + ceramideString;
@@ -16861,7 +17048,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
         private static LipidMolecule getAcylhexceramideMoleculeObjAsLevel2_1(string lipidClass, LbmClass lbmClass,
              string hydroxyString, //d: 2*OH, t: 3*OH
-             int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, double score, string acylHydroString)
+             int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, double score, int acylOxidizedCount)
         {
             var sphHydroxyCount = 0;
             switch (hydroxyString)
@@ -16877,20 +17064,16 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                     break;
             }
 
+            var acylOxString = acylOxidizedCount > 1 ? ";O" + acylOxidizedCount.ToString() : acylOxidizedCount == 1 ? ";O" : "";
             var totalCarbon = sphCarbon + acylCarbon;
             var totalDB = sphDouble + acylDouble;
             var totalString = totalCarbon + ":" + totalDB;
-            //var totalName = lipidClass + " " + hydroxyString + totalString + acylHydroString;
-            var totalName = lipidClass + " " + totalString + ";O" + (sphHydroxyCount + 1).ToString();
-
-            //var sphChainString = hydroxyString.ToString() + sphCarbon.ToString() + ":" + sphDouble;
-            //var acylChainString = acylCarbon + ":" + acylDouble + acylHydroString;
+            var totalName = lipidClass + " " + totalString + ";O" + (sphHydroxyCount + acylOxidizedCount).ToString();
             var sphChainString = sphCarbon.ToString() + ":" + sphDouble + ";O" + sphHydroxyCount.ToString();
-            var acylChainString = acylCarbon + ":" + acylDouble + ";O";
+            var acylChainString = acylCarbon + ":" + acylDouble + acylOxString;
 
             var chainString = sphChainString + "/" + acylChainString;
-            //var lipidName = lipidClass + " " + chainString;
-            var lipidName = lipidClass + " " + totalString + ";O" + (sphHydroxyCount + 1).ToString(); // 
+            var lipidName = lipidClass + " " + totalString + ";O" + (sphHydroxyCount + acylOxidizedCount).ToString(); // 
 
             return new LipidMolecule()
             {
