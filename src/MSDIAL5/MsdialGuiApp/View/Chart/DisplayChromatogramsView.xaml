@@ -26,9 +26,9 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="150" />
         </Grid.ColumnDefinitions>
-        <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis}"
-                          VerticalAxis="{Binding VerticalAxis}"
-                          HorizontalTitle="{Binding HorizontalTitle}"
+        <chart:MultiChart HorizontalAxis="{Binding HorizontalSelector.SelectedAxisItem.AxisManager}"
+                          VerticalAxis="{Binding VerticalSelector.SelectedAxisItem.AxisManager}"
+                          HorizontalTitle="{Binding HorizontalSelector.SelectedAxisItem.GraphLabel}"
                           GraphTitle="{Binding GraphTitle}"
                           ItemsSource="{Binding DisplayChromatograms}"
                           Style="{StaticResource OverlapChart}"
@@ -47,8 +47,8 @@
             <chart:MultiChart.VerticalTitle>
                 <MultiBinding StringFormat="{}{0}({1})">
                     <MultiBinding.Bindings>
-                        <Binding Path="VerticalTitle"/>
-                        <Binding Path="VerticalAxis.UnitLabel"/>
+                        <Binding Path="VerticalSelector.SelectedAxisItem.GraphLabel"/>
+                        <Binding Path="VerticalSelector.SelectedAxisItem.AxisManager.UnitLabel"/>
                     </MultiBinding.Bindings>
                 </MultiBinding>
             </chart:MultiChart.VerticalTitle>

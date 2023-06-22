@@ -90,7 +90,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 .Select(chromatograms => chromatograms.Select(chromatogram => chromatogram.ChromatogramSmoothing(CompMs.Common.Enum.SmoothingMethod.LinearWeightedMovingAverage, peakPickParameter.SmoothingLevel)))
                 .Select(chromatograms => new ChromatogramsModel(
                     "EI chromatograms",
-                    chromatograms.Zip(ChartBrushes.GetSolidColorPenList(1d, DashStyles.Dash), (chromatogram, pen) => new DisplayChromatogram(chromatogram.Peaks.Select(peak_ => peak_.ConvertToChromatogramPeak(ChromXType.RT, ChromXUnit.Min)).ToList(), linePen: pen, title: chromatogram.ExtractedMz.ToString("F5"))).ToList(), // TODO: [magic number] ChromXType, ChromXUnit
+                    chromatograms.Zip(ChartBrushes.GetSolidColorPenList(1d, DashStyles.Dash), (chromatogram, pen) => new DisplayChromatogram(chromatogram.Peaks.Select(peak_ => peak_.ConvertToChromatogramPeak(ChromXType.RT, ChromXUnit.Min)).ToList(), linePen: pen, title: chromatogram.ExtractedMz.ToString())).ToList(), // TODO: [magic number] ChromXType, ChromXUnit
                     "EI chromatograms",
                     "Retention time [min]", // TODO: [magic number] Retention time 
                     "Abundance"));
@@ -100,7 +100,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 .CombineLatest(numberOfChromatograms, (result, number) => result.DecChromPeaks(number))
                 .Select(chromatograms => new ChromatogramsModel(
                     "EI chromatograms",
-                    chromatograms.Zip(ChartBrushes.GetSolidColorPenList(1d, DashStyles.Solid), (chromatogram, pen) => new DisplayChromatogram(chromatogram, linePen: pen, title: chromatogram.FirstOrDefault()?.Mass.ToString("F5") ?? "NA")).ToList(),
+                    chromatograms.Zip(ChartBrushes.GetSolidColorPenList(1d, DashStyles.Solid), (chromatogram, pen) => new DisplayChromatogram(chromatogram, linePen: pen, title: chromatogram.FirstOrDefault()?.Mass.ToString() ?? "NA")).ToList(),
                     "EI chromatograms",
                     "Retention time [min]", // TODO: [magic number] Retention time 
                     "Abundance"));

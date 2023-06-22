@@ -6,20 +6,21 @@ using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    public sealed class ChromatogramsViewModel : ViewModelBase {
-        public ChromatogramsViewModel(
-           ChromatogramsModel model,
-           IAxisManager<double> horizontalAxis = null,
-           IAxisManager<double> verticalAxis = null) {
+    internal sealed class ChromatogramsViewModel : ViewModelBase {
+        private readonly ChromatogramsModel _model;
+
+        public ChromatogramsViewModel(ChromatogramsModel model) {
+            _model = model;
 
             DisplayChromatograms = model.DisplayChromatograms;
 
-            HorizontalAxis = horizontalAxis ?? model.ChromAxis;
-            VerticalAxis = verticalAxis ?? model.AbundanceAxis;
+            HorizontalAxis = model.ChromAxis;
+            VerticalAxis = model.AbundanceAxis;
 
-            GraphTitle = model.GraphTitle;
             HorizontalTitle = model.HorizontalTitle;
             VerticalTitle = model.VerticalTitle;
+
+            GraphTitle = model.GraphTitle;
             HorizontalProperty = model.HorizontalProperty;
             VerticalProperty = model.VerticalProperty;
         }
@@ -29,6 +30,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public IAxisManager<double> HorizontalAxis { get; }
 
         public IAxisManager<double> VerticalAxis { get; }
+
+        public AxisItemSelector<double> HorizontalSelector => _model.ChromAxisItemSelector;
+        public AxisItemSelector<double> VerticalSelector => _model.AbundanceAxisItemSelector;
 
         public string GraphTitle { get; }
 

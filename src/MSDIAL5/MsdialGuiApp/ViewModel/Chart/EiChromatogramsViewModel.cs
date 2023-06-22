@@ -20,11 +20,16 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             NumberOfEIChromatograms = numberOfEIChromatograms;
             MultiMsRawSpectrumLoaderViewModel = loader;
 
-            ChromatogramsViewModel = model.ChromatogramsModel
-                .Where(chromatograms => !(chromatograms is null))
-                .Select(chromatograms => new ChromatogramsViewModel(chromatograms))
+            RawChromatogramsViewModel = model.RawChromatogramsModel
+                .Select(chromatograms => chromatograms is null ? null : new ChromatogramsViewModel(chromatograms))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+            DeconvolutedChromatogramsViewModel = model.DeconvolutedChromatogramsModel
+                .Select(chromatograms => chromatograms is null ? null : new ChromatogramsViewModel(chromatograms))
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            HorizontalAxisItemModel = model.HorizontalAxisItemModel;
+            VerticalAxisItemModel = model.VerticalAxisItemModel;
             IsRawSelected = model.IsRawSelected;
             IsDeconvolutedSelected = model.IsDeconvolutedSelected;
             IsBothSelected = model.IsBothSelected;
@@ -37,7 +42,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             SaveAsTableCommand = new AsyncReactiveCommand().WithSubscribe(model.SaveAsTableAsync).AddTo(Disposables);
         }
 
-        public ReadOnlyReactivePropertySlim<ChromatogramsViewModel> ChromatogramsViewModel { get; }
+        public ReadOnlyReactivePropertySlim<ChromatogramsViewModel> RawChromatogramsViewModel { get; }
+        public ReadOnlyReactivePropertySlim<ChromatogramsViewModel> DeconvolutedChromatogramsViewModel { get; }
+        public ReadOnlyReactivePropertySlim<AxisItemModel<double>> HorizontalAxisItemModel { get; }
+        public ReadOnlyReactivePropertySlim<AxisItemModel<double>> VerticalAxisItemModel { get; }
 
         public ReactivePropertySlim<bool> IsRawSelected { get; }
         public ReactivePropertySlim<bool> IsDeconvolutedSelected { get; }

@@ -14,7 +14,25 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    public sealed class ChromatogramsModel : DisposableModelBase {
+    internal sealed class ChromatogramsModel : DisposableModelBase {
+        public ChromatogramsModel (string name, List<DisplayChromatogram> chromatograms, string graphTitle, AxisPropertySelectors<double> horizontalSelectors, AxisPropertySelectors<double> verticalSelectors) {
+            DisplayChromatograms = chromatograms ?? throw new ArgumentNullException(nameof(chromatograms));
+            Name = name;
+            GraphTitle = graphTitle;
+
+            AbundanceAxisItemSelector = verticalSelectors.AxisItemSelector;
+            ChromAxisItemSelector = horizontalSelectors.AxisItemSelector;
+
+            HorizontalTitle = horizontalSelectors.AxisItemSelector.SelectedAxisItem.GraphLabel; // TODO: AxisItemSelector.SelectedAxisItem property is implemented INotifyPropertyChanged
+            VerticalTitle = verticalSelectors.AxisItemSelector.SelectedAxisItem.GraphLabel; // TODO: AxisItemSelector.SelectedAxisItem property is implemented INotifyPropertyChanged
+
+            HorizontalProperty = horizontalSelectors.GetSelector(typeof(PeakItem)).Property;
+            VerticalProperty = verticalSelectors.GetSelector(typeof(PeakItem)).Property;
+
+            AbundanceAxis = verticalSelectors.AxisItemSelector.SelectedAxisItem.AxisManager; // TODO: AxisItemSelector.SelectedAxisItem property is implemented INotifyPropertyChanged
+            ChromAxis = horizontalSelectors.AxisItemSelector.SelectedAxisItem.AxisManager; // TODO: AxisItemSelector.SelectedAxisItem property is implemented INotifyPropertyChanged
+        }
+
         public ChromatogramsModel(
             string name,
             List<DisplayChromatogram> chromatograms,
@@ -35,6 +53,9 @@ namespace CompMs.App.Msdial.Model.Chart
                 LabelType = LabelType.Order,
             }.AddTo(Disposables);
             ChromAxis = new ContinuousAxisManager<double>(chromatograms.Aggregate<DisplayChromatogram, Range>(null, (acc, chromatogram) => chromatogram.ChromXRange.Union(acc)) ?? new Range(0d, 1d)).AddTo(Disposables);
+
+            AbundanceAxisItemSelector = new AxisItemSelector<double>(new AxisItemModel<double>(verticalTitle, AbundanceAxis, verticalTitle)).AddTo(Disposables);
+            ChromAxisItemSelector = new AxisItemSelector<double>(new AxisItemModel<double>(horizontalTitle, ChromAxis, horizontalTitle)).AddTo(Disposables);
         }
 
         public ChromatogramsModel(string name, DisplayChromatogram chromatogram, string graphTitle, string horizontalTitle, string verticalTitle)
@@ -49,6 +70,9 @@ namespace CompMs.App.Msdial.Model.Chart
 
 
         public List<DisplayChromatogram> DisplayChromatograms { get; }
+
+        public AxisItemSelector<double> AbundanceAxisItemSelector { get; }
+        public AxisItemSelector<double> ChromAxisItemSelector { get; }
 
         public IAxisManager<double> AbundanceAxis { get; }
         public IAxisManager<double> ChromAxis { get; }

@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    public class ExperimentSpectrumModel : BindableBase {
+    internal class ExperimentSpectrumModel : BindableBase {
         private readonly IDataProvider provider;
 
         public ExperimentSpectrumModel(

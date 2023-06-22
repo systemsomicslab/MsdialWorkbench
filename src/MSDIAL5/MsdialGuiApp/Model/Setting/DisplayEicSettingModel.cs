@@ -14,7 +14,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public class DisplayEicSettingModel : BindableBase {
+    internal class DisplayEicSettingModel : BindableBase {
         private readonly EicLoader _loader;
         private readonly ParameterBase _parameter;
 

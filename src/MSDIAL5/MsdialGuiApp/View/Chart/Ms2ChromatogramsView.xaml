@@ -72,9 +72,9 @@
 
         <chart:MultiChart DataContext="{Binding ChromatogramsViewModel.Value}"
                           GraphTitle="{Binding GraphTitle}"
-                          HorizontalTitle="{Binding HorizontalTitle}"
-                          HorizontalAxis="{Binding HorizontalAxis}"
-                          VerticalAxis="{Binding VerticalAxis}"
+                          HorizontalTitle="{Binding HorizontalSelector.SelectedAxisItem.GraphLabel}"
+                          HorizontalAxis="{Binding HorizontalSelector.SelectedAxisItem.AxisManager}"
+                          VerticalAxis="{Binding VerticalSelector.SelectedAxisItem.AxisManager}"
                           ItemsSource="{Binding DisplayChromatograms}"
                           Style="{StaticResource OverlapChart}"
                           Grid.Row="1">
@@ -113,8 +113,8 @@
                     <Grid>
                         <chart:LineChartControl ItemsSource="{Binding ChromatogramPeaks}"
                                                 LinePen="{Binding LinePen}"
-                                                HorizontalPropertyName="{Binding DataContext.HorizontalProperty, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
-                                                VerticalPropertyName="{Binding DataContext.VerticalProperty, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}">
+                                                HorizontalPropertyName="{Binding Path=(FrameworkElement.DataContext).(vm:ChromatogramsViewModel.HorizontalProperty), RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                                VerticalPropertyName="{Binding Path=(FrameworkElement.DataContext).(vm:ChromatogramsViewModel.VerticalProperty), RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}">
                             <chart:LineChartControl.ToolTip>
                                 <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}"
                                          Content="{Binding Path=(chart:LineChartControl.DataContext).(do:DisplayChromatogram.Name), Mode=OneWay}"
@@ -123,8 +123,8 @@
                         </chart:LineChartControl>
                         <chart:ScatterControlSlim ItemsSource="{Binding ChromatogramPeaks}"
                                                   DataType="{x:Type do:PeakItem}"
-                                                  HorizontalProperty="{Binding DataContext.HorizontalProperty, RelativeSource={RelativeSource AncestorType=chart:MultiChart}}"
-                                                  VerticalProperty="{Binding DataContext.VerticalProperty, RelativeSource={RelativeSource AncestorType=chart:MultiChart}}"
+                                                  HorizontalProperty="{Binding Path=(FrameworkElement.DataContext).(vm:ChromatogramsViewModel.HorizontalProperty), RelativeSource={RelativeSource AncestorType=chart:MultiChart}}"
+                                                  VerticalProperty="{Binding Path=(FrameworkElement.DataContext).(vm:ChromatogramsViewModel.VerticalProperty), RelativeSource={RelativeSource AncestorType=chart:MultiChart}}"
                                                   Radius="1.5">
                             <chart:ScatterControlSlim.ToolTip>
                                 <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}"
@@ -138,8 +138,8 @@
             <chart:MultiChart.VerticalTitle>
                 <MultiBinding StringFormat="{}{0}({1})">
                     <MultiBinding.Bindings>
-                        <Binding Path="VerticalTitle"/>
-                        <Binding Path="VerticalAxis.UnitLabel"/>
+                        <Binding Path="VerticalSelector.SelectedAxisItem.GraphLabel"/>
+                        <Binding Path="VerticalSelector.SelectedAxisItem.AxisManager.UnitLabel"/>
                     </MultiBinding.Bindings>
                 </MultiBinding>
             </chart:MultiChart.VerticalTitle>
