@@ -18276,7 +18276,7 @@ AdductIon adduct)
             }
             return null;
         }
-        public static LipidMolecule JudgeIfNAcylTrp(IMSScanProperty msScanProp, double ms2Tolerance,
+        public static LipidMolecule JudgeIfNAcylTryA(IMSScanProperty msScanProp, double ms2Tolerance,
         double theoreticalMz, int totalCarbon, int totalDoubleBond, int totalOxidized,
         AdductIon adduct)
         {
@@ -18295,7 +18295,7 @@ AdductIon adduct)
 
                     var candidates = new List<LipidMolecule>();
 
-                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("NATrp", LbmClass.NATryA, "", theoreticalMz, adduct,
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("NATryA", LbmClass.NATryA, "", theoreticalMz, adduct,
                     totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
                 }
             }
