@@ -4333,7 +4333,7 @@ namespace CompMs.Common.Lipidomics
                 case "NAOrn": return LbmClass.NAOrn;
                 case "NAPhe": return LbmClass.NAPhe;
                 case "NATau": return LbmClass.NATau;
-                case "NATrp": return LbmClass.NATryA;
+                case "NATryA": return LbmClass.NATryA;
                 case "NA5HT": return LbmClass.NA5HT;
                 case "NAAla": return LbmClass.NAAla;
                 case "NAGln": return LbmClass.NAGln;
