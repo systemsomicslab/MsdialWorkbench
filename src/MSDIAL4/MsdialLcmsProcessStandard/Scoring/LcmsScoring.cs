@@ -647,12 +647,18 @@ namespace Msdial.Lcms.Dataprocess.Scoring
                     sn2DbBond = molecule.Sn2DoubleBondCount;
                     return LipidMsmsCharacterization.JudgeIfAcylcerbds(spectrum, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, adduct);
-                    
+
                 case LbmClass.AHexCer:
                     sn2Carbon = molecule.Sn2CarbonCount;
                     sn2DbBond = molecule.Sn2DoubleBondCount;
                     return LipidMsmsCharacterization.JudgeIfAcylhexceras(spectrum, ms2tol, refMz,
-                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, adduct);
+                         totalCarbon, totalDbBond, totalOxidized,sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, adduct);
+
+                case LbmClass.ASHexCer:
+                    sn2Carbon = molecule.Sn2CarbonCount;
+                    sn2DbBond = molecule.Sn2DoubleBondCount;
+                    return LipidMsmsCharacterization.JudgeIfAshexcer(spectrum, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, adduct);
 
                 case LbmClass.CL:
                     sn2Carbon = molecule.Sn2CarbonCount;

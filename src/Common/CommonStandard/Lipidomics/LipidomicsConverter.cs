@@ -5,6 +5,7 @@ using CompMs.Common.Parser;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -3296,6 +3297,9 @@ namespace CompMs.Common.Lipidomics
             var isPlasmenyl = chainString.Contains("P-") ? true : false;
             chainString = chainString.Replace("O-", "").Replace("P-", "").Replace("N-", "").Replace("e", "").Replace("p", "").Replace("m", "").Replace("n-", "").Replace("d", "").Replace("t", "");
 
+            //remove double bond position  add 2023/06/02
+            chainString = Regex.Replace(chainString, @"\([\d+?(E|Z)*,*]+\)", string.Empty);
+
             // for oxidized moiety parser
             if (chainString.Contains(";"))
             { // e.g. 18:2;2O, 18:2;(2OH)
@@ -3317,7 +3321,7 @@ namespace CompMs.Common.Lipidomics
             else if (chainString.Contains("+"))
             { //20:3+3O
                 var chain = chainString.Split('+')[0]; // 20:3
-                var expectedOxCount = chainString.Split('+')[1].Replace("O", ""); //2
+                var expectedOxCount = chainString.Split('+')[1].Replace("O", ""); //3
                 if (expectedOxCount == string.Empty || expectedOxCount == "")
                 {
                     expectedOxCount = "1";
@@ -3326,20 +3330,22 @@ namespace CompMs.Common.Lipidomics
                 chainString = chain;
             }
             else if (chainString.Contains("("))
-            { // e.g. 18:2;2O, 18:2;(2OH)
+            { // e.g. 18:1(1OH,3OH), 18:2(2OH)
                 var chain = chainString.Split('(')[0];
-                var oxidizedmoiety = chainString.Split('(')[1]; //2OH)
-                //modified by MT 2020/12/11 & 2021/01/12
-                var expectedOxCount = oxidizedmoiety.Replace("O", string.Empty).Replace("H", string.Empty).Replace("(", string.Empty).Replace(")", string.Empty);
-                if (expectedOxCount == string.Empty || expectedOxCount == "")
-                {
-                    expectedOxCount = "1";
-                }
-                else if (oxidizedmoiety.Contains("2OH)") || oxidizedmoiety.Contains("3OH)"))
-                {
-                    expectedOxCount = "1";
-                }
-                int.TryParse(expectedOxCount, out oxidizedCount);
+                var oxidizedmoiety = chainString.Split('(')[1].Replace(")", string.Empty); //2OH 
+                ////modified by MT 2020/12/11 & 2021/01/12
+                //var expectedOxCount = oxidizedmoiety.Replace("O", string.Empty).Replace("H", string.Empty).Replace("(", string.Empty).Replace(")", string.Empty);
+                //if (expectedOxCount == string.Empty || expectedOxCount == "")
+                //{
+                //    expectedOxCount = "1";
+                //}
+                //else if (oxidizedmoiety.Contains("2OH)") || oxidizedmoiety.Contains("3OH)"))
+                //{
+                //    expectedOxCount = "1";
+                //}
+                //int.TryParse(expectedOxCount, out oxidizedCount);
+                oxidizedCount = oxidizedmoiety.Split(',').Length;
+
                 chainString = chain;
             }
 
@@ -3883,6 +3889,15 @@ namespace CompMs.Common.Lipidomics
                 case LbmClass.NAGly: return "NAGly";
                 case LbmClass.NAGlySer: return "NAGlySer";
                 case LbmClass.NAOrn: return "NAOrn";
+                case LbmClass.NATryA: return "NATryA";
+                case LbmClass.NA5HT: return "NA5HT";
+                case LbmClass.NAAla: return "NAAla";
+                case LbmClass.NAGln: return "NAGln";
+                case LbmClass.NALeu: return "NALeu";
+                case LbmClass.NAVal: return "NAVal";
+                case LbmClass.NASer: return "NASer";
+                case LbmClass.WE: return "WE";
+
                 case LbmClass.FAHFA: return "FAHFA";
                 case LbmClass.DMEDFAHFA: return "DMEDFAHFA";
                 case LbmClass.PhytoSph: return "PhytoSph";
@@ -3924,6 +3939,7 @@ namespace CompMs.Common.Lipidomics
                 case LbmClass.Ac4PIM2: return "Ac4PIM2";
                 case LbmClass.Cer_EBDS: return "Cer-EBDS";
                 case LbmClass.AHexCer: return "AHexCer";
+                case LbmClass.ASHexCer: return "ASHexCer";
                 case LbmClass.ASM: return "ASM";
                 case LbmClass.EtherSMGDG: return "EtherSMGDG";
                 case LbmClass.SMGDG: return "SMGDG";
@@ -3962,6 +3978,7 @@ namespace CompMs.Common.Lipidomics
                 case LbmClass.SM_d9: return "SM_d9";
 
                 case LbmClass.bmPC: return "bmPC";
+                case LbmClass.BisMeLPA: return "BisMeLPA";
                 default: return "Undefined";
             }
         }
@@ -4185,6 +4202,7 @@ namespace CompMs.Common.Lipidomics
                 case "LDGTS": return LbmClass.LDGTS;
                 case "LDGTA": return LbmClass.LDGTA;
                 case "LDGCC": return LbmClass.LDGCC;
+                case "BisMeLPA": return LbmClass.BisMeLPA;
 
                 case "EtherLPC": return LbmClass.EtherLPC;
                 case "EtherLPE": return LbmClass.EtherLPE;
@@ -4315,6 +4333,14 @@ namespace CompMs.Common.Lipidomics
                 case "NAOrn": return LbmClass.NAOrn;
                 case "NAPhe": return LbmClass.NAPhe;
                 case "NATau": return LbmClass.NATau;
+                case "NATrp": return LbmClass.NATryA;
+                case "NA5HT": return LbmClass.NA5HT;
+                case "NAAla": return LbmClass.NAAla;
+                case "NAGln": return LbmClass.NAGln;
+                case "NALeu": return LbmClass.NALeu;
+                case "NAVal": return LbmClass.NAVal;
+                case "NASer": return LbmClass.NASer;
+                case "WE": return LbmClass.WE;
 
                 case "PhytoSph": return LbmClass.PhytoSph;
                 case "DHSph": return LbmClass.DHSph;
@@ -4389,6 +4415,7 @@ namespace CompMs.Common.Lipidomics
                 case "Cer_EBDS": return LbmClass.Cer_EBDS;
                 case "Cer-EBDS": return LbmClass.Cer_EBDS;
                 case "AHexCer": return LbmClass.AHexCer;
+                case "ASHexCer": return LbmClass.ASHexCer;
                 case "ASM": return LbmClass.ASM;
 
                 case "GPNAE": return LbmClass.GPNAE;
@@ -4633,6 +4660,14 @@ namespace CompMs.Common.Lipidomics
                 case "NAOrn": return "FattyAcyls";
                 case "NAPhe": return "FattyAcyls";
                 case "NATau": return "FattyAcyls";
+                case "NATryA": return "FattyAcyls";
+                case "NA5HT": return "FattyAcyls";
+                case "NAAla": return "FattyAcyls";
+                case "NAGln": return "FattyAcyls";
+                case "NALeu": return "FattyAcyls";
+                case "NAVal": return "FattyAcyls";
+                case "NASer": return "FattyAcyls";
+                case "WE": return "FattyAcyls";
 
                 case "CAR": return "FattyAcyls";
                 case "FA": return "FattyAcyls";
@@ -4671,6 +4706,7 @@ namespace CompMs.Common.Lipidomics
                 case "LPG": return "Glycerophospholipids";
                 case "LPI": return "Glycerophospholipids";
                 case "LPS": return "Glycerophospholipids";
+                case "BisMeLPA": return "Glycerophospholipids";
 
                 case "PC": return "Glycerophospholipids";
                 case "PA": return "Glycerophospholipids";
@@ -4831,6 +4867,7 @@ namespace CompMs.Common.Lipidomics
                 case "Cer_EBDS": return "Sphingolipids";
                 case "Cer-EBDS": return "Sphingolipids";
                 case "AHexCer": return "Sphingolipids";
+                case "ASHexCer": return "Sphingolipids";
                 case "ASM": return "Sphingolipids";
 
                 case "PI-Cer": return "Sphingolipids";

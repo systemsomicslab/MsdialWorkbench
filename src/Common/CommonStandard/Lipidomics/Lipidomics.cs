@@ -15,9 +15,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CompMs.Common.Lipidomics {
+namespace CompMs.Common.Lipidomics
+{
 
-    public class LipidMolecule {
+    public class LipidMolecule
+    {
 
         public string LipidName { get; set; }
         public string SublevelLipidName { get; set; }
@@ -62,22 +64,26 @@ namespace CompMs.Common.Lipidomics {
         public int Sn4Oxidizedount { get; set; }
     }
 
-    public sealed class LipidAnnotation {
+    public sealed class LipidAnnotation
+    {
         private LipidAnnotation() { }
 
         // test query spectrum
-        public static RawData ReadTestSpectrum(string input) {
+        public static RawData ReadTestSpectrum(string input)
+        {
             return RawDataParcer.RawDataFileReader(input, new AnalysisParamOfMsfinder());
         }
 
         // ref molecules must be sorted by mz before using this program
         public static LipidMolecule Characterize(double queryMz, double queryRt,
             IMSScanProperty msScanProp, List<LipidMolecule> RefMolecules, IonMode ionMode,
-            double ms1tol, double ms2tol) {
+            double ms1tol, double ms2tol)
+        {
 
             var startID = GetDatabaseStartIndex(queryMz, ms1tol, RefMolecules);
             var molecules = new List<LipidMolecule>();
-            for (int i = startID; i < RefMolecules.Count; i++) {
+            for (int i = startID; i < RefMolecules.Count; i++)
+            {
                 var molecule = RefMolecules[i];
                 var refMz = molecule.Mz;
                 var refClass = molecule.LipidClass;
@@ -115,7 +121,8 @@ namespace CompMs.Common.Lipidomics {
                 var sn3MinDbBond = 0;
                 //var sn3Oxidized = 6;
 
-                switch (lipidclass) {
+                switch (lipidclass)
+                {
                     case LbmClass.PC:
                         result = LipidMsmsCharacterization.JudgeIfPhosphatidylcholine(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
@@ -166,8 +173,8 @@ namespace CompMs.Common.Lipidomics {
                         result = LipidMsmsCharacterization.JudgeIfCholesterylEster(msScanProp, ms2tol, refMz,
                             totalCarbon, totalDbBond, adduct);
                         break;
-                   
-                        // add MT, single or double chains pattern
+
+                    // add MT, single or double chains pattern
                     case LbmClass.DG:
                         result = LipidMsmsCharacterization.JudgeIfDag(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
@@ -421,7 +428,7 @@ namespace CompMs.Common.Lipidomics {
                         break;
                     case LbmClass.CL:
                         result = LipidMsmsCharacterization.JudgeIfCardiolipin(msScanProp, ms2tol, refMz,
-                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, 
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond,
                              sn2MinCarbon, sn2MaxCarbon, sn2MinDbBond, sn2MaxDbBond, sn3MinCarbon, sn3MaxCarbon, sn3MinDbBond, sn3MaxDbBond, adduct);
                         break;
                     case LbmClass.MLCL:
@@ -449,8 +456,12 @@ namespace CompMs.Common.Lipidomics {
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, sn2MinCarbon, sn2MaxCarbon, sn2MinDbBond, sn2MaxDbBond, adduct);
                         break;
                     case LbmClass.AHexCer:
-                        result = LipidMsmsCharacterization.JudgeIfAcylhexceras(msScanProp, ms2tol, refMz,
-                             totalCarbon, totalDbBond, sn3MinCarbon, sn3MaxCarbon, sn3MinDbBond, sn3MaxDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        result = LipidMsmsCharacterization.JudgeIfAcylhexcer(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, totalOxidized, sn3MinCarbon, sn3MaxCarbon, sn3MinDbBond, sn3MaxDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.ASHexCer:
+                        result = LipidMsmsCharacterization.JudgeIfAshexcer(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, totalOxidized, sn3MinCarbon, sn3MaxCarbon, sn3MinDbBond, sn3MaxDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
                         break;
 
                     //add 10/04/19
@@ -882,12 +893,46 @@ namespace CompMs.Common.Lipidomics {
                     case LbmClass.bmPC:
                         return LipidMsmsCharacterization.JudgeIfBetaMethylPhosphatidylcholine(msScanProp, ms2tol, refMz,
                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
-
-
+                    //20230612
+                    case LbmClass.NATryA:
+                        result = LipidMsmsCharacterization.JudgeIfNAcylTrp(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                        break;
+                    case LbmClass.NA5HT:
+                        result = LipidMsmsCharacterization.JudgeIfNAcyl5HT(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                        break;
+                    case LbmClass.WE:
+                        result = LipidMsmsCharacterization.JudgeIfWaxEster(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, totalOxidized, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    //20230626
+                    case LbmClass.NAAla:
+                        result = LipidMsmsCharacterization.JudgeIfNAcylAla(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                        break;
+                    case LbmClass.NAGln:
+                        result = LipidMsmsCharacterization.JudgeIfNAcylGln(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                        break;
+                    case LbmClass.NALeu:
+                        result = LipidMsmsCharacterization.JudgeIfNAcylLeu(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                        break;
+                    case LbmClass.NAVal:
+                        result = LipidMsmsCharacterization.JudgeIfNAcylVal(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                        break;
+                    case LbmClass.NASer:
+                        result = LipidMsmsCharacterization.JudgeIfNAcylSer(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                        break;
+                    case LbmClass.BisMeLPA:
+                        result = LipidMsmsCharacterization.JudgeIfBismelpa(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                        break;
                     default:
                         return null;
-
-
                 }
 
                 if (result != null)
@@ -913,7 +958,7 @@ namespace CompMs.Common.Lipidomics {
             {
                 return null;
             }
-            
+
         }
 
         /// <summary>
@@ -921,26 +966,32 @@ namespace CompMs.Common.Lipidomics {
         /// 1. normalized spectrum where maximum intensity is normalized to 100
         /// 2. ordered as higher intensity -> lower intensity
         /// </summary>
-        public static List<SpectrumPeak> ConvertToRequiredSpectrumFormat(List<SpectrumPeak> peaks) {
+        public static List<SpectrumPeak> ConvertToRequiredSpectrumFormat(List<SpectrumPeak> peaks)
+        {
             var spectrum = new List<SpectrumPeak>();
             var maxintensity = peaks.Max(n => n.Intensity);
-            foreach (var peak in peaks) {
+            foreach (var peak in peaks)
+            {
                 spectrum.Add(new SpectrumPeak { Mass = peak.Mass, Intensity = peak.Intensity / maxintensity * 100.0 });
             }
             return spectrum.OrderByDescending(n => n.Intensity).ToList();
         }
 
-        public static int GetDatabaseStartIndex(double mz, double tolerance, List<LipidMolecule> molecules) {
+        public static int GetDatabaseStartIndex(double mz, double tolerance, List<LipidMolecule> molecules)
+        {
             double targetMass = mz - tolerance;
             int startIndex = 0, endIndex = molecules.Count - 1;
             if (targetMass > molecules[endIndex].Mz) return endIndex;
 
             int counter = 0;
-            while (counter < 10) {
-                if (molecules[startIndex].Mz <= targetMass && targetMass < molecules[(startIndex + endIndex) / 2].Mz) {
+            while (counter < 10)
+            {
+                if (molecules[startIndex].Mz <= targetMass && targetMass < molecules[(startIndex + endIndex) / 2].Mz)
+                {
                     endIndex = (startIndex + endIndex) / 2;
                 }
-                else if (molecules[(startIndex + endIndex) / 2].Mz <= targetMass && targetMass < molecules[endIndex].Mz) {
+                else if (molecules[(startIndex + endIndex) / 2].Mz <= targetMass && targetMass < molecules[endIndex].Mz)
+                {
                     startIndex = (startIndex + endIndex) / 2;
                 }
                 counter++;
@@ -949,15 +1000,19 @@ namespace CompMs.Common.Lipidomics {
         }
     }
 
-    public sealed class LipidLibraryParser {
+    public sealed class LipidLibraryParser
+    {
         private LipidLibraryParser() { }
 
         //[0] Name [1] m/z [2] adduct
-        public static List<LipidMolecule> ReadLibrary(string file) {
+        public static List<LipidMolecule> ReadLibrary(string file)
+        {
             var molecules = new List<LipidMolecule>();
-            using (var sr = new StreamReader(file, Encoding.ASCII)) {
+            using (var sr = new StreamReader(file, Encoding.ASCII))
+            {
                 sr.ReadLine(); // header pathed
-                while (sr.Peek() > -1) {
+                while (sr.Peek() > -1)
+                {
                     var line = sr.ReadLine();
                     var lineArray = line.Split('\t'); // e.g. [0] PC 28:2+3O [1] 301.000 [2] [M+HCOO]-
 
@@ -980,11 +1035,13 @@ namespace CompMs.Common.Lipidomics {
                     if (!adduct.FormatCheck) continue;
 
                     var chainString = nameString.Split(' ')[1]; // case 18:2, d18:2, t18:2, 28:2+3O
-                    var totalCarbonString = chainString.Split(':')[0]; 
-                    if (totalCarbonString.Contains("d")) {
+                    var totalCarbonString = chainString.Split(':')[0];
+                    if (totalCarbonString.Contains("d"))
+                    {
                         totalCarbonString = totalCarbonString.Replace("d", "");
                     }
-                    if (totalCarbonString.Contains("t")) {
+                    if (totalCarbonString.Contains("t"))
+                    {
                         totalCarbonString = totalCarbonString.Replace("t", "");
                     }
                     if (totalCarbonString.Contains("m"))
@@ -997,7 +1054,8 @@ namespace CompMs.Common.Lipidomics {
                     var bondString = nameString.Split(':')[1]; // 2+3O
                     var totalDoubleBondString = bondString.Split('+')[0]; // 2
                     var totalOxidizedString = "0";
-                    if (bondString.Split('+').Length > 1) {
+                    if (bondString.Split('+').Length > 1)
+                    {
                         totalOxidizedString = bondString.Split('+')[1]; //3O
                         totalOxidizedString = totalOxidizedString.Replace("O", "");//3
                     }
@@ -1015,7 +1073,8 @@ namespace CompMs.Common.Lipidomics {
                     int.TryParse(totalOxidizedString, out totalOxidized);
 
                     //if (totalCarbon <= 0 || totalDoubleBond < 0) continue;
-                    var molecule = new LipidMolecule() {
+                    var molecule = new LipidMolecule()
+                    {
                         LipidName = lineArray[0],
                         SublevelLipidName = lineArray[0],
                         LipidClass = lipidClassEnum,
@@ -1032,8 +1091,10 @@ namespace CompMs.Common.Lipidomics {
             return molecules.OrderBy(n => n.Mz).ToList();
         }
 
-        private static LbmClass getLipidClassEnum(string lipidClass) {
-            foreach (var lipid in System.Enum.GetValues(typeof(LbmClass)).Cast<LbmClass>()) {
+        private static LbmClass getLipidClassEnum(string lipidClass)
+        {
+            foreach (var lipid in System.Enum.GetValues(typeof(LbmClass)).Cast<LbmClass>())
+            {
                 if (lipid.ToString() == lipidClass) { return lipid; }
             }
             return LbmClass.Undefined;

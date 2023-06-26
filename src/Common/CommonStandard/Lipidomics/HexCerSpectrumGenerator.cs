@@ -86,14 +86,18 @@ namespace CompMs.Common.Lipidomics
                 if (plChains.Chains[0] is SphingoChain sphingo)
                 {
                     spectrum.AddRange(GetSphingoSpectrum(lipid, sphingo, adduct));
-                    //spectrum.AddRange(spectrumGenerator.GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlmass, 30d));
-                    spectrum.AddRange(spectrumGenerator.GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlmass , 30d)); //-header
+                    if (adduct.AdductIonName == "[M+Na]+")
+                    {
+                        spectrum.AddRange(spectrumGenerator.GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlmass, 30d)); //-header
+                    }
                 }
                 if (plChains.Chains[1] is AcylChain acyl)
                 {
                     spectrum.AddRange(GetAcylSpectrum(lipid, acyl, adduct));
-                    //spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlmass, 30d));
-                    spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlmass, 30d)); //-header
+                    if (adduct.AdductIonName == "[M+Na]+")
+                    {
+                        spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlmass, 30d)); //-header
+                    }
                 }
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
@@ -181,7 +185,7 @@ namespace CompMs.Common.Lipidomics
             var chainMass = acyl.Mass + MassDiffDictionary.HydrogenMass;
             var spectrum = new List<SpectrumPeak>()
             {
-                             new SpectrumPeak(adduct.ConvertToMz(chainMass) +C2H3NO +MassDiffDictionary.HydrogenMass+ C6H10O5, 150d, "[FAA+C2H4O+Hex+adduct]+") { SpectrumComment = SpectrumComment.acylchain },
+                             new SpectrumPeak(adduct.ConvertToMz(chainMass) +C2H3NO + C6H10O5, 150d, "[FAA+C2H4O+Hex+adduct]+") { SpectrumComment = SpectrumComment.acylchain },
 
             };
             if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
