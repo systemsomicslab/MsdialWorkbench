@@ -291,7 +291,7 @@ namespace CompMs.App.Msdial.Model.Imms
             var tic = analysisModel.EicLoader.LoadTic();
             Pen pen = new Pen(Brushes.Black, 1.0);
             pen.Freeze();
-            return new ChromatogramsModel("Total ion chromatogram", new DisplayChromatogram(tic, pen, "TIC"), "Total ion chromatogram", "Mobility", "Absolute ion abundance");
+            return new ChromatogramsModel("Total ion chromatogram", new[] { new DisplayChromatogram(tic, pen, "TIC") }, "Total ion chromatogram", "Mobility", "Absolute ion abundance");
         }
 
         public ChromatogramsModel PrepareBPC() {
@@ -303,7 +303,7 @@ namespace CompMs.App.Msdial.Model.Imms
             var bpc = analysisModel.EicLoader.LoadBpc();
             Pen pen = new Pen(Brushes.Red, 1.0);
             pen.Freeze();
-            return new ChromatogramsModel("Base peak chromatogram", new DisplayChromatogram(bpc, pen, "BPC"), "Base peak chromatogram", "Mobility", "Absolute ion abundance");
+            return new ChromatogramsModel("Base peak chromatogram", new[] { new DisplayChromatogram(bpc, pen, "BPC") }, "Base peak chromatogram", "Mobility", "Absolute ion abundance");
         }
 
         public DisplayEicSettingModel PrepareEicSetting() {

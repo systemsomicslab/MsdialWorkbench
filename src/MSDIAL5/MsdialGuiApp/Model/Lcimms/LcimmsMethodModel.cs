@@ -254,7 +254,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var tic = analysisModel.EicLoader.LoadTic();
             var pen = new Pen(Brushes.Black, 1.0);
             pen.Freeze();
-            return new ChromatogramsModel("Total ion chromatogram", new DisplayChromatogram(tic, pen, "TIC"), "Total ion chromatogram", "Retention time", "Absolute ion abundance");
+            return new ChromatogramsModel("Total ion chromatogram", new[] { new DisplayChromatogram(tic, pen, "TIC") }, "Total ion chromatogram", "Retention time", "Absolute ion abundance");
         }
 
         public ChromatogramsModel PrepareBPC() {
@@ -266,7 +266,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var bpc = analysisModel.EicLoader.LoadBpc();
             var pen = new Pen(Brushes.Red, 1.0);
             pen.Freeze();
-            return new ChromatogramsModel("Base peak chromatogram", new DisplayChromatogram(bpc, pen, "BPC"), "Base peak chromatogram", "Retention time", "Absolute ion abundance");
+            return new ChromatogramsModel("Base peak chromatogram", new[] { new DisplayChromatogram(bpc, pen, "BPC") }, "Base peak chromatogram", "Retention time", "Absolute ion abundance");
         }
 
         public DisplayEicSettingModel PrepareEicSetting() {

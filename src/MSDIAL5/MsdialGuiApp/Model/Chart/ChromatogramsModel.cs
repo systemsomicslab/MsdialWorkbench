@@ -15,77 +15,37 @@ using System.Threading.Tasks;
 namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class ChromatogramsModel : DisposableModelBase {
-        public ChromatogramsModel (string name, List<DisplayChromatogram> chromatograms, string graphTitle, AxisPropertySelectors<double> horizontalSelectors, AxisPropertySelectors<double> verticalSelectors) {
-            DisplayChromatograms = chromatograms ?? throw new ArgumentNullException(nameof(chromatograms));
-            Name = name;
-            GraphTitle = graphTitle;
-
-            AbundanceAxisItemSelector = verticalSelectors.AxisItemSelector;
-            ChromAxisItemSelector = horizontalSelectors.AxisItemSelector;
-
-            HorizontalTitle = horizontalSelectors.AxisItemSelector.SelectedAxisItem.GraphLabel; // TODO: AxisItemSelector.SelectedAxisItem property is implemented INotifyPropertyChanged
-            VerticalTitle = verticalSelectors.AxisItemSelector.SelectedAxisItem.GraphLabel; // TODO: AxisItemSelector.SelectedAxisItem property is implemented INotifyPropertyChanged
-
-            HorizontalProperty = horizontalSelectors.GetSelector(typeof(PeakItem)).Property;
-            VerticalProperty = verticalSelectors.GetSelector(typeof(PeakItem)).Property;
-
-            AbundanceAxis = verticalSelectors.AxisItemSelector.SelectedAxisItem.AxisManager; // TODO: AxisItemSelector.SelectedAxisItem property is implemented INotifyPropertyChanged
-            ChromAxis = horizontalSelectors.AxisItemSelector.SelectedAxisItem.AxisManager; // TODO: AxisItemSelector.SelectedAxisItem property is implemented INotifyPropertyChanged
-        }
-
-        public ChromatogramsModel(
-            string name,
-            List<DisplayChromatogram> chromatograms,
-            string graphTitle, string horizontalTitle, string verticalTitle) {
-
-            DisplayChromatograms = chromatograms ?? throw new ArgumentNullException(nameof(chromatograms));
+        public ChromatogramsModel(string name, IReadOnlyList<DisplayChromatogram> chromatograms, string graphTitle, string horizontalTitle, string verticalTitle) {
+            DisplayChromatograms = (chromatograms as List<DisplayChromatogram>) ?? chromatograms?.ToList() ?? throw new ArgumentNullException(nameof(chromatograms));
 
             Name = name;
             GraphTitle = graphTitle;
-            HorizontalTitle = horizontalTitle;
-            VerticalTitle = verticalTitle;
 
             HorizontalProperty = nameof(PeakItem.Time);
             VerticalProperty = nameof(PeakItem.Intensity);
 
-            AbundanceAxis = new ContinuousAxisManager<double>(0d, chromatograms.DefaultIfEmpty().Max(chromatogram => chromatogram?.MaxIntensity) ?? 1d, new ConstantMargin(0, 10d), new Range(0d, 0d))
+            var abundanceAxis = new ContinuousAxisManager<double>(0d, chromatograms.DefaultIfEmpty().Max(chromatogram => chromatogram?.MaxIntensity) ?? 1d, new ConstantMargin(0, 10d), new Range(0d, 0d))
             {
                 LabelType = LabelType.Order,
             }.AddTo(Disposables);
-            ChromAxis = new ContinuousAxisManager<double>(chromatograms.Aggregate<DisplayChromatogram, Range>(null, (acc, chromatogram) => chromatogram.ChromXRange.Union(acc)) ?? new Range(0d, 1d)).AddTo(Disposables);
+            var chromAxis = new ContinuousAxisManager<double>(chromatograms.Aggregate<DisplayChromatogram, Range>(null, (acc, chromatogram) => chromatogram.ChromXRange.Union(acc)) ?? new Range(0d, 1d)).AddTo(Disposables);
 
-            AbundanceAxisItemSelector = new AxisItemSelector<double>(new AxisItemModel<double>(verticalTitle, AbundanceAxis, verticalTitle)).AddTo(Disposables);
-            ChromAxisItemSelector = new AxisItemSelector<double>(new AxisItemModel<double>(horizontalTitle, ChromAxis, horizontalTitle)).AddTo(Disposables);
+            AbundanceAxisItemSelector = new AxisItemSelector<double>(new AxisItemModel<double>(verticalTitle, abundanceAxis, verticalTitle)).AddTo(Disposables);
+            ChromAxisItemSelector = new AxisItemSelector<double>(new AxisItemModel<double>(horizontalTitle, chromAxis, horizontalTitle)).AddTo(Disposables);
         }
-
-        public ChromatogramsModel(string name, DisplayChromatogram chromatogram, string graphTitle, string horizontalTitle, string verticalTitle)
-           : this(name, new List<DisplayChromatogram>() { chromatogram }, graphTitle, horizontalTitle, verticalTitle) {
-
-        }
-
-        public ChromatogramsModel(string name, DisplayChromatogram chromatogram)
-           : this(name, new List<DisplayChromatogram>() { chromatogram }, string.Empty, string.Empty, string.Empty) {
-
-        }
-
 
         public List<DisplayChromatogram> DisplayChromatograms { get; }
 
         public AxisItemSelector<double> AbundanceAxisItemSelector { get; }
         public AxisItemSelector<double> ChromAxisItemSelector { get; }
 
-        public IAxisManager<double> AbundanceAxis { get; }
-        public IAxisManager<double> ChromAxis { get; }
-
         public string Name { get; }
-        public string HorizontalTitle { get; }
-        public string VerticalTitle { get; }
         public string GraphTitle { get; }
         public string HorizontalProperty { get; }
         public string VerticalProperty { get; }
 
         public ChromatogramsModel Merge(ChromatogramsModel other) {
-            return new ChromatogramsModel($"{Name} and {other.Name}", DisplayChromatograms.Concat(other.DisplayChromatograms).ToList(), $"{GraphTitle} and {other.GraphTitle}", HorizontalTitle, VerticalTitle);
+            return new ChromatogramsModel($"{Name} and {other.Name}", DisplayChromatograms.Concat(other.DisplayChromatograms).ToList(), $"{GraphTitle} and {other.GraphTitle}", ChromAxisItemSelector.SelectedAxisItem.GraphLabel, AbundanceAxisItemSelector.SelectedAxisItem.GraphLabel);
         }
 
         public async Task ExportAsync(Stream stream, string separator) {

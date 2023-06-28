@@ -149,7 +149,7 @@
                                     <chart:ScatterControlSlim ItemsSource="{Binding ChromatogramPeaks}"
                                                               DataType="{x:Type do:PeakItem}"
                                                               HorizontalProperty="{Binding Path=(FrameworkElement.DataContext).(vm:ChromatogramsViewModel.HorizontalProperty), RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                              VerticalProperty="{Binding Path=(FrameworkElement.DataContext).(vm:ChromatogramsViewModel.HorizontalProperty), RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                              VerticalProperty="{Binding Path=(FrameworkElement.DataContext).(vm:ChromatogramsViewModel.VerticalProperty), RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                               Radius="1.5">
                                         <chart:ScatterControlSlim.ToolTip>
                                             <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}"
@@ -215,7 +215,7 @@
                                     <chart:ScatterControlSlim ItemsSource="{Binding ChromatogramPeaks}"
                                                               DataType="{x:Type do:PeakItem}"
                                                               HorizontalProperty="{Binding Path=(FrameworkElement.DataContext).(vm:ChromatogramsViewModel.HorizontalProperty), RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                              VerticalProperty="{Binding Path=(FrameworkElement.DataContext).(vm:ChromatogramsViewModel.HorizontalProperty), RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                              VerticalProperty="{Binding Path=(FrameworkElement.DataContext).(vm:ChromatogramsViewModel.VerticalProperty), RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                               Radius="1.5">
                                         <chart:ScatterControlSlim.ToolTip>
                                             <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}"
