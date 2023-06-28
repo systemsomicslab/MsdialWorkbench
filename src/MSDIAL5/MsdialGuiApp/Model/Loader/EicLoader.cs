@@ -15,7 +15,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Loader
 {
-    public class EicLoader : IChromatogramLoader
+    public class EicLoader : IChromatogramLoader<ChromatogramPeakFeatureModel>
     {
         protected EicLoader(AnalysisFileBean file, IDataProvider provider, PeakPickBaseParameter peakPickParameter, IonMode ionMode, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd, bool isConstantRange = true) {
             this.provider = provider;

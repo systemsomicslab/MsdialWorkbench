@@ -31,7 +31,7 @@ namespace CompMs.App.Msdial.Model.Chart
             chromatogram_.Subscribe(chromatogram => GraphTitle = chromatogram?.Description ?? string.Empty).AddTo(Disposables);
         }
 
-        public EicModel(IObservable<ChromatogramPeakFeatureModel> targetSource, IChromatogramLoader loader, string graphTitle, string horizontalTitle, string verticalTitle) {
+        public EicModel(IObservable<ChromatogramPeakFeatureModel> targetSource, IChromatogramLoader<ChromatogramPeakFeatureModel> loader, string graphTitle, string horizontalTitle, string verticalTitle) {
 
             GraphTitle = graphTitle;
             HorizontalTitle = horizontalTitle;
@@ -65,7 +65,7 @@ namespace CompMs.App.Msdial.Model.Chart
             Chromatogram.Subscribe(chromatogram => GraphTitle = chromatogram?.Description ?? string.Empty).AddTo(Disposables);
         }
 
-        public EicModel(IObservable<ChromatogramPeakFeatureModel> targetSource, IChromatogramLoader loader)
+        public EicModel(IObservable<ChromatogramPeakFeatureModel> targetSource, IChromatogramLoader<ChromatogramPeakFeatureModel> loader)
             : this(targetSource, loader, string.Empty, string.Empty, string.Empty) {
 
         }

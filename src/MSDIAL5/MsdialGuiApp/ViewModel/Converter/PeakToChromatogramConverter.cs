@@ -11,7 +11,7 @@ namespace CompMs.App.Msdial.ViewModel.Converter
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture) {
             if (values.Length >= 2 &&
                 values[0] is ChromatogramPeakFeatureModel feature &&
-                values[1] is IChromatogramLoader loader) {
+                values[1] is IChromatogramLoader<ChromatogramPeakFeatureModel> loader) {
                 var chromatogram = loader.LoadChromatogramAsync(feature, default).Result;
                 return chromatogram;
             }

@@ -14,7 +14,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcimms
 {
-    internal sealed class LcimmsEicLoader : IChromatogramLoader
+    internal sealed class LcimmsEicLoader : IChromatogramLoader<ChromatogramPeakFeatureModel>
     {
         private readonly MsdialLcImMsParameter _parameter;
         private readonly RawSpectra _rawSpectra;
