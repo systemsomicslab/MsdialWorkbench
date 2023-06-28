@@ -13,6 +13,24 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     public sealed class EicModel : DisposableModelBase
     {
+        private EicModel(IReadOnlyReactiveProperty<Chromatogram> chromatogram_, ReadOnlyReactivePropertySlim<bool> itemLoaded, string graphTitle, string horizontalTitle, string verticalTitle) {
+            GraphTitle = graphTitle;
+            HorizontalTitle = horizontalTitle;
+            VerticalTitle = verticalTitle;
+            HorizontalProperty = nameof(PeakItem.Time);
+            VerticalProperty = nameof(PeakItem.Intensity);
+
+            Chromatogram = chromatogram_;
+            ItemLoaded = itemLoaded;
+            ChromRangeSource = chromatogram_.Select(chromatogram => chromatogram?.GetTimeRange() ?? new Range(0d, 1d))
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            AbundanceRangeSource = chromatogram_.Select(chromatogram => chromatogram?.GetAbundanceRange() ?? new Range(0d, 1d))
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            chromatogram_.Subscribe(chromatogram => GraphTitle = chromatogram?.Description ?? string.Empty).AddTo(Disposables);
+        }
+
         public EicModel(IObservable<ChromatogramPeakFeatureModel> targetSource, IChromatogramLoader loader, string graphTitle, string horizontalTitle, string verticalTitle) {
 
             GraphTitle = graphTitle;
@@ -88,5 +106,16 @@ namespace CompMs.App.Msdial.Model.Chart
             set => SetProperty(ref verticalProperty, value);
         }
         private string verticalProperty;
+
+        public static EicModel Create<T>(IObservable<T> targetSource, IChromatogramLoader<T> loader, string graphTitle, string horizontalTitle, string verticalTitle) {
+            var source = targetSource.SelectSwitch(t => Observable.FromAsync(token => loader.LoadChromatogramAsync(t, token)).Select(c => (c, true)).StartWith((null, false))).Publish();
+            var chromatogram = source.Select(p => p.c).ToReactiveProperty();
+            var itemLoaded = source.Select(p => p.Item2).ToReadOnlyReactivePropertySlim();
+            var result = new EicModel(chromatogram, itemLoaded, graphTitle, horizontalTitle, verticalTitle);
+            result.Disposables.Add(source.Connect());
+            result.Disposables.Add(chromatogram);
+            result.Disposables.Add(itemLoaded);
+            return result;
+        }
     }
 }

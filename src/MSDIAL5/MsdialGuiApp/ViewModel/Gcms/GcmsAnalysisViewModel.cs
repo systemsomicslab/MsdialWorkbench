@@ -18,6 +18,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         public GcmsAnalysisViewModel(GcmsAnalysisModel model, FocusControlManager focusControlManager) {
             _model = model;
             PeakPlotViewModel = new SpectrumFeaturePlotViewModel(model.PeakPlotModel).AddTo(Disposables);
+            EicViewModel = new EicViewModel(_model.EicModel, horizontalAxis: PeakPlotViewModel.HorizontalAxis as IAxisManager<double>).AddTo(Disposables);
             var (rawDecSpectraViewFocusAction, rawDecSpectraViewFocused) = focusControlManager.Request();
             RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(model.RawDecSpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused).AddTo(Disposables);
             RawPurifiedSpectrumsViewModel = new RawPurifiedSpectrumsViewModel(model.RawPurifiedSpectrumsModel).AddTo(Disposables);
@@ -30,7 +31,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         }
 
         public SpectrumFeaturePlotViewModel PeakPlotViewModel { get; }
-
+        public EicViewModel EicViewModel { get; }
         public RawDecSpectrumsViewModel RawDecSpectrumsViewModel { get; }
         public RawPurifiedSpectrumsViewModel RawPurifiedSpectrumsViewModel { get; }
 

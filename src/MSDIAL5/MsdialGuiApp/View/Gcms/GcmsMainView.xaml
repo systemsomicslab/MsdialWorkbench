@@ -58,6 +58,49 @@
                 </Grid.RowDefinitions>
                 <chart:SurveyScanView DataContext="{Binding AnalysisViewModel.Value.SurveyScanViewModel}"
                                       Grid.Row="1" Grid.Column="0"/>
+                <TabControl ItemsSource="{Binding ChromatogramViewModels.ViewModels.Value}"
+                            SelectedIndex="{Binding ChromatogramViewModels.SelectedIndex.Value}"
+                            Margin="0,-1,0,0"
+                            ItemContainerStyle="{StaticResource MainWindowTabItemStyle}"
+                            Grid.Row="0" Grid.Column="1">
+                    <TabControl.ItemTemplate>
+                        <DataTemplate>
+                            <ContentPresenter Content="{Binding}">
+                                <ContentPresenter.Resources>
+                                    <DataTemplate DataType="{x:Type chartvm:EicViewModel}">
+                                        <TextBlock Text="Eic of focused spot"
+                                                   VerticalAlignment="Stretch"/>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type chartvm:BarChartViewModel}">
+                                        <TextBlock Text="Bar chart of aligned spot"
+                                                   VerticalAlignment="Stretch"/>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type chartvm:AlignmentEicViewModel}">
+                                        <TextBlock Text="EIC of aligned spot"
+                                                   VerticalAlignment="Stretch"/>
+                                    </DataTemplate>
+                                </ContentPresenter.Resources>
+                            </ContentPresenter>
+                        </DataTemplate>
+                    </TabControl.ItemTemplate>
+                    <TabControl.ContentTemplate>
+                        <DataTemplate>
+                            <ContentControl Content="{Binding}">
+                                <ContentControl.Resources>
+                                    <DataTemplate DataType="{x:Type chartvm:EicViewModel}">
+                                        <chart:EicView/>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type chartvm:BarChartViewModel}">
+                                        <chart:BarChartView/>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type chartvm:AlignmentEicViewModel}">
+                                        <chart:AlignmentEicView/>
+                                    </DataTemplate>
+                                </ContentControl.Resources>
+                            </ContentControl>
+                        </DataTemplate>
+                    </TabControl.ContentTemplate>
+                </TabControl>
                 <TabControl Grid.Row="1" Grid.Column="1">
                     <chart:SpectrumFeaturePlotView DataContext="{Binding AnalysisViewModel.Value.PeakPlotViewModel}"/>
                 </TabControl>

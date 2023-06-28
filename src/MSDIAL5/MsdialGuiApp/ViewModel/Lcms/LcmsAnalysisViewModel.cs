@@ -70,9 +70,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
             PlotViewModel = new AnalysisPeakPlotViewModel(_model.PlotModel, peakPlotAction, peakPlotFocused).AddTo(Disposables);
-            EicViewModel = new EicViewModel(
-                _model.EicModel,
-                horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
+            EicViewModel = new EicViewModel(_model.EicModel, horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
 
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
                 _model.Parameter.ProjectParam.SpectrumCommentToColorBytes

@@ -48,9 +48,16 @@ namespace CompMs.App.Msdial.Model.Gcms
             PeakPlotModel = new SpectrumFeaturePlotModel(_spectrumFeatures, _peaks, brushMapDataSelector).AddTo(_disposables);
 
             var selectedSpectrum = PeakPlotModel.SelectedSpectrum;
+            IDataProvider provider = providerFactory.Create(file);
+            // Eic chart
+            var eicLoader = new QuantMassEicLoader(file.File, provider, peakPickParameter, projectParameter.IonMode, ChromXType.RT, ChromXUnit.Min, peakPickParameter.RetentionTimeBegin, peakPickParameter.RetentionTimeEnd, isConstantRange: true); // TODO: Not only RT, but also RI.
+            //var tableEicLoader = new QuantMassEicLoader(file.File, provider, peakPickParameter, projectParameter.IonMode, ChromXType.RT, ChromXUnit.Min, peakPickParameter.RetentionTimeBegin, peakPickParameter.RetentionTimeEnd, isConstantRange: false);
+            EicModel = EicModel.Create(selectedSpectrum, eicLoader, string.Empty, string.Empty, string.Empty).AddTo(_disposables);
+            EicModel.VerticalTitle = "Abundance";
+            PeakPlotModel.HorizontalLabel.Subscribe(label => EicModel.HorizontalTitle = label).AddTo(_disposables);
+
             var matchResultCandidatesModel = new MatchResultCandidatesModel(selectedSpectrum.Select(t => t?.MatchResults)).AddTo(_disposables);
             MatchResultCandidatesModel = matchResultCandidatesModel;
-            IDataProvider provider = providerFactory.Create(file);
             var rawSpectrumLoader = new MsRawSpectrumLoader(provider, projectParameter.MSDataType, chromDecParameter);
             var decLoader = new MSDecLoader(file.DeconvolutionFilePath).AddTo(_disposables);
             var decSpectrumLoader = new MsDecSpectrumLoader(decLoader, _spectrumFeatures.Items);
@@ -136,6 +143,7 @@ namespace CompMs.App.Msdial.Model.Gcms
 
         public ReactivePropertySlim<int> NumberOfEIChromatograms { get; }
         public SurveyScanModel SurveyScanModel { get; }
+        public EicModel EicModel { get; }
 
         // IAnalysisModel interface
         Task IAnalysisModel.SaveAsync(CancellationToken token) {

@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Components;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
@@ -16,21 +17,21 @@ namespace CompMs.App.Msdial.Model.Loader
 {
     public class EicLoader : IChromatogramLoader
     {
-        protected EicLoader(AnalysisFileBean file, IDataProvider provider, ParameterBase parameter, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd, bool isConstantRange = true) {
+        protected EicLoader(AnalysisFileBean file, IDataProvider provider, PeakPickBaseParameter peakPickParameter, IonMode ionMode, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd, bool isConstantRange = true) {
             this.provider = provider;
-            this.parameter = parameter;
+            _peakPickParameter = peakPickParameter;
             this.chromXType = chromXType;
             this.chromXUnit = chromXUnit;
             this.rangeBegin = rangeBegin;
             this.rangeEnd = rangeEnd;
             _isConstantRange = isConstantRange;
 
-            _rawSpectraTask = Task.Run(async () => new RawSpectra(await provider.LoadMs1SpectrumsAsync(default).ConfigureAwait(false), parameter.IonMode, file.AcquisitionType));
+            _rawSpectraTask = Task.Run(async () => new RawSpectra(await provider.LoadMs1SpectrumsAsync(default).ConfigureAwait(false), ionMode, file.AcquisitionType));
             _chromatogramRange = new ChromatogramRange(rangeBegin, rangeEnd, chromXType, chromXUnit);
         }
 
         protected readonly IDataProvider provider;
-        protected readonly ParameterBase parameter;
+        protected readonly PeakPickBaseParameter _peakPickParameter;
         protected readonly ChromXType chromXType;
         protected readonly ChromXUnit chromXUnit;
         protected readonly double rangeBegin, rangeEnd;
@@ -40,9 +41,9 @@ namespace CompMs.App.Msdial.Model.Loader
 
         private RawSpectra RawSpectra => _rawSpectraTask.Result;
 
-        public double MzTolerance => parameter.CentroidMs1Tolerance;
+        public double MzTolerance => _peakPickParameter.CentroidMs1Tolerance;
 
-        async Task<DataObj.Chromatogram> IChromatogramLoader.LoadChromatogramAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
+        async Task<DataObj.Chromatogram> IChromatogramLoader<ChromatogramPeakFeatureModel>.LoadChromatogramAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
 
             if (target != null) {
                 var chromatogram = await Task.Run(async () =>
@@ -59,7 +60,7 @@ namespace CompMs.App.Msdial.Model.Loader
                     var results = await Task.WhenAll(eicPeakTask, eicFocusedTask).ConfigureAwait(false);
                     var peakEic = results[0];
                     var focusedEic = results[1];
-                    return new DataObj.Chromatogram(eic, peakEic, focusedEic.FirstOrDefault(), string.Empty, Colors.Black, chromXType, chromXUnit, $"EIC chromatogram of {target.Mass:N4} tolerance [Da]: {MzTolerance:F} Max intensity: {peakEic.Max(peak => peak.Intensity):F0}");
+                    return new DataObj.Chromatogram(eic, peakEic, focusedEic.FirstOrDefault(), string.Empty, Colors.Black, chromXType, chromXUnit, $"EIC of {target.Mass:N4} tolerance [Da]: {MzTolerance:F} Max intensity: {peakEic.Max(peak => peak.Intensity):F0}");
                 }, token).ConfigureAwait(false);
                 return chromatogram;
             }
@@ -113,8 +114,8 @@ namespace CompMs.App.Msdial.Model.Loader
 
         public List<PeakItem> LoadHighestEicTrace(List<ChromatogramPeakFeatureModel> targets) {
             return RawSpectra
-                .GetMs1ExtractedChromatogramByHighestBasePeakMz(targets, parameter.CentroidMs1Tolerance, _chromatogramRange)
-                .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
+                .GetMs1ExtractedChromatogramByHighestBasePeakMz(targets, _peakPickParameter.CentroidMs1Tolerance, _chromatogramRange)
+                .Smoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel)
                 .Where(peak => peak != null)
                 .Select(peak => new PeakItem(peak))
                 .ToList();
@@ -124,8 +125,8 @@ namespace CompMs.App.Msdial.Model.Loader
             return Task.Run(async () =>
             {
                 var rawSpectra = await _rawSpectraTask.ConfigureAwait(false);
-                var ms1Peaks = rawSpectra.GetMs1ExtractedChromatogram(target.Mass, parameter.CentroidMs1Tolerance, GetChromatogramRange(target));
-                return ms1Peaks.Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
+                var ms1Peaks = rawSpectra.GetMs1ExtractedChromatogram(target.Mass, _peakPickParameter.CentroidMs1Tolerance, GetChromatogramRange(target));
+                return ms1Peaks.Smoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel)
                     .Where(peak => peak != null)
                     .Select(peak => new PeakItem(peak))
                     .ToList();
@@ -134,8 +135,8 @@ namespace CompMs.App.Msdial.Model.Loader
 
         protected virtual List<PeakItem> LoadEicCore(double mass, double massTolerance) {
             return RawSpectra
-                .GetMs1ExtractedChromatogram(mass, parameter.CentroidMs1Tolerance, _chromatogramRange)
-                .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
+                .GetMs1ExtractedChromatogram(mass, _peakPickParameter.CentroidMs1Tolerance, _chromatogramRange)
+                .Smoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel)
                 .Where(peak => peak != null)
                 .Select(peak => new PeakItem(peak))
                 .ToList();
@@ -164,7 +165,7 @@ namespace CompMs.App.Msdial.Model.Loader
 
         protected virtual List<PeakItem> LoadTicCore() {
             var chromatogram = RawSpectra.GetMs1TotalIonChromatogram(_chromatogramRange);
-            return chromatogram.Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
+            return chromatogram.Smoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel)
                 .Where(peak => peak != null)
                 .Select(peak => new PeakItem(peak))
                 .ToList();
@@ -183,18 +184,26 @@ namespace CompMs.App.Msdial.Model.Loader
 
         protected virtual List<PeakItem> LoadBpcCore() {
             return RawSpectra.GetMs1BasePeakChromatogram(_chromatogramRange)
-                .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
+                .Smoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel)
                 .Where(peak => peak != null)
                 .Select(peak => new PeakItem(peak))
                 .ToList();
         }
 
         public static EicLoader BuildForAllRange(AnalysisFileBean file, IDataProvider provider, ParameterBase parameter, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd) {
-            return new EicLoader(file, provider, parameter, chromXType, chromXUnit, rangeBegin, rangeEnd);
+            return new EicLoader(file, provider, parameter.PeakPickBaseParam, parameter.IonMode, chromXType, chromXUnit, rangeBegin, rangeEnd);
         }
 
         public static EicLoader BuildForPeakRange(AnalysisFileBean file, IDataProvider provider, ParameterBase parameter, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd) {
-            return new EicLoader(file, provider, parameter, chromXType, chromXUnit, rangeBegin, rangeEnd, isConstantRange: false);
+            return new EicLoader(file, provider, parameter.PeakPickBaseParam, parameter.IonMode, chromXType, chromXUnit, rangeBegin, rangeEnd, isConstantRange: false);
+        }
+
+        public static EicLoader BuildForAllRange(AnalysisFileBean file, IDataProvider provider, PeakPickBaseParameter peakPickBaseParameter, IonMode ionMode, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd) {
+            return new EicLoader(file, provider, peakPickBaseParameter, ionMode, chromXType, chromXUnit, rangeBegin, rangeEnd);
+        }
+
+        public static EicLoader BuildForPeakRange(AnalysisFileBean file, IDataProvider provider, PeakPickBaseParameter peakPickBaseParameter, IonMode ionMode, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd) {
+            return new EicLoader(file, provider, peakPickBaseParameter, ionMode, chromXType, chromXUnit, rangeBegin, rangeEnd, isConstantRange: false);
         }
     }
 }
