@@ -24,9 +24,9 @@ namespace CompMs.App.Msdial.Model.DataObj
         }
 
         public string Formula {
-            get => _molecule.Formula.FormulaString;
+            get => _molecule.Formula?.FormulaString;
             set {
-                if (_molecule.Formula.FormulaString != value && FormulaStringParcer.Convert2FormulaObjV2(value) is Formula formula) {
+                if (value != null && _molecule.Formula?.FormulaString != value && FormulaStringParcer.Convert2FormulaObjV2(value) is Formula formula) {
                     _molecule.Formula = formula;
                     OnPropertyChanged(nameof(Formula));
                 }

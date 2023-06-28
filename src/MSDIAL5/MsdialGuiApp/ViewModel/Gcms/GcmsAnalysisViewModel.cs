@@ -26,9 +26,14 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             EiChromatogramsViewModel = new EiChromatogramsViewModel(model.EiChromatogramsModel, model.NumberOfEIChromatograms, null, eiChromatogramsViewFocusAction, eiChromatogramsViewFocused).AddTo(Disposables);
             SurveyScanViewModel = new SurveyScanViewModel(model.SurveyScanModel, horizontalAxis: PeakPlotViewModel.VerticalAxis as IAxisManager<double>).AddTo(Disposables);
             
+            var peakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
+            var compoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
             var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
-            PeakDetailViewModels = new ViewModelBase[] { matchResultCandidatesViewModel, };
+            var moleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
+            PeakDetailViewModels = new ViewModelBase[] { peakInformationViewModel, compoundDetailViewModel, moleculeStructureViewModel, matchResultCandidatesViewModel, };
         }
+
+        public IResultModel Model => _model;
 
         public SpectrumFeaturePlotViewModel PeakPlotViewModel { get; }
         public EicViewModel EicViewModel { get; }
@@ -39,8 +44,6 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 
         public EiChromatogramsViewModel EiChromatogramsViewModel { get; }
         public SurveyScanViewModel SurveyScanViewModel { get; }
-
-        public IResultModel Model => _model;
 
         public ViewModelBase[] PeakDetailViewModels { get; }
 

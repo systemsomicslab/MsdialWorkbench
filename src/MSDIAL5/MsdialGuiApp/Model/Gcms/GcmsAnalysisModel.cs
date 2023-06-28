@@ -133,6 +133,25 @@ namespace CompMs.App.Msdial.Model.Gcms
             SurveyScanModel.Elements.VerticalTitle = "Abundance";
             SurveyScanModel.Elements.HorizontalProperty = nameof(SpectrumPeakWrapper.Mass);
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
+
+            var peakInformationModel = new PeakInformationMs1BasedModel(selectedSpectrum).AddTo(_disposables);
+            peakInformationModel.Add(
+                t => new RtPoint(t?.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value ?? 0d, dbMapper.MoleculeMsRefer(t.MatchResults.Representative)?.ChromXs.RT.Value),
+                t => new MzPoint(t?.QuantifiedChromatogramPeak.PeakFeature.Mass ?? 0d, dbMapper.MoleculeMsRefer(t.MatchResults.Representative)?.PrecursorMz));
+            peakInformationModel.Add(
+                t => new HeightAmount(t?.QuantifiedChromatogramPeak.PeakFeature.PeakHeightTop ?? 0d),
+                t => new AreaAmount(t?.QuantifiedChromatogramPeak.PeakFeature.PeakAreaAboveZero ?? 0d));
+            PeakInformationModel = peakInformationModel;
+
+            var compoundDetailModel = new CompoundDetailModel(selectedSpectrum.SkipNull().SelectSwitch(t => t.ObserveProperty(p => p.MatchResults.Representative)).Publish().RefCount(), dbMapper).AddTo(_disposables);
+            compoundDetailModel.Add(
+                r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d),
+                r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d),
+                r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
+            CompoundDetailModel = compoundDetailModel;
+            var moleculeStructureModel = new MoleculeStructureModel().AddTo(_disposables);
+            MoleculeStructureModel = moleculeStructureModel;
+            selectedSpectrum.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.GetCurrentSpectrumFeature().AnnotatedMSDecResult.Molecule)).AddTo(_disposables);
         }
 
         public SpectrumFeaturePlotModel PeakPlotModel { get; }
@@ -144,6 +163,9 @@ namespace CompMs.App.Msdial.Model.Gcms
         public ReactivePropertySlim<int> NumberOfEIChromatograms { get; }
         public SurveyScanModel SurveyScanModel { get; }
         public EicModel EicModel { get; }
+        public PeakInformationMs1BasedModel PeakInformationModel { get; }
+        public CompoundDetailModel CompoundDetailModel { get; }
+        public MoleculeStructureModel MoleculeStructureModel { get; }
 
         // IAnalysisModel interface
         Task IAnalysisModel.SaveAsync(CancellationToken token) {
