@@ -2211,8 +2211,10 @@ namespace CompMs.Common.Lipidomics.Tests
             };
             var parser = FacadeLipidParser.Default;
             ILipid lipid = parser.Parse("PC P-18:0/18:1(9)");
+            ILipid lipid2 = parser.Parse("PC O-18:1(9)/18:1(9)");
             var generator = new EtherPCSpectrumGenerator();
             var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan2 = lipid2.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
             var reference = new MoleculeMsReference()
             {
                 AdductType = AdductIon.GetAdductIon("[M+H]+"),
@@ -2220,8 +2222,17 @@ namespace CompMs.Common.Lipidomics.Tests
                 CompoundClass = "EtherPC",
                 Spectrum = scan.Spectrum,
             };
+            var reference2 = new MoleculeMsReference()
+            {
+                AdductType = AdductIon.GetAdductIon("[M+H]+"),
+                Charge = 1,
+                CompoundClass = "EtherPC",
+                Spectrum = scan2.Spectrum,
+            };
             var result = EtherPCEadMsCharacterization.Characterize(target, (Lipid)lipid, reference, 0.025f, 0, 2000);
+            var result2 = EtherPCEadMsCharacterization.Characterize(target, (Lipid)lipid2, reference2, 0.025f, 0, 2000);
             Console.WriteLine($"{result.Item1.Name}\t{result.Item2[0]}\t{result.Item2[1]}");
+            Console.WriteLine($"{result2.Item1.Name}\t{result2.Item2[0]}\t{result2.Item2[1]}");
         }
 
     }
