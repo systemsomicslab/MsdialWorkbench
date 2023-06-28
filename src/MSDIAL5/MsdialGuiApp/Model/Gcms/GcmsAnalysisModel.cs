@@ -15,10 +15,12 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Utility;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Disposables;
@@ -106,6 +108,24 @@ namespace CompMs.App.Msdial.Model.Gcms
                     "Abundance"));
             var deconvolutedChromatogram = new SelectableChromatogram(deconvolutedChromatograms, new ReactivePropertySlim<bool>(true), Observable.Return(true).ToReadOnlyReactivePropertySlim()).AddTo(_disposables);
             EiChromatogramsModel = new EiChromatogramsModel(rawChromatogram, deconvolutedChromatogram, broker).AddTo(_disposables);
+
+            // SurveyScan
+            var surveyScanSpectrum = SurveyScanSpectrum.Create(selectedSpectrum, t =>
+            {
+                if (t is null) {
+                    return Observable.Return(new List<SpectrumPeakWrapper>());
+                }
+                return Observable.FromAsync(provider.LoadMsSpectrumsAsync)
+                    .Select(spectrums =>
+                        {
+                            var spectrum = DataAccess.GetCentroidMassSpectra(spectrums[t.QuantifiedChromatogramPeak.MS1RawSpectrumIdTop], projectParameter.MSDataType, 0, float.MinValue, float.MaxValue);
+                            return spectrum.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
+                        });
+            }).AddTo(_disposables);
+            SurveyScanModel = new SurveyScanModel(surveyScanSpectrum, spec => spec.Mass, spec => spec.Intensity).AddTo(_disposables);
+            SurveyScanModel.Elements.VerticalTitle = "Abundance";
+            SurveyScanModel.Elements.HorizontalProperty = nameof(SpectrumPeakWrapper.Mass);
+            SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
         }
 
         public SpectrumFeaturePlotModel PeakPlotModel { get; }
@@ -115,6 +135,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
         public ReactivePropertySlim<int> NumberOfEIChromatograms { get; }
+        public SurveyScanModel SurveyScanModel { get; }
 
         // IAnalysisModel interface
         Task IAnalysisModel.SaveAsync(CancellationToken token) {

@@ -56,6 +56,8 @@
                     <RowDefinition Height="240"/>
                     <RowDefinition Height="*" MinHeight="200"/>
                 </Grid.RowDefinitions>
+                <chart:SurveyScanView DataContext="{Binding AnalysisViewModel.Value.SurveyScanViewModel}"
+                                      Grid.Row="1" Grid.Column="0"/>
                 <TabControl Grid.Row="1" Grid.Column="1">
                     <chart:SpectrumFeaturePlotView DataContext="{Binding AnalysisViewModel.Value.PeakPlotViewModel}"/>
                 </TabControl>

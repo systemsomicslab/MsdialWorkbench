@@ -5,6 +5,7 @@ using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.Core.Base;
 using Reactive.Bindings.Extensions;
 using System.Windows.Input;
 
@@ -22,6 +23,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             RawPurifiedSpectrumsViewModel = new RawPurifiedSpectrumsViewModel(model.RawPurifiedSpectrumsModel).AddTo(Disposables);
             var (eiChromatogramsViewFocusAction, eiChromatogramsViewFocused) = focusControlManager.Request();
             EiChromatogramsViewModel = new EiChromatogramsViewModel(model.EiChromatogramsModel, model.NumberOfEIChromatograms, null, eiChromatogramsViewFocusAction, eiChromatogramsViewFocused).AddTo(Disposables);
+            SurveyScanViewModel = new SurveyScanViewModel(model.SurveyScanModel, horizontalAxis: PeakPlotViewModel.VerticalAxis as IAxisManager<double>).AddTo(Disposables);
             
             var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
             PeakDetailViewModels = new ViewModelBase[] { matchResultCandidatesViewModel, };
@@ -35,6 +37,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         public Ms2ChromatogramsViewModel Ms2ChromatogramsViewModel => null;
 
         public EiChromatogramsViewModel EiChromatogramsViewModel { get; }
+        public SurveyScanViewModel SurveyScanViewModel { get; }
 
         public IResultModel Model => _model;
 
