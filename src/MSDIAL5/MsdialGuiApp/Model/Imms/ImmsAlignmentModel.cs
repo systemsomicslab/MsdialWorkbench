@@ -103,6 +103,8 @@ namespace CompMs.App.Msdial.Model.Imms
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator, status: ~FilterEnableStatus.Rt).AddTo(Disposables);
+            var peakSpotFiltering = new PeakSpotFiltering().AddTo(Disposables);
+            PeakSpotNavigatorModel.AttachFilter(Ms1Spots, peakSpotFiltering, peakFilterModel, status: ~FilterEnableStatus.Rt);
 
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel);
             PlotModel = new AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, SelectedBrush, Brushes)

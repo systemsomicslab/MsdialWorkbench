@@ -34,8 +34,6 @@ namespace CompMs.App.Msdial.Model.Search
 
     internal sealed class PeakSpotNavigatorModel : DisposableModelBase
     {
-        private readonly Dictionary<ICollectionView, Predicate<object>> _viewToPredicate = new Dictionary<ICollectionView, Predicate<object>>();
-        private readonly Dictionary<ICollectionView, List<PeakFilterModel>> _viewToFilters = new Dictionary<ICollectionView, List<PeakFilterModel>>();
         private readonly FilterEnableStatus _status;
 
         public PeakSpotNavigatorModel(IReadOnlyList<IFilterable> peakSpots, PeakFilterModel peakFilterModel, IMatchResultEvaluator<MsScanMatchResult> evaluator, FilterEnableStatus status) {
@@ -82,8 +80,6 @@ namespace CompMs.App.Msdial.Model.Search
             OntologyFilterKeywords = ontologyFilterKeywords.AsReadOnly();
             adductFilterKeywords = new List<string>();
             AdductFilterKeywords = adductFilterKeywords.AsReadOnly();
-
-            AttachFilter(peakSpots, peakFilterModel, status: status, evaluator: _evaluator);
         }
 
         public string SelectedAnnotationLabel {
@@ -253,152 +249,69 @@ namespace CompMs.App.Msdial.Model.Search
 
         public ObservableCollection<PeakFilterModel> PeakFilters { get; } = new ObservableCollection<PeakFilterModel>();
 
-        public void AttachFilter(ICollectionView view, PeakFilterModel peakFilterModel, FilterEnableStatus status, IMatchResultEvaluator<IFilterable> evaluator = null) {
-            if (_viewToPredicate.ContainsKey(view)) {
-                view.Filter -= _viewToPredicate[view];
-                _viewToPredicate[view] += CreateFilter(peakFilterModel, status, evaluator ?? _evaluator);
+        public void RefreshCollectionViews() {
+            foreach (var view in PeakSpotsCollection) {
+                view.Refresh();
             }
-            else {
-                _viewToPredicate[view] = CreateFilter(peakFilterModel, status, evaluator ?? _evaluator);
-            }
-            view.Filter += _viewToPredicate[view];
-            if (!_viewToFilters.ContainsKey(view)) {
-                _viewToFilters.Add(view, new List<PeakFilterModel>());
-            }
-            _viewToFilters[view].Add(peakFilterModel);
-            PeakFilters.Add(peakFilterModel);
-            PeakSpotsCollection.Add(view);
         }
 
-        public void AttachFilter(IEnumerable<IFilterable> peaks, PeakFilterModel peakFilterModel, FilterEnableStatus status = ~FilterEnableStatus.None, IMatchResultEvaluator<IFilterable> evaluator = null) {
+        public void AttachFilter(IEnumerable<IFilterable> peaks, PeakSpotFiltering peakSpotFiltering, PeakFilterModel peakFilterModel, FilterEnableStatus status = FilterEnableStatus.All, IMatchResultEvaluator<IFilterable> evaluator = null) {
             System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
                 ICollectionView collection = CollectionViewSource.GetDefaultView(peaks);
                 if (collection is ListCollectionView list) {
                     list.IsLiveFiltering = true;
                 }
-                AttachFilter(collection, peakFilterModel, status, evaluator);
+                peakSpotFiltering.AttachFilter(this, collection, peakFilterModel, status, evaluator ?? _evaluator);
+                PeakSpotsCollection.Add(collection);
+                PeakFilters.Add(peakFilterModel);
             });
         }
 
-        public void DetatchFilter(ICollectionView view) {
-            if (_viewToPredicate.ContainsKey(view)) {
-                view.Filter -= _viewToPredicate[view];
-                _viewToPredicate.Remove(view);
-                foreach (var filter in _viewToFilters[view]) {
-                    PeakFilters.Remove(filter);
-                }
-                _viewToFilters.Remove(view);
-                PeakSpotsCollection.Remove(view);
-            }
-        }
-
-        public void DetatchFilter(IEnumerable<IFilterable> peaks) {
-            DetatchFilter(CollectionViewSource.GetDefaultView(peaks));
-        }
-
-        public Predicate<IFilterable> CreateCurrentFilter() {
-            var results = CreateFilters(PeakFilterModel, _status, _evaluator);
-            bool Pred(IFilterable filterable) {
-                return results.All(pred => pred(filterable));
-            }
-            return Pred;
-        }
-
-        private Predicate<object> CreateFilter(PeakFilterModel peakFilterModel, FilterEnableStatus status, IMatchResultEvaluator<IFilterable> evaluator) {
-            var results = CreateFilters(peakFilterModel, status, evaluator);
-            bool Pred(object obj) {
-                return obj is IFilterable filterable && results.All(pred => pred(filterable));
-            }
-            return Pred;
-        }
-
-        private List<Predicate<IFilterable>> CreateFilters(PeakFilterModel peakFilterModel, FilterEnableStatus status, IMatchResultEvaluator<IFilterable> evaluator) {
-            List<Predicate<IFilterable>> results = new List<Predicate<IFilterable>>
-            {
-                filterable => peakFilterModel.PeakFilter(filterable, evaluator) && filterable.TagCollection.IsSelected(TagSearchQueryBuilder.CreateQuery())
-            };
-            if ((status & FilterEnableStatus.Rt) != FilterEnableStatus.None) {
-                results.Add(RtFilter);
-            }
-            if ((status & FilterEnableStatus.Dt) != FilterEnableStatus.None) {
-                results.Add(DtFilter);
-            }
-            if ((status & FilterEnableStatus.Mz) != FilterEnableStatus.None) {
-                results.Add(MzFilter);
-            }
-            if ((status & FilterEnableStatus.Amplitude) != FilterEnableStatus.None) {
-                results.Add(AmplitudeFilter);
-            }
-            if ((status & FilterEnableStatus.Metabolite) != FilterEnableStatus.None) {
-                results.Add(filterable => MetaboliteFilter(filterable, MetaboliteFilterKeywords));
-            }
-            if ((status & FilterEnableStatus.Protein) != FilterEnableStatus.None) {
-                results.Add(filterable => ProteinFilter(filterable, ProteinFilterKeywords));
-            }
-            if ((status & FilterEnableStatus.Comment) != FilterEnableStatus.None) {
-                results.Add(filterable => CommentFilter(filterable, CommentFilterKeywords));
-            }
-
-            if ((status & FilterEnableStatus.Adduct) != FilterEnableStatus.None) {
-                results.Add(filterable => AdductFilter(filterable, AdductFilterKeywords));
-            }
-
-            if ((status & FilterEnableStatus.Ontology) != FilterEnableStatus.None) {
-                results.Add(filterable => OntologyFilter(filterable, OntologyFilterKeywords));
-            }
-            return results;
-        }
-
-        private bool MzFilter(IChromatogramPeak peak) {
+        internal bool MzFilter(IChromatogramPeak peak) {
             return MzLowerValue <= peak.Mass && peak.Mass <= MzUpperValue;
         }
 
-        private bool RtFilter(IChromatogramPeak peak) {
+        internal bool RtFilter(IChromatogramPeak peak) {
             return RtLowerValue <= peak.ChromXs.RT.Value && peak.ChromXs.RT.Value <= RtUpperValue;
         }
 
-        private bool DtFilter(IChromatogramPeak peak) {
+        internal bool DtFilter(IChromatogramPeak peak) {
             return DtLowerValue <= peak.ChromXs.Drift.Value && peak.ChromXs.Drift.Value <= DtUpperValue;
         }
 
-        private bool ProteinFilter(IFilterable peak, IEnumerable<string> keywords) {
+        internal bool ProteinFilter(IFilterable peak, IEnumerable<string> keywords) {
             var protein = peak.Protein?.ToLower();
             return keywords.All(keyword => protein?.Contains(keyword) ?? true);
         }
 
-        private bool MetaboliteFilter(IMoleculeProperty peak, IEnumerable<string> keywords) {
+        internal bool MetaboliteFilter(IMoleculeProperty peak, IEnumerable<string> keywords) {
             var name = peak.Name.ToLower();
             return keywords.All(keyword => name.Contains(keyword));
         }
 
-        private bool CommentFilter(IFilterable peak, IEnumerable<string> keywords) {
+        internal bool CommentFilter(IFilterable peak, IEnumerable<string> keywords) {
             var comment = peak.Comment?.ToLower();
             return keywords.All(keyword => (comment?.Contains(keyword) ?? false));
         }
 
-        private bool OntologyFilter(IFilterable peak, IEnumerable<string> keywords) {
+        internal bool OntologyFilter(IMoleculeProperty peak, IEnumerable<string> keywords) {
             return !keywords.Any() || keywords.Any(keyword => peak.Ontology == keyword);
         }
 
-        private bool AdductFilter(IFilterable peak, IEnumerable<string> keywords) {
+        internal bool AdductFilter(IFilterable peak, IEnumerable<string> keywords) {
             return keywords.All(keyword => peak.AdductIonName?.ToLower().Contains(keyword.ToLower()) ?? true);
         }
 
-        private bool AmplitudeFilter(IFilterable peak) {
+        internal bool AmplitudeFilter(IFilterable peak) {
             var relative = peak.RelativeAmplitudeValue;
             return AmplitudeLowerValue <= relative && relative <= AmplitudeUpperValue;
         }
 
         protected override void Dispose(bool disposing) {
             if (disposing) {
-                var views = _viewToFilters.Keys.ToArray();
-                foreach (var view in views) {
-                    DetatchFilter(view);
-                }
-                _viewToFilters.Clear();
-                _viewToPredicate.Clear();
                 PeakFilters.Clear();
+                PeakSpotsCollection.Clear();
             }
             base.Dispose(disposing);
         }

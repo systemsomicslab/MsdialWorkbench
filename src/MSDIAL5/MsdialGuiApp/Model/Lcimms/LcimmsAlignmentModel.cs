@@ -129,11 +129,13 @@ namespace CompMs.App.Msdial.Model.Lcimms
             Ms1Spots = propModels;
 
             var peakSpotNavigator = new PeakSpotNavigatorModel(driftProps, peakFilterModel, evaluator, status: FilterEnableStatus.All).AddTo(Disposables);
+            var peakSpotFiltering = new PeakSpotFiltering().AddTo(Disposables);
+            PeakSpotNavigatorModel.AttachFilter(driftProps, peakSpotFiltering, peakFilterModel, status: FilterEnableStatus.All);
             var accEvaluator = new AccumulatedPeakEvaluator(evaluator);
             var filterableEvaluator = evaluator.Contramap<IFilterable, MsScanMatchResult>(filterable => filterable.MatchResults.Representative, (e, f) => f.MatchResults.IsReferenceMatched(e), (e, f) => f.MatchResults.IsAnnotationSuggested(e));
-            peakSpotNavigator.AttachFilter(propModels, peakFilterModel, status: FilterEnableStatus.All, evaluator: filterableEvaluator);
+            peakSpotNavigator.AttachFilter(propModels, peakSpotFiltering, peakFilterModel, status: FilterEnableStatus.All, evaluator: filterableEvaluator);
             var accFilterableEvaluator = accEvaluator.Contramap<IFilterable, AlignmentSpotProperty>(filterable => ((AlignmentSpotPropertyModel)filterable).innerModel);
-            peakSpotNavigator.AttachFilter(accumulatedPropModels, accumulatedPeakFilterModel, status: FilterEnableStatus.None, evaluator: accFilterableEvaluator);
+            peakSpotNavigator.AttachFilter(accumulatedPropModels, peakSpotFiltering, accumulatedPeakFilterModel, status: FilterEnableStatus.None, evaluator: accFilterableEvaluator);
             PeakSpotNavigatorModel = peakSpotNavigator;
 
             InternalStandardSetModel = new InternalStandardSetModel(driftProps, TargetMsMethod.Lcimms).AddTo(Disposables);

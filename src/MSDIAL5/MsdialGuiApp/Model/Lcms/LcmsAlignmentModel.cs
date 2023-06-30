@@ -104,6 +104,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 .AddTo(Disposables);
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator, status: FilterEnableStatus.All & ~FilterEnableStatus.Dt).AddTo(Disposables);
+            var peakSpotFiltering = new PeakSpotFiltering().AddTo(Disposables);
+            PeakSpotNavigatorModel.AttachFilter(Ms1Spots, peakSpotFiltering, peakFilterModel, status: FilterEnableStatus.All & ~FilterEnableStatus.Dt);
 
             // Peak scatter plot
             var ontologyBrush = new BrushMapData<AlignmentSpotPropertyModel>(

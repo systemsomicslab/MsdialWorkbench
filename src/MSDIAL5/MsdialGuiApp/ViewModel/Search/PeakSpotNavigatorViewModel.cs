@@ -121,9 +121,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
                 .Throttle(TimeSpan.FromMilliseconds(500))
                 .ObserveOnUIDispatcher()
                 .SelectMany(_ => Observable.Defer(() => {
-                    foreach (var view in model.PeakSpotsCollection) {
-                        view.Refresh();
-                    }
+                    model.RefreshCollectionViews();
                     return Observable.Return(Unit.Default);
                 }))
                 .OnErrorRetry<Unit, InvalidOperationException>(_ => System.Diagnostics.Debug.WriteLine("Failed to refresh. Retry after 0.1 seconds."), retryCount: 5, delay: TimeSpan.FromSeconds(.1d))

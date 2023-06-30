@@ -88,6 +88,8 @@ namespace CompMs.App.Msdial.Model.Dims
             InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Dims).AddTo(Disposables);
             NormalizationSetModel = new NormalizationSetModel(Container, _files, _fileCollection, _dataBaseMapper, _matchResultEvaluator, InternalStandardSetModel, _parameter, _broker).AddTo(Disposables);
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator, status: ~(FilterEnableStatus.Rt | FilterEnableStatus.Dt)).AddTo(Disposables);
+            var peakSpotFiltering = new PeakSpotFiltering().AddTo(Disposables);
+            PeakSpotNavigatorModel.AttachFilter(Ms1Spots, peakSpotFiltering, peakFilterModel, status: ~(FilterEnableStatus.Rt | FilterEnableStatus.Dt));
 
             var ontologyBrush = new BrushMapData<AlignmentSpotPropertyModel>(
                     new KeyBrushMapper<AlignmentSpotPropertyModel, string>(

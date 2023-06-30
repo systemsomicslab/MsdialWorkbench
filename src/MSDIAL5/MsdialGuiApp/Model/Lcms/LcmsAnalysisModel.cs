@@ -81,6 +81,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, status: ~FilterEnableStatus.Dt).AddTo(Disposables);
+            var peakSpotFiltering = new PeakSpotFiltering().AddTo(Disposables);
+            PeakSpotNavigatorModel.AttachFilter(Ms1Peaks, peakSpotFiltering, peakFilterModel, status: ~FilterEnableStatus.Dt);
 
             // Peak scatter plot
             var ontologyBrush = new BrushMapData<ChromatogramPeakFeatureModel>(
