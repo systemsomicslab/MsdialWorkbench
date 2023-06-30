@@ -894,10 +894,6 @@ namespace CompMs.Common.Lipidomics
                         return LipidMsmsCharacterization.JudgeIfBetaMethylPhosphatidylcholine(msScanProp, ms2tol, refMz,
                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
                     //20230612
-                    case LbmClass.NATryA:
-                        result = LipidMsmsCharacterization.JudgeIfNAcylTryA(msScanProp, ms2tol, refMz,
-                         totalCarbon, totalDbBond, totalOxidized, adduct);
-                        break;
                     case LbmClass.NA5HT:
                         result = LipidMsmsCharacterization.JudgeIfNAcyl5HT(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, totalOxidized, adduct);
@@ -931,6 +927,22 @@ namespace CompMs.Common.Lipidomics
                         result = LipidMsmsCharacterization.JudgeIfBismelpa(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, totalOxidized, adduct);
                         break;
+                    //20230630
+                    case LbmClass.NATryA:
+                        if (totalCarbon < 29)
+                        {
+                            return LipidMsmsCharacterization.JudgeIfNAcylTryA(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, totalOxidized, adduct);
+                        }
+                        else
+                        {
+                            return LipidMsmsCharacterization.JudgeIfFahfamideTrya(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        }
+                    case LbmClass.NAGABA:
+                        return LipidMsmsCharacterization.JudgeIfNAcylGaba(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+
                     default:
                         return null;
                 }
