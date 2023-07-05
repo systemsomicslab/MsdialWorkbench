@@ -80,7 +80,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 ProteinResultContainerModel = proteinResultContainerModel;
             }
 
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, status: ~FilterEnableStatus.Dt).AddTo(Disposables);
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator).AddTo(Disposables);
             var peakSpotFiltering = new PeakSpotFiltering().AddTo(Disposables);
             PeakSpotNavigatorModel.AttachFilter(Ms1Peaks, peakSpotFiltering, peakFilterModel, status: ~FilterEnableStatus.Dt);
 

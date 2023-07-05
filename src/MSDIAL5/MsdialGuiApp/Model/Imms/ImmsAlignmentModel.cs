@@ -102,7 +102,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
 
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator, status: ~FilterEnableStatus.Rt).AddTo(Disposables);
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator).AddTo(Disposables);
             var peakSpotFiltering = new PeakSpotFiltering().AddTo(Disposables);
             PeakSpotNavigatorModel.AttachFilter(Ms1Spots, peakSpotFiltering, peakFilterModel, status: ~FilterEnableStatus.Rt);
 

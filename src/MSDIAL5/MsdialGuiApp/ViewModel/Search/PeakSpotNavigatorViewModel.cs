@@ -24,35 +24,35 @@ namespace CompMs.App.Msdial.ViewModel.Search
             PeakFilterViewModel = new PeakFilterViewModel(model.PeakFilters.ToArray()).AddTo(Disposables);
             TagSearchBuilderViewModel = new PeakSpotTagSearchQueryBuilderViewModel(model.TagSearchQueryBuilder).AddTo(Disposables);
 
-            AmplitudeLowerValue = model
-                .ToReactivePropertyAsSynchronized(m => m.AmplitudeLowerValue)
+            AmplitudeLowerValue = model.AmplitudeFilterModel
+                .ToReactivePropertyAsSynchronized(m => m.Lower)
                 .AddTo(Disposables);
-            AmplitudeUpperValue = model
-                .ToReactivePropertyAsSynchronized(m => m.AmplitudeUpperValue)
+            AmplitudeUpperValue = model.AmplitudeFilterModel
+                .ToReactivePropertyAsSynchronized(m => m.Upper)
                 .AddTo(Disposables);
             AmplitudeLowerValue.SetValidateNotifyError(v => AmplitudeUpperValue.Value >= v ? null : "Too large");
             AmplitudeUpperValue.SetValidateNotifyError(v => AmplitudeLowerValue.Value <= v ? null : "Too small");
-            MzLowerValue = model
-                .ToReactivePropertyAsSynchronized(m => m.MzLowerValue)
+            MzLowerValue = model.MzFilterModel
+                .ToReactivePropertyAsSynchronized(m => m.Lower)
                 .AddTo(Disposables);
-            MzUpperValue = model
-                .ToReactivePropertyAsSynchronized(m => m.MzUpperValue)
+            MzUpperValue = model.MzFilterModel
+                .ToReactivePropertyAsSynchronized(m => m.Upper)
                 .AddTo(Disposables);
             MzLowerValue.SetValidateNotifyError(v => MzUpperValue.Value >= v ? null : "Too large");
             MzUpperValue.SetValidateNotifyError(v => MzLowerValue.Value <= v ? null : "Too small");
-            RtLowerValue = model
-                .ToReactivePropertyAsSynchronized(m => m.RtLowerValue)
+            RtLowerValue = model.RtFilterModel
+                .ToReactivePropertyAsSynchronized(m => m.Lower)
                 .AddTo(Disposables);
-            RtUpperValue = model
-                .ToReactivePropertyAsSynchronized(m => m.RtUpperValue)
+            RtUpperValue = model.RtFilterModel
+                .ToReactivePropertyAsSynchronized(m => m.Upper)
                 .AddTo(Disposables);
             RtLowerValue.SetValidateNotifyError(v => RtUpperValue.Value >= v ? null : "Too large");
             RtUpperValue.SetValidateNotifyError(v => RtLowerValue.Value <= v ? null : "Too small");
-            DtLowerValue = model
-                .ToReactivePropertyAsSynchronized(m => m.DtLowerValue)
+            DtLowerValue = model.DtFilterModel
+                .ToReactivePropertyAsSynchronized(m => m.Lower)
                 .AddTo(Disposables);
-            DtUpperValue = model
-                .ToReactivePropertyAsSynchronized(m => m.DtUpperValue)
+            DtUpperValue = model.DtFilterModel
+                .ToReactivePropertyAsSynchronized(m => m.Upper)
                 .AddTo(Disposables);
             DtLowerValue.SetValidateNotifyError(v => DtUpperValue.Value >= v ? null : "Too large");
             DtUpperValue.SetValidateNotifyError(v => DtLowerValue.Value <= v ? null : "Too small");
@@ -60,33 +60,33 @@ namespace CompMs.App.Msdial.ViewModel.Search
             MetaboliteFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
             MetaboliteFilterKeyword
                 .Where(keywords => !(keywords is null))
-                .SelectSwitch(keywords => Observable.FromAsync(token => model.SetMetaboliteKeywordsAsync(keywords.Split(), token)))
+                .SelectSwitch(keywords => Observable.FromAsync(token => model.MetaboliteFilterModel.SetKeywordsAsync(keywords.Split(), token)))
                 .Subscribe()
                 .AddTo(Disposables);
             ProteinFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
             ProteinFilterKeyword
                 .Where(keywords => !(keywords is null))
-                .SelectSwitch(keywords => Observable.FromAsync(token => model.SetProteinKeywordsAsync(keywords.Split(), token)))
+                .SelectSwitch(keywords => Observable.FromAsync(token => model.ProteinFilterModel.SetKeywordsAsync(keywords.Split(), token)))
                 .Subscribe()
                 .AddTo(Disposables);
             CommentFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
             CommentFilterKeyword
                 .Where(keywords => keywords != null)
-                .SelectSwitch(keywords => Observable.FromAsync(token => model.SetCommentKeywordsAsync(keywords.Split(), token)))
+                .SelectSwitch(keywords => Observable.FromAsync(token => model.CommentFilterModel.SetKeywordsAsync(keywords.Split(), token)))
                 .Subscribe()
                 .AddTo(Disposables);
 
             OntologyFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
             OntologyFilterKeyword
                 .Where(keywords => keywords != null)
-                .SelectSwitch(keywords => Observable.FromAsync(token => model.SetOntologyKeywordsAsync(keywords.Split(), token)))
+                .SelectSwitch(keywords => Observable.FromAsync(token => model.OntologyFilterModel.SetKeywordsAsync(keywords.Split(), token)))
                 .Subscribe()
                 .AddTo(Disposables);
 
             AdductFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
             AdductFilterKeyword
                 .Where(keywords => keywords != null)
-                .SelectSwitch(keywords => Observable.FromAsync(token => model.SetAdductKeywordsAsync(keywords.Split(), token)))
+                .SelectSwitch(keywords => Observable.FromAsync(token => model.AdductFilterModel.SetKeywordsAsync(keywords.Split(), token)))
                 .Subscribe()
                 .AddTo(Disposables);
 

@@ -135,7 +135,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }).AddTo(Disposables);
             Ms1Peaks = peakModels;
 
-            var peakSpotNavigator = new PeakSpotNavigatorModel(driftPeaks, peakFilterModel, evaluator, status: FilterEnableStatus.All).AddTo(Disposables);
+            var peakSpotNavigator = new PeakSpotNavigatorModel(driftPeaks, peakFilterModel, evaluator).AddTo(Disposables);
             var peakSpotFiltering = new PeakSpotFiltering().AddTo(Disposables);
             PeakSpotNavigatorModel.AttachFilter(driftPeaks, peakSpotFiltering, peakFilterModel, status: FilterEnableStatus.All);
             var accEvaluator = new AccumulatedPeakEvaluator(evaluator);

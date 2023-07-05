@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.DataObj.Result;
-using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using Reactive.Bindings.Extensions;
@@ -11,8 +10,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Data;
 
 namespace CompMs.App.Msdial.Model.Search
@@ -34,219 +31,61 @@ namespace CompMs.App.Msdial.Model.Search
 
     internal sealed class PeakSpotNavigatorModel : DisposableModelBase
     {
-        private readonly FilterEnableStatus _status;
+        private readonly IMatchResultEvaluator<IFilterable> _evaluator;
 
-        public PeakSpotNavigatorModel(IReadOnlyList<IFilterable> peakSpots, PeakFilterModel peakFilterModel, IMatchResultEvaluator<MsScanMatchResult> evaluator, FilterEnableStatus status) {
+        public PeakSpotNavigatorModel(IReadOnlyList<IFilterable> peakSpots, PeakFilterModel peakFilterModel, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             if (evaluator is null) {
                 throw new ArgumentNullException(nameof(evaluator));
             }
+            AmplitudeFilterModel = new ValueFilterModel { Lower = 0d, Upper = 1d, };
+            MzFilterModel = new ValueFilterModel();
+            RtFilterModel = new ValueFilterModel();
+            DtFilterModel = new ValueFilterModel();
 
             PeakSpots = peakSpots ?? throw new ArgumentNullException(nameof(peakSpots));
             PeakFilterModel = peakFilterModel ?? throw new ArgumentNullException(nameof(peakFilterModel));
             TagSearchQueryBuilder = new PeakSpotTagSearchQueryBuilderModel();
-            _status = status;
             _evaluator = evaluator.Contramap<IFilterable, MsScanMatchResult>(filterable => filterable.MatchResults.Representative, (e, f) => f.MatchResults.IsReferenceMatched(e), (e, f) => f.MatchResults.IsAnnotationSuggested(e));
-            AmplitudeLowerValue = 0d;
-            AmplitudeUpperValue = 1d;
             if (peakSpots is INotifyCollectionChanged notifyCollection) {
                 notifyCollection.CollectionChangedAsObservable().ToUnit()
                     .StartWith(Unit.Default)
                     .Throttle(TimeSpan.FromSeconds(.1d))
                     .Subscribe(_ =>
                     {
-                        MzLowerValue = peakSpots.DefaultIfEmpty().Min(p => p?.Mass) ?? 0d;
-                        MzUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.Mass) ?? 1d;
-                        RtLowerValue = peakSpots.DefaultIfEmpty().Min(p => p?.ChromXs.RT.Value) ?? 0d;
-                        RtUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.ChromXs.RT.Value) ?? 1d;
-                        DtLowerValue = peakSpots.DefaultIfEmpty().Min(p => p?.ChromXs.Drift.Value) ?? 0d;
-                        DtUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.ChromXs.Drift.Value) ?? 1d;
+                        MzFilterModel.Lower = peakSpots.DefaultIfEmpty().Min(p => p?.Mass) ?? 0d;
+                        MzFilterModel.Upper = peakSpots.DefaultIfEmpty().Max(p => p?.Mass) ?? 1d;
+                        RtFilterModel.Lower = peakSpots.DefaultIfEmpty().Min(p => p?.ChromXs.RT.Value) ?? 0d;
+                        RtFilterModel.Upper = peakSpots.DefaultIfEmpty().Max(p => p?.ChromXs.RT.Value) ?? 1d;
+                        DtFilterModel.Lower = peakSpots.DefaultIfEmpty().Min(p => p?.ChromXs.Drift.Value) ?? 0d;
+                        DtFilterModel.Upper = peakSpots.DefaultIfEmpty().Max(p => p?.ChromXs.Drift.Value) ?? 1d;
                     }).AddTo(Disposables);
             }
-            else {
-                //MzLowerValue = peakSpots.DefaultIfEmpty().Min(p => p?.Mass) ?? 0d;
-                //MzUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.Mass) ?? 1d;
-                //RtLowerValue = peakSpots.DefaultIfEmpty().Min(p => p?.ChromXs.RT.Value) ?? 0d;
-                //RtUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.ChromXs.RT.Value) ?? 1d;
-                //DtLowerValue = peakSpots.DefaultIfEmpty().Min(p => p?.ChromXs.Drift.Value) ?? 0d;
-                //DtUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.ChromXs.Drift.Value) ?? 1d;
-            }
-            metaboliteFilterKeywords = new List<string>();
-            MetaboliteFilterKeywords = metaboliteFilterKeywords.AsReadOnly();
-            proteinFilterKeywords = new List<string>();
-            ProteinFilterKeywords = proteinFilterKeywords.AsReadOnly();
-            commentFilterKeywords = new List<string>();
-            CommentFilterKeywords = commentFilterKeywords.AsReadOnly();
-            ontologyFilterKeywords = new List<string>();
-            OntologyFilterKeywords = ontologyFilterKeywords.AsReadOnly();
-            adductFilterKeywords = new List<string>();
-            AdductFilterKeywords = adductFilterKeywords.AsReadOnly();
+            MetaboliteFilterModel = new KeywordFilterModel().AddTo(Disposables);
+            ProteinFilterModel = new KeywordFilterModel(KeywordFilteringType.KeepIfWordIsNull).AddTo(Disposables);
+            CommentFilterModel = new KeywordFilterModel().AddTo(Disposables);
+            OntologyFilterModel = new KeywordFilterModel(KeywordFilteringType.ExactMatch).AddTo(Disposables);
+            AdductFilterModel = new KeywordFilterModel(KeywordFilteringType.KeepIfWordIsNull).AddTo(Disposables);
         }
 
         public string SelectedAnnotationLabel {
-            get => selectedAnnotationLabel;
-            set => SetProperty(ref selectedAnnotationLabel, value);
+            get => _selectedAnnotationLabel;
+            set => SetProperty(ref _selectedAnnotationLabel, value);
         }
-        private string selectedAnnotationLabel;
+        private string _selectedAnnotationLabel;
 
         public IReadOnlyList<IFilterable> PeakSpots { get; }
         public ObservableCollection<ICollectionView> PeakSpotsCollection { get; } = new ObservableCollection<ICollectionView>();
-
-        public double AmplitudeLowerValue {
-            get => amplitudeLowerValue;
-            set => SetProperty(ref amplitudeLowerValue, value);
-        }
-        private double amplitudeLowerValue;
-        public double AmplitudeUpperValue { 
-            get => amplitudeUpperValue;
-            set => SetProperty(ref amplitudeUpperValue, value);
-        }
-        private double amplitudeUpperValue;
-
-        public double MzLowerValue {
-            get => mzLowerValue;
-            set => SetProperty(ref mzLowerValue, value);
-        }
-        private double mzLowerValue;
-        public double MzUpperValue { 
-            get => mzUpperValue;
-            set => SetProperty(ref mzUpperValue, value);
-        }
-        private double mzUpperValue;
-
-        public double RtLowerValue {
-            get => rtLowerValue;
-            set => SetProperty(ref rtLowerValue, value);
-        }
-        private double rtLowerValue;
-        public double RtUpperValue { 
-            get => rtUpperValue;
-            set => SetProperty(ref rtUpperValue, value);
-        }
-        private double rtUpperValue;
-
-        public double DtLowerValue {
-            get => dtLowerValue;
-            set => SetProperty(ref dtLowerValue, value);
-        }
-        private double dtLowerValue;
-        public double DtUpperValue { 
-            get => dtUpperValue;
-            set => SetProperty(ref dtUpperValue, value);
-        }
-        private double dtUpperValue;
-
-        private readonly IMatchResultEvaluator<IFilterable> _evaluator;
-
-        public ReadOnlyCollection<string> MetaboliteFilterKeywords { get; }
-        private readonly List<string> metaboliteFilterKeywords;
-
-        private readonly SemaphoreSlim metaboliteSemaphore = new SemaphoreSlim(1, 1);
-        public async Task SetMetaboliteKeywordsAsync(IEnumerable<string> keywords, CancellationToken token) {
-            token.ThrowIfCancellationRequested();
-            await metaboliteSemaphore.WaitAsync().ConfigureAwait(false);
-            try {
-                token.ThrowIfCancellationRequested();
-                SetMetaboliteKeywords(keywords.Where(keyword => !string.IsNullOrEmpty(keyword)).Select(keyword => keyword.ToLower()));
-            }
-            finally {
-                metaboliteSemaphore.Release();
-            }
-        }
-
-        private void SetMetaboliteKeywords(IEnumerable<string> keywords) {
-            metaboliteFilterKeywords.Clear();
-            metaboliteFilterKeywords.AddRange(keywords);
-        }
-
-        public ReadOnlyCollection<string> ProteinFilterKeywords { get; }
-        private readonly List<string> proteinFilterKeywords;
-
-        private readonly SemaphoreSlim proteinSemaphore = new SemaphoreSlim(1, 1);
-        public async Task SetProteinKeywordsAsync(IEnumerable<string> keywords, CancellationToken token) {
-            token.ThrowIfCancellationRequested();
-            await proteinSemaphore.WaitAsync().ConfigureAwait(false);
-            try {
-                token.ThrowIfCancellationRequested();
-                SetProteinKeywords(keywords.Where(keyword => !string.IsNullOrEmpty(keyword)).Select(keyword => keyword.ToLower()));
-            }
-            finally {
-                proteinSemaphore.Release();
-            }
-        }
-
-        private void SetProteinKeywords(IEnumerable<string> keywords) {
-            proteinFilterKeywords.Clear();
-            proteinFilterKeywords.AddRange(keywords);
-        }
-
-        public ReadOnlyCollection<string> CommentFilterKeywords { get; }
-        private readonly List<string> commentFilterKeywords;
-
-        private readonly SemaphoreSlim commentSemaphore = new SemaphoreSlim(1, 1);
-        public async Task SetCommentKeywordsAsync(IEnumerable<string> keywords, CancellationToken token) {
-            token.ThrowIfCancellationRequested();
-            await commentSemaphore.WaitAsync().ConfigureAwait(false);
-            try {
-                token.ThrowIfCancellationRequested();
-                SetCommentKeywords(keywords.Where(keyword => !string.IsNullOrEmpty(keyword)).Select(keyword => keyword.ToLower()));
-            }
-            finally {
-                commentSemaphore.Release();
-            }
-        }
-
-        private void SetCommentKeywords(IEnumerable<string> keywords) {
-            commentFilterKeywords.Clear();
-            commentFilterKeywords.AddRange(keywords);
-        }
-
-        public ReadOnlyCollection<string> OntologyFilterKeywords { get; }
-        private readonly List<string> ontologyFilterKeywords;
-
-        private readonly SemaphoreSlim ontologySemaphore = new SemaphoreSlim(1, 1);
-        public async Task SetOntologyKeywordsAsync(IEnumerable<string> keywords, CancellationToken token) {
-            token.ThrowIfCancellationRequested();
-            await ontologySemaphore.WaitAsync().ConfigureAwait(false);
-            try {
-                token.ThrowIfCancellationRequested();
-                SetOntologyKeywords(keywords.Where(keyword => !string.IsNullOrEmpty(keyword)));
-            }
-            finally {
-                ontologySemaphore.Release();
-            }
-        }
-
-        private void SetOntologyKeywords(IEnumerable<string> keywords) {
-            ontologyFilterKeywords.Clear();
-            ontologyFilterKeywords.AddRange(keywords.Where(keyword => !string.IsNullOrEmpty(keyword)));
-        }
-
-        public ReadOnlyCollection<string> AdductFilterKeywords { get; }
-        private readonly List<string> adductFilterKeywords;
-
-        private readonly SemaphoreSlim adductSemaphore = new SemaphoreSlim(1, 1);
-        public async Task SetAdductKeywordsAsync(IEnumerable<string> keywords, CancellationToken token) {
-            token.ThrowIfCancellationRequested();
-            await adductSemaphore.WaitAsync().ConfigureAwait(false);
-            try {
-                token.ThrowIfCancellationRequested();
-                SetAdductKeywords(keywords);
-            }
-            finally {
-                adductSemaphore.Release();
-            }
-        }
-
-        private void SetAdductKeywords(IEnumerable<string> keywords) {
-            adductFilterKeywords.Clear();
-            adductFilterKeywords.AddRange(keywords);
-        }
-
+        public ValueFilterModel AmplitudeFilterModel { get; }
+        public ValueFilterModel MzFilterModel { get; }
+        public ValueFilterModel RtFilterModel { get; }
+        public ValueFilterModel DtFilterModel { get; }
+        public KeywordFilterModel MetaboliteFilterModel { get; }
+        public KeywordFilterModel ProteinFilterModel { get; }
+        public KeywordFilterModel CommentFilterModel { get; }
+        public KeywordFilterModel OntologyFilterModel { get; }
+        public KeywordFilterModel AdductFilterModel { get; }
         public PeakSpotTagSearchQueryBuilderModel TagSearchQueryBuilder { get; }
-
-
         public PeakFilterModel PeakFilterModel { get; }
-
         public ObservableCollection<PeakFilterModel> PeakFilters { get; } = new ObservableCollection<PeakFilterModel>();
 
         public void RefreshCollectionViews() {
@@ -266,46 +105,6 @@ namespace CompMs.App.Msdial.Model.Search
                 PeakSpotsCollection.Add(collection);
                 PeakFilters.Add(peakFilterModel);
             });
-        }
-
-        internal bool MzFilter(IChromatogramPeak peak) {
-            return MzLowerValue <= peak.Mass && peak.Mass <= MzUpperValue;
-        }
-
-        internal bool RtFilter(IChromatogramPeak peak) {
-            return RtLowerValue <= peak.ChromXs.RT.Value && peak.ChromXs.RT.Value <= RtUpperValue;
-        }
-
-        internal bool DtFilter(IChromatogramPeak peak) {
-            return DtLowerValue <= peak.ChromXs.Drift.Value && peak.ChromXs.Drift.Value <= DtUpperValue;
-        }
-
-        internal bool ProteinFilter(IFilterable peak, IEnumerable<string> keywords) {
-            var protein = peak.Protein?.ToLower();
-            return keywords.All(keyword => protein?.Contains(keyword) ?? true);
-        }
-
-        internal bool MetaboliteFilter(IMoleculeProperty peak, IEnumerable<string> keywords) {
-            var name = peak.Name.ToLower();
-            return keywords.All(keyword => name.Contains(keyword));
-        }
-
-        internal bool CommentFilter(IFilterable peak, IEnumerable<string> keywords) {
-            var comment = peak.Comment?.ToLower();
-            return keywords.All(keyword => (comment?.Contains(keyword) ?? false));
-        }
-
-        internal bool OntologyFilter(IMoleculeProperty peak, IEnumerable<string> keywords) {
-            return !keywords.Any() || keywords.Any(keyword => peak.Ontology == keyword);
-        }
-
-        internal bool AdductFilter(IFilterable peak, IEnumerable<string> keywords) {
-            return keywords.All(keyword => peak.AdductIonName?.ToLower().Contains(keyword.ToLower()) ?? true);
-        }
-
-        internal bool AmplitudeFilter(IFilterable peak) {
-            var relative = peak.RelativeAmplitudeValue;
-            return AmplitudeLowerValue <= relative && relative <= AmplitudeUpperValue;
         }
 
         protected override void Dispose(bool disposing) {

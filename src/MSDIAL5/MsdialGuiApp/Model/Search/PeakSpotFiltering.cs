@@ -53,33 +53,33 @@ namespace CompMs.App.Msdial.Model.Search
                 filterable => peakFilterModel.PeakFilter(filterable, evaluator) && filterable.TagCollection.IsSelected(peakSpotNavigatorModel.TagSearchQueryBuilder.CreateQuery())
             };
             if ((status & FilterEnableStatus.Rt) != FilterEnableStatus.None) {
-                results.Add(peakSpotNavigatorModel.RtFilter);
+                results.Add(peak => peakSpotNavigatorModel.RtFilterModel.Contains(peak.ChromXs.RT.Value));
             }
             if ((status & FilterEnableStatus.Dt) != FilterEnableStatus.None) {
-                results.Add(peakSpotNavigatorModel.DtFilter);
+                results.Add(peak => peakSpotNavigatorModel.DtFilterModel.Contains(peak.ChromXs.Drift.Value));
             }
             if ((status & FilterEnableStatus.Mz) != FilterEnableStatus.None) {
-                results.Add(peakSpotNavigatorModel.MzFilter);
+                results.Add(peak => peakSpotNavigatorModel.MzFilterModel.Contains(peak.Mass));
             }
             if ((status & FilterEnableStatus.Amplitude) != FilterEnableStatus.None) {
-                results.Add(peakSpotNavigatorModel.AmplitudeFilter);
+                results.Add(peak => peakSpotNavigatorModel.AmplitudeFilterModel.Contains(peak.RelativeAmplitudeValue));
             }
             if ((status & FilterEnableStatus.Metabolite) != FilterEnableStatus.None) {
-                results.Add(filterable => peakSpotNavigatorModel.MetaboliteFilter(filterable, peakSpotNavigatorModel.MetaboliteFilterKeywords));
+                results.Add(filterable => peakSpotNavigatorModel.MetaboliteFilterModel.Match(filterable.Name));
             }
             if ((status & FilterEnableStatus.Protein) != FilterEnableStatus.None) {
-                results.Add(filterable => peakSpotNavigatorModel.ProteinFilter(filterable, peakSpotNavigatorModel.ProteinFilterKeywords));
+                results.Add(filterable => peakSpotNavigatorModel.ProteinFilterModel.Match(filterable.Protein));
             }
             if ((status & FilterEnableStatus.Comment) != FilterEnableStatus.None) {
-                results.Add(filterable => peakSpotNavigatorModel.CommentFilter(filterable, peakSpotNavigatorModel.CommentFilterKeywords));
+                results.Add(filterable => peakSpotNavigatorModel.CommentFilterModel.Match(filterable.Comment));
             }
 
             if ((status & FilterEnableStatus.Adduct) != FilterEnableStatus.None) {
-                results.Add(filterable => peakSpotNavigatorModel.AdductFilter(filterable, peakSpotNavigatorModel.AdductFilterKeywords));
+                results.Add(filterable => peakSpotNavigatorModel.AdductFilterModel.Match(filterable.AdductIonName));
             }
 
             if ((status & FilterEnableStatus.Ontology) != FilterEnableStatus.None) {
-                results.Add(filterable => peakSpotNavigatorModel.OntologyFilter(filterable, peakSpotNavigatorModel.OntologyFilterKeywords));
+                results.Add(filterable => peakSpotNavigatorModel.OntologyFilterModel.Match(filterable.Ontology));
             }
             return results;
         }
