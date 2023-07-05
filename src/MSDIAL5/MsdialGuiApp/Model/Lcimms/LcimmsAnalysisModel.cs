@@ -28,6 +28,7 @@ using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
 using CompMs.MsdialLcImMsApi.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -64,7 +65,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             DataBaseMapper mapper,
             MsdialLcImMsParameter parameter,
             PeakFilterModel peakFilterModel,
-            PeakFilterModel accumulatedPeakFilterModel) {
+            PeakFilterModel accumulatedPeakFilterModel,
+            IMessageBroker broker) {
             if (analysisFileModel is null) {
                 throw new ArgumentNullException(nameof(analysisFileModel));
             }
@@ -237,7 +239,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     }
                 },
                 true);
-            var spectraExporter = new NistSpectraExporter(target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
+            var spectraExporter = new NistSpectraExporter<ChromatogramPeakFeature>(target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
             var decLoader = new MSDecLoader(analysisFileModel.DeconvolutionFilePath).AddTo(Disposables);
             _decLoader = decLoader;
             var msdecResult = target.SkipNull()
@@ -273,7 +275,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 MatchResultCandidatesModel.GetCandidatesScorer(searcherCollection)).AddTo(Disposables);
 
             // Ms2 chromatogram
-            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(target, target.Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation)), rawLoader, spectrumProvider, parameter, analysisFileModel.AcquisitionType).AddTo(Disposables);
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(target, target.Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation)), rawLoader, spectrumProvider, parameter, analysisFileModel.AcquisitionType, broker).AddTo(Disposables);
 
             // Raw vs Purified spectrum model
             RawPurifiedSpectrumsModel = new RawPurifiedSpectrumsModel(

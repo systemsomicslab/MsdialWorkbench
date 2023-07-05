@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -11,34 +12,31 @@ using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Export
 {
-    public class NistSpectraExporter : ISpectraExporter, IDisposable, IObserver<ChromatogramPeakFeature>
+    public class NistSpectraExporter<T> : ISpectraExporter, IDisposable, IObserver<T> where T: IMoleculeProperty, IChromatogramPeak, IIonProperty, IAnnotatedObject
     {
-        private IDisposable unsubscriber;
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
-        private readonly ParameterBase parameter;
+        private IDisposable _unsubscriber;
+        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+        private readonly ParameterBase _parameter;
 
-        public NistSpectraExporter(
-            IObservable<ChromatogramPeakFeature> chromatogramPeakFeature,
-            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
-            ParameterBase parameter) {
-            this.refer = refer;
-            this.parameter = parameter;
-            unsubscriber = chromatogramPeakFeature.Subscribe(this);
+        public NistSpectraExporter(IObservable<T> peak, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter) {
+            _refer = refer;
+            _parameter = parameter;
+            _unsubscriber = peak.Subscribe(this);
         }
-        private ChromatogramPeakFeature cache;
+        private T _cache;
 
         public void Save(Stream stream, IReadOnlyList<SpectrumPeak> peaks) {
-            SpectraExport.SaveSpectraTableAsNistFormat(stream, cache, peaks, refer, parameter);
+            SpectraExport.SaveSpectraTableAsNistFormat(stream, _cache, peaks, _refer, _parameter);
         }
 
         public Task SaveAsync(Stream stream, IReadOnlyList<SpectrumPeak> peaks, CancellationToken token) {
-            SpectraExport.SaveSpectraTableAsNistFormat(stream, cache, peaks, refer, parameter);
+            SpectraExport.SaveSpectraTableAsNistFormat(stream, _cache, peaks, _refer, _parameter);
             return Task.CompletedTask;
         }
 
         public void Dispose() {
-            unsubscriber?.Dispose();
-            unsubscriber = null;
+            _unsubscriber?.Dispose();
+            _unsubscriber = null;
         }
 
         public void OnCompleted() {
@@ -49,8 +47,8 @@ namespace CompMs.MsdialCore.Export
 
         }
 
-        public void OnNext(ChromatogramPeakFeature value) {
-            cache = value;
+        public void OnNext(T value) {
+            _cache = value;
         }
     }
 }

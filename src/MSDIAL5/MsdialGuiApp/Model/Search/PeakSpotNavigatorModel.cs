@@ -32,7 +32,7 @@ namespace CompMs.App.Msdial.Model.Search
         All = ~None,
     }
 
-    public sealed class PeakSpotNavigatorModel : DisposableModelBase
+    internal sealed class PeakSpotNavigatorModel : DisposableModelBase
     {
         private readonly Dictionary<ICollectionView, Predicate<object>> _viewToPredicate = new Dictionary<ICollectionView, Predicate<object>>();
         private readonly Dictionary<ICollectionView, List<PeakFilterModel>> _viewToFilters = new Dictionary<ICollectionView, List<PeakFilterModel>>();
@@ -45,6 +45,7 @@ namespace CompMs.App.Msdial.Model.Search
 
             PeakSpots = peakSpots ?? throw new ArgumentNullException(nameof(peakSpots));
             PeakFilterModel = peakFilterModel ?? throw new ArgumentNullException(nameof(peakFilterModel));
+            TagSearchQueryBuilder = new PeakSpotTagSearchQueryBuilderModel();
             _status = status;
             _evaluator = evaluator.Contramap<IFilterable, MsScanMatchResult>(filterable => filterable.MatchResults.Representative, (e, f) => f.MatchResults.IsReferenceMatched(e), (e, f) => f.MatchResults.IsAnnotationSuggested(e));
             AmplitudeLowerValue = 0d;
@@ -245,6 +246,8 @@ namespace CompMs.App.Msdial.Model.Search
             adductFilterKeywords.AddRange(keywords);
         }
 
+        public PeakSpotTagSearchQueryBuilderModel TagSearchQueryBuilder { get; }
+
 
         public PeakFilterModel PeakFilterModel { get; }
 
@@ -311,8 +314,10 @@ namespace CompMs.App.Msdial.Model.Search
         }
 
         private List<Predicate<IFilterable>> CreateFilters(PeakFilterModel peakFilterModel, FilterEnableStatus status, IMatchResultEvaluator<IFilterable> evaluator) {
-            List<Predicate<IFilterable>> results = new List<Predicate<IFilterable>>();
-            results.Add(filterable => peakFilterModel.PeakFilter(filterable, evaluator));
+            List<Predicate<IFilterable>> results = new List<Predicate<IFilterable>>
+            {
+                filterable => peakFilterModel.PeakFilter(filterable, evaluator) && filterable.TagCollection.IsSelected(TagSearchQueryBuilder.CreateQuery())
+            };
             if ((status & FilterEnableStatus.Rt) != FilterEnableStatus.None) {
                 results.Add(RtFilter);
             }

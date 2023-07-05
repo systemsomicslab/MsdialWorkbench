@@ -27,7 +27,7 @@
     </UserControl.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="50" MinHeight="50"/>
+            <RowDefinition Height="Auto" MinHeight="50"/>
             <RowDefinition />
         </Grid.RowDefinitions>
 
@@ -40,6 +40,10 @@
                 <ColumnDefinition Width="210"/>
                 <ColumnDefinition Width="210"/>
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="20"/>
+            </Grid.RowDefinitions>
 
             <StackPanel Grid.Column="0">
                 <StackPanel Orientation="Horizontal">
@@ -100,6 +104,10 @@
                             Style="{StaticResource EditableRangeSlider}"
                             Margin="8,0"
                             Grid.Column="5"/>
+
+            <ContentControl Content="{Binding PeakSpotNavigatorViewModel.TagSearchBuilderViewModel}"
+                            ContentTemplate="{StaticResource FilteringPeakSpotTag}"
+                            Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"/>
         </Grid>
 
         <DataGrid x:Name="PeakSpotView"
@@ -163,6 +171,9 @@
                                     Binding="{Binding Path=Comment}"
                                     IsReadOnly="False"
                                     Width="2*" />
+                <DataGridTemplateColumn Header="Tag"
+                                        Width="Auto"
+                                        CellTemplate="{StaticResource EditPeakSpotTag}"/>
                 <DataGridTextColumn Header="Height"
                                     Binding="{Binding Path=Intensity, StringFormat=F3}"
                                     IsReadOnly="True"
