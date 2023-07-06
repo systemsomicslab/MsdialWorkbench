@@ -103,9 +103,9 @@ namespace CompMs.App.Msdial.Model.Lcms
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator).AddTo(Disposables);
-            var peakSpotFiltering = new PeakSpotFiltering().AddTo(Disposables);
-            PeakSpotNavigatorModel.AttachFilter(Ms1Spots, peakSpotFiltering, peakFilterModel, status: FilterEnableStatus.All & ~FilterEnableStatus.Dt);
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots).AddTo(Disposables);
+            var peakSpotFiltering = new PeakSpotFiltering<AlignmentSpotPropertyModel>().AddTo(Disposables);
+            PeakSpotNavigatorModel.AttachFilter(Ms1Spots, peakSpotFiltering, peakFilterModel, evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: FilterEnableStatus.All & ~FilterEnableStatus.Dt);
 
             // Peak scatter plot
             var ontologyBrush = new BrushMapData<AlignmentSpotPropertyModel>(

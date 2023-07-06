@@ -1,5 +1,4 @@
-﻿using CompMs.Common.DataObj.Result;
-using CompMs.CommonMVVM;
+﻿using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using Reactive.Bindings.Extensions;
 using System;
@@ -31,21 +30,14 @@ namespace CompMs.App.Msdial.Model.Search
 
     internal sealed class PeakSpotNavigatorModel : DisposableModelBase
     {
-        private readonly IMatchResultEvaluator<IFilterable> _evaluator;
-
-        public PeakSpotNavigatorModel(IReadOnlyList<IFilterable> peakSpots, PeakFilterModel peakFilterModel, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
-            if (evaluator is null) {
-                throw new ArgumentNullException(nameof(evaluator));
-            }
+        public PeakSpotNavigatorModel(IReadOnlyList<IFilterable> peakSpots) {
             AmplitudeFilterModel = new ValueFilterModel { Lower = 0d, Upper = 1d, };
             MzFilterModel = new ValueFilterModel();
             RtFilterModel = new ValueFilterModel();
             DtFilterModel = new ValueFilterModel();
 
             PeakSpots = peakSpots ?? throw new ArgumentNullException(nameof(peakSpots));
-            PeakFilterModel = peakFilterModel ?? throw new ArgumentNullException(nameof(peakFilterModel));
             TagSearchQueryBuilder = new PeakSpotTagSearchQueryBuilderModel();
-            _evaluator = evaluator.Contramap<IFilterable, MsScanMatchResult>(filterable => filterable.MatchResults.Representative, (e, f) => f.MatchResults.IsReferenceMatched(e), (e, f) => f.MatchResults.IsAnnotationSuggested(e));
             if (peakSpots is INotifyCollectionChanged notifyCollection) {
                 notifyCollection.CollectionChangedAsObservable().ToUnit()
                     .StartWith(Unit.Default)
@@ -85,7 +77,6 @@ namespace CompMs.App.Msdial.Model.Search
         public KeywordFilterModel OntologyFilterModel { get; }
         public KeywordFilterModel AdductFilterModel { get; }
         public PeakSpotTagSearchQueryBuilderModel TagSearchQueryBuilder { get; }
-        public PeakFilterModel PeakFilterModel { get; }
         public ObservableCollection<PeakFilterModel> PeakFilters { get; } = new ObservableCollection<PeakFilterModel>();
 
         public void RefreshCollectionViews() {
@@ -94,14 +85,41 @@ namespace CompMs.App.Msdial.Model.Search
             }
         }
 
-        public void AttachFilter(IEnumerable<IFilterable> peaks, PeakSpotFiltering peakSpotFiltering, PeakFilterModel peakFilterModel, FilterEnableStatus status = FilterEnableStatus.All, IMatchResultEvaluator<IFilterable> evaluator = null) {
+        public void AttachFilter<T>(IEnumerable<T> peaks, PeakSpotFiltering<T> peakSpotFiltering, PeakFilterModel peakFilterModel, IMatchResultEvaluator<T> evaluator, FilterEnableStatus status) where T: IFilterable {
             System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
                 ICollectionView collection = CollectionViewSource.GetDefaultView(peaks);
                 if (collection is ListCollectionView list) {
                     list.IsLiveFiltering = true;
                 }
-                peakSpotFiltering.AttachFilter(this, collection, peakFilterModel, status, evaluator ?? _evaluator);
+                peakSpotFiltering.AttachFilter(collection, peakFilterModel, TagSearchQueryBuilder, evaluator);
+                if ((status & FilterEnableStatus.Rt) != FilterEnableStatus.None) {
+                    peakSpotFiltering.AttachFilter(RtFilterModel, obj => ((IFilterable)obj).ChromXs.RT.Value, collection);
+                }
+                if ((status & FilterEnableStatus.Dt) != FilterEnableStatus.None) {
+                    peakSpotFiltering.AttachFilter(DtFilterModel, obj => ((IFilterable)obj).ChromXs.Drift.Value, collection);
+                }
+                if ((status & FilterEnableStatus.Mz) != FilterEnableStatus.None) {
+                    peakSpotFiltering.AttachFilter(MzFilterModel, obj => ((IFilterable)obj).Mass, collection);
+                }
+                if ((status & FilterEnableStatus.Amplitude) != FilterEnableStatus.None) {
+                    peakSpotFiltering.AttachFilter(AmplitudeFilterModel, obj => ((IFilterable)obj).RelativeAmplitudeValue, collection);
+                }
+                if ((status & FilterEnableStatus.Metabolite) != FilterEnableStatus.None) {
+                    peakSpotFiltering.AttachFilter(MetaboliteFilterModel, obj => ((IFilterable)obj).Name, collection);
+                }
+                if ((status & FilterEnableStatus.Protein) != FilterEnableStatus.None) {
+                    peakSpotFiltering.AttachFilter(ProteinFilterModel, obj => ((IFilterable)obj).Protein, collection);
+                }
+                if ((status & FilterEnableStatus.Comment) != FilterEnableStatus.None) {
+                    peakSpotFiltering.AttachFilter(CommentFilterModel, obj => ((IFilterable)obj).Comment, collection);
+                }
+                if ((status & FilterEnableStatus.Adduct) != FilterEnableStatus.None) {
+                    peakSpotFiltering.AttachFilter(AdductFilterModel, obj => ((IFilterable)obj).AdductIonName, collection);
+                }
+                if ((status & FilterEnableStatus.Ontology) != FilterEnableStatus.None) {
+                    peakSpotFiltering.AttachFilter(OntologyFilterModel, obj => ((IFilterable)obj).Ontology, collection);
+                }
                 PeakSpotsCollection.Add(collection);
                 PeakFilters.Add(peakFilterModel);
             });

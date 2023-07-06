@@ -135,12 +135,13 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }).AddTo(Disposables);
             Ms1Peaks = peakModels;
 
-            var peakSpotNavigator = new PeakSpotNavigatorModel(driftPeaks, peakFilterModel, evaluator).AddTo(Disposables);
-            var peakSpotFiltering = new PeakSpotFiltering().AddTo(Disposables);
-            PeakSpotNavigatorModel.AttachFilter(driftPeaks, peakSpotFiltering, peakFilterModel, status: FilterEnableStatus.All);
+            var peakSpotNavigator = new PeakSpotNavigatorModel(driftPeaks).AddTo(Disposables);
+            var peakSpotFiltering = new PeakSpotFiltering<ChromatogramPeakFeatureModel>().AddTo(Disposables);
+            IMatchResultEvaluator<ChromatogramPeakFeatureModel> driftEvaluator = evaluator.Contramap<ChromatogramPeakFeatureModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e));
+            PeakSpotNavigatorModel.AttachFilter(driftPeaks, peakSpotFiltering, peakFilterModel, driftEvaluator, status: FilterEnableStatus.All);
             var accEvaluator = new AccumulatedPeakEvaluator(evaluator);
-            peakSpotNavigator.AttachFilter(accumulatedPeakModels, peakSpotFiltering, accumulatedPeakFilterModel, status: FilterEnableStatus.None, evaluator: accEvaluator?.Contramap<IFilterable, ChromatogramPeakFeature>(filterable => ((ChromatogramPeakFeatureModel)filterable).InnerModel));
-            peakSpotNavigator.AttachFilter(peakModels, peakSpotFiltering, peakFilterModel, status: FilterEnableStatus.All, evaluator: evaluator.Contramap<IFilterable, MsScanMatchResult>(filterable => filterable.MatchResults.Representative));
+            peakSpotNavigator.AttachFilter(accumulatedPeakModels, peakSpotFiltering, accumulatedPeakFilterModel, evaluator: accEvaluator?.Contramap<ChromatogramPeakFeatureModel, ChromatogramPeakFeature>(filterable => filterable.InnerModel), status: FilterEnableStatus.None);
+            peakSpotNavigator.AttachFilter(peakModels, peakSpotFiltering, peakFilterModel, evaluator: driftEvaluator, status: FilterEnableStatus.All);
             PeakSpotNavigatorModel = peakSpotNavigator;
 
             var ontologyBrush = new BrushMapData<ChromatogramPeakFeatureModel>(

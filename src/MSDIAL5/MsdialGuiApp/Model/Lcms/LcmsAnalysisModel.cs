@@ -80,9 +80,9 @@ namespace CompMs.App.Msdial.Model.Lcms
                 ProteinResultContainerModel = proteinResultContainerModel;
             }
 
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator).AddTo(Disposables);
-            var peakSpotFiltering = new PeakSpotFiltering().AddTo(Disposables);
-            PeakSpotNavigatorModel.AttachFilter(Ms1Peaks, peakSpotFiltering, peakFilterModel, status: ~FilterEnableStatus.Dt);
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks).AddTo(Disposables);
+            var peakSpotFiltering = new PeakSpotFiltering<ChromatogramPeakFeatureModel>().AddTo(Disposables);
+            PeakSpotNavigatorModel.AttachFilter(Ms1Peaks, peakSpotFiltering, peakFilterModel, evaluator.Contramap<ChromatogramPeakFeatureModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: ~FilterEnableStatus.Dt);
 
             // Peak scatter plot
             var ontologyBrush = new BrushMapData<ChromatogramPeakFeatureModel>(
