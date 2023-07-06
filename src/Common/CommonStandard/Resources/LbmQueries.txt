@@ -159,6 +159,8 @@ NAPhe	[M-H]-	Negative	TRUE
 NATau	[M-H]-	Negative	TRUE
 NATryA	[M+H]+	Positive	TRUE
 NATryA	[M-H]-	Negative	TRUE
+NATryA	[M+CH3COO]-	Negative	TRUE
+NATryA	[M+HCOO]-	Negative	TRUE
 NA5HT	[M+H]+	Positive	TRUE
 NAAla	[M+H]+	Positive	TRUE
 NAGln	[M+H]+	Positive	TRUE
@@ -166,6 +168,15 @@ NALeu	[M+H]+	Positive	TRUE
 NAVal	[M+H]+	Positive	TRUE
 NASer	[M+H]+	Positive	TRUE
 NAGABA	[M+H]+	Positive	TRUE
+NA5HT	[M-H]-	Negative	TRUE
+NA5HT	[M+CH3COO]-	Negative	TRUE
+NA5HT	[M+HCOO]-	Negative	TRUE
+NAAla	[M-H]-	Negative	TRUE
+NAGln	[M-H]-	Negative	TRUE
+NALeu	[M-H]-	Negative	TRUE
+NAVal	[M-H]-	Negative	TRUE
+NASer	[M-H]-	Negative	TRUE
+NAGABA	[M-H]-	Negative	TRUE
 WE	[M+NH4]+	Positive	TRUE
 SL	[M-H]-	Negative	TRUE
 SL	[M+H]+	Positive	TRUE
