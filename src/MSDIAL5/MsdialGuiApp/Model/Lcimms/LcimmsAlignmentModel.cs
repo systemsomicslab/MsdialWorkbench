@@ -128,15 +128,14 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }).AddTo(Disposables);
             Ms1Spots = propModels;
 
-            var peakSpotNavigator = new PeakSpotNavigatorModel(driftProps).AddTo(Disposables);
-            var peakSpotFiltering = new PeakSpotFiltering<AlignmentSpotPropertyModel>().AddTo(Disposables);
+            var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(driftProps).AddTo(Disposables);
             var filterableEvaluator = evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e));
-            PeakSpotNavigatorModel.AttachFilter(driftProps, peakSpotFiltering, peakFilterModel, filterableEvaluator, status: FilterEnableStatus.All);
-            peakSpotNavigator.AttachFilter(propModels, peakSpotFiltering, peakFilterModel, evaluator: filterableEvaluator, status: FilterEnableStatus.All);
+            filterRegistrationManager.AttachFilter(driftProps, peakFilterModel, filterableEvaluator, status: FilterEnableStatus.All);
+            filterRegistrationManager.AttachFilter(propModels, peakFilterModel, evaluator: filterableEvaluator, status: FilterEnableStatus.All);
             var accEvaluator = new AccumulatedPeakEvaluator(evaluator);
             var accFilterableEvaluator = accEvaluator.Contramap<AlignmentSpotPropertyModel, AlignmentSpotProperty>(filterable => filterable.innerModel);
-            peakSpotNavigator.AttachFilter(accumulatedPropModels, peakSpotFiltering, accumulatedPeakFilterModel, evaluator: accFilterableEvaluator, status: FilterEnableStatus.None);
-            PeakSpotNavigatorModel = peakSpotNavigator;
+            filterRegistrationManager.AttachFilter(accumulatedPropModels, accumulatedPeakFilterModel, evaluator: accFilterableEvaluator, status: FilterEnableStatus.None);
+            PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
 
             InternalStandardSetModel = new InternalStandardSetModel(driftProps, TargetMsMethod.Lcimms).AddTo(Disposables);
             NormalizationSetModel = new NormalizationSetModel(Container, files, fileCollection, mapper, evaluator, InternalStandardSetModel, parameter, broker).AddTo(Disposables);

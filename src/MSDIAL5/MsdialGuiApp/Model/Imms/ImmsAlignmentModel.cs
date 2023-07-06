@@ -102,9 +102,10 @@ namespace CompMs.App.Msdial.Model.Imms
 
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
 
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots).AddTo(Disposables);
-            var peakSpotFiltering = new PeakSpotFiltering<AlignmentSpotPropertyModel>().AddTo(Disposables);
-            PeakSpotNavigatorModel.AttachFilter(Ms1Spots, peakSpotFiltering, peakFilterModel, evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: ~FilterEnableStatus.Rt);
+            var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(Ms1Spots).AddTo(Disposables);
+            PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
+            var peakSpotFiltering = filterRegistrationManager.PeakSpotFiltering;
+            filterRegistrationManager.AttachFilter(Ms1Spots, peakFilterModel, evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: ~FilterEnableStatus.Rt);
 
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel);
             PlotModel = new AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, SelectedBrush, Brushes)

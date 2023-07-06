@@ -1,14 +1,21 @@
 ﻿using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.DataObj;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Search
 {
-    internal class PeakSpotFiltering<T> : IDisposable where T: IFilterable
+    internal class PeakSpotFiltering<T> : IDisposable where T: IFilterable, IAnnotatedObject
     {
         private readonly Dictionary<ICollectionView, PeakFilters> _viewToFilterMethods = new Dictionary<ICollectionView, PeakFilters>();
+        private readonly Dictionary<ICollectionView, CompositeDisposable> _viewToDisposables = new Dictionary<ICollectionView, CompositeDisposable>();
         private bool _disposedValue;
 
         public void AttachFilter(ICollectionView view, PeakFilterModel peakFilterModel, PeakSpotTagSearchQueryBuilderModel tagSearchQueryBuilder, IMatchResultEvaluator<T> evaluator) {
@@ -19,6 +26,19 @@ namespace CompMs.App.Msdial.Model.Search
         public void AttachFilter(ValueFilterModel filterModel, Func<T, double> convert, ICollectionView view) {
             bool predicate(T filterable) => filterModel.Contains(convert(filterable));
             AttachFilterCore(predicate, view);
+            if (view.SourceCollection is INotifyCollectionChanged notifyCollection) {
+                if (!_viewToDisposables.ContainsKey(view)) {
+                    _viewToDisposables[view] = new CompositeDisposable();
+                }
+                notifyCollection.CollectionChangedAsObservable().ToUnit()
+                    .StartWith(Unit.Default)
+                    .Throttle(TimeSpan.FromSeconds(.05d))
+                    .Subscribe(_ =>
+                    {
+                        filterModel.Lower = view.SourceCollection.Cast<T>().DefaultIfEmpty().Min(convert);
+                        filterModel.Upper = view.SourceCollection.Cast<T>().DefaultIfEmpty().Max(convert);
+                    }).AddTo(_viewToDisposables[view]);
+            }
         }
 
         public void AttachFilter(KeywordFilterModel filterModel, Func<T, string> convert, ICollectionView view) {
@@ -37,6 +57,8 @@ namespace CompMs.App.Msdial.Model.Search
             if (_viewToFilterMethods.ContainsKey(view)) {
                 _viewToFilterMethods[view].Detatch();
                 _viewToFilterMethods.Remove(view);
+                _viewToDisposables[view].Dispose();
+                _viewToDisposables.Remove(view);
                 return true;
             }
             return false;
@@ -49,13 +71,13 @@ namespace CompMs.App.Msdial.Model.Search
         private void Dispose(bool disposing) {
             if (!_disposedValue) {
                 if (disposing) {
-
                 }
                 var views = _viewToFilterMethods.Keys.ToArray();
                 foreach (var view in views) {
                     DetatchFilter(view);
                 }
                 _viewToFilterMethods.Clear();
+                _viewToDisposables.Clear();
                 _disposedValue = true;
             }
         }

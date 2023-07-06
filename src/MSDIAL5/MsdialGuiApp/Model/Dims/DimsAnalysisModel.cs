@@ -70,9 +70,9 @@ namespace CompMs.App.Msdial.Model.Dims
 
             _undoManager = new UndoManager().AddTo(Disposables);
 
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks).AddTo(Disposables);
-            var peakSpotFiltering = new PeakSpotFiltering<ChromatogramPeakFeatureModel>().AddTo(Disposables);
-            PeakSpotNavigatorModel.AttachFilter(Ms1Peaks, peakSpotFiltering, peakFilterModel, evaluator.Contramap<ChromatogramPeakFeatureModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: ~(FilterEnableStatus.Rt | FilterEnableStatus.Dt));
+            var filterRegistrationManager = new FilterRegistrationManager<ChromatogramPeakFeatureModel>(Ms1Peaks).AddTo(Disposables);
+            PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
+            filterRegistrationManager.AttachFilter(Ms1Peaks, peakFilterModel, evaluator.Contramap<ChromatogramPeakFeatureModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: ~(FilterEnableStatus.Rt | FilterEnableStatus.Dt));
 
             var ontologyBrush = new BrushMapData<ChromatogramPeakFeatureModel>(
                     new KeyBrushMapper<ChromatogramPeakFeatureModel, string>(
