@@ -522,12 +522,6 @@
             <CheckBox IsChecked="{Binding Overannotation.Value, Mode=TwoWay}" Content="O" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
 
             <CheckBox Content="Exclude tagged peaks" IsChecked="{Binding Excludes.Value, Mode=TwoWay}" Margin="8,0" VerticalAlignment="Center" FontSize="12"/>
-
-            <Button Content="Mark all as confirmed"
-                    IsEnabled="False"
-                    Margin="8,0"
-                    VerticalAlignment="Center" HorizontalAlignment="Left"
-                    Width="128"/>
         </StackPanel>
     </DataTemplate>
 
