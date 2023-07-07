@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -15,14 +13,10 @@ namespace CompMs.Graphics.UI.RangeSlider
             DefaultStyleKeyProperty.OverrideMetadata(typeof(RangeSlider), new FrameworkPropertyMetadata(typeof(RangeSlider)));
         }
 
-        public RangeSlider() {
-            DefaultStyleKey = typeof(RangeSlider);
-        }
-
         public static readonly DependencyProperty MinimumProperty =
             DependencyProperty.Register(
                 nameof(Minimum), typeof(double), typeof(RangeSlider),
-                new PropertyMetadata(0d, MinimumChanged));
+                new FrameworkPropertyMetadata(0d, MinimumChanged));
         public double Minimum {
             get => (double)GetValue(MinimumProperty);
             set => SetValue(MinimumProperty, value);
@@ -30,8 +24,10 @@ namespace CompMs.Graphics.UI.RangeSlider
 
         private static void MinimumChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             if (d is RangeSlider slider) {
+                slider.LowerRangeElement?.SetValue(RangeBase.MinimumProperty, e.NewValue);
+                slider.UpperRangeElement?.SetValue(RangeBase.MinimumProperty, e.NewValue);
                 if (slider.LowerValue == (double)e.OldValue) {
-                    slider.LowerValue = (double)e.NewValue;
+                    slider.SetCurrentValue(LowerValueProperty, e.NewValue);
                 }
             }
         }
@@ -39,7 +35,7 @@ namespace CompMs.Graphics.UI.RangeSlider
         public static readonly DependencyProperty MaximumProperty =
             DependencyProperty.Register(
                 nameof(Maximum), typeof(double), typeof(RangeSlider),
-                new PropertyMetadata(1d, MaximumChanged));
+                new FrameworkPropertyMetadata(1d, MaximumChanged));
         public double Maximum {
             get => (double)GetValue(MaximumProperty);
             set => SetValue(MaximumProperty, value);
@@ -47,8 +43,10 @@ namespace CompMs.Graphics.UI.RangeSlider
 
         private static void MaximumChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             if (d is RangeSlider slider) {
+                slider.LowerRangeElement?.SetValue(RangeBase.MaximumProperty, e.NewValue);
+                slider.UpperRangeElement?.SetValue(RangeBase.MaximumProperty, e.NewValue);
                 if (slider.UpperValue == (double)e.OldValue) {
-                    slider.UpperValue = (double)e.NewValue;
+                    slider.SetCurrentValue(UpperValueProperty, e.NewValue);
                 }
             }
         }
@@ -56,25 +54,45 @@ namespace CompMs.Graphics.UI.RangeSlider
         public static readonly DependencyProperty LowerValueProperty =
             DependencyProperty.Register(
                 nameof(LowerValue), typeof(double), typeof(RangeSlider),
-                new PropertyMetadata(0d, ValueChanged));
+                new FrameworkPropertyMetadata(0d, LowerValueChanged, CoerceValue));
         public double LowerValue {
             get => (double)GetValue(LowerValueProperty);
             set => SetValue(LowerValueProperty, value);
         }
 
+        private static void LowerValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            if (d is RangeSlider slider) {
+                slider.LowerRangeElement?.SetValue(RangeBase.ValueProperty, e.NewValue);
+                slider.CoerceValue(IntervalValueProperty);
+            }
+        }
+
         public static readonly DependencyProperty UpperValueProperty =
             DependencyProperty.Register(
                 nameof(UpperValue), typeof(double), typeof(RangeSlider),
-                new PropertyMetadata(1d, ValueChanged));
+                new FrameworkPropertyMetadata(1d, UpperValueChanged, CoerceValue));
         public double UpperValue {
             get => (double)GetValue(UpperValueProperty);
             set => SetValue(UpperValueProperty, value);
         }
 
-        private static void ValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+        private static void UpperValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             if (d is RangeSlider slider) {
+                slider.UpperRangeElement?.SetValue(RangeBase.ValueProperty, e.NewValue);
                 slider.CoerceValue(IntervalValueProperty);
             }
+        }
+
+        private static object CoerceValue(DependencyObject d, object value) {
+            var slider = (RangeSlider)d;
+            var lower = (double)value;
+            if (slider.Minimum > lower) {
+                return slider.Minimum;
+            }
+            if (slider.Maximum < lower) {
+                return slider.Maximum;
+            }
+            return value;
         }
 
         private static readonly DependencyPropertyKey IntervalValuePropertyKey =
@@ -96,35 +114,53 @@ namespace CompMs.Graphics.UI.RangeSlider
             return slider.UpperValue - slider.LowerValue;
         }
 
-        private RangeBase lowerRangeElement, upperRangeElement;
+        private RangeBase _lowerRangeElement, _upperRangeElement;
 
         public RangeBase LowerRangeElement {
-            get => lowerRangeElement;
+            get => _lowerRangeElement;
             set {
-                if (lowerRangeElement != null)
-                    lowerRangeElement.ValueChanged -= LowerRangeElement_ValueChanged;
-                lowerRangeElement = value;
-                if (lowerRangeElement != null)
-                    lowerRangeElement.ValueChanged += LowerRangeElement_ValueChanged;
+                if (_lowerRangeElement != null) {
+                    _lowerRangeElement.ValueChanged -= LowerRangeElement_ValueChanged;
+                }
+                _lowerRangeElement = value;
+                if (_lowerRangeElement != null) {
+                    InitializeLowerRangeElement();
+                    _lowerRangeElement.ValueChanged += LowerRangeElement_ValueChanged;
+                }
             }
         }
 
         public RangeBase UpperRangeElement {
-            get => upperRangeElement;
+            get => _upperRangeElement;
             set {
-                if (upperRangeElement != null)
-                    upperRangeElement.ValueChanged -= UpperRangeElement_ValueChanged;
-                upperRangeElement = value;
-                if (upperRangeElement != null)
-                    upperRangeElement.ValueChanged += UpperRangeElement_ValueChanged;
+                if (_upperRangeElement != null) {
+                    _upperRangeElement.ValueChanged -= UpperRangeElement_ValueChanged;
+                }
+                _upperRangeElement = value;
+                if (_upperRangeElement != null) {
+                    InitializeUpperRangeElement();
+                    _upperRangeElement.ValueChanged += UpperRangeElement_ValueChanged;
+                }
             }
         }
 
+        void InitializeLowerRangeElement() {
+            LowerRangeElement.SetValue(RangeBase.MinimumProperty, Minimum);
+            LowerRangeElement.SetValue(RangeBase.MaximumProperty, Maximum);
+            LowerRangeElement.SetValue(RangeBase.ValueProperty, LowerValue);
+        }
+
+        void InitializeUpperRangeElement() {
+            UpperRangeElement.SetValue(RangeBase.MinimumProperty, Minimum);
+            UpperRangeElement.SetValue(RangeBase.MaximumProperty, Maximum);
+            UpperRangeElement.SetValue(RangeBase.ValueProperty, UpperValue);
+        }
+
         void LowerRangeElement_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
-            LowerValue = Math.Min(LowerRangeElement.Value, UpperRangeElement.Value);
+            SetCurrentValue(LowerValueProperty, Math.Min(LowerRangeElement.Value, UpperRangeElement.Value));
         }
         void UpperRangeElement_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
-            UpperValue = Math.Max(LowerRangeElement.Value, UpperRangeElement.Value);
+            SetCurrentValue(UpperValueProperty, Math.Max(LowerRangeElement.Value, UpperRangeElement.Value));
         }
 
         public override void OnApplyTemplate() {
