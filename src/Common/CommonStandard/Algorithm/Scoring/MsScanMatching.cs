@@ -17,39 +17,47 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CompMs.Common.Algorithm.Scoring {
-   
-    public class MatchedPeak {
+namespace CompMs.Common.Algorithm.Scoring
+{
+
+    public class MatchedPeak
+    {
         public bool IsProductIonMatched { get; set; } = false;
         public bool IsNeutralLossMatched { get; set; } = false;
         public double Mass { get; set; }
         public double Intensity { get; set; }
         public double MatchedIntensity { get; set; }
     }
-    public sealed class MsScanMatching {
+    public sealed class MsScanMatching
+    {
         private MsScanMatching() { }
 
-        private static bool IsComparedAvailable<T>(IReadOnlyCollection<T> obj1, IReadOnlyCollection<T> obj2) {
+        private static bool IsComparedAvailable<T>(IReadOnlyCollection<T> obj1, IReadOnlyCollection<T> obj2)
+        {
             if (obj1 == null || obj2 == null || obj1.Count == 0 || obj2.Count == 0) return false;
             return true;
         }
 
-        private static bool IsComparedAvailable(IMSScanProperty obj1, IMSScanProperty obj2) {
+        private static bool IsComparedAvailable(IMSScanProperty obj1, IMSScanProperty obj2)
+        {
             if (obj1.Spectrum == null || obj2.Spectrum == null || obj1.Spectrum.Count == 0 || obj2.Spectrum.Count == 0) return false;
             return true;
         }
 
-        public static double[] GetEieioBasedLipidomicsMatchedPeaksScores(IMSScanProperty scan, MoleculeMsReference reference, 
-            float tolerance, float mzBegin, float mzEnd) {
+        public static double[] GetEieioBasedLipidomicsMatchedPeaksScores(IMSScanProperty scan, MoleculeMsReference reference,
+            float tolerance, float mzBegin, float mzEnd)
+        {
 
             var returnedObj = GetEieioBasedLipidMoleculeAnnotationResult(scan, reference, tolerance, mzBegin, mzEnd);
             return returnedObj.Item2;
         }
 
         public static (ILipid, double[]) GetEieioBasedLipidMoleculeAnnotationResult(IMSScanProperty scan, MoleculeMsReference reference,
-            float tolerance, float mzBegin, float mzEnd) {
+            float tolerance, float mzBegin, float mzEnd)
+        {
             var lipid = FacadeLipidParser.Default.Parse(reference.Name);
-            switch (lipid.LipidClass) {
+            switch (lipid.LipidClass)
+            {
                 case LbmClass.PC:
                     return PCEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.PE:
@@ -162,16 +170,19 @@ namespace CompMs.Common.Algorithm.Scoring {
         }
 
         public static double[] GetEidBasedLipidomicsMatchedPeaksScores(IMSScanProperty scan, MoleculeMsReference reference,
-           float tolerance, float mzBegin, float mzEnd) {
+           float tolerance, float mzBegin, float mzEnd)
+        {
 
             var returnedObj = GetEidBasedLipidMoleculeAnnotationResult(scan, reference, tolerance, mzBegin, mzEnd);
             return returnedObj.Item2;
         }
 
         public static (ILipid, double[]) GetEidBasedLipidMoleculeAnnotationResult(IMSScanProperty scan, MoleculeMsReference reference,
-            float tolerance, float mzBegin, float mzEnd) {
+            float tolerance, float mzBegin, float mzEnd)
+        {
             var lipid = FacadeLipidParser.Default.Parse(reference.Name);
-            switch (lipid.LipidClass) {
+            switch (lipid.LipidClass)
+            {
                 case LbmClass.PC:
                 case LbmClass.PE:
                 case LbmClass.PS:
@@ -239,16 +250,19 @@ namespace CompMs.Common.Algorithm.Scoring {
 
 
         public static double[] GetOadBasedLipidomicsMatchedPeaksScores(IMSScanProperty scan, MoleculeMsReference reference,
-           float tolerance, float mzBegin, float mzEnd) {
+           float tolerance, float mzBegin, float mzEnd)
+        {
 
             var returnedObj = GetOadBasedLipidMoleculeAnnotationResult(scan, reference, tolerance, mzBegin, mzEnd);
             return returnedObj.Item2;
         }
 
         public static (ILipid, double[]) GetOadBasedLipidMoleculeAnnotationResult(IMSScanProperty scan, MoleculeMsReference reference,
-            float tolerance, float mzBegin, float mzEnd) {
+            float tolerance, float mzBegin, float mzEnd)
+        {
             var lipid = FacadeLipidParser.Default.Parse(reference.Name);
-            switch (lipid.LipidClass) {
+            switch (lipid.LipidClass)
+            {
                 case LbmClass.PC:
                 case LbmClass.PE:
                 case LbmClass.PS:
@@ -339,19 +353,22 @@ namespace CompMs.Common.Algorithm.Scoring {
 
         public static MsScanMatchResult CompareMS2ScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, MsRefSearchParameterBase param,
             TargetOmics targetOmics = TargetOmics.Metabolomics, double scanCCS = -1.0,
-            IReadOnlyList<IsotopicPeak> scanIsotopes = null, IReadOnlyList<IsotopicPeak> refIsotopes = null, 
-            double andromedaDelta = 100, int andromedaMaxPeaks = 12) {
+            IReadOnlyList<IsotopicPeak> scanIsotopes = null, IReadOnlyList<IsotopicPeak> refIsotopes = null,
+            double andromedaDelta = 100, int andromedaMaxPeaks = 12)
+        {
 
             MsScanMatchResult result = null;
-            if (targetOmics == TargetOmics.Metabolomics) {
+            if (targetOmics == TargetOmics.Metabolomics)
+            {
                 result = CompareMSScanProperties(scanProp, refSpec, param, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
-            } 
-            else if (targetOmics == TargetOmics.Lipidomics) {
+            }
+            else if (targetOmics == TargetOmics.Lipidomics)
+            {
                 result = CompareMS2LipidomicsScanProperties(scanProp, refSpec, param);
-            } 
+            }
 
             result.IsotopeSimilarity = (float)GetIsotopeRatioSimilarity(scanIsotopes, refIsotopes, scanProp.PrecursorMz, param.Ms1Tolerance);
-            
+
             var isCcsMatch = false;
             var ccsSimilarity = GetGaussianSimilarity(scanCCS, refSpec.CollisionCrossSection, param.CcsTolerance, out isCcsMatch);
 
@@ -364,10 +381,12 @@ namespace CompMs.Common.Algorithm.Scoring {
         public static MsScanMatchResult CompareMS2ScanProperties(IMSScanProperty scanProp, int chargestate, PeptideMsReference refSpec, MsRefSearchParameterBase param,
             TargetOmics targetOmics = TargetOmics.Metabolomics, double scanCCS = -1.0,
             IReadOnlyList<IsotopicPeak> scanIsotopes = null, IReadOnlyList<IsotopicPeak> refIsotopes = null,
-            double andromedaDelta = 100, int andromedaMaxPeaks = 12) {
+            double andromedaDelta = 100, int andromedaMaxPeaks = 12)
+        {
 
             MsScanMatchResult result = null;
-            if (targetOmics == TargetOmics.Proteomics) {
+            if (targetOmics == TargetOmics.Proteomics)
+            {
                 result = CompareMS2ProteomicsScanProperties(scanProp, chargestate, refSpec, param, (float)andromedaDelta, andromedaMaxPeaks);
             }
 
@@ -400,7 +419,8 @@ namespace CompMs.Common.Algorithm.Scoring {
         //    return result;
         //}
 
-        public static MsScanMatchResult CompareMS2LipidomicsScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, MsRefSearchParameterBase param) {
+        public static MsScanMatchResult CompareMS2LipidomicsScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, MsRefSearchParameterBase param)
+        {
 
             var result = CompareBasicMSScanProperties(scanProp, refSpec, param, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
             var matchedPeaksScores = GetLipidomicsMatchedPeaksScores(scanProp, refSpec, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
@@ -411,7 +431,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                 result.SimpleDotProduct >= param.SimpleDotProductCutOff &&
                 result.ReverseDotProduct >= param.ReverseDotProductCutOff &&
                 result.MatchedPeaksPercentage >= param.MatchedPeaksPercentageCutOff &&
-                result.MatchedPeaksCount >= param.MinimumSpectrumMatch) {
+                result.MatchedPeaksCount >= param.MinimumSpectrumMatch)
+            {
                 result.IsSpectrumMatch = true;
             }
 
@@ -435,8 +456,9 @@ namespace CompMs.Common.Algorithm.Scoring {
             return result;
         }
 
-        public static MsScanMatchResult CompareMS2ProteomicsScanProperties(IMSScanProperty scanProp, int chargestate, PeptideMsReference refSpec, 
-            MsRefSearchParameterBase param, float andromedaDelta, float andromedaMaxPeaks) {
+        public static MsScanMatchResult CompareMS2ProteomicsScanProperties(IMSScanProperty scanProp, int chargestate, PeptideMsReference refSpec,
+            MsRefSearchParameterBase param, float andromedaDelta, float andromedaMaxPeaks)
+        {
 
             var result = CompareBasicMSScanProperties(scanProp, refSpec, param, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
             var matchedPeaks = GetMachedSpectralPeaks(scanProp, chargestate, refSpec, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
@@ -451,7 +473,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                 result.ReverseDotProduct >= param.ReverseDotProductCutOff &&
                 result.MatchedPeaksPercentage >= param.MatchedPeaksPercentageCutOff &&
                 result.MatchedPeaksCount >= param.MinimumSpectrumMatch &&
-                result.AndromedaScore >= param.AndromedaScoreCutOff) {
+                result.AndromedaScore >= param.AndromedaScoreCutOff)
+            {
                 result.IsSpectrumMatch = true;
             }
             result.TotalScore = (float)GetTotalScore(result, param);
@@ -460,33 +483,40 @@ namespace CompMs.Common.Algorithm.Scoring {
         }
 
 
-        public static MsScanMatchResult CompareEIMSScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, 
-            MsRefSearchParameterBase param, bool isUseRetentionIndex = false) {
+        public static MsScanMatchResult CompareEIMSScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec,
+            MsRefSearchParameterBase param, bool isUseRetentionIndex = false)
+        {
             var result = CompareMSScanProperties(scanProp, refSpec, param, param.Ms1Tolerance, param.MassRangeBegin, param.MassRangeEnd);
             var msMatchedScore = GetIntegratedSpectraSimilarity(result);
-            if (isUseRetentionIndex) {
+            if (isUseRetentionIndex)
+            {
                 result.TotalScore = (float)GetTotalSimilarity(result.RiSimilarity, msMatchedScore, param.IsUseTimeForAnnotationScoring);
             }
-            else {
+            else
+            {
                 result.TotalScore = (float)GetTotalSimilarity(result.RtSimilarity, msMatchedScore, param.IsUseTimeForAnnotationScoring);
             }
             return result;
         }
 
         public static MsScanMatchResult CompareEIMSScanProperties(IMSScanProperty scan1, IMSScanProperty scan2,
-            MsRefSearchParameterBase param, bool isUseRetentionIndex = false) {
+            MsRefSearchParameterBase param, bool isUseRetentionIndex = false)
+        {
             var result = CompareMSScanProperties(scan1, scan2, param, param.Ms1Tolerance, param.MassRangeBegin, param.MassRangeEnd);
             var msMatchedScore = GetIntegratedSpectraSimilarity(result);
-            if (isUseRetentionIndex) {
+            if (isUseRetentionIndex)
+            {
                 result.TotalScore = (float)GetTotalSimilarity(result.RiSimilarity, msMatchedScore);
             }
-            else {
+            else
+            {
                 result.TotalScore = (float)GetTotalSimilarity(result.RtSimilarity, msMatchedScore);
             }
             return result;
         }
 
-        public static double GetIntegratedSpectraSimilarity(MsScanMatchResult result) {
+        public static double GetIntegratedSpectraSimilarity(MsScanMatchResult result)
+        {
             var dotproductFact = 3.0;
             var revDotproductFact = 2.0;
             var matchedRatioFact = 1.0;
@@ -495,8 +525,9 @@ namespace CompMs.Common.Algorithm.Scoring {
         }
 
 
-        public static MsScanMatchResult CompareMSScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, MsRefSearchParameterBase param, 
-            float ms2Tol, float massRangeBegin, float massRangeEnd) {
+        public static MsScanMatchResult CompareMSScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, MsRefSearchParameterBase param,
+            float ms2Tol, float massRangeBegin, float massRangeEnd)
+        {
 
             var result = CompareMSScanProperties(scanProp, (IMSScanProperty)refSpec, param, ms2Tol, massRangeBegin, massRangeEnd);
             result.Name = refSpec.Name;
@@ -506,7 +537,8 @@ namespace CompMs.Common.Algorithm.Scoring {
         }
 
         public static MsScanMatchResult CompareMSScanProperties(IMSScanProperty scanProp, IMSScanProperty refSpec, MsRefSearchParameterBase param,
-           float ms2Tol, float massRangeBegin, float massRangeEnd) {
+           float ms2Tol, float massRangeBegin, float massRangeEnd)
+        {
 
             var result = CompareBasicMSScanProperties(scanProp, refSpec, param, ms2Tol, massRangeBegin, massRangeEnd);
             var matchedPeaksScores = GetMatchedPeaksScores(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
@@ -517,7 +549,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                 result.SimpleDotProduct >= param.SimpleDotProductCutOff &&
                 result.ReverseDotProduct >= param.ReverseDotProductCutOff &&
                 result.MatchedPeaksPercentage >= param.MatchedPeaksPercentageCutOff &&
-                result.MatchedPeaksCount >= param.MinimumSpectrumMatch) {
+                result.MatchedPeaksCount >= param.MinimumSpectrumMatch)
+            {
                 result.IsSpectrumMatch = true;
             }
 
@@ -525,7 +558,8 @@ namespace CompMs.Common.Algorithm.Scoring {
         }
 
         public static MsScanMatchResult CompareBasicMSScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, MsRefSearchParameterBase param,
-           float ms2Tol, float massRangeBegin, float massRangeEnd) {
+           float ms2Tol, float massRangeBegin, float massRangeEnd)
+        {
             var result = CompareMSScanProperties(scanProp, (IMSScanProperty)refSpec, param, ms2Tol, massRangeBegin, massRangeEnd);
             result.Name = refSpec.Name;
             result.LibraryID = refSpec.ScanID;
@@ -534,8 +568,9 @@ namespace CompMs.Common.Algorithm.Scoring {
         }
 
         public static MsScanMatchResult CompareBasicMSScanProperties(IMSScanProperty scanProp, IMSScanProperty refSpec, MsRefSearchParameterBase param,
-           float ms2Tol, float massRangeBegin, float massRangeEnd) {
-            
+           float ms2Tol, float massRangeBegin, float massRangeEnd)
+        {
+
             var isRtMatch = false;
             var isRiMatch = false;
             var isMs1Match = false;
@@ -548,17 +583,24 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             var ms1Tol = param.Ms1Tolerance;
             var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms1Tol));
-            if (scanProp.PrecursorMz > 500) {
+            if (scanProp.PrecursorMz > 500)
+            {
                 ms1Tol = (float)MolecularFormulaUtility.ConvertPpmToMassAccuracy(scanProp.PrecursorMz, ppm);
             }
             var ms1Similarity = GetGaussianSimilarity(scanProp.PrecursorMz, refSpec.PrecursorMz, ms1Tol, out isMs1Match);
 
-            var result = new MsScanMatchResult() {
-                LibraryID = refSpec.ScanID, 
+            var result = new MsScanMatchResult()
+            {
+                LibraryID = refSpec.ScanID,
                 WeightedDotProduct = (float)weightedDotProduct,
-                SimpleDotProduct = (float)simpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
+                SimpleDotProduct = (float)simpleDotProduct,
+                ReverseDotProduct = (float)reverseDotProduct,
                 AcurateMassSimilarity = (float)ms1Similarity,
-                RtSimilarity = (float)rtSimilarity, RiSimilarity = (float)riSimilarity, IsPrecursorMzMatch = isMs1Match, IsRtMatch = isRtMatch, IsRiMatch = isRiMatch
+                RtSimilarity = (float)rtSimilarity,
+                RiSimilarity = (float)riSimilarity,
+                IsPrecursorMzMatch = isMs1Match,
+                IsRtMatch = isRtMatch,
+                IsRiMatch = isRiMatch
             };
 
             return result;
@@ -587,7 +629,8 @@ namespace CompMs.Common.Algorithm.Scoring {
         /// <returns>
         /// The similarity score which is standadized from 0 (no similarity) to 1 (consistency) will be return.
         /// </returns>
-        public static double GetIsotopeRatioSimilarity(IReadOnlyList<IsotopicPeak> peaks1, IReadOnlyList<IsotopicPeak> peaks2, double targetedMz, double tolerance) {
+        public static double GetIsotopeRatioSimilarity(IReadOnlyList<IsotopicPeak> peaks1, IReadOnlyList<IsotopicPeak> peaks2, double targetedMz, double tolerance)
+        {
             if (!IsComparedAvailable(peaks1, peaks2)) return -1;
 
             double similarity = 0;
@@ -595,16 +638,20 @@ namespace CompMs.Common.Algorithm.Scoring {
             if (peaks1[0].RelativeAbundance <= 0 || peaks2[0].RelativeAbundance <= 0) return -1;
 
             var minimum = Math.Min(peaks1.Count, peaks2.Count);
-            for (int i = 1; i < minimum; i++) {
+            for (int i = 1; i < minimum; i++)
+            {
                 ratio1 = peaks1[i].RelativeAbundance / peaks1[0].RelativeAbundance;
                 ratio2 = peaks2[i].RelativeAbundance / peaks2[0].RelativeAbundance;
 
                 if (ratio1 <= 1 && ratio2 <= 1) similarity += Math.Abs(ratio1 - ratio2);
-                else {
-                    if (ratio1 > ratio2) {
+                else
+                {
+                    if (ratio1 > ratio2)
+                    {
                         similarity += 1 - ratio2 / ratio1;
                     }
-                    else if (ratio2 > ratio1) {
+                    else if (ratio2 > ratio1)
+                    {
                         similarity += 1 - ratio1 / ratio2;
                     }
                 }
@@ -632,7 +679,8 @@ namespace CompMs.Common.Algorithm.Scoring {
         /// [1] MatchedPeaksCount is also returned.
         /// </returns>
         public static double[] GetMatchedPeaksScores(IMSScanProperty prop1, IMSScanProperty prop2, double bin,
-            double massBegin, double massEnd) {
+            double massBegin, double massEnd)
+        {
             if (!IsComparedAvailable(prop1, prop2)) return new double[2] { -1, -1 };
 
             var peaks1 = prop1.Spectrum;
@@ -642,7 +690,8 @@ namespace CompMs.Common.Algorithm.Scoring {
         }
 
         public static double[] GetMatchedPeaksScores(List<SpectrumPeak> peaks1, List<SpectrumPeak> peaks2, double bin,
-            double massBegin, double massEnd) {
+            double massBegin, double massEnd)
+        {
             if (!IsComparedAvailable(peaks1, peaks2)) return new double[2] { -1, -1 };
 
             double sumM = 0, sumL = 0;
@@ -661,28 +710,33 @@ namespace CompMs.Common.Algorithm.Scoring {
             List<double[]> measuredMassList = new List<double[]>();
             List<double[]> referenceMassList = new List<double[]>();
 
-            while (focusedMz <= maxMz) {
+            while (focusedMz <= maxMz)
+            {
                 sumL = 0;
-                for (int i = remaindIndexL; i < peaks2.Count; i++) {
+                for (int i = remaindIndexL; i < peaks2.Count; i++)
+                {
                     if (peaks2[i].Mass < focusedMz - bin) continue;
                     else if (focusedMz - bin <= peaks2[i].Mass && peaks2[i].Mass < focusedMz + bin)
                         sumL += peaks2[i].Intensity;
                     else { remaindIndexL = i; break; }
                 }
 
-                if (sumL >= 0.01 * maxLibIntensity) {
+                if (sumL >= 0.01 * maxLibIntensity)
+                {
                     libCounter++;
                 }
 
                 sumM = 0;
-                for (int i = remaindIndexM; i < peaks1.Count; i++) {
+                for (int i = remaindIndexM; i < peaks1.Count; i++)
+                {
                     if (peaks1[i].Mass < focusedMz - bin) continue;
                     else if (focusedMz - bin <= peaks1[i].Mass && peaks1[i].Mass < focusedMz + bin)
                         sumM += peaks1[i].Intensity;
                     else { remaindIndexM = i; break; }
                 }
 
-                if (sumM > 0 && sumL >= 0.01 * maxLibIntensity) {
+                if (sumM > 0 && sumL >= 0.01 * maxLibIntensity)
+                {
                     counter++;
                 }
 
@@ -695,7 +749,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                 return new double[2] { (double)counter / (double)libCounter, libCounter };
         }
 
-        public static double GetSpetralEntropySimilarity(List<SpectrumPeak> peaks1, List<SpectrumPeak> peaks2, double bin) {
+        public static double GetSpetralEntropySimilarity(List<SpectrumPeak> peaks1, List<SpectrumPeak> peaks2, double bin)
+        {
             var combinedSpectrum = SpectrumHandler.GetCombinedSpectrum(peaks1, peaks2, bin);
             var entropy12 = GetSpectralEntropy(combinedSpectrum);
             var entropy1 = GetSpectralEntropy(peaks1);
@@ -705,7 +760,8 @@ namespace CompMs.Common.Algorithm.Scoring {
         }
 
         public static double GetSpectralEntropy(
-            List<SpectrumPeak> peaks) {
+            List<SpectrumPeak> peaks)
+        {
             var sumIntensity = peaks.Sum(n => n.Intensity);
             return -1 * peaks.Sum(n => n.Intensity / sumIntensity * Math.Log(n.Intensity / sumIntensity, 2));
         }
@@ -715,16 +771,20 @@ namespace CompMs.Common.Algorithm.Scoring {
             IMSScanProperty prop2,
             double massTolerance = 0.05,
             MassToleranceType massToleranceType = MassToleranceType.Da
-            ) {
+            )
+        {
             var matchedPeaks = new List<MatchedPeak>();
-            if (prop1.PrecursorMz < prop2.PrecursorMz) {
+            if (prop1.PrecursorMz < prop2.PrecursorMz)
+            {
                 SearchMatchedPeaks(prop1.Spectrum, prop1.PrecursorMz, prop2.Spectrum, prop2.PrecursorMz, massTolerance, massToleranceType, out matchedPeaks);
             }
-            else {
+            else
+            {
                 SearchMatchedPeaks(prop2.Spectrum, prop2.PrecursorMz, prop1.Spectrum, prop1.PrecursorMz, massTolerance, massToleranceType, out matchedPeaks);
             }
 
-            if (matchedPeaks.Count == 0) {
+            if (matchedPeaks.Count == 0)
+            {
                 return new double[] { 0, 0 };
             }
 
@@ -738,16 +798,20 @@ namespace CompMs.Common.Algorithm.Scoring {
             IMSScanProperty prop1,
             IMSScanProperty prop2,
             double massTolerance = 0.05,
-            MassToleranceType massToleranceType = MassToleranceType.Da) {
+            MassToleranceType massToleranceType = MassToleranceType.Da)
+        {
             var matchedPeaks = new List<MatchedPeak>();
-            if (prop1.PrecursorMz < prop2.PrecursorMz) {
+            if (prop1.PrecursorMz < prop2.PrecursorMz)
+            {
                 SearchMatchedPeaks(prop1.Spectrum, prop1.PrecursorMz, prop2.Spectrum, prop2.PrecursorMz, massTolerance, massToleranceType, out matchedPeaks);
             }
-            else {
+            else
+            {
                 SearchMatchedPeaks(prop2.Spectrum, prop2.PrecursorMz, prop1.Spectrum, prop1.PrecursorMz, massTolerance, massToleranceType, out matchedPeaks);
             }
 
-            if (matchedPeaks.Count == 0) {
+            if (matchedPeaks.Count == 0)
+            {
                 return new double[] { 0, 0 };
             }
 
@@ -764,7 +828,8 @@ namespace CompMs.Common.Algorithm.Scoring {
             double rPrecursor, // large precursor
             double massTolerance,
             MassToleranceType massTolType,
-            out List<MatchedPeak> matchedPeaks) {
+            out List<MatchedPeak> matchedPeaks)
+        {
             matchedPeaks = new List<MatchedPeak>();
             foreach (var e in ePeaks) e.IsMatched = false;
             foreach (var e in rPeaks) e.IsMatched = false;
@@ -772,26 +837,32 @@ namespace CompMs.Common.Algorithm.Scoring {
             //match definition: if product ion or neutral loss are within the mass tolerance, it will be recognized as MATCH.
             //The smallest intensity difference will be recognized as highest match.
             var precursorDiff = rPrecursor - ePrecursor;
-            for (int i = 0; i < rPeaks.Count; i++) {
+            for (int i = 0; i < rPeaks.Count; i++)
+            {
                 var rPeak = rPeaks[i];
                 var massTol = massTolType == MassToleranceType.Da ? massTolerance : MolecularFormulaUtility.ConvertPpmToMassAccuracy(rPeak.Mass, massTolerance);
                 var minPeakID = -1;
                 var minIntensityDiff = double.MaxValue;
                 var isProduct = false;
-                for (int j = 0; j < ePeaks.Count; j++) {
+                for (int j = 0; j < ePeaks.Count; j++)
+                {
                     var ePeak = ePeaks[j];
                     if (ePeak.IsMatched == true) continue;
-                    if (Math.Abs(ePeak.Mass - rPeak.Mass) < massTol) {
+                    if (Math.Abs(ePeak.Mass - rPeak.Mass) < massTol)
+                    {
                         var intensityDiff = Math.Abs(ePeak.Intensity - rPeak.Intensity);
-                        if (intensityDiff < minIntensityDiff) {
+                        if (intensityDiff < minIntensityDiff)
+                        {
                             minIntensityDiff = intensityDiff;
                             minPeakID = j;
                             isProduct = true;
                         }
                     }
-                    else if (Math.Abs(precursorDiff + ePeak.Mass - rPeak.Mass) < massTol) {
+                    else if (Math.Abs(precursorDiff + ePeak.Mass - rPeak.Mass) < massTol)
+                    {
                         var intensityDiff = Math.Abs(ePeak.Intensity - rPeak.Intensity);
-                        if (intensityDiff < minIntensityDiff) {
+                        if (intensityDiff < minIntensityDiff)
+                        {
                             minIntensityDiff = intensityDiff;
                             minPeakID = j;
                             isProduct = false;
@@ -799,11 +870,13 @@ namespace CompMs.Common.Algorithm.Scoring {
                     }
                 }
 
-                if (minPeakID >= 0) {
+                if (minPeakID >= 0)
+                {
                     rPeak.IsMatched = true;
                     ePeaks[minPeakID].IsMatched = true;
                     matchedPeaks.Add(
-                        new MatchedPeak() {
+                        new MatchedPeak()
+                        {
                             Mass = rPeak.Mass,
                             Intensity = rPeak.Intensity,
                             MatchedIntensity = ePeaks[minPeakID].Intensity,
@@ -820,7 +893,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             double minMz = 0.0,
             double maxMz = 10000,
             double relativeAbundanceCutOff = 0.1, // 0.1%
-            double absoluteAbundanceCutOff = 50.0, 
+            double absoluteAbundanceCutOff = 50.0,
             double massTolerance = 0.05,
             double massBinningValue = 1.0,
             double intensityScaleFactor = 0.5,
@@ -830,7 +903,8 @@ namespace CompMs.Common.Algorithm.Scoring {
             MassToleranceType massToleranceType = MassToleranceType.Da,
             bool isBrClConsideredForIsotopes = false,
             bool isRemoveIsotopes = false,
-            bool removeAfterPrecursor = true) {
+            bool removeAfterPrecursor = true)
+        {
             //Console.WriteLine("Original peaks");
             //foreach (var peak in peaks) {
             //    Console.WriteLine(peak.Mass + "\t" + peak.Intensity);
@@ -849,7 +923,8 @@ namespace CompMs.Common.Algorithm.Scoring {
             //    Console.WriteLine(peak.Mass + "\t" + peak.Intensity);
             //}
 
-            if (massDelta > 1) { // meaning the peaks are selected by ordering the intensity values
+            if (massDelta > 1)
+            { // meaning the peaks are selected by ordering the intensity values
                 peaks = SpectrumHandler.GetBinnedSpectrum(peaks, massDelta, maxPeakNumInDelta);
             }
             peaks = SpectrumHandler.GetNormalizedPeaks(peaks, intensityScaleFactor, scaledMaxValue);
@@ -866,14 +941,16 @@ namespace CompMs.Common.Algorithm.Scoring {
         /// </summary>
         /// <param name="peaks"></param>
         /// <returns></returns>
-        public static double GetAndromedaScore(List<SpectrumPeak> peaks, double andromedaDelta, double andromedaMaxPeak) {
+        public static double GetAndromedaScore(List<SpectrumPeak> peaks, double andromedaDelta, double andromedaMaxPeak)
+        {
             var p = andromedaMaxPeak / andromedaDelta;
             var q = 1 - p;
             var n = peaks.Count;
             var k = peaks.Count(spec => spec.IsMatched == true);
 
             var sum = 0.0;
-            for (int j = k; j <= n; j++) {
+            for (int j = k; j <= n; j++)
+            {
                 var bc = Mathematics.Basic.BasicMathematics.BinomialCoefficient(n, j);
                 var p_prob = Math.Pow(p, j);
                 var q_prob = Math.Pow(q, n - j);
@@ -894,7 +971,8 @@ namespace CompMs.Common.Algorithm.Scoring {
         /// Add the bin value to merge the abundance of m/z.
         /// </param>
         public static List<SpectrumPeak> GetMachedSpectralPeaks(IMSScanProperty prop1, int chargeState, IMSScanProperty prop2, double bin,
-           double massBegin, double massEnd) {
+           double massBegin, double massEnd)
+        {
             if (!IsComparedAvailable(prop1, prop2)) return new List<SpectrumPeak>();
 
             var peaks1 = prop1.Spectrum;
@@ -904,24 +982,30 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             // at this moment...
             var finalPeaks = new List<SpectrumPeak>();
-            foreach (var group in searchedPeaks.GroupBy(n => n.PeakID)) {
+            foreach (var group in searchedPeaks.GroupBy(n => n.PeakID))
+            {
                 var isParentExist = false;
-                foreach (var peak in group) {
-                    if (peak.SpectrumComment.HasFlag(SpectrumComment.b) && peak.IsMatched) {
+                foreach (var peak in group)
+                {
+                    if (peak.SpectrumComment.HasFlag(SpectrumComment.b) && peak.IsMatched)
+                    {
                         isParentExist = true;
                     }
-                    if (peak.SpectrumComment.HasFlag(SpectrumComment.y) && peak.IsMatched) {
+                    if (peak.SpectrumComment.HasFlag(SpectrumComment.y) && peak.IsMatched)
+                    {
                         isParentExist = true;
                     }
                 }
-                foreach (var peak in group) {
+                foreach (var peak in group)
+                {
                     if (peak.SpectrumComment.HasFlag(SpectrumComment.precursor)) continue; // exclude
                     if (chargeState <= 2 && (peak.SpectrumComment.HasFlag(SpectrumComment.b2) || peak.SpectrumComment.HasFlag(SpectrumComment.y2))) continue; // exclude
                     if (!isParentExist &&
                         (peak.SpectrumComment.HasFlag(SpectrumComment.b_h2o) ||
                          peak.SpectrumComment.HasFlag(SpectrumComment.b_nh3) ||
                          peak.SpectrumComment.HasFlag(SpectrumComment.y_h2o) ||
-                         peak.SpectrumComment.HasFlag(SpectrumComment.y_nh3))) {
+                         peak.SpectrumComment.HasFlag(SpectrumComment.y_nh3)))
+                    {
                         continue;
                     }
                     finalPeaks.Add(peak);
@@ -932,7 +1016,8 @@ namespace CompMs.Common.Algorithm.Scoring {
         }
 
         public static List<SpectrumPeak> GetMachedSpectralPeaks(List<SpectrumPeak> peaks1, List<SpectrumPeak> peaks2, double bin,
-           double massBegin, double massEnd) {
+           double massBegin, double massEnd)
+        {
             if (!IsComparedAvailable(peaks1, peaks2)) return new List<SpectrumPeak>();
             var minMz = Math.Max(peaks2[0].Mass, massBegin);
             var maxMz = Math.Min(peaks2[peaks2.Count - 1].Mass, massEnd);
@@ -941,13 +1026,17 @@ namespace CompMs.Common.Algorithm.Scoring {
             int remaindIndexM = 0, remaindIndexL = 0;
             var searchedPeaks = new List<SpectrumPeak>();
 
-            while (focusedMz <= maxMz) {
+            while (focusedMz <= maxMz)
+            {
                 var maxRefIntensity = double.MinValue;
                 var maxRefID = -1;
-                for (int i = remaindIndexL; i < peaks2.Count; i++) {
+                for (int i = remaindIndexL; i < peaks2.Count; i++)
+                {
                     if (peaks2[i].Mass < focusedMz - bin) continue;
-                    else if (Math.Abs(focusedMz - peaks2[i].Mass) < bin) {
-                        if (maxRefIntensity < peaks2[i].Intensity) {
+                    else if (Math.Abs(focusedMz - peaks2[i].Mass) < bin)
+                    {
+                        if (maxRefIntensity < peaks2[i].Intensity)
+                        {
                             maxRefIntensity = peaks2[i].Intensity;
                             maxRefID = i;
                         }
@@ -956,15 +1045,18 @@ namespace CompMs.Common.Algorithm.Scoring {
                 }
 
                 SpectrumPeak spectrumPeak = maxRefID >= 0 ? peaks2[maxRefID].Clone() : null;
-                if (spectrumPeak == null) {
+                if (spectrumPeak == null)
+                {
                     focusedMz = peaks2[remaindIndexL].Mass;
                     if (remaindIndexL == peaks2.Count - 1) break;
                     continue;
                 }
                 var sumintensity = 0.0;
-                for (int i = remaindIndexM; i < peaks1.Count; i++) {
+                for (int i = remaindIndexM; i < peaks1.Count; i++)
+                {
                     if (peaks1[i].Mass < focusedMz - bin) continue;
-                    else if (Math.Abs(focusedMz - peaks1[i].Mass) < bin) {
+                    else if (Math.Abs(focusedMz - peaks1[i].Mass) < bin)
+                    {
                         sumintensity += peaks1[i].Intensity;
                         spectrumPeak.IsMatched = true;
                     }
@@ -981,7 +1073,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             return searchedPeaks;
         }
 
-        
+
 
         /// <summary>
         /// This method returns the presence similarity (% of matched fragments) between the experimental MS/MS spectrum and the standard MS/MS spectrum.
@@ -1003,10 +1095,11 @@ namespace CompMs.Common.Algorithm.Scoring {
         /// [1] MatchedPeaksCount is also returned.
         /// </returns>
         public static double[] GetLipidomicsMatchedPeaksScores(IMSScanProperty msScanProp, MoleculeMsReference molMsRef,
-            double bin, double massBegin, double massEnd) {
+            double bin, double massBegin, double massEnd)
+        {
 
             if (!IsComparedAvailable(msScanProp, molMsRef)) return new double[] { -1, -1 };
-           
+
             // in lipidomics project, currently, the well-known lipid classes now including
             // PC, PE, PI, PS, PG, BMP, SM, TAG are now evaluated.
             // if the lipid class diagnostic fragment (like m/z 184 in PC and SM in ESI(+)) is observed, 
@@ -1015,41 +1108,50 @@ namespace CompMs.Common.Algorithm.Scoring {
             var resultArray = GetMatchedPeaksScores(msScanProp, molMsRef, bin, massBegin, massEnd); // [0] matched ratio [1] matched count
             var compClass = molMsRef.CompoundClass;
             var comment = molMsRef.Comment;
-            if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
+            if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others")
+            {
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
                 if (molecule == null || molecule.Adduct == null) return resultArray;
                 if (molecule.LipidClass == LbmClass.EtherPE && molMsRef.Spectrum.Count == 3 && msScanProp.IonMode == IonMode.Positive) return resultArray;
 
                 var result = GetLipidMoleculeAnnotationResult(msScanProp, molecule, bin);
-                if (result != null) {
-                    if (result.AnnotationLevel == 1) {
-                        if (compClass == "SM" && (molecule.LipidName.Contains("3O") || molecule.LipidName.Contains("O3"))) {
+                if (result != null)
+                {
+                    if (result.AnnotationLevel == 1)
+                    {
+                        if (compClass == "SM" && (molecule.LipidName.Contains("3O") || molecule.LipidName.Contains("O3")))
+                        {
                             resultArray[0] += 1.0;
                             return resultArray; // add bonus
                         }
-                        else {
+                        else
+                        {
                             resultArray[0] += 0.5;
                             return resultArray; // add bonus
                         }
                     }
-                    else if (result.AnnotationLevel == 2) {
+                    else if (result.AnnotationLevel == 2)
+                    {
                         resultArray[0] += 1.0;
                         return resultArray; // add bonus
                     }
                     else
                         return resultArray;
                 }
-                else {
+                else
+                {
                     return resultArray;
                 }
             }
-            else { // currently default value is retured for other lipids
+            else
+            { // currently default value is retured for other lipids
                 return resultArray;
             }
         }
 
         public static double[] GetLipidomicsMoleculerSpeciesLevelAnnotationPeaksScoresForEIEIO(IMSScanProperty msScanProp, MoleculeMsReference molMsRef,
-            double bin, double massBegin, double massEnd) {
+            double bin, double massBegin, double massEnd)
+        {
 
             if (!IsComparedAvailable(msScanProp, molMsRef)) return new double[] { -1, -1 };
 
@@ -1061,62 +1163,77 @@ namespace CompMs.Common.Algorithm.Scoring {
             var resultArray = GetMatchedPeaksScores(msScanProp, molMsRef, bin, massBegin, massEnd); // [0] matched ratio [1] matched count
             var compClass = molMsRef.CompoundClass;
             var comment = molMsRef.Comment;
-            if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
+            if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others")
+            {
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
                 if (molecule == null || molecule.Adduct == null) return resultArray;
                 if (molecule.LipidClass == LbmClass.EtherPE && molMsRef.Spectrum.Count == 3 && msScanProp.IonMode == IonMode.Positive) return resultArray;
 
                 var result = GetLipidMoleculerSpeciesLevelAnnotationResultForEIEIO(msScanProp, molecule, bin);
-                if (result != null) {
-                    if (result.AnnotationLevel == 1) {
-                        if (compClass == "SM" && (molecule.LipidName.Contains("3O") || molecule.LipidName.Contains("O3"))) {
+                if (result != null)
+                {
+                    if (result.AnnotationLevel == 1)
+                    {
+                        if (compClass == "SM" && (molecule.LipidName.Contains("3O") || molecule.LipidName.Contains("O3")))
+                        {
                             resultArray[0] += 1.0;
                             return resultArray; // add bonus
                         }
-                        else {
+                        else
+                        {
                             resultArray[0] += 0.5;
                             return resultArray; // add bonus
                         }
                     }
-                    else if (result.AnnotationLevel == 2) {
+                    else if (result.AnnotationLevel == 2)
+                    {
                         resultArray[0] += 1.0;
                         return resultArray; // add bonus
                     }
                     else
                         return resultArray;
                 }
-                else {
+                else
+                {
                     return resultArray;
                 }
             }
-            else { // currently default value is retured for other lipids
+            else
+            { // currently default value is retured for other lipids
                 return resultArray;
             }
         }
 
-        public static string GetLipidNameFromReference(MoleculeMsReference reference) {
+        public static string GetLipidNameFromReference(MoleculeMsReference reference)
+        {
             var compClass = reference.CompoundClass;
             var comment = reference.Comment;
-            if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
+            if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others")
+            {
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(reference);
-                if (molecule == null || molecule.Adduct == null) {
+                if (molecule == null || molecule.Adduct == null)
+                {
                     return reference.Name;
                 }
                 var refinedName = string.Empty;
-                if (molecule.SublevelLipidName == molecule.LipidName) {
+                if (molecule.SublevelLipidName == molecule.LipidName)
+                {
                     return molecule.SublevelLipidName;
                 }
-                else {
+                else
+                {
                     return molecule.SublevelLipidName + "|" + molecule.LipidName;
                 }
             }
-            else {
+            else
+            {
                 return reference.Name;
             }
         }
 
         public static string GetRefinedLipidAnnotationLevel(IMSScanProperty msScanProp, MoleculeMsReference molMsRef, double bin,
-            out bool isLipidClassMatched, out bool isLipidChainMatched, out bool isLipidPositionMatched, out bool isOthers) {
+            out bool isLipidClassMatched, out bool isLipidChainMatched, out bool isLipidPositionMatched, out bool isOthers)
+        {
 
             isLipidClassMatched = false;
             isLipidChainMatched = false;
@@ -1131,60 +1248,71 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             var compClass = molMsRef.CompoundClass;
             var comment = molMsRef.Comment;
-           
-            if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
+
+            if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others")
+            {
 
                 if (compClass == "Cholesterol" || compClass == "CholesterolSulfate" ||
                     compClass == "Undefined" || compClass == "BileAcid" ||
                     compClass == "Ac2PIM1" || compClass == "Ac2PIM2" || compClass == "Ac3PIM2" || compClass == "Ac4PIM2" ||
-                    compClass == "LipidA") {
+                    compClass == "LipidA")
+                {
                     isOthers = true;
                     return molMsRef.Name; // currently default value is retured for these lipids
                 }
 
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
-                if (molecule == null || molecule.Adduct == null) {
+                if (molecule == null || molecule.Adduct == null)
+                {
                     isOthers = true;
                     return molMsRef.Name;
                 }
 
                 var result = GetLipidMoleculeAnnotationResult(msScanProp, molecule, bin);
-                if (result != null) {
+                if (result != null)
+                {
                     var refinedName = string.Empty;
-                    if (result.AnnotationLevel == 1) {
+                    if (result.AnnotationLevel == 1)
+                    {
                         refinedName = result.SublevelLipidName;
                         isLipidClassMatched = true;
                         isLipidChainMatched = false;
                         isLipidPositionMatched = false;
                     }
-                    else if (result.AnnotationLevel == 2) {
+                    else if (result.AnnotationLevel == 2)
+                    {
                         isLipidClassMatched = true;
                         isLipidChainMatched = true;
                         isLipidPositionMatched = false;
-                        if (result.SublevelLipidName == result.LipidName) {
+                        if (result.SublevelLipidName == result.LipidName)
+                        {
                             refinedName = result.SublevelLipidName;
                         }
-                        else {
+                        else
+                        {
                             refinedName = result.SublevelLipidName + "|" + result.LipidName;
                         }
                     }
                     else
                         return string.Empty;
-                    
+
                     return refinedName;
                 }
-                else {
+                else
+                {
                     return string.Empty;
                 }
             }
-            else { // currently default value is retured for other lipids
+            else
+            { // currently default value is retured for other lipids
                 isOthers = true;
                 return molMsRef.Name;
             }
         }
 
         public static string GetRefinedLipidAnnotationLevelForEIEIO(IMSScanProperty msScanProp, MoleculeMsReference molMsRef, double bin,
-            out bool isLipidClassMatched, out bool isLipidChainMatched, out bool isLipidPositionMatched, out bool isOthers) {
+            out bool isLipidClassMatched, out bool isLipidChainMatched, out bool isLipidPositionMatched, out bool isOthers)
+        {
 
             isLipidClassMatched = false;
             isLipidChainMatched = false;
@@ -1200,39 +1328,47 @@ namespace CompMs.Common.Algorithm.Scoring {
             var compClass = molMsRef.CompoundClass;
             var comment = molMsRef.Comment;
 
-            if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
+            if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others")
+            {
 
                 if (compClass == "Cholesterol" || compClass == "CholesterolSulfate" ||
                     compClass == "Undefined" || compClass == "BileAcid" ||
                     compClass == "Ac2PIM1" || compClass == "Ac2PIM2" || compClass == "Ac3PIM2" || compClass == "Ac4PIM2" ||
-                    compClass == "LipidA") {
+                    compClass == "LipidA")
+                {
                     isOthers = true;
                     return molMsRef.Name; // currently default value is retured for these lipids
                 }
 
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
-                if (molecule == null || molecule.Adduct == null) {
+                if (molecule == null || molecule.Adduct == null)
+                {
                     isOthers = true;
                     return molMsRef.Name;
                 }
 
                 var result = GetLipidMoleculerSpeciesLevelAnnotationResultForEIEIO(msScanProp, molecule, bin);
-                if (result != null) {
+                if (result != null)
+                {
                     var refinedName = string.Empty;
-                    if (result.AnnotationLevel == 1) {
+                    if (result.AnnotationLevel == 1)
+                    {
                         refinedName = result.SublevelLipidName;
                         isLipidClassMatched = true;
                         isLipidChainMatched = false;
                         isLipidPositionMatched = false;
                     }
-                    else if (result.AnnotationLevel == 2) {
+                    else if (result.AnnotationLevel == 2)
+                    {
                         isLipidClassMatched = true;
                         isLipidChainMatched = true;
                         isLipidPositionMatched = false;
-                        if (result.SublevelLipidName == result.LipidName) {
+                        if (result.SublevelLipidName == result.LipidName)
+                        {
                             refinedName = result.SublevelLipidName;
                         }
-                        else {
+                        else
+                        {
                             refinedName = result.SublevelLipidName + "|" + result.LipidName;
                         }
                     }
@@ -1241,11 +1377,13 @@ namespace CompMs.Common.Algorithm.Scoring {
 
                     return refinedName;
                 }
-                else {
+                else
+                {
                     return string.Empty;
                 }
             }
-            else { // currently default value is retured for other lipids
+            else
+            { // currently default value is retured for other lipids
                 isOthers = true;
                 return molMsRef.Name;
             }
@@ -1253,7 +1391,8 @@ namespace CompMs.Common.Algorithm.Scoring {
 
 
         public static LipidMolecule GetLipidMoleculerSpeciesLevelAnnotationResultForEIEIO(IMSScanProperty msScanProp,
-            LipidMolecule molecule, double ms2tol) {
+            LipidMolecule molecule, double ms2tol)
+        {
             var lipidclass = molecule.LipidClass;
             var refMz = molecule.Mz;
             var adduct = molecule.Adduct;
@@ -1271,7 +1410,8 @@ namespace CompMs.Common.Algorithm.Scoring {
             var lipidheader = LipidomicsConverter.GetLipidHeaderString(molecule.LipidName);
             // Console.WriteLine(lipidheader + "\t" + lipidclass.ToString());
 
-            switch (lipidclass) {
+            switch (lipidclass)
+            {
                 case LbmClass.PC:
                     return LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholine(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
@@ -1280,7 +1420,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                         totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
                 case LbmClass.PS:
                     return LipidMsmsCharacterization.JudgeIfPhosphatidylserine(msScanProp, ms2tol, refMz,
-                        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                        totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                 case LbmClass.PG:
                     return LipidEieioMsmsCharacterization.JudgeIfPhosphatidylglycerol(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
@@ -1289,13 +1429,15 @@ namespace CompMs.Common.Algorithm.Scoring {
                         totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
                 case LbmClass.PI:
                     return LipidMsmsCharacterization.JudgeIfPhosphatidylinositol(msScanProp, ms2tol, refMz,
-                        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                        totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                 case LbmClass.SM:
-                    if (molecule.TotalChainString.Contains("O3")) {
+                    if (molecule.TotalChainString.Contains("O3"))
+                    {
                         return LipidMsmsCharacterization.JudgeIfSphingomyelinPhyto(msScanProp, ms2tol, refMz,
                        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                     }
-                    else {
+                    else
+                    {
                         return LipidEieioMsmsCharacterization.JudgeIfSphingomyelin(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
                     }
@@ -1588,7 +1730,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                     sn2DbBond = molecule.Sn2DoubleBondCount;
                     return LipidMsmsCharacterization.JudgeIfAcylhexcer(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, totalOxidized, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, adduct);
- 
+
                 case LbmClass.ASHexCer:
                     sn2Carbon = molecule.Sn2CarbonCount;
                     sn2DbBond = molecule.Sn2DoubleBondCount;
@@ -1600,11 +1742,13 @@ namespace CompMs.Common.Algorithm.Scoring {
                     sn2DbBond = molecule.Sn2DoubleBondCount;
                     var sn3Carbon = molecule.Sn3CarbonCount;
                     var sn3DbBond = molecule.Sn3DoubleBondCount;
-                    if (sn3Carbon < 1) {
+                    if (sn3Carbon < 1)
+                    {
                         return LipidMsmsCharacterization.JudgeIfCardiolipin(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                     }
-                    else {
+                    else
+                    {
                         return LipidMsmsCharacterization.JudgeIfCardiolipin(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
                         sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, sn3Carbon, sn3Carbon, sn3DbBond, sn3DbBond, adduct);
@@ -1654,22 +1798,26 @@ namespace CompMs.Common.Algorithm.Scoring {
                         totalCarbon, totalDbBond, adduct);
 
                 case LbmClass.NAGly:
-                    if (totalCarbon < 29) {
+                    if (totalCarbon < 29)
+                    {
                         return LipidEieioMsmsCharacterization.JudgeIfNAcylGlyOxFa(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, totalOxidized, adduct);
                     }
-                    else {
+                    else
+                    {
                         return LipidMsmsCharacterization.JudgeIfFahfamidegly(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                     }
 
 
                 case LbmClass.NAGlySer:
-                    if (totalCarbon < 29) {
+                    if (totalCarbon < 29)
+                    {
                         return LipidMsmsCharacterization.JudgeIfNAcylGlySerOxFa(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, totalOxidized, adduct);
                     }
-                    else {
+                    else
+                    {
                         return LipidMsmsCharacterization.JudgeIfFahfamideglyser(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                     }
@@ -1706,11 +1854,13 @@ namespace CompMs.Common.Algorithm.Scoring {
 
 
                 case LbmClass.NAOrn:
-                    if (totalCarbon < 29) {
+                    if (totalCarbon < 29)
+                    {
                         return LipidMsmsCharacterization.JudgeIfNAcylOrnOxFa(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, totalOxidized, adduct);
                     }
-                    else {
+                    else
+                    {
                         return LipidMsmsCharacterization.JudgeIfFahfamideorn(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                     }
@@ -1990,8 +2140,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                     sn2Carbon = molecule.Sn2CarbonCount;
                     sn2DbBond = molecule.Sn2DoubleBondCount;
                     return LipidEieioMsmsCharacterization.JudgeIfTriacylglycerolD5(msScanProp, ms2tol, refMz,
-                        totalCarbon, totalDbBond, 
-                        sn1Carbon, sn2Carbon, totalCarbon - sn1Carbon - sn2Carbon, 
+                        totalCarbon, totalDbBond,
+                        sn1Carbon, sn2Carbon, totalCarbon - sn1Carbon - sn2Carbon,
                         sn1DbBond, sn2DbBond, totalDbBond - sn1DbBond - sn2DbBond, adduct);
                 case LbmClass.DG_d5:
                     return LipidEieioMsmsCharacterization.JudgeIfDagD5(msScanProp, ms2tol, refMz,
@@ -2010,9 +2160,6 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return LipidMsmsCharacterization.JudgeIfBetaMethylPhosphatidylcholine(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                 //20230612
-                case LbmClass.NATryA:
-                    return LipidMsmsCharacterization.JudgeIfNAcylTryA(msScanProp, ms2tol, refMz,
-                     totalCarbon, totalDbBond, totalOxidized, adduct);
                 case LbmClass.NA5HT:
                     return LipidMsmsCharacterization.JudgeIfNAcyl5HT(msScanProp, ms2tol, refMz,
                      totalCarbon, totalDbBond, totalOxidized, adduct);
@@ -2038,13 +2185,30 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.BisMeLPA:
                     return LipidMsmsCharacterization.JudgeIfBismelpa(msScanProp, ms2tol, refMz,
                      totalCarbon, totalDbBond, totalOxidized, adduct);
+                //20230630
+                case LbmClass.NATryA:
+                    if (totalCarbon < 29)
+                    {
+                        return LipidMsmsCharacterization.JudgeIfNAcylTryA(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                    }
+                    else
+                    {
+                        return LipidMsmsCharacterization.JudgeIfFahfamideTrya(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                    }
+                case LbmClass.NAGABA:
+                    return LipidMsmsCharacterization.JudgeIfNAcylGaba(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
+
                 default:
                     return null;
             }
         }
 
         public static LipidMolecule GetLipidMoleculeAnnotationResult(IMSScanProperty msScanProp,
-            LipidMolecule molecule, double ms2tol) {
+            LipidMolecule molecule, double ms2tol)
+        {
 
             var lipidclass = molecule.LipidClass;
             var refMz = molecule.Mz;
@@ -2063,7 +2227,8 @@ namespace CompMs.Common.Algorithm.Scoring {
             var lipidheader = LipidomicsConverter.GetLipidHeaderString(molecule.LipidName);
             // Console.WriteLine(lipidheader + "\t" + lipidclass.ToString());
 
-            switch (lipidclass) {
+            switch (lipidclass)
+            {
                 case LbmClass.PC:
                     return LipidMsmsCharacterization.JudgeIfPhosphatidylcholine(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
@@ -2083,11 +2248,13 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return LipidMsmsCharacterization.JudgeIfPhosphatidylinositol(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                 case LbmClass.SM:
-                    if (molecule.TotalChainString.Contains("O3")) {
+                    if (molecule.TotalChainString.Contains("O3"))
+                    {
                         return LipidMsmsCharacterization.JudgeIfSphingomyelinPhyto(msScanProp, ms2tol, refMz,
                        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                     }
-                    else {
+                    else
+                    {
                         return LipidMsmsCharacterization.JudgeIfSphingomyelin(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                     }
@@ -2392,11 +2559,13 @@ namespace CompMs.Common.Algorithm.Scoring {
                     sn2DbBond = molecule.Sn2DoubleBondCount;
                     var sn3Carbon = molecule.Sn3CarbonCount;
                     var sn3DbBond = molecule.Sn3DoubleBondCount;
-                    if (sn3Carbon < 1) {
+                    if (sn3Carbon < 1)
+                    {
                         return LipidMsmsCharacterization.JudgeIfCardiolipin(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                     }
-                    else {
+                    else
+                    {
                         return LipidMsmsCharacterization.JudgeIfCardiolipin(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
                         sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, sn3Carbon, sn3Carbon, sn3DbBond, sn3DbBond, adduct);
@@ -2450,7 +2619,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                         return LipidMsmsCharacterization.JudgeIfNAcylGlyOxFa(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, totalOxidized, adduct);
                     }
-                    else {
+                    else
+                    {
                         return LipidMsmsCharacterization.JudgeIfFahfamidegly(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                     }
@@ -2462,7 +2632,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                         return LipidMsmsCharacterization.JudgeIfNAcylGlySerOxFa(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, totalOxidized, adduct);
                     }
-                    else {
+                    else
+                    {
                         return LipidMsmsCharacterization.JudgeIfFahfamideglyser(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                     }
@@ -2504,7 +2675,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                         return LipidMsmsCharacterization.JudgeIfNAcylOrnOxFa(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, totalOxidized, adduct);
                     }
-                    else {
+                    else
+                    {
                         return LipidMsmsCharacterization.JudgeIfFahfamideorn(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                     }
@@ -2715,7 +2887,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
 
                 case LbmClass.ST:
-                    return LipidMsmsCharacterization.JudgeIfnoChainSterol(molecule.LipidName, molecule.LipidClass, 
+                    return LipidMsmsCharacterization.JudgeIfnoChainSterol(molecule.LipidName, molecule.LipidClass,
                         msScanProp, ms2tol, refMz, totalCarbon, totalDbBond, adduct);
 
                 case LbmClass.CSLPHex:
@@ -2802,9 +2974,6 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return LipidMsmsCharacterization.JudgeIfBetaMethylPhosphatidylcholine(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                 //20230612
-                case LbmClass.NATryA:
-                    return LipidMsmsCharacterization.JudgeIfNAcylTryA(msScanProp, ms2tol, refMz,
-                     totalCarbon, totalDbBond, totalOxidized, adduct);
                 case LbmClass.NA5HT:
                     return LipidMsmsCharacterization.JudgeIfNAcyl5HT(msScanProp, ms2tol, refMz,
                      totalCarbon, totalDbBond, totalOxidized, adduct);
@@ -2831,6 +3000,22 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.BisMeLPA:
                     return LipidMsmsCharacterization.JudgeIfBismelpa(msScanProp, ms2tol, refMz,
                      totalCarbon, totalDbBond, totalOxidized, adduct);
+                //20230630
+                case LbmClass.NATryA:
+                    if (totalCarbon < 29)
+                    {
+                        return LipidMsmsCharacterization.JudgeIfNAcylTryA(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                    }
+                    else
+                    {
+                        return LipidMsmsCharacterization.JudgeIfFahfamideTrya(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                    }
+                case LbmClass.NAGABA:
+                    return LipidMsmsCharacterization.JudgeIfNAcylGaba(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
+
 
                 default:
                     return null;
@@ -2855,7 +3040,8 @@ namespace CompMs.Common.Algorithm.Scoring {
         /// The similarity score which is standadized from 0 (no similarity) to 1 (consistency) will be return.
         /// </returns>
         public static double GetReverseDotProduct(IMSScanProperty prop1, IMSScanProperty prop2, double bin,
-            double massBegin, double massEnd) {
+            double massBegin, double massEnd)
+        {
             double scalarM = 0, scalarR = 0, covariance = 0;
             double sumM = 0, sumL = 0;
             if (!IsComparedAvailable(prop1, prop2)) return -1;
@@ -2878,9 +3064,11 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             double sumMeasure = 0, sumReference = 0, baseM = double.MinValue, baseR = double.MinValue;
 
-            while (focusedMz <= maxMz) {
+            while (focusedMz <= maxMz)
+            {
                 sumL = 0;
-                for (int i = remaindIndexL; i < peaks2.Count; i++) {
+                for (int i = remaindIndexL; i < peaks2.Count; i++)
+                {
                     if (peaks2[i].Mass < focusedMz - bin) continue;
                     else if (focusedMz - bin <= peaks2[i].Mass && peaks2[i].Mass < focusedMz + bin)
                         sumL += peaks2[i].Intensity;
@@ -2888,21 +3076,24 @@ namespace CompMs.Common.Algorithm.Scoring {
                 }
 
                 sumM = 0;
-                for (int i = remaindIndexM; i < peaks1.Count; i++) {
+                for (int i = remaindIndexM; i < peaks1.Count; i++)
+                {
                     if (peaks1[i].Mass < focusedMz - bin) continue;
                     else if (focusedMz - bin <= peaks1[i].Mass && peaks1[i].Mass < focusedMz + bin)
                         sumM += peaks1[i].Intensity;
                     else { remaindIndexM = i; break; }
                 }
 
-                if (sumM <= 0) {
+                if (sumM <= 0)
+                {
                     measuredMassList.Add(new double[] { focusedMz, sumM });
                     if (sumM > baseM) baseM = sumM;
 
                     referenceMassList.Add(new double[] { focusedMz, sumL });
                     if (sumL > baseR) baseR = sumL;
                 }
-                else {
+                else
+                {
                     measuredMassList.Add(new double[] { focusedMz, sumM });
                     if (sumM > baseM) baseM = sumM;
 
@@ -2920,7 +3111,8 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             var eSpectrumCounter = 0;
             var lSpectrumCounter = 0;
-            for (int i = 0; i < measuredMassList.Count; i++) {
+            for (int i = 0; i < measuredMassList.Count; i++)
+            {
                 measuredMassList[i][1] = measuredMassList[i][1] / baseM;
                 referenceMassList[i][1] = referenceMassList[i][1] / baseR;
                 sumMeasure += measuredMassList[i][1];
@@ -2946,7 +3138,8 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             var cutoff = 0.01;
 
-            for (int i = 0; i < measuredMassList.Count; i++) {
+            for (int i = 0; i < measuredMassList.Count; i++)
+            {
                 if (referenceMassList[i][1] < cutoff)
                     continue;
 
@@ -2981,7 +3174,8 @@ namespace CompMs.Common.Algorithm.Scoring {
         /// The similarity score which is standadized from 0 (no similarity) to 1 (consistency) will be return.
         /// </returns>
         public static double GetWeightedDotProduct(IMSScanProperty prop1, IMSScanProperty prop2, double bin,
-            double massBegin, double massEnd) {
+            double massBegin, double massEnd)
+        {
             double scalarM = 0, scalarR = 0, covariance = 0;
             double sumM = 0, sumR = 0;
 
@@ -3004,30 +3198,35 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             double sumMeasure = 0, sumReference = 0, baseM = double.MinValue, baseR = double.MinValue;
 
-            while (focusedMz <= maxMz) {
+            while (focusedMz <= maxMz)
+            {
                 sumM = 0;
-                for (int i = remaindIndexM; i < peaks1.Count; i++) {
+                for (int i = remaindIndexM; i < peaks1.Count; i++)
+                {
                     if (peaks1[i].Mass < focusedMz - bin) { continue; }
                     else if (focusedMz - bin <= peaks1[i].Mass && peaks1[i].Mass < focusedMz + bin) sumM += peaks1[i].Intensity;
                     else { remaindIndexM = i; break; }
                 }
 
                 sumR = 0;
-                for (int i = remaindIndexL; i < peaks2.Count; i++) {
+                for (int i = remaindIndexL; i < peaks2.Count; i++)
+                {
                     if (peaks2[i].Mass < focusedMz - bin) continue;
                     else if (focusedMz - bin <= peaks2[i].Mass && peaks2[i].Mass < focusedMz + bin)
                         sumR += peaks2[i].Intensity;
                     else { remaindIndexL = i; break; }
                 }
 
-                if (sumM <= 0 && sumR > 0) {
+                if (sumM <= 0 && sumR > 0)
+                {
                     measuredMassList.Add(new double[] { focusedMz, sumM });
                     if (sumM > baseM) baseM = sumM;
 
                     referenceMassList.Add(new double[] { focusedMz, sumR });
                     if (sumR > baseR) baseR = sumR;
                 }
-                else {
+                else
+                {
                     measuredMassList.Add(new double[] { focusedMz, sumM });
                     if (sumM > baseM) baseM = sumM;
 
@@ -3049,7 +3248,8 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             var eSpectrumCounter = 0;
             var lSpectrumCounter = 0;
-            for (int i = 0; i < measuredMassList.Count; i++) {
+            for (int i = 0; i < measuredMassList.Count; i++)
+            {
                 measuredMassList[i][1] = measuredMassList[i][1] / baseM;
                 referenceMassList[i][1] = referenceMassList[i][1] / baseR;
                 sumMeasure += measuredMassList[i][1];
@@ -3074,7 +3274,8 @@ namespace CompMs.Common.Algorithm.Scoring {
             else wR = 1 / (sumReference - 0.5);
 
             var cutoff = 0.01;
-            for (int i = 0; i < measuredMassList.Count; i++) {
+            for (int i = 0; i < measuredMassList.Count; i++)
+            {
                 if (measuredMassList[i][1] < cutoff)
                     continue;
 
@@ -3091,7 +3292,8 @@ namespace CompMs.Common.Algorithm.Scoring {
             else { return Math.Pow(covariance, 2) / scalarM / scalarR * peakCountPenalty; }
         }
 
-        public static double GetSimpleDotProduct(IMSScanProperty prop1, IMSScanProperty prop2, double bin, double massBegin, double massEnd) {
+        public static double GetSimpleDotProduct(IMSScanProperty prop1, IMSScanProperty prop2, double bin, double massBegin, double massEnd)
+        {
             double scalarM = 0, scalarR = 0, covariance = 0;
             double sumM = 0, sumR = 0;
 
@@ -3114,16 +3316,19 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             double sumMeasure = 0, sumReference = 0, baseM = double.MinValue, baseR = double.MinValue;
 
-            while (focusedMz <= maxMz) {
+            while (focusedMz <= maxMz)
+            {
                 sumM = 0;
-                for (int i = remaindIndexM; i < peaks1.Count; i++) {
+                for (int i = remaindIndexM; i < peaks1.Count; i++)
+                {
                     if (peaks1[i].Mass < focusedMz - bin) { continue; }
                     else if (focusedMz - bin <= peaks1[i].Mass && peaks1[i].Mass < focusedMz + bin) sumM += peaks1[i].Intensity;
                     else { remaindIndexM = i; break; }
                 }
 
                 sumR = 0;
-                for (int i = remaindIndexL; i < peaks2.Count; i++) {
+                for (int i = remaindIndexL; i < peaks2.Count; i++)
+                {
                     if (peaks2[i].Mass < focusedMz - bin) continue;
                     else if (focusedMz - bin <= peaks2[i].Mass && peaks2[i].Mass < focusedMz + bin)
                         sumR += peaks2[i].Intensity;
@@ -3147,24 +3352,28 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             if (baseM == 0 || baseR == 0) return 0;
 
-            for (int i = 0; i < measuredMassList.Count; i++) {
+            for (int i = 0; i < measuredMassList.Count; i++)
+            {
                 measuredMassList[i][1] = measuredMassList[i][1] / baseM * 999;
                 referenceMassList[i][1] = referenceMassList[i][1] / baseR * 999;
             }
 
-            for (int i = 0; i < measuredMassList.Count; i++) {
+            for (int i = 0; i < measuredMassList.Count; i++)
+            {
                 scalarM += measuredMassList[i][1];
                 scalarR += referenceMassList[i][1];
                 covariance += Math.Sqrt(measuredMassList[i][1] * referenceMassList[i][1]);
             }
 
             if (scalarM == 0 || scalarR == 0) { return 0; }
-            else {
+            else
+            {
                 return Math.Pow(covariance, 2) / scalarM / scalarR;
             }
         }
 
-        public static double GetGaussianSimilarity(IChromX actual, IChromX reference, double tolerance, out bool isInTolerance) {
+        public static double GetGaussianSimilarity(IChromX actual, IChromX reference, double tolerance, out bool isInTolerance)
+        {
             isInTolerance = false;
             if (actual == null || reference == null) return -1;
             if (actual.Value <= 0 || reference.Value <= 0) return -1;
@@ -3173,7 +3382,8 @@ namespace CompMs.Common.Algorithm.Scoring {
             return similarity;
         }
 
-        public static double GetGaussianSimilarity(double actual, double reference, double tolerance, out bool isInTolerance) {
+        public static double GetGaussianSimilarity(double actual, double reference, double tolerance, out bool isInTolerance)
+        {
             isInTolerance = false;
             if (actual <= 0 || reference <= 0) return -1;
             if (Math.Abs(actual - reference) <= tolerance) isInTolerance = true;
@@ -3197,7 +3407,8 @@ namespace CompMs.Common.Algorithm.Scoring {
         /// <returns>
         /// The similarity score which is standadized from 0 (no similarity) to 1 (consistency) will be return.
         /// </returns>
-        public static double GetGaussianSimilarity(double actual, double reference, double tolrance) {
+        public static double GetGaussianSimilarity(double actual, double reference, double tolrance)
+        {
             return Math.Exp(-0.5 * Math.Pow((actual - reference) / tolrance, 2));
         }
 
@@ -3215,7 +3426,8 @@ namespace CompMs.Common.Algorithm.Scoring {
         /// The similarity score which is standadized from 0 (no similarity) to 1 (consistency) will be return.
         /// </returns>
         public static double GetTotalSimilarity(double accurateMassSimilarity, double rtSimilarity, double isotopeSimilarity,
-            double spectraSimilarity, double reverseSearchSimilarity, double presenceSimilarity, bool spectrumPenalty, TargetOmics targetOmics, bool isUseRT) {
+            double spectraSimilarity, double reverseSearchSimilarity, double presenceSimilarity, bool spectrumPenalty, TargetOmics targetOmics, bool isUseRT)
+        {
             var dotProductFactor = 3.0;
             var revesrseDotProdFactor = 2.0;
             var presensePercentageFactor = 1.0;
@@ -3225,7 +3437,8 @@ namespace CompMs.Common.Algorithm.Scoring {
             var massFactor = 1.0;
             var isotopeFactor = 0.0;
 
-            if (targetOmics == TargetOmics.Lipidomics) {
+            if (targetOmics == TargetOmics.Lipidomics)
+            {
                 dotProductFactor = 1.0; revesrseDotProdFactor = 2.0; presensePercentageFactor = 3.0; msmsFactor = 1.5; rtFactor = 0.5;
             }
 
@@ -3235,30 +3448,38 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             if (spectrumPenalty == true && targetOmics == TargetOmics.Metabolomics) msmsSimilarity = msmsSimilarity * 0.5;
 
-            if (!isUseRT) {
-                if (isotopeSimilarity < 0) {
+            if (!isUseRT)
+            {
+                if (isotopeSimilarity < 0)
+                {
                     return (msmsFactor * msmsSimilarity + massFactor * accurateMassSimilarity)
                         / (msmsFactor + massFactor);
                 }
-                else {
+                else
+                {
                     return (msmsFactor * msmsSimilarity + massFactor * accurateMassSimilarity + isotopeFactor * isotopeSimilarity)
                         / (msmsFactor + massFactor + isotopeFactor);
                 }
             }
-            else {
-                if (rtSimilarity < 0 && isotopeSimilarity < 0) {
+            else
+            {
+                if (rtSimilarity < 0 && isotopeSimilarity < 0)
+                {
                     return (msmsFactor * msmsSimilarity + massFactor * accurateMassSimilarity)
                         / (msmsFactor + massFactor + rtFactor);
                 }
-                else if (rtSimilarity < 0 && isotopeSimilarity >= 0) {
+                else if (rtSimilarity < 0 && isotopeSimilarity >= 0)
+                {
                     return (msmsFactor * msmsSimilarity + massFactor * accurateMassSimilarity + isotopeFactor * isotopeSimilarity)
                         / (msmsFactor + massFactor + isotopeFactor + rtFactor);
                 }
-                else if (isotopeSimilarity < 0 && rtSimilarity >= 0) {
+                else if (isotopeSimilarity < 0 && rtSimilarity >= 0)
+                {
                     return (msmsFactor * msmsSimilarity + massFactor * accurateMassSimilarity + rtFactor * rtSimilarity)
                         / (msmsFactor + massFactor + rtFactor);
                 }
-                else {
+                else
+                {
                     return (msmsFactor * msmsSimilarity + massFactor * accurateMassSimilarity + rtFactor * rtSimilarity + isotopeFactor * isotopeSimilarity)
                         / (msmsFactor + massFactor + rtFactor + isotopeFactor);
                 }
@@ -3266,7 +3487,8 @@ namespace CompMs.Common.Algorithm.Scoring {
         }
 
         public static double GetTotalSimilarity(double accurateMassSimilarity, double rtSimilarity, double ccsSimilarity, double isotopeSimilarity,
-            double spectraSimilarity, double reverseSearchSimilarity, double presenceSimilarity, bool spectrumPenalty, TargetOmics targetOmics, bool isUseRT, bool isUseCcs) {
+            double spectraSimilarity, double reverseSearchSimilarity, double presenceSimilarity, bool spectrumPenalty, TargetOmics targetOmics, bool isUseRT, bool isUseCcs)
+        {
             var dotProductFactor = 3.0;
             var revesrseDotProdFactor = 2.0;
             var presensePercentageFactor = 1.0;
@@ -3277,7 +3499,8 @@ namespace CompMs.Common.Algorithm.Scoring {
             var isotopeFactor = 0.0;
             var ccsFactor = 2.0;
 
-            if (targetOmics == TargetOmics.Lipidomics) {
+            if (targetOmics == TargetOmics.Lipidomics)
+            {
                 dotProductFactor = 1.0; revesrseDotProdFactor = 2.0; presensePercentageFactor = 3.0; msmsFactor = 1.5; rtFactor = 0.5; ccsFactor = 1.0F;
             }
 
@@ -3294,35 +3517,43 @@ namespace CompMs.Common.Algorithm.Scoring {
             if (!isUseCcs || ccsSimilarity < 0) useCcsScore = false;
             if (isotopeSimilarity < 0) useIsotopicScore = false;
 
-            if (useRtScore == true && useCcsScore == true && useIsotopicScore == true) {
+            if (useRtScore == true && useCcsScore == true && useIsotopicScore == true)
+            {
                 return (msmsFactor * msmsSimilarity + massFactor * accurateMassSimilarity + rtFactor * rtSimilarity + isotopeFactor * isotopeSimilarity + ccsFactor * ccsSimilarity)
                         / (msmsFactor + massFactor + rtFactor + isotopeFactor + ccsFactor);
             }
-            else if (useRtScore == true && useCcsScore == true && useIsotopicScore == false) {
+            else if (useRtScore == true && useCcsScore == true && useIsotopicScore == false)
+            {
                 return (msmsFactor * msmsSimilarity + massFactor * accurateMassSimilarity + rtFactor * rtSimilarity + ccsFactor * ccsSimilarity)
                         / (msmsFactor + massFactor + rtFactor + ccsFactor);
             }
-            else if (useRtScore == true && useCcsScore == false && useIsotopicScore == true) {
+            else if (useRtScore == true && useCcsScore == false && useIsotopicScore == true)
+            {
                 return (msmsFactor * msmsSimilarity + massFactor * accurateMassSimilarity + rtFactor * rtSimilarity + isotopeFactor * isotopeSimilarity)
                         / (msmsFactor + massFactor + rtFactor + isotopeFactor);
             }
-            else if (useRtScore == false && useCcsScore == true && useIsotopicScore == true) {
+            else if (useRtScore == false && useCcsScore == true && useIsotopicScore == true)
+            {
                 return (msmsFactor * msmsSimilarity + massFactor * accurateMassSimilarity + isotopeFactor * isotopeSimilarity + ccsFactor * ccsSimilarity)
                         / (msmsFactor + massFactor + isotopeFactor + ccsFactor);
             }
-            else if (useRtScore == false && useCcsScore == true && useIsotopicScore == false) {
+            else if (useRtScore == false && useCcsScore == true && useIsotopicScore == false)
+            {
                 return (msmsFactor * msmsSimilarity + massFactor * accurateMassSimilarity + ccsFactor * ccsSimilarity)
                       / (msmsFactor + massFactor + ccsFactor);
             }
-            else if (useRtScore == true && useCcsScore == false && useIsotopicScore == false) {
+            else if (useRtScore == true && useCcsScore == false && useIsotopicScore == false)
+            {
                 return (msmsFactor * msmsSimilarity + massFactor * accurateMassSimilarity + rtFactor * rtSimilarity)
                         / (msmsFactor + massFactor + rtFactor);
             }
-            else if (useRtScore == false && useCcsScore == false && useIsotopicScore == true) {
+            else if (useRtScore == false && useCcsScore == false && useIsotopicScore == true)
+            {
                 return (msmsFactor * msmsSimilarity + massFactor * accurateMassSimilarity + isotopeFactor * isotopeSimilarity)
                         / (msmsFactor + massFactor + isotopeFactor);
             }
-            else {
+            else
+            {
                 return (msmsFactor * msmsSimilarity + massFactor * accurateMassSimilarity)
                         / (msmsFactor + massFactor);
             }
@@ -3386,32 +3617,42 @@ namespace CompMs.Common.Algorithm.Scoring {
         /// <returns>
         /// The similarity score which is standadized from 0 (no similarity) to 1 (consistency) will be return.
         /// </returns>
-        public static double GetTotalSimilarity(double accurateMassSimilarity, double rtSimilarity, double isotopeSimilarity, bool isUseRT) {
-            if (!isUseRT) {
-                if (isotopeSimilarity < 0) {
+        public static double GetTotalSimilarity(double accurateMassSimilarity, double rtSimilarity, double isotopeSimilarity, bool isUseRT)
+        {
+            if (!isUseRT)
+            {
+                if (isotopeSimilarity < 0)
+                {
                     return accurateMassSimilarity;
                 }
-                else {
+                else
+                {
                     return (accurateMassSimilarity + 0.5 * isotopeSimilarity) / 1.5;
                 }
             }
-            else {
-                if (rtSimilarity < 0 && isotopeSimilarity < 0) {
+            else
+            {
+                if (rtSimilarity < 0 && isotopeSimilarity < 0)
+                {
                     return accurateMassSimilarity * 0.5;
                 }
-                else if (rtSimilarity < 0 && isotopeSimilarity >= 0) {
+                else if (rtSimilarity < 0 && isotopeSimilarity >= 0)
+                {
                     return (accurateMassSimilarity + 0.5 * isotopeSimilarity) / 2.5;
                 }
-                else if (isotopeSimilarity < 0 && rtSimilarity >= 0) {
+                else if (isotopeSimilarity < 0 && rtSimilarity >= 0)
+                {
                     return (accurateMassSimilarity + rtSimilarity) * 0.5;
                 }
-                else {
+                else
+                {
                     return (accurateMassSimilarity + rtSimilarity + 0.5 * isotopeSimilarity) * 0.4;
                 }
             }
         }
 
-        public static double GetTotalSimilarity(double accurateMassSimilarity, double rtSimilarity, double ccsSimilarity, double isotopeSimilarity, bool isUseRT, bool isUseCcs) {
+        public static double GetTotalSimilarity(double accurateMassSimilarity, double rtSimilarity, double ccsSimilarity, double isotopeSimilarity, bool isUseRT, bool isUseCcs)
+        {
 
             var rtFactor = 1.0;
             var massFactor = 1.0;
@@ -3425,42 +3666,51 @@ namespace CompMs.Common.Algorithm.Scoring {
             if (!isUseCcs || ccsSimilarity < 0) useCcsScore = false;
             if (isotopeSimilarity < 0) useIsotopicScore = false;
 
-            if (useRtScore == true && useCcsScore == true && useIsotopicScore == true) {
+            if (useRtScore == true && useCcsScore == true && useIsotopicScore == true)
+            {
                 return (massFactor * accurateMassSimilarity + rtFactor * rtSimilarity + isotopeFactor * isotopeSimilarity + ccsFactor * ccsSimilarity)
                         / (massFactor + rtFactor + isotopeFactor + ccsFactor);
             }
-            else if (useRtScore == true && useCcsScore == true && useIsotopicScore == false) {
+            else if (useRtScore == true && useCcsScore == true && useIsotopicScore == false)
+            {
                 return (massFactor * accurateMassSimilarity + rtFactor * rtSimilarity + ccsFactor * ccsSimilarity)
                         / (massFactor + rtFactor + ccsFactor);
             }
-            else if (useRtScore == true && useCcsScore == false && useIsotopicScore == true) {
+            else if (useRtScore == true && useCcsScore == false && useIsotopicScore == true)
+            {
                 return (massFactor * accurateMassSimilarity + rtFactor * rtSimilarity + isotopeFactor * isotopeSimilarity)
                         / (massFactor + rtFactor + isotopeFactor);
             }
-            else if (useRtScore == false && useCcsScore == true && useIsotopicScore == true) {
+            else if (useRtScore == false && useCcsScore == true && useIsotopicScore == true)
+            {
                 return (massFactor * accurateMassSimilarity + isotopeFactor * isotopeSimilarity + ccsFactor * ccsSimilarity)
                         / (massFactor + isotopeFactor + ccsFactor);
             }
-            else if (useRtScore == false && useCcsScore == true && useIsotopicScore == false) {
+            else if (useRtScore == false && useCcsScore == true && useIsotopicScore == false)
+            {
                 return (massFactor * accurateMassSimilarity + ccsFactor * ccsSimilarity)
                       / (massFactor + ccsFactor);
             }
-            else if (useRtScore == true && useCcsScore == false && useIsotopicScore == false) {
+            else if (useRtScore == true && useCcsScore == false && useIsotopicScore == false)
+            {
                 return (massFactor * accurateMassSimilarity + rtFactor * rtSimilarity)
                         / (massFactor + rtFactor);
             }
-            else if (useRtScore == false && useCcsScore == false && useIsotopicScore == true) {
+            else if (useRtScore == false && useCcsScore == false && useIsotopicScore == true)
+            {
                 return (massFactor * accurateMassSimilarity + isotopeFactor * isotopeSimilarity)
                         / (massFactor + isotopeFactor);
             }
-            else {
+            else
+            {
                 return (massFactor * accurateMassSimilarity)
                         / massFactor;
             }
         }
 
         public static double GetTotalSimilarityUsingSimpleDotProduct(double accurateMassSimilarity, double rtSimilarity, double isotopeSimilarity,
-            double dotProductSimilarity, bool spectrumPenalty, TargetOmics targetOmics, bool isUseRT) {
+            double dotProductSimilarity, bool spectrumPenalty, TargetOmics targetOmics, bool isUseRT)
+        {
             var msmsFactor = 2.0;
             var rtFactor = 1.0;
             var massFactor = 1.0;
@@ -3470,67 +3720,86 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             if (spectrumPenalty == true && targetOmics == TargetOmics.Metabolomics) msmsSimilarity = msmsSimilarity * 0.5;
 
-            if (!isUseRT) {
-                if (isotopeSimilarity < 0) {
+            if (!isUseRT)
+            {
+                if (isotopeSimilarity < 0)
+                {
                     return (msmsFactor * msmsSimilarity + massFactor * accurateMassSimilarity)
                         / (msmsFactor + massFactor);
                 }
-                else {
+                else
+                {
                     return (msmsFactor * msmsSimilarity + massFactor * accurateMassSimilarity + isotopeFactor * isotopeSimilarity)
                         / (msmsFactor + massFactor + isotopeFactor);
                 }
             }
-            else {
-                if (rtSimilarity < 0 && isotopeSimilarity < 0) {
+            else
+            {
+                if (rtSimilarity < 0 && isotopeSimilarity < 0)
+                {
                     return (msmsFactor * msmsSimilarity + massFactor * accurateMassSimilarity)
                         / (msmsFactor + massFactor + rtFactor);
                 }
-                else if (rtSimilarity < 0 && isotopeSimilarity >= 0) {
+                else if (rtSimilarity < 0 && isotopeSimilarity >= 0)
+                {
                     return (msmsFactor * msmsSimilarity + massFactor * accurateMassSimilarity + isotopeFactor * isotopeSimilarity)
                         / (msmsFactor + massFactor + isotopeFactor + rtFactor);
                 }
-                else if (isotopeSimilarity < 0 && rtSimilarity >= 0) {
+                else if (isotopeSimilarity < 0 && rtSimilarity >= 0)
+                {
                     return (msmsFactor * msmsSimilarity + massFactor * accurateMassSimilarity + rtFactor * rtSimilarity)
                         / (msmsFactor + massFactor + rtFactor);
                 }
-                else {
+                else
+                {
                     return (msmsFactor * msmsSimilarity + massFactor * accurateMassSimilarity + rtFactor * rtSimilarity + isotopeFactor * isotopeSimilarity)
                         / (msmsFactor + massFactor + rtFactor + isotopeFactor);
                 }
             }
         }
 
-        public static double GetTotalScore(MsScanMatchResult result, MsRefSearchParameterBase param) {
+        public static double GetTotalScore(MsScanMatchResult result, MsRefSearchParameterBase param)
+        {
             var totalScore = 0.0;
-            if (param.IsUseTimeForAnnotationScoring && result.RtSimilarity > 0) {
+            if (param.IsUseTimeForAnnotationScoring && result.RtSimilarity > 0)
+            {
                 totalScore += result.RtSimilarity;
             }
-            if (param.IsUseCcsForAnnotationScoring && result.CcsSimilarity > 0) {
+            if (param.IsUseCcsForAnnotationScoring && result.CcsSimilarity > 0)
+            {
                 totalScore += result.CcsSimilarity;
             }
-            if (result.AcurateMassSimilarity > 0) {
+            if (result.AcurateMassSimilarity > 0)
+            {
                 totalScore += result.AcurateMassSimilarity;
             }
-            if (result.IsotopeSimilarity > 0) {
+            if (result.IsotopeSimilarity > 0)
+            {
                 totalScore += result.IsotopeSimilarity;
             }
-            if (result.WeightedDotProduct > 0) {
+            if (result.WeightedDotProduct > 0)
+            {
                 totalScore += (result.WeightedDotProduct + result.SimpleDotProduct + result.ReverseDotProduct) / 3.0;
             }
-            if (result.MatchedPeaksPercentage > 0) {
+            if (result.MatchedPeaksPercentage > 0)
+            {
                 totalScore += result.MatchedPeaksPercentage;
             }
-            if (result.AndromedaScore > 0) {
+            if (result.AndromedaScore > 0)
+            {
                 totalScore += result.AndromedaScore;
             }
             return totalScore;
         }
 
-        public static double GetTotalSimilarity(double rtSimilarity, double eiSimilarity, bool isUseRT = true) {
-            if (rtSimilarity < 0 || !isUseRT) {
+        public static double GetTotalSimilarity(double rtSimilarity, double eiSimilarity, bool isUseRT = true)
+        {
+            if (rtSimilarity < 0 || !isUseRT)
+            {
                 return eiSimilarity;
             }
-            else {
+            else
+            {
                 return (0.6 * eiSimilarity + 0.4 * rtSimilarity);
             }
         }
