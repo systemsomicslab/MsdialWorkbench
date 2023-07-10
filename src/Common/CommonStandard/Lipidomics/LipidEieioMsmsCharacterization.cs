@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
+using System.Data.SqlTypes;
 
 namespace CompMs.Common.Lipidomics
 {
@@ -265,7 +266,7 @@ namespace CompMs.Common.Lipidomics
                             var sn2DoubleNum = totalDoubleBond - sn1DoubleNum;
                             if (sn2DoubleNum >= 7) continue;
 
-                            var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1CarbonNum, sn1DoubleNum) - MassDiffDictionary.HydrogenMass*2;
+                            var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1CarbonNum, sn1DoubleNum) - MassDiffDictionary.HydrogenMass * 2;
                             var nl_SN1_H2O = nl_SN1 - H2O;
                             var nl_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2CarbonNum, sn2DoubleNum) - MassDiffDictionary.HydrogenMass * 2;
                             var nl_SN2_H2O = nl_SN2 - H2O;
@@ -1430,7 +1431,7 @@ namespace CompMs.Common.Lipidomics
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
                     //var acylLoss = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
-                    var EtherLoss = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - MassDiffDictionary.HydrogenMass*2;
+                    var EtherLoss = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - MassDiffDictionary.HydrogenMass * 2;
 
                     var query = new List<SpectrumPeak> {
                                 //new SpectrumPeak() { Mass = acylLoss, Intensity = 0.1 },
@@ -2799,6 +2800,151 @@ namespace CompMs.Common.Lipidomics
                         totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
 
+            }
+            return null;
+        }
+        public static LipidMolecule JudgeIfDgts(IMSScanProperty msScanProp, double ms2Tolerance,
+        double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
+        int minSnCarbon, int maxSnCarbon, int minSnDoubleBond, int maxSnDoubleBond,
+        AdductIon adduct)
+        {
+            var spectrum = msScanProp.Spectrum;
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (maxSnCarbon > totalCarbon) maxSnCarbon = totalCarbon;
+            if (maxSnDoubleBond > totalDoubleBond) maxSnDoubleBond = totalDoubleBond;
+            if (adduct.IonMode == IonMode.Positive)
+            { // positive ion mode 
+                if (adduct.AdductIonName == "[M+H]+")
+                {
+                    double Gly_C = new[] {
+                        MassDiffDictionary.CarbonMass * 10,
+                        MassDiffDictionary.HydrogenMass * 19,
+                        MassDiffDictionary.NitrogenMass,
+                        MassDiffDictionary.OxygenMass * 3,
+                        Proton
+                    }.Sum();
+
+                    double Gly_O = new[] {
+                        MassDiffDictionary.CarbonMass * 9,
+                        MassDiffDictionary.HydrogenMass * 17,
+                        MassDiffDictionary.NitrogenMass,
+                        MassDiffDictionary.OxygenMass * 4,
+                        Proton
+                    }.Sum();
+
+                    var threshold = 1.0;
+                    var isClassIonFound1 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C, threshold);
+                    var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O, threshold);
+                    if (!isClassIonFound1 && !isClassIonFound2) return null;
+
+                    // from here, acyl level annotation is executed.
+                    var candidates = new List<LipidMolecule>();
+                    for (int sn1Carbon = minSnCarbon; sn1Carbon <= maxSnCarbon; sn1Carbon++)
+                    {
+                        for (int sn1Double = minSnDoubleBond; sn1Double <= maxSnDoubleBond; sn1Double++)
+                        {
+
+                            var sn2Carbon = totalCarbon - sn1Carbon;
+                            var sn2Double = totalDoubleBond - sn1Double;
+
+                            var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass;
+                            var nl_SN1_H2O = nl_SN1 - H2O;
+
+                            var nl_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
+                            var nl_NS2_H2O = nl_SN2 - H2O;
+
+                            var query = new List<SpectrumPeak> {
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = nl_SN1_H2O, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = nl_SN2, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = nl_NS2_H2O, Intensity = 0.01 }
+                            };
+
+                            var foundCount = 0;
+                            var averageIntensity = 0.0;
+                            LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
+
+                            if (foundCount >= 2)
+                            { // now I set 2 as the correct level
+                                var DgtsFrag = 130.0862; //130.0862 (C6H12NO2+)DGTS
+                                var DgtaFrag = 144.10191; //144.10191 (C7H14NO2+) DGTA
+
+                                var molecule = new LipidMolecule();
+                                if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, DgtsFrag, DgtaFrag))
+                                {
+                                    molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("DGTS", LbmClass.DGTS, sn1Carbon, sn1Double,
+                                                                        sn2Carbon, sn2Double, averageIntensity);
+                                }
+                                else
+                                {
+                                    molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("DGTA", LbmClass.DGTA, sn1Carbon, sn1Double,
+                                    sn2Carbon, sn2Double, averageIntensity);
+                                }
+                                candidates.Add(molecule);
+                            }
+                        }
+                    }
+                    //var score = 0;
+                    //var molecule0 = getLipidAnnotaionAsLevel1("DGTS", LbmClass.DGTS, totalCarbon, totalDoubleBond, score, "");
+                    //candidates.Add(molecule0);
+
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("DGTS", LbmClass.DGTS, "", theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, 0, candidates, 2);
+                }
+            }
+            return null;
+        }
+
+        public static LipidMolecule JudgeIfLdgts(IMSScanProperty msScanProp, double ms2Tolerance,
+            double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
+            int minSnCarbon, int maxSnCarbon, int minSnDoubleBond, int maxSnDoubleBond,
+            AdductIon adduct)
+        {
+            var spectrum = msScanProp.Spectrum;
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (maxSnCarbon > totalCarbon) maxSnCarbon = totalCarbon;
+            if (maxSnDoubleBond > totalDoubleBond) maxSnDoubleBond = totalDoubleBond;
+            if (adduct.IonMode == IonMode.Positive)
+            { // positive ion mode 
+                if (adduct.AdductIonName == "[M+H]+")
+                {
+                    double Gly_C = new[] {
+                        MassDiffDictionary.CarbonMass * 10,
+                        MassDiffDictionary.HydrogenMass * 19,
+                        MassDiffDictionary.NitrogenMass,
+                        MassDiffDictionary.OxygenMass * 3,
+                        Proton
+                    }.Sum();
+
+                    double Gly_O = new[] {
+                        MassDiffDictionary.CarbonMass * 9,
+                        MassDiffDictionary.HydrogenMass * 17,
+                        MassDiffDictionary.NitrogenMass,
+                        MassDiffDictionary.OxygenMass * 4,
+                        Proton
+                    }.Sum();
+
+                    var threshold = 1.0;
+                    var isClassIonFound1 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C, threshold);
+                    var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O, threshold);
+                    if (!isClassIonFound1 && !isClassIonFound2) return null;
+
+                    var candidates = new List<LipidMolecule>();
+                    var DgtsFrag = 130.0862; //130.0862 (C6H12NO2+)DGTS
+                    var DgtaFrag = 144.10191; //144.10191 (C7H14NO2+) DGTA
+
+                    if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, DgtsFrag, DgtaFrag))
+                    {
+                        return LipidMsmsCharacterizationUtility.returnAnnotationResult("LDGTS", LbmClass.LDGTS, "", theoreticalMz, adduct,
+                             totalCarbon, totalDoubleBond, 0, candidates, 1);
+                    }
+                    else
+                    {
+                        return LipidMsmsCharacterizationUtility.returnAnnotationResult("LDGTA", LbmClass.LDGTA, "", theoreticalMz, adduct,
+                             totalCarbon, totalDoubleBond, 0, candidates, 1);
+                    }
+
+                }
             }
             return null;
         }

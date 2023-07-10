@@ -1413,11 +1413,11 @@ namespace CompMs.Common.Algorithm.Scoring {
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
 
                 case LbmClass.DGTS:
-                    return LipidMsmsCharacterization.JudgeIfDgts(msScanProp, ms2tol, refMz,
+                    return LipidEieioMsmsCharacterization.JudgeIfDgts(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
 
                 case LbmClass.LDGTS:
-                    return LipidMsmsCharacterization.JudgeIfLdgts(msScanProp, ms2tol, refMz,
+                    return LipidEieioMsmsCharacterization.JudgeIfLdgts(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                 case LbmClass.DGCC:
                     return LipidMsmsCharacterization.JudgeIfDgcc(msScanProp, ms2tol, refMz,
