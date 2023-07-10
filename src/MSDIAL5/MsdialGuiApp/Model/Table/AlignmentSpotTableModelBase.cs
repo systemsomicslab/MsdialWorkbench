@@ -27,5 +27,11 @@ namespace CompMs.App.Msdial.Model.Table
         public IObservable<IBrushMapper<BarItem>> ClassBrush { get; }
         public IObservable<IBarItemsLoader> BarItemsLoader { get; }
         public FileClassPropertiesModel FileClassProperties { get; }
+
+        public void MarkAllAsConfirmed() {
+            foreach (var peak in PeakSpots) {
+                peak.Confirmed = true;
+            }
+        }
     }
 }

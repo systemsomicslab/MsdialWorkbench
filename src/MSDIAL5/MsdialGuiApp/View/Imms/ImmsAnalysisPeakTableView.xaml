@@ -9,6 +9,7 @@
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:converter="clr-namespace:CompMs.App.Msdial.ViewModel.Converter"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:commonmvvm="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
              d:DataContext="{d:DesignInstance Type=vm:ImmsAnalysisPeakTableViewModel}"
              d:DesignHeight="450" d:DesignWidth="1200">
     <d:DesignerProperties.DesignStyle>
@@ -100,9 +101,16 @@
                             Margin="8,0"
                             Grid.Column="4"/>
 
-            <ContentControl Content="{Binding PeakSpotNavigatorViewModel.TagSearchBuilderViewModel}"
-                            ContentTemplate="{StaticResource FilteringPeakSpotTag}"
-                            Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"/>
+            <StackPanel Orientation="Horizontal"
+                        Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
+                <ContentControl Content="{Binding PeakSpotNavigatorViewModel.TagSearchBuilderViewModel}"
+                                ContentTemplate="{StaticResource FilteringPeakSpotTag}"/>
+                <Button Content="Mark all as confirmed"
+                        Command="{Binding MarkAllAsConfirmedCommand, Mode=OneTime, FallbackValue={x:Static commonmvvm:NeverCommand.Instance}}"
+                        Margin="8,0"
+                        VerticalAlignment="Center" HorizontalAlignment="Left"
+                        Width="128"/>
+            </StackPanel>
         </Grid>
 
         <DataGrid x:Name="PeakSpotView"
