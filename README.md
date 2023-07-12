@@ -2,11 +2,19 @@
 
 ## MS-DIAL - software for untargeted metabolomics and lipidomics
 The program supports data processings for any type of chromatography / scan type mass spectrometry data, and the assembly is licensed under the CC-BY 4.0.
-Please contact Hiroshi Tsugawa (htsugawa@go.tuat.ac.jp) for feedback, bug reports, and questions.
 
 ## MS-FINDER - software for structure elucidation of unknown spectra with hydrogen rearrangement (HR) rules
 The program supports molecular formula prediction, metabolie class prediction, and structure elucidation for EI-MS and MS/MS spectra, and the assembly is licensed under the CC-BY 4.0.
-Please contact Hiroshi Tsugawa (htsugawa@go.tuat.ac.jp) for feedback, bug reports, and questions.
+
+## From e-mail to GitHub (for open science)
+If you would like to discuss with us (for feedback, bug reports, and questions),
+we would appreciate it if you could do it on
+https://github.com/systemsomicslab/MsdialWorkbench/issues
+or
+https://github.com/systemsomicslab/MsdialWorkbench/discussions
+(instead of e-mail).
+
+However, if the discussion is something that cannot be done openly by any means, please email htsugawa@go.tuat.ac.jp.
 
 # How to build MS-DIAL5 Desktop Application (for Windows)
 
@@ -25,8 +33,10 @@ Please contact Hiroshi Tsugawa (htsugawa@go.tuat.ac.jp) for feedback, bug report
 
 # Developers
 Lead developer: Hiroshi Tsugawa (TUAT/RIKEN) 
-Current main developers: Hiroshi Tsugawa (RIKEN), Ipputa Tada (SOKENDAI), and Yuki Matsuzawa (RIKEN)
-Past developers: Diego Pedrosa (UC Davis)
+
+Current main developers: Hiroshi Tsugawa (TUAT/RIKEN), Mikiko Takahashi (RIKEN), and Yuki Matsuzawa (TUAT)
+
+Past developers: Diego Pedrosa (UC Davis), Ipputa Tada (SOKENDAI)
 
 # Usage
 See the tutorial page: https://mtbinfo-team.github.io/mtbinfo.github.io/
