@@ -27,6 +27,7 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls.Ribbon;
 using System.Windows.Input;
@@ -99,6 +100,10 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(OpenTargetCompoundLibrarySettingView);
             broker.ToObservable<FindTargetCompoundsSpotViewModel>()
                 .Subscribe(ShowFindTargetCompoundsSpotView);
+            broker.ToObservable<InternalMsfinderSettingViewModel>()
+                .Subscribe(ShowInternalMsfinderSettingView);
+            broker.ToObservable<FormulaFinderAdductIonSettingViewModel>()
+                .Subscribe(ShowChildDialog<Window>);
 #if RELEASE
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
 #elif DEBUG
@@ -358,6 +363,19 @@ namespace CompMs.App.Msdial.View.Core
                 };
                 window.Closed += (s, e) => vm.Dispose();
                 window.Show();
+            });
+        }
+
+        private void ShowInternalMsfinderSettingView(InternalMsfinderSettingViewModel vm) {
+            Dispatcher.Invoke(() =>
+            {
+                var dialog = new IntrenalMsfinderSettingView
+                {
+                    DataContext = vm,
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                var result = dialog.ShowDialog();
             });
         }
 
