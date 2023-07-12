@@ -73,14 +73,16 @@ namespace CompMs.App.Msdial.Model.Lcms
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper);
             _undoManager = new UndoManager().AddTo(Disposables);
 
+            var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Dt & ~FilterEnableStatus.Protein;
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
                 // These 3 lines must be moved to somewhere for swithcing/updating the alignment result
                 var proteinResultContainer = MsdialProteomicsSerializer.LoadProteinResultContainer(analysisFileModel.ProteinAssembledResultFilePath);
                 var proteinResultContainerModel = new ProteinResultContainerModel(proteinResultContainer, Ms1Peaks, Target);
                 ProteinResultContainerModel = proteinResultContainerModel;
+                filterEnabled |= FilterEnableStatus.Protein;
             }
 
-            var filterRegistrationManager = new FilterRegistrationManager<ChromatogramPeakFeatureModel>(Ms1Peaks).AddTo(Disposables);
+            var filterRegistrationManager = new FilterRegistrationManager<ChromatogramPeakFeatureModel>(Ms1Peaks, filterEnabled).AddTo(Disposables);
             filterRegistrationManager.AttachFilter(Ms1Peaks, peakFilterModel, evaluator.Contramap<ChromatogramPeakFeatureModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: ~FilterEnableStatus.Dt);
             PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
 

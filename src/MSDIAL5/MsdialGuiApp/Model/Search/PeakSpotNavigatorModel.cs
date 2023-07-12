@@ -1,5 +1,4 @@
 ﻿using CompMs.CommonMVVM;
-using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -24,19 +23,12 @@ namespace CompMs.App.Msdial.Model.Search
 
     internal sealed class PeakSpotNavigatorModel : DisposableModelBase
     {
-        public PeakSpotNavigatorModel(IReadOnlyList<IFilterable> peakSpots) {
-            AmplitudeFilterModel = new ValueFilterModel { Lower = 0d, Upper = 1d, };
-            MzFilterModel = new ValueFilterModel();
-            RtFilterModel = new ValueFilterModel();
-            DtFilterModel = new ValueFilterModel();
-
+        public PeakSpotNavigatorModel(IReadOnlyList<IFilterable> peakSpots, IReadOnlyList<ValueFilterModel> valueFilterModels, IReadOnlyList<KeywordFilterModel> keywordFilterModels) {
             PeakSpots = peakSpots ?? throw new ArgumentNullException(nameof(peakSpots));
+            AmplitudeFilterModel = new ValueFilterModel("Amplitude filter", 0d, 1d);
+            ValueFilterModels = new ObservableCollection<ValueFilterModel>(valueFilterModels);
+            KeywordFilterModels = new ObservableCollection<KeywordFilterModel>(keywordFilterModels);
             TagSearchQueryBuilder = new PeakSpotTagSearchQueryBuilderModel();
-            MetaboliteFilterModel = new KeywordFilterModel().AddTo(Disposables);
-            ProteinFilterModel = new KeywordFilterModel(KeywordFilteringType.KeepIfWordIsNull).AddTo(Disposables);
-            CommentFilterModel = new KeywordFilterModel().AddTo(Disposables);
-            OntologyFilterModel = new KeywordFilterModel(KeywordFilteringType.ExactMatch).AddTo(Disposables);
-            AdductFilterModel = new KeywordFilterModel(KeywordFilteringType.KeepIfWordIsNull).AddTo(Disposables);
         }
 
         public string SelectedAnnotationLabel {
@@ -48,14 +40,8 @@ namespace CompMs.App.Msdial.Model.Search
         public IReadOnlyList<IFilterable> PeakSpots { get; }
         public ObservableCollection<ICollectionView> PeakSpotsCollection { get; } = new ObservableCollection<ICollectionView>();
         public ValueFilterModel AmplitudeFilterModel { get; }
-        public ValueFilterModel MzFilterModel { get; }
-        public ValueFilterModel RtFilterModel { get; }
-        public ValueFilterModel DtFilterModel { get; }
-        public KeywordFilterModel MetaboliteFilterModel { get; }
-        public KeywordFilterModel ProteinFilterModel { get; }
-        public KeywordFilterModel CommentFilterModel { get; }
-        public KeywordFilterModel OntologyFilterModel { get; }
-        public KeywordFilterModel AdductFilterModel { get; }
+        public ObservableCollection<ValueFilterModel> ValueFilterModels { get; }
+        public ObservableCollection<KeywordFilterModel> KeywordFilterModels { get; }
         public PeakSpotTagSearchQueryBuilderModel TagSearchQueryBuilder { get; }
         public ObservableCollection<PeakFilterModel> PeakFilters { get; } = new ObservableCollection<PeakFilterModel>();
 

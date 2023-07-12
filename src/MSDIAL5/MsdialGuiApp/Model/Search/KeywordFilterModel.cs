@@ -15,13 +15,13 @@ namespace CompMs.App.Msdial.Model.Search
         ExactMatch,
     }
 
-    internal class KeywordFilterModel : DisposableModelBase
+    internal sealed class KeywordFilterModel : DisposableModelBase
     {
         private readonly SemaphoreSlim _sem;
         private readonly List<string> _keywords;
         private IKeywordFiltering _method;
 
-        public KeywordFilterModel(KeywordFilteringType type = KeywordFilteringType.IgnoreIfWordIsNull) {
+        public KeywordFilterModel(string label, KeywordFilteringType type = KeywordFilteringType.IgnoreIfWordIsNull) {
             _sem = new SemaphoreSlim(1, 1).AddTo(Disposables);
             _keywords = new List<string>();
             Keywords = _keywords.AsReadOnly();
@@ -37,7 +37,10 @@ namespace CompMs.App.Msdial.Model.Search
                     _method = new IgnoreIfWordIsNull();
                     break;
             }
+            Label = label;
         }
+
+        public string Label { get; }
 
         public ReadOnlyCollection<string> Keywords { get; }
 

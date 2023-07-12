@@ -35,8 +35,8 @@ namespace CompMs.App.Msdial.Model.Search
                     .Throttle(TimeSpan.FromSeconds(.05d))
                     .Subscribe(_ =>
                     {
-                        filterModel.Lower = view.SourceCollection.Cast<T>().DefaultIfEmpty().Min(convert);
-                        filterModel.Upper = view.SourceCollection.Cast<T>().DefaultIfEmpty().Max(convert);
+                        filterModel.Minimum = view.SourceCollection.Cast<T>().DefaultIfEmpty().Min(convert);
+                        filterModel.Maximum = view.SourceCollection.Cast<T>().DefaultIfEmpty().Max(convert);
                     }).AddTo(_viewToDisposables[view]);
             }
         }

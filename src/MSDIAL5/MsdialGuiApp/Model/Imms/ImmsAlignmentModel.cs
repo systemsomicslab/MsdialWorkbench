@@ -102,7 +102,11 @@ namespace CompMs.App.Msdial.Model.Imms
 
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
 
-            var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(Ms1Spots).AddTo(Disposables);
+            var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Rt & ~FilterEnableStatus.Protein;
+            if (parameter.TargetOmics == TargetOmics.Proteomics) {
+                filterEnabled |= FilterEnableStatus.Protein;
+            }
+            var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(Ms1Spots, filterEnabled).AddTo(Disposables);
             PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
             var peakSpotFiltering = filterRegistrationManager.PeakSpotFiltering;
             filterRegistrationManager.AttachFilter(Ms1Spots, peakFilterModel, evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: ~FilterEnableStatus.Rt);

@@ -128,7 +128,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }).AddTo(Disposables);
             Ms1Spots = propModels;
 
-            var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(driftProps).AddTo(Disposables);
+            var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Protein;
+            if (parameter.TargetOmics == TargetOmics.Proteomics) {
+                filterEnabled |= FilterEnableStatus.Protein;
+            }
+            var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(driftProps, filterEnabled).AddTo(Disposables);
             var filterableEvaluator = evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e));
             filterRegistrationManager.AttachFilter(driftProps, peakFilterModel, filterableEvaluator, status: FilterEnableStatus.All);
             filterRegistrationManager.AttachFilter(propModels, peakFilterModel, evaluator: filterableEvaluator, status: FilterEnableStatus.All);

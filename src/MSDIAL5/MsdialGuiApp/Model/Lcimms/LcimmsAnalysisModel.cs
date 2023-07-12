@@ -135,7 +135,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }).AddTo(Disposables);
             Ms1Peaks = peakModels;
 
-            var filterRegistrationManager = new FilterRegistrationManager<ChromatogramPeakFeatureModel>(driftPeaks).AddTo(Disposables);
+            var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Protein;
+            if (parameter.TargetOmics == TargetOmics.Proteomics) {
+                filterEnabled |= FilterEnableStatus.Protein;
+            }
+            var filterRegistrationManager = new FilterRegistrationManager<ChromatogramPeakFeatureModel>(driftPeaks, filterEnabled).AddTo(Disposables);
             IMatchResultEvaluator<ChromatogramPeakFeatureModel> driftEvaluator = evaluator.Contramap<ChromatogramPeakFeatureModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e));
             filterRegistrationManager.AttachFilter(driftPeaks, peakFilterModel, driftEvaluator, status: FilterEnableStatus.All);
             var accEvaluator = new AccumulatedPeakEvaluator(evaluator);
