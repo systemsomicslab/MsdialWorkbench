@@ -7,12 +7,13 @@ using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings.Notifiers;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public class AdductIonSettingModel : BindableBase
+    public class AdductIonSettingModel : BindableBase, IAdductIonSettingModel
     {
         public AdductIonSettingModel(ParameterBase parameter, ProcessOption process) {
             referenceParameter = parameter.ReferenceFileParam;
