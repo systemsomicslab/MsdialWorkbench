@@ -9,6 +9,8 @@ namespace CompMs.Graphics.UI.RangeSlider
     [TemplatePart(Name = "PART_UpperRange", Type = typeof(RangeBase))]
     public class RangeSlider : Control
     {
+        private bool _edittingLower, _edittingUpper;
+
         static RangeSlider() {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(RangeSlider), new FrameworkPropertyMetadata(typeof(RangeSlider)));
         }
@@ -62,8 +64,12 @@ namespace CompMs.Graphics.UI.RangeSlider
 
         private static void LowerValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             if (d is RangeSlider slider) {
-                slider.LowerRangeElement?.SetValue(RangeBase.ValueProperty, e.NewValue);
-                slider.CoerceValue(IntervalValueProperty);
+                if (!slider._edittingLower) {
+                    slider._edittingLower = true;
+                    slider.LowerRangeElement?.SetValue(RangeBase.ValueProperty, e.NewValue);
+                    slider.CoerceValue(IntervalValueProperty);
+                    slider._edittingLower = false;
+                }
             }
         }
 
@@ -78,8 +84,12 @@ namespace CompMs.Graphics.UI.RangeSlider
 
         private static void UpperValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             if (d is RangeSlider slider) {
-                slider.UpperRangeElement?.SetValue(RangeBase.ValueProperty, e.NewValue);
-                slider.CoerceValue(IntervalValueProperty);
+                if (!slider._edittingUpper) {
+                    slider._edittingUpper = true;
+                    slider.UpperRangeElement?.SetValue(RangeBase.ValueProperty, e.NewValue);
+                    slider.CoerceValue(IntervalValueProperty);
+                    slider._edittingUpper = false;
+                }
             }
         }
 
