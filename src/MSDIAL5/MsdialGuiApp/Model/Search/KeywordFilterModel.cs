@@ -59,11 +59,18 @@ namespace CompMs.App.Msdial.Model.Search
         private void SetKeywords(IEnumerable<string> keywords) {
             _keywords.Clear();
             _keywords.AddRange(keywords);
+            IsEnabled = _keywords.Count > 0;
         }
 
         public bool Match(string word) {
             return _method.Match(word, _keywords);
         }
+
+        public bool IsEnabled {
+            get => _isEnabled;
+            set => SetProperty(ref _isEnabled, value);
+        }
+        private bool _isEnabled;
 
         interface IKeywordFiltering {
             IEnumerable<string> Filter(IEnumerable<string> keywords);

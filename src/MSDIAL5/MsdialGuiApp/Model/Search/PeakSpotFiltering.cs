@@ -25,7 +25,7 @@ namespace CompMs.App.Msdial.Model.Search
 
         public void AttachFilter(ValueFilterModel filterModel, Func<T, double> convert, ICollectionView view) {
             bool predicate(T filterable) => filterModel.Contains(convert(filterable));
-            AttachFilterCore(predicate, view);
+            AttachFilterCore(predicate, view, filterModel.ObserveProperty(m => m.IsEnabled, isPushCurrentValueAtFirst: false), filterModel.IsEnabled);
             if (view.SourceCollection is INotifyCollectionChanged notifyCollection) {
                 if (!_viewToDisposables.ContainsKey(view)) {
                     _viewToDisposables[view] = new CompositeDisposable();
@@ -43,7 +43,7 @@ namespace CompMs.App.Msdial.Model.Search
 
         public void AttachFilter(KeywordFilterModel filterModel, Func<T, string> convert, ICollectionView view) {
             bool predicate(T filterable) => filterModel.Match(convert(filterable));
-            AttachFilterCore(predicate, view);
+            AttachFilterCore(predicate, view, filterModel.ObserveProperty(m => m.IsEnabled, isPushCurrentValueAtFirst: false), filterModel.IsEnabled);
         }
 
         private void AttachFilterCore(Predicate<T> predicate, ICollectionView view) {
@@ -51,6 +51,13 @@ namespace CompMs.App.Msdial.Model.Search
                 _viewToFilterMethods[view] = new PeakFilters(view);
             }
             _viewToFilterMethods[view].Attatch(predicate);
+        }
+
+        private void AttachFilterCore(Predicate<T> predicate, ICollectionView view, IObservable<bool> enabled, bool initial) {
+            if (!_viewToFilterMethods.ContainsKey(view)) {
+                _viewToFilterMethods[view] = new PeakFilters(view);
+            }
+            _viewToFilterMethods[view].Attatch(predicate, enabled, initial);
         }
 
         public bool DetatchFilter(ICollectionView view) {
@@ -90,25 +97,61 @@ namespace CompMs.App.Msdial.Model.Search
 
         class PeakFilters {
             private readonly ICollectionView _view;
-            private readonly List<Predicate<T>> _predicates;
+            private readonly List<Predicate<T>> _enabledPredicates;
+            private readonly List<Predicate<T>> _disabledPredicates;
             private Predicate<object> _predicate;
+            private readonly CompositeDisposable _disposables;
 
             public PeakFilters(ICollectionView view) {
                 _view = view;
-                _predicates = new List<Predicate<T>>();
+                _enabledPredicates = new List<Predicate<T>>();
+                _disabledPredicates = new List<Predicate<T>>();
+                _disposables = new CompositeDisposable();
+            }
+
+            private void ReloadFilter() {
+                _view.Filter -= _predicate;
+                _predicate = obj => obj is T t && _enabledPredicates.All(pred => pred.Invoke(t));
+                _view.Filter += _predicate;
             }
 
             public void Attatch(Predicate<T> predicate) {
-                _view.Filter -= _predicate;
-                _predicates.Add(predicate);
-                _predicate = obj => obj is T t && _predicates.All(pred => pred.Invoke(t));
-                _view.Filter += _predicate;
+                _enabledPredicates.Add(predicate);
+                ReloadFilter();
+            }
+
+            public void Attatch(Predicate<T> predicate, IObservable<bool> enabled, bool initial) {
+                if (initial) {
+                    _enabledPredicates.Add(predicate);
+                    ReloadFilter();
+                }
+                else {
+                    _disabledPredicates.Add(predicate);
+                }
+                _disposables.Add(enabled.Subscribe(e => {
+                    if (e) {
+                        _disabledPredicates.Remove(predicate);
+                        _enabledPredicates.Add(predicate);
+                    }
+                    else {
+                        _enabledPredicates.Remove(predicate);
+                        _disabledPredicates.Add(predicate);
+                    }
+                    ReloadFilter();
+                }));
             }
 
             public void Detatch() {
                 _view.Filter -= _predicate;
-                _predicates.Clear();
+                _enabledPredicates.Clear();
+                _disabledPredicates.Clear();
                 _predicate = null;
+                _disposables.Dispose();
+                _disposables.Clear();
+            }
+
+            ~PeakFilters() {
+                _disposables.Dispose();
             }
         }
     }
