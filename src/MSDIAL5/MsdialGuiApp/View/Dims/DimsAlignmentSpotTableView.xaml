@@ -5,10 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
+             xmlns:searchvm="clr-namespace:CompMs.App.Msdial.ViewModel.Search"
              xmlns:rs="clr-namespace:CompMs.Graphics.UI.RangeSlider;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:converter="clr-namespace:CompMs.App.Msdial.ViewModel.Converter"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:commonmvvm="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
              d:DataContext="{d:DesignInstance Type=vm:DimsAlignmentSpotTableViewModel}"
              d:DesignHeight="450" d:DesignWidth="1200">
     <d:DesignerProperties.DesignStyle>
@@ -31,17 +33,20 @@
     </UserControl.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="50" MinHeight="50"/>
+            <RowDefinition Height="Auto" MinHeight="50"/>
             <RowDefinition />
         </Grid.RowDefinitions>
 
         <Grid Margin="5" Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="110"/>
-                <ColumnDefinition />
-                <ColumnDefinition />
+                <ColumnDefinition Width="4*"/>
                 <ColumnDefinition Width="210"/>
             </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
 
             <StackPanel Grid.Column="0">
                 <StackPanel Orientation="Horizontal">
@@ -64,28 +69,54 @@
                 </StackPanel>
             </StackPanel>
 
-            <StackPanel Margin="5,0,0,0"
-                        Grid.Column="1">
-                <TextBlock Text="Metabolite Name Filter"/>
-                <TextBox Text="{Binding PeakSpotNavigatorViewModel.MetaboliteFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
-                         HorizontalAlignment="Stretch"/>
-            </StackPanel>
+            <ItemsControl ItemsSource="{Binding PeakSpotNavigatorViewModel.KeywordFilterViewModels, Mode=OneTime}"
+                          Grid.Column="1">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="1"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type searchvm:KeywordFilterViewModel}">
+                        <StackPanel Margin="5,0,0,0">
+                            <TextBlock Text="{Binding Label, Mode=OneTime}"/>
+                            <TextBox Text="{Binding Keywords.Value, UpdateSourceTrigger=PropertyChanged}"
+                                     HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
-            <StackPanel Margin="5,0,0,0"
-                        Grid.Column="2">
-                <TextBlock Text="Comment Filter"/>
-                <TextBox Text="{Binding PeakSpotNavigatorViewModel.CommentFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
-                         HorizontalAlignment="Stretch"/>
-            </StackPanel>
+            <ItemsControl ItemsSource="{Binding PeakSpotNavigatorViewModel.ValueFilterViewModels, Mode=OneTime}"
+                          Grid.Column="2">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="1"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type searchvm:ValueFilterViewModel}">
+                        <rs:RangeSlider Tag="{Binding Label, Mode=OneTime}"
+                                        Minimum="{Binding Minimum.Value, Mode=OneWay}"
+                                        Maximum="{Binding Maximum.Value, Mode=OneWay}"
+                                        LowerValue="{Binding Lower.Value, Mode=TwoWay}"
+                                        UpperValue="{Binding Upper.Value, Mode=TwoWay}"
+                                        Style="{StaticResource EditableRangeSlider}"
+                                        Margin="8,0"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
-            <rs:RangeSlider Tag="m/z range"
-                            Minimum="{Binding MassMin, Mode=OneWay}"
-                            Maximum="{Binding MassMax, Mode=OneWay}"
-                            LowerValue="{Binding PeakSpotNavigatorViewModel.MzLowerValue.Value, Mode=TwoWay}"
-                            UpperValue="{Binding PeakSpotNavigatorViewModel.MzUpperValue.Value, Mode=TwoWay}"
-                            Style="{StaticResource EditableRangeSlider}"
-                            Margin="8,0"
-                            Grid.Column="3"/>
+            <StackPanel Orientation="Horizontal"
+                        Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
+                <ContentControl Content="{Binding PeakSpotNavigatorViewModel.TagSearchBuilderViewModel}"
+                                ContentTemplate="{StaticResource FilteringPeakSpotTag}"/>
+                <Button Content="Mark all as confirmed"
+                        Command="{Binding MarkAllAsConfirmedCommand, Mode=OneTime, FallbackValue={x:Static commonmvvm:NeverCommand.Instance}}"
+                        Margin="8,0"
+                        VerticalAlignment="Center" HorizontalAlignment="Left"
+                        Width="128"/>
+            </StackPanel>
         </Grid>
 
         <DataGrid x:Name="PeakSpotView"
@@ -146,6 +177,9 @@
                                     Binding="{Binding Path=Comment}"
                                     IsReadOnly="False"
                                     Width="2*" />
+                <DataGridTemplateColumn Header="Tag"
+                                        Width="Auto"
+                                        CellTemplate="{StaticResource EditPeakSpotTag}"/>
                 <DataGridTextColumn Header="Annotation method"
                                     Binding="{Binding Path=AnnotatorID}"
                                     IsReadOnly="True"

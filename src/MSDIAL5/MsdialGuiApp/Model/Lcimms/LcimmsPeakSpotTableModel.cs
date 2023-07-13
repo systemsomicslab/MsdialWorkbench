@@ -46,7 +46,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public double DtMax { get; }
     }
 
-    internal sealed class LcimmsAnalysisPeakTableModel : PeakSpotTableModelBase<ChromatogramPeakFeatureModel>, ILcimmsPeakSpotTableModel
+    internal sealed class LcimmsAnalysisPeakTableModel : AnalysisPeakSpotTableModelBase, ILcimmsPeakSpotTableModel
     {
         public LcimmsAnalysisPeakTableModel(IReadOnlyList<ChromatogramPeakFeatureModel> peakSpots, IReactiveProperty<ChromatogramPeakFeatureModel> target, PeakSpotNavigatorModel peakSpotNavigatorModel)
             : base(peakSpots, target, peakSpotNavigatorModel) {

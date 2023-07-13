@@ -1429,10 +1429,12 @@ namespace CompMs.Common.Lipidomics
 
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
-                    var acylLoss = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
+                    //var acylLoss = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
+                    var EtherLoss = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - MassDiffDictionary.HydrogenMass*2;
 
                     var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = acylLoss, Intensity = 0.1 },
+                                //new SpectrumPeak() { Mass = acylLoss, Intensity = 0.1 },
+                                new SpectrumPeak() { Mass = EtherLoss, Intensity = 1.0 },
                              };
 
                     var foundCount = 0;
