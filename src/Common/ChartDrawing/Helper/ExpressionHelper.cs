@@ -34,10 +34,17 @@ namespace CompMs.Graphics.Helper
         }
 
         public static Expression<Func<object, object>> GetPropertyGetterExpression(Type type, string property) {
+            var properties = property.Split('.');
             var parameter = Expression.Parameter(typeof(object));
-            var casted = Expression.Convert(parameter, type);
-            var getter = Expression.Property(casted, property);
-            var prop = Expression.Convert(getter, typeof(object));
+            var curType = type;
+            Expression curValue = parameter;
+            foreach (var p in properties) {
+                var v = Expression.Convert(curValue, curType);
+                var m = Expression.Property(v, p);
+                curType = ((PropertyInfo)m.Member).PropertyType;
+                curValue = m;
+            }
+            var prop = Expression.Convert(curValue, typeof(object));
             return Expression.Lambda<Func<object, object>>(prop, parameter);
         }
 
