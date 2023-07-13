@@ -1887,7 +1887,6 @@ namespace CompMs.Common.Lipidomics
             int minSnCarbon, int maxSnCarbon, int minSnDoubleBond, int maxSnDoubleBond,
             AdductIon adduct)
         {
-
             var spectrum = msScanProp.Spectrum;
 
             if (spectrum == null || spectrum.Count == 0) return null;
@@ -1932,7 +1931,7 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
-                            if (sn1Carbon < 10 || sn2Carbon < 10) continue;
+                            //if (sn1Carbon < 10 || sn2Carbon < 10) continue;
                             if (sn1Double > 6 || sn2Double > 6) continue;
 
                             var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass;

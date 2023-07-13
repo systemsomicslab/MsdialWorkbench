@@ -1434,7 +1434,7 @@ namespace CompMs.Common.Lipidomics
 
                     var query = new List<SpectrumPeak> {
                                 //new SpectrumPeak() { Mass = acylLoss, Intensity = 0.1 },
-                                new SpectrumPeak() { Mass = EtherLoss, Intensity = 5.0 },
+                                new SpectrumPeak() { Mass = EtherLoss, Intensity = 1.0 },
                              };
 
                     var foundCount = 0;

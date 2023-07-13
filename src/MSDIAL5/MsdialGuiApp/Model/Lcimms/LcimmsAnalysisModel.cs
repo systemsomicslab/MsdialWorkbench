@@ -135,11 +135,17 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }).AddTo(Disposables);
             Ms1Peaks = peakModels;
 
-            var peakSpotNavigator = new PeakSpotNavigatorModel(driftPeaks, peakFilterModel, evaluator, status: FilterEnableStatus.All).AddTo(Disposables);
+            var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Protein;
+            if (parameter.TargetOmics == TargetOmics.Proteomics) {
+                filterEnabled |= FilterEnableStatus.Protein;
+            }
+            var filterRegistrationManager = new FilterRegistrationManager<ChromatogramPeakFeatureModel>(driftPeaks, filterEnabled).AddTo(Disposables);
+            IMatchResultEvaluator<ChromatogramPeakFeatureModel> driftEvaluator = evaluator.Contramap<ChromatogramPeakFeatureModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e));
+            filterRegistrationManager.AttachFilter(driftPeaks, peakFilterModel, driftEvaluator, status: FilterEnableStatus.All);
             var accEvaluator = new AccumulatedPeakEvaluator(evaluator);
-            peakSpotNavigator.AttachFilter(accumulatedPeakModels, accumulatedPeakFilterModel, status: FilterEnableStatus.None, evaluator: accEvaluator?.Contramap<IFilterable, ChromatogramPeakFeature>(filterable => ((ChromatogramPeakFeatureModel)filterable).InnerModel));
-            peakSpotNavigator.AttachFilter(peakModels, peakFilterModel, status: FilterEnableStatus.All, evaluator: evaluator.Contramap<IFilterable, MsScanMatchResult>(filterable => filterable.MatchResults.Representative));
-            PeakSpotNavigatorModel = peakSpotNavigator;
+            filterRegistrationManager.AttachFilter(accumulatedPeakModels, accumulatedPeakFilterModel, evaluator: accEvaluator?.Contramap<ChromatogramPeakFeatureModel, ChromatogramPeakFeature>(filterable => filterable.InnerModel), status: FilterEnableStatus.None);
+            filterRegistrationManager.AttachFilter(peakModels, peakFilterModel, evaluator: driftEvaluator, status: FilterEnableStatus.All);
+            PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
 
             var ontologyBrush = new BrushMapData<ChromatogramPeakFeatureModel>(
                     new KeyBrushMapper<ChromatogramPeakFeatureModel, string>(
