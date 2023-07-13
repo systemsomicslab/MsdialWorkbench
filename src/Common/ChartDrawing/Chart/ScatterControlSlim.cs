@@ -182,45 +182,23 @@ namespace CompMs.Graphics.Chart
         private void CoerceXProperty(Type type, string hprop) {
             if (type == null
                 || string.IsNullOrEmpty(hprop)
-                || !type.GetProperties().Any(m => m.Name == hprop)) {
+                || !ExpressionHelper.ValidatePropertyString(type, hprop)) {
                 xLambda = null;
                 return;
             }
-            var xProperty = GetExpression(type, hprop);
-            xLambda = new Lazy<Func<object, IAxisManager, AxisValue>>(() => (Func<object, IAxisManager, AxisValue>)xProperty.Compile());
+            var xProperty = ExpressionHelper.GetConvertToAxisValueExpression(type, hprop);
+            xLambda = new Lazy<Func<object, IAxisManager, AxisValue>>(xProperty.Compile);
         }
 
         private void CoerceYProperty(Type type, string vprop) {
             if (type == null
                 || string.IsNullOrEmpty(vprop)
-                || !type.GetProperties().Any(m => m.Name == vprop)) {
+                || !ExpressionHelper.ValidatePropertyString(type, vprop)) {
                 yLambda = null;
                 return;
             }
-            var yProperty = GetExpression(type, vprop);
-            yLambda = new Lazy<Func<object, IAxisManager, AxisValue>>(() => (Func<object, IAxisManager, AxisValue>)yProperty.Compile());
-        }
-
-        private System.Linq.Expressions.LambdaExpression GetExpression(Type type, string property) {
-            var parameter = System.Linq.Expressions.Expression.Parameter(typeof(object));
-            var casted = System.Linq.Expressions.Expression.Convert(parameter, type);
-            var getter = System.Linq.Expressions.Expression.Property(casted, property);
-            var axis = System.Linq.Expressions.Expression.Parameter(typeof(IAxisManager));
-
-            var prop = System.Linq.Expressions.Expression.Convert(getter, typeof(object));
-            var axisvalue = System.Linq.Expressions.Expression.Call(axis, typeof(IAxisManager).GetMethod(nameof(IAxisManager.TranslateToAxisValue)), prop);
-
-            var axistype = typeof(IAxisManager<>).MakeGenericType(((System.Reflection.PropertyInfo)getter.Member).PropertyType);
-            var castedaxis = System.Linq.Expressions.Expression.TypeAs(axis, axistype);
-            var castedaxisvalue = System.Linq.Expressions.Expression.Call(castedaxis, axistype.GetMethod(nameof(IAxisManager<object>.TranslateToAxisValue)), getter);
-
-            var val = System.Linq.Expressions.Expression.Condition(
-                System.Linq.Expressions.Expression.Equal(castedaxis, System.Linq.Expressions.Expression.Constant(null)),
-                axisvalue,
-                castedaxisvalue);
-
-            // var result = System.Linq.Expressions.Expression.Property(val, nameof(AxisValue.Value));
-            return System.Linq.Expressions.Expression.Lambda<Func<object, IAxisManager, AxisValue>>(val, parameter, axis);
+            var yProperty = ExpressionHelper.GetConvertToAxisValueExpression(type, vprop);
+            yLambda = new Lazy<Func<object, IAxisManager, AxisValue>>(yProperty.Compile);
         }
 
         public static readonly DependencyProperty HuePropertyProperty =
