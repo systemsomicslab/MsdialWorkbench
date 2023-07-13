@@ -30,7 +30,6 @@ namespace CompMs.Graphics.Helper
                 Expression.Equal(castedaxis, Expression.Constant(null)),
                 axisvalue,
                 castedaxisvalue);
-
             return Expression.Lambda<Func<object, IAxisManager, AxisValue>>(val, parameter, axis);
         }
 
@@ -40,6 +39,18 @@ namespace CompMs.Graphics.Helper
             var getter = Expression.Property(casted, property);
             var prop = Expression.Convert(getter, typeof(object));
             return Expression.Lambda<Func<object, object>>(prop, parameter);
+        }
+
+        public static bool ValidatePropertyString(Type type, string property) {
+            var properties = property.Split('.');
+            foreach (var p in properties) {
+                var prop = type?.GetProperty(p);
+                if (prop is null) {
+                    return false;
+                }
+                type = prop.PropertyType;
+            }
+            return true;
         }
     }
 }
