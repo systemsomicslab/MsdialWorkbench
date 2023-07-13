@@ -17030,7 +17030,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             return new LipidMolecule()
             {
                 LipidClass = lbmClass,
-                AnnotationLevel = 1,
+                AnnotationLevel = 2,
                 SublevelLipidName = totalName,
                 LipidName = lipidName,
                 TotalCarbonCount = totalCarbon,
@@ -17078,7 +17078,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             return new LipidMolecule()
             {
                 LipidClass = lbmClass,
-                AnnotationLevel = 1,
+                AnnotationLevel = 2,
                 SublevelLipidName = totalName,
                 LipidName = lipidName,
                 TotalCarbonCount = totalCarbon,
