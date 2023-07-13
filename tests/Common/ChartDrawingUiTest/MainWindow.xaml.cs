@@ -66,6 +66,7 @@ namespace ChartDrawingUiTest
                 typeof(ColorPicker),
                 typeof(AreaSelector),
                 typeof(NumericUpDownTest),
+                typeof(NestedProperties),
             };
             pageType = pages.ToDictionary(type => type.Name);
             names = pageType.Keys.ToList();
