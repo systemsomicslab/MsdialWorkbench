@@ -1,5 +1,4 @@
 ﻿using CompMs.Graphics.Core.Base;
-using CompMs.Common.Extension;
 using System;
 using CompMs.Graphics.Helper;
 using System.Collections.Generic;
@@ -158,7 +157,7 @@ namespace CompMs.Graphics.Chart
         }
 
         private void UpdateHorizontalItems(LazyDatas lazyDatas) {
-            if (string.IsNullOrEmpty(HorizontalPropertyName) || dataType is null) {
+            if (string.IsNullOrEmpty(HorizontalPropertyName) || dataType is null || !ExpressionHelper.ValidatePropertyString(dataType, HorizontalPropertyName)) {
                 WriteCleanFlag(PropertyClean.Horizontal, true);
                 return;
             }
@@ -191,7 +190,7 @@ namespace CompMs.Graphics.Chart
         }
 
         private void UpdateVerticalItems(LazyDatas lazyDatas) {
-            if (string.IsNullOrEmpty(VerticalPropertyName) || dataType is null) {
+            if (string.IsNullOrEmpty(VerticalPropertyName) || dataType is null || !ExpressionHelper.ValidatePropertyString(dataType, VerticalPropertyName)) {
                 WriteCleanFlag(PropertyClean.Vertical, true);
                 return;
             }
@@ -224,7 +223,7 @@ namespace CompMs.Graphics.Chart
                 return;
             }
 
-            if (!string.IsNullOrEmpty(OrderingPropertyName) && dataType != null) {
+            if (!string.IsNullOrEmpty(OrderingPropertyName) && dataType != null && ExpressionHelper.ValidatePropertyString(dataType, OrderingPropertyName)) {
                 var expression = ExpressionHelper.GetPropertyGetterExpression(dataType, OrderingPropertyName);
                 lazyDatas.UpdateOrderValue(expression);
             }
@@ -259,7 +258,7 @@ namespace CompMs.Graphics.Chart
                 return;
             }
 
-            if (dataType != null && !string.IsNullOrEmpty(LabelPropertyName)) {
+            if (dataType != null && !string.IsNullOrEmpty(LabelPropertyName) && ExpressionHelper.ValidatePropertyString(dataType, LabelPropertyName)) {
                 var expression = ExpressionHelper.GetPropertyGetterExpression(dataType, LabelPropertyName);
                 lazyDatas.UpdateLabelValue(expression, Format);
             }
