@@ -64,7 +64,6 @@ namespace CompMs.Common.Lipidomics
             director.SetPositionLevel();
             director.SetDoubleBondNumberLevel();
             director.SetOxidizedNumberLevel();
-            ((ILipidomicsVisitorBuilder)builder).SetSphingoDoubleBond(DoubleBondIndeterminateState.AllCisTransIsomers);
             ((ILipidomicsVisitorBuilder)builder).SetSphingoOxidized(OxidizedIndeterminateState.Identity);
             CERAMIDE_POSITION_LEVEL = builder.Create();
         }
