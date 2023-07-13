@@ -207,7 +207,7 @@ namespace CompMs.Common.Lipidomics
 
             return new[]
             {
-                new SpectrumPeak(lipidMass - chainMass + adductmass - MassDiffDictionary.OxygenMass - CH2, 100d, "-CD2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
+                new SpectrumPeak(lipidMass - chainMass + adductmass - MassDiffDictionary.OxygenMass - CH2, 100d, "-CH2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
             };
         }
 
