@@ -12255,6 +12255,10 @@ AdductIon adduct)
                                     var acylDouble = totalDoubleBond - sphDouble - extDouble;
 
                                     var extAcylFa = LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble);
+
+                                    Debug.WriteLine("O-acyl {0}, SPH {1}, N-acyl {2}, at mz {3}",
+                                        extCarbon + ":" + extDouble, sphCarbon + ":" + sphDouble, acylCarbon + ":" + acylDouble, msScanProp.PrecursorMz);
+
                                     var sphLoss = theoreticalMz - ((sphCarbon - 2) * 12 + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2) - sphDouble * 2);  //[M-Sph+C2H6NO]-
                                     var sphLoss2 = sphLoss - H2O;      //[M-Sph+C2H4N]-
                                     var queryExtAcyl = new List<SpectrumPeak> {
