@@ -129,6 +129,10 @@
       <DependentUpon>MultiLineChartControl1.xaml</DependentUpon>
     </Compile>
     <Compile Include="Chart\MultiLineChartControlViewModel1.cs" />
+    <Compile Include="Chart\NestedProperties.xaml.cs">
+      <DependentUpon>NestedProperties.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Chart\NestedPropertiesViewModel.cs" />
     <Compile Include="Chart\RangeSelector.xaml.cs">
       <DependentUpon>RangeSelector.xaml</DependentUpon>
     </Compile>
@@ -262,6 +266,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Chart\MultiLineChartControl1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Chart\NestedProperties.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
