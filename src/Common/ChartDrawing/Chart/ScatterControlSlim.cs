@@ -226,7 +226,7 @@ namespace CompMs.Graphics.Chart
         private void CoerceHueProperty(Type type, string hueProperty) {
             if (type == null
                 || string.IsNullOrEmpty(hueProperty)
-                || !type.GetProperties().Any(m => m.Name == hueProperty)) {
+                || !ExpressionHelper.ValidatePropertyString(type, hueProperty)) {
                 hueLambda = null;
                 return;
             }

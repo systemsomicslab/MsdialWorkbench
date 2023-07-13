@@ -105,7 +105,7 @@ namespace CompMs.Graphics.Chart
 
         private System.Linq.Expressions.Expression<Func<object, IAxisManager, AxisValue>> _xLambda;
         private void SetHorizontalLambdaExpression(Type dataType, string horizontalProperty) {
-            if (dataType is null || dataType.GetProperties().All(prop => prop.Name != horizontalProperty)) {
+            if (dataType is null || !ExpressionHelper.ValidatePropertyString(dataType, horizontalProperty)) {
                 _xLambda = null;
                 return;
             }
@@ -142,7 +142,7 @@ namespace CompMs.Graphics.Chart
 
         private System.Linq.Expressions.Expression<Func<object, IAxisManager, AxisValue>> _yLambda;
         private void SetVerticalLambdaExpression(Type dataType, string verticalProperty) {
-            if (dataType is null || dataType.GetProperties().All(prop => prop.Name != verticalProperty)) {
+            if (dataType is null || !ExpressionHelper.ValidatePropertyString(dataType, verticalProperty)) {
                 _yLambda = null;
                 return;
             }
