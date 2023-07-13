@@ -64,7 +64,6 @@ namespace CompMs.Common.Lipidomics
             director.SetPositionLevel();
             director.SetDoubleBondNumberLevel();
             director.SetOxidizedNumberLevel();
-            ((ILipidomicsVisitorBuilder)builder).SetSphingoDoubleBond(DoubleBondIndeterminateState.AllCisTransIsomers);
             ((ILipidomicsVisitorBuilder)builder).SetSphingoOxidized(OxidizedIndeterminateState.Identity);
             CERAMIDE_POSITION_LEVEL = builder.Create();
         }
@@ -97,16 +96,19 @@ namespace CompMs.Common.Lipidomics
 
         public static (ILipid, double[]) GetDefaultCharacterizationResultForCeramides(ILipid molecule, LipidMsCharacterizationResult result)
         {
-            ILipid lipid = molecule;
+            IVisitor<ILipid, ILipid> converter;
             if (!result.IsChainIonsExisted)
             { // chain cannot determine
-                lipid = molecule.Accept(SPECIES_LEVEL, IdentityDecomposer<ILipid, ILipid>.Instance);
+                converter = SPECIES_LEVEL;
             }
             else if (!result.IsDoubleBondIonsExisted)
             { // chain existed expected: SM 18:1;2O/18:1
-                lipid = molecule.Accept(CERAMIDE_POSITION_LEVEL, IdentityDecomposer<ILipid, ILipid>.Instance);
+                converter = CERAMIDE_POSITION_LEVEL;
             }
-            return (lipid, new double[2] { result.TotalScore, result.TotalMatchedIonCount });
+            else {
+                converter = POSITION_AND_DOUBLEBOND_LEVEL;
+            }
+            return (molecule.Accept(converter, IdentityDecomposer<ILipid, ILipid>.Instance), new double[2] { result.TotalScore, result.TotalMatchedIonCount });
         }
 
         public static (ILipid, double[]) GetDefaultCharacterizationResultForGlycerophospholipid(ILipid molecule, LipidMsCharacterizationResult result)
