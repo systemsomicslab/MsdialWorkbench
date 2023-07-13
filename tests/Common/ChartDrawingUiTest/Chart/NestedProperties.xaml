@@ -13,23 +13,48 @@
         <local:NestedPropertiesViewModel/>
     </Page.DataContext>
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
         <chart:SimpleChartControl HorizontalAxis="{Binding HorizontalAxis}"
                                   VerticalAxis="{Binding VerticalAxis}"
                                   HorizontalTitle="X"
-                                  VerticalTitle="Y">
+                                  VerticalTitle="Y"
+                                  Grid.Column="0">
             <Grid>
                 <chart:LineSpectrumControlSlim ItemsSource="{Binding Series}"
                                                HorizontalProperty="X"
                                                VerticalProperty="Y"
                                                DataType="{x:Type core:DataPoint}"/>
-                <chart:ScatterControlSlim ItemsSource="{Binding WrappedSeries}"
-                                          HorizontalProperty="Dp.X"
-                                          VerticalProperty="Dp.Y"
-                                          DataType="{x:Type local:DataPointWrapper}"/>
+                <chart:ScatterControlSlim ItemsSource="{Binding Series}"
+                                          HorizontalProperty="X"
+                                          VerticalProperty="Y"
+                                          DataType="{x:Type core:DataPoint}"/>
                 <chart:Annotator ItemsSource="{Binding Series}"
                                  HorizontalPropertyName="X"
                                  VerticalPropertyName="Y"
                                  LabelPropertyName="Y"/>
+            </Grid>
+        </chart:SimpleChartControl>
+        <chart:SimpleChartControl HorizontalAxis="{Binding HorizontalAxis}"
+                                  VerticalAxis="{Binding VerticalAxis}"
+                                  HorizontalTitle="Dp.X"
+                                  VerticalTitle="Dp.Y"
+                                  Grid.Column="1">
+            <Grid>
+                <chart:LineSpectrumControlSlim ItemsSource="{Binding WrappedSeries}"
+                                               HorizontalProperty="Dp.X"
+                                               VerticalProperty="Dp.Y"
+                                               DataType="{x:Type local:DataPointWrapper}"/>
+                <chart:ScatterControlSlim ItemsSource="{Binding WrappedSeries}"
+                                          HorizontalProperty="Dp.X"
+                                          VerticalProperty="Dp.Y"
+                                          DataType="{x:Type local:DataPointWrapper}"/>
+                <chart:Annotator ItemsSource="{Binding WrappedSeries}"
+                                 HorizontalPropertyName="Dp.X"
+                                 VerticalPropertyName="Dp.Y"
+                                 LabelPropertyName="Dp.Y"/>
             </Grid>
         </chart:SimpleChartControl>
     </Grid>
