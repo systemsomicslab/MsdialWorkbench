@@ -8,17 +8,23 @@ namespace CompMs.Graphics.Helper
     internal static class ExpressionHelper
     {
         public static Expression<Func<object, IAxisManager, AxisValue>> GetConvertToAxisValueExpression(Type type, string property) {
+            var properties = property.Split('.');
             var parameter = Expression.Parameter(typeof(object));
-            var casted = Expression.Convert(parameter, type);
-            var getter = Expression.Property(casted, property);
+            var curType = type;
+            Expression curValue = parameter;
+            foreach (var p in properties) {
+                var v = Expression.Convert(curValue, curType);
+                var m = Expression.Property(v, p);
+                curType = ((PropertyInfo)m.Member).PropertyType;
+                curValue = m;
+            }
             var axis = Expression.Parameter(typeof(IAxisManager));
-
-            var prop = Expression.Convert(getter, typeof(object));
+            var prop = Expression.Convert(curValue, typeof(object));
             var axisvalue = Expression.Call(axis, typeof(IAxisManager).GetMethod(nameof(IAxisManager.TranslateToAxisValue)), prop);
 
-            var axistype = typeof(IAxisManager<>).MakeGenericType(((PropertyInfo)getter.Member).PropertyType);
+            var axistype = typeof(IAxisManager<>).MakeGenericType(((PropertyInfo)((MemberExpression)curValue).Member).PropertyType);
             var castedaxis = Expression.TypeAs(axis, axistype);
-            var castedaxisvalue = Expression.Call(castedaxis, axistype.GetMethod(nameof(IAxisManager<object>.TranslateToAxisValue)), getter);
+            var castedaxisvalue = Expression.Call(castedaxis, axistype.GetMethod(nameof(IAxisManager<object>.TranslateToAxisValue)), curValue);
 
             var val = Expression.Condition(
                 Expression.Equal(castedaxis, Expression.Constant(null)),
