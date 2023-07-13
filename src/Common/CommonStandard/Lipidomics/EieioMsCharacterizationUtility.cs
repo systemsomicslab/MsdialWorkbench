@@ -147,7 +147,7 @@ namespace CompMs.Common.Lipidomics
                 converter = POSITION_AND_DOUBLEBOND_LEVEL;
             }
             else if (result.IsPositionIonsExisted)
-            { // chain existed expected: TG 16:0/18:1/18:2
+            { // chain existed expected: TG 16:0_18:1(sn2)_18:2 for TG, HBMP/DCL 16:0/18:0_20:4
                 converter = POSITION_LEVEL;
             }
             else if (result.IsDoubleBondIonsExisted)

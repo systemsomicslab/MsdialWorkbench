@@ -35,7 +35,7 @@ namespace CompMs.Common.Lipidomics
             }
             else
             {
-                var matchSub2 = pattern.Match(lipidStr.Replace("/", "_"));
+                var matchSub2 = pattern.Match(lipidStr.Replace("_", "/"));
                 if (matchSub2.Success)
                 {
                     var group = matchSub2.Groups;

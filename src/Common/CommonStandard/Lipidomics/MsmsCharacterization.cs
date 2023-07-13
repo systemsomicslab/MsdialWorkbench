@@ -12255,18 +12255,16 @@ AdductIon adduct)
                                     var acylDouble = totalDoubleBond - sphDouble - extDouble;
 
                                     var extAcylFa = LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble);
-
-                                    Debug.WriteLine("O-acyl {0}, SPH {1}, N-acyl {2}, at mz {3}",
-                                        extCarbon + ":" + extDouble, sphCarbon + ":" + sphDouble, acylCarbon + ":" + acylDouble, msScanProp.PrecursorMz);
-
-                                    var sphLoss = theoreticalMz - ((sphCarbon - 2) * 12 + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2) - sphDouble * 2);  //[M-Sph+C2H6NO]-
+                                    var sphMass = sphCarbon * 12 + (2 * sphCarbon - 2 * sphDouble + 3) * MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass;
+                                    //var sphLoss = theoreticalMz - ((sphCarbon - 2) * 12 + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2) - sphDouble * 2);  //[M-Sph+C2H6NO]-
+                                    var sphLoss = theoreticalMz - sphMass + 12 * 2 + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.NitrogenMass;  //"[M-Sph+C2H4N]-"
                                     var sphLoss2 = sphLoss - H2O;      //[M-Sph+C2H4N]-
                                     var queryExtAcyl = new List<SpectrumPeak> {
                                         new SpectrumPeak() { Mass = extAcylFa, Intensity = 1.0 },
                                     };
                                     var querySph = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = sphLoss, Intensity = 0.1 },
-                                        new SpectrumPeak() { Mass = sphLoss2, Intensity = 0.1 },
+                                        new SpectrumPeak() { Mass = sphLoss, Intensity = 0.005 },
+                                        new SpectrumPeak() { Mass = sphLoss2, Intensity = 0.005 },
                                     };
                                     LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, queryExtAcyl, ms2Tolerance, out int queryExtAcylFoundCount, out double queryExtAcylAverageInt);
                                     LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, querySph, ms2Tolerance, out int querySphFoundCount, out double querySphAverageInt);
