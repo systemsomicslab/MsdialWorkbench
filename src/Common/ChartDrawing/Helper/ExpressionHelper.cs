@@ -49,6 +49,9 @@ namespace CompMs.Graphics.Helper
         }
 
         public static bool ValidatePropertyString(Type type, string property) {
+            if (string.IsNullOrEmpty(property)) {
+                return false;
+            }
             var properties = property.Split('.');
             foreach (var p in properties) {
                 var prop = type?.GetProperty(p);
