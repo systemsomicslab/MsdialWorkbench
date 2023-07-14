@@ -52,7 +52,7 @@ namespace CompMs.App.Msdial.Model.Search
                 keywordFilterManagers.Add(new KeywordFilterManager(CommentFilterModel, FilterEnableStatus.Comment, obj => ((IFilterable)obj).Comment));
             }
             _keywordFilterManagers = keywordFilterManagers;
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel((IReadOnlyList<IFilterable>)spots, valueFilterManagers.Select(pair => pair.Filter).ToArray(), keywordFilterManagers.Select(pair => pair.Filter).ToArray());
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(spots, valueFilterManagers.Select(pair => pair.Filter).ToArray(), keywordFilterManagers.Select(pair => pair.Filter).ToArray());
             PeakSpotFiltering = new PeakSpotFiltering<T>();
         }
 

@@ -5,7 +5,7 @@ using System.ComponentModel;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class Ms1BasedSpectrumFeature : BindableBase, IDisposable
+    public sealed class Ms1BasedSpectrumFeature : BindableBase, IDisposable, IAnnotatedObject
     {
         private SpectrumFeature _spectrumFeature;
         private bool _disposedValue;
@@ -63,5 +63,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+
+        MsScanMatchResultContainer IAnnotatedObject.MatchResults => _spectrumFeature.AnnotatedMSDecResult.MatchResults;
     }
 }

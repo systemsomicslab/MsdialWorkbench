@@ -1,7 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using System.Collections.ObjectModel;
@@ -16,8 +15,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             _model = model;
         }
 
-        public ReactivePropertySlim<object> SelectedSpectrum => _model.SelectedSpectrumWrapper;
-        public ReadOnlyObservableCollection<object> Spectra => _model.SpectraWrapper;
+        public ReactiveProperty<Ms1BasedSpectrumFeature> SelectedSpectrum => _model.SelectedSpectrum;
+        public ReadOnlyObservableCollection<Ms1BasedSpectrumFeature> Spectra => _model.Spectra;
         public ReactivePropertySlim<ChromatogramPeakFeatureModel> SelectedChromatogramPeak => _model.SelectedChromatogramPeak;
         public ReadOnlyObservableCollection<ChromatogramPeakFeatureModel> ChromatogramPeaks => _model.ChromatogramPeaks;
 

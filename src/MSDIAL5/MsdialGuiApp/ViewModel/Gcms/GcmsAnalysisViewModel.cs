@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Gcms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
@@ -17,6 +18,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 
         public GcmsAnalysisViewModel(GcmsAnalysisModel model, FocusControlManager focusControlManager) {
             _model = model;
+            PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
             PeakPlotViewModel = new SpectrumFeaturePlotViewModel(model.PeakPlotModel).AddTo(Disposables);
             EicViewModel = new EicViewModel(_model.EicModel, horizontalAxis: PeakPlotViewModel.HorizontalAxis as IAxisManager<double>).AddTo(Disposables);
             var (rawDecSpectraViewFocusAction, rawDecSpectraViewFocused) = focusControlManager.Request();
@@ -34,6 +36,8 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         }
 
         public IResultModel Model => _model;
+
+        public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
 
         public SpectrumFeaturePlotViewModel PeakPlotViewModel { get; }
         public EicViewModel EicViewModel { get; }

@@ -13,11 +13,8 @@ namespace CompMs.App.Msdial.Model.Chart
     internal sealed class SpectrumFeaturePlotModel : DisposableModelBase
     {
         public SpectrumFeaturePlotModel(Ms1BasedSpectrumFeatureCollection spectra, ObservableCollection<ChromatogramPeakFeatureModel> peaks, BrushMapDataSelector<ChromatogramPeakFeatureModel> brushMapDataSelector) {
-            SpectraWrapper = new ReadOnlyObservableCollection<object>(new ObservableCollection<object>(spectra.Items.Select(item => new SpectrumWrapper(item))));
-            SelectedSpectrumWrapper = new ReactivePropertySlim<object>().AddTo(Disposables);
-
             Spectra = new ReadOnlyObservableCollection<Ms1BasedSpectrumFeature>(spectra.Items);
-            SelectedSpectrum = SelectedSpectrumWrapper.OfType<SpectrumWrapper>().Select(s => s.Feature).ToReactiveProperty().AddTo(Disposables);
+            SelectedSpectrum = new ReactiveProperty<Ms1BasedSpectrumFeature>().AddTo(Disposables);
 
             ChromatogramPeaks = new ReadOnlyObservableCollection<ChromatogramPeakFeatureModel>(peaks);
             SelectedChromatogramPeak = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);

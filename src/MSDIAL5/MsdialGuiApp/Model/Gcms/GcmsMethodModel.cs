@@ -1,6 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Utility;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.Graphics.UI.ProgressBar;
@@ -26,6 +26,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly FacadeMatchResultEvaluator _evaluator;
         private readonly IMessageBroker _broker;
         private readonly StandardDataProviderFactory _providerFactory;
+        private readonly PeakFilterModel _peakFilterModel;
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> CHROMATOGRAM_SPOT_SERIALIZER;
 
         static GcmsMethodModel() {
@@ -38,6 +39,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             _broker = broker;
             _providerFactory = new StandardDataProviderFactory(retry: 5, isGuiProcess: true);
+            _peakFilterModel = new PeakFilterModel(DisplayFilter.RefMatched | DisplayFilter.Unknown /*&& DisplayFilter.Blank*/); // TODO: Implement blank filtering
         }
 
         public GcmsAnalysisModel SelectedAnalysisModel {
@@ -143,7 +145,7 @@ namespace CompMs.App.Msdial.Model.Gcms
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             var providerFactory = _providerFactory.ContraMap((AnalysisFileBeanModel fileModel) => fileModel.File);
-            return SelectedAnalysisModel = new GcmsAnalysisModel(analysisFile, providerFactory, _storage.Parameter.ProjectParam, _storage.Parameter.PeakPickBaseParam, _storage.Parameter.ChromDecBaseParam, _storage.DataBaseMapper, _storage.DataBases, _projectBaseParameter, _broker);
+            return SelectedAnalysisModel = new GcmsAnalysisModel(analysisFile, providerFactory, _storage.Parameter.ProjectParam, _storage.Parameter.PeakPickBaseParam, _storage.Parameter.ChromDecBaseParam, _storage.DataBaseMapper, _storage.DataBases, _projectBaseParameter, _peakFilterModel, _broker);
         }
     }
 }

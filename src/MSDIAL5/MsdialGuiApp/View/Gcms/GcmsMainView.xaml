@@ -56,6 +56,8 @@
                     <RowDefinition Height="240"/>
                     <RowDefinition Height="*" MinHeight="200"/>
                 </Grid.RowDefinitions>
+                <search:PeakSpotNavigatorView DataContext="{Binding SelectedViewModel.Value.PeakSpotNavigatorViewModel}"
+                                              Grid.Row="0" Grid.Column="0"/>
                 <chart:SurveyScanView DataContext="{Binding AnalysisViewModel.Value.SurveyScanViewModel}"
                                       Grid.Row="1" Grid.Column="0"/>
                 <TabControl ItemsSource="{Binding ChromatogramViewModels.ViewModels.Value}"

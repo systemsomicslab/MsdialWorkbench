@@ -38,16 +38,23 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly Ms1BasedSpectrumFeatureCollection _spectrumFeatures;
         private readonly ObservableCollection<ChromatogramPeakFeatureModel> _peaks;
 
-        public GcmsAnalysisModel(AnalysisFileBeanModel file, IDataProviderFactory<AnalysisFileBeanModel> providerFactory, ProjectBaseParameter projectParameter, PeakPickBaseParameter peakPickParameter, ChromDecBaseParameter chromDecParameter, DataBaseMapper dbMapper, DataBaseStorage dbStorage, ProjectBaseParameterModel projectBaseParameterModel, IMessageBroker broker) {
+        public GcmsAnalysisModel(AnalysisFileBeanModel file, IDataProviderFactory<AnalysisFileBeanModel> providerFactory, ProjectBaseParameter projectParameter, PeakPickBaseParameter peakPickParameter, ChromDecBaseParameter chromDecParameter, DataBaseMapper dbMapper, DataBaseStorage dbStorage, ProjectBaseParameterModel projectBaseParameterModel, PeakFilterModel peakFilterModel, IMessageBroker broker) {
             _disposables = new CompositeDisposable();
             _spectrumFeatures = file.LoadMs1BasedSpectrumFeatureCollection().AddTo(_disposables);
             _peaks =  file.LoadChromatogramPeakFeatureModels();
+
+            var evaluator = FacadeMatchResultEvaluator.FromDataBases(dbStorage);
 
             var compoundSearchers = CompoundSearcherCollection.BuildSearchers(dbStorage, dbMapper);
             var brushMapDataSelector = BrushMapDataSelectorFactory.CreatePeakFeatureBrushes(projectParameter.TargetOmics);
             PeakPlotModel = new SpectrumFeaturePlotModel(_spectrumFeatures, _peaks, brushMapDataSelector).AddTo(_disposables);
 
+            var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Mz & ~FilterEnableStatus.Dt & ~FilterEnableStatus.Protein;
+            var filterRegistrationManager = new SpectrumFeatureFilterRegistrationManager(PeakPlotModel.Spectra).AddTo(_disposables);
+            filterRegistrationManager.AttachFilter(PeakPlotModel.Spectra, peakFilterModel, evaluator.Contramap<Ms1BasedSpectrumFeature, MsScanMatchResult>(spectrumFeature => spectrumFeature.MatchResults.Representative), status: filterEnabled);
+            PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
             var selectedSpectrum = PeakPlotModel.SelectedSpectrum;
+
             IDataProvider provider = providerFactory.Create(file);
             // Eic chart
             var eicLoader = new QuantMassEicLoader(file.File, provider, peakPickParameter, projectParameter.IonMode, ChromXType.RT, ChromXUnit.Min, peakPickParameter.RetentionTimeBegin, peakPickParameter.RetentionTimeEnd, isConstantRange: true); // TODO: Not only RT, but also RI.
@@ -166,6 +173,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         public PeakInformationMs1BasedModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
         public MoleculeStructureModel MoleculeStructureModel { get; }
+        public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
 
         // IAnalysisModel interface
         Task IAnalysisModel.SaveAsync(CancellationToken token) {

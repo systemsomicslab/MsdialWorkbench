@@ -23,8 +23,8 @@ namespace CompMs.App.Msdial.Model.Search
 
     internal sealed class PeakSpotNavigatorModel : DisposableModelBase
     {
-        public PeakSpotNavigatorModel(IReadOnlyList<IFilterable> peakSpots, IReadOnlyList<ValueFilterModel> valueFilterModels, IReadOnlyList<KeywordFilterModel> keywordFilterModels) {
-            PeakSpots = peakSpots ?? throw new ArgumentNullException(nameof(peakSpots));
+        public PeakSpotNavigatorModel(object peakSpots, IReadOnlyList<ValueFilterModel> valueFilterModels, IReadOnlyList<KeywordFilterModel> keywordFilterModels) {
+            PeakSpots = peakSpots;
             AmplitudeFilterModel = new ValueFilterModel("Amplitude filter", 0d, 1d);
             ValueFilterModels = new ObservableCollection<ValueFilterModel>(valueFilterModels);
             KeywordFilterModels = new ObservableCollection<KeywordFilterModel>(keywordFilterModels);
@@ -37,7 +37,8 @@ namespace CompMs.App.Msdial.Model.Search
         }
         private string _selectedAnnotationLabel;
 
-        public IReadOnlyList<IFilterable> PeakSpots { get; }
+        public object PeakSpots { get; }
+
         public ObservableCollection<ICollectionView> PeakSpotsCollection { get; } = new ObservableCollection<ICollectionView>();
         public ValueFilterModel AmplitudeFilterModel { get; }
         public ObservableCollection<ValueFilterModel> ValueFilterModels { get; }
