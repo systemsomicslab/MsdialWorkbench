@@ -1,7 +1,6 @@
 ﻿using CompMs.Common.MessagePack;
 using MessagePack;
 using System.IO;
-
 namespace CompMs.MsdialCore.DataObj
 {
     [MessagePackObject]
@@ -28,6 +27,8 @@ namespace CompMs.MsdialCore.DataObj
         public FeatureFilterStatus FeatureFilterStatus { get; } = new FeatureFilterStatus();
         [Key("Comment")]
         public string Comment { get; set; } = string.Empty;
+        [IgnoreMember]
+        public PeakSpotTagCollection TagCollection { get; } = new PeakSpotTagCollection();
 
         public void Save(Stream stream) {
             MessagePackDefaultHandler.SaveToStream(this, stream);
