@@ -19,7 +19,7 @@ namespace CompMs.App.Msdial.Model.Search
         private bool _disposedValue;
 
         public void AttachFilter(ICollectionView view, PeakFilterModel peakFilterModel, PeakSpotTagSearchQueryBuilderModel tagSearchQueryBuilder, IMatchResultEvaluator<Ms1BasedSpectrumFeature> evaluator) {
-            var pred = CreateFilter(peakFilterModel, evaluator);
+            var pred = CreateFilter(peakFilterModel, evaluator, tagSearchQueryBuilder);
             AttachFilterCore(pred.Invoke, view);
         }
 
@@ -71,8 +71,8 @@ namespace CompMs.App.Msdial.Model.Search
             return false;
         }
 
-        private Predicate<Ms1BasedSpectrumFeature> CreateFilter(PeakFilterModel peakFilterModel, IMatchResultEvaluator<Ms1BasedSpectrumFeature> evaluator) {
-            return spectrumFeature => peakFilterModel.AnnotationFilter(spectrumFeature, evaluator);
+        private Predicate<Ms1BasedSpectrumFeature> CreateFilter(PeakFilterModel peakFilterModel, IMatchResultEvaluator<Ms1BasedSpectrumFeature> evaluator, PeakSpotTagSearchQueryBuilderModel tagSearchQueryBuilder) {
+            return spectrumFeature => peakFilterModel.AnnotationFilter(spectrumFeature, evaluator) && spectrumFeature.TagCollection.IsSelected(tagSearchQueryBuilder.CreateQuery());
         }
 
         private void Dispose(bool disposing) {
