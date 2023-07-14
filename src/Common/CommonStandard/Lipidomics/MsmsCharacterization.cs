@@ -7043,7 +7043,6 @@ AdductIon adduct)
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("ADGGA", LbmClass.ADGGA, "", theoreticalMz, adduct,
                        totalCarbon, totalDoubleBond, 0, candidates, 3);
-
                 }
             }
             else
@@ -12259,7 +12258,7 @@ AdductIon adduct)
                                     //var sphLoss = theoreticalMz - sphMass + 12 * 2 + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.NitrogenMass;  //"[M-Sph+C2H4N]-"
                                     //var sphLoss2 = sphLoss - H2O;      //[M-Sph+C2H4N]-
                                     var queryExtAcyl = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = extAcylFa, Intensity = 1.0 },
+                                        new SpectrumPeak() { Mass = extAcylFa, Intensity = 5.0 },
                                     };
                                     //var querySph = new List<SpectrumPeak> {
                                     //    new SpectrumPeak() { Mass = sphLoss, Intensity = 0.005 },
