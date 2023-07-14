@@ -26,7 +26,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         public double RiMin { get; }
         public double RiMax { get; }
 
-        public void MarkAllAsConfirmed() {
+        public override void MarkAllAsConfirmed() {
             foreach (var peak in PeakSpots) {
                 peak.Confirmed = true;
             }

@@ -28,7 +28,7 @@ namespace CompMs.App.Msdial.Model.Table
         public IObservable<IBarItemsLoader> BarItemsLoader { get; }
         public FileClassPropertiesModel FileClassProperties { get; }
 
-        public void MarkAllAsConfirmed() {
+        public override void MarkAllAsConfirmed() {
             foreach (var peak in PeakSpots) {
                 peak.Confirmed = true;
             }

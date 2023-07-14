@@ -12,7 +12,7 @@ namespace CompMs.App.Msdial.Model.Table
 
         }
 
-        public void MarkAllAsConfirmed() {
+        public override void MarkAllAsConfirmed() {
             foreach (var peak in PeakSpots) {
                 peak.Confirmed = true;
             }

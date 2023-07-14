@@ -11,6 +11,7 @@ namespace CompMs.App.Msdial.Model.Table
         IReadOnlyList<object> PeakSpots { get; }
 
         IReactiveProperty Target { get; }
+        void MarkAllAsConfirmed();
     }
 
     internal abstract class PeakSpotTableModelBase<T> : DisposableModelBase, IPeakSpotTableModelBase where T: class
@@ -27,5 +28,6 @@ namespace CompMs.App.Msdial.Model.Table
         protected IReadOnlyList<T> PeakSpots { get; }
         IReadOnlyList<object> IPeakSpotTableModelBase.PeakSpots => PeakSpots;
         IReactiveProperty IPeakSpotTableModelBase.Target => _target;
+        public abstract void MarkAllAsConfirmed();
     }
 }

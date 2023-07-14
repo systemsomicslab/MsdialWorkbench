@@ -10,7 +10,7 @@ using System.Windows.Input;
 namespace CompMs.App.Msdial.ViewModel.Table
 {
     internal abstract class AnalysisPeakTableViewModelBase : PeakSpotTableViewModelBase {
-        public AnalysisPeakTableViewModelBase(AnalysisPeakSpotTableModelBase model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknonwCommand, UndoManagerViewModel undoManagerViewModel, IObservable<EicLoader> eicLoader)
+        public AnalysisPeakTableViewModelBase(IPeakSpotTableModelBase model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknonwCommand, UndoManagerViewModel undoManagerViewModel, IObservable<EicLoader> eicLoader)
             : base(model, peakSpotNavigatorViewModel, setUnknonwCommand, undoManagerViewModel) {
             if (eicLoader is null) {
                 throw new ArgumentNullException(nameof(eicLoader));
