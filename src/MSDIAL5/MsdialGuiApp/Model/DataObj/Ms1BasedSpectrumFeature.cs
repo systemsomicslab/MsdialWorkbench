@@ -34,6 +34,43 @@ namespace CompMs.App.Msdial.Model.DataObj
         }
         private string _comment;
 
+        public bool Confirmed {
+            get => _spectrumFeature.TagCollection.IsSelected(PeakSpotTag.CONFIRMED);
+            set => SetPeakSpotTag(PeakSpotTag.CONFIRMED, value, nameof(Confirmed));
+        }
+        public bool LowQualitySpectrum {
+            get => _spectrumFeature.TagCollection.IsSelected(PeakSpotTag.LOW_QUALITY_SPECTRUM);
+            set => SetPeakSpotTag(PeakSpotTag.LOW_QUALITY_SPECTRUM, value, nameof(LowQualitySpectrum));
+        }
+        public bool Misannotation {
+            get => _spectrumFeature.TagCollection.IsSelected(PeakSpotTag.MISANNOTATION);
+            set => SetPeakSpotTag(PeakSpotTag.MISANNOTATION, value, nameof(Misannotation));
+        }
+        public bool Coelution {
+            get => _spectrumFeature.TagCollection.IsSelected(PeakSpotTag.COELUTION);
+            set => SetPeakSpotTag(PeakSpotTag.COELUTION, value, nameof(Coelution));
+        }
+        public bool Overannotation {
+            get => _spectrumFeature.TagCollection.IsSelected(PeakSpotTag.OVERANNOTATION);
+            set => SetPeakSpotTag(PeakSpotTag.OVERANNOTATION, value, nameof(Overannotation));
+        }
+
+        private bool SetPeakSpotTag(PeakSpotTag tag, bool value, string propertyname) {
+            if (value == _spectrumFeature.TagCollection.IsSelected(tag)) {
+                return false;
+            }
+            if (value) {
+                _spectrumFeature.TagCollection.Select(tag);
+            }
+            else {
+                _spectrumFeature.TagCollection.Deselect(tag);
+            }
+            OnPropertyChanged(propertyname);
+            return true;
+        }
+
+        public PeakSpotTagCollection TagCollection => _spectrumFeature.TagCollection;
+
         public SpectrumFeature GetCurrentSpectrumFeature() => _spectrumFeature;
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs args) {
