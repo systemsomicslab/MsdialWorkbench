@@ -78,14 +78,25 @@ namespace CompMs.MsdialCore.DataObj {
         }
 
         public void SaveSpectrumFeatures(SpectrumFeatureCollection spectrumFeatures) {
-            using (var stream = new TemporaryFileStream(SpectrumFeatureFilePath)) {
-                spectrumFeatures.Save(stream);
+            var file = SpectrumFeatureFilePath;
+            var tagfile = Path.Combine(Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file) + "_tags.xml");
+            using (var stream = new TemporaryFileStream(file))
+            using (var tagStream = new TemporaryFileStream(tagfile)) {
+                spectrumFeatures.Save(stream, tagStream);
                 stream.Move();
+                tagStream.Move();
             }
         }
 
         public SpectrumFeatureCollection LoadSpectrumFeatures() {
-            using (var stream = File.Open(SpectrumFeatureFilePath, FileMode.Open)) {
+            var file = SpectrumFeatureFilePath;
+            var tagfile = Path.Combine(Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file) + "_tags.xml");
+            using (var stream = File.Open(file, FileMode.Open)) {
+                if (File.Exists(tagfile)) {
+                    using (var tagStream = File.Open(tagfile, FileMode.Open)) {
+                        return SpectrumFeatureCollection.Load(stream, tagStream);
+                    }
+                }
                 return SpectrumFeatureCollection.Load(stream);
             }
         }
