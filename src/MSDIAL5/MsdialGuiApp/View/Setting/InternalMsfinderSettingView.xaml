@@ -485,7 +485,7 @@
                             </Grid>
                         </GroupBox>
                         <GroupBox Grid.Row="2" Grid.Column="0" BorderThickness="0" Margin="0,5,0,0">
-                            
+
                         </GroupBox>
                         <GroupBox Grid.Row="3" Grid.Column="0" BorderThickness="0" Margin="0,5,0,0">
                             <GroupBox.Header>
@@ -668,6 +668,82 @@
                                 <CheckBox IsChecked="{Binding IsUseRtForFilteringCandidates.Value}"
                                           VerticalContentAlignment="Center">
                                     <Label Content="Use retention time to 'exclude' candidates"/>
+                                </CheckBox>
+                            </GroupBox.Header>
+                        </GroupBox>
+                    </Grid>
+                </TabItem>
+                <TabItem Name="TabItem_CCS" Header="CCS">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <GroupBox Grid.Row="0" BorderThickness="0" Margin="0,5,0,0">
+                            <GroupBox.Header>
+                                <CheckBox IsChecked="{Binding IsUsePredictedCcsForStructureElucidation.Value}"
+                                          VerticalContentAlignment="Center">
+                                    <Label Content="Use predicted CCS values for structure elucidation"/>
+                                </CheckBox>
+                            </GroupBox.Header>
+                            <StackPanel Margin="8,0,0,0">
+                                <ui:LabeledContent PrependLabel="CCS tolerance:"
+                                                   AppendLabel="Ao^2"
+                                                   Style="{StaticResource AlignedContent}">
+                                    <TextBox IsEnabled="{Binding IsUsePredictedCcsForStructureElucidation.Value}"
+                                             Text="{Binding CcsToleranceForStructureElucidation}"/>
+                                </ui:LabeledContent>
+                                <Label Content="User-defined InChIKey-Adduct-CCS text library"
+                                       FontStyle="Italic"
+                                       Margin="0,8,0,0"/>
+                                <ui:ExecutableBar LabelWidth="200"
+                                                  ButtonContent="Select"
+                                                  Command="ApplicationCommands.Open"
+                                                  CommandIsEnabled="{Binding IsUsePredictedCcsForStructureElucidation.Value}"
+                                                  Margin="8,5,0,0">
+                                    <ui:ExecutableBar.ToolTip>
+                                        <TextBlock>
+                                            File format (tab-delimited text) <LineBreak />
+                                            Header: [0] InChIKey [1] Adduct type [2] CCS <LineBreak />
+                                            From second row (ex.):  <LineBreak />
+                                            AAAAAAAAAAAAAA-AAAAAAAAAA-A (tab) [M+H]+ (tab) 3.2 <LineBreak />
+                                            BBBBBBBBBBBBBB-BBBBBBBBBB-B (tab) [M+NH4]+ (tab) 3.5 <LineBreak />
+                                            CCCCCCCCCCCCCC-CCCCCCCCCC-C (tab) [M+Na]+ (tab) 2.6 <LineBreak />
+                                            DDDDDDDDDDDDDD-DDDDDDDDDD-D (tab) [M+H]+ (tab) 3.3
+                                        </TextBlock>
+                                    </ui:ExecutableBar.ToolTip>
+                                    <ui:ExecutableBar.Label>
+                                        <Label Content="File path:"/>
+                                    </ui:ExecutableBar.Label>
+                                    <TextBox Name="TextBox_CcsAdductInChIKeyDictionaryFilepath"
+                                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
+                                             Text="{Binding CcsAdductInChIKeyDictionaryFilepath.Value}"
+                                             Width="300"/>
+                                </ui:ExecutableBar>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Grid.Row="1" BorderThickness="0" Margin="0,5,0,0">
+                            <GroupBox.Header>
+                                <CheckBox IsChecked="{Binding IsUseExperimentalCcsForSpectralSearching.Value}"
+                                          VerticalContentAlignment="Center">
+                                    <Label Content="Use experimental CCS values for searching"/>
+                                </CheckBox>
+                            </GroupBox.Header>
+                            <StackPanel Margin="8,0,0,0">
+                                <ui:LabeledContent PrependLabel="CCS tolerance:"
+                                                   AppendLabel="Ao^2"
+                                                   Style="{StaticResource AlignedContent}">
+                                    <TextBox IsEnabled="{Binding IsUseExperimentalCcsForSpectralSearching.Value}"
+                                             Text="{Binding CcsToleranceForSpectralSearching.Value}"/>
+                                </ui:LabeledContent>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Grid.Row="2" BorderThickness="0" Margin="0,5,0,0">
+                            <GroupBox.Header>
+                                <CheckBox IsChecked="{Binding IsUseCcsForFilteringCandidates.Value}"
+                                          VerticalContentAlignment="Center">
+                                    <Label Content="Use CCS to 'exclude' candidates"/>
                                 </CheckBox>
                             </GroupBox.Header>
                         </GroupBox>
