@@ -21,6 +21,57 @@ namespace CompMs.Common.Lipidomics
         private const double Sugar162 = 162.052823422;
         private const double Na = 22.98977;
 
+        public static LipidMolecule getTriacylglycerolMoleculeObjAsLevel2PositionChain(string lipidClass, LbmClass lbmClass,
+            int sn1Carbon, int sn1Double, int sn2Carbon, int sn2Double, int sn3Carbon, int sn3Double, double score)
+        {
+
+            var totalCarbon = sn1Carbon + sn2Carbon + sn3Carbon;
+            var totalDB = sn1Double + sn2Double + sn3Double;
+            var totalString = totalCarbon + ":" + totalDB;
+            var totalName = lipidClass + " " + totalString;
+
+            var acyls = new List<int[]>() {
+                new int[] { sn1Carbon, sn1Double },  new int[] { sn3Carbon, sn3Double }
+            };
+            acyls = acyls.OrderBy(n => n[1]).ThenBy(n => n[0]).ToList();
+
+            var sn1CarbonCount = acyls[0][0];
+            var sn1DbCount = acyls[0][1];
+            var sn3CarbonCount = acyls[1][0];
+            var sn3DbCount = acyls[1][1];
+
+            var sn2CarbonCount = sn2Carbon;
+            var sn2DbCount = sn2Double;
+
+            var sn1ChainString = sn1CarbonCount + ":" + sn1DbCount;
+            var sn2ChainString = sn2Carbon + ":" + sn2Double;
+            var sn3ChainString = sn3CarbonCount + ":" + sn3DbCount;
+            var chainString = sn1ChainString + "/" + sn2ChainString + "/" + sn3ChainString;
+            var lipidName = lipidClass + " " + chainString;
+
+            return new LipidMolecule()
+            {
+                LipidClass = lbmClass,
+                AnnotationLevel = 2,
+                SublevelLipidName = totalName,
+                LipidName = lipidName,
+                TotalCarbonCount = totalCarbon,
+                TotalDoubleBondCount = totalDB,
+                TotalChainString = totalString,
+                Score = score,
+                Sn1CarbonCount = sn1CarbonCount,
+                Sn1DoubleBondCount = sn1DbCount,
+                Sn1AcylChainString = sn1ChainString,
+                Sn2CarbonCount = sn2CarbonCount,
+                Sn2DoubleBondCount = sn2DbCount,
+                Sn2AcylChainString = sn2ChainString,
+                Sn3CarbonCount = sn3CarbonCount,
+                Sn3DoubleBondCount = sn3DbCount,
+                Sn3AcylChainString = sn3ChainString
+            };
+        }
+
+
         public static LipidMolecule JudgeIfPhosphatidylcholine(IMSScanProperty msScanProp, double ms2Tolerance,
            double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
            int sn1Carbon, int sn2Carbon, int sn1Double, int sn2Double,
@@ -2492,6 +2543,30 @@ namespace CompMs.Common.Lipidomics
 
                     if (foundCount == 3)
                     { // these three chains must be observed.
+                        double C2H3O = new[] {
+                            MassDiffDictionary.CarbonMass * 2,
+                            MassDiffDictionary.HydrogenMass * 3,
+                            MassDiffDictionary.OxygenMass,
+                            Proton
+                            }.Sum();
+
+                        var sn1Sn2Diagnostics = LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + C2H3O;
+                        var sn2Sn2Diagnostics = LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) + C2H3O;
+                        var sn3Sn2Diagnostics = LipidMsmsCharacterizationUtility.acylCainMass(sn3Carbon, sn3Double) + C2H3O;
+                        var querySn2 = new List<SpectrumPeak> {
+                                        new SpectrumPeak() { Mass = sn1Sn2Diagnostics, Intensity = 3.0 },
+                                        new SpectrumPeak() { Mass = sn2Sn2Diagnostics, Intensity = 3.0 },
+                                        new SpectrumPeak() { Mass = sn3Sn2Diagnostics, Intensity = 3.0 }
+                                    };
+
+                        var foundCountSn2 = 0;
+                        var averageIntensitySn2 = 0.0;
+                        LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, querySn2, ms2Tolerance, out foundCountSn2, out averageIntensitySn2);
+                        if (foundCountSn2 > 0)
+                        {
+
+                        }
+
                         var molecule = LipidMsmsCharacterizationUtility.getTriacylglycerolMoleculeObjAsLevel2("TG_d5", LbmClass.TG_d5, sn1Carbon, sn1Double,
                             sn2Carbon, sn2Double, sn3Carbon, sn3Double, averageIntensity);
                         candidates.Add(molecule);
@@ -2532,8 +2607,7 @@ namespace CompMs.Common.Lipidomics
 
                         var foundCount2 = 0;
                         var averageIntensity2 = 0.0;
-                        LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity2);
-
+                        LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query2, ms2Tolerance, out foundCount2, out averageIntensity2);
 
                         if (foundCount2 == 3)
                         {
