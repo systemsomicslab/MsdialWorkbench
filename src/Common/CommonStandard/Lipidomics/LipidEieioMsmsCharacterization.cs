@@ -206,7 +206,7 @@ namespace CompMs.Common.Lipidomics
                             LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
                             if (foundCount >= 2)
                             {
-                                var molecule = LipidMsmsCharacterizationUtility.getDiacylglycerolMoleculeObjAsLevel2("PC", LbmClass.PC, sn1CarbonNum, sn1DoubleNum,
+                                var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PC", LbmClass.PC, sn1CarbonNum, sn1DoubleNum,
                                 sn2CarbonNum, sn2DoubleNum,
                                 averageIntensity);
                                 candidates.Add(molecule);
@@ -333,7 +333,7 @@ namespace CompMs.Common.Lipidomics
                             LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
                             if (foundCount >= 2)
                             {
-                                var molecule = LipidMsmsCharacterizationUtility.getDiacylglycerolMoleculeObjAsLevel2("PE", LbmClass.PE, sn1CarbonNum, sn1DoubleNum,
+                                var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PE", LbmClass.PE, sn1CarbonNum, sn1DoubleNum,
                                 sn2CarbonNum, sn2DoubleNum,
                                 averageIntensity);
                                 candidates.Add(molecule);
@@ -1751,7 +1751,7 @@ namespace CompMs.Common.Lipidomics
                             LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
                             if (foundCount >= 3)
                             {
-                                var molecule = LipidMsmsCharacterizationUtility.getDiacylglycerolMoleculeObjAsLevel2("PC_d5", LbmClass.PC_d5, sn1CarbonNum, sn1DoubleNum,
+                                var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PC_d5", LbmClass.PC_d5, sn1CarbonNum, sn1DoubleNum,
                                 sn2CarbonNum, sn2DoubleNum,
                                 averageIntensity);
                                 candidates.Add(molecule);
@@ -1874,7 +1874,7 @@ namespace CompMs.Common.Lipidomics
                             LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
                             if (foundCount >= 3)
                             {
-                                var molecule = LipidMsmsCharacterizationUtility.getDiacylglycerolMoleculeObjAsLevel2("PE_d5", LbmClass.PE_d5, sn1CarbonNum, sn1DoubleNum,
+                                var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PE_d5", LbmClass.PE_d5, sn1CarbonNum, sn1DoubleNum,
                                 sn2CarbonNum, sn2DoubleNum,
                                 averageIntensity);
                                 candidates.Add(molecule);
@@ -2726,9 +2726,8 @@ namespace CompMs.Common.Lipidomics
                             LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
                             if (foundCount == 2)
                             {
-                                var molecule = LipidMsmsCharacterizationUtility.getDiacylglycerolMoleculeObjAsLevel2("SM", LbmClass.SM, sphCarbonNum, sphDoubleNum,
-                                acylCarbonNum, acylDoubleNum,
-                                averageIntensity);
+                                var molecule = LipidMsmsCharacterizationUtility.getCeramideMoleculeObjAsLevel2("SM_d9", LbmClass.SM_d9, "d", sphCarbon, sphDouble,
+                                   acylCarbon, acylDouble, averageIntensity);
                                 candidates.Add(molecule);
                             }
                         }
