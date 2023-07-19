@@ -3,6 +3,7 @@ using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -74,6 +75,40 @@ ID,Name,File 1,File 2,File 3,A,B
 2,Metabolite 3,100,400,500,250,500
 ",
                 System.Text.Encoding.ASCII.GetString(memory.GetBuffer()));
+        }
+
+        [TestMethod()]
+        public void ContainsDelimiterInFieldTest() {
+            var exporter = new AlignmentCSVExporter(",");
+            var spots = new List<AlignmentSpotProperty>
+            {
+                new AlignmentSpotProperty
+                {
+                    MasterAlignmentID = 0,
+                    Name = "Metabolite 1,2",
+                    AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+                    {
+                        new AlignmentChromPeakFeature { FileName = "File 1", PeakHeightTop = 400, },
+                    },
+                },
+            };
+            var msdecs = new List<MSDecResult> { null, null, null, };
+            var files = new List<AnalysisFileBean>
+            {
+                new AnalysisFileBean { AnalysisFileName = "File 1", AnalysisFileClass = "A", AnalysisFileType = AnalysisFileType.Sample, AnalysisFileAnalyticalOrder = 1, AnalysisBatch = 1, },
+            };
+
+            var memory = new MemoryStream();
+            exporter.Export(memory, spots, msdecs, files, new MockMetaAccessor(), new MockQuantAccessor(), Array.Empty<StatsValue>());
+
+            Assert.AreEqual(
+                ",Class,A\n" +
+                ",File type,Sample\n" +
+                ",Injection order,1\n" +
+                ",Batch ID,1\n" +
+                "ID,Name,File 1\n" +
+                "0,\"Metabolite 1,2\",400",
+                System.Text.Encoding.ASCII.GetString(memory.ToArray()));
         }
 
         class MockMetaAccessor : IMetadataAccessor
