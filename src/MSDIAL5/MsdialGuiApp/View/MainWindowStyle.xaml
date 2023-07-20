@@ -397,7 +397,7 @@
                         <TextBox Text="{Binding LowerValue, RelativeSource={RelativeSource Mode=TemplatedParent}, StringFormat=F4}"
                                  TextAlignment="Center"
                                  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
-                        <TextBlock Text="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                        <TextBlock Text="{TemplateBinding Tag}"
                                    Margin="10,0"
                                    Grid.Row="0" Grid.Column="2"/>
                         <TextBox Text="{Binding UpperValue, RelativeSource={RelativeSource Mode=TemplatedParent}, StringFormat=F4}"
@@ -411,17 +411,11 @@
                                    Height="5" Margin="5,0"
                                    Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"/>
                         <Slider x:Name="PART_LowerRange"
-                                Minimum="{Binding Minimum, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                Maximum="{Binding Maximum, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                Value="{Binding LowerValue, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                 VerticalAlignment="Center"
                                 Template="{StaticResource simpleSlider}"
                                 Margin="0,0,10,0"
                                 Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"/>
                         <Slider x:Name="PART_UpperRange"
-                                Minimum="{Binding Minimum, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                Maximum="{Binding Maximum, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                Value="{Binding UpperValue, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                 VerticalAlignment="Center"
                                 Template="{StaticResource simpleSlider}"
                                 Margin="10,0,0,0"
@@ -522,12 +516,6 @@
             <CheckBox IsChecked="{Binding Overannotation.Value, Mode=TwoWay}" Content="O" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
 
             <CheckBox Content="Exclude tagged peaks" IsChecked="{Binding Excludes.Value, Mode=TwoWay}" Margin="8,0" VerticalAlignment="Center" FontSize="12"/>
-
-            <Button Content="Mark all as confirmed"
-                    IsEnabled="False"
-                    Margin="8,0"
-                    VerticalAlignment="Center" HorizontalAlignment="Left"
-                    Width="128"/>
         </StackPanel>
     </DataTemplate>
 

@@ -33,7 +33,7 @@ namespace CompMs.Common.Lipidomics
             {
                 foreach (var ox in chain.Oxidized.Oxidises)
                 {
-                        diffs[ox - 1] = diffs[ox - 1] + MassDiffDictionary.OxygenMass;
+                    diffs[ox - 1] = diffs[ox - 1] + MassDiffDictionary.OxygenMass;
                 }
             }
 
@@ -72,7 +72,8 @@ namespace CompMs.Common.Lipidomics
                 // i=15 means i-1=14=C14 in bondPositions and C16 in chain obj and C4 from omega terminal
                 if (bondPositions.Contains(i - 1))
                 { // in the case of 18:2(9,12), Radical is big, and H loss is next
-                    if (nlMass < 0.001) {
+                    if (nlMass < 0.001)
+                    {
                         factor = 4.0;
                         factorHLoss = 2.0;
                         factorHGain = 0.05;
@@ -135,9 +136,18 @@ namespace CompMs.Common.Lipidomics
 
                 if (i == 2)
                 {
-                    factor = 0.75;
-                    factorHLoss = 2.0;
-                    factorHGain = 0.5;
+                    if (bondPositions.Contains(1))
+                    {
+                        factor = 2.5;
+                        factorHLoss = 0.5;
+                        factorHGain = 0.0;
+                    }
+                    else
+                    {
+                        factor = 0.75;
+                        factorHLoss = 2.0;
+                        factorHGain = 0.5;
+                    }
                 }
                 if (i == 1)
                 {
@@ -145,8 +155,9 @@ namespace CompMs.Common.Lipidomics
                     factorHLoss = 0.5;
                     factorHGain = 2.0;
                 }
-                
-                if (factorHGain == 4.0) {
+
+                if (factorHGain == 4.0)
+                {
                     speccomment_hgain |= SpectrumComment.doublebond_high;
                 }
 

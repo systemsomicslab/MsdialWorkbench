@@ -19,10 +19,13 @@ namespace CompMs.App.Msdial.ViewModel.Table
             BarItemsLoader = model.BarItemsLoader;
             ClassBrush = model.ClassBrush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             FileClassPropertiesModel = model.FileClassProperties;
+            MarkAllAsConfirmedCommand = new ReactiveCommand().WithSubscribe(model.MarkAllAsConfirmed).AddTo(Disposables);
         }
 
         public IObservable<IBarItemsLoader> BarItemsLoader { get; }
         public ReadOnlyReactivePropertySlim<IBrushMapper<BarItem>> ClassBrush { get; }
         public FileClassPropertiesModel FileClassPropertiesModel { get; }
+
+        public ReactiveCommand MarkAllAsConfirmedCommand { get; }
     }
 }

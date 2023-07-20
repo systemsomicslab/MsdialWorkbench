@@ -18,13 +18,13 @@ namespace CompMs.App.Msdial.Model.Export
     internal sealed class AlignmentPeakSpotSupplyer : BindableBase
     {
         private readonly PeakFilterModel _peakFilterModel;
-        private readonly IMatchResultEvaluator<IFilterable> _evaluator;
+        private readonly IMatchResultEvaluator<AlignmentSpotPropertyModel> _evaluator;
         private readonly IReadOnlyReactiveProperty<IAlignmentModel> _currentResult;
 
-        public AlignmentPeakSpotSupplyer(PeakFilterModel peakFilterModel, IMatchResultEvaluator<IFilterable> evaluator, IReadOnlyReactiveProperty<IAlignmentModel> currentResult) {
+        public AlignmentPeakSpotSupplyer(PeakFilterModel peakFilterModel, IMatchResultEvaluator<AlignmentSpotPropertyModel> evaluator, IReadOnlyReactiveProperty<IAlignmentModel> currentResult) {
             _peakFilterModel = peakFilterModel ?? throw new ArgumentNullException(nameof(peakFilterModel));
-            _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _currentResult = currentResult;
+            _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));;
         }
 
         public bool UseFilter {
