@@ -10,18 +10,33 @@ namespace CompMs.Common.Lipidomics.Characterization
         bool Satisfy(TLipidCandidate lipid, IMSScanProperty scan);
     }
 
-    internal sealed class FragmentsExistCondition<TLipidCandidate> : ILipidCondition<TLipidCandidate> where TLipidCandidate : ILipidCandidate
+    internal sealed class FragmentsExistAllCondition<TLipidCandidate> : ILipidCondition<TLipidCandidate> where TLipidCandidate : ILipidCandidate
     {
         private readonly Func<TLipidCandidate, (double mz, double threshold)[]> _diagnosticIonsFactory;
         private readonly double _ms2Tolerance;
 
-        public FragmentsExistCondition(Func<TLipidCandidate, (double mz, double threshold)[]> diagnosticIonsFactory, double ms2Tolerance) {
+        public FragmentsExistAllCondition(Func<TLipidCandidate, (double mz, double threshold)[]> diagnosticIonsFactory, double ms2Tolerance) {
             _diagnosticIonsFactory = diagnosticIonsFactory;
             _ms2Tolerance = ms2Tolerance;
         }
 
         public bool Satisfy(TLipidCandidate lipid, IMSScanProperty scan) {
             return _diagnosticIonsFactory.Invoke(lipid).All(pair => LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(scan.Spectrum, _ms2Tolerance, pair.mz, pair.threshold));
+        }
+    }
+
+    internal sealed class FragmentsExistAnyCondition<TLipidCandidate> : ILipidCondition<TLipidCandidate> where TLipidCandidate : ILipidCandidate
+    {
+        private readonly Func<TLipidCandidate, (double mz, double threshold)[]> _diagnosticIonsFactory;
+        private readonly double _ms2Tolerance;
+
+        public FragmentsExistAnyCondition(Func<TLipidCandidate, (double mz, double threshold)[]> diagnosticIonsFactory, double ms2Tolerance) {
+            _diagnosticIonsFactory = diagnosticIonsFactory;
+            _ms2Tolerance = ms2Tolerance;
+        }
+
+        public bool Satisfy(TLipidCandidate lipid, IMSScanProperty scan) {
+            return _diagnosticIonsFactory.Invoke(lipid).Any(pair => LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(scan.Spectrum, _ms2Tolerance, pair.mz, pair.threshold));
         }
     }
 

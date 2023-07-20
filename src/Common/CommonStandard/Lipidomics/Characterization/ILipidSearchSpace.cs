@@ -24,7 +24,7 @@ namespace CompMs.Common.Lipidomics.Characterization
         public IEnumerable<LipidMolecule> RetrieveAll(LipidMolecule lipid, IMSScanProperty scan) {
             var candidate = _factory.Invoke(lipid, scan);
             if (!_condition.Satisfy(candidate, scan)) {
-                return Array.Empty<LipidMolecule>();
+                return null;
             }
             var score = _scorer.Score(candidate, scan);
             if (candidate.ToMolecule(score) is LipidMolecule m) {

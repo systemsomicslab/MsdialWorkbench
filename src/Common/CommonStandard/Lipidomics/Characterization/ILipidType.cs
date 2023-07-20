@@ -19,4 +19,12 @@ namespace CompMs.Common.Lipidomics.Characterization
             return LipidMsmsCharacterizationUtility.returnAnnotationResult("PC", LbmClass.PC, "", molecule.Mz, molecule.Adduct, molecule.TotalCarbonCount, molecule.TotalDoubleBondCount, 0, candidates_, 2);
         }
     }
+
+    internal sealed class SHexCerLipidType : ILipidType
+    {
+        public LipidMolecule Convert(LipidMolecule molecule, IEnumerable<LipidMolecule> candidates) {
+            List<LipidMolecule> candidates_ = candidates.ToList();
+            return LipidMsmsCharacterizationUtility.returnAnnotationResult("SHexCer", LbmClass.SHexCer, "d", molecule.Mz, molecule.Adduct, molecule.TotalCarbonCount, molecule.TotalDoubleBondCount, molecule.Sn2Oxidizedount, candidates_, 2);
+        }
+    }
 }
