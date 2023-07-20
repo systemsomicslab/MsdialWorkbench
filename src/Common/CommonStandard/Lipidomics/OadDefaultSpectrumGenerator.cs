@@ -76,7 +76,7 @@ namespace CompMs.Common.Lipidomics
 
             if (lipid.Chains is PositionLevelChains plChains)
             {
-                foreach (var chain in plChains.Chains)
+                foreach (var chain in plChains.GetChains())
                 {
                     if (chain is AcylChain acyl)
                     {

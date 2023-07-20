@@ -16,6 +16,7 @@ namespace CompMs.Common.Lipidomics
         double Mass { get; }
         LipidDescription Description { get; }
 
+        IChain[] GetAllChains();
         bool Includes(ITotalChain chains);
         IEnumerable<ITotalChain> GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator);
     }

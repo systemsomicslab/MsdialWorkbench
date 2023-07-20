@@ -12,15 +12,15 @@ namespace CompMs.Common.Lipidomics
 
         }
 
-        public IEnumerable<ITotalChain> GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator) {
+        IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator) {
             return totalChainGenerator.Permutate(this);
         }
 
         public override string ToString() {
-            if (Chains.Count(c => c.CarbonCount > 0) == 1) {
-                return Chains.First(c => c.CarbonCount > 0).ToString(); // for LPC...
+            if (GetChains().Count(c => c.CarbonCount > 0) == 1) {
+                return GetChains().First(c => c.CarbonCount > 0).ToString(); // for LPC...
             }
-            return string.Join("_", Chains.Select(c => c.ToString()));
+            return string.Join("_", GetChains().Select(c => c.ToString()));
         }
 
         bool ITotalChain.Includes(ITotalChain chains) {
@@ -29,9 +29,9 @@ namespace CompMs.Common.Lipidomics
             }
 
             var matching = new BipartiteMatching(ChainCount + chains.ChainCount);
-            for (int i = 0; i < Chains.Count; i++) {
-                for (int j = 0; j < sChains.Chains.Count; j++) {
-                    if (Chains[i].Includes(sChains.Chains[j])) {
+            for (int i = 0; i < GetChains().Count; i++) {
+                for (int j = 0; j < sChains.GetChains().Count; j++) {
+                    if (GetChains()[i].Includes(sChains.GetChains()[j])) {
                         matching.AddEdge(i, j + ChainCount);
                     }
                 }
@@ -39,17 +39,17 @@ namespace CompMs.Common.Lipidomics
             return matching.Match() == ChainCount;
         }
 
-        public bool Equals(ITotalChain other) {
+        public override bool Equals(ITotalChain other) {
             return other is MolecularSpeciesLevelChains mChains
                 && ChainCount == other.ChainCount
                 && CarbonCount == other.CarbonCount
                 && DoubleBondCount == other.DoubleBondCount
                 && OxidizedCount == other.OxidizedCount
                 && Description == other.Description
-                && Chains.Zip(mChains.Chains, (a, b) => a.Equals(b)).All(p => p);
+                && GetChains().Zip(mChains.GetChains(), (a, b) => a.Equals(b)).All(p => p);
         }
 
-        public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
+        public override TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
             if (decomposer is IDecomposer<TResult, MolecularSpeciesLevelChains> decomposer_) {
                 return decomposer_.Decompose(visitor, this);
             }

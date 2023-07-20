@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.DataStructure;
 using CompMs.Common.FormulaGenerator.DataObj;
+using System;
 using System.Collections.Generic;
 
 namespace CompMs.Common.Lipidomics
@@ -43,6 +44,10 @@ namespace CompMs.Common.Lipidomics
         private static readonly double AlkylGain = 0d;
 
         private static readonly double SphingoGain = MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass;
+
+        IChain[] ITotalChain.GetAllChains() {
+            return Array.Empty<IChain>();
+        }
 
         bool ITotalChain.Includes(ITotalChain chains) {
             return CarbonCount == chains.CarbonCount

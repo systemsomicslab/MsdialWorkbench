@@ -10,12 +10,12 @@ namespace CompMs.Common.Lipidomics
         }
 
         ITotalChain IDecomposer<ITotalChain, MolecularSpeciesLevelChains>.Decompose<T>(IAcyclicVisitor visitor, T element) {
-            var chains = element.Chains.Select(c => c.Accept(visitor, IdentityDecomposer<IChain, IChain>.Instance)).ToArray();
+            var chains = element.GetChains().Select(c => c.Accept(visitor, IdentityDecomposer<IChain, IChain>.Instance)).ToArray();
             return new MolecularSpeciesLevelChains(chains);
         }
 
         ITotalChain IDecomposer<ITotalChain, PositionLevelChains>.Decompose<T>(IAcyclicVisitor visitor, T element) {
-            var chains = element.Chains.Select(c => c.Accept(visitor, IdentityDecomposer<IChain, IChain>.Instance)).ToArray();
+            var chains = element.GetChains().Select(c => c.Accept(visitor, IdentityDecomposer<IChain, IChain>.Instance)).ToArray();
             return new PositionLevelChains(chains);
         }
     }

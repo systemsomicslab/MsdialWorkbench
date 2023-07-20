@@ -16,28 +16,28 @@ namespace CompMs.Common.Lipidomics
 
             if (molecule.Chains.ChainCount > 1) {
                 var deepChains = (SeparatedChains)molecule.Chains;
-                if (deepChains.Chains[0].CarbonCount == deepChains.Chains[1].CarbonCount &&
-                    deepChains.Chains[1].CarbonCount == deepChains.Chains[2].CarbonCount &&
-                    deepChains.Chains[0].DoubleBond == deepChains.Chains[1].DoubleBond &&
-                    deepChains.Chains[1].DoubleBond == deepChains.Chains[2].DoubleBond) {
+                if (deepChains.GetChains()[0].CarbonCount == deepChains.GetChains()[1].CarbonCount &&
+                    deepChains.GetChains()[1].CarbonCount == deepChains.GetChains()[2].CarbonCount &&
+                    deepChains.GetChains()[0].DoubleBond == deepChains.GetChains()[1].DoubleBond &&
+                    deepChains.GetChains()[1].DoubleBond == deepChains.GetChains()[2].DoubleBond) {
                     chain_cutoff = 1;
                 } 
-                else if (deepChains.Chains[0].CarbonCount == deepChains.Chains[1].CarbonCount &&
-                    deepChains.Chains[1].CarbonCount != deepChains.Chains[2].CarbonCount &&
-                    deepChains.Chains[0].DoubleBond == deepChains.Chains[1].DoubleBond &&
-                    deepChains.Chains[1].DoubleBond != deepChains.Chains[2].DoubleBond) {
+                else if (deepChains.GetChains()[0].CarbonCount == deepChains.GetChains()[1].CarbonCount &&
+                    deepChains.GetChains()[1].CarbonCount != deepChains.GetChains()[2].CarbonCount &&
+                    deepChains.GetChains()[0].DoubleBond == deepChains.GetChains()[1].DoubleBond &&
+                    deepChains.GetChains()[1].DoubleBond != deepChains.GetChains()[2].DoubleBond) {
                     chain_cutoff = 2;
                 }
-                else if (deepChains.Chains[0].CarbonCount != deepChains.Chains[1].CarbonCount &&
-                    deepChains.Chains[1].CarbonCount == deepChains.Chains[2].CarbonCount &&
-                    deepChains.Chains[0].DoubleBond != deepChains.Chains[1].DoubleBond &&
-                    deepChains.Chains[1].DoubleBond == deepChains.Chains[2].DoubleBond) {
+                else if (deepChains.GetChains()[0].CarbonCount != deepChains.GetChains()[1].CarbonCount &&
+                    deepChains.GetChains()[1].CarbonCount == deepChains.GetChains()[2].CarbonCount &&
+                    deepChains.GetChains()[0].DoubleBond != deepChains.GetChains()[1].DoubleBond &&
+                    deepChains.GetChains()[1].DoubleBond == deepChains.GetChains()[2].DoubleBond) {
                     chain_cutoff = 2;
                 }
-                else if (deepChains.Chains[0].CarbonCount == deepChains.Chains[2].CarbonCount &&
-                    deepChains.Chains[1].CarbonCount != deepChains.Chains[2].CarbonCount &&
-                    deepChains.Chains[0].DoubleBond == deepChains.Chains[2].DoubleBond &&
-                    deepChains.Chains[1].DoubleBond != deepChains.Chains[2].DoubleBond) {
+                else if (deepChains.GetChains()[0].CarbonCount == deepChains.GetChains()[2].CarbonCount &&
+                    deepChains.GetChains()[1].CarbonCount != deepChains.GetChains()[2].CarbonCount &&
+                    deepChains.GetChains()[0].DoubleBond == deepChains.GetChains()[2].DoubleBond &&
+                    deepChains.GetChains()[1].DoubleBond != deepChains.GetChains()[2].DoubleBond) {
                     chain_cutoff = 2;
                 }
                 else {

@@ -64,7 +64,7 @@ namespace CompMs.Common.Lipidomics
             if (lipid.Chains is PositionLevelChains plChains)
             {
                 var nlMass = adduct.AdductIonName == "[M+NH4]+" ? adduct.AdductIonAccurateMass : 0.0;
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, (AcylChain)plChains.Chains[0], adduct));
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, (AcylChain)plChains.GetChains()[0], adduct));
                 //spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.Chains.OfType<AcylChain>(), adduct, nlMass));
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)

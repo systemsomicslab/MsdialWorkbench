@@ -6,34 +6,34 @@ namespace CompMs.Common.Lipidomics
 {
     public class PositionLevelChains : SeparatedChains, ITotalChain
     {
-        public PositionLevelChains(params IChain[] chains) : base(chains, LipidDescription.Class | LipidDescription.Chain | LipidDescription.SnPosition) {
+        public PositionLevelChains(params IChain[] chains) : base(chains.Select((c, i) => (c, i)).ToArray(), LipidDescription.Class | LipidDescription.Chain | LipidDescription.SnPosition) {
 
         }
 
-        public IEnumerable<ITotalChain> GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator) {
+        IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator) {
             return totalChainGenerator.Product(this);
         }
 
         public override string ToString() {
-            return string.Join("/", Chains.Select(c => c.ToString()));
+            return string.Join("/", GetChains().Select(c => c.ToString()));
         }
 
         bool ITotalChain.Includes(ITotalChain chains) {
             return chains.ChainCount == ChainCount && chains is PositionLevelChains pChains
-                && Enumerable.Range(0, ChainCount).All(i => Chains[i].Includes(pChains.Chains[i]));
+                && Enumerable.Range(0, ChainCount).All(i => GetChains()[i].Includes(pChains.GetChains()[i]));
         }
 
-        public bool Equals(ITotalChain other) {
+        public override bool Equals(ITotalChain other) {
             return other is PositionLevelChains pChains
                 && ChainCount == other.ChainCount
                 && CarbonCount == other.CarbonCount
                 && DoubleBondCount == other.DoubleBondCount
                 && OxidizedCount == other.OxidizedCount
                 && Description == other.Description
-                && Chains.Zip(pChains.Chains, (a, b) => a.Equals(b)).All(p => p);
+                && GetChains().Zip(pChains.GetChains(), (a, b) => a.Equals(b)).All(p => p);
         }
 
-        public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
+        public override TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
             if (decomposer is IDecomposer<TResult, PositionLevelChains> decomposer_) {
                 return decomposer_.Decompose(visitor, this);
             }

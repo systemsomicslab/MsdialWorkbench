@@ -92,29 +92,29 @@ namespace CompMs.Common.Lipidomics
             spectrum.AddRange(GetEtherPESpectrum(lipid, adduct));
             if (lipid.Chains is PositionLevelChains plChains)
             {
-                spectrum.AddRange(GetSn1PositionSpectrum(lipid, plChains.Chains[0], adduct));
+                spectrum.AddRange(GetSn1PositionSpectrum(lipid, plChains.GetChains()[0], adduct));
 
                 AlkylChain alkyl;
                 AcylChain acyl;
 
-                if (plChains.Chains[0] is AlkylChain)
+                if (plChains.GetChains()[0] is AlkylChain)
                 {
-                    alkyl = (AlkylChain)plChains.Chains[0];
-                    acyl = (AcylChain)plChains.Chains[1];
+                    alkyl = (AlkylChain)plChains.GetChains()[0];
+                    acyl = (AcylChain)plChains.GetChains()[1];
                 }
                 else
                 {
-                    alkyl = (AlkylChain)plChains.Chains[1];
-                    acyl = (AcylChain)plChains.Chains[0];
+                    alkyl = (AlkylChain)plChains.GetChains()[1];
+                    acyl = (AcylChain)plChains.GetChains()[0];
                 }
 
                 if (alkyl.DoubleBond.Bonds.Any(b => b.Position == 1))
                 {
-                    spectrum.AddRange(GetEtherPEPSpectrum(lipid, alkyl, plChains.Chains[1], adduct));
+                    spectrum.AddRange(GetEtherPEPSpectrum(lipid, alkyl, plChains.GetChains()[1], adduct));
                 }
                 else
                 {
-                    spectrum.AddRange(GetEtherPEOSpectrum(lipid, plChains.Chains[0], plChains.Chains[1], adduct));
+                    spectrum.AddRange(GetEtherPEOSpectrum(lipid, plChains.GetChains()[0], plChains.GetChains()[1], adduct));
                 }
                 spectrum.AddRange(spectrumGenerator.GetAlkylDoubleBondSpectrum(lipid, alkyl, adduct, 0d, 30d));
                 //spectrum.AddRange(spectrumGenerator.GetAlkylDoubleBondSpectrum(lipid, alkyl, adduct, nlMass: C2H8NO4P, 30d));
@@ -215,7 +215,7 @@ namespace CompMs.Common.Lipidomics
             var spectrum = new List<SpectrumPeak>();
             if (lipid.Chains is SeparatedChains chains)
             {
-                foreach (var chain in chains.Chains)
+                foreach (var chain in chains.GetChains())
                 {
                     if (chain.DoubleBond.Count == 0 || chain.DoubleBond.UnDecidedCount > 0) continue;
                     spectrum.AddRange(EidSpecificSpectrumGenerator.EidSpecificSpectrumGen(lipid, chain, adduct, nlMass, intensity));
