@@ -46,19 +46,17 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
                 .IsPositive()
                 .HasAdduct("[M+H]+")
                 .IsValidMolecule(c => c.Sn1Carbon >= 10 && c.Sn1DoubleBond <= 6)
-                .ExistAll(.02d,
-                _ => new[] {
+                .SetTolerance(.02d)
+                .ExistAll(_ => new[] {
                     (C5H15NO4P, 3d),
                     (Gly_C, 3d),
                     (Gly_O, 3d),
                 })
-                .NotExist(.02d,
-                c => new[] {
+                .NotExist(c => new[] {
                     (c.Lipid.Mz - 59.0735, 10d),
                     (c.Lipid.Mz - 141.019094261, 5d),
                 })
-                .ScoreBy(.02d,
-                c => {
+                .ScoreBy(c => {
                     var theoreticalMz = c.Lipid.Mz;
                     var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(c.Sn1Carbon, c.Sn1DoubleBond) + MassDiffDictionary.HydrogenMass;
                     var nl_SN1_H2O = nl_SN1 - MassDiffDictionary.HydrogenMass * 2 - MassDiffDictionary.OxygenMass;
@@ -147,8 +145,8 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
                 .IsPositive()
                 .HasAdduct("[M+Na]+")
                 .IsValidMolecule(c => c.Sn1DoubleBond <= 6)
-                .ExistAny(.02d,
-                c => {
+                .SetTolerance(.02d)
+                .ExistAny(c => {
                     //// seek 184.07332 (C5H15NO4P)
                     //var diagnosticMz = 184.07332;
                     // seek [M+Na -C5H14NO4P]+
@@ -160,8 +158,7 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
                         (diagnosticMz3, 3d),
                     };
                 })
-                .ScoreBy(.02d,
-                c => {
+                .ScoreBy(c => {
                     var theoreticalMz = c.Lipid.Mz;
                     var sn1CarbonNum = c.Sn1Carbon;
                     var sn1DoubleNum = c.Sn1DoubleBond;
@@ -259,8 +256,8 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
                 .DefineRules()
                 .IsPositive()
                 .HasAdduct("[M+H]+", "[M+NH4]+")
-                .ExistAny(.02d,
-                c => {
+                .SetTolerance(.02d)
+                .ExistAny(c => {
                     var diagnosticMz = c.Lipid.Adduct.AdductIonName == "[M+NH4]+" ? c.Lipid.Mz - (MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 3) : c.Lipid.Mz;
                     // seek [M-SO3-H2O+H]+
                     var diagnosticMz1 = diagnosticMz - MassDiffDictionary.SulfurMass - 3 * MassDiffDictionary.OxygenMass - (MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.OxygenMass) - electron;
@@ -271,8 +268,7 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
                         (diagnosticMz2, 1d),
                     };
                 })
-                .ScoreBy(.02d,
-                c => {
+                .ScoreBy(c => {
                     var diagnosticMz = c.Lipid.Adduct.AdductIonName == "[M+NH4]+" ? c.Lipid.Mz - (MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 3) : c.Lipid.Mz;
                     // seek [M-SO3-H2O+H]+
                     var diagnosticMz1 = diagnosticMz - MassDiffDictionary.SulfurMass - 3 * MassDiffDictionary.OxygenMass - (MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.OxygenMass) - electron;
