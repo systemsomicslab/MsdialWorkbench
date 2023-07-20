@@ -6,6 +6,7 @@ namespace CompMs.Common.Lipidomics.Characterization
 {
     internal interface ILipidCandidate
     {
+        LipidMolecule SourceLipid { get; }
         LipidMolecule ToMolecule(LipidScore score);
         int GetCarbon(int snPosition);
         int GetDoubleBond(int snPosition);
@@ -58,6 +59,8 @@ namespace CompMs.Common.Lipidomics.Characterization
             }
             return null;
         }
+
+        LipidMolecule ILipidCandidate.SourceLipid => Lipid;
     }
 
     internal sealed class SHexCerCandidate : ILipidCandidate
@@ -121,6 +124,8 @@ namespace CompMs.Common.Lipidomics.Characterization
                 return LipidMsmsCharacterizationUtility.getCeramideoxMoleculeObjAsLevel2("SHexCer", LbmClass.SHexCer, "d", Sn1Carbon, Sn1DoubleBond, Sn2Carbon, Sn2DoubleBond, Sn2Oxidized, score.Score);
             }
         }
+
+        LipidMolecule ILipidCandidate.SourceLipid => Lipid;
     }
 
     internal static class LipidCandidateFactories {
