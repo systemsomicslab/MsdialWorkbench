@@ -7,6 +7,9 @@ namespace CompMs.Common.Lipidomics.Characterization
     internal interface ILipidCandidate
     {
         LipidMolecule ToMolecule(LipidScore score);
+        int GetCarbon(int snPosition);
+        int GetDoubleBond(int snPosition);
+        int GetOxidized(int snPosition);
     }
 
     internal sealed class PCCandidate : ILipidCandidate
@@ -24,6 +27,30 @@ namespace CompMs.Common.Lipidomics.Characterization
         public int Sn1DoubleBond { get; }
         public int Sn2Carbon { get; }
         public int Sn2DoubleBond { get; }
+
+        public int GetCarbon(int snPosition) {
+            if (snPosition == 1) {
+                return Sn1Carbon;
+            }
+            if (snPosition == 2) {
+                return Sn2Carbon;
+            }
+            return 0;
+        }
+
+        public int GetDoubleBond(int snPosition) {
+            if (snPosition == 1) {
+                return Sn1DoubleBond;
+            }
+            if (snPosition == 2) {
+                return Sn2DoubleBond;
+            }
+            return 0;
+        }
+
+        public int GetOxidized(int snPosition) {
+            return 0;
+        }
 
         public LipidMolecule ToMolecule(LipidScore score) {
             if (score.Count >= 2) {
@@ -52,6 +79,36 @@ namespace CompMs.Common.Lipidomics.Characterization
         public int Sn2Carbon { get; }
         public int Sn2DoubleBond { get; }
         public int Sn2Oxidized { get; }
+
+        public int GetCarbon(int snPosition) {
+            if (snPosition == 1) {
+                return Sn1Carbon;
+            }
+            if (snPosition == 2) {
+                return Sn2Carbon;
+            }
+            return 0;
+        }
+
+        public int GetDoubleBond(int snPosition) {
+            if (snPosition == 1) {
+                return Sn1DoubleBond;
+            }
+            if (snPosition == 2) {
+                return Sn2DoubleBond;
+            }
+            return 0;
+        }
+
+        public int GetOxidized(int snPosition) {
+            if (snPosition == 1) {
+                return Sn1Oxidized;
+            }
+            if (snPosition == 2) {
+                return Sn2Oxidized;
+            }
+            return 0;
+        }
 
         public LipidMolecule ToMolecule(LipidScore score) {
             if (score.Count < 1) {
