@@ -9,6 +9,11 @@ namespace CompMs.Common.Lipidomics
 {
     [Flags]
     public enum LipidDescription { None = 0, Class = 1, Chain = 2, SnPosition = 4, DoubleBondPosition = 8, EZ = 16 }
+
+    public static class LipidDescriptionExtensions {
+        public static bool Has(this LipidDescription description, LipidDescription other) => (description & other) != LipidDescription.None;
+    }
+
     public interface ILipid : IEquatable<ILipid>, IVisitableElement
     {
         string Name { get; }

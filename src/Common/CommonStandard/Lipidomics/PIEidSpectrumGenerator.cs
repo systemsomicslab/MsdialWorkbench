@@ -80,18 +80,13 @@ namespace CompMs.Common.Lipidomics
             var nlMass = adduct.ConvertToMz(C6H13O9P) - MassDiffDictionary.ProtonMass;
             var spectrum = new List<SpectrumPeak>();
             spectrum.AddRange(GetPISpectrum(lipid, adduct));
-            if (lipid.Chains is MolecularSpeciesLevelChains mlChains)
-            {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, mlChains.GetAllChains(), adduct));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.GetTypedChains<AcylChain>(), adduct, nlMass: nlMass));
-                spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, 0d, 50d));
-                spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, nlMass, 200d));
-            }
-            if (lipid.Chains is PositionLevelChains plChains)
-            {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.GetAllChains(), adduct));
-                spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.GetAllChains()[0], adduct));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.GetTypedChains<AcylChain>(), adduct, nlMass: nlMass));
+            if (lipid.Description.Has(LipidDescription.Chain)) {
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetAllChains(), adduct));
+                if (lipid.Chains is PositionLevelChains plChains)
+                {
+                    spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.GetAllChains()[0], adduct));
+                }
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, lipid.Chains.GetTypedChains<AcylChain>(), adduct, nlMass: nlMass));
                 spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, 0d, 50d));
                 spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, nlMass, 200d));
             }

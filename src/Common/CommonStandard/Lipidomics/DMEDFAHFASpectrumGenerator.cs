@@ -75,17 +75,16 @@ namespace CompMs.Common.Lipidomics
             var nlMass = 0.0;
             var spectrum = new List<SpectrumPeak>();
             spectrum.AddRange(GetDMEDFAHFASpectrum(lipid, adduct));
-            if (lipid.Chains is MolecularSpeciesLevelChains mlChains)
-            {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, (AcylChain)mlChains.GetAllChains()[1], adduct));
-                spectrum.AddRange(GetOxPositionSpectrum(lipid, (AcylChain)mlChains.GetAllChains()[1], adduct));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.GetTypedChains<AcylChain>(), adduct, nlMass));
-            }
-            if (lipid.Chains is PositionLevelChains plChains)
-            {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, (AcylChain)plChains.GetAllChains()[1], adduct));
-                spectrum.AddRange(GetOxPositionSpectrum(lipid, (AcylChain)plChains.GetAllChains()[1], adduct));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.GetTypedChains<AcylChain>(), adduct, nlMass));
+            if (lipid.Description.Has(LipidDescription.Chain)) {
+                if (lipid.Chains is MolecularSpeciesLevelChains mlChains) {
+                    spectrum.AddRange(GetAcylLevelSpectrum(lipid, (AcylChain)mlChains.GetAllChains()[1], adduct));
+                    spectrum.AddRange(GetOxPositionSpectrum(lipid, (AcylChain)mlChains.GetAllChains()[1], adduct));
+                }
+                if (lipid.Chains is PositionLevelChains plChains) {
+                    spectrum.AddRange(GetAcylLevelSpectrum(lipid, (AcylChain)plChains.GetAllChains()[1], adduct));
+                    spectrum.AddRange(GetOxPositionSpectrum(lipid, (AcylChain)plChains.GetAllChains()[1], adduct));
+                }
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, lipid.Chains.GetTypedChains<AcylChain>(), adduct, nlMass));
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
                 .Select(specs => new SpectrumPeak(specs.First().Mass, specs.Sum(n => n.Intensity), string.Join(", ", specs.Select(spec => spec.Comment)), specs.Aggregate(SpectrumComment.none, (a, b) => a | b.SpectrumComment)))

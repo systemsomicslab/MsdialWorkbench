@@ -71,31 +71,27 @@ namespace CompMs.Common.Lipidomics
             var spectrum = new List<SpectrumPeak>();
             spectrum.AddRange(GetCLSpectrum(lipid, adduct));
 
-            if (lipid.Chains is MolecularSpeciesLevelChains mlChains)
-            {
-                var sn1sn2mass = lipid.Mass - (mlChains.GetAllChains()[0].Mass + mlChains.GetAllChains()[1].Mass + C3H3O2 + MassDiffDictionary.HydrogenMass);
-                var sn3sn4mass = lipid.Mass - (mlChains.GetAllChains()[2].Mass + mlChains.GetAllChains()[3].Mass + C3H3O2 + MassDiffDictionary.HydrogenMass);
-                var sn1sn2 = mlChains.GetAllChains().Where((c, index) => index < 2);
-                var sn3sn4 = mlChains.GetAllChains().Where((c, index) => index >= 2);
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, mlChains.GetAllChains(), adduct));
-                //spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.Chains.OfType<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, sn1sn2.OfType<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct, sn3sn4mass + nlMass));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, sn3sn4.OfType<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct, sn1sn2mass + nlMass));
-                spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, nlMass: 0.0, 200d));
-            }
-            if (lipid.Chains is PositionLevelChains plChains)
-            {
-                var sn1sn2mass = lipid.Mass - (plChains.GetAllChains()[0].Mass + plChains.GetAllChains()[1].Mass + C3H3O2 + MassDiffDictionary.HydrogenMass);
-                var sn3sn4mass = lipid.Mass - (plChains.GetAllChains()[2].Mass + plChains.GetAllChains()[3].Mass + C3H3O2 + MassDiffDictionary.HydrogenMass);
-                var sn1sn2 = plChains.GetAllChains().Where((c, index) => index < 2);
-                var sn3sn4 = plChains.GetAllChains().Where((c, index) => index >= 2);
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.GetAllChains(), adduct));
-                spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.GetAllChains()[0], adduct, sn3sn4mass + nlMass));
-                spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.GetAllChains()[2], adduct, sn1sn2mass + nlMass));
-                //spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.Chains.OfType<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, sn1sn2.OfType<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct, sn3sn4mass + nlMass));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, sn3sn4.OfType<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct, sn1sn2mass + nlMass));
-                spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, nlMass, 200d));
+            if (lipid.Description.Has(LipidDescription.Chain)) {
+                var sn1sn2 = lipid.Chains.GetAllChains().Where((c, index) => index < 2);
+                var sn3sn4 = lipid.Chains.GetAllChains().Where((c, index) => index >= 2);
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetAllChains(), adduct));
+                //spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, lipid.Chains.GetTypedChains<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct));
+                if (lipid.Chains is MolecularSpeciesLevelChains mlChains) {
+                    var sn1sn2mass = lipid.Mass - (mlChains.GetAllChains()[0].Mass + mlChains.GetAllChains()[1].Mass + C3H3O2 + MassDiffDictionary.HydrogenMass);
+                    var sn3sn4mass = lipid.Mass - (mlChains.GetAllChains()[2].Mass + mlChains.GetAllChains()[3].Mass + C3H3O2 + MassDiffDictionary.HydrogenMass);
+                    spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, sn1sn2.OfType<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct, sn3sn4mass + nlMass));
+                    spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, sn3sn4.OfType<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct, sn1sn2mass + nlMass));
+                    spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, nlMass: 0.0, 200d));
+                }
+                if (lipid.Chains is PositionLevelChains plChains) {
+                    var sn1sn2mass = lipid.Mass - (plChains.GetAllChains()[0].Mass + plChains.GetAllChains()[1].Mass + C3H3O2 + MassDiffDictionary.HydrogenMass);
+                    var sn3sn4mass = lipid.Mass - (plChains.GetAllChains()[2].Mass + plChains.GetAllChains()[3].Mass + C3H3O2 + MassDiffDictionary.HydrogenMass);
+                    spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.GetAllChains()[0], adduct, sn3sn4mass + nlMass));
+                    spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.GetAllChains()[2], adduct, sn1sn2mass + nlMass));
+                    spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, sn1sn2.OfType<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct, sn3sn4mass + nlMass));
+                    spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, sn3sn4.OfType<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct, sn1sn2mass + nlMass));
+                    spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, nlMass, 200d));
+                }
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
                 .Select(specs => new SpectrumPeak(specs.First().Mass, specs.Sum(n => n.Intensity), string.Join(", ", specs.Select(spec => spec.Comment)), specs.Aggregate(SpectrumComment.none, (a, b) => a | b.SpectrumComment)))
