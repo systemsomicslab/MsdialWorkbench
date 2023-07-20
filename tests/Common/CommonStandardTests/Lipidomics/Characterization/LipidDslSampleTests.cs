@@ -42,7 +42,7 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
             }.Sum();
 
             var characterizer = new PCLipidType()
-                .ToDsl()
+                .DefineRules()
                 .IsPositive()
                 .HasAdduct("[M+H]+")
                 .IsValidMolecule(c => c.Sn1Carbon >= 10 && c.Sn1DoubleBond <= 6)
@@ -143,7 +143,7 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
         [DynamicData(nameof(PCCharacterizationTest2Data))]
         public void PCCharacterizationTest2(LipidMolecule lipid, IMSScanProperty scan) {
             var characterizer = new PCLipidType()
-                .ToDsl()
+                .DefineRules()
                 .IsPositive()
                 .HasAdduct("[M+Na]+")
                 .IsValidMolecule(c => c.Sn1DoubleBond <= 6)
@@ -256,7 +256,7 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
         public void SHexCerCharacterizationTest(LipidMolecule lipid, IMSScanProperty scan) {
             var electron = 0.00054858026;
             var characterizer = new SHexCerLipidType()
-                .ToDsl()
+                .DefineRules()
                 .IsPositive()
                 .HasAdduct("[M+H]+", "[M+NH4]+")
                 .ExistAny(.02d,

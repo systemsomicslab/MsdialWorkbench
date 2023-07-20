@@ -5,7 +5,7 @@ namespace CompMs.Common.Lipidomics.Characterization
 {
     internal static class LipidDsl
     {
-        public static LipidCharacterizationDsl<T> ToDsl<T>(this ILipidType<T> type) where T : ILipidCandidate {
+        public static LipidCharacterizationDsl<T> DefineRules<T>(this ILipidType<T> type) where T : ILipidCandidate {
             return LipidCharacterizationDsl<T>.From(type);
         }
 
