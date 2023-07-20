@@ -70,16 +70,16 @@ namespace CompMs.Common.Lipidomics
             spectrum.AddRange(GetTGSpectrum(lipid, adduct));
             if (lipid.Chains is MolecularSpeciesLevelChains mlChains)
             {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, mlChains.GetChains(), adduct));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.GetChains().OfType<AcylChain>(), adduct));
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, mlChains.GetAllChains(), adduct));
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.GetAllChains().OfType<AcylChain>(), adduct));
                 spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, 0d, 100d));
             }
             if (lipid.Chains is PositionLevelChains plChains)
             {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.GetChains()[0], adduct));
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.GetChains()[2], adduct));
-                spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.GetChains()[1], adduct));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.GetChains().OfType<AcylChain>(), adduct));
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.GetAllChains()[0], adduct));
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.GetAllChains()[2], adduct));
+                spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.GetAllChains()[1], adduct));
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.GetAllChains().OfType<AcylChain>(), adduct));
                 spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, 0d, 200d));
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
@@ -236,10 +236,10 @@ namespace CompMs.Common.Lipidomics
             var spectrum = new List<SpectrumPeak>();
             if (lipid.Chains is SeparatedChains acylChains)
             {
-                foreach (var lossChain in acylChains.GetChains())
+                foreach (var lossChain in acylChains.GetAllChains())
                 {
                     nlMass = lossChain.Mass + MassDiffDictionary.OxygenMass + adduct.AdductIonAccurateMass - MassDiffDictionary.ProtonMass;
-                    var chains = acylChains.GetChains().Where((c) => !c.Equals(lossChain)).ToList();
+                    var chains = acylChains.GetAllChains().Where((c) => !c.Equals(lossChain)).ToList();
                     foreach (var chain in chains)
                     {
                         if (chain.DoubleBond.Count == 0 || chain.DoubleBond.UnDecidedCount > 0) continue;

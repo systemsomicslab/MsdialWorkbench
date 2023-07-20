@@ -21,22 +21,22 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(34, actual.CarbonCount);
             Assert.AreEqual(2, actual.DoubleBondCount);
             Assert.AreEqual(0, actual.OxidizedCount);
-            Assert.IsInstanceOfType(((MolecularSpeciesLevelChains)actual).GetChains()[0], typeof(AcylChain));
-            Assert.IsInstanceOfType(((MolecularSpeciesLevelChains)actual).GetChains()[1], typeof(AcylChain));
+            Assert.IsInstanceOfType(((MolecularSpeciesLevelChains)actual).GetAllChains()[0], typeof(AcylChain));
+            Assert.IsInstanceOfType(((MolecularSpeciesLevelChains)actual).GetAllChains()[1], typeof(AcylChain));
 
             actual = parser.Parse("16:0/18:2");
             Assert.IsInstanceOfType(actual, typeof(PositionLevelChains));
             Assert.AreEqual(34, actual.CarbonCount);
             Assert.AreEqual(2, actual.DoubleBondCount);
             Assert.AreEqual(0, actual.OxidizedCount);
-            Assert.IsInstanceOfType(((PositionLevelChains)actual).GetChains()[0], typeof(AcylChain));
-            Assert.AreEqual(16, ((PositionLevelChains)actual).GetChains()[0].CarbonCount);
-            Assert.AreEqual(0, ((PositionLevelChains)actual).GetChains()[0].DoubleBondCount);
-            Assert.AreEqual(0, ((PositionLevelChains)actual).GetChains()[0].OxidizedCount);
-            Assert.IsInstanceOfType(((PositionLevelChains)actual).GetChains()[1], typeof(AcylChain));
-            Assert.AreEqual(18, ((PositionLevelChains)actual).GetChains()[1].CarbonCount);
-            Assert.AreEqual(2, ((PositionLevelChains)actual).GetChains()[1].DoubleBondCount);
-            Assert.AreEqual(0, ((PositionLevelChains)actual).GetChains()[1].OxidizedCount);
+            Assert.IsInstanceOfType(((PositionLevelChains)actual).GetAllChains()[0], typeof(AcylChain));
+            Assert.AreEqual(16, ((PositionLevelChains)actual).GetAllChains()[0].CarbonCount);
+            Assert.AreEqual(0, ((PositionLevelChains)actual).GetAllChains()[0].DoubleBondCount);
+            Assert.AreEqual(0, ((PositionLevelChains)actual).GetAllChains()[0].OxidizedCount);
+            Assert.IsInstanceOfType(((PositionLevelChains)actual).GetAllChains()[1], typeof(AcylChain));
+            Assert.AreEqual(18, ((PositionLevelChains)actual).GetAllChains()[1].CarbonCount);
+            Assert.AreEqual(2, ((PositionLevelChains)actual).GetAllChains()[1].DoubleBondCount);
+            Assert.AreEqual(0, ((PositionLevelChains)actual).GetAllChains()[1].OxidizedCount);
 
             parser = TotalChainParser.BuildParser(3);
             actual = parser.Parse("16:0_18:1_18:2");
@@ -44,18 +44,18 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(52, actual.CarbonCount);
             Assert.AreEqual(3, actual.DoubleBondCount);
             Assert.AreEqual(0, actual.OxidizedCount);
-            Assert.IsInstanceOfType(((MolecularSpeciesLevelChains)actual).GetChains()[0], typeof(AcylChain));
-            Assert.AreEqual(16, ((MolecularSpeciesLevelChains)actual).GetChains()[0].CarbonCount);
-            Assert.AreEqual(0, ((MolecularSpeciesLevelChains)actual).GetChains()[0].DoubleBondCount);
-            Assert.AreEqual(0, ((MolecularSpeciesLevelChains)actual).GetChains()[0].OxidizedCount);
-            Assert.IsInstanceOfType(((MolecularSpeciesLevelChains)actual).GetChains()[1], typeof(AcylChain));
-            Assert.AreEqual(18, ((MolecularSpeciesLevelChains)actual).GetChains()[1].CarbonCount);
-            Assert.AreEqual(1, ((MolecularSpeciesLevelChains)actual).GetChains()[1].DoubleBondCount);
-            Assert.AreEqual(0, ((MolecularSpeciesLevelChains)actual).GetChains()[1].OxidizedCount);
-            Assert.IsInstanceOfType(((MolecularSpeciesLevelChains)actual).GetChains()[2], typeof(AcylChain));
-            Assert.AreEqual(18, ((MolecularSpeciesLevelChains)actual).GetChains()[2].CarbonCount);
-            Assert.AreEqual(2, ((MolecularSpeciesLevelChains)actual).GetChains()[2].DoubleBondCount);
-            Assert.AreEqual(0, ((MolecularSpeciesLevelChains)actual).GetChains()[2].OxidizedCount);
+            Assert.IsInstanceOfType(((MolecularSpeciesLevelChains)actual).GetAllChains()[0], typeof(AcylChain));
+            Assert.AreEqual(16, ((MolecularSpeciesLevelChains)actual).GetAllChains()[0].CarbonCount);
+            Assert.AreEqual(0, ((MolecularSpeciesLevelChains)actual).GetAllChains()[0].DoubleBondCount);
+            Assert.AreEqual(0, ((MolecularSpeciesLevelChains)actual).GetAllChains()[0].OxidizedCount);
+            Assert.IsInstanceOfType(((MolecularSpeciesLevelChains)actual).GetAllChains()[1], typeof(AcylChain));
+            Assert.AreEqual(18, ((MolecularSpeciesLevelChains)actual).GetAllChains()[1].CarbonCount);
+            Assert.AreEqual(1, ((MolecularSpeciesLevelChains)actual).GetAllChains()[1].DoubleBondCount);
+            Assert.AreEqual(0, ((MolecularSpeciesLevelChains)actual).GetAllChains()[1].OxidizedCount);
+            Assert.IsInstanceOfType(((MolecularSpeciesLevelChains)actual).GetAllChains()[2], typeof(AcylChain));
+            Assert.AreEqual(18, ((MolecularSpeciesLevelChains)actual).GetAllChains()[2].CarbonCount);
+            Assert.AreEqual(2, ((MolecularSpeciesLevelChains)actual).GetAllChains()[2].DoubleBondCount);
+            Assert.AreEqual(0, ((MolecularSpeciesLevelChains)actual).GetAllChains()[2].OxidizedCount);
         }
 
         [TestMethod]
@@ -90,44 +90,44 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(34, actual.CarbonCount);
             Assert.AreEqual(2, actual.DoubleBondCount);
             Assert.AreEqual(0, actual.OxidizedCount);
-            Assert.IsInstanceOfType(((MolecularSpeciesLevelChains)actual).GetChains()[0], typeof(AlkylChain));
-            Assert.IsInstanceOfType(((MolecularSpeciesLevelChains)actual).GetChains()[1], typeof(AcylChain));
+            Assert.IsInstanceOfType(((MolecularSpeciesLevelChains)actual).GetAllChains()[0], typeof(AlkylChain));
+            Assert.IsInstanceOfType(((MolecularSpeciesLevelChains)actual).GetAllChains()[1], typeof(AcylChain));
 
             actual = parser.Parse("O-16:0_18:2;O2");
             Assert.IsInstanceOfType(actual, typeof(MolecularSpeciesLevelChains));
             Assert.AreEqual(34, actual.CarbonCount);
             Assert.AreEqual(2, actual.DoubleBondCount);
             Assert.AreEqual(2, actual.OxidizedCount);
-            Assert.IsInstanceOfType(((MolecularSpeciesLevelChains)actual).GetChains()[0], typeof(AlkylChain));
-            Assert.IsInstanceOfType(((MolecularSpeciesLevelChains)actual).GetChains()[1], typeof(AcylChain));
+            Assert.IsInstanceOfType(((MolecularSpeciesLevelChains)actual).GetAllChains()[0], typeof(AlkylChain));
+            Assert.IsInstanceOfType(((MolecularSpeciesLevelChains)actual).GetAllChains()[1], typeof(AcylChain));
 
             actual = parser.Parse("19:0/O-17:0");
             Assert.IsInstanceOfType(actual, typeof(PositionLevelChains));
             Assert.AreEqual(36, actual.CarbonCount);
             Assert.AreEqual(0, actual.DoubleBondCount);
             Assert.AreEqual(0, actual.OxidizedCount);
-            Assert.IsInstanceOfType(((PositionLevelChains)actual).GetChains()[0], typeof(AcylChain));
-            Assert.AreEqual(19, ((PositionLevelChains)actual).GetChains()[0].CarbonCount);
-            Assert.AreEqual(0, ((PositionLevelChains)actual).GetChains()[0].DoubleBondCount);
-            Assert.AreEqual(0, ((PositionLevelChains)actual).GetChains()[0].OxidizedCount);
-            Assert.IsInstanceOfType(((PositionLevelChains)actual).GetChains()[1], typeof(AlkylChain));
-            Assert.AreEqual(17, ((PositionLevelChains)actual).GetChains()[1].CarbonCount);
-            Assert.AreEqual(0, ((PositionLevelChains)actual).GetChains()[1].DoubleBondCount);
-            Assert.AreEqual(0, ((PositionLevelChains)actual).GetChains()[1].OxidizedCount);
+            Assert.IsInstanceOfType(((PositionLevelChains)actual).GetAllChains()[0], typeof(AcylChain));
+            Assert.AreEqual(19, ((PositionLevelChains)actual).GetAllChains()[0].CarbonCount);
+            Assert.AreEqual(0, ((PositionLevelChains)actual).GetAllChains()[0].DoubleBondCount);
+            Assert.AreEqual(0, ((PositionLevelChains)actual).GetAllChains()[0].OxidizedCount);
+            Assert.IsInstanceOfType(((PositionLevelChains)actual).GetAllChains()[1], typeof(AlkylChain));
+            Assert.AreEqual(17, ((PositionLevelChains)actual).GetAllChains()[1].CarbonCount);
+            Assert.AreEqual(0, ((PositionLevelChains)actual).GetAllChains()[1].DoubleBondCount);
+            Assert.AreEqual(0, ((PositionLevelChains)actual).GetAllChains()[1].OxidizedCount);
 
             actual = parser.Parse("O-16:0/O-18:2");
             Assert.IsInstanceOfType(actual, typeof(PositionLevelChains));
             Assert.AreEqual(34, actual.CarbonCount);
             Assert.AreEqual(2, actual.DoubleBondCount);
             Assert.AreEqual(0, actual.OxidizedCount);
-            Assert.IsInstanceOfType(((PositionLevelChains)actual).GetChains()[0], typeof(AlkylChain));
-            Assert.AreEqual(16, ((PositionLevelChains)actual).GetChains()[0].CarbonCount);
-            Assert.AreEqual(0, ((PositionLevelChains)actual).GetChains()[0].DoubleBondCount);
-            Assert.AreEqual(0, ((PositionLevelChains)actual).GetChains()[0].OxidizedCount);
-            Assert.IsInstanceOfType(((PositionLevelChains)actual).GetChains()[1], typeof(AlkylChain));
-            Assert.AreEqual(18, ((PositionLevelChains)actual).GetChains()[1].CarbonCount);
-            Assert.AreEqual(2, ((PositionLevelChains)actual).GetChains()[1].DoubleBondCount);
-            Assert.AreEqual(0, ((PositionLevelChains)actual).GetChains()[1].OxidizedCount);
+            Assert.IsInstanceOfType(((PositionLevelChains)actual).GetAllChains()[0], typeof(AlkylChain));
+            Assert.AreEqual(16, ((PositionLevelChains)actual).GetAllChains()[0].CarbonCount);
+            Assert.AreEqual(0, ((PositionLevelChains)actual).GetAllChains()[0].DoubleBondCount);
+            Assert.AreEqual(0, ((PositionLevelChains)actual).GetAllChains()[0].OxidizedCount);
+            Assert.IsInstanceOfType(((PositionLevelChains)actual).GetAllChains()[1], typeof(AlkylChain));
+            Assert.AreEqual(18, ((PositionLevelChains)actual).GetAllChains()[1].CarbonCount);
+            Assert.AreEqual(2, ((PositionLevelChains)actual).GetAllChains()[1].DoubleBondCount);
+            Assert.AreEqual(0, ((PositionLevelChains)actual).GetAllChains()[1].OxidizedCount);
         }
 
         [TestMethod]
@@ -139,14 +139,14 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(62, actual.CarbonCount);
             Assert.AreEqual(3, actual.DoubleBondCount);
             Assert.AreEqual(4, actual.OxidizedCount);
-            Assert.IsInstanceOfType(((PositionLevelChains)actual).GetChains()[0], typeof(SphingoChain));
-            Assert.AreEqual(18, ((PositionLevelChains)actual).GetChains()[0].CarbonCount);
-            Assert.AreEqual(1, ((PositionLevelChains)actual).GetChains()[0].DoubleBondCount);
-            Assert.AreEqual(2, ((PositionLevelChains)actual).GetChains()[0].OxidizedCount);
-            Assert.IsInstanceOfType(((PositionLevelChains)actual).GetChains()[1], typeof(AcylChain));
-            Assert.AreEqual(44, ((PositionLevelChains)actual).GetChains()[1].CarbonCount);
-            Assert.AreEqual(2, ((PositionLevelChains)actual).GetChains()[1].DoubleBondCount);
-            Assert.AreEqual(2, ((PositionLevelChains)actual).GetChains()[1].OxidizedCount);
+            Assert.IsInstanceOfType(((PositionLevelChains)actual).GetAllChains()[0], typeof(SphingoChain));
+            Assert.AreEqual(18, ((PositionLevelChains)actual).GetAllChains()[0].CarbonCount);
+            Assert.AreEqual(1, ((PositionLevelChains)actual).GetAllChains()[0].DoubleBondCount);
+            Assert.AreEqual(2, ((PositionLevelChains)actual).GetAllChains()[0].OxidizedCount);
+            Assert.IsInstanceOfType(((PositionLevelChains)actual).GetAllChains()[1], typeof(AcylChain));
+            Assert.AreEqual(44, ((PositionLevelChains)actual).GetAllChains()[1].CarbonCount);
+            Assert.AreEqual(2, ((PositionLevelChains)actual).GetAllChains()[1].DoubleBondCount);
+            Assert.AreEqual(2, ((PositionLevelChains)actual).GetAllChains()[1].OxidizedCount);
         }
     }
 }

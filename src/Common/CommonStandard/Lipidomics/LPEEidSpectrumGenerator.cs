@@ -91,15 +91,15 @@ namespace CompMs.Common.Lipidomics
             spectrum.AddRange(GetLPESpectrum(lipid, adduct));
             if (lipid.Chains is MolecularSpeciesLevelChains mlChains)
             {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, mlChains.GetChains(), adduct));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.GetChains().OfType<AcylChain>(), adduct));
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, mlChains.GetAllChains(), adduct));
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.GetAllChains().OfType<AcylChain>(), adduct));
                 spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, 0d, 300d));
             }
             if (lipid.Chains is PositionLevelChains plChains)
             {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.GetChains(), adduct));
-                spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.GetChains()[0], adduct));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.GetChains().OfType<AcylChain>(), adduct));
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.GetAllChains(), adduct));
+                spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.GetAllChains()[0], adduct));
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.GetAllChains().OfType<AcylChain>(), adduct));
                 spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, 0d, 300d));
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
@@ -196,7 +196,7 @@ namespace CompMs.Common.Lipidomics
             var spectrum = new List<SpectrumPeak>();
             if (lipid.Chains is SeparatedChains chains)
             {
-                foreach (var chain in chains.GetChains())
+                foreach (var chain in chains.GetAllChains())
                 {
                     if (chain.DoubleBond.Count == 0 || chain.DoubleBond.UnDecidedCount > 0) continue;
                     spectrum.AddRange(EidSpecificSpectrumGenerator.EidSpecificSpectrumGen(lipid, chain, adduct, nlMass, intensity));

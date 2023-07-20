@@ -15,12 +15,12 @@ namespace CompMs.Common.Lipidomics
         }
 
         public override string ToString() {
-            return string.Join("/", GetChains().Select(c => c.ToString()));
+            return string.Join("/", GetAllChains().Select(c => c.ToString()));
         }
 
         bool ITotalChain.Includes(ITotalChain chains) {
             return chains.ChainCount == ChainCount && chains is PositionLevelChains pChains
-                && Enumerable.Range(0, ChainCount).All(i => GetChains()[i].Includes(pChains.GetChains()[i]));
+                && Enumerable.Range(0, ChainCount).All(i => GetAllChains()[i].Includes(pChains.GetAllChains()[i]));
         }
 
         public override bool Equals(ITotalChain other) {
@@ -30,7 +30,7 @@ namespace CompMs.Common.Lipidomics
                 && DoubleBondCount == other.DoubleBondCount
                 && OxidizedCount == other.OxidizedCount
                 && Description == other.Description
-                && GetChains().Zip(pChains.GetChains(), (a, b) => a.Equals(b)).All(p => p);
+                && GetAllChains().Zip(pChains.GetAllChains(), (a, b) => a.Equals(b)).All(p => p);
         }
 
         public override TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {

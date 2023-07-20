@@ -17,10 +17,10 @@ namespace CompMs.Common.Lipidomics
         }
 
         public override string ToString() {
-            if (GetChains().Count(c => c.CarbonCount > 0) == 1) {
-                return GetChains().First(c => c.CarbonCount > 0).ToString(); // for LPC...
+            if (GetAllChains().Count(c => c.CarbonCount > 0) == 1) {
+                return GetAllChains().First(c => c.CarbonCount > 0).ToString(); // for LPC...
             }
-            return string.Join("_", GetChains().Select(c => c.ToString()));
+            return string.Join("_", GetAllChains().Select(c => c.ToString()));
         }
 
         bool ITotalChain.Includes(ITotalChain chains) {
@@ -29,9 +29,9 @@ namespace CompMs.Common.Lipidomics
             }
 
             var matching = new BipartiteMatching(ChainCount + chains.ChainCount);
-            for (int i = 0; i < GetChains().Count; i++) {
-                for (int j = 0; j < sChains.GetChains().Count; j++) {
-                    if (GetChains()[i].Includes(sChains.GetChains()[j])) {
+            for (int i = 0; i < GetAllChains().Length; i++) {
+                for (int j = 0; j < sChains.GetAllChains().Length; j++) {
+                    if (GetAllChains()[i].Includes(sChains.GetAllChains()[j])) {
                         matching.AddEdge(i, j + ChainCount);
                     }
                 }
@@ -46,7 +46,7 @@ namespace CompMs.Common.Lipidomics
                 && DoubleBondCount == other.DoubleBondCount
                 && OxidizedCount == other.OxidizedCount
                 && Description == other.Description
-                && GetChains().Zip(mChains.GetChains(), (a, b) => a.Equals(b)).All(p => p);
+                && GetAllChains().Zip(mChains.GetAllChains(), (a, b) => a.Equals(b)).All(p => p);
         }
 
         public override TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {

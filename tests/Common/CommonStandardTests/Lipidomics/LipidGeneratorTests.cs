@@ -27,7 +27,7 @@ namespace CompMs.Common.Lipidomics.Tests
             };
             var actuals = lipids.OfType<Lipid>()
                 .Select(l => l.Chains as MolecularSpeciesLevelChains)
-                .Select(chains => (chains.GetChains()[0].CarbonCount, chains.GetChains()[0].DoubleBondCount, chains.GetChains()[0].OxidizedCount, chains.GetChains()[1].CarbonCount, chains.GetChains()[1].DoubleBondCount, chains.GetChains()[1].OxidizedCount))
+                .Select(chains => (chains.GetAllChains()[0].CarbonCount, chains.GetAllChains()[0].DoubleBondCount, chains.GetAllChains()[0].OxidizedCount, chains.GetAllChains()[1].CarbonCount, chains.GetAllChains()[1].DoubleBondCount, chains.GetAllChains()[1].OxidizedCount))
                 .ToArray();
             CollectionAssert.AreEquivalent(expects, actuals);
         }
@@ -50,7 +50,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 (acyl2, acyl1),
             };
             var actuals = lipids.OfType<Lipid>()
-                .Select(l => ((l.Chains as PositionLevelChains).GetChains()[0], (l.Chains as PositionLevelChains).GetChains()[1]))
+                .Select(l => ((l.Chains as PositionLevelChains).GetAllChains()[0], (l.Chains as PositionLevelChains).GetAllChains()[1]))
                 .ToArray();
             CollectionAssert.AreEquivalent(expects, actuals);
 
@@ -67,7 +67,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 (acyl3, acyl3),
             };
             actuals = lipids.OfType<Lipid>()
-                .Select(l => ((l.Chains as PositionLevelChains).GetChains()[0], (l.Chains as PositionLevelChains).GetChains()[1]))
+                .Select(l => ((l.Chains as PositionLevelChains).GetAllChains()[0], (l.Chains as PositionLevelChains).GetAllChains()[1]))
                 .ToArray();
             CollectionAssert.AreEquivalent(expects, actuals);
         }
@@ -91,7 +91,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 (12,  6), (12,  9), (12, 12),
             };
             var actuals = lipids.OfType<Lipid>()
-                .Select(l => (((l.Chains as PositionLevelChains).GetChains()[0] as AcylChain).DoubleBond.Bonds[0].Position, ((l.Chains as PositionLevelChains).GetChains()[1] as AcylChain).DoubleBond.Bonds[0].Position))
+                .Select(l => (((l.Chains as PositionLevelChains).GetAllChains()[0] as AcylChain).DoubleBond.Bonds[0].Position, ((l.Chains as PositionLevelChains).GetAllChains()[1] as AcylChain).DoubleBond.Bonds[0].Position))
                 .ToArray();
             CollectionAssert.AreEquivalent(expects, actuals);
         }
@@ -120,11 +120,11 @@ namespace CompMs.Common.Lipidomics.Tests
         }
 
         public IEnumerable<ITotalChain> Permutate(MolecularSpeciesLevelChains chains) {
-            return SearchCollection.Permutations(chains.GetChains()).Select(chains => new PositionLevelChains(chains));
+            return SearchCollection.Permutations(chains.GetAllChains()).Select(chains => new PositionLevelChains(chains));
         }
 
         public IEnumerable<ITotalChain> Product(PositionLevelChains chains) {
-            return SearchCollection.CartesianProduct(chains.GetChains().Select(c => c.GetCandidates(this).ToArray()).ToArray()).Select(chains => new PositionLevelChains(chains));
+            return SearchCollection.CartesianProduct(chains.GetAllChains().Select(c => c.GetCandidates(this).ToArray()).ToArray()).Select(chains => new PositionLevelChains(chains));
         }
 
         public IEnumerable<IChain> Generate(SphingoChain chain) {

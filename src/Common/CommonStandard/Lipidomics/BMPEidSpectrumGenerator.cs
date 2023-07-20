@@ -71,14 +71,14 @@ namespace CompMs.Common.Lipidomics
             spectrum.AddRange(GetBMPSpectrum(lipid, adduct));
             if (lipid.Chains is MolecularSpeciesLevelChains mlChains)
             {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, mlChains.GetChains(), adduct));
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, mlChains.GetAllChains(), adduct));
                 //spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.Chains.OfType<AcylChain>(), adduct, nlMass: nlMass));
                 spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, 0.0, 200d));
             }
             if (lipid.Chains is PositionLevelChains plChains)
             {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.GetChains(), adduct));
-                spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.GetChains()[0], adduct));
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.GetAllChains(), adduct));
+                spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.GetAllChains()[0], adduct));
                 //spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.Chains.OfType<AcylChain>(), adduct, nlMass: nlMass));
                 spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, 0.0, 200d));
             }
@@ -209,10 +209,10 @@ namespace CompMs.Common.Lipidomics
             var spectrum = new List<SpectrumPeak>();
             if (lipid.Chains is SeparatedChains acylChains)
             {
-                foreach (var lossChain in acylChains.GetChains())
+                foreach (var lossChain in acylChains.GetAllChains())
                 {
                     nlMass = lossChain.Mass + C3H9O6P - MassDiffDictionary.HydrogenMass + adduct.AdductIonAccurateMass - MassDiffDictionary.ProtonMass;
-                    var chains = acylChains.GetChains().Where((c) => !c.Equals(lossChain)).ToList();
+                    var chains = acylChains.GetAllChains().Where((c) => !c.Equals(lossChain)).ToList();
                     foreach (var chain in chains)
                     {
                         if (chain.DoubleBond.Count == 0 || chain.DoubleBond.UnDecidedCount > 0) continue;

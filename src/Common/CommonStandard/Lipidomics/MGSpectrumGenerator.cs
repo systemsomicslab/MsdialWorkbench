@@ -55,13 +55,13 @@ namespace CompMs.Common.Lipidomics
             spectrum.AddRange(GetMGSpectrum(lipid, adduct));
             if (lipid.Chains is MolecularSpeciesLevelChains mlChains)
             {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, mlChains.GetChains(), adduct));
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, mlChains.GetAllChains(), adduct));
                 // can't find spectrum rule TBC
                 //spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.Chains.OfType<AcylChain>(), adduct, nlMass));
             }
             if (lipid.Chains is PositionLevelChains plChains)
             {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.GetChains(), adduct));
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.GetAllChains(), adduct));
                 //spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.Chains[0], adduct));
                 // can't find spectrum rule TBC
                 //spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.Chains.OfType<AcylChain>(), adduct, nlMass));

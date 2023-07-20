@@ -55,14 +55,14 @@ namespace CompMs.Common.Lipidomics
             spectrum.AddRange(GetMGSpectrum(lipid, adduct));
             if (lipid.Chains is MolecularSpeciesLevelChains mlChains)
             {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, mlChains.GetChains(), adduct));
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, mlChains.GetAllChains(), adduct));
                 // can't find spectrum rule 
                 //spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.Chains.OfType<AcylChain>(), adduct, nlMass));
                 //spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, 0d, 100d));
             }
             if (lipid.Chains is PositionLevelChains plChains)
             {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.GetChains(), adduct));
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.GetAllChains(), adduct));
                 //spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.Chains[0], adduct));
                 // can't find spectrum rule 
                 //spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.Chains.OfType<AcylChain>(), adduct, nlMass));
@@ -184,7 +184,7 @@ namespace CompMs.Common.Lipidomics
             var spectrum = new List<SpectrumPeak>();
             if (lipid.Chains is SeparatedChains chains)
             {
-                foreach (var chain in chains.GetChains())
+                foreach (var chain in chains.GetAllChains())
                 {
                     if (chain.DoubleBond.Count == 0 || chain.DoubleBond.UnDecidedCount > 0) continue;
                     if (chain.DoubleBond.Count <= 3) { intensity = intensity * 0.1; }

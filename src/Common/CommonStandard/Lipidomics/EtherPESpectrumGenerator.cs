@@ -92,29 +92,29 @@ namespace CompMs.Common.Lipidomics
             spectrum.AddRange(GetEtherPESpectrum(lipid, adduct));
             if (lipid.Chains is PositionLevelChains plChains)
             {
-                spectrum.AddRange(GetSn1PositionSpectrum(lipid, plChains.GetChains()[0], adduct));
+                spectrum.AddRange(GetSn1PositionSpectrum(lipid, plChains.GetAllChains()[0], adduct));
 
                 AlkylChain alkyl;
                 AcylChain acyl;
 
-                if (plChains.GetChains()[0] is AlkylChain)
+                if (plChains.GetAllChains()[0] is AlkylChain)
                 {
-                    alkyl = (AlkylChain)plChains.GetChains()[0];
-                    acyl = (AcylChain)plChains.GetChains()[1];
+                    alkyl = (AlkylChain)plChains.GetAllChains()[0];
+                    acyl = (AcylChain)plChains.GetAllChains()[1];
                 }
                 else
                 {
-                    alkyl = (AlkylChain)plChains.GetChains()[1];
-                    acyl = (AcylChain)plChains.GetChains()[0];
+                    alkyl = (AlkylChain)plChains.GetAllChains()[1];
+                    acyl = (AcylChain)plChains.GetAllChains()[0];
                 }
 
                 if (alkyl.DoubleBond.Bonds.Any(b => b.Position == 1))
                 {
-                    spectrum.AddRange(GetEtherPEPSpectrum(lipid, alkyl, plChains.GetChains()[1], adduct));
+                    spectrum.AddRange(GetEtherPEPSpectrum(lipid, alkyl, plChains.GetAllChains()[1], adduct));
                 }
                 else
                 {
-                    spectrum.AddRange(GetEtherPEOSpectrum(lipid, plChains.GetChains()[0], plChains.GetChains()[1], adduct));
+                    spectrum.AddRange(GetEtherPEOSpectrum(lipid, plChains.GetAllChains()[0], plChains.GetAllChains()[1], adduct));
                 }
                 spectrum.AddRange(spectrumGenerator.GetAlkylDoubleBondSpectrum(lipid, alkyl, adduct, 0d, 30d));
                 //spectrum.AddRange(spectrumGenerator.GetAlkylDoubleBondSpectrum(lipid, alkyl, adduct, nlMass: C2H8NO4P, 30d));

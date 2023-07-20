@@ -49,10 +49,6 @@ namespace CompMs.Common.Lipidomics
             Description = description;
         }
 
-        public ReadOnlyCollection<IChain> GetChains() {
-            return _chains.Select(c => c.Chain).ToList().AsReadOnly();
-        }
-
         public IChain[] GetAllChains() {
             return _chains.Select(c => c.Chain).ToArray();
         }

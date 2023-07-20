@@ -93,7 +93,7 @@ namespace CompMs.Common.Lipidomics
                     }
                     else if (chains.ChainCount < Capacity) {
                         return new MolecularSpeciesLevelChains(
-                            chains.GetChains()
+                            chains.GetAllChains()
                                 .Concat(Enumerable.Range(0, Capacity - chains.ChainCount).Select(_ => new AcylChain(0, DoubleBond.CreateFromPosition(), Oxidized.CreateFromPosition())))
                                 .ToArray()
                         );
