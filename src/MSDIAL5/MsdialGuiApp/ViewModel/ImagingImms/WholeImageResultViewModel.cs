@@ -12,6 +12,7 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.ImagingImms
 {
@@ -38,5 +39,7 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
         public ReadOnlyReactiveCollection<IntensityImageViewModel> Intensities { get; }
         public ReactiveProperty<IntensityImageViewModel> SelectedPeakIntensities { get; }
         public ImagingRoiViewModel ImagingRoiViewModel { get; }
+
+        public ICommand ShowIonTableCommand => AnalysisViewModel.ShowIonTableCommand;
     }
 }
