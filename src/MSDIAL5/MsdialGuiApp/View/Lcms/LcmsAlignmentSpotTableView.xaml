@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
+             xmlns:searchvm="clr-namespace:CompMs.App.Msdial.ViewModel.Search"
              xmlns:converter="clr-namespace:CompMs.App.Msdial.ViewModel.Converter"
              xmlns:rs="clr-namespace:CompMs.Graphics.UI.RangeSlider;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
@@ -39,12 +40,8 @@
         <Grid Margin="5" Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="110"/>
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition Width="210"/>
-                <ColumnDefinition Width="210"/>
+                <ColumnDefinition Width="4*" />
+                <ColumnDefinition Width="420"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="50"/>
@@ -72,50 +69,43 @@
                 </StackPanel>
             </StackPanel>
 
-            <StackPanel Margin="5,0,0,0"
-                        Grid.Column="1">
-                <TextBlock Text="Metabolite name filter"/>
-                <TextBox Text="{Binding PeakSpotNavigatorViewModel.MetaboliteFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
-                         HorizontalAlignment="Stretch"/>
-            </StackPanel>
+            <ItemsControl ItemsSource="{Binding PeakSpotNavigatorViewModel.KeywordFilterViewModels, Mode=OneTime}"
+                          Grid.Column="1">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="1"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type searchvm:KeywordFilterViewModel}">
+                        <StackPanel Margin="5,0,0,0">
+                            <TextBlock Text="{Binding Label, Mode=OneTime}"/>
+                            <TextBox Text="{Binding Keywords.Value, UpdateSourceTrigger=PropertyChanged}"
+                                     HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
-            <StackPanel Margin="5,0,0,0"
-                        Grid.Column="2">
-                <TextBlock Text="Ontology name filter"/>
-                <TextBox Text="{Binding PeakSpotNavigatorViewModel.OntologyFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
-                         HorizontalAlignment="Stretch"/>
-            </StackPanel>
-
-            <StackPanel Margin="5,0,0,0"
-                        Grid.Column="3">
-                <TextBlock Text="Adduct type filter"/>
-                <TextBox Text="{Binding PeakSpotNavigatorViewModel.AdductFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
-                         HorizontalAlignment="Stretch"/>
-            </StackPanel>
-
-            <StackPanel Margin="5,0,0,0"
-                        Grid.Column="4">
-                <TextBlock Text="Comment filter"/>
-                <TextBox Text="{Binding PeakSpotNavigatorViewModel.CommentFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
-                         HorizontalAlignment="Stretch"/>
-            </StackPanel>
-
-            <rs:RangeSlider Tag="m/z range"
-                            Minimum="{Binding MassMin, Mode=OneWay}"
-                            Maximum="{Binding MassMax, Mode=OneWay}"
-                            LowerValue="{Binding PeakSpotNavigatorViewModel.MzLowerValue.Value, Mode=TwoWay}"
-                            UpperValue="{Binding PeakSpotNavigatorViewModel.MzUpperValue.Value, Mode=TwoWay}"
-                            Style="{StaticResource EditableRangeSlider}"
-                            Margin="8,0"
-                            Grid.Column="5"/>
-            <rs:RangeSlider Tag="Retention time"
-                            Minimum="{Binding RtMin, Mode=OneWay}"
-                            Maximum="{Binding RtMax, Mode=OneWay}"
-                            LowerValue="{Binding PeakSpotNavigatorViewModel.RtLowerValue.Value, Mode=TwoWay}"
-                            UpperValue="{Binding PeakSpotNavigatorViewModel.RtUpperValue.Value, Mode=TwoWay}"
-                            Style="{StaticResource EditableRangeSlider}"
-                            Margin="8,0"
-                            Grid.Column="6"/>
+            <ItemsControl ItemsSource="{Binding PeakSpotNavigatorViewModel.ValueFilterViewModels, Mode=OneTime}"
+                          Grid.Column="2">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="1"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type searchvm:ValueFilterViewModel}">
+                        <rs:RangeSlider Tag="{Binding Label, Mode=OneTime}"
+                                        Minimum="{Binding Minimum.Value, Mode=OneWay}"
+                                        Maximum="{Binding Maximum.Value, Mode=OneWay}"
+                                        LowerValue="{Binding Lower.Value, Mode=TwoWay}"
+                                        UpperValue="{Binding Upper.Value, Mode=TwoWay}"
+                                        Style="{StaticResource EditableRangeSlider}"
+                                        Margin="8,0"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
             <StackPanel Orientation="Horizontal"
                         Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">

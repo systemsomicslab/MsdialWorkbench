@@ -130,7 +130,7 @@ namespace CompMs.Graphics.Chart
         private void CoerceXProperty(Type type, string hprop) {
             if (type is null
                 || string.IsNullOrEmpty(hprop)
-                || type.GetProperties().All(m => m.Name != hprop)) {
+                || !ExpressionHelper.ValidatePropertyString(type, hprop)) {
                 xLambda = null;
                 return;
             }
@@ -140,7 +140,7 @@ namespace CompMs.Graphics.Chart
         private void CoerceYProperty(Type type, string vprop) {
             if (type is null
                 || string.IsNullOrEmpty(vprop)
-                || type.GetProperties().All(m => m.Name != vprop)) {
+                || !ExpressionHelper.ValidatePropertyString(type, vprop)) {
                 yLambda = null;
                 return;
             }
