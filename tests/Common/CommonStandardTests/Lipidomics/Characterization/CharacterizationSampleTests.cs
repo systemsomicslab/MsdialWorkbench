@@ -73,23 +73,11 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
                     (nl_NS2_H2O, 0.1),
                 };
             }, .02d);
-            var search = new IdentitySearchSpace<PCCandidate>((m, scan) => new PCCandidate(m, m.Sn1CarbonCount, m.Sn1DoubleBondCount), conditions, scorer);
+            var search = new IdentitySearchSpace<PCCandidate>(pcType, conditions, scorer);
+            var characterizer = new LipidCharacterization<PCCandidate>(pcType, preConditions, search);
             var expected = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholine(scan, .02d, lipid.Mz, lipid.TotalCarbonCount, lipid.TotalDoubleBondCount, lipid.Sn1CarbonCount, lipid.TotalCarbonCount - lipid.Sn1CarbonCount, lipid.Sn1DoubleBondCount, lipid.TotalDoubleBondCount - lipid.Sn1DoubleBondCount, lipid.Adduct);
-            if (!preConditions.Satisfy(lipid)) {
-                Assert.IsNull(expected);
-                return;
-            }
-            var candidates = search.RetrieveAll(lipid, scan);
-            if (candidates is null) {
-                Assert.IsNull(expected);
-                return;
-            }
-            var actual = pcType.Convert(lipid, candidates);
-            if (expected is null) {
-                Assert.IsNull(actual);
-                return;
-            }
-            Assert.AreEqual(expected.LipidName, actual?.LipidName);
+            var actual = characterizer.Apply(lipid, scan);
+            Assert.AreEqual(expected?.LipidName, actual?.LipidName);
         }
 
         public static IEnumerable<object[]> PCCharacterizationTestData {
@@ -197,22 +185,10 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
                 };
             }, .02d);
             var search = new PCSearchSpace(6, 7, conditions, scorer);
+            var characterizer = new LipidCharacterization<PCCandidate>(pcType, preConditions, search);
             var expected = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholine(scan, .02d, lipid.Mz, lipid.TotalCarbonCount, lipid.TotalDoubleBondCount, lipid.Sn1CarbonCount, lipid.TotalCarbonCount - lipid.Sn1CarbonCount, lipid.Sn1DoubleBondCount, lipid.TotalDoubleBondCount - lipid.Sn1DoubleBondCount, lipid.Adduct);
-            if (!preConditions.Satisfy(lipid)) {
-                Assert.IsNull(expected);
-                return;
-            }
-            var candidates = search.RetrieveAll(lipid, scan);
-            if (candidates is null) {
-                Assert.IsNull(expected);
-                return;
-            }
-            var actual = pcType.Convert(lipid, candidates);
-            if (expected is null) {
-                Assert.IsNull(actual);
-                return;
-            }
-            Assert.AreEqual(expected.LipidName, actual?.LipidName);
+            var actual = characterizer.Apply(lipid, scan);
+            Assert.AreEqual(expected?.LipidName, actual?.LipidName);
         }
 
         public static IEnumerable<object[]> PCCharacterizationTest2Data {
@@ -310,22 +286,10 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
                 };
             }, .02d);
             var search = new IdentitySearchSpace<SHexCerCandidate>((m, scan) => new SHexCerCandidate(m, m.Sn1CarbonCount, m.Sn1DoubleBondCount), conditions, scorer);
+            var characterizer = new LipidCharacterization<SHexCerCandidate>(shexcerType, preConditions, search);
             var expected = LipidEieioMsmsCharacterization.JudgeIfShexcer(scan, .02d, lipid.Mz, lipid.TotalCarbonCount, lipid.TotalDoubleBondCount, lipid.Sn1CarbonCount, lipid.TotalCarbonCount - lipid.Sn1CarbonCount, lipid.Sn1DoubleBondCount, lipid.TotalDoubleBondCount - lipid.Sn1DoubleBondCount, lipid.Adduct, lipid.TotalOxidizedCount);
-            if (!preConditions.Satisfy(lipid)) {
-                Assert.IsNull(expected);
-                return;
-            }
-            var candidates = search.RetrieveAll(lipid, scan);
-            if (candidates is null) {
-                Assert.IsNull(expected);
-                return;
-            }
-            var actual = shexcerType.Convert(lipid, candidates);
-            if (expected is null) {
-                Assert.IsNull(actual);
-                return;
-            }
-            Assert.AreEqual(expected.LipidName, actual?.LipidName);
+            var actual = characterizer.Apply(lipid, scan);
+            Assert.AreEqual(expected?.LipidName, actual?.LipidName);
         }
 
         public static IEnumerable<object[]> SHexCerCharacterizationTestData {

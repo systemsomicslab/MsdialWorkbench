@@ -21,6 +21,12 @@ namespace CompMs.Common.Lipidomics.Characterization
             _scorer = scorer;
         }
 
+        public IdentitySearchSpace(ILipidType<TLipidCandidate> type, ILipidCondition<TLipidCandidate> condition, ILipidScoring<TLipidCandidate> scorer) {
+            _factory = (m, s) => type.Create(m, Array.Empty<(int, int, int)>());
+            _condition = condition;
+            _scorer = scorer;
+        }
+
         public IEnumerable<LipidMolecule> RetrieveAll(LipidMolecule lipid, IMSScanProperty scan) {
             var candidate = _factory.Invoke(lipid, scan);
             if (!_condition.Satisfy(candidate, scan)) {

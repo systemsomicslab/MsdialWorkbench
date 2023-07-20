@@ -1,4 +1,6 @@
 ﻿using CompMs.Common.Enum;
+using CompMs.Common.Interfaces;
+using System;
 
 namespace CompMs.Common.Lipidomics.Characterization
 {
@@ -61,6 +63,21 @@ namespace CompMs.Common.Lipidomics.Characterization
             else {
                 return LipidMsmsCharacterizationUtility.getCeramideoxMoleculeObjAsLevel2("SHexCer", LbmClass.SHexCer, "d", Sn1Carbon, Sn1DoubleBond, Sn2Carbon, Sn2DoubleBond, Sn2Oxidized, score.Score);
             }
+        }
+    }
+
+    internal static class LipidCandidateFactories {
+        static LipidCandidateFactories() {
+            FactoryCache<PCCandidate>.Factory = (m, _) => new PCCandidate(m, m.Sn1CarbonCount, m.Sn1DoubleBondCount);
+            FactoryCache<SHexCerCandidate>.Factory = (m, _) => new SHexCerCandidate(m, m.Sn1CarbonCount, m.Sn1DoubleBondCount);
+        }
+
+        public static Func<LipidMolecule, IMSScanProperty, T> GetFactory<T>() where T: ILipidCandidate {
+            return FactoryCache<T>.Factory;
+        }
+
+        private static class FactoryCache<T> where T: ILipidCandidate {
+            public static Func<LipidMolecule, IMSScanProperty, T> Factory;
         }
     }
 }
