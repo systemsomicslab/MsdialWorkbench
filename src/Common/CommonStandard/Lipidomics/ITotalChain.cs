@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.DataStructure;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
@@ -61,6 +62,10 @@ namespace CompMs.Common.Lipidomics
                 chains[3] = new AcylChain(lipid.Sn4CarbonCount, new DoubleBond(lipid.Sn4DoubleBondCount), new Oxidized(lipid.Sn4Oxidizedount));
             }
             return chains;
+        }
+
+        public static IEnumerable<T> GetTypedChains<T>(this ITotalChain chain) where T : IChain {
+            return chain.GetAllChains().OfType<T>();
         }
     }
 }

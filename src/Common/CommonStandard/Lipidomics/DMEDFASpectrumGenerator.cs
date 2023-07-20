@@ -77,7 +77,7 @@ namespace CompMs.Common.Lipidomics
             spectrum.AddRange(GetDMEDFASpectrum(lipid, adduct));
             if (lipid.Chains is PositionLevelChains plChains)//TBC
             {
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.GetAllChains().OfType<AcylChain>(), adduct, nlMass));
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.GetTypedChains<AcylChain>(), adduct, nlMass));
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
                 .Select(specs => new SpectrumPeak(specs.First().Mass, specs.Sum(n => n.Intensity), string.Join(", ", specs.Select(spec => spec.Comment)), specs.Aggregate(SpectrumComment.none, (a, b) => a | b.SpectrumComment)))

@@ -56,7 +56,7 @@ namespace CompMs.Common.Lipidomics
             {
                 spectrum.AddRange(GetAcylLevelSpectrum(lipid, mlChains.GetAllChains(), adduct));
                 var nlMass = adduct.AdductIonName == "[M+Na]+" ? 0.0 : adduct.AdductIonAccurateMass + H2O - MassDiffDictionary.ProtonMass;
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.GetAllChains().OfType<AcylChain>(), adduct, nlMass));
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.GetTypedChains<AcylChain>(), adduct, nlMass));
                 spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, nlMass, 200d));
             }
             if (lipid.Chains is PositionLevelChains plChains)
@@ -64,7 +64,7 @@ namespace CompMs.Common.Lipidomics
                 spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.GetAllChains(), adduct));
                 spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.GetAllChains()[0], adduct));
                 var nlMass = adduct.AdductIonName == "[M+Na]+" ? 0.0 : adduct.AdductIonAccurateMass + H2O - MassDiffDictionary.ProtonMass;
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.GetAllChains().OfType<AcylChain>(), adduct, nlMass));
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.GetTypedChains<AcylChain>(), adduct, nlMass));
                 spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, nlMass, 200d));
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)

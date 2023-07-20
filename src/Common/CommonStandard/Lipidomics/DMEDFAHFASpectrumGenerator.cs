@@ -79,13 +79,13 @@ namespace CompMs.Common.Lipidomics
             {
                 spectrum.AddRange(GetAcylLevelSpectrum(lipid, (AcylChain)mlChains.GetAllChains()[1], adduct));
                 spectrum.AddRange(GetOxPositionSpectrum(lipid, (AcylChain)mlChains.GetAllChains()[1], adduct));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.GetAllChains().OfType<AcylChain>(), adduct, nlMass));
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.GetTypedChains<AcylChain>(), adduct, nlMass));
             }
             if (lipid.Chains is PositionLevelChains plChains)
             {
                 spectrum.AddRange(GetAcylLevelSpectrum(lipid, (AcylChain)plChains.GetAllChains()[1], adduct));
                 spectrum.AddRange(GetOxPositionSpectrum(lipid, (AcylChain)plChains.GetAllChains()[1], adduct));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.GetAllChains().OfType<AcylChain>(), adduct, nlMass));
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.GetTypedChains<AcylChain>(), adduct, nlMass));
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
                 .Select(specs => new SpectrumPeak(specs.First().Mass, specs.Sum(n => n.Intensity), string.Join(", ", specs.Select(spec => spec.Comment)), specs.Aggregate(SpectrumComment.none, (a, b) => a | b.SpectrumComment)))

@@ -96,13 +96,13 @@ namespace CompMs.Common.Lipidomics
                 spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.GetAllChains(), adduct));
                 spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.GetAllChains()[0], adduct));
                 spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, 0d, 250d));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.GetAllChains().OfType<AcylChain>(), adduct));
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.GetTypedChains<AcylChain>(), adduct));
             }
             if (lipid.Chains is MolecularSpeciesLevelChains mlChains)
             {
                 spectrum.AddRange(GetAcylLevelSpectrum(lipid, mlChains.GetAllChains(), adduct));
                 spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, 0d, 250d));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.GetAllChains().OfType<AcylChain>(), adduct));
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.GetTypedChains<AcylChain>(), adduct));
             }
             //spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains));
             //spectrum.AddRange(GetAcylPositionSpectrum(lipid, lipid.Chains[0]));
