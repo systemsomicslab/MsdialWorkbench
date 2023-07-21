@@ -169,6 +169,7 @@ namespace CompMs.Common.Lipidomics.Characterization
         /// <param name="snPosition">1-indexed sn-position</param>
         /// <returns></returns>
         public static LipidCandidatePlaceholder AcylChainMass(int snPosition) => new LipidCandidatePlaceholder(c => LipidMsmsCharacterizationUtility.acylCainMass(c.GetCarbon(snPosition), c.GetDoubleBond(snPosition)) + c.GetOxidized(snPosition) * MassDiffDictionary.OxygenMass);
+        public static LipidCandidatePlaceholder AcylChainNeutralLoss(int snPosition) => new LipidCandidatePlaceholder(c => LipidMsmsCharacterizationUtility.acylCainMass(c.GetCarbon(snPosition), c.GetDoubleBond(snPosition)) + c.GetOxidized(snPosition) * MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass);
 
         private readonly Func<ILipidCandidate, double> _getter;
 

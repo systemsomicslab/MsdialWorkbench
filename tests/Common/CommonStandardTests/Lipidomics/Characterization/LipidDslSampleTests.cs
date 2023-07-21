@@ -42,9 +42,9 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
             }.Sum();
 
             var theoreticalMz = LipidCandidatePlaceholder.PrecurosrMz;
-            var nl_SN1 = theoreticalMz - LipidCandidatePlaceholder.AcylChainMass(1) + MassDiffDictionary.HydrogenMass;
+            var nl_SN1 = theoreticalMz - LipidCandidatePlaceholder.AcylChainNeutralLoss(1);
             var nl_SN1_H2O = nl_SN1 - MassDiffDictionary.HydrogenMass * 2 - MassDiffDictionary.OxygenMass;
-            var nl_SN2 = theoreticalMz - LipidCandidatePlaceholder.AcylChainMass(2) + MassDiffDictionary.HydrogenMass;
+            var nl_SN2 = theoreticalMz - LipidCandidatePlaceholder.AcylChainNeutralLoss(2);
             var nl_NS2_H2O = nl_SN2 - MassDiffDictionary.HydrogenMass * 2 - MassDiffDictionary.OxygenMass;
 
             var characterizer = new PCLipidType()
@@ -241,7 +241,7 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
             var diagnosticMz1 = diagnosticMz - (MassDiffDictionary.SulfurMass + 3 * MassDiffDictionary.OxygenMass + (MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.OxygenMass) + electron);
             // seek [M-H2O-SO3-C6H10O5+H]+
             var diagnosticMz2 = diagnosticMz1 - 162.052833;
-            var sph1 = diagnosticMz2 - LipidCandidatePlaceholder.AcylChainMass(2) + MassDiffDictionary.HydrogenMass;
+            var sph1 = diagnosticMz2 - LipidCandidatePlaceholder.AcylChainNeutralLoss(2);
             var sph2 = sph1 - (MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.OxygenMass);
             var sph3 = sph2 - 12;
             var characterizer = new SHexCerLipidType()
