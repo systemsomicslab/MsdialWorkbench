@@ -1,4 +1,5 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.App.Msdial.Model.Service;
+using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using System;
 using System.ComponentModel;
@@ -99,6 +100,12 @@ namespace CompMs.App.Msdial.Model.DataObj
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+
+        public void SetUnknown(UndoManager undoManager) {
+            IDoCommand command = new SetUnknownDoCommand(Molecule, MatchResults);
+            command.Do();
+            undoManager.Add(command);
         }
 
         MsScanMatchResultContainer IAnnotatedObject.MatchResults => _spectrumFeature.AnnotatedMSDecResult.MatchResults;

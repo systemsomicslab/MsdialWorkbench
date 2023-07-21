@@ -7,7 +7,9 @@ using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System.Reactive.Linq;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Gcms
@@ -33,6 +35,10 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
             var moleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
             PeakDetailViewModels = new ViewModelBase[] { peakInformationViewModel, compoundDetailViewModel, moleculeStructureViewModel, matchResultCandidatesViewModel, };
+
+            SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
+            UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
+            PeakTableViewModel = new GcmsAnalysisPeakTableViewModel(model.PeakTableModel, Observable.Return(model.EicLoader), PeakSpotNavigatorViewModel, SetUnknownCommand, UndoManagerViewModel).AddTo(Disposables);
         }
 
         public IResultModel Model => _model;
@@ -53,8 +59,9 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 
         public ICommand ShowIonTableCommand => null;
 
-        public ICommand SetUnknownCommand => null;
+        public ICommand SetUnknownCommand { get; }
 
-        public UndoManagerViewModel UndoManagerViewModel => null;
+        public UndoManagerViewModel UndoManagerViewModel { get; }
+        public GcmsAnalysisPeakTableViewModel PeakTableViewModel { get; }
     }
 }

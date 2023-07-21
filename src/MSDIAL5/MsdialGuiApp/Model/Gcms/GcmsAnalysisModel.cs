@@ -5,6 +5,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
@@ -42,6 +43,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             _disposables = new CompositeDisposable();
             _spectrumFeatures = file.LoadMs1BasedSpectrumFeatureCollection().AddTo(_disposables);
             _peaks =  file.LoadChromatogramPeakFeatureModels();
+            UndoManager = new UndoManager().AddTo(_disposables);
 
             var evaluator = FacadeMatchResultEvaluator.FromDataBases(dbStorage);
 
@@ -58,7 +60,8 @@ namespace CompMs.App.Msdial.Model.Gcms
             IDataProvider provider = providerFactory.Create(file);
             // Eic chart
             var eicLoader = new QuantMassEicLoader(file.File, provider, peakPickParameter, projectParameter.IonMode, ChromXType.RT, ChromXUnit.Min, peakPickParameter.RetentionTimeBegin, peakPickParameter.RetentionTimeEnd, isConstantRange: true); // TODO: Not only RT, but also RI.
-            //var tableEicLoader = new QuantMassEicLoader(file.File, provider, peakPickParameter, projectParameter.IonMode, ChromXType.RT, ChromXUnit.Min, peakPickParameter.RetentionTimeBegin, peakPickParameter.RetentionTimeEnd, isConstantRange: false);
+            var tableEicLoader = new QuantMassEicLoader(file.File, provider, peakPickParameter, projectParameter.IonMode, ChromXType.RT, ChromXUnit.Min, peakPickParameter.RetentionTimeBegin, peakPickParameter.RetentionTimeEnd, isConstantRange: false); // TODO: Not only RT, but also RI.
+            EicLoader = tableEicLoader;
             EicModel = EicModel.Create(selectedSpectrum, eicLoader, string.Empty, string.Empty, string.Empty).AddTo(_disposables);
             EicModel.VerticalTitle = "Abundance";
             PeakPlotModel.HorizontalLabel.Subscribe(label => EicModel.HorizontalTitle = label).AddTo(_disposables);
@@ -159,6 +162,8 @@ namespace CompMs.App.Msdial.Model.Gcms
             var moleculeStructureModel = new MoleculeStructureModel().AddTo(_disposables);
             MoleculeStructureModel = moleculeStructureModel;
             selectedSpectrum.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.GetCurrentSpectrumFeature().AnnotatedMSDecResult.Molecule)).AddTo(_disposables);
+
+            PeakTableModel = new GcmsAnalysisPeakTableModel(PeakPlotModel.Spectra, selectedSpectrum, PeakSpotNavigatorModel);
         }
 
         public SpectrumFeaturePlotModel PeakPlotModel { get; }
@@ -169,11 +174,17 @@ namespace CompMs.App.Msdial.Model.Gcms
 
         public ReactivePropertySlim<int> NumberOfEIChromatograms { get; }
         public SurveyScanModel SurveyScanModel { get; }
+        public IChromatogramLoader<Ms1BasedSpectrumFeature> EicLoader { get; }
         public EicModel EicModel { get; }
         public PeakInformationMs1BasedModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
         public MoleculeStructureModel MoleculeStructureModel { get; }
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
+        public GcmsAnalysisPeakTableModel PeakTableModel { get; }
+        public UndoManager UndoManager { get; }
+
+        public IObservable<bool> CanSetUnknown => PeakPlotModel.SelectedSpectrum.Select(t => !(t is null));
+        public void SetUnknown() => PeakPlotModel.SelectedSpectrum.Value?.SetUnknown(UndoManager);
 
         // IAnalysisModel interface
         Task IAnalysisModel.SaveAsync(CancellationToken token) {
