@@ -121,41 +121,35 @@ namespace CompMs.Common.Lipidomics.Characterization
         private readonly Func<double, ILipidCondition<TLipidCandidate>>[] _conditions;
         private readonly Func<double, ILipidScoring<TLipidCandidate>> _scoring;
         private readonly Func<ILipidCondition<TLipidCandidate>, ILipidScoring<TLipidCandidate>, ILipidSearchSpace> _search;
-        private readonly double _tolerance;
 
-        private LipidCharacterizationDsl(ILipidType<TLipidCandidate> type, ILipidPreCondition[] preConditions, Func<double, ILipidCondition<TLipidCandidate>>[] conditionsZZZ, Func<double, ILipidScoring<TLipidCandidate>> scoringZZZ, Func<ILipidCondition<TLipidCandidate>, ILipidScoring<TLipidCandidate>, ILipidSearchSpace> search, double tolerance) {
+        private LipidCharacterizationDsl(ILipidType<TLipidCandidate> type, ILipidPreCondition[] preConditions, Func<double, ILipidCondition<TLipidCandidate>>[] conditionsZZZ, Func<double, ILipidScoring<TLipidCandidate>> scoringZZZ, Func<ILipidCondition<TLipidCandidate>, ILipidScoring<TLipidCandidate>, ILipidSearchSpace> search) {
             _type = type;
             _preConditions = preConditions;
             _search = search;
-            _tolerance = tolerance;
             _conditions = conditionsZZZ;
             _scoring = scoringZZZ;
         }
 
         public LipidCharacterizationDsl<TLipidCandidate> Append(ILipidPreCondition preCondition) {
-            return new LipidCharacterizationDsl<TLipidCandidate>(_type, _preConditions.Append(preCondition).ToArray(), _conditions, _scoring, _search, _tolerance);
+            return new LipidCharacterizationDsl<TLipidCandidate>(_type, _preConditions.Append(preCondition).ToArray(), _conditions, _scoring, _search);
         }
 
         public LipidCharacterizationDsl<TLipidCandidate> Append(Func<double, ILipidCondition<TLipidCandidate>> condition) {
-            return new LipidCharacterizationDsl<TLipidCandidate>(_type, _preConditions, _conditions.Append(condition).ToArray(), _scoring, _search, _tolerance);
+            return new LipidCharacterizationDsl<TLipidCandidate>(_type, _preConditions, _conditions.Append(condition).ToArray(), _scoring, _search);
         }
 
         public LipidCharacterizationDsl<TLipidCandidate> Set(Func<double, ILipidScoring<TLipidCandidate>> scoring) {
-            return new LipidCharacterizationDsl<TLipidCandidate>(_type, _preConditions, _conditions, scoring, _search, _tolerance);
+            return new LipidCharacterizationDsl<TLipidCandidate>(_type, _preConditions, _conditions, scoring, _search);
         }
 
         public LipidCharacterizationDsl<TLipidCandidate> Set(Func<ILipidType<TLipidCandidate>, ILipidCondition<TLipidCandidate>, ILipidScoring<TLipidCandidate>, ILipidSearchSpace> search) {
-            return new LipidCharacterizationDsl<TLipidCandidate>(_type, _preConditions, _conditions, _scoring, (c, s) => search(_type, c, s), _tolerance);
-        }
-
-        public LipidCharacterizationDsl<TLipidCandidate> SetTolerance(double tolerance) {
-            return new LipidCharacterizationDsl<TLipidCandidate>(_type, _preConditions, _conditions, _scoring, _search, tolerance);
+            return new LipidCharacterizationDsl<TLipidCandidate>(_type, _preConditions, _conditions, _scoring, (c, s) => search(_type, c, s));
         }
 
         public ILipidCharacterization Compile() {
             var preConditions = _preConditions.Length == 1 ? _preConditions[0] : new MergePreCondition(_preConditions);
-            var conditions = _conditions.Length == 1 ? _conditions[0](_tolerance) : new MergeCondition<TLipidCandidate>(_conditions.Select(c => c(_tolerance)).ToArray());
-            return new LipidCharacterization<TLipidCandidate>(_type, preConditions, _search(conditions, _scoring(_tolerance)));
+            var conditions = _conditions.Length == 1 ? (Func<double, ILipidCondition<TLipidCandidate>>)(tolerance => _conditions[0](tolerance)) : (tolerance => new MergeCondition<TLipidCandidate>(_conditions.Select(c => c(tolerance)).ToArray()));
+            return new LipidCharacterization<TLipidCandidate>(_type, preConditions, tolerance => _search(conditions(tolerance), _scoring(tolerance)));
         }
 
         public static LipidCharacterizationDsl<TLipidCandidate> From(ILipidType<TLipidCandidate> type) {
@@ -163,8 +157,7 @@ namespace CompMs.Common.Lipidomics.Characterization
                 Array.Empty<ILipidPreCondition>(),
                 Array.Empty<Func<double, ILipidCondition<TLipidCandidate>>>(),
                 _ => new LipidScoring<TLipidCandidate>(c => Array.Empty<(double, double)>(), .02d),
-                (c, s) => new IdentitySearchSpace<TLipidCandidate>(type, c, s),
-                .025d);
+                (c, s) => new IdentitySearchSpace<TLipidCandidate>(type, c, s));
         }
     }
 

@@ -52,7 +52,6 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
                 .IsPositive()
                 .HasAdduct("[M+H]+")
                 .IsValidMolecule(c => c.Sn1Carbon >= 10 && c.Sn1DoubleBond <= 6)
-                .SetTolerance(.02d)
                 .ExistAll(_ => new[] {
                     (C5H15NO4P, 3d),
                     (Gly_C, 3d),
@@ -70,7 +69,7 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
                 )
                 .Just()
                 .Compile();
-            var actual = characterizer.Apply(lipid, scan);
+            var actual = characterizer.Apply(lipid, scan, .02d);
             var expected = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholine(scan, .02d, lipid.Mz, lipid.TotalCarbonCount, lipid.TotalDoubleBondCount, lipid.Sn1CarbonCount, lipid.TotalCarbonCount - lipid.Sn1CarbonCount, lipid.Sn1DoubleBondCount, lipid.TotalDoubleBondCount - lipid.Sn1DoubleBondCount, lipid.Adduct);
             Assert.AreEqual(expected?.LipidName, actual?.LipidName);
         }
@@ -156,7 +155,6 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
                 .IsPositive()
                 .HasAdduct("[M+Na]+")
                 .IsValidMolecule(c => c.Sn1DoubleBond <= 6)
-                .SetTolerance(.02d)
                 .ExistAny(
                     (diagnosticMz2, 3d),
                     (diagnosticMz3, 3d)
@@ -169,7 +167,7 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
                 )
                 .FromRange(6, 7)
                 .Compile();
-            var actual = characterizer.Apply(lipid, scan);
+            var actual = characterizer.Apply(lipid, scan, .02d);
             var expected = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholine(scan, .02d, lipid.Mz, lipid.TotalCarbonCount, lipid.TotalDoubleBondCount, lipid.Sn1CarbonCount, lipid.TotalCarbonCount - lipid.Sn1CarbonCount, lipid.Sn1DoubleBondCount, lipid.TotalDoubleBondCount - lipid.Sn1DoubleBondCount, lipid.Adduct);
             Assert.AreEqual(expected?.LipidName, actual?.LipidName);
         }
@@ -250,7 +248,6 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
                 .DefineRules()
                 .IsPositive()
                 .HasAdduct("[M+H]+", "[M+NH4]+")
-                .SetTolerance(.02d)
                 .ExistAny(
                     (diagnosticMz1, 1d),
                     (diagnosticMz2, 1d)
@@ -262,7 +259,7 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
                 )
                 .Just()
                 .Compile();
-            var actual = characterizer.Apply(lipid, scan);
+            var actual = characterizer.Apply(lipid, scan, .02d);
             var expected = LipidEieioMsmsCharacterization.JudgeIfShexcer(scan, .02d, lipid.Mz, lipid.TotalCarbonCount, lipid.TotalDoubleBondCount, lipid.Sn1CarbonCount, lipid.TotalCarbonCount - lipid.Sn1CarbonCount, lipid.Sn1DoubleBondCount, lipid.TotalDoubleBondCount - lipid.Sn1DoubleBondCount, lipid.Adduct, lipid.TotalOxidizedCount);
             Assert.AreEqual(expected?.LipidName, actual?.LipidName);
         }

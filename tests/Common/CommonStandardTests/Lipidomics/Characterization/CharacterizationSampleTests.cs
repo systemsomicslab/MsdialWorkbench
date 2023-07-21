@@ -74,9 +74,9 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
                 };
             }, .02d);
             var search = new IdentitySearchSpace<PCCandidate>(pcType, conditions, scorer);
-            var characterizer = new LipidCharacterization<PCCandidate>(pcType, preConditions, search);
+            var characterizer = new LipidCharacterization<PCCandidate>(pcType, preConditions, _ => search);
             var expected = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholine(scan, .02d, lipid.Mz, lipid.TotalCarbonCount, lipid.TotalDoubleBondCount, lipid.Sn1CarbonCount, lipid.TotalCarbonCount - lipid.Sn1CarbonCount, lipid.Sn1DoubleBondCount, lipid.TotalDoubleBondCount - lipid.Sn1DoubleBondCount, lipid.Adduct);
-            var actual = characterizer.Apply(lipid, scan);
+            var actual = characterizer.Apply(lipid, scan, .02d);
             Assert.AreEqual(expected?.LipidName, actual?.LipidName);
         }
 
@@ -185,9 +185,9 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
                 };
             }, .02d);
             var search = new PCSearchSpace(6, 7, conditions, scorer);
-            var characterizer = new LipidCharacterization<PCCandidate>(pcType, preConditions, search);
+            var characterizer = new LipidCharacterization<PCCandidate>(pcType, preConditions, _ => search);
             var expected = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholine(scan, .02d, lipid.Mz, lipid.TotalCarbonCount, lipid.TotalDoubleBondCount, lipid.Sn1CarbonCount, lipid.TotalCarbonCount - lipid.Sn1CarbonCount, lipid.Sn1DoubleBondCount, lipid.TotalDoubleBondCount - lipid.Sn1DoubleBondCount, lipid.Adduct);
-            var actual = characterizer.Apply(lipid, scan);
+            var actual = characterizer.Apply(lipid, scan, .02d);
             Assert.AreEqual(expected?.LipidName, actual?.LipidName);
         }
 
@@ -286,9 +286,9 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
                 };
             }, .02d);
             var search = new IdentitySearchSpace<SHexCerCandidate>((m, scan) => new SHexCerCandidate(m, m.Sn1CarbonCount, m.Sn1DoubleBondCount), conditions, scorer);
-            var characterizer = new LipidCharacterization<SHexCerCandidate>(shexcerType, preConditions, search);
+            var characterizer = new LipidCharacterization<SHexCerCandidate>(shexcerType, preConditions, _ => search);
             var expected = LipidEieioMsmsCharacterization.JudgeIfShexcer(scan, .02d, lipid.Mz, lipid.TotalCarbonCount, lipid.TotalDoubleBondCount, lipid.Sn1CarbonCount, lipid.TotalCarbonCount - lipid.Sn1CarbonCount, lipid.Sn1DoubleBondCount, lipid.TotalDoubleBondCount - lipid.Sn1DoubleBondCount, lipid.Adduct, lipid.TotalOxidizedCount);
-            var actual = characterizer.Apply(lipid, scan);
+            var actual = characterizer.Apply(lipid, scan, .02d);
             Assert.AreEqual(expected?.LipidName, actual?.LipidName);
         }
 
