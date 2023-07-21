@@ -18490,6 +18490,13 @@ AdductIon adduct)
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
+                    //  seek -44(CO2 loss)
+                    var threshold2 = 0.5;
+                    var diagnosticMz2 = theoreticalMz - 12- MassDiffDictionary.OxygenMass * 2;
+                    var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
+                    if (isClassIonFound2 == false) return null;
+
+
                     var candidates = new List<LipidMolecule>();
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("NALeu", LbmClass.NALeu, "", theoreticalMz, adduct,
