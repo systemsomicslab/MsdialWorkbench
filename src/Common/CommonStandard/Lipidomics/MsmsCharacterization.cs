@@ -18318,7 +18318,7 @@ AdductIon adduct)
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
-                    if (isClassIonFound == false||isClassIon2Found == false) return null;
+                    if (isClassIonFound == false || isClassIon2Found == false) return null;
 
                     var candidates = new List<LipidMolecule>();
 
@@ -18396,7 +18396,7 @@ AdductIon adduct)
                 }
             }
             else if (adduct.IonMode == IonMode.Negative)
-            { 
+            {
                 if (adduct.AdductIonName == "[M-H]-")
                 {
                     //  seek 88 (Ala-)
@@ -18438,7 +18438,7 @@ AdductIon adduct)
                 }
             }
             else if (adduct.IonMode == IonMode.Negative)
-            { 
+            {
                 if (adduct.AdductIonName == "[M-H]-")
                 {
                     //  seek 145 (Gln-)
@@ -18480,7 +18480,7 @@ AdductIon adduct)
                 }
             }
             else if (adduct.IonMode == IonMode.Negative)
-            { 
+            {
                 if (adduct.AdductIonName == "[M-H]-")
                 {
                     //  seek 130.08 (Leu)
@@ -18522,7 +18522,7 @@ AdductIon adduct)
                 }
             }
             else if (adduct.IonMode == IonMode.Negative)
-            { 
+            {
                 if (adduct.AdductIonName == "[M-H]-")
                 {
                     //  seek 116.07 (Val)
@@ -18564,7 +18564,7 @@ AdductIon adduct)
                 }
             }
             else if (adduct.IonMode == IonMode.Negative)
-            { 
+            {
                 if (adduct.AdductIonName == "[M-H]-")
                 {
                     //  seek 104.04 (Ser)
@@ -18739,7 +18739,7 @@ AdductIon adduct)
                 }
             }
             if (adduct.IonMode == IonMode.Negative)
-            { 
+            {
                 if (adduct.AdductIonName == "[M-H]-")
                 {
                     //  seek "[GABA]-"; // 102
@@ -18756,6 +18756,32 @@ AdductIon adduct)
                     var candidates = new List<LipidMolecule>();
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("NAGABA", LbmClass.NAGABA, "", theoreticalMz, adduct,
+                    totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
+                }
+            }
+            return null;
+        }
+        //20230721
+        public static LipidMolecule JudgeIfNAcylAnthranilicacid(IMSScanProperty msScanProp, double ms2Tolerance,
+        double theoreticalMz, int totalCarbon, int totalDoubleBond, int totalOxidized,
+        AdductIon adduct)
+        {
+            var spectrum = msScanProp.Spectrum;
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (adduct.IonMode == IonMode.Negative)
+            {
+                if (adduct.AdductIonName == "[M-H]-")
+                {
+                    //  seek 120 (Anthranilic acid)
+                    var threshold = 20.0;
+                    var diagnosticMz = 12 * 7 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 7 - Proton;
+
+                    var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    if (isClassIonFound == false) return null;
+
+                    var candidates = new List<LipidMolecule>();
+
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("NAAnt", LbmClass.NAAnt, "", theoreticalMz, adduct,
                     totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
                 }
             }

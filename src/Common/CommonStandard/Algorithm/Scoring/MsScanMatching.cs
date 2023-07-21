@@ -2183,6 +2183,9 @@ namespace CompMs.Common.Algorithm.Scoring
                 case LbmClass.NASer:
                     return LipidMsmsCharacterization.JudgeIfNAcylSer(msScanProp, ms2tol, refMz,
                      totalCarbon, totalDbBond, totalOxidized, adduct);
+                case LbmClass.NAAnt:
+                    return LipidMsmsCharacterization.JudgeIfNAcylAnthranilicacid(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
                 case LbmClass.BisMeLPA:
                     return LipidMsmsCharacterization.JudgeIfBismelpa(msScanProp, ms2tol, refMz,
                      totalCarbon, totalDbBond, totalOxidized, adduct);
@@ -2997,6 +3000,9 @@ namespace CompMs.Common.Algorithm.Scoring
                      totalCarbon, totalDbBond, totalOxidized, adduct);
                 case LbmClass.NASer:
                     return LipidMsmsCharacterization.JudgeIfNAcylSer(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
+                case LbmClass.NAAnt:
+                    return LipidMsmsCharacterization.JudgeIfNAcylAnthranilicacid(msScanProp, ms2tol, refMz,
                      totalCarbon, totalDbBond, totalOxidized, adduct);
                 case LbmClass.BisMeLPA:
                     return LipidMsmsCharacterization.JudgeIfBismelpa(msScanProp, ms2tol, refMz,
