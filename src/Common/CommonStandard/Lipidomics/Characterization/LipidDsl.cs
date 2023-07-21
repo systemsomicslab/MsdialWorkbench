@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompMs.Common.FormulaGenerator.DataObj;
+using System;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics.Characterization
@@ -33,12 +34,28 @@ namespace CompMs.Common.Lipidomics.Characterization
             return dsl.Append(t => new FragmentsExistAllCondition<T>(factory, t));
         }
 
+        public static LipidCharacterizationDsl<T> ExistAll<T>(this LipidCharacterizationDsl<T> dsl, double tolerance, (LipidCandidatePlaceholder mz, double threshold)[] ions) where T: ILipidCandidate {
+            return dsl.Append(_ => new FragmentsExistAllCondition<T>(c => ions.Select(pair => (pair.mz.Apply(c), pair.threshold)).ToArray(), tolerance));
+        }
+
+        public static LipidCharacterizationDsl<T> ExistAll<T>(this LipidCharacterizationDsl<T> dsl, (LipidCandidatePlaceholder mz, double threshold)[] ions) where T: ILipidCandidate {
+            return dsl.Append(t => new FragmentsExistAllCondition<T>(c => ions.Select(pair => (pair.mz.Apply(c), pair.threshold)).ToArray(), t));
+        }
+
         public static LipidCharacterizationDsl<T> ExistAny<T>(this LipidCharacterizationDsl<T> dsl, double tolerance, Func<T, (double mz, double threshold)[]> factory) where T: ILipidCandidate {
             return dsl.Append(_ => new FragmentsExistAnyCondition<T>(factory, tolerance));
         }
 
         public static LipidCharacterizationDsl<T> ExistAny<T>(this LipidCharacterizationDsl<T> dsl, Func<T, (double mz, double threshold)[]> factory) where T: ILipidCandidate {
             return dsl.Append(t => new FragmentsExistAnyCondition<T>(factory, t));
+        }
+
+        public static LipidCharacterizationDsl<T> ExistAny<T>(this LipidCharacterizationDsl<T> dsl, double tolerance, params (LipidCandidatePlaceholder mz, double threshold)[] ions) where T: ILipidCandidate {
+            return dsl.Append(_ => new FragmentsExistAnyCondition<T>(c => ions.Select(pair => (pair.mz.Apply(c), pair.threshold)).ToArray(), tolerance));
+        }
+
+        public static LipidCharacterizationDsl<T> ExistAny<T>(this LipidCharacterizationDsl<T> dsl, params (LipidCandidatePlaceholder mz, double threshold)[] ions) where T: ILipidCandidate {
+            return dsl.Append(t => new FragmentsExistAnyCondition<T>(c => ions.Select(pair => (pair.mz.Apply(c), pair.threshold)).ToArray(), t));
         }
 
         public static LipidCharacterizationDsl<T> NotExist<T>(this LipidCharacterizationDsl<T> dsl, double tolerance, Func<T, (double mz, double threshold)[]> factory) where T: ILipidCandidate {
@@ -49,6 +66,14 @@ namespace CompMs.Common.Lipidomics.Characterization
             return dsl.Append(t => new FragmentsNotExistCondition<T>(factory, t));
         }
 
+        public static LipidCharacterizationDsl<T> NotExist<T>(this LipidCharacterizationDsl<T> dsl, double tolerance, params (LipidCandidatePlaceholder mz, double threshold)[] ions) where T: ILipidCandidate {
+            return dsl.Append(_ => new FragmentsNotExistCondition<T>(c => ions.Select(pair => (pair.mz.Apply(c), pair.threshold)).ToArray(), tolerance));
+        }
+
+        public static LipidCharacterizationDsl<T> NotExist<T>(this LipidCharacterizationDsl<T> dsl, params (LipidCandidatePlaceholder mz, double threshold)[] ions) where T: ILipidCandidate {
+            return dsl.Append(t => new FragmentsNotExistCondition<T>(c => ions.Select(pair => (pair.mz.Apply(c), pair.threshold)).ToArray(), t));
+        }
+
         public static LipidCharacterizationDsl<T> GreaterThan<T>(this LipidCharacterizationDsl<T> dsl, double tolerance, Func<T, double> greater, Func<T, double> less) where T: ILipidCandidate {
             return dsl.Append(_ => new FragmentsGreaterThanCondition<T>(greater, less, tolerance));
         }
@@ -57,12 +82,28 @@ namespace CompMs.Common.Lipidomics.Characterization
             return dsl.Append(t => new FragmentsGreaterThanCondition<T>(greater, less, t));
         }
 
+        public static LipidCharacterizationDsl<T> GreaterThan<T>(this LipidCharacterizationDsl<T> dsl, double tolerance, LipidCandidatePlaceholder greater, LipidCandidatePlaceholder less) where T: ILipidCandidate {
+            return dsl.Append(_ => new FragmentsGreaterThanCondition<T>(c => greater.Apply(c), c => less.Apply(c), tolerance));
+        }
+
+        public static LipidCharacterizationDsl<T> GreaterThan<T>(this LipidCharacterizationDsl<T> dsl, LipidCandidatePlaceholder greater, LipidCandidatePlaceholder less) where T: ILipidCandidate {
+            return dsl.Append(t => new FragmentsGreaterThanCondition<T>(c => greater.Apply(c), c => less.Apply(c), t));
+        }
+
         public static LipidCharacterizationDsl<T> ScoreBy<T>(this LipidCharacterizationDsl<T> dsl, double tolerance, Func<T, (double mz, double threahold)[]> factory) where T : ILipidCandidate {
             return dsl.Set(_ => new LipidScoring<T>(factory, tolerance));
         }
 
         public static LipidCharacterizationDsl<T> ScoreBy<T>(this LipidCharacterizationDsl<T> dsl, Func<T, (double mz, double threahold)[]> factory) where T : ILipidCandidate {
             return dsl.Set(t => new LipidScoring<T>(factory, t));
+        }
+
+        public static LipidCharacterizationDsl<T> ScoreBy<T>(this LipidCharacterizationDsl<T> dsl, double tolerance, params (LipidCandidatePlaceholder mz, double threahold)[] ions) where T : ILipidCandidate {
+            return dsl.Set(_ => new LipidScoring<T>(c => ions.Select(pair => (pair.mz.Apply(c), pair.threahold)).ToArray(), tolerance));
+        }
+
+        public static LipidCharacterizationDsl<T> ScoreBy<T>(this LipidCharacterizationDsl<T> dsl, params (LipidCandidatePlaceholder mz, double threahold)[] ions) where T : ILipidCandidate {
+            return dsl.Set(t => new LipidScoring<T>(c => ions.Select(pair => (pair.mz.Apply(c), pair.threahold)).ToArray(), t));
         }
 
         public static LipidCharacterizationDsl<T> Just<T>(this LipidCharacterizationDsl<T> dsl) where T: ILipidCandidate {
@@ -124,6 +165,46 @@ namespace CompMs.Common.Lipidomics.Characterization
                 _ => new LipidScoring<TLipidCandidate>(c => Array.Empty<(double, double)>(), .02d),
                 (c, s) => new IdentitySearchSpace<TLipidCandidate>(type, c, s),
                 .025d);
+        }
+    }
+
+    internal sealed class LipidCandidatePlaceholder {
+        public static LipidCandidatePlaceholder PrecurosrMz { get; } = new LipidCandidatePlaceholder(c => c.SourceLipid.Mz);
+        /// <summary>
+        /// Get placeholder of acylchain -C(=O)-(CH2)n-CH3
+        /// </summary>
+        /// <param name="snPosition">1-indexed sn-position</param>
+        /// <returns></returns>
+        public static LipidCandidatePlaceholder AcylChainMass(int snPosition) => new LipidCandidatePlaceholder(c => LipidMsmsCharacterizationUtility.acylCainMass(c.GetCarbon(snPosition), c.GetDoubleBond(snPosition)) + c.GetOxidized(snPosition) * MassDiffDictionary.OxygenMass);
+
+        private readonly Func<ILipidCandidate, double> _getter;
+
+        public LipidCandidatePlaceholder(Func<ILipidCandidate, double> getter) {
+            _getter = getter;
+        }
+
+        public double Apply(ILipidCandidate candidate) {
+            return _getter.Invoke(candidate);
+        }
+
+        public static implicit operator LipidCandidatePlaceholder(double value) {
+            return new LipidCandidatePlaceholder(_ => value);
+        }
+
+        public static LipidCandidatePlaceholder operator +(LipidCandidatePlaceholder lhs, LipidCandidatePlaceholder rhs) {
+            return new LipidCandidatePlaceholder(x => lhs._getter(x) + rhs._getter(x));
+        }
+
+        public static LipidCandidatePlaceholder operator -(LipidCandidatePlaceholder lhs, LipidCandidatePlaceholder rhs) {
+            return new LipidCandidatePlaceholder(x => lhs._getter(x) - rhs._getter(x));
+        }
+
+        public static LipidCandidatePlaceholder operator *(LipidCandidatePlaceholder lhs, double rhs) {
+            return new LipidCandidatePlaceholder(x => lhs._getter(x) * rhs);
+        }
+
+        public static LipidCandidatePlaceholder operator /(LipidCandidatePlaceholder lhs, double rhs) {
+            return new LipidCandidatePlaceholder(x => lhs._getter(x) / rhs);
         }
     }
 }

@@ -41,6 +41,12 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
                 MassDiffDictionary.ProtonMass,
             }.Sum();
 
+            var theoreticalMz = LipidCandidatePlaceholder.PrecurosrMz;
+            var nl_SN1 = theoreticalMz - LipidCandidatePlaceholder.AcylChainMass(1) + MassDiffDictionary.HydrogenMass;
+            var nl_SN1_H2O = nl_SN1 - MassDiffDictionary.HydrogenMass * 2 - MassDiffDictionary.OxygenMass;
+            var nl_SN2 = theoreticalMz - LipidCandidatePlaceholder.AcylChainMass(2) + MassDiffDictionary.HydrogenMass;
+            var nl_NS2_H2O = nl_SN2 - MassDiffDictionary.HydrogenMass * 2 - MassDiffDictionary.OxygenMass;
+
             var characterizer = new PCLipidType()
                 .DefineRules()
                 .IsPositive()
@@ -52,25 +58,16 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
                     (Gly_C, 3d),
                     (Gly_O, 3d),
                 })
-                .NotExist(c => new[] {
-                    (c.Lipid.Mz - 59.0735, 10d),
-                    (c.Lipid.Mz - 141.019094261, 5d),
-                })
-                .ScoreBy(c => {
-                    var theoreticalMz = c.Lipid.Mz;
-                    var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(c.Sn1Carbon, c.Sn1DoubleBond) + MassDiffDictionary.HydrogenMass;
-                    var nl_SN1_H2O = nl_SN1 - MassDiffDictionary.HydrogenMass * 2 - MassDiffDictionary.OxygenMass;
-
-                    var nl_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(c.Sn2Carbon, c.Sn2DoubleBond) + MassDiffDictionary.HydrogenMass;
-                    var nl_NS2_H2O = nl_SN2 - MassDiffDictionary.HydrogenMass * 2 - MassDiffDictionary.OxygenMass;
-                    return new[]
-                    {
-                        (nl_SN1, 0.1),
-                        (nl_SN1_H2O, 0.1),
-                        (nl_SN2, 0.1),
-                        (nl_NS2_H2O, 0.1),
-                    };
-                })
+                .NotExist(
+                    (theoreticalMz - 59.0735, 10d),
+                    (theoreticalMz - 141.019094261, 5d)
+                )
+                .ScoreBy(
+                    (nl_SN1, 0.1),
+                    (nl_SN1_H2O, 0.1),
+                    (nl_SN2, 0.1),
+                    (nl_NS2_H2O, 0.1)
+                )
                 .Just()
                 .Compile();
             var actual = characterizer.Apply(lipid, scan);
@@ -140,48 +137,36 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
         [DataTestMethod()]
         [DynamicData(nameof(PCCharacterizationTest2Data))]
         public void PCCharacterizationTest2(LipidMolecule lipid, IMSScanProperty scan) {
+            //// seek 184.07332 (C5H15NO4P)
+            //var diagnosticMz = 184.07332;
+            var theoreticalMz = LipidCandidatePlaceholder.PrecurosrMz;
+            // seek [M+Na -C5H14NO4P]+
+            var diagnosticMz2 = theoreticalMz - 183.06604;
+            // seek [M+Na -C3H9N]+
+            var diagnosticMz3 = theoreticalMz - 59.0735;
+
+            var H2O = MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.OxygenMass;
+            var nl_SN1 = theoreticalMz - LipidCandidatePlaceholder.AcylChainMass(1);
+            var nl_SN1_H2O = nl_SN1 - H2O;
+            var nl_SN2 = theoreticalMz - LipidCandidatePlaceholder.AcylChainMass(2);
+            var nl_SN2_H2O = nl_SN2 - H2O;
+
             var characterizer = new PCLipidType()
                 .DefineRules()
                 .IsPositive()
                 .HasAdduct("[M+Na]+")
                 .IsValidMolecule(c => c.Sn1DoubleBond <= 6)
                 .SetTolerance(.02d)
-                .ExistAny(c => {
-                    //// seek 184.07332 (C5H15NO4P)
-                    //var diagnosticMz = 184.07332;
-                    // seek [M+Na -C5H14NO4P]+
-                    var diagnosticMz2 = c.Lipid.Mz - 183.06604;
-                    // seek [M+Na -C3H9N]+
-                    var diagnosticMz3 = c.Lipid.Mz - 59.0735;
-                    return new[] {
-                        (diagnosticMz2, 3d),
-                        (diagnosticMz3, 3d),
-                    };
-                })
-                .ScoreBy(c => {
-                    var theoreticalMz = c.Lipid.Mz;
-                    var sn1CarbonNum = c.Sn1Carbon;
-                    var sn1DoubleNum = c.Sn1DoubleBond;
-                    var sn2CarbonNum = c.Sn2Carbon;
-                    var sn2DoubleNum = c.Sn2DoubleBond;
-                    var H2O = MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.OxygenMass;
-
-                    var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1CarbonNum, sn1DoubleNum);
-                    var nl_SN1_H2O = nl_SN1 - H2O;
-                    var nl_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2CarbonNum, sn2DoubleNum);
-                    var nl_SN2_H2O = nl_SN2 - H2O;
-
-                    var query = new List<SpectrumPeak>
-                    {
-                    };
-                    return new[]
-                    {
-                        (nl_SN1, 0.01),
-                        (nl_SN1_H2O, 0.01),
-                        (nl_SN2, 0.01),
-                        (nl_SN2_H2O, 0.01)
-                    };
-                })
+                .ExistAny(
+                    (diagnosticMz2, 3d),
+                    (diagnosticMz3, 3d)
+                )
+                .ScoreBy(
+                    (nl_SN1, 0.01),
+                    (nl_SN1_H2O, 0.01),
+                    (nl_SN2, 0.01),
+                    (nl_SN2_H2O, 0.01)
+                )
                 .FromRange(6, 7)
                 .Compile();
             var actual = characterizer.Apply(lipid, scan);
@@ -252,38 +237,29 @@ namespace CompMs.Common.Lipidomics.Characterization.Tests
         [DynamicData(nameof(SHexCerCharacterizationTestData))]
         public void SHexCerCharacterizationTest(LipidMolecule lipid, IMSScanProperty scan) {
             var electron = 0.00054858026;
+            var theoreticalMz = LipidCandidatePlaceholder.PrecurosrMz;
+            var diagnosticMz = theoreticalMz - (lipid.Adduct.AdductIonAccurateMass - MassDiffDictionary.HydrogenMass);
+            // seek [M-SO3-H2O+H]+
+            var diagnosticMz1 = diagnosticMz - (MassDiffDictionary.SulfurMass + 3 * MassDiffDictionary.OxygenMass + (MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.OxygenMass) + electron);
+            // seek [M-H2O-SO3-C6H10O5+H]+
+            var diagnosticMz2 = diagnosticMz1 - 162.052833;
+            var sph1 = diagnosticMz2 - LipidCandidatePlaceholder.AcylChainMass(2) + MassDiffDictionary.HydrogenMass;
+            var sph2 = sph1 - (MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.OxygenMass);
+            var sph3 = sph2 - 12;
             var characterizer = new SHexCerLipidType()
                 .DefineRules()
                 .IsPositive()
                 .HasAdduct("[M+H]+", "[M+NH4]+")
                 .SetTolerance(.02d)
-                .ExistAny(c => {
-                    var diagnosticMz = c.Lipid.Adduct.AdductIonName == "[M+NH4]+" ? c.Lipid.Mz - (MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 3) : c.Lipid.Mz;
-                    // seek [M-SO3-H2O+H]+
-                    var diagnosticMz1 = diagnosticMz - MassDiffDictionary.SulfurMass - 3 * MassDiffDictionary.OxygenMass - (MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.OxygenMass) - electron;
-                    // seek [M-H2O-SO3-C6H10O5+H]+
-                    var diagnosticMz2 = diagnosticMz1 - 162.052833;
-                    return new[] {
-                        (diagnosticMz1, 1d),
-                        (diagnosticMz2, 1d),
-                    };
-                })
-                .ScoreBy(c => {
-                    var diagnosticMz = c.Lipid.Adduct.AdductIonName == "[M+NH4]+" ? c.Lipid.Mz - (MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 3) : c.Lipid.Mz;
-                    // seek [M-SO3-H2O+H]+
-                    var diagnosticMz1 = diagnosticMz - MassDiffDictionary.SulfurMass - 3 * MassDiffDictionary.OxygenMass - (MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.OxygenMass) - electron;
-                    // seek [M-H2O-SO3-C6H10O5+H]+
-                    var diagnosticMz2 = diagnosticMz1 - 162.052833;
-
-                    var sph1 = diagnosticMz2 - LipidMsmsCharacterizationUtility.acylCainMass(c.Sn2Carbon, c.Sn2DoubleBond) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass * c.Sn2Oxidized;
-                    var sph2 = sph1 - (MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.OxygenMass);
-                    var sph3 = sph2 - 12;
-                    return new[] {
-                        (sph1, 1d),
-                        (sph2, 1d),
-                        (sph3, 1d),
-                    };
-                })
+                .ExistAny(
+                    (diagnosticMz1, 1d),
+                    (diagnosticMz2, 1d)
+                )
+                .ScoreBy(
+                    (sph1, 1d),
+                    (sph2, 1d),
+                    (sph3, 1d)
+                )
                 .Just()
                 .Compile();
             var actual = characterizer.Apply(lipid, scan);
