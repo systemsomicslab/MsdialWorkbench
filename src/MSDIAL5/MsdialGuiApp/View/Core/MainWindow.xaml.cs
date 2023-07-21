@@ -107,6 +107,16 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildView<AlignmentSpotTable>);
             broker.ToObservable<AlignmentSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<AlignmentSpotTable>);
+            broker.ToObservable<CompoundSearchVM>()
+                .Subscribe(ShowChildDialog<CompoundSearchWindow>);
+            broker.ToObservable<PeakSpotTableViewModelBase>()
+                .Subscribe(ShowChildView<AlignmentSpotTable>);
+            broker.ToObservable<PeakSpotTableViewModelBase>()
+                .Subscribe(ShowChildView<ProteomicsSpotTable>);
+            broker.ToObservable<AnalysisFilePropertyResetViewModel>()
+                .Subscribe(ShowChildDialog<AnalysisFilePropertyResettingWindow>);
+            broker.ToObservable<ProcessSettingViewModel>()
+                .Subscribe(ShowChildDialog<ProjectSettingDialog>);
 #if RELEASE
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
 #elif DEBUG
