@@ -81,7 +81,7 @@ namespace CompMs.Common.Lipidomics
                 //spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.Chains.OfType<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct));
                 spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, sn1sn2.OfType<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct, sn3sn4mass + nlMass));
                 spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, sn3sn4.OfType<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct, sn1sn2mass + nlMass));
-                spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, nlMass: 0.0, 200d));
+                spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, nlMass, 200d));
             }
             if (lipid.Chains is PositionLevelChains plChains)
             {
