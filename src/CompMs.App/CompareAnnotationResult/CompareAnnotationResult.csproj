@@ -7,4 +7,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj" />
+    <ProjectReference Include="..\..\MSDIAL5\MsdialIntegrate\MsdialIntegrate.csproj" />
+  </ItemGroup>
+
 </Project>
