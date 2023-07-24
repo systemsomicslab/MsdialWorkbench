@@ -26,7 +26,6 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public MainWindowVM(
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<AnalysisFilePropertyResetViewModel> analysisFilePropertyResetService,
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
             IWindowService<ProcessSettingViewModel> processSettingSerivce) {
 
@@ -36,10 +35,6 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
-            }
-
-            if (analysisFilePropertyResetService is null) {
-                throw new ArgumentNullException(nameof(analysisFilePropertyResetService));
             }
 
             if (proteomicsTableService is null) {
@@ -52,7 +47,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
             Model = new MainWindowModel(_broker);
 
             var projectViewModel = Model.ObserveProperty(m => m.CurrentProject)
-                .Select(m => m is null ? null : new ProjectViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService, analysisFilePropertyResetService, _broker))
+                .Select(m => m is null ? null : new ProjectViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService, _broker))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
