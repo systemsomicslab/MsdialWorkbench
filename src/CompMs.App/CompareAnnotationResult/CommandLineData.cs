@@ -43,7 +43,13 @@ namespace CompMs.App.CompareAnnotationResult
         }
 
         public AlignmentResultContainer LoadSpots() {
-            throw new NotImplementedException();
+            if (!File.Exists(AlignmentResultPath)) {
+                throw new Exception("AlignmentResultFile is not found");
+            }
+            if (!AlignmentResultPath.EndsWith(".arf")) {
+                throw new Exception("Unknown alignment result format.");
+            }
+            return AlignmentResultContainer.LoadLazy(new AlignmentFileBean() { FilePath = AlignmentResultPath, });
         }
     }
 }
