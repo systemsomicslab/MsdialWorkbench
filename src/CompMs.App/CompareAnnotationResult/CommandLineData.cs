@@ -3,7 +3,7 @@ using CompMs.Common.Parser;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
 
-namespace CompareAnnotationResult
+namespace CompMs.App.CompareAnnotationResult
 {
     internal sealed class CommandLineData {
         [LongStyleArgument("--input")]
