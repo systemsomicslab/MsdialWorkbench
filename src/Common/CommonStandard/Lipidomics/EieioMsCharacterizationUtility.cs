@@ -231,8 +231,8 @@ namespace CompMs.Common.Lipidomics
             foreach (var ion in dIons) {
                 if (!IsDiagnosticFragmentExist_ResolutionUsed4Intensity(spectrum, ion.MzTolerance, ion.Mz, ion.IonAbundanceCutOff)) {
                     missedCounter++;
-                    if (dIons.Count < 6 && missedCounter == 1) { isAllExisted = false; break; }
-                    if (dIons.Count >= 6 && missedCounter == 2) { isAllExisted = false; break; }
+                    if (dIons.Count < 4 && missedCounter == 1) { isAllExisted = false; break; }
+                    if (dIons.Count >= 4 && missedCounter == 2) { isAllExisted = false; break; }
                 }
             }
             return isAllExisted;
