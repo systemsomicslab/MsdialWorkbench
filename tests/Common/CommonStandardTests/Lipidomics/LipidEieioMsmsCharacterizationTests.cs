@@ -2168,7 +2168,7 @@ namespace CompMs.Common.Lipidomics.Tests
                     new SpectrumPeak { Mass = 745.54718, Intensity =1038, },
                 }
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholineD5(target, 0.01, 745.55027f, 31, 1, 31, 0, 1, 0, adduct = new AdductIon() { AdductIonName = "[M+Na]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholineD5(target, 0.02, 745.55027f, 31, 1, 31, 0, 1, 0, adduct = new AdductIon() { AdductIonName = "[M+Na]+" });
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
