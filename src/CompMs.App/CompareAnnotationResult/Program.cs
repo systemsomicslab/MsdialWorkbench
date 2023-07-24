@@ -1,7 +1,7 @@
 ﻿using CompMs.Common.Parser;
 using CompMs.MsdialCore.DataObj;
 
-namespace CompareAnnotationResult
+namespace CompMs.App.CompareAnnotationResult
 {
     internal class Program
     {
