@@ -8,8 +8,8 @@ namespace CompareAnnotationResult
         private readonly MatchedSpotCandidateCalculator _calculator;
         private readonly List<MoleculeMsReference> _references;
 
-        public CompoundTargetFinder(CommandLineData data) {
-            _calculator = new MatchedSpotCandidateCalculator(data.MzTolerance, data.RtTolerance, data.AmplitudeThreshold);
+        public CompoundTargetFinder(CommandLineData data, MatchedSpotCandidateCalculator candidateCalculator) {
+            _calculator = candidateCalculator;
             _references = data.GetLibrary();
         }
 
