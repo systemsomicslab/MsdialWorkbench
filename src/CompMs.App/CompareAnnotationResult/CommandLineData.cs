@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.Parser;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Utility;
 
 namespace CompareAnnotationResult
 {
@@ -19,7 +20,26 @@ namespace CompareAnnotationResult
         public double AmplitudeThreshold { get; set; }
 
         public List<MoleculeMsReference> GetLibrary() {
-            throw new NotImplementedException();
+            if (!File.Exists(LibraryPath)) {
+                throw new Exception("Library path is not entered.");
+            }
+
+            string libraryPath = LibraryPath!;
+            switch (Path.GetExtension(libraryPath)) {
+                case ".txt":
+                    var textdb = TextLibraryParser.TextLibraryReader(libraryPath, out string error);
+                    if (string.IsNullOrEmpty(error)) {
+                        return textdb;
+                    }
+                    else {
+                        throw new Exception(error);
+                    }
+                case ".msp":
+                    var mspdb = LibraryHandler.ReadMspLibrary(libraryPath) ?? throw new Exception("Loading msp file failed.");
+                    return mspdb;
+                default:
+                    throw new Exception( "Unsupported library type.");
+            }
         }
 
         public AlignmentResultContainer LoadSpots() {
