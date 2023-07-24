@@ -1,9 +1,11 @@
-﻿namespace CompareAnnotationResult
+﻿using CompMs.Common.Parser;
+
+namespace CompareAnnotationResult
 {
     internal class Program
     {
         static void Main(string[] args) {
-            Console.WriteLine("Hello, World!");
+            var data = CommandLineParser.Parse<CommandLineData>(args);
         }
     }
 }
