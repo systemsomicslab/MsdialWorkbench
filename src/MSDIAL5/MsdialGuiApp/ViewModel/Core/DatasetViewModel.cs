@@ -71,7 +71,8 @@ namespace CompMs.App.Msdial.ViewModel.Core
         private void FilePropertyResetting() {
             var model = Model.AnalysisFilePropertyResetModel;
             using (var analysisFilePropertyResetWindowVM = new AnalysisFilePropertyResetViewModel(model)) {
-                var afpsw_result = analysisFilePropertyResetService.ShowDialog(analysisFilePropertyResetWindowVM);
+                _messageBroker.Publish(analysisFilePropertyResetWindowVM);
+                var afpsw_result = analysisFilePropertyResetWindowVM.Result;// analysisFilePropertyResetService.ShowDialog(analysisFilePropertyResetWindowVM);
                 if (afpsw_result == true) {
                     model.Update();
                 }

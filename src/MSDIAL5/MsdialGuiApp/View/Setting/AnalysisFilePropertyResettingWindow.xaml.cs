@@ -1,22 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+﻿using System.Windows.Controls;
 
-namespace CompMs.App.Msdial.View.Setting {
+namespace CompMs.App.Msdial.View.Setting
+{
     /// <summary>
     /// Interaction logic for AnalysisFilePropertyResettingWindow.xaml
     /// </summary>
-    public partial class AnalysisFilePropertyResettingWindow : Window {
+    public partial class AnalysisFilePropertyResettingWindow : UserControl {
         public AnalysisFilePropertyResettingWindow() {
             InitializeComponent();
         }

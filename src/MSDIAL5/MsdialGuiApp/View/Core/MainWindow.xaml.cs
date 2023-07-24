@@ -44,7 +44,7 @@ namespace CompMs.App.Msdial.View.Core
             var compoundSearchService = new DialogService<CompoundSearchWindow, CompoundSearchVM>(this);
             var peakSpotTableService = new DialogService<AlignmentSpotTable, PeakSpotTableViewModelBase>(this);
             var proteomicsTableService = new DialogService<AlignmentSpotTable, PeakSpotTableViewModelBase>(this);
-            var analysisFilePropertyResetService = new DialogService<AnalysisFilePropertyResettingWindow, AnalysisFilePropertyResetViewModel>(this);
+            var analysisFilePropertyResetService = new DialogService<Window, AnalysisFilePropertyResetViewModel>(this);
             var processSettingDialogService = new DialogService<ProjectSettingDialog, ProcessSettingViewModel>(this);
             DataContext = new MainWindowVM(
                 compoundSearchService,
@@ -107,16 +107,18 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildView<AlignmentSpotTable>);
             broker.ToObservable<AlignmentSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<AlignmentSpotTable>);
+            broker.ToObservable<AnalysisFilePropertyResetViewModel>()
+                .Subscribe(ShowChildSettingDialog<AnalysisFilePropertyResettingWindow>("Analysis property setting", height: 700, width: 1000));
+            /*
             broker.ToObservable<CompoundSearchVM>()
                 .Subscribe(ShowChildDialog<CompoundSearchWindow>);
             broker.ToObservable<PeakSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<AlignmentSpotTable>);
             broker.ToObservable<PeakSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<ProteomicsSpotTable>);
-            broker.ToObservable<AnalysisFilePropertyResetViewModel>()
-                .Subscribe(ShowChildDialog<AnalysisFilePropertyResettingWindow>);
             broker.ToObservable<ProcessSettingViewModel>()
                 .Subscribe(ShowChildDialog<ProjectSettingDialog>);
+            */
 #if RELEASE
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
 #elif DEBUG
