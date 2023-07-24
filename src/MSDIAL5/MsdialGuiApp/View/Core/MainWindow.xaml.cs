@@ -108,7 +108,7 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<AlignmentSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<AlignmentSpotTable>);
             broker.ToObservable<AnalysisFilePropertyResetViewModel>()
-                .Subscribe(ShowChildSettingDialog<AnalysisFilePropertyResettingWindow>("Analysis property setting", height: 700, width: 1000));
+                .Subscribe(ShowChildSettingDialog<AnalysisFilePropertyResettingView>("Analysis property setting", height: 700, width: 1000));
             /*
             broker.ToObservable<CompoundSearchVM>()
                 .Subscribe(ShowChildDialog<CompoundSearchWindow>);
