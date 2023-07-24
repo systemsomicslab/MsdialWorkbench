@@ -117,7 +117,7 @@ namespace CompMs.Graphics.Chart
 
         private Func<object, object> _itemsGetter;
         private void SetItemsGetter(Type type, string property) {
-            if (type is null || type.GetProperties().All(prop => prop.Name != property)) {
+            if (type is null || !ExpressionHelper.ValidatePropertyString(type, property)) {
                 _itemsGetter = null;
                 return;
             }
@@ -206,7 +206,7 @@ namespace CompMs.Graphics.Chart
 
         private Func<object, IAxisManager, AxisValue> _xGetter;
         private void SetHorizontalGetter(Type dataType, string horizontalProperty) {
-            if (dataType is null || dataType.GetProperties().All(prop => prop.Name != horizontalProperty)) {
+            if (dataType is null || !ExpressionHelper.ValidatePropertyString(dataType, horizontalProperty)) {
                 _xGetter = null;
                 return;
             }
@@ -246,7 +246,7 @@ namespace CompMs.Graphics.Chart
 
         private Func<object, IAxisManager, AxisValue> _yGetter;
         private void SetVerticalGetter(Type dataType, string verticalProperty) {
-            if (dataType is null || dataType.GetProperties().All(prop => prop.Name != verticalProperty)) {
+            if (dataType is null || !ExpressionHelper.ValidatePropertyString(dataType, verticalProperty)) {
                 _yGetter = null;
                 return;
             }

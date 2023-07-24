@@ -923,6 +923,10 @@ namespace CompMs.Common.Lipidomics
                         result = LipidMsmsCharacterization.JudgeIfNAcylSer(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, totalOxidized, adduct);
                         break;
+                    case LbmClass.NAAnt:
+                        result = LipidMsmsCharacterization.JudgeIfNAcylAnthranilicacid(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                        break;
                     case LbmClass.BisMeLPA:
                         result = LipidMsmsCharacterization.JudgeIfBismelpa(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, totalOxidized, adduct);

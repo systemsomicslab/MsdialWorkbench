@@ -1,5 +1,6 @@
 ﻿using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.DataObj;
 
 namespace CompMs.App.Msdial.Model.Search
 {
@@ -17,7 +18,7 @@ namespace CompMs.App.Msdial.Model.Search
         }
         private DisplayFilter _checkedFilter;
 
-        public bool PeakFilter(IFilterable filterable, IMatchResultEvaluator<IFilterable> evaluator) {
+        public bool PeakFilter<T>(T filterable, IMatchResultEvaluator<T> evaluator) where T: IFilterable, IAnnotatedObject {
             var checkedFilter = CheckedFilter;
             return AnnotationFilter(filterable, evaluator)
                 && (!checkedFilter.All(DisplayFilter.Ms2Acquired) || filterable.IsMsmsAssigned)
@@ -32,7 +33,7 @@ namespace CompMs.App.Msdial.Model.Search
                 && (!checkedFilter.All(DisplayFilter.MscleanrRmd) || !filterable.IsRmdFilteredByPostCurator);
         }
 
-        private bool AnnotationFilter(IFilterable spot, IMatchResultEvaluator<IFilterable> evaluator) {
+        private bool AnnotationFilter<T>(T spot, IMatchResultEvaluator<T> evaluator) where T: IAnnotatedObject {
             var checkedFilter = CheckedFilter;
             if (!checkedFilter.Any(DisplayFilter.Annotates)) return true;
             return checkedFilter.All(DisplayFilter.RefMatched) && evaluator.IsReferenceMatched(spot)

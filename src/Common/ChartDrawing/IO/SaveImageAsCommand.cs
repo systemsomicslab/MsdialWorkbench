@@ -70,7 +70,7 @@ namespace CompMs.Graphics.IO
             var sfd = new SaveFileDialog
             {
                 Title = "Save image dialog.",
-                Filter = string.Join("|", IMAGE_FILTERS),
+                Filter = string.Join("|", filters),
                 RestoreDirectory = true,
             };
             var result = sfd.ShowDialog() ?? false;
