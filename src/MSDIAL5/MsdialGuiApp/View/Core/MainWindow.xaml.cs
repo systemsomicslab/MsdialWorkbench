@@ -168,6 +168,22 @@ namespace CompMs.App.Msdial.View.Core
             view.ShowDialog();
         }
 
+        private Action<object> ShowChildSettingDialog<TView>(string title, double height, double width) where TView: FrameworkElement, new() {
+            void InnerShowDialog(object viewmodel) {
+                var dialog = new SettingDialog
+                {
+                    Height = height, Width = width,
+                    Title = title,
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    DataContext = viewmodel,
+                    Content = new TView(),
+                };
+                dialog.ShowDialog();
+            }
+            return InnerShowDialog;
+        }
+
         private void ShowMultiProgressBarWindow(ProgressBarMultiContainerRequest request) {
             using (var viewmodel = new ProgressBarMultiContainerVM(request)) {
                 var dialog = new ProgressBarMultiContainerWindow
