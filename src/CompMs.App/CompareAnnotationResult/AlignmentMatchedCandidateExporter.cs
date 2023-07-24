@@ -4,7 +4,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using System.Xml.Linq;
 
-namespace CompareAnnotationResult
+namespace CompMs.App.CompareAnnotationResult
 {
     internal sealed class AlignmentMatchedSpotCandidateExporter : MatchedSpotCandidateExporterBase<AlignmentSpotProperty>
     {
