@@ -1,7 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.MsdialCore.DataObj;
 
-namespace CompareAnnotationResult
+namespace CompMs.App.CompareAnnotationResult
 {
     internal sealed class CompoundTargetFinder
     {
