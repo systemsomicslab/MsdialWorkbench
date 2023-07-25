@@ -46,10 +46,24 @@ namespace CompMs.App.CompareAnnotationResult
             if (!File.Exists(AlignmentResultPath)) {
                 throw new Exception("AlignmentResultFile is not found");
             }
-            if (!AlignmentResultPath.EndsWith(".arf")) {
+            if (!AlignmentResultPath.EndsWith(".arf2")) {
                 throw new Exception("Unknown alignment result format.");
             }
-            return AlignmentResultContainer.LoadLazy(new AlignmentFileBean() { FilePath = AlignmentResultPath, });
+            return AlignmentResultContainer.LoadLazy(new AlignmentFileBean() { FilePath = AlignmentResultPath.TrimEnd('2'), });
+        }
+
+        public Stream GetOutputStream() {
+            var output = OutputPath;
+            if (string.IsNullOrEmpty(output)) {
+                output = Directory.GetParent(AlignmentResultPath!)?.FullName;
+            }
+            if (string.IsNullOrEmpty(output)) {
+                throw new Exception("OutputPath is required.");
+            }
+            if (!Directory.Exists(output)) {
+                Directory.CreateDirectory(output);
+            }
+            return File.Open(Path.Combine(output, "output.xml"), FileMode.Create);
         }
     }
 }

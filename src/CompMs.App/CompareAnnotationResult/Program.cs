@@ -5,7 +5,7 @@ namespace CompMs.App.CompareAnnotationResult
 {
     internal class Program
     {
-        static async void Main(string[] args) {
+        static void Main(string[] args) {
             var data = CommandLineParser.Parse<CommandLineData>(args);
 
             MatchedSpotCandidateCalculator candidateCalculator = new MatchedSpotCandidateCalculator(data.MzTolerance, data.RtTolerance, data.AmplitudeThreshold);
@@ -13,7 +13,7 @@ namespace CompMs.App.CompareAnnotationResult
             var candidate = finder.Find(data.LoadSpots().AlignmentSpotProperties);
             var exporter = new AlignmentMatchedSpotCandidateExporter();
 
-            await exporter.ExportAsync(null, candidate, candidateCalculator).ConfigureAwait(false);
+            exporter.ExportAsync(data.GetOutputStream(), candidate, candidateCalculator).Wait();
         }
     }
 }
