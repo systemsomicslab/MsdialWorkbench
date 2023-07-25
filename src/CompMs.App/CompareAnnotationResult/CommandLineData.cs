@@ -54,8 +54,9 @@ namespace CompMs.App.CompareAnnotationResult
 
         public Stream GetOutputStream() {
             var output = OutputPath;
+            var file = AlignmentResultPath!;
             if (string.IsNullOrEmpty(output)) {
-                output = Directory.GetParent(AlignmentResultPath!)?.FullName;
+                output = Directory.GetParent(file)?.FullName;
             }
             if (string.IsNullOrEmpty(output)) {
                 throw new Exception("OutputPath is required.");
@@ -63,7 +64,7 @@ namespace CompMs.App.CompareAnnotationResult
             if (!Directory.Exists(output)) {
                 Directory.CreateDirectory(output);
             }
-            return File.Open(Path.Combine(output, "output.xml"), FileMode.Create);
+            return File.Open(Path.Combine(output, Path.ChangeExtension(Path.GetFileName(file), ".xml")), FileMode.Create);
         }
     }
 }
