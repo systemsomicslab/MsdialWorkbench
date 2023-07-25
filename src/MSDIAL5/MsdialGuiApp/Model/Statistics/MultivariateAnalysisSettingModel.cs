@@ -91,6 +91,8 @@ namespace CompMs.App.Msdial.Model.Statistics {
 
         public MultivariateAnalysisResult HCAResult { get; set; }
 
+        public AnalysisFileBean[] IncludedFiles => _analysisfiles.Where(file => file.AnalysisFileIncluded).ToArray();
+
         public void ExecutePCA() {
             if (!SelectedSomeMetaboliteSelectionOptions()) {
                 MessageBox.Show("Please select at least one metabolite selection option.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -102,12 +104,13 @@ namespace CompMs.App.Msdial.Model.Statistics {
             }
             SetParameters();
             var observableSpots = new ObservableCollection<AlignmentSpotPropertyModel>();
+            var analysisFiles = IncludedFiles;
             var result = StatisticsObjectConverter.PrincipalComponentAnalysis(_analysisfiles, _spotprops, _parameter, _evaluator, ref observableSpots);
             if (result == null) {
                 return;
             }
 
-            PCAPLSResultModel = new PCAPLSResultModel(result, _parameter, observableSpots, _analysisfiles, _brushmaps);
+            PCAPLSResultModel = new PCAPLSResultModel(result, _parameter, observableSpots, analysisFiles, _brushmaps);
         }
 
         private bool SelectedSomeMetaboliteSelectionOptions() {
@@ -138,9 +141,8 @@ namespace CompMs.App.Msdial.Model.Statistics {
                 return;
             }
 
-            var yValues = _analysisfiles.
-                Where(n => n.AnalysisFileIncluded == true).
-                Select(n => n.ResponseVariable).ToList();
+            var analysisFiles = IncludedFiles;
+            var yValues = analysisFiles.Select(file => file.ResponseVariable).ToList();
 
             // all same value check
             var isAllSame = true;
@@ -171,7 +173,7 @@ namespace CompMs.App.Msdial.Model.Statistics {
             var observableSpots = new ObservableCollection<AlignmentSpotPropertyModel>();
             var result = StatisticsObjectConverter.PartialLeastSquares(_analysisfiles, _spotprops, _parameter, _evaluator, ref observableSpots);
             if (result == null) return;
-            PCAPLSResultModel = new PCAPLSResultModel(result, _parameter, observableSpots, _analysisfiles, _brushmaps);
+            PCAPLSResultModel = new PCAPLSResultModel(result, _parameter, observableSpots, analysisFiles, _brushmaps);
         }
 
         private void SetParameters() {

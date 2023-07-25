@@ -24,7 +24,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private readonly MsRefSearchParameterBase _parameter;
 
         public EadLipidAnnotator(EadLipidDatabase db, string id, int priority, MsRefSearchParameterBase parameter) {
-            _lipidGenerator = new LipidGenerator(new TotalChainVariationGenerator(chainGenerator: new Omega3nChainGenerator(), minLength: 6));
+            _lipidGenerator = new LipidGenerator(new TotalChainVariationGenerator(chainGenerator: new Omega3nChainGenerator(), minLength: 12));
             Id = id ?? throw new ArgumentNullException(nameof(id));
             Priority = priority;
             _lipidDatabase = db ?? throw new ArgumentNullException(nameof(db));
