@@ -56,7 +56,7 @@ namespace CompMs.Common.Lipidomics
             }
             if (groups["ox"].Success) {
                 var ox = !groups["oxnum"].Success ? 1 : int.Parse(groups["oxnum"].Value);
-                switch (ox)
+                switch (ox) //TBC
                 {
                     case 1:
                         return new Oxidized(ox, 1);
