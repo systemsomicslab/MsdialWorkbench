@@ -44,12 +44,10 @@ namespace CompMs.App.Msdial.View.Core
             var compoundSearchService = new DialogService<CompoundSearchWindow, CompoundSearchVM>(this);
             var peakSpotTableService = new DialogService<AlignmentSpotTable, PeakSpotTableViewModelBase>(this);
             var proteomicsTableService = new DialogService<AlignmentSpotTable, PeakSpotTableViewModelBase>(this);
-            var processSettingDialogService = new DialogService<ProjectSettingDialog, ProcessSettingViewModel>(this);
             DataContext = new MainWindowVM(
                 compoundSearchService,
                 peakSpotTableService,
-                proteomicsTableService,
-                processSettingDialogService);
+                proteomicsTableService);
 
             broker = MessageBroker.Default;
 
@@ -107,6 +105,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildView<AlignmentSpotTable>);
             broker.ToObservable<AnalysisFilePropertyResetViewModel>()
                 .Subscribe(ShowChildSettingDialog<AnalysisFilePropertyResettingView>("Analysis property setting", height: 700, width: 1000));
+            broker.ToObservable<ProcessSettingViewModel>()
+                .Subscribe(ShowChildDialog<ProjectSettingDialog>);
             /*
             broker.ToObservable<CompoundSearchVM>()
                 .Subscribe(ShowChildDialog<CompoundSearchWindow>);
@@ -114,8 +114,6 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildView<AlignmentSpotTable>);
             broker.ToObservable<PeakSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<ProteomicsSpotTable>);
-            broker.ToObservable<ProcessSettingViewModel>()
-                .Subscribe(ShowChildDialog<ProjectSettingDialog>);
             */
 #if RELEASE
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
