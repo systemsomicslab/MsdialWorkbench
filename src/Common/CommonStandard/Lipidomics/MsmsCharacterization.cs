@@ -18622,6 +18622,25 @@ AdductIon adduct)
                     totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
                 }
             }
+            else
+            {
+                if (adduct.AdductIonName == "[M-H]-")
+                {
+                    //  seek "[C5H10PO5]-"; // 181
+                    var threshold = 1.0;
+                    var diagnosticMz1 = 12 * 5 + MassDiffDictionary.HydrogenMass * 11 + MassDiffDictionary.OxygenMass * 5 + MassDiffDictionary.PhosphorusMass - Proton;
+                    // FA-
+                    var thresholdFA = 30.0;
+                    var FA = LipidMsmsCharacterizationUtility.fattyacidProductIon(totalCarbon, totalDoubleBond);
+                    var isClassIonFound1 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
+                    var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, FA, thresholdFA);
+                    if (isClassIonFound1 == false || isClassIonFound2 == false) return null;
+                    var candidates = new List<LipidMolecule>();
+
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("BisMeLPA", LbmClass.BisMeLPA, "", theoreticalMz, adduct,
+                    totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
+                }
+            }
             return null;
         }
         /// 20230630

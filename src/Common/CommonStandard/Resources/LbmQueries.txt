@@ -173,6 +173,9 @@ NAOrn	[M+H]+	Positive	TRUE
 #NALeu	[M-H]-	Negative	TRUE
 #NAVal	[M-H]-	Negative	TRUE
 #NASer	[M-H]-	Negative	TRUE
+#NATryA	[M-H]-	Negative	TRUE
+#NATryA	[M+CH3COO]-	Negative	TRUE
+#NATryA	[M+HCOO]-	Negative	TRUE
 #WE	[M+NH4]+	Positive	TRUE
 #NAGABA	[M+H]+	Positive	TRUE
 #NAGABA	[M-H]-	Negative	TRUE
@@ -459,3 +462,4 @@ GM3	[M-2H]2-	Negative	TRUE
 #bmPC	[M+HCOO]-	Negative	FALSE
 #BisMeLPA	[M+H]+	Positive	FALSE
 #BisMeLPA	[M+NH4]+	Positive	FALSE
+#BisMeLPA	[M-H]-	Negative	FALSE
