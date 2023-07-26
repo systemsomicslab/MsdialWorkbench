@@ -92,9 +92,9 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<AlignmentResultExportViewModel>()
                 .Subscribe(ShowChildDialog<AlignmentResultExportWin>);
             broker.ToObservable<TargetCompoundLibrarySettingViewModel>()
-                .Subscribe(OpenTargetCompoundLibrarySettingView);
+                .Subscribe(ShowChildSettingDialog<TargetCompoundsLibrarySettingView>("Select library file", height: 600, width: 400));
             broker.ToObservable<FindTargetCompoundsSpotViewModel>()
-                .Subscribe(ShowFindTargetCompoundsSpotView);
+                .Subscribe(ShowChildSettingDialog<FindTargetCompoundsSpotView>("Find match peak spots", height: 800, width: 400));
             broker.ToObservable<MolecularNetworkingExportSettingViewModel>()
                 .Subscribe(ShowChildView<MolecularNetworkingExportSettingView>);
             broker.ToObservable<MolecularNetworkingSendingToCytoscapeJsSettingViewModel>()
@@ -247,42 +247,6 @@ namespace CompMs.App.Msdial.View.Core
                 });
             };
             request.Result = dialog.ShowDialog();
-        }
-
-        private void ShowFindTargetCompoundsSpotView(FindTargetCompoundsSpotViewModel viewmodel) {
-            var dialog = new SettingDialog
-            {
-                Height = 800, Width = 400,
-                Title = "Find match peak spots",
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Content = new FindTargetCompoundsSpotView
-                {
-                    DataContext = viewmodel,
-                },
-                ApplyCommand = CommonMVVM.NeverCommand.Instance,
-                FinishCommand = CommonMVVM.IdentityCommand.Instance,
-                CancelCommand = CommonMVVM.NeverCommand.Instance,
-            };
-            dialog.Show();
-        }
-
-        private void OpenTargetCompoundLibrarySettingView(TargetCompoundLibrarySettingViewModel viewmodel) {
-            var dialog = new SettingDialog
-            {
-                Height = 600, Width = 400,
-                Title = "Select library file",
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Content = new TargetCompoundsLibrarySettingView
-                {
-                    DataContext = viewmodel,
-                },
-                ApplyCommand = CommonMVVM.NeverCommand.Instance,
-                FinishCommand = CommonMVVM.IdentityCommand.Instance,
-                CancelCommand = CommonMVVM.NeverCommand.Instance,
-            };
-            dialog.ShowDialog();
         }
 
         private void OpenPCAPLSResultView(PCAPLSResultViewModel viewmodel) {
