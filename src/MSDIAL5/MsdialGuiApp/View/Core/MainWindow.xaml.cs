@@ -72,7 +72,7 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<SampleTableViewerInAlignmentViewModelLegacy>()
                 .Subscribe(CreateSampleTableViewerDialog);
             broker.ToObservable<InternalStandardSetViewModel>()
-                .Subscribe(OpenInternalStandardSetView);
+                .Subscribe(ShowChildSettingDialog<InternalStandardSetView>("Internal standard settting", height: 600, width: 800));
             broker.ToObservable<PCAPLSResultViewModel>()
                 .Subscribe(OpenPCAPLSResultView);
             broker.ToObservable<ExperimentSpectrumViewModel>()
@@ -247,24 +247,6 @@ namespace CompMs.App.Msdial.View.Core
                 });
             };
             request.Result = dialog.ShowDialog();
-        }
-
-        private void OpenInternalStandardSetView(InternalStandardSetViewModel viewmodel) {
-            var dialog = new SettingDialog
-            {
-                Height = 600, Width = 800,
-                Title = "Internal standard settting",
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Content = new InternalStandardSetView
-                {
-                    DataContext = viewmodel,
-                },
-                ApplyCommand = null,
-                FinishCommand = viewmodel.ApplyCommand,
-                CancelCommand = viewmodel.CancelCommand,
-            };
-            dialog.Show();
         }
 
         private void ShowFindTargetCompoundsSpotView(FindTargetCompoundsSpotViewModel viewmodel) {

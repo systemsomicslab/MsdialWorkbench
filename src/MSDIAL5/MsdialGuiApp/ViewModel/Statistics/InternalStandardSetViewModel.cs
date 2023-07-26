@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.UI;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -8,19 +9,22 @@ using System;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Statistics
 {
-    internal sealed class InternalStandardSetViewModel : ViewModelBase
+    internal sealed class InternalStandardSetViewModel : SettingDialogViewModel
     {
+        private ReactiveCommand _applyChangeCommand, _cancelCommand;
+
         public InternalStandardSetViewModel(InternalStandardSetModel model) {
             var isEditting = new BooleanNotifier();
             IsEditting = isEditting;
-            ApplyCommand = isEditting.ToReactiveCommand().AddTo(Disposables);
-            CancelCommand = new ReactiveCommand().AddTo(Disposables);
+            _applyChangeCommand = isEditting.ToReactiveCommand().AddTo(Disposables);
+            _cancelCommand = new ReactiveCommand().AddTo(Disposables);
 
-            var commit = ApplyCommand.ToUnit().ToReactiveProperty(mode: ReactivePropertyMode.RaiseLatestValueOnSubscribe).AddTo(Disposables);
-            var discard = CancelCommand.ToUnit().ToReactiveProperty(mode: ReactivePropertyMode.RaiseLatestValueOnSubscribe).AddTo(Disposables);
+            var commit = _applyChangeCommand.ToUnit().ToReactiveProperty(mode: ReactivePropertyMode.RaiseLatestValueOnSubscribe).AddTo(Disposables);
+            var discard = _cancelCommand.ToUnit().ToReactiveProperty(mode: ReactivePropertyMode.RaiseLatestValueOnSubscribe).AddTo(Disposables);
             Spots = model.Spots.ToReadOnlyReactiveCollection(m => new NormalizationSpotPropertyViewModel(m, commit, discard)).AddTo(Disposables);
             TargetMsMethod = model.TargetMsMethod;
 
@@ -34,8 +38,9 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
         public BooleanNotifier IsEditting { get; }
 
-        public ReactiveCommand ApplyCommand { get; }
-        public ReactiveCommand CancelCommand { get; }
+        public ReactiveCommand ApplyChangeCommand => _applyChangeCommand;
+        public override ICommand FinishCommand => _applyChangeCommand;
+        public override ICommand CancelCommand => _cancelCommand;
     }
 
     internal sealed class NormalizationSpotPropertyViewModel : ViewModelBase
