@@ -60,7 +60,7 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<ProcessMessageRequest>()
                 .Subscribe(ShowProcessMessageDialog);
             broker.ToObservable<FileClassSetViewModel>()
-                .Subscribe(ShowFileClassSetView);
+                .Subscribe(ShowChildSettingDialog<FileClassSetView>("Class property setting", height: 450, width: 400));
             broker.ToObservable<SaveFileNameRequest>()
                 .Subscribe(GetSaveFilePath);
             broker.ToObservable<OpenFileRequest>()
@@ -247,24 +247,6 @@ namespace CompMs.App.Msdial.View.Core
                 });
             };
             request.Result = dialog.ShowDialog();
-        }
-
-        private void ShowFileClassSetView(FileClassSetViewModel viewmodel) {
-            var dialog = new SettingDialog
-            {
-                Height = 450, Width = 400,
-                Title = "Class property setting",
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Content = new FileClassSetView
-                {
-                    DataContext = viewmodel,
-                },
-                ApplyCommand = viewmodel.ApplyCommand,
-                FinishCommand = viewmodel.ApplyCommand,
-                CancelCommand = viewmodel.CancelCommand,
-            };
-            dialog.Show();
         }
 
         private void OpenInternalStandardSetView(InternalStandardSetViewModel viewmodel) {
