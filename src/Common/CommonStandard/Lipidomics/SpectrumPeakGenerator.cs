@@ -185,7 +185,7 @@ namespace CompMs.Common.Lipidomics
             var chainLoss = lipid.Mass - sphingo.Mass - nlMass
                 + MassDiffDictionary.NitrogenMass
                 + 12 * 2
-                + MassDiffDictionary.OxygenMass * (sphingo.OxidizedCount > 2 ? 2 : sphingo.OxidizedCount)
+                + MassDiffDictionary.OxygenMass * 1
                 + MassDiffDictionary.HydrogenMass * 5;
             var diffs = new double[sphingo.CarbonCount];
             for (int i = 0; i < sphingo.CarbonCount; i++)
@@ -222,13 +222,26 @@ namespace CompMs.Common.Lipidomics
                 var factor = 1.0;
                 var factorHLoss = 0.5;
                 var factorHGain = 0.2;
+                var speccomment_hloss = SpectrumComment.doublebond;
+                var speccomment_radical = SpectrumComment.doublebond;
+                var speccomment_hgain = SpectrumComment.doublebond;
 
                 if (bondPositions.Contains(i - 1))
                 { // in the case of 18:2(9,12), Radical is big, and H loss is next
-                    factor = 4.0;
-                    factorHLoss = 2.0;
-                    speccomment |= SpectrumComment.doublebond_high;
+                    if (nlMass < 0.001)
+                    {
+                        factor = 4.0;
+                        factorHLoss = 2.0;
+                        factorHGain = 0.05;
+                        speccomment_radical |= SpectrumComment.doublebond_high;
+                    }
                 }
+                //if (bondPositions.Contains(i - 1))
+                //{ // in the case of 18:2(9,12), Radical is big, and H loss is next
+                //    factor = 4.0;
+                //    factorHLoss = 2.0;
+                //    speccomment |= SpectrumComment.doublebond_high;
+                //}
                 else if (bondPositions.Contains(i))
                 {
                     // now no modification
