@@ -92,29 +92,29 @@ namespace CompMs.Common.Lipidomics
             spectrum.AddRange(GetEtherPESpectrum(lipid, adduct));
             if (lipid.Chains is PositionLevelChains)
             {
-                spectrum.AddRange(GetSn1PositionSpectrum(lipid, lipid.Chains.GetAllChains()[0], adduct));
+                spectrum.AddRange(GetSn1PositionSpectrum(lipid, lipid.Chains.GetChain(1), adduct));
 
                 AlkylChain alkyl;
                 AcylChain acyl;
 
-                if (lipid.Chains.GetAllChains()[0] is AlkylChain)
+                if (lipid.Chains.GetChain(1) is AlkylChain)
                 {
-                    alkyl = (AlkylChain)lipid.Chains.GetAllChains()[0];
-                    acyl = (AcylChain)lipid.Chains.GetAllChains()[1];
+                    alkyl = (AlkylChain)lipid.Chains.GetChain(1);
+                    acyl = (AcylChain)lipid.Chains.GetChain(2);
                 }
                 else
                 {
-                    alkyl = (AlkylChain)lipid.Chains.GetAllChains()[1];
-                    acyl = (AcylChain)lipid.Chains.GetAllChains()[0];
+                    alkyl = (AlkylChain)lipid.Chains.GetChain(2);
+                    acyl = (AcylChain)lipid.Chains.GetChain(1);
                 }
 
                 if (alkyl.DoubleBond.Bonds.Any(b => b.Position == 1))
                 {
-                    spectrum.AddRange(GetEtherPEPSpectrum(lipid, alkyl, lipid.Chains.GetAllChains()[1], adduct));
+                    spectrum.AddRange(GetEtherPEPSpectrum(lipid, alkyl, acyl, adduct));
                 }
                 else
                 {
-                    spectrum.AddRange(GetEtherPEOSpectrum(lipid, lipid.Chains.GetAllChains()[0], lipid.Chains.GetAllChains()[1], adduct));
+                    spectrum.AddRange(GetEtherPEOSpectrum(lipid, alkyl, acyl, adduct));
                 }
                 spectrum.AddRange(spectrumGenerator.GetAlkylDoubleBondSpectrum(lipid, alkyl, adduct, 0d, 30d));
                 //spectrum.AddRange(spectrumGenerator.GetAlkylDoubleBondSpectrum(lipid, alkyl, adduct, nlMass: C2H8NO4P, 30d));

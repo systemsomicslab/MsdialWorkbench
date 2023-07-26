@@ -88,28 +88,28 @@ namespace CompMs.Common.Lipidomics
             spectrum.AddRange(GetEtherPCSpectrum(lipid, adduct));
             if (lipid.Chains is PositionLevelChains)
             {
-                spectrum.AddRange(GetSn1PositionSpectrum(lipid, lipid.Chains.GetAllChains()[0], adduct));
+                spectrum.AddRange(GetSn1PositionSpectrum(lipid, lipid.Chains.GetChain(1), adduct));
                 AlkylChain alkyl;
                 AcylChain acyl;
 
-                if (lipid.Chains.GetAllChains()[0] is AlkylChain)
+                if (lipid.Chains.GetChain(1) is AlkylChain)
                 {
-                    alkyl = (AlkylChain)lipid.Chains.GetAllChains()[0];
-                    acyl = (AcylChain)lipid.Chains.GetAllChains()[1];
+                    alkyl = (AlkylChain)lipid.Chains.GetChain(1);
+                    acyl = (AcylChain)lipid.Chains.GetChain(2);
                 }
                 else
                 {
-                    alkyl = (AlkylChain)lipid.Chains.GetAllChains()[1];
-                    acyl = (AcylChain)lipid.Chains.GetAllChains()[0];
+                    alkyl = (AlkylChain)lipid.Chains.GetChain(2);
+                    acyl = (AcylChain)lipid.Chains.GetChain(1);
                 }
 
                 if (alkyl.DoubleBond.Bonds.Any(b => b.Position == 1))
                 {
-                    spectrum.AddRange(GetEtherPCPSpectrum(lipid, alkyl, lipid.Chains.GetAllChains()[1], adduct));
+                    spectrum.AddRange(GetEtherPCPSpectrum(lipid, alkyl, acyl, adduct));
                 }
                 else
                 {
-                    spectrum.AddRange(GetEtherPCOSpectrum(lipid, lipid.Chains.GetAllChains()[0], lipid.Chains.GetAllChains()[1], adduct));
+                    spectrum.AddRange(GetEtherPCOSpectrum(lipid, alkyl, acyl, adduct));
                 }
                 spectrum.AddRange(spectrumGenerator.GetAlkylDoubleBondSpectrum(lipid, alkyl, adduct, 0d, 50d));
                 spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, 0d, 50d));
