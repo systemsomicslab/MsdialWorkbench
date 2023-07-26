@@ -2,7 +2,6 @@
 using CompMs.Common.Utility;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics
@@ -47,6 +46,10 @@ namespace CompMs.Common.Lipidomics
                 description |= LipidDescription.DoubleBondPosition;
             }
             Description = description;
+        }
+
+        IChain ITotalChain.GetChain(int snPosition) {
+            return _chains.FirstOrDefault(c => c.SnPosition == snPosition)?.Chain;
         }
 
         public IChain[] GetAllChains() {

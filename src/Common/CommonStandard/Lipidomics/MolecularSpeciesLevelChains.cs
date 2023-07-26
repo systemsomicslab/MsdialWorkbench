@@ -12,6 +12,10 @@ namespace CompMs.Common.Lipidomics
 
         }
 
+        IChain ITotalChain.GetChain(int snPosition) {
+            return null;
+        }
+
         IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator) {
             return totalChainGenerator.Permutate(this);
         }

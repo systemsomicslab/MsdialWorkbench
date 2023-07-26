@@ -6,8 +6,17 @@ namespace CompMs.Common.Lipidomics
 {
     public class PositionLevelChains : SeparatedChains, ITotalChain
     {
-        public PositionLevelChains(params IChain[] chains) : base(chains.Select((c, i) => (c, i)).ToArray(), LipidDescription.Class | LipidDescription.Chain | LipidDescription.SnPosition) {
+        private readonly IChain[] _chains;
 
+        public PositionLevelChains(params IChain[] chains) : base(chains.Select((c, i) => (c, i)).ToArray(), LipidDescription.Class | LipidDescription.Chain | LipidDescription.SnPosition) {
+            _chains = chains;
+        }
+
+        IChain ITotalChain.GetChain(int snPosition) {
+            if (snPosition > _chains.Length) {
+                return null;
+            }
+            return _chains[snPosition - 1];
         }
 
         IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator) {

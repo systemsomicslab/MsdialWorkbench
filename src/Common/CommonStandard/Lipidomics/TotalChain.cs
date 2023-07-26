@@ -45,6 +45,10 @@ namespace CompMs.Common.Lipidomics
 
         private static readonly double SphingoGain = MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass;
 
+        IChain ITotalChain.GetChain(int snPosition) {
+            return null;
+        }
+
         IChain[] ITotalChain.GetAllChains() {
             return Array.Empty<IChain>();
         }

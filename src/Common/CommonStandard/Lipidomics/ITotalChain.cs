@@ -17,6 +17,11 @@ namespace CompMs.Common.Lipidomics
         double Mass { get; }
         LipidDescription Description { get; }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="snPosition">1-indexed sn position</param>
+        /// <returns></returns>
+        IChain GetChain(int snPosition);
         IChain[] GetAllChains();
         bool Includes(ITotalChain chains);
         IEnumerable<ITotalChain> GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator);
