@@ -75,16 +75,16 @@ namespace CompMs.Common.Lipidomics
             // chains[0] = lyso
             if (lipid.Description.Has(LipidDescription.Chain)) {
                 if (lipid.Chains is MolecularSpeciesLevelChains mlChains) {
-                    spectrum.AddRange(GetLysoAcylLevelSpectrum(lipid, mlChains.GetAllChains()[0], adduct));
-                    spectrum.AddRange(GetAcylLevelSpectrum(lipid, mlChains.GetAllChains()[1], adduct));
-                    spectrum.AddRange(GetAcylLevelSpectrum(lipid, mlChains.GetAllChains()[2], adduct));
+                    spectrum.AddRange(GetLysoAcylLevelSpectrum(lipid, lipid.Chains.GetAllChains()[0], adduct));
+                    spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetAllChains()[1], adduct));
+                    spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetAllChains()[2], adduct));
                 }
                 if (lipid.Chains is PositionLevelChains plChains) {
-                    spectrum.AddRange(GetLysoAcylLevelSpectrum(lipid, plChains.GetAllChains()[0], adduct));
-                    spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.GetAllChains()[1], adduct));
-                    spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.GetAllChains()[2], adduct));
-                    spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.GetAllChains()[0], adduct));
-                    spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.GetAllChains()[1], adduct));
+                    spectrum.AddRange(GetLysoAcylLevelSpectrum(lipid, lipid.Chains.GetAllChains()[0], adduct));
+                    spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetAllChains()[1], adduct));
+                    spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetAllChains()[2], adduct));
+                    spectrum.AddRange(GetAcylPositionSpectrum(lipid, lipid.Chains.GetAllChains()[0], adduct));
+                    spectrum.AddRange(GetAcylPositionSpectrum(lipid, lipid.Chains.GetAllChains()[1], adduct));
                 }
                 spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, lipid.Chains.GetTypedChains<AcylChain>(), adduct, nlMass: 0.0));
             }

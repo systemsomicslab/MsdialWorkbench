@@ -74,9 +74,9 @@ namespace CompMs.Common.Lipidomics
                     spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, 0d, 100d));
                 }
                 if (lipid.Chains is PositionLevelChains plChains) {
-                    spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.GetAllChains()[0], adduct));
-                    spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.GetAllChains()[2], adduct));
-                    spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.GetAllChains()[1], adduct));
+                    spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetAllChains()[0], adduct));
+                    spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetAllChains()[2], adduct));
+                    spectrum.AddRange(GetAcylPositionSpectrum(lipid, lipid.Chains.GetAllChains()[1], adduct));
                     spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, 0d, 200d));
                 }
                 spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, lipid.Chains.GetTypedChains<AcylChain>(), adduct));
@@ -235,10 +235,10 @@ namespace CompMs.Common.Lipidomics
             var spectrum = new List<SpectrumPeak>();
             if (lipid.Chains is SeparatedChains acylChains)
             {
-                foreach (var lossChain in acylChains.GetAllChains())
+                foreach (var lossChain in lipid.Chains.GetAllChains())
                 {
                     nlMass = lossChain.Mass + MassDiffDictionary.OxygenMass + adduct.AdductIonAccurateMass - MassDiffDictionary.ProtonMass;
-                    var chains = acylChains.GetAllChains().Where((c) => !c.Equals(lossChain)).ToList();
+                    var chains = lipid.Chains.GetAllChains().Where((c) => !c.Equals(lossChain)).ToList();
                     foreach (var chain in chains)
                     {
                         if (chain.DoubleBond.Count == 0 || chain.DoubleBond.UnDecidedCount > 0) continue;

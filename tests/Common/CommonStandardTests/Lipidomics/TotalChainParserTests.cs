@@ -50,7 +50,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.IsInstanceOfType(chains[0], typeof(AcylChain));
             Assert.AreEqual(16, chains[0].CarbonCount);
             Assert.AreEqual(0, chains[0].DoubleBondCount);
-            Assert.AreEqual(0, actual   .GetAllChains()[0].OxidizedCount);
+            Assert.AreEqual(0, actual   .GetChain(1).OxidizedCount);
             Assert.IsInstanceOfType(chains[1], typeof(AcylChain));
             Assert.AreEqual(18, chains[1].CarbonCount);
             Assert.AreEqual(1, chains[1].DoubleBondCount);

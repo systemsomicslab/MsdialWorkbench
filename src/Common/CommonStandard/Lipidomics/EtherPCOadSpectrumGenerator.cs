@@ -89,24 +89,24 @@ namespace CompMs.Common.Lipidomics
                 AlkylChain alkyl;
                 AcylChain acyl;
 
-                if (plChains.GetAllChains()[0] is AlkylChain)
+                if (lipid.Chains.GetAllChains()[0] is AlkylChain)
                 {
-                    alkyl = (AlkylChain)plChains.GetAllChains()[0];
-                    acyl = (AcylChain)plChains.GetAllChains()[1];
+                    alkyl = (AlkylChain)lipid.Chains.GetAllChains()[0];
+                    acyl = (AcylChain)lipid.Chains.GetAllChains()[1];
                 }
                 else
                 {
-                    alkyl = (AlkylChain)plChains.GetAllChains()[1];
-                    acyl = (AcylChain)plChains.GetAllChains()[0];
+                    alkyl = (AlkylChain)lipid.Chains.GetAllChains()[1];
+                    acyl = (AcylChain)lipid.Chains.GetAllChains()[0];
                 }
 
                 if (alkyl.DoubleBond.Bonds.Any(b => b.Position == 1))
                 {
-                    spectrum.AddRange(GetEtherPCPSpectrum(lipid, alkyl, plChains.GetAllChains()[1], adduct));
+                    spectrum.AddRange(GetEtherPCPSpectrum(lipid, alkyl, lipid.Chains.GetAllChains()[1], adduct));
                 }
                 else
                 {
-                    spectrum.AddRange(GetEtherPCOSpectrum(lipid, plChains.GetAllChains()[0], plChains.GetAllChains()[1], adduct));
+                    spectrum.AddRange(GetEtherPCOSpectrum(lipid, lipid.Chains.GetAllChains()[0], lipid.Chains.GetAllChains()[1], adduct));
                 }
                 spectrum.AddRange(spectrumGenerator.GetAlkylDoubleBondSpectrum(lipid, alkyl, adduct, nlMass, abundance, oadId));
                 spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlMass, abundance, oadId));

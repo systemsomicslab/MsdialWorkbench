@@ -61,12 +61,9 @@ namespace CompMs.Common.Lipidomics
         {
             var spectrum = new List<SpectrumPeak>();
             spectrum.AddRange(GetCESpectrum(lipid, adduct));
-            if (lipid.Chains is PositionLevelChains plChains)
-            {
-                var nlMass = adduct.AdductIonName == "[M+NH4]+" ? adduct.AdductIonAccurateMass : 0.0;
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, (AcylChain)plChains.GetAllChains()[0], adduct));
-                //spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.Chains.OfType<AcylChain>(), adduct, nlMass));
-            }
+            var nlMass = adduct.AdductIonName == "[M+NH4]+" ? adduct.AdductIonAccurateMass : 0.0;
+            spectrum.AddRange(GetAcylLevelSpectrum(lipid, (AcylChain)lipid.Chains.GetChain(1), adduct));
+            //spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, lipid.Chains.GetTypedChains<AcylChain>(), adduct, nlMass));
             spectrum = spectrum.GroupBy(spec => spec, comparer)
                 .Select(specs => new SpectrumPeak(specs.First().Mass, specs.Sum(n => n.Intensity), string.Join(", ", specs.Select(spec => spec.Comment)), specs.Aggregate(SpectrumComment.none, (a, b) => a | b.SpectrumComment)))
                 .OrderBy(peak => peak.Mass)

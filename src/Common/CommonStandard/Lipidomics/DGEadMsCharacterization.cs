@@ -21,9 +21,8 @@ namespace CompMs.Common.Lipidomics
             var double_cutoff = 0.5;
 
             if (molecule.Chains.ChainCount > 1) {
-                var deepChains = (SeparatedChains)molecule.Chains;
-                if (deepChains.GetAllChains()[0].CarbonCount == deepChains.GetAllChains()[1].CarbonCount &&
-                    deepChains.GetAllChains()[0].DoubleBond == deepChains.GetAllChains()[1].DoubleBond) {
+                if (molecule.Chains.GetChain(1).CarbonCount == molecule.Chains.GetChain(2).CarbonCount &&
+                    molecule.Chains.GetChain(1).DoubleBond == molecule.Chains.GetChain(2).DoubleBond) {
                     chain_cutoff = 1;
                 }
             }

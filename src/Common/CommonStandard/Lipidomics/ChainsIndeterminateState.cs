@@ -54,7 +54,7 @@ namespace CompMs.Common.Lipidomics
         sealed class MolecularSpeciesLevelIndeterminate : IIndeterminate {
             public ITotalChain Indeterminate(ITotalChain chains) {
                 if (chains.Description.HasFlag(LipidDescription.SnPosition) && chains is SeparatedChains sc) {
-                    return new MolecularSpeciesLevelChains(sc.GetAllChains().ToArray());
+                    return new MolecularSpeciesLevelChains(sc.GetAllChains());
                 }
                 return chains;
             }
