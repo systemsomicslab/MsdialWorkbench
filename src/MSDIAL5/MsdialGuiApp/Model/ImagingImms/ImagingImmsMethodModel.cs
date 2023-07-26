@@ -84,6 +84,16 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             return null;
         }
 
+        public override Task SaveAsync()
+        {
+            if (Image is null || Image.ImageResult is null)
+            {
+                return Task.CompletedTask;
+            }
+
+            return Image.ImageResult.SaveAsync();
+        }
+
         public AnalysisResultExportModel CreateExportAnalysisModel() {
             var spectraTypes = new[]
             {
