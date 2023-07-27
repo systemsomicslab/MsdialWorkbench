@@ -6,6 +6,7 @@ namespace CompMs.App.CompareAnnotationResult
     internal class Program
     {
         static void Main(string[] args) {
+
             var data = CommandLineParser.Parse<CommandLineData>(args);
 
             MatchedSpotCandidateCalculator candidateCalculator = new MatchedSpotCandidateCalculator(data.MzTolerance, data.RtTolerance, data.AmplitudeThreshold);

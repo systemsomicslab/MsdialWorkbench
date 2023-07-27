@@ -11813,7 +11813,7 @@ AdductIon adduct)
                                                                                                                                                                                                 //Console.WriteLine("ASM {0} Unique mass {1}", "d" + sphCarbon + acylCarbon + ":" + sphDouble + acylDouble + "-O-" + extCarbon + ":" + extDouble, extAcylloss);
 
                                     var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = extAcylloss, Intensity = 0.01 },
+                                        new SpectrumPeak() { Mass = extAcylloss, Intensity = 1 },
                                     };
 
                                     var foundCount = 0;

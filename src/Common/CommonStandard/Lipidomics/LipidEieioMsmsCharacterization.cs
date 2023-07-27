@@ -978,8 +978,8 @@ namespace CompMs.Common.Lipidomics
 
 
                     var query = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = NL_sn1, Intensity = 1 },
-                                    new SpectrumPeak() { Mass = NL_sn2, Intensity = 1 },
+                                    new SpectrumPeak() { Mass = NL_sn1, Intensity = 5 },
+                                    new SpectrumPeak() { Mass = NL_sn2, Intensity = 5 },
                                 };
 
                     var foundCount = 0;
