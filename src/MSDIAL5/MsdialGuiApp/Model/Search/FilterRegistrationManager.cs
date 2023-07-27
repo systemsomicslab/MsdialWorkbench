@@ -121,6 +121,13 @@ namespace CompMs.App.Msdial.Model.Search
 
             public ValueFilterModel Filter => _model;
 
+            public IEnumerable<T> Apply(IEnumerable<T> peaks, FilterEnableStatus status) {
+                if ((status & _status) == _status) {
+                    return peaks.Where(p => _model.Contains(_convert(p)));
+                }
+                return peaks;
+            }
+
             public void AttchFilter(PeakSpotFiltering<T> filtering, ICollectionView collection) {
                 filtering.AttachFilter(_model, _convert, collection);
             }
