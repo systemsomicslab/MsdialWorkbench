@@ -13,7 +13,7 @@ namespace CompMs.App.Msdial.Model.Search
     {
         private bool _disposedValue;
         private readonly List<ValueFilterManager<T>> _valueFilterManagers;
-        private readonly List<KeywordFilterManager> _keywordFilterManagers;
+        private readonly List<KeywordFilterManager<T>> _keywordFilterManagers;
         private readonly ValueFilterModel _amplitudeFilterModel;
         private readonly PeakSpotTagSearchQueryBuilderModel _tagSearchQueryBuilderModel;
 
@@ -32,26 +32,26 @@ namespace CompMs.App.Msdial.Model.Search
                 valueFilterManagers.Add(new ValueFilterManager<T>(DtFilterModel, FilterEnableStatus.Dt, obj => ((IChromatogramPeak)obj)?.ChromXs.Drift.Value ?? 0d));
             }
             _valueFilterManagers = valueFilterManagers;
-            var keywordFilterManagers = new List<KeywordFilterManager>();
+            var keywordFilterManagers = new List<KeywordFilterManager<T>>();
             if ((status & FilterEnableStatus.Metabolite) != FilterEnableStatus.None) {
                 var MetaboliteFilterModel = new KeywordFilterModel("Name filter");
-                keywordFilterManagers.Add(new KeywordFilterManager(MetaboliteFilterModel, FilterEnableStatus.Metabolite, obj => ((IMoleculeProperty)obj).Name));
+                keywordFilterManagers.Add(new KeywordFilterManager<T>(MetaboliteFilterModel, FilterEnableStatus.Metabolite, obj => ((IMoleculeProperty)obj).Name));
             }
             if ((status & FilterEnableStatus.Protein) != FilterEnableStatus.None) {
                 var ProteinFilterModel = new KeywordFilterModel("Protein filter", KeywordFilteringType.KeepIfWordIsNull);
-                keywordFilterManagers.Add(new KeywordFilterManager(ProteinFilterModel, FilterEnableStatus.Protein, obj => ((IFilterable)obj).Protein));
+                keywordFilterManagers.Add(new KeywordFilterManager<T>(ProteinFilterModel, FilterEnableStatus.Protein, obj => ((IFilterable)obj).Protein));
             }
             if ((status & FilterEnableStatus.Ontology) != FilterEnableStatus.None) {
                 var OntologyFilterModel = new KeywordFilterModel("Ontology filter", KeywordFilteringType.ExactMatch);
-                keywordFilterManagers.Add(new KeywordFilterManager(OntologyFilterModel, FilterEnableStatus.Ontology, obj => ((IMoleculeProperty)obj).Ontology));
+                keywordFilterManagers.Add(new KeywordFilterManager<T>(OntologyFilterModel, FilterEnableStatus.Ontology, obj => ((IMoleculeProperty)obj).Ontology));
             }
             if ((status & FilterEnableStatus.Adduct) != FilterEnableStatus.None) {
                 var AdductFilterModel = new KeywordFilterModel("Adduct filter", KeywordFilteringType.KeepIfWordIsNull);
-                keywordFilterManagers.Add(new KeywordFilterManager(AdductFilterModel, FilterEnableStatus.Adduct, obj => ((IFilterable)obj).AdductIonName));
+                keywordFilterManagers.Add(new KeywordFilterManager<T>(AdductFilterModel, FilterEnableStatus.Adduct, obj => ((IFilterable)obj).AdductIonName));
             }
             if ((status & FilterEnableStatus.Comment) != FilterEnableStatus.None) {
                 var CommentFilterModel = new KeywordFilterModel("Comment filter");
-                keywordFilterManagers.Add(new KeywordFilterManager(CommentFilterModel, FilterEnableStatus.Comment, obj => ((IFilterable)obj).Comment));
+                keywordFilterManagers.Add(new KeywordFilterManager<T>(CommentFilterModel, FilterEnableStatus.Comment, obj => ((IFilterable)obj).Comment));
             }
             _keywordFilterManagers = keywordFilterManagers;
             _amplitudeFilterModel = new ValueFilterModel("Amplitude filter", 0d, 1d);
@@ -111,45 +111,6 @@ namespace CompMs.App.Msdial.Model.Search
             GC.SuppressFinalize(this);
         }
 
-
-        class KeywordFilterManager : IDisposable
-        {
-            private readonly KeywordFilterModel _model;
-            private readonly FilterEnableStatus _status;
-            private readonly Func<T, string> _convert;
-
-            public KeywordFilterManager(KeywordFilterModel model, FilterEnableStatus status, Func<T, string> convert) {
-                _model = model;
-                _status = status;
-                _convert = convert;
-            }
-
-            public KeywordFilterModel Filter => _model;
-
-            public IEnumerable<T> Apply(IEnumerable<T> peaks, FilterEnableStatus status) {
-                if ((status & _status) == _status) {
-                    return peaks.Where(p => _model.Match(_convert(p)));
-                }
-                return peaks;
-            }
-
-            public void AttchFilter(PeakSpotFiltering<T> filtering, ICollectionView collection) {
-                filtering.AttachFilter(_model, _convert, collection);
-            }
-
-            public bool TryAttachFilter(PeakSpotFiltering<T> filtering, ICollectionView collection, FilterEnableStatus status) {
-                if ((status & _status) == _status) {
-                    AttchFilter(filtering, collection);
-                    return true;
-                }
-                return false;
-            }
-
-            public void Dispose() {
-                _model.Dispose();
-            }
-        }
-
     }
 
     class ValueFilterManager<T> where T: IAnnotatedObject, IFilterable {
@@ -158,7 +119,7 @@ namespace CompMs.App.Msdial.Model.Search
         private readonly Func<T, double> _convert;
 
         public ValueFilterManager(ValueFilterModel model, FilterEnableStatus status, Func<T, double> convert)
-            {
+        {
                 _model = model;
                 _status = status;
                 _convert = convert;
@@ -184,5 +145,43 @@ namespace CompMs.App.Msdial.Model.Search
                 }
                 return false;
             }
+            }
+
+    class KeywordFilterManager<T> : IDisposable where T : IAnnotatedObject, IFilterable
+    {
+        private readonly KeywordFilterModel _model;
+            private readonly FilterEnableStatus _status;
+        private readonly Func<T, string> _convert;
+
+        public KeywordFilterManager(KeywordFilterModel model, FilterEnableStatus status, Func<T, string> convert) {
+                _model = model;
+                _status = status;
+                _convert = convert;
+            }
+
+        public KeywordFilterModel Filter => _model;
+
+            public IEnumerable<T> Apply(IEnumerable<T> peaks, FilterEnableStatus status) {
+                if ((status & _status) == _status) {
+                return peaks.Where(p => _model.Match(_convert(p)));
+                }
+                return peaks;
+            }
+
+            public void AttchFilter(PeakSpotFiltering<T> filtering, ICollectionView collection) {
+                filtering.AttachFilter(_model, _convert, collection);
+            }
+
+            public bool TryAttachFilter(PeakSpotFiltering<T> filtering, ICollectionView collection, FilterEnableStatus status) {
+                if ((status & _status) == _status) {
+                    AttchFilter(filtering, collection);
+                    return true;
+                }
+                return false;
+            }
+
+        public void Dispose() {
+            _model.Dispose();
+        }
     }
 }
