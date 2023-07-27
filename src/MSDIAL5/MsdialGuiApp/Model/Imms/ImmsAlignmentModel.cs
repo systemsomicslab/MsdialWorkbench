@@ -52,6 +52,7 @@ namespace CompMs.App.Msdial.Model.Imms
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseStorage databases,
             DataBaseMapper mapper,
+            PeakSpotFiltering<AlignmentSpotPropertyModel> peakSpotFiltering,
             PeakFilterModel peakFilterModel,
             ProjectBaseParameterModel projectBaseParameter,
             ParameterBase parameter,
@@ -102,11 +103,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
 
-            var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Rt & ~FilterEnableStatus.Protein;
-            if (parameter.TargetOmics == TargetOmics.Proteomics) {
-                filterEnabled |= FilterEnableStatus.Protein;
-            }
-            var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(Ms1Spots, new PeakSpotFiltering<AlignmentSpotPropertyModel>(filterEnabled)).AddTo(Disposables);
+            var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(Ms1Spots, peakSpotFiltering).AddTo(Disposables);
             PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
             filterRegistrationManager.AttachFilter(Ms1Spots, peakFilterModel, evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: ~FilterEnableStatus.Rt);
 

@@ -54,6 +54,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
             AccumulatedPeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
 
             List<AnalysisFileBean> analysisFiles = analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File).ToList();
+            var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Protein;
+            if (storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
+                filterEnabled |= FilterEnableStatus.Protein;
+            }
+            _peakSpotFiltering = new PeakSpotFiltering<AlignmentSpotPropertyModel>(filterEnabled).AddTo(Disposables);
             var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
             var metadataAccessorFactory = new LcimmsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter);
             var currentAlignmentResult = this.ObserveProperty(m => m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -121,6 +126,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly IDataProviderFactory<RawMeasurement> accProviderFactory;
         private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly IMessageBroker _broker;
+        private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _peakSpotFiltering;
 
         public PeakFilterModel AccumulatedPeakFilterModel { get; }
         public PeakFilterModel PeakFilterModel { get; }
@@ -160,6 +166,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 _projectBaseParameter,
                 Storage.Parameter,
                 Storage.AnalysisFiles,
+                _peakSpotFiltering,
                 PeakFilterModel,
                 AccumulatedPeakFilterModel,
                 _broker)

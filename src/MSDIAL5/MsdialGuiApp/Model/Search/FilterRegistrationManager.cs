@@ -36,12 +36,14 @@ namespace CompMs.App.Msdial.Model.Search
 
         public void DetatchFilter(ICollectionView view) {
             PeakSpotFiltering.DetatchFilter(view);
+            var idx = PeakSpotNavigatorModel.PeakSpotsCollection.IndexOf(view);
+            PeakSpotNavigatorModel.PeakSpotsCollection.RemoveAt(idx);
+            PeakSpotNavigatorModel.PeakFilters.RemoveAt(idx);
         }
 
         private void Dispose(bool disposing) {
             if (!_disposedValue) {
                 if (disposing) {
-                    PeakSpotFiltering.Dispose();
                     PeakSpotNavigatorModel.Dispose();
                 }
                 _disposedValue = true;
