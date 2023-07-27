@@ -72,5 +72,31 @@ namespace CompMs.Common.Lipidomics
         public static IEnumerable<T> GetTypedChains<T>(this ITotalChain chain) where T : IChain {
             return chain.GetAllChains().OfType<T>();
         }
+
+        public static (T, U) Deconstruct<T, U>(this ITotalChain chain) where T : IChain where U : IChain {
+            if (chain.ChainCount != 2 || typeof(T) == typeof(U)) {
+                return default;
+            }
+            var t = chain.GetTypedChains<T>().SingleOrDefault();
+            var u = chain.GetTypedChains<U>().SingleOrDefault();
+            if (t is T && u is U) {
+                return (t, u);
+            }
+            return default;
+        }
+
+        public static void ApplyToChain(this ITotalChain chains, int snPosition, Action<IChain> action) {
+            var chain = chains.GetChain(snPosition);
+            if (chain != null) {
+                action?.Invoke(chain);
+            }
+        }
+
+        public static void ApplyToChain<T>(this ITotalChain chains, int snPosition, Action<T> action) where T: IChain {
+            var chain = chains.GetChain(snPosition);
+            if (chain is T c) {
+                action?.Invoke(c);
+            }
+        }
     }
 }

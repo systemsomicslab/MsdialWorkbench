@@ -76,14 +76,8 @@ namespace CompMs.Common.Lipidomics
             var spectrum = new List<SpectrumPeak>();
             spectrum.AddRange(GetDMEDFAHFASpectrum(lipid, adduct));
             if (lipid.Description.Has(LipidDescription.Chain)) {
-                if (lipid.Chains is MolecularSpeciesLevelChains) {
-                    spectrum.AddRange(GetAcylLevelSpectrum(lipid, (AcylChain)lipid.Chains.GetChain(2), adduct));
-                    spectrum.AddRange(GetOxPositionSpectrum(lipid, (AcylChain)lipid.Chains.GetChain(2), adduct));
-                }
-                if (lipid.Chains is PositionLevelChains) {
-                    spectrum.AddRange(GetAcylLevelSpectrum(lipid, (AcylChain)lipid.Chains.GetChain(2), adduct));
-                    spectrum.AddRange(GetOxPositionSpectrum(lipid, (AcylChain)lipid.Chains.GetChain(2), adduct));
-                }
+                lipid.Chains.ApplyToChain<AcylChain>(2, acylChain => spectrum.AddRange(GetAcylLevelSpectrum(lipid, acylChain, adduct)));
+                lipid.Chains.ApplyToChain<AcylChain>(2, acylChain => spectrum.AddRange(GetOxPositionSpectrum(lipid, acylChain, adduct)));
                 spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, lipid.Chains.GetTypedChains<AcylChain>(), adduct, nlMass));
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)

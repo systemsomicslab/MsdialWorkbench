@@ -20,11 +20,9 @@ namespace CompMs.Common.Lipidomics
             var position_cutoff = 1;
             var double_cutoff = 0.5;
 
-            if (molecule.Chains.ChainCount > 1) {
-                if (molecule.Chains.GetChain(1).CarbonCount == molecule.Chains.GetChain(2).CarbonCount &&
-                    molecule.Chains.GetChain(1).DoubleBond == molecule.Chains.GetChain(2).DoubleBond) {
-                    chain_cutoff = 1;
-                }
+            var chains = molecule.Chains.GetAllChains();
+            if (chains.Length >= 2 && chains[0].CarbonCount == chains[1].CarbonCount && chains[0].DoubleBond == chains[1].DoubleBond) {
+                chain_cutoff = 1;
             }
             if (reference.AdductType.AdductIonName == "[M+NH4]+") {
                 position_cutoff = 0;

@@ -86,23 +86,10 @@ namespace CompMs.Common.Lipidomics
         {
             var spectrum = new List<SpectrumPeak>();
             spectrum.AddRange(GetEtherPCSpectrum(lipid, adduct));
-            if (lipid.Chains is PositionLevelChains)
-            {
-                spectrum.AddRange(GetSn1PositionSpectrum(lipid, lipid.Chains.GetChain(1), adduct));
-                AlkylChain alkyl;
-                AcylChain acyl;
+            lipid.Chains.ApplyToChain(1, chain => spectrum.AddRange(GetSn1PositionSpectrum(lipid, chain, adduct)));
 
-                if (lipid.Chains.GetChain(1) is AlkylChain)
-                {
-                    alkyl = (AlkylChain)lipid.Chains.GetChain(1);
-                    acyl = (AcylChain)lipid.Chains.GetChain(2);
-                }
-                else
-                {
-                    alkyl = (AlkylChain)lipid.Chains.GetChain(2);
-                    acyl = (AcylChain)lipid.Chains.GetChain(1);
-                }
-
+            (AlkylChain alkyl, AcylChain acyl) = lipid.Chains.Deconstruct<AlkylChain, AcylChain>();
+            if (alkyl != null && acyl != null) {
                 if (alkyl.DoubleBond.Bonds.Any(b => b.Position == 1))
                 {
                     spectrum.AddRange(GetEtherPCPSpectrum(lipid, alkyl, acyl, adduct));
@@ -116,7 +103,6 @@ namespace CompMs.Common.Lipidomics
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
                 .Select(specs => new SpectrumPeak(specs.First().Mass, specs.Sum(n => n.Intensity), string.Join(", ", specs.Select(spec => spec.Comment)), specs.Aggregate(SpectrumComment.none, (a, b) => a | b.SpectrumComment)))
-                .OrderBy(peak => peak.Mass)
                 .OrderBy(peak => peak.Mass)
                 .ToList();
             return CreateReference(lipid, adduct, spectrum, molecule);
