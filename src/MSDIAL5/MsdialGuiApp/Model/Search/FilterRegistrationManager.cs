@@ -12,24 +12,24 @@ namespace CompMs.App.Msdial.Model.Search
     internal sealed class FilterRegistrationManager<T> : IDisposable where T : IFilterable, IAnnotatedObject, IMoleculeProperty, IChromatogramPeak, ISpectrumPeak
     {
         private bool _disposedValue;
-        private readonly List<ValueFilterManager> _valueFilterManagers;
+        private readonly List<ValueFilterManager<T>> _valueFilterManagers;
         private readonly List<KeywordFilterManager> _keywordFilterManagers;
         private readonly ValueFilterModel _amplitudeFilterModel;
         private readonly PeakSpotTagSearchQueryBuilderModel _tagSearchQueryBuilderModel;
 
         public FilterRegistrationManager(IReadOnlyList<T> spots, FilterEnableStatus status) {
-            var valueFilterManagers = new List<ValueFilterManager>();
+            var valueFilterManagers = new List<ValueFilterManager<T>>();
             if ((status & FilterEnableStatus.Mz) != FilterEnableStatus.None) {
                 var MzFilterModel = new ValueFilterModel("m/z range", 0d, 1d);
-                valueFilterManagers.Add(new ValueFilterManager(MzFilterModel, FilterEnableStatus.Mz, obj => ((ISpectrumPeak)obj)?.Mass ?? 0d));
+                valueFilterManagers.Add(new ValueFilterManager<T>(MzFilterModel, FilterEnableStatus.Mz, obj => ((ISpectrumPeak)obj)?.Mass ?? 0d));
             }
             if ((status & FilterEnableStatus.Rt) != FilterEnableStatus.None) {
                 var RtFilterModel = new ValueFilterModel("Retention time", 0d, 1d);
-                valueFilterManagers.Add(new ValueFilterManager(RtFilterModel, FilterEnableStatus.Rt, obj => ((IChromatogramPeak)obj)?.ChromXs.RT.Value ?? 0d));
+                valueFilterManagers.Add(new ValueFilterManager<T>(RtFilterModel, FilterEnableStatus.Rt, obj => ((IChromatogramPeak)obj)?.ChromXs.RT.Value ?? 0d));
             }
             if ((status & FilterEnableStatus.Dt) != FilterEnableStatus.None) {
                 var DtFilterModel = new ValueFilterModel("Mobility", 0d, 1d);
-                valueFilterManagers.Add(new ValueFilterManager(DtFilterModel, FilterEnableStatus.Dt, obj => ((IChromatogramPeak)obj)?.ChromXs.Drift.Value ?? 0d));
+                valueFilterManagers.Add(new ValueFilterManager<T>(DtFilterModel, FilterEnableStatus.Dt, obj => ((IChromatogramPeak)obj)?.ChromXs.Drift.Value ?? 0d));
             }
             _valueFilterManagers = valueFilterManagers;
             var keywordFilterManagers = new List<KeywordFilterManager>();
@@ -111,47 +111,14 @@ namespace CompMs.App.Msdial.Model.Search
             GC.SuppressFinalize(this);
         }
 
-        class ValueFilterManager {
-            private readonly ValueFilterModel _model;
-            private readonly FilterEnableStatus _status;
-            private readonly Func<T, double> _convert;
 
-            public ValueFilterManager(ValueFilterModel model, FilterEnableStatus status, Func<T, double> convert)
-            {
-                _model = model;
-                _status = status;
-                _convert = convert;
-            }
-
-            public ValueFilterModel Filter => _model;
-
-            public IEnumerable<T> Apply(IEnumerable<T> peaks, FilterEnableStatus status) {
-                if ((status & _status) == _status) {
-                    return peaks.Where(p => _model.Contains(_convert(p)));
-                }
-                return peaks;
-            }
-
-            public void AttchFilter(PeakSpotFiltering<T> filtering, ICollectionView collection) {
-                filtering.AttachFilter(_model, _convert, collection);
-            }
-
-            public bool TryAttachFilter(PeakSpotFiltering<T> filtering, ICollectionView collection, FilterEnableStatus status) {
-                if ((status & _status) == _status) {
-                    AttchFilter(filtering, collection);
-                    return true;
-                }
-                return false;
-            }
-        }
-
-        class KeywordFilterManager : IDisposable {
+        class KeywordFilterManager : IDisposable
+        {
             private readonly KeywordFilterModel _model;
             private readonly FilterEnableStatus _status;
             private readonly Func<T, string> _convert;
 
-            public KeywordFilterManager(KeywordFilterModel model, FilterEnableStatus status, Func<T, string> convert)
-            {
+            public KeywordFilterManager(KeywordFilterModel model, FilterEnableStatus status, Func<T, string> convert) {
                 _model = model;
                 _status = status;
                 _convert = convert;
@@ -182,5 +149,40 @@ namespace CompMs.App.Msdial.Model.Search
                 _model.Dispose();
             }
         }
+
+    }
+
+    class ValueFilterManager<T> where T: IAnnotatedObject, IFilterable {
+        private readonly ValueFilterModel _model;
+            private readonly FilterEnableStatus _status;
+        private readonly Func<T, double> _convert;
+
+        public ValueFilterManager(ValueFilterModel model, FilterEnableStatus status, Func<T, double> convert)
+            {
+                _model = model;
+                _status = status;
+                _convert = convert;
+            }
+
+        public ValueFilterModel Filter => _model;
+
+            public IEnumerable<T> Apply(IEnumerable<T> peaks, FilterEnableStatus status) {
+                if ((status & _status) == _status) {
+                return peaks.Where(p => _model.Contains(_convert(p)));
+                }
+                return peaks;
+            }
+
+            public void AttchFilter(PeakSpotFiltering<T> filtering, ICollectionView collection) {
+                filtering.AttachFilter(_model, _convert, collection);
+            }
+
+            public bool TryAttachFilter(PeakSpotFiltering<T> filtering, ICollectionView collection, FilterEnableStatus status) {
+                if ((status & _status) == _status) {
+                    AttchFilter(filtering, collection);
+                    return true;
+                }
+                return false;
+            }
     }
 }
