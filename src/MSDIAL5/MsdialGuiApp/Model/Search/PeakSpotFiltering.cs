@@ -68,6 +68,10 @@ namespace CompMs.App.Msdial.Model.Search
         public ValueFilterModel AmplitudeFilterModel { get; }
         public PeakSpotTagSearchQueryBuilderModel TagSearchQueryBuilder { get; }
 
+        public PeakSpotFilter CreateFilter(PeakFilterModel peakFilterModel, IMatchResultEvaluator<T> evaluator, FilterEnableStatus status) {
+            return new PeakSpotFilter(this, peakFilterModel, evaluator, status);
+        }
+
         public void AttachFilter(ICollectionView view, PeakFilterModel peakFilterModel, IMatchResultEvaluator<T> evaluator, FilterEnableStatus status) {
             var pred = CreateFilter(peakFilterModel, evaluator, TagSearchQueryBuilder);
             AttachFilterCore(pred.Invoke, view);
@@ -218,5 +222,36 @@ namespace CompMs.App.Msdial.Model.Search
                 _disposables.Dispose();
             }
         }
+
+        public sealed class PeakSpotFilter {
+            private readonly IMatchResultEvaluator<T> _evaluator;
+            private readonly FilterEnableStatus _status;
+            private readonly PeakFilterModel _peakFilterModel;
+            private readonly PeakSpotFiltering<T> _peakSpotFiltering;
+
+            public PeakSpotFilter(PeakSpotFiltering<T> peakSpotFiltering, PeakFilterModel peakFilterModel, IMatchResultEvaluator<T> evaluator, FilterEnableStatus status) {
+                _evaluator = evaluator;
+                _status = status;
+                _peakFilterModel = peakFilterModel;
+                _peakSpotFiltering = peakSpotFiltering;
+            }
+
+            public IEnumerable<T> Filter(IEnumerable<T> peaks) {
+                peaks = peaks.Where(p => _peakFilterModel.PeakFilter(p, _evaluator));
+                var query = _peakSpotFiltering.TagSearchQueryBuilder.CreateQuery();
+                peaks = peaks.Where(p => p.TagCollection.IsSelected(query));
+
+                if ((_status & FilterEnableStatus.Amplitude) != FilterEnableStatus.None) {
+                    peaks = peaks.Where(p => _peakSpotFiltering.AmplitudeFilterModel.Contains(p.RelativeAmplitudeValue));
+                }
+                foreach (var valueFilterManager in _peakSpotFiltering.ValueFilterManagers) {
+                    peaks = valueFilterManager.Apply(peaks, _status);
+                }
+                foreach (var keywordFilterManager in _peakSpotFiltering.KeywordFilterManagers) {
+                    peaks = keywordFilterManager.Apply(peaks, _status);
+                }
+                return peaks;
+            }
+        } 
     }
 }
