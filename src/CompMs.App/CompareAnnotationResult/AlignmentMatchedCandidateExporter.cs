@@ -1,39 +1,32 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.Common.Components;
+﻿using CompMs.Common.Components;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
-using System.Reactive.Threading.Tasks;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace CompMs.App.Msdial.Model.Export
+namespace CompMs.App.CompareAnnotationResult
 {
-    internal sealed class AlignmentMatchedSpotCandidateExporter : MatchedSpotCandidateExporterBase<AlignmentSpotPropertyModel>
+    internal sealed class AlignmentMatchedSpotCandidateExporter : MatchedSpotCandidateExporterBase<AlignmentSpotProperty>
     {
-        protected override async Task<XElement> ToXmlElement(AlignmentSpotPropertyModel spot, MoleculeMsReference reference, MatchedSpotCandidateCalculator calculator) {
+        protected override async Task<XElement> ToXmlElement(AlignmentSpotProperty spot, MoleculeMsReference reference, MatchedSpotCandidateCalculator calculator) {
             var spotElement = new XElement("AlignedSpot",
                 new XElement("SpotId", spot.MasterAlignmentID),
-                new XElement("Adduct", spot.AdductIonName),
-                new XElement("Mz", spot.Mass),
+                new XElement("Adduct", spot.AdductType.AdductIonName),
+                new XElement("Mz", spot.MassCenter),
                 ToXmlElement(((IChromatogramPeak)spot).ChromXs));
             AddIfContentIsNotEmpty(spotElement, "Name", spot.Name);
-            var task = spot.AlignedPeakPropertiesModelProperty.ToTask();
-            var peaks = spot.AlignedPeakPropertiesModelProperty.Value;
-            if (peaks is null) {
-                peaks = await task.ConfigureAwait(false);
-            }
+            var peaks = await spot.AlignedPeakPropertiesTask.ConfigureAwait(false);
             foreach (var peak in peaks) {
                 spotElement.Add(ToXml(calculator.Score(peak, reference)));
             }
             return spotElement;
         }
 
-        private XElement ToXml(MatchedSpotCandidate<AlignmentChromPeakFeatureModel> candidate) {
+        private XElement ToXml(MatchedSpotCandidate<AlignmentChromPeakFeature> candidate) {
             var peakElement = new XElement("Peak");
             peakElement.Add(new XElement("File", candidate.Spot.FileName));
             AddIfContentIsNotEmpty(peakElement, "Name", candidate.Spot.Name);
-            peakElement.Add(new XElement("Adduct", candidate.Spot.Adduct.AdductIonName));
+            peakElement.Add(new XElement("Adduct", candidate.Spot.PeakCharacter.AdductType.AdductIonName));
             peakElement.Add(new XElement("Mz", candidate.Spot.Mass));
             peakElement.Add(ToXmlElement(candidate.Spot.ChromXsTop));
             peakElement.Add(new XElement("PeakHeight", candidate.Spot.PeakHeightTop));
