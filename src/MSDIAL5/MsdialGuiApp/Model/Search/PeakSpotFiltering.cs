@@ -1,4 +1,5 @@
-﻿using CompMs.MsdialCore.Algorithm.Annotation;
+﻿using CompMs.Common.Interfaces;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings.Extensions;
 using System;
@@ -18,7 +19,44 @@ namespace CompMs.App.Msdial.Model.Search
         private readonly Dictionary<ICollectionView, CompositeDisposable> _viewToDisposables = new Dictionary<ICollectionView, CompositeDisposable>();
         private bool _disposedValue;
 
-        public PeakSpotFiltering(List<ValueFilterManager<T>> valueFilterManagers, List<KeywordFilterManager<T>> keywordFilterManagers, ValueFilterModel amplitudeFilterModel, PeakSpotTagSearchQueryBuilderModel tagSearchQueryBuilder) {
+        public PeakSpotFiltering(FilterEnableStatus status) {
+            var valueFilterManagers = new List<ValueFilterManager<T>>();
+            if ((status & FilterEnableStatus.Mz) != FilterEnableStatus.None) {
+                var MzFilterModel = new ValueFilterModel("m/z range", 0d, 1d);
+                valueFilterManagers.Add(new ValueFilterManager<T>(MzFilterModel, FilterEnableStatus.Mz, obj => ((ISpectrumPeak)obj)?.Mass ?? 0d));
+            }
+            if ((status & FilterEnableStatus.Rt) != FilterEnableStatus.None) {
+                var RtFilterModel = new ValueFilterModel("Retention time", 0d, 1d);
+                valueFilterManagers.Add(new ValueFilterManager<T>(RtFilterModel, FilterEnableStatus.Rt, obj => ((IChromatogramPeak)obj)?.ChromXs.RT.Value ?? 0d));
+            }
+            if ((status & FilterEnableStatus.Dt) != FilterEnableStatus.None) {
+                var DtFilterModel = new ValueFilterModel("Mobility", 0d, 1d);
+                valueFilterManagers.Add(new ValueFilterManager<T>(DtFilterModel, FilterEnableStatus.Dt, obj => ((IChromatogramPeak)obj)?.ChromXs.Drift.Value ?? 0d));
+            }
+            var keywordFilterManagers = new List<KeywordFilterManager<T>>();
+            if ((status & FilterEnableStatus.Metabolite) != FilterEnableStatus.None) {
+                var MetaboliteFilterModel = new KeywordFilterModel("Name filter");
+                keywordFilterManagers.Add(new KeywordFilterManager<T>(MetaboliteFilterModel, FilterEnableStatus.Metabolite, obj => ((IMoleculeProperty)obj).Name));
+            }
+            if ((status & FilterEnableStatus.Protein) != FilterEnableStatus.None) {
+                var ProteinFilterModel = new KeywordFilterModel("Protein filter", KeywordFilteringType.KeepIfWordIsNull);
+                keywordFilterManagers.Add(new KeywordFilterManager<T>(ProteinFilterModel, FilterEnableStatus.Protein, obj => ((IFilterable)obj).Protein));
+            }
+            if ((status & FilterEnableStatus.Ontology) != FilterEnableStatus.None) {
+                var OntologyFilterModel = new KeywordFilterModel("Ontology filter", KeywordFilteringType.ExactMatch);
+                keywordFilterManagers.Add(new KeywordFilterManager<T>(OntologyFilterModel, FilterEnableStatus.Ontology, obj => ((IMoleculeProperty)obj).Ontology));
+            }
+            if ((status & FilterEnableStatus.Adduct) != FilterEnableStatus.None) {
+                var AdductFilterModel = new KeywordFilterModel("Adduct filter", KeywordFilteringType.KeepIfWordIsNull);
+                keywordFilterManagers.Add(new KeywordFilterManager<T>(AdductFilterModel, FilterEnableStatus.Adduct, obj => ((IFilterable)obj).AdductIonName));
+            }
+            if ((status & FilterEnableStatus.Comment) != FilterEnableStatus.None) {
+                var CommentFilterModel = new KeywordFilterModel("Comment filter");
+                keywordFilterManagers.Add(new KeywordFilterManager<T>(CommentFilterModel, FilterEnableStatus.Comment, obj => ((IFilterable)obj).Comment));
+            }
+            var amplitudeFilterModel = new ValueFilterModel("Amplitude filter", 0d, 1d);
+            var tagSearchQueryBuilder = new PeakSpotTagSearchQueryBuilderModel();
+
             ValueFilterManagers = valueFilterManagers;
             KeywordFilterManagers = keywordFilterManagers;
             AmplitudeFilterModel = amplitudeFilterModel;

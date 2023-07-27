@@ -14,45 +14,8 @@ namespace CompMs.App.Msdial.Model.Search
         private bool _disposedValue;
 
         public FilterRegistrationManager(IReadOnlyList<T> spots, FilterEnableStatus status) {
-            var valueFilterManagers = new List<ValueFilterManager<T>>();
-            if ((status & FilterEnableStatus.Mz) != FilterEnableStatus.None) {
-                var MzFilterModel = new ValueFilterModel("m/z range", 0d, 1d);
-                valueFilterManagers.Add(new ValueFilterManager<T>(MzFilterModel, FilterEnableStatus.Mz, obj => ((ISpectrumPeak)obj)?.Mass ?? 0d));
-            }
-            if ((status & FilterEnableStatus.Rt) != FilterEnableStatus.None) {
-                var RtFilterModel = new ValueFilterModel("Retention time", 0d, 1d);
-                valueFilterManagers.Add(new ValueFilterManager<T>(RtFilterModel, FilterEnableStatus.Rt, obj => ((IChromatogramPeak)obj)?.ChromXs.RT.Value ?? 0d));
-            }
-            if ((status & FilterEnableStatus.Dt) != FilterEnableStatus.None) {
-                var DtFilterModel = new ValueFilterModel("Mobility", 0d, 1d);
-                valueFilterManagers.Add(new ValueFilterManager<T>(DtFilterModel, FilterEnableStatus.Dt, obj => ((IChromatogramPeak)obj)?.ChromXs.Drift.Value ?? 0d));
-            }
-            _valueFilterManagers = valueFilterManagers;
-            var keywordFilterManagers = new List<KeywordFilterManager<T>>();
-            if ((status & FilterEnableStatus.Metabolite) != FilterEnableStatus.None) {
-                var MetaboliteFilterModel = new KeywordFilterModel("Name filter");
-                keywordFilterManagers.Add(new KeywordFilterManager<T>(MetaboliteFilterModel, FilterEnableStatus.Metabolite, obj => ((IMoleculeProperty)obj).Name));
-            }
-            if ((status & FilterEnableStatus.Protein) != FilterEnableStatus.None) {
-                var ProteinFilterModel = new KeywordFilterModel("Protein filter", KeywordFilteringType.KeepIfWordIsNull);
-                keywordFilterManagers.Add(new KeywordFilterManager<T>(ProteinFilterModel, FilterEnableStatus.Protein, obj => ((IFilterable)obj).Protein));
-            }
-            if ((status & FilterEnableStatus.Ontology) != FilterEnableStatus.None) {
-                var OntologyFilterModel = new KeywordFilterModel("Ontology filter", KeywordFilteringType.ExactMatch);
-                keywordFilterManagers.Add(new KeywordFilterManager<T>(OntologyFilterModel, FilterEnableStatus.Ontology, obj => ((IMoleculeProperty)obj).Ontology));
-            }
-            if ((status & FilterEnableStatus.Adduct) != FilterEnableStatus.None) {
-                var AdductFilterModel = new KeywordFilterModel("Adduct filter", KeywordFilteringType.KeepIfWordIsNull);
-                keywordFilterManagers.Add(new KeywordFilterManager<T>(AdductFilterModel, FilterEnableStatus.Adduct, obj => ((IFilterable)obj).AdductIonName));
-            }
-            if ((status & FilterEnableStatus.Comment) != FilterEnableStatus.None) {
-                var CommentFilterModel = new KeywordFilterModel("Comment filter");
-                keywordFilterManagers.Add(new KeywordFilterManager<T>(CommentFilterModel, FilterEnableStatus.Comment, obj => ((IFilterable)obj).Comment));
-            }
-            var amplitudeFilterModel = new ValueFilterModel("Amplitude filter", 0d, 1d);
-            var tagSearchQueryBuilderModel = new PeakSpotTagSearchQueryBuilderModel();
-            PeakSpotFiltering = new PeakSpotFiltering<T>(valueFilterManagers, keywordFilterManagers, amplitudeFilterModel, tagSearchQueryBuilderModel);
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel((IReadOnlyList<IFilterable>)spots, valueFilterManagers.Select(pair => pair.Filter).ToArray(), keywordFilterManagers.Select(pair => pair.Filter).ToArray(), amplitudeFilterModel, tagSearchQueryBuilderModel);
+            PeakSpotFiltering = new PeakSpotFiltering<T>(status);
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel((IReadOnlyList<IFilterable>)spots, PeakSpotFiltering.ValueFilterManagers.Select(pair => pair.Filter).ToArray(), PeakSpotFiltering.KeywordFilterManagers.Select(pair => pair.Filter).ToArray(), PeakSpotFiltering.AmplitudeFilterModel, PeakSpotFiltering.TagSearchQueryBuilder);
         }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
