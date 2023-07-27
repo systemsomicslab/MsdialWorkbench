@@ -12,7 +12,7 @@ namespace CompMs.Common.Lipidomics
 
         }
 
-        IChain ITotalChain.GetChainByPosition(int snPosition) {
+        IChain ITotalChain.GetChainByPosition(int position) {
             return null;
         }
 

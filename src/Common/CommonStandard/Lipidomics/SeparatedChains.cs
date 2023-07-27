@@ -40,16 +40,16 @@ namespace CompMs.Common.Lipidomics
                 throw new ArgumentException(nameof(chains));
             }
             _chains = chains.Select(c => new ChainInformation(c.Item1, c.Item2)).ToArray();
-            _decided = _chains.Where(c => c.SnPosition >= 0).ToArray();
-            _undecided = _chains.Where(c => c.SnPosition < 0).ToArray();
+            _decided = _chains.Where(c => c.Position >= 0).ToArray();
+            _undecided = _chains.Where(c => c.Position < 0).ToArray();
             if (chains.All(c => c.Item1.DoubleBond.UnDecidedCount == 0)) {
                 description |= LipidDescription.DoubleBondPosition;
             }
             Description = description;
         }
 
-        IChain ITotalChain.GetChainByPosition(int snPosition) {
-            return _chains.FirstOrDefault(c => c.SnPosition == snPosition)?.Chain;
+        IChain ITotalChain.GetChainByPosition(int position) {
+            return _chains.FirstOrDefault(c => c.Position == position)?.Chain;
         }
 
         public IChain[] GetDeterminedChains() {
@@ -79,7 +79,7 @@ namespace CompMs.Common.Lipidomics
         public override string ToString() {
             var box = new ChainInformation[_chains.Length];
             foreach (var c in _decided) {
-                box[c.SnPosition - 1] = c;
+                box[c.Position - 1] = c;
             }
             var idx = 0;
             foreach (var c in _undecided) {
@@ -90,7 +90,7 @@ namespace CompMs.Common.Lipidomics
                     box[idx++] = c;
                 }
             }
-            return string.Concat(box.Select(c => c.Chain.ToString() + (c.SnPosition < 0 ? "_" : "/"))).TrimEnd('_', '/');
+            return string.Concat(box.Select(c => c.Chain.ToString() + (c.Position < 0 ? "_" : "/"))).TrimEnd('_', '/');
         }
 
         bool ITotalChain.Includes(ITotalChain chains) {
@@ -105,7 +105,7 @@ namespace CompMs.Common.Lipidomics
             }
             var used = new HashSet<ChainInformation>();
             foreach (var d in _decided) {
-                if (sChains._decided.FirstOrDefault(d2 => d2.SnPosition == d.SnPosition) is ChainInformation ci && d.Chain.Includes(ci.Chain)) {
+                if (sChains._decided.FirstOrDefault(d2 => d2.Position == d.Position) is ChainInformation ci && d.Chain.Includes(ci.Chain)) {
                     used.Add(ci);
                 }
                 else {
@@ -133,7 +133,7 @@ namespace CompMs.Common.Lipidomics
             }
             var used = new HashSet<ChainInformation>();
             foreach (var d in _decided) {
-                if (sChains._decided.FirstOrDefault(d2 => d2.SnPosition == d.SnPosition) is ChainInformation ci && d.Chain.Equals(ci.Chain)) {
+                if (sChains._decided.FirstOrDefault(d2 => d2.Position == d.Position) is ChainInformation ci && d.Chain.Equals(ci.Chain)) {
                     used.Add(ci);
                 }
                 else {
@@ -157,9 +157,9 @@ namespace CompMs.Common.Lipidomics
         }
 
         class ChainInformation {
-            public ChainInformation(IChain chain, int snPosition) {
+            public ChainInformation(IChain chain, int position) {
                 Chain = chain;
-                SnPosition = snPosition;
+                Position = position;
             }
 
             public ChainInformation(IChain chain) : this(chain, -1) {
@@ -169,10 +169,10 @@ namespace CompMs.Common.Lipidomics
             public IChain Chain { get; }
 
             /// <summary>
-            /// sn position 1-indexed.
-            /// If sn position is indetermined, -1 assigned.
+            /// position 1-indexed.
+            /// If position is indetermined, -1 assigned.
             /// </summary>
-            public int SnPosition { get; }
+            public int Position { get; }
         }
 
         class GenerateChain {
@@ -183,8 +183,8 @@ namespace CompMs.Common.Lipidomics
                 _box = new IChain[length + 1];
                 _remains = Enumerable.Range(1, length).ToList();
                 foreach (var d in determined) {
-                    _box[d.SnPosition] = d.Chain;
-                    _remains.Remove(d.SnPosition);
+                    _box[d.Position] = d.Chain;
+                    _remains.Remove(d.Position);
                 }
             }
 

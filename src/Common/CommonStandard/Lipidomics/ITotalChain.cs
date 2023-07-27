@@ -93,15 +93,15 @@ namespace CompMs.Common.Lipidomics
             return default;
         }
 
-        public static void ApplyToChain(this ITotalChain chains, int snPosition, Action<IChain> action) {
-            var chain = chains.GetChainByPosition(snPosition);
+        public static void ApplyToChain(this ITotalChain chains, int position, Action<IChain> action) {
+            var chain = chains.GetChainByPosition(position);
             if (chain != null) {
                 action?.Invoke(chain);
             }
         }
 
-        public static void ApplyToChain<T>(this ITotalChain chains, int snPosition, Action<T> action) where T: IChain {
-            var chain = chains.GetChainByPosition(snPosition);
+        public static void ApplyToChain<T>(this ITotalChain chains, int position, Action<T> action) where T: IChain {
+            var chain = chains.GetChainByPosition(position);
             if (chain is T c) {
                 action?.Invoke(c);
             }

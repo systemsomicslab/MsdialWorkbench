@@ -12,11 +12,11 @@ namespace CompMs.Common.Lipidomics
             _chains = chains;
         }
 
-        IChain ITotalChain.GetChainByPosition(int snPosition) {
-            if (snPosition > _chains.Length) {
+        IChain ITotalChain.GetChainByPosition(int position) {
+            if (position > _chains.Length) {
                 return null;
             }
-            return _chains[snPosition - 1];
+            return _chains[position - 1];
         }
 
         IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator) {
