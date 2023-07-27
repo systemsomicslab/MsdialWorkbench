@@ -14,29 +14,18 @@ namespace CompMs.Common.Lipidomics
             var position_cutoff = 1;
             var double_cutoff = 0.5;
 
-            if (molecule.Chains.ChainCount > 1) {
-                if (molecule.Chains.GetChain(1).CarbonCount == molecule.Chains.GetChain(2).CarbonCount &&
-                    molecule.Chains.GetChain(2).CarbonCount == molecule.Chains.GetChain(3).CarbonCount &&
-                    molecule.Chains.GetChain(1).DoubleBond == molecule.Chains.GetChain(2).DoubleBond &&
-                    molecule.Chains.GetChain(2).DoubleBond == molecule.Chains.GetChain(3).DoubleBond) {
+            var chains = molecule.Chains.GetAllChains();
+            if (chains.Length == 3) {
+                if (ChainsEqual(chains[0], chains[1]) && ChainsEqual(chains[1], chains[2])) {
                     chain_cutoff = 1;
                 } 
-                else if (molecule.Chains.GetChain(1).CarbonCount == molecule.Chains.GetChain(2).CarbonCount &&
-                    molecule.Chains.GetChain(2).CarbonCount != molecule.Chains.GetChain(3).CarbonCount &&
-                    molecule.Chains.GetChain(1).DoubleBond == molecule.Chains.GetChain(2).DoubleBond &&
-                    molecule.Chains.GetChain(2).DoubleBond != molecule.Chains.GetChain(3).DoubleBond) {
+                else if (ChainsEqual(chains[0], chains[1]) && !ChainsEqual(chains[1], chains[2])) {
                     chain_cutoff = 2;
                 }
-                else if (molecule.Chains.GetChain(1).CarbonCount != molecule.Chains.GetChain(2).CarbonCount &&
-                    molecule.Chains.GetChain(2).CarbonCount == molecule.Chains.GetChain(3).CarbonCount &&
-                    molecule.Chains.GetChain(1).DoubleBond != molecule.Chains.GetChain(2).DoubleBond &&
-                    molecule.Chains.GetChain(2).DoubleBond == molecule.Chains.GetChain(3).DoubleBond) {
+                else if (!ChainsEqual(chains[0], chains[1]) && ChainsEqual(chains[1], chains[2])) {
                     chain_cutoff = 2;
                 }
-                else if (molecule.Chains.GetChain(1).CarbonCount == molecule.Chains.GetChain(3).CarbonCount &&
-                    molecule.Chains.GetChain(2).CarbonCount != molecule.Chains.GetChain(3).CarbonCount &&
-                    molecule.Chains.GetChain(1).DoubleBond == molecule.Chains.GetChain(3).DoubleBond &&
-                    molecule.Chains.GetChain(2).DoubleBond != molecule.Chains.GetChain(3).DoubleBond) {
+                else if (ChainsEqual(chains[0], chains[2]) && !ChainsEqual(chains[1], chains[2])) {
                     chain_cutoff = 2;
                 }
                 else {
@@ -50,6 +39,10 @@ namespace CompMs.Common.Lipidomics
             var defaultResult = EieioMsCharacterizationUtility.GetDefaultScore(
                     scan, reference, tolerance, mzBegin, mzEnd, class_cutoff, chain_cutoff, position_cutoff, double_cutoff);
             return StandardMsCharacterizationUtility.GetDefaultCharacterizationResultForTriacylGlycerols(molecule, defaultResult);
+        }
+
+        private static bool ChainsEqual(IChain a, IChain b) {
+            return a.CarbonCount == b.CarbonCount && a.DoubleBond == b.DoubleBond;
         }
     }
 }
