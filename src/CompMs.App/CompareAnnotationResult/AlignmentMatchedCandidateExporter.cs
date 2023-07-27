@@ -13,7 +13,8 @@ namespace CompMs.App.CompareAnnotationResult
                 new XElement("SpotId", spot.MasterAlignmentID),
                 new XElement("Adduct", spot.AdductType.AdductIonName),
                 new XElement("Mz", spot.MassCenter),
-                ToXmlElement(((IChromatogramPeak)spot).ChromXs));
+                ToXmlElement(((IChromatogramPeak)spot).ChromXs),
+                new XElement("IsMsmsAssigned", spot.IsMsmsAssigned));
             AddIfContentIsNotEmpty(spotElement, "Name", spot.Name);
             var peaks = await spot.AlignedPeakPropertiesTask.ConfigureAwait(false);
             foreach (var peak in peaks) {
@@ -33,6 +34,7 @@ namespace CompMs.App.CompareAnnotationResult
             if (candidate.Spot.NormalizedPeakHeight > 0) {
                 peakElement.Add(new XElement("NormalizedPeakHeight", candidate.Spot.NormalizedPeakHeight));
             }
+            peakElement.Add(new XElement("IsMsmsAssigned", candidate.Spot.IsMsmsAssigned));
             if (candidate.IsLipidReference) {
                 peakElement.Add(new XElement("IsExactlyReference", candidate.IsExactlyReference));
                 peakElement.Add(new XElement("IsSubgroupOfReference", candidate.IsSubgroupOfReference));

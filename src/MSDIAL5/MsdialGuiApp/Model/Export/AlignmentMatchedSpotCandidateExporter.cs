@@ -16,7 +16,8 @@ namespace CompMs.App.Msdial.Model.Export
                 new XElement("SpotId", spot.MasterAlignmentID),
                 new XElement("Adduct", spot.AdductIonName),
                 new XElement("Mz", spot.Mass),
-                ToXmlElement(((IChromatogramPeak)spot).ChromXs));
+                ToXmlElement(((IChromatogramPeak)spot).ChromXs),
+                new XElement("IsMsmsAssigned", spot.IsMsmsAssigned));
             AddIfContentIsNotEmpty(spotElement, "Name", spot.Name);
             var task = spot.AlignedPeakPropertiesModelProperty.ToTask();
             var peaks = spot.AlignedPeakPropertiesModelProperty.Value;
@@ -40,6 +41,7 @@ namespace CompMs.App.Msdial.Model.Export
             if (candidate.Spot.NormalizedPeakHeight > 0) {
                 peakElement.Add(new XElement("NormalizedPeakHeight", candidate.Spot.NormalizedPeakHeight));
             }
+            peakElement.Add(new XElement("IsMsmsAssigned", candidate.Spot.IsMsmsAssigned));
             if (candidate.IsLipidReference) {
                 peakElement.Add(new XElement("IsExactlyReference", candidate.IsExactlyReference));
                 peakElement.Add(new XElement("IsSubgroupOfReference", candidate.IsSubgroupOfReference));
