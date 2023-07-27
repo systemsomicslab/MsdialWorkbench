@@ -54,7 +54,7 @@ namespace CompMs.Common.Lipidomics
             var nlMass = adduct.AdductIonName == "[M+Na]+" ? 0.0 : adduct.AdductIonAccurateMass - MassDiffDictionary.ProtonMass;
             spectrum.AddRange(GetMGSpectrum(lipid, adduct));
             if (lipid.Description.Has(LipidDescription.Chain)) {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetAllChains(), adduct));
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetDeterminedChains(), adduct));
                 if (lipid.Chains is PositionLevelChains plChains) {
                     //spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.Chains[0], adduct));
                 }

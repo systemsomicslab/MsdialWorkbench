@@ -91,12 +91,12 @@ namespace CompMs.Common.Lipidomics
             var spectrum = new List<SpectrumPeak>();
             var nlmass = adduct.AdductIonName == "[M+H]+" ? H2O : 0.0;
             spectrum.AddRange(GetCerNSd7Spectrum(lipid, adduct));
-            if (lipid.Chains.GetChain(1) is SphingoChain sphingo)
+            if (lipid.Chains.GetChainByPosition(1) is SphingoChain sphingo)
             {
                 spectrum.AddRange(GetSphingoSpectrum(lipid, sphingo, adduct));
                 spectrum.AddRange(GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlmass, 100d));
             }
-            if (lipid.Chains.GetChain(2) is AcylChain acyl)
+            if (lipid.Chains.GetChainByPosition(2) is AcylChain acyl)
             {
                 spectrum.AddRange(GetAcylSpectrum(lipid, acyl, adduct));
                 spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlmass - sphD7MassBalance, 30d));

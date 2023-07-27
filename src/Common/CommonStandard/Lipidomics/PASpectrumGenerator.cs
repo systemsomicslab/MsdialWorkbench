@@ -78,7 +78,7 @@ namespace CompMs.Common.Lipidomics
             spectrum.AddRange(GetPASpectrum(lipid, adduct));
             var nlMass = adduct.AdductIonAccurateMass - MassDiffDictionary.ProtonMass + H3PO4;
             if (lipid.Description.Has(LipidDescription.Chain)) {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetAllChains(), adduct));
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetDeterminedChains(), adduct));
                 lipid.Chains.ApplyToChain(1, chain => spectrum.AddRange(GetAcylPositionSpectrum(lipid, chain, adduct)));
                 spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, lipid.Chains.GetTypedChains<AcylChain>(), adduct, nlMass));
             }

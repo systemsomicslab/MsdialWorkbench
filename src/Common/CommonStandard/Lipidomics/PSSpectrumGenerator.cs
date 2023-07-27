@@ -91,7 +91,7 @@ namespace CompMs.Common.Lipidomics
             var nlMass = adduct.AdductIonName == "[M+Na]+" ? 0.0 : C3H8NO6P;
             spectrum.AddRange(GetPSSpectrum(lipid, adduct));
             if (lipid.Description.Has(LipidDescription.Chain)) {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetAllChains(), adduct));
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetDeterminedChains(), adduct));
                 lipid.Chains.ApplyToChain(1, chain => spectrum.AddRange(GetAcylPositionSpectrum(lipid, chain, adduct)));
                 spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, lipid.Chains.GetTypedChains<AcylChain>(), adduct, nlMass));
             }

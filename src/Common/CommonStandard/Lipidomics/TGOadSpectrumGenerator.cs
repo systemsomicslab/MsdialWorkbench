@@ -79,7 +79,7 @@ namespace CompMs.Common.Lipidomics
 
             if (lipid.Chains is PositionLevelChains plChains)
             {
-                foreach (AcylChain chain in lipid.Chains.GetAllChains())
+                foreach (AcylChain chain in lipid.Chains.GetDeterminedChains())
                 {
                     spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, chain, adduct, nlMass, abundance, oadId));
                 }
@@ -105,7 +105,7 @@ namespace CompMs.Common.Lipidomics
                 );
                 if (lipid.Chains is SeparatedChains Chains)
                 {
-                    foreach (AcylChain chain in lipid.Chains.GetAllChains())
+                    foreach (AcylChain chain in lipid.Chains.GetDeterminedChains())
                     {
                         spectrum.AddRange
                         (

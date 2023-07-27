@@ -20,7 +20,7 @@ namespace CompMs.Common.Lipidomics
                 var chainList = new List<string>();
                 var jointPosition = 10;
                 
-                foreach (var chain in lipid.Chains.GetAllChains())
+                foreach (var chain in lipid.Chains.GetDeterminedChains())
                 {
                     var oxidized = chain.Oxidized;
                     var doubleBond = chain.DoubleBond;

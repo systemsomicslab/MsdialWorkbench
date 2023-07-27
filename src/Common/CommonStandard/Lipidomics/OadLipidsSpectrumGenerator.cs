@@ -137,7 +137,7 @@ namespace CompMs.Common.Lipidomics
                     spectrum.Add(new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor });
                     if (lipid.Chains is PositionLevelChains tgChains)
                     {
-                        foreach (var chain in lipid.Chains.GetAllChains())
+                        foreach (var chain in lipid.Chains.GetDeterminedChains())
                         {
                             spectrum.Add(new SpectrumPeak(lipid.Mass - chain.Mass - MassDiffDictionary.OxygenMass, 200d, $"{chain} loss") { SpectrumComment = SpectrumComment.acylchain });
                         }
@@ -157,7 +157,7 @@ namespace CompMs.Common.Lipidomics
                     spectrum.Add(new SpectrumPeak(lipid.Mass - H2O + MassDiffDictionary.ProtonMass, 999d, "[M+H]+ -H2O") { SpectrumComment = SpectrumComment.metaboliteclass });
                     if (lipid.Chains is PositionLevelChains dgChains)
                     {
-                        foreach (var chain in lipid.Chains.GetAllChains())
+                        foreach (var chain in lipid.Chains.GetDeterminedChains())
                         {
                             spectrum.Add(new SpectrumPeak(lipid.Mass - chain.Mass - MassDiffDictionary.OxygenMass - Electron, 800d, $"{chain} loss") { SpectrumComment = SpectrumComment.acylchain });
                         }

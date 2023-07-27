@@ -14,7 +14,7 @@ namespace CompMs.Common.Lipidomics
             var position_cutoff = 1;
             var double_cutoff = 0.5;
 
-            var chains = molecule.Chains.GetAllChains();
+            var chains = molecule.Chains.GetDeterminedChains();
             if (chains.Length == 3) {
                 if (ChainsEqual(chains[0], chains[1]) && ChainsEqual(chains[1], chains[2])) {
                     chain_cutoff = 1;

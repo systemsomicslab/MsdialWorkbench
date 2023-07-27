@@ -92,7 +92,7 @@ namespace CompMs.Common.Lipidomics
             spectrum.AddRange(GetLPCSpectrum(lipid, adduct));
 
             if (lipid.Description.Has(LipidDescription.Chain)) {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetAllChains(), adduct));
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetDeterminedChains(), adduct));
                 lipid.Chains.ApplyToChain(1, chain => spectrum.AddRange(GetAcylPositionSpectrum(lipid, chain, adduct)));
                 spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, lipid.Chains.GetTypedChains<AcylChain>(), adduct));
             }

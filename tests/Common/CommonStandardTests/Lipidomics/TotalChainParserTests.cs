@@ -21,7 +21,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(34, actual.CarbonCount);
             Assert.AreEqual(2, actual.DoubleBondCount);
             Assert.AreEqual(0, actual.OxidizedCount);
-            IChain[] chains = actual.GetAllChains();
+            IChain[] chains = actual.GetDeterminedChains();
             Assert.IsInstanceOfType(chains[0], typeof(AcylChain));
             Assert.IsInstanceOfType(chains[1], typeof(AcylChain));
 
@@ -30,7 +30,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(34, actual.CarbonCount);
             Assert.AreEqual(2, actual.DoubleBondCount);
             Assert.AreEqual(0, actual.OxidizedCount);
-            chains = actual.GetAllChains();
+            chains = actual.GetDeterminedChains();
             Assert.IsInstanceOfType(chains[0], typeof(AcylChain));
             Assert.AreEqual(16, chains[0].CarbonCount);
             Assert.AreEqual(0, chains[0].DoubleBondCount);
@@ -46,7 +46,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(52, actual.CarbonCount);
             Assert.AreEqual(3, actual.DoubleBondCount);
             Assert.AreEqual(0, actual.OxidizedCount);
-            chains = actual.GetAllChains();
+            chains = actual.GetDeterminedChains();
             Assert.IsInstanceOfType(chains[0], typeof(AcylChain));
             Assert.AreEqual(16, chains[0].CarbonCount);
             Assert.AreEqual(0, chains[0].DoubleBondCount);
@@ -93,7 +93,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(34, actual.CarbonCount);
             Assert.AreEqual(2, actual.DoubleBondCount);
             Assert.AreEqual(0, actual.OxidizedCount);
-            var chains = actual.GetAllChains();
+            var chains = actual.GetDeterminedChains();
             Assert.IsInstanceOfType(chains[0], typeof(AlkylChain));
             Assert.IsInstanceOfType(chains[1], typeof(AcylChain));
 
@@ -102,7 +102,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(34, actual.CarbonCount);
             Assert.AreEqual(2, actual.DoubleBondCount);
             Assert.AreEqual(2, actual.OxidizedCount);
-            chains = actual.GetAllChains();
+            chains = actual.GetDeterminedChains();
             Assert.IsInstanceOfType(chains[0], typeof(AlkylChain));
             Assert.IsInstanceOfType(chains[1], typeof(AcylChain));
 
@@ -111,7 +111,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(36, actual.CarbonCount);
             Assert.AreEqual(0, actual.DoubleBondCount);
             Assert.AreEqual(0, actual.OxidizedCount);
-            chains = actual.GetAllChains();
+            chains = actual.GetDeterminedChains();
             Assert.IsInstanceOfType(chains[0], typeof(AcylChain));
             Assert.AreEqual(19, chains[0].CarbonCount);
             Assert.AreEqual(0, chains[0].DoubleBondCount);
@@ -126,7 +126,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(34, actual.CarbonCount);
             Assert.AreEqual(2, actual.DoubleBondCount);
             Assert.AreEqual(0, actual.OxidizedCount);
-            chains = actual.GetAllChains();
+            chains = actual.GetDeterminedChains();
             Assert.IsInstanceOfType(chains[0], typeof(AlkylChain));
             Assert.AreEqual(16, chains[0].CarbonCount);
             Assert.AreEqual(0, chains[0].DoubleBondCount);
@@ -146,7 +146,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(62, actual.CarbonCount);
             Assert.AreEqual(3, actual.DoubleBondCount);
             Assert.AreEqual(4, actual.OxidizedCount);
-            var chains = actual.GetAllChains();
+            var chains = actual.GetDeterminedChains();
             Assert.IsInstanceOfType(chains[0], typeof(SphingoChain));
             Assert.AreEqual(18, chains[0].CarbonCount);
             Assert.AreEqual(1, chains[0].DoubleBondCount);

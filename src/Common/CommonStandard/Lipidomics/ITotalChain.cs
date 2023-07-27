@@ -18,11 +18,19 @@ namespace CompMs.Common.Lipidomics
         LipidDescription Description { get; }
 
         /// <summary>
+        /// Retrieve the determined chain by position.
+        /// The position here refers to a specific order defined for each lipid class.
+        /// It may not necessarily match the commonly used sn-position for lipids.
         /// </summary>
-        /// <param name="snPosition">1-indexed sn position</param>
-        /// <returns></returns>
-        IChain GetChain(int snPosition);
-        IChain[] GetAllChains();
+        /// <param name="position">1-indexed position</param>
+        /// <returns>IChain if the specified position chain is determined; otherwise, null.</returns>
+        IChain GetChainByPosition(int position);
+        /// <summary>
+        /// This method returns an array of lipid chains with confirmed structures.
+        /// It only includes the chains that have their structures determined, and there is no guarantee that the position and index will match.
+        /// </summary>
+        /// <returns>IChain[]</returns>
+        IChain[] GetDeterminedChains();
         bool Includes(ITotalChain chains);
         IEnumerable<ITotalChain> GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator);
     }
@@ -70,7 +78,7 @@ namespace CompMs.Common.Lipidomics
         }
 
         public static IEnumerable<T> GetTypedChains<T>(this ITotalChain chain) where T : IChain {
-            return chain.GetAllChains().OfType<T>();
+            return chain.GetDeterminedChains().OfType<T>();
         }
 
         public static (T, U) Deconstruct<T, U>(this ITotalChain chain) where T : IChain where U : IChain {
@@ -86,14 +94,14 @@ namespace CompMs.Common.Lipidomics
         }
 
         public static void ApplyToChain(this ITotalChain chains, int snPosition, Action<IChain> action) {
-            var chain = chains.GetChain(snPosition);
+            var chain = chains.GetChainByPosition(snPosition);
             if (chain != null) {
                 action?.Invoke(chain);
             }
         }
 
         public static void ApplyToChain<T>(this ITotalChain chains, int snPosition, Action<T> action) where T: IChain {
-            var chain = chains.GetChain(snPosition);
+            var chain = chains.GetChainByPosition(snPosition);
             if (chain is T c) {
                 action?.Invoke(c);
             }

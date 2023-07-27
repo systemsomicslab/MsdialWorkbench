@@ -20,7 +20,7 @@ namespace CompMs.Common.Lipidomics
             var position_cutoff = 1;
             var double_cutoff = 0.5;
 
-            var chains = molecule.Chains.GetAllChains();
+            var chains = molecule.Chains.GetDeterminedChains();
             if (chains.Length == 2) {
                 if (chains[0].CarbonCount == chains[1].CarbonCount && chains[0].DoubleBond == chains[1].DoubleBond) {
                     chain_cutoff = 1;

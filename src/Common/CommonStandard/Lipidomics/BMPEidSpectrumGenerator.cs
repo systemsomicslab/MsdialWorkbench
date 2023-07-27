@@ -70,7 +70,7 @@ namespace CompMs.Common.Lipidomics
             var spectrum = new List<SpectrumPeak>();
             spectrum.AddRange(GetBMPSpectrum(lipid, adduct));
             if (lipid.Description.Has(LipidDescription.Chain)) {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetAllChains(), adduct));
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetDeterminedChains(), adduct));
                 lipid.Chains.ApplyToChain(1, chain => spectrum.AddRange(GetAcylPositionSpectrum(lipid, chain, adduct)));
                 //spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, lipid.Chains.GetTypedChains<AcylChain>(), adduct, nlMass: nlMass));
                 spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, 0.0, 200d));
@@ -202,10 +202,10 @@ namespace CompMs.Common.Lipidomics
             var spectrum = new List<SpectrumPeak>();
             if (lipid.Chains is SeparatedChains)
             {
-                foreach (var lossChain in lipid.Chains.GetAllChains())
+                foreach (var lossChain in lipid.Chains.GetDeterminedChains())
                 {
                     nlMass = lossChain.Mass + C3H9O6P - MassDiffDictionary.HydrogenMass + adduct.AdductIonAccurateMass - MassDiffDictionary.ProtonMass;
-                    var chains = lipid.Chains.GetAllChains().Where((c) => !c.Equals(lossChain)).ToList();
+                    var chains = lipid.Chains.GetDeterminedChains().Where((c) => !c.Equals(lossChain)).ToList();
                     foreach (var chain in chains)
                     {
                         if (chain.DoubleBond.Count == 0 || chain.DoubleBond.UnDecidedCount > 0) continue;

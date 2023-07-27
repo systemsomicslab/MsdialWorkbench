@@ -84,12 +84,12 @@ namespace CompMs.Common.Lipidomics
             spectrum.AddRange(GetSHexCerSpectrum(lipid, adduct));
             if (lipid.Chains is PositionLevelChains)
             {
-                if (lipid.Chains.GetChain(1) is SphingoChain sphingo)
+                if (lipid.Chains.GetChainByPosition(1) is SphingoChain sphingo)
                 {
                     spectrum.AddRange(GetSphingoSpectrum(lipid, sphingo, adduct));
                     //spectrum.AddRange(spectrumGenerator.GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlmass, 20d));
                 }
-                if (lipid.Chains.GetChain(2) is AcylChain acyl)
+                if (lipid.Chains.GetChainByPosition(2) is AcylChain acyl)
                 {
                     spectrum.AddRange(GetAcylSpectrum(lipid, acyl, adduct));
                     //spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlmass, 20d));

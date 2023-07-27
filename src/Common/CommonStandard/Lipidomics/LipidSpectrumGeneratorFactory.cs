@@ -127,7 +127,7 @@ namespace CompMs.Common.Lipidomics
     {
         public IEnumerable<double> Evaluate(ILipid lipid, AdductIon adduct) {
             if (lipid is Lipid lipid_ && lipid_.Chains is SeparatedChains chains) {
-                return lipid.Chains.GetAllChains().Select(chain => chain.Mass);
+                return lipid.Chains.GetDeterminedChains().Select(chain => chain.Mass);
             }
             return Enumerable.Empty<double>();
         }
@@ -143,7 +143,7 @@ namespace CompMs.Common.Lipidomics
 
         public IEnumerable<double> Evaluate(ILipid lipid, AdductIon adduct) {
             if (lipid is Lipid lipid_ && lipid_.Chains is PositionLevelChains chains && chains.ChainCount >= Position) {
-                var chain = lipid.Chains.GetChain(Position);
+                var chain = lipid.Chains.GetChainByPosition(Position);
                 yield return chain.Mass;
             }
         }
@@ -159,7 +159,7 @@ namespace CompMs.Common.Lipidomics
 
         public IEnumerable<double> Evaluate(ILipid lipid, AdductIon adduct) {
             if (lipid is Lipid lipid_ && lipid_.Chains is SeparatedChains chains && chains.ChainCount >= Position) {
-                return CreateSpectrum(lipid.Chains.GetChain(Position));
+                return CreateSpectrum(lipid.Chains.GetChainByPosition(Position));
             }
             return Enumerable.Empty<double>();
         }

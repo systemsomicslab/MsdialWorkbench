@@ -48,11 +48,11 @@ namespace CompMs.Common.Lipidomics
             Description = description;
         }
 
-        IChain ITotalChain.GetChain(int snPosition) {
+        IChain ITotalChain.GetChainByPosition(int snPosition) {
             return _chains.FirstOrDefault(c => c.SnPosition == snPosition)?.Chain;
         }
 
-        public IChain[] GetAllChains() {
+        public IChain[] GetDeterminedChains() {
             return _chains.Select(c => c.Chain).ToArray();
         }
 

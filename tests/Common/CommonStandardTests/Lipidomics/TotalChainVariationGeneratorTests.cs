@@ -12,7 +12,7 @@ namespace CompMs.Common.Lipidomics.Tests
             ITotalChain totalChain = new TotalChain(34, 2, 0, 2, 0, 0);
 
             var tmp = totalChain.GetCandidateSets(generator).ToArray();
-            var actual = totalChain.GetCandidateSets(generator).Cast<MolecularSpeciesLevelChains>().Select(act => act.GetAllChains()).ToArray();
+            var actual = totalChain.GetCandidateSets(generator).Cast<MolecularSpeciesLevelChains>().Select(act => act.GetDeterminedChains()).ToArray();
             Assert.IsTrue(actual.All(set => set.Length == 2));
             foreach (var a in actual) {
                 Assert.IsInstanceOfType(a[0], typeof(AcylChain));
@@ -40,7 +40,7 @@ namespace CompMs.Common.Lipidomics.Tests
             CollectionAssert.AreEquivalent(expects, tuples);
 
             totalChain = new TotalChain(34, 2, 0, 1, 1, 0);
-            actual = totalChain.GetCandidateSets(generator).Select(act => act.GetAllChains()).ToArray();
+            actual = totalChain.GetCandidateSets(generator).Select(act => act.GetDeterminedChains()).ToArray();
             Assert.IsTrue(actual.All(set => set.Length == 2));
             foreach (var a in actual) {
                 Assert.IsInstanceOfType(a[0], typeof(AlkylChain));
@@ -94,7 +94,7 @@ namespace CompMs.Common.Lipidomics.Tests
             ITotalChain totalChain = new TotalChain(34, 1, 2, 1, 0, 1);
 
             var tmp = totalChain.GetCandidateSets(generator).ToArray();
-            var actual = totalChain.GetCandidateSets(generator).Cast<PositionLevelChains>().Select(act => act.GetAllChains()).ToArray();
+            var actual = totalChain.GetCandidateSets(generator).Cast<PositionLevelChains>().Select(act => act.GetDeterminedChains()).ToArray();
             Assert.IsTrue(actual.All(set => set.Length == 2));
             foreach (var a in actual) {
                 Assert.IsInstanceOfType(a[0], typeof(SphingoChain));

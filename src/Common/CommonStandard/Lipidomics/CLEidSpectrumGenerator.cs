@@ -72,9 +72,9 @@ namespace CompMs.Common.Lipidomics
             spectrum.AddRange(GetCLSpectrum(lipid, adduct));
 
             if (lipid.Description.Has(LipidDescription.Chain)) {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetAllChains(), adduct));
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetDeterminedChains(), adduct));
                 //spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, lipid.Chains.GetTypedChains<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct));
-                if (lipid.Chains.GetChain(1) is AcylChain c1 && lipid.Chains.GetChain(2) is AcylChain c2 && lipid.Chains.GetChain(3) is AcylChain c3 && lipid.Chains.GetChain(4) is AcylChain c4) {
+                if (lipid.Chains.GetChainByPosition(1) is AcylChain c1 && lipid.Chains.GetChainByPosition(2) is AcylChain c2 && lipid.Chains.GetChainByPosition(3) is AcylChain c3 && lipid.Chains.GetChainByPosition(4) is AcylChain c4) {
                     var sn1sn2 = new[] { c1, c2, };
                     var sn3sn4mass = lipid.Mass - (c3.Mass + c4.Mass + C3H3O2 + MassDiffDictionary.HydrogenMass);
                     spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, sn1sn2.Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct, sn3sn4mass + nlMass));
@@ -189,7 +189,7 @@ namespace CompMs.Common.Lipidomics
         private static SpectrumPeak[] EidSpecificSpectrum(Lipid lipid, AdductIon adduct, double nlMass, double intensity)
         {
             var spectrum = new List<SpectrumPeak>();
-            if (lipid.Chains.GetChain(1) is IChain c1 && lipid.Chains.GetChain(2) is IChain c2 && lipid.Chains.GetChain(3) is IChain c3 && lipid.Chains.GetChain(4) is IChain c4)
+            if (lipid.Chains.GetChainByPosition(1) is IChain c1 && lipid.Chains.GetChainByPosition(2) is IChain c2 && lipid.Chains.GetChainByPosition(3) is IChain c3 && lipid.Chains.GetChainByPosition(4) is IChain c4)
             {
                 var sn1sn2mass = lipid.Mass - (c1.Mass + c2.Mass + C3H3O2 + MassDiffDictionary.HydrogenMass);
                 var sn3sn4mass = lipid.Mass - (c3.Mass + c4.Mass + C3H3O2 + MassDiffDictionary.HydrogenMass);

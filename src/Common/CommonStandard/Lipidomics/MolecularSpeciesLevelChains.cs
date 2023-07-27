@@ -12,7 +12,7 @@ namespace CompMs.Common.Lipidomics
 
         }
 
-        IChain ITotalChain.GetChain(int snPosition) {
+        IChain ITotalChain.GetChainByPosition(int snPosition) {
             return null;
         }
 
@@ -21,10 +21,10 @@ namespace CompMs.Common.Lipidomics
         }
 
         public override string ToString() {
-            if (GetAllChains().Count(c => c.CarbonCount > 0) == 1) {
-                return GetAllChains().First(c => c.CarbonCount > 0).ToString(); // for LPC...
+            if (GetDeterminedChains().Count(c => c.CarbonCount > 0) == 1) {
+                return GetDeterminedChains().First(c => c.CarbonCount > 0).ToString(); // for LPC...
             }
-            return string.Join("_", GetAllChains().Select(c => c.ToString()));
+            return string.Join("_", GetDeterminedChains().Select(c => c.ToString()));
         }
 
         bool ITotalChain.Includes(ITotalChain chains) {
@@ -33,9 +33,9 @@ namespace CompMs.Common.Lipidomics
             }
 
             var matching = new BipartiteMatching(ChainCount + chains.ChainCount);
-            for (int i = 0; i < GetAllChains().Length; i++) {
-                for (int j = 0; j < sChains.GetAllChains().Length; j++) {
-                    if (GetAllChains()[i].Includes(sChains.GetAllChains()[j])) {
+            for (int i = 0; i < GetDeterminedChains().Length; i++) {
+                for (int j = 0; j < sChains.GetDeterminedChains().Length; j++) {
+                    if (GetDeterminedChains()[i].Includes(sChains.GetDeterminedChains()[j])) {
                         matching.AddEdge(i, j + ChainCount);
                     }
                 }
@@ -50,7 +50,7 @@ namespace CompMs.Common.Lipidomics
                 && DoubleBondCount == other.DoubleBondCount
                 && OxidizedCount == other.OxidizedCount
                 && Description == other.Description
-                && GetAllChains().Zip(mChains.GetAllChains(), (a, b) => a.Equals(b)).All(p => p);
+                && GetDeterminedChains().Zip(mChains.GetDeterminedChains(), (a, b) => a.Equals(b)).All(p => p);
         }
 
         public override TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {

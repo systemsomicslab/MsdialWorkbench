@@ -69,8 +69,8 @@ namespace CompMs.Common.Lipidomics
             var spectrum = new List<SpectrumPeak>();
             spectrum.AddRange(GetTGSpectrum(lipid, adduct));
             if (lipid.Description.Has(LipidDescription.Chain)) {
-                var chains = lipid.Chains.GetAllChains().ToList();
-                if (lipid.Chains.GetChain(2) is IChain sn2) {
+                var chains = lipid.Chains.GetDeterminedChains().ToList();
+                if (lipid.Chains.GetChainByPosition(2) is IChain sn2) {
                     spectrum.AddRange(GetAcylPositionSpectrum(lipid, sn2, adduct));
                     chains.Remove(sn2);
                 }

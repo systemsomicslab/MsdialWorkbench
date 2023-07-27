@@ -195,9 +195,9 @@ namespace CompMs.Common.Lipidomics
         private static SpectrumPeak[] EidSpecificSpectrum(Lipid lipid, AdductIon adduct, double nlMass, double intensity)
         {
             var spectrum = new List<SpectrumPeak>();
-            if (lipid.Chains.GetChain(1) is IChain sn23) { // HBMP sn-2/sn-3/sn-2'/sn-3'
+            if (lipid.Chains.GetChainByPosition(1) is IChain sn23) { // HBMP sn-2/sn-3/sn-2'/sn-3'
                 nlMass = sn23.Mass + C3H9O6P - MassDiffDictionary.HydrogenMass + adduct.AdductIonAccurateMass - MassDiffDictionary.ProtonMass;
-                var sn23ps = lipid.Chains.GetAllChains().ToList();
+                var sn23ps = lipid.Chains.GetDeterminedChains().ToList();
                 sn23ps.Remove(sn23);
                 foreach (var chain in sn23ps) {
                     if (chain.DoubleBond.Count == 0 || chain.DoubleBond.UnDecidedCount > 0 || chain.DoubleBond.Count < 3) continue;
