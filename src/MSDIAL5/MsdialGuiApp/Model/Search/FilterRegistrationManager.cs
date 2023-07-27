@@ -14,6 +14,8 @@ namespace CompMs.App.Msdial.Model.Search
         private bool _disposedValue;
         private readonly List<ValueFilterManager> _valueFilterManagers;
         private readonly List<KeywordFilterManager> _keywordFilterManagers;
+        private readonly ValueFilterModel _amplitudeFilterModel;
+        private readonly PeakSpotTagSearchQueryBuilderModel _tagSearchQueryBuilderModel;
 
         public FilterRegistrationManager(IReadOnlyList<T> spots, FilterEnableStatus status) {
             var valueFilterManagers = new List<ValueFilterManager>();
@@ -52,7 +54,9 @@ namespace CompMs.App.Msdial.Model.Search
                 keywordFilterManagers.Add(new KeywordFilterManager(CommentFilterModel, FilterEnableStatus.Comment, obj => ((IFilterable)obj).Comment));
             }
             _keywordFilterManagers = keywordFilterManagers;
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel((IReadOnlyList<IFilterable>)spots, valueFilterManagers.Select(pair => pair.Filter).ToArray(), keywordFilterManagers.Select(pair => pair.Filter).ToArray());
+            _amplitudeFilterModel = new ValueFilterModel("Amplitude filter", 0d, 1d);
+            _tagSearchQueryBuilderModel = new PeakSpotTagSearchQueryBuilderModel();
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel((IReadOnlyList<IFilterable>)spots, valueFilterManagers.Select(pair => pair.Filter).ToArray(), keywordFilterManagers.Select(pair => pair.Filter).ToArray(), _amplitudeFilterModel, _tagSearchQueryBuilderModel);
             PeakSpotFiltering = new PeakSpotFiltering<T>();
         }
 
