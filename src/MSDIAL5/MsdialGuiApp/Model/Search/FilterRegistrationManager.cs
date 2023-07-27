@@ -13,9 +13,9 @@ namespace CompMs.App.Msdial.Model.Search
     {
         private bool _disposedValue;
 
-        public FilterRegistrationManager(IReadOnlyList<T> spots, FilterEnableStatus status) {
-            PeakSpotFiltering = new PeakSpotFiltering<T>(status);
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel((IReadOnlyList<IFilterable>)spots, PeakSpotFiltering.ValueFilterManagers.Select(pair => pair.Filter).ToArray(), PeakSpotFiltering.KeywordFilterManagers.Select(pair => pair.Filter).ToArray(), PeakSpotFiltering.AmplitudeFilterModel, PeakSpotFiltering.TagSearchQueryBuilder);
+        public FilterRegistrationManager(IReadOnlyList<T> spots, PeakSpotFiltering<T> peakSpotFiltering) {
+            PeakSpotFiltering = peakSpotFiltering;
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel((IReadOnlyList<IFilterable>)spots, peakSpotFiltering.ValueFilterManagers.Select(pair => pair.Filter).ToArray(), peakSpotFiltering.KeywordFilterManagers.Select(pair => pair.Filter).ToArray(), peakSpotFiltering.AmplitudeFilterModel, peakSpotFiltering.TagSearchQueryBuilder);
         }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
