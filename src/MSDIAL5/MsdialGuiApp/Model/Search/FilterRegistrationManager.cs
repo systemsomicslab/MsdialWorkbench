@@ -12,10 +12,6 @@ namespace CompMs.App.Msdial.Model.Search
     internal sealed class FilterRegistrationManager<T> : IDisposable where T : IFilterable, IAnnotatedObject, IMoleculeProperty, IChromatogramPeak, ISpectrumPeak
     {
         private bool _disposedValue;
-        private readonly List<ValueFilterManager<T>> _valueFilterManagers;
-        private readonly List<KeywordFilterManager<T>> _keywordFilterManagers;
-        private readonly ValueFilterModel _amplitudeFilterModel;
-        private readonly PeakSpotTagSearchQueryBuilderModel _tagSearchQueryBuilderModel;
 
         public FilterRegistrationManager(IReadOnlyList<T> spots, FilterEnableStatus status) {
             var valueFilterManagers = new List<ValueFilterManager<T>>();
@@ -53,11 +49,10 @@ namespace CompMs.App.Msdial.Model.Search
                 var CommentFilterModel = new KeywordFilterModel("Comment filter");
                 keywordFilterManagers.Add(new KeywordFilterManager<T>(CommentFilterModel, FilterEnableStatus.Comment, obj => ((IFilterable)obj).Comment));
             }
-            _keywordFilterManagers = keywordFilterManagers;
-            _amplitudeFilterModel = new ValueFilterModel("Amplitude filter", 0d, 1d);
-            _tagSearchQueryBuilderModel = new PeakSpotTagSearchQueryBuilderModel();
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel((IReadOnlyList<IFilterable>)spots, valueFilterManagers.Select(pair => pair.Filter).ToArray(), keywordFilterManagers.Select(pair => pair.Filter).ToArray(), _amplitudeFilterModel, _tagSearchQueryBuilderModel);
-            PeakSpotFiltering = new PeakSpotFiltering<T>();
+            var amplitudeFilterModel = new ValueFilterModel("Amplitude filter", 0d, 1d);
+            var tagSearchQueryBuilderModel = new PeakSpotTagSearchQueryBuilderModel();
+            PeakSpotFiltering = new PeakSpotFiltering<T>(valueFilterManagers, keywordFilterManagers, amplitudeFilterModel, tagSearchQueryBuilderModel);
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel((IReadOnlyList<IFilterable>)spots, valueFilterManagers.Select(pair => pair.Filter).ToArray(), keywordFilterManagers.Select(pair => pair.Filter).ToArray(), amplitudeFilterModel, tagSearchQueryBuilderModel);
         }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
@@ -70,17 +65,7 @@ namespace CompMs.App.Msdial.Model.Search
                 if (collection is ListCollectionView list) {
                     list.IsLiveFiltering = true;
                 }
-                PeakSpotFiltering.AttachFilter(collection, peakFilterModel, PeakSpotNavigatorModel.TagSearchQueryBuilder, evaluator);
-                if ((status & FilterEnableStatus.Amplitude) != FilterEnableStatus.None) {
-                    PeakSpotFiltering.AttachFilter(PeakSpotNavigatorModel.AmplitudeFilterModel, obj => ((IFilterable)obj)?.RelativeAmplitudeValue ?? 0d, collection);
-                }
-                foreach (var valueFilterManager in _valueFilterManagers) {
-                    valueFilterManager.TryAttachFilter(PeakSpotFiltering, collection, status);
-                }
-                foreach (var keywordFilterManager in _keywordFilterManagers) {
-                    keywordFilterManager.TryAttachFilter(PeakSpotFiltering, collection, status);
-                }
-
+                PeakSpotFiltering.AttachFilter(collection, peakFilterModel, evaluator, status);
                 PeakSpotNavigatorModel.PeakSpotsCollection.Add(collection);
                 PeakSpotNavigatorModel.PeakFilters.Add(peakFilterModel);
             });
@@ -95,12 +80,7 @@ namespace CompMs.App.Msdial.Model.Search
                 if (disposing) {
                     PeakSpotFiltering.Dispose();
                     PeakSpotNavigatorModel.Dispose();
-                    foreach (var manager in _keywordFilterManagers) {
-                        manager.Dispose();
-                    }
                 }
-                _keywordFilterManagers.Clear();
-                _valueFilterManagers.Clear();
                 _disposedValue = true;
             }
         }

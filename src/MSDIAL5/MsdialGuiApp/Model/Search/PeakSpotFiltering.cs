@@ -18,9 +18,30 @@ namespace CompMs.App.Msdial.Model.Search
         private readonly Dictionary<ICollectionView, CompositeDisposable> _viewToDisposables = new Dictionary<ICollectionView, CompositeDisposable>();
         private bool _disposedValue;
 
-        public void AttachFilter(ICollectionView view, PeakFilterModel peakFilterModel, PeakSpotTagSearchQueryBuilderModel tagSearchQueryBuilder, IMatchResultEvaluator<T> evaluator) {
-            var pred = CreateFilter(peakFilterModel, evaluator, tagSearchQueryBuilder);
+        public PeakSpotFiltering(List<ValueFilterManager<T>> valueFilterManagers, List<KeywordFilterManager<T>> keywordFilterManagers, ValueFilterModel amplitudeFilterModel, PeakSpotTagSearchQueryBuilderModel tagSearchQueryBuilder) {
+            ValueFilterManagers = valueFilterManagers;
+            KeywordFilterManagers = keywordFilterManagers;
+            AmplitudeFilterModel = amplitudeFilterModel;
+            TagSearchQueryBuilder = tagSearchQueryBuilder;
+        }
+
+        public List<ValueFilterManager<T>> ValueFilterManagers { get; }
+        public List<KeywordFilterManager<T>> KeywordFilterManagers { get; }
+        public ValueFilterModel AmplitudeFilterModel { get; }
+        public PeakSpotTagSearchQueryBuilderModel TagSearchQueryBuilder { get; }
+
+        public void AttachFilter(ICollectionView view, PeakFilterModel peakFilterModel, IMatchResultEvaluator<T> evaluator, FilterEnableStatus status) {
+            var pred = CreateFilter(peakFilterModel, evaluator, TagSearchQueryBuilder);
             AttachFilterCore(pred.Invoke, view);
+            if ((status & FilterEnableStatus.Amplitude) != FilterEnableStatus.None) {
+                AttachFilter(AmplitudeFilterModel, obj => ((IFilterable)obj)?.RelativeAmplitudeValue ?? 0d, view);
+            }
+            foreach (var valueFilterManager in ValueFilterManagers) {
+                valueFilterManager.TryAttachFilter(this, view, status);
+            }
+            foreach (var keywordFilterManager in KeywordFilterManagers) {
+                keywordFilterManager.TryAttachFilter(this, view, status);
+            }
         }
 
         public void AttachFilter(ValueFilterModel filterModel, Func<T, double> convert, ICollectionView view) {
@@ -78,6 +99,9 @@ namespace CompMs.App.Msdial.Model.Search
         private void Dispose(bool disposing) {
             if (!_disposedValue) {
                 if (disposing) {
+                    foreach (var manager in KeywordFilterManagers) {
+                        manager.Dispose();
+                    }
                 }
                 var views = _viewToFilterMethods.Keys.ToArray();
                 foreach (var view in views) {
@@ -85,6 +109,8 @@ namespace CompMs.App.Msdial.Model.Search
                 }
                 _viewToFilterMethods.Clear();
                 _viewToDisposables.Clear();
+                ValueFilterManagers.Clear();
+                KeywordFilterManagers.Clear();
                 _disposedValue = true;
             }
         }
