@@ -26,7 +26,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                     .AddTo(Disposables);
             }
             else {
-                HorizontalAxis = fileClasses.OrderedClasses.ToReactiveCategoryAxisManager().AddTo(Disposables);
+                var sets = collectionChanged.Select(c => c.Select(item => item.Class).ToHashSet());
+                HorizontalAxis = fileClasses.OrderedClasses
+                    .CombineLatest(sets, (clss, s) => clss.Where(cls => s.Contains(cls)).ToArray())
+                    .ToReactiveCategoryAxisManager().AddTo(Disposables);
             }
             VerticalAxis = collectionChanged
                 .Where(c => c.Count > 0)

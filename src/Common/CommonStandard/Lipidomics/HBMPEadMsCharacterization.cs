@@ -18,6 +18,10 @@ namespace CompMs.Common.Lipidomics
 
             var defaultResult = EieioMsCharacterizationUtility.GetDefaultScore(
                     scan, reference, tolerance, mzBegin, mzEnd, 1, 2, 1, 0.5);
+            if (reference.Name.Contains("/")) {
+                defaultResult.IsPositionIonsExisted = true;
+            }
+
             return StandardMsCharacterizationUtility.GetDefaultCharacterizationResultForTriacylGlycerols(molecule, defaultResult);
         }
     }
