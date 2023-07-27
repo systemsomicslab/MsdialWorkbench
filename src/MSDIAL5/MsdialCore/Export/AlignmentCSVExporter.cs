@@ -93,8 +93,15 @@ namespace CompMs.MsdialCore.Export
         }
 
         private string JoinContents(params IEnumerable<string>[] contentss) {
-            var contents = contentss.SelectMany(cs => cs);
+            var contents = contentss.SelectMany(cs => cs.Select(WrapField));
             return string.Join(Separator, contents);
+        }
+
+        private string WrapField(string field) {
+            if (field.Contains(Separator)) {
+                return $"\"{field}\"";
+            }
+            return field;
         }
     }
 }

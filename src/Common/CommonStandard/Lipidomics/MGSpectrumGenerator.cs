@@ -24,6 +24,13 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.OxygenMass,
         }.Sum();
 
+        private static readonly double CH4O = new[]
+        {
+            MassDiffDictionary.CarbonMass,
+            MassDiffDictionary.HydrogenMass * 4,
+            MassDiffDictionary.OxygenMass,
+        }.Sum();
+
         public MGSpectrumGenerator()
         {
             spectrumGenerator = new SpectrumPeakGenerator();
@@ -60,6 +67,10 @@ namespace CompMs.Common.Lipidomics
                 }
                 // can't find spectrum rule TBC
                 //spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, lipid.Chains.GetTypedChains<AcylChain>(), adduct, nlMass));
+                if (adduct.AdductIonName == "[M+Na]+")
+                {
+                    spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, lipid.Chains.GetTypedChains<AcylChain>(), adduct, nlMass));
+                }
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
                 .Select(specs => new SpectrumPeak(specs.First().Mass, specs.Sum(n => n.Intensity), string.Join(", ", specs.Select(spec => spec.Comment)), specs.Aggregate(SpectrumComment.none, (a, b) => a | b.SpectrumComment)))
@@ -113,6 +124,16 @@ namespace CompMs.Common.Lipidomics
                      }
                 );
             }
+            else if (adduct.AdductIonName == "[M+Na]+")
+            {
+                spectrum.AddRange
+                (
+                     new[]
+                     {
+                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass) - CH4O, 300d, $"CH4O Loss") { SpectrumComment = SpectrumComment.metaboliteclass },
+                     }
+                );
+            }
 
             return spectrum.ToArray();
         }
@@ -132,14 +153,15 @@ namespace CompMs.Common.Lipidomics
             {
                 if (adduct.AdductIonName == "[M+Na]+")
                 {
-                    spectrum.AddRange
-                    (
-                         new[]
-                         {
-                        new SpectrumPeak(lipidMass - chainMass - MassDiffDictionary.HydrogenMass * 2, 50d, $"-{acylChain}"){ SpectrumComment = SpectrumComment.acylchain },
-                        new SpectrumPeak(lipidMass - chainMass - MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass, 200d, $"-{acylChain}-O"){ SpectrumComment = SpectrumComment.acylchain },
-                         }
-                    );
+                    //spectrum.AddRange
+                    //(
+                    //     new[]
+                    //     {
+                    //    //new SpectrumPeak(lipidMass - chainMass - MassDiffDictionary.HydrogenMass * 2, 50d, $"-{acylChain}"){ SpectrumComment = SpectrumComment.acylchain },
+                    //    //new SpectrumPeak(lipidMass - chainMass - MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass, 200d, $"-{acylChain}-O"){ SpectrumComment = SpectrumComment.acylchain },
+                    //    //new SpectrumPeak(adduct.ConvertToMz(lipid.Mass) - CH4O, 300d, $"CH4O Loss") { SpectrumComment = SpectrumComment.acylchain },
+                    //     }
+                    //);
                 }
                 else
                 {

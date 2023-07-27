@@ -94,7 +94,7 @@ namespace CompMs.Common.Lipidomics
             if (lipid.Chains.GetChainByPosition(1) is SphingoChain sphingo)
             {
                 spectrum.AddRange(GetSphingoSpectrum(lipid, sphingo, adduct));
-                spectrum.AddRange(GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlmass, 100d));
+                spectrum.AddRange(GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, 0d, 100d));
             }
             if (lipid.Chains.GetChainByPosition(2) is AcylChain acyl)
             {
@@ -195,23 +195,23 @@ namespace CompMs.Common.Lipidomics
             var chainLoss = (lipid.Mass + sphD7MassBalance) - sphingoD7mass - nlMass
                 + MassDiffDictionary.NitrogenMass
                 + 12 * 2
-                + MassDiffDictionary.OxygenMass * (sphingo.OxidizedCount > 2 ? 2 : sphingo.OxidizedCount)
+                //+ MassDiffDictionary.OxygenMass * (sphingo.OxidizedCount > 2 ? 2 : sphingo.OxidizedCount)
+                + MassDiffDictionary.OxygenMass * 1
                 + MassDiffDictionary.HydrogenMass * 5;
             var diffs = new double[sphingo.CarbonCount];
             for (int i = 0; i < sphingo.CarbonCount; i++)
             {
                 diffs[i] = CH2;
             }
-            //for (int i = sphingo.CarbonCount - 3; i < sphingo.CarbonCount; i++)
-            //{
-            //    diffs[i] = CD2;
-            //}
-
+            for (int i = sphingo.CarbonCount - 2; i < sphingo.CarbonCount; i++)
+            {
+                diffs[i] = CD2;
+            }
             if (sphingo.Oxidized != null)
             {
                 foreach (var ox in sphingo.Oxidized.Oxidises)
                 {
-                    if (ox > 3)
+                    if (ox > 2)
                     {
                         diffs[ox - 1] = diffs[ox - 1] + MassDiffDictionary.OxygenMass;
                     }
@@ -226,10 +226,6 @@ namespace CompMs.Common.Lipidomics
             for (int i = 3; i < sphingo.CarbonCount; i++)
             {
                 diffs[i] += diffs[i - 1];
-            }
-            for (int i = sphingo.CarbonCount - 3; i < sphingo.CarbonCount; i++)
-            {
-                diffs[i] = diffs[i] + (MassDiffDictionary.Hydrogen2Mass * 2 - MassDiffDictionary.HydrogenMass * 2)*(i - sphingo.CarbonCount +4);
             }
 
             var peaks = new List<SpectrumPeak>();

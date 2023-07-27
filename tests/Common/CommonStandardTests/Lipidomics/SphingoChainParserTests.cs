@@ -7,7 +7,8 @@ namespace CompMs.Common.Lipidomics.Tests
     public class SphingoChainParserTests
     {
         [TestMethod()]
-        public void ParseTest() {
+        public void ParseTest()
+        {
             var parser = new SphingoChainParser();
 
             var acyl = parser.Parse("16:0;O2");
@@ -69,7 +70,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(3, acyl.OxidizedCount);
             CollectionAssert.AreEqual(new[] { 1, 3, 4 }, ((SphingoChain)acyl).Oxidized.Oxidises);
 
-            acyl = parser.Parse("18:1;O3"); // "18:1(4);1OH,3OH,4OH"
+            acyl = parser.Parse("18:1;O3"); // 
             Assert.IsInstanceOfType(acyl, typeof(SphingoChain));
             Assert.AreEqual(18, acyl.CarbonCount);
             Assert.AreEqual(1, acyl.DoubleBondCount);

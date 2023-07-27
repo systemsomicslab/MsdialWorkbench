@@ -97,6 +97,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return CeramideEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.HexCer_NS:
                     return HexCerEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.Hex2Cer:
+                    return Hex2CerEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.HBMP:
                     return HBMPEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
 
@@ -105,6 +107,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.EtherPC:
                     return EtherPCEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.EtherPE:
+
                     return EtherPEEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
 
                 case LbmClass.SHexCer:
@@ -1413,11 +1416,11 @@ namespace CompMs.Common.Algorithm.Scoring {
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
 
                 case LbmClass.DGTS:
-                    return LipidMsmsCharacterization.JudgeIfDgts(msScanProp, ms2tol, refMz,
+                    return LipidEieioMsmsCharacterization.JudgeIfDgts(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
 
                 case LbmClass.LDGTS:
-                    return LipidMsmsCharacterization.JudgeIfLdgts(msScanProp, ms2tol, refMz,
+                    return LipidEieioMsmsCharacterization.JudgeIfLdgts(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                 case LbmClass.DGCC:
                     return LipidMsmsCharacterization.JudgeIfDgcc(msScanProp, ms2tol, refMz,

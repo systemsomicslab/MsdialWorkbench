@@ -197,7 +197,7 @@ namespace CompMs.Common.Lipidomics
             {
                 foreach (var ox in sphingo.Oxidized.Oxidises)
                 {
-                    if (ox > 3)
+                    if (ox > 1)
                     {
                         diffs[ox - 1] = diffs[ox - 1] + MassDiffDictionary.OxygenMass;
                     }
