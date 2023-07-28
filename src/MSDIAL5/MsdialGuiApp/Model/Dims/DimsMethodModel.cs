@@ -20,6 +20,7 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -62,6 +63,8 @@ namespace CompMs.App.Msdial.Model.Dims
             DimsAlignmentMetadataAccessorFactory metadataAccessorFactory = new DimsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter);
             var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
             var currentAlignmentResult = this.ObserveProperty(m => m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            AlignmentFilesForExport alignmentFilesForExport = new AlignmentFilesForExport(alignmentFiles.Files, this.ObserveProperty(m => m.AlignmentFile)).AddTo(Disposables);
+            var isNormalized = alignmentFilesForExport.CanExportNormalizedData(currentAlignmentResult.Select(r => r?.NormalizationSetModel.IsNormalized ?? Observable.Return(false)).Switch()).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(currentAlignmentResult, filter);
             var peakGroup = new AlignmentExportGroupModel(
                 "Peaks",
@@ -75,8 +78,8 @@ namespace CompMs.App.Msdial.Model.Dims
                 {
                     new ExportType("Raw data (Height)", new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, isSelected: true),
                     new ExportType("Raw data (Area)", new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", stats),
-                    new ExportType("Normalized data (Height)", new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", stats),
-                    new ExportType("Normalized data (Area)", new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", stats),
+                    new ExportType("Normalized data (Height)", new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", stats, isNormalized),
+                    new ExportType("Normalized data (Area)", new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", stats, isNormalized),
                     new ExportType("Alignment ID", new LegacyQuantValueAccessor("ID", storage.Parameter), "PeakID"),
                     new ExportType("m/z", new LegacyQuantValueAccessor("MZ", storage.Parameter), "Mz"),
                     new ExportType("S/N", new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
@@ -98,7 +101,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
             var spectraAndReference = new AlignmentMatchedSpectraExportModel(peakSpotSupplyer, storage.DataBaseMapper, analysisFileBeanModelCollection.IncludedAnalysisFiles, CompoundSearcherCollection.BuildSearchers(storage.DataBases, storage.DataBaseMapper));
-            AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, spectraAndReference, }, this.ObserveProperty(m => m.AlignmentFile), alignmentFiles.Files, peakSpotSupplyer, storage.Parameter.DataExportParam).AddTo(Disposables);
+            AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, spectraAndReference, }, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam);
         }
 
         public PeakFilterModel PeakFilterModel { get; }
