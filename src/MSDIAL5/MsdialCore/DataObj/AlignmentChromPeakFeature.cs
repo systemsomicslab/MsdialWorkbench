@@ -13,7 +13,7 @@ using System.Linq;
 namespace CompMs.MsdialCore.DataObj
 {
     [MessagePackObject]
-    public class AlignmentChromPeakFeature : IChromatogramPeakFeature, IMSIonProperty, IAnnotatedObject, INormalizableValue {
+    public class AlignmentChromPeakFeature : IChromatogramPeak, IChromatogramPeakFeature, IMSIonProperty, IAnnotatedObject, INormalizableValue {
 
         public AlignmentChromPeakFeature() {
             Formula = new Formula();
@@ -261,6 +261,18 @@ namespace CompMs.MsdialCore.DataObj
 
         // INormalizableValue
         double INormalizableValue.PeakHeight => PeakHeightTop;
+
+        // IChromatogramPeak members
+        int IChromatogramPeak.ID => MasterPeakID;
+
+        ChromXs IChromatogramPeak.ChromXs {
+            get => ChromXsTop;
+            set => ChromXsTop = value;
+        }
+        double ISpectrumPeak.Intensity {
+            get => PeakHeightTop;
+            set => PeakHeightTop = value;
+        }
 
         public AlignmentChromPeakFeature Clone() {
             return new AlignmentChromPeakFeature

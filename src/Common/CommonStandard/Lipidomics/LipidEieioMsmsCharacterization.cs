@@ -928,6 +928,7 @@ namespace CompMs.Common.Lipidomics
             int Sn1Carbon, int Sn2Carbon, int Sn1Double, int Sn2Double,
             AdductIon adduct)
         {
+            if (totalCarbon <= 28) return null; // currently carbon <= 28 is recognized as Lyso PE
             var spectrum = msScanProp.Spectrum;
             if (spectrum == null || spectrum.Count == 0) return null;
             if (adduct.IonMode == IonMode.Positive)
@@ -978,8 +979,8 @@ namespace CompMs.Common.Lipidomics
 
 
                     var query = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = NL_sn1, Intensity = 1 },
-                                    new SpectrumPeak() { Mass = NL_sn2, Intensity = 1 },
+                                    new SpectrumPeak() { Mass = NL_sn1, Intensity = 5 },
+                                    new SpectrumPeak() { Mass = NL_sn2, Intensity = 5 },
                                 };
 
                     var foundCount = 0;

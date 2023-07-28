@@ -221,6 +221,8 @@ namespace CompMs.App.Msdial.Model.DataObj
             }
         }
 
+        public bool IsMsmsAssigned => _innerModel.IsMsmsAssigned;
+
         // IAnnotatedObject interface
         MsScanMatchResultContainer IAnnotatedObject.MatchResults => _innerModel.MatchResults;
 
