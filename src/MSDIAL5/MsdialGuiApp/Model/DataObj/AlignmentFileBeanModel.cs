@@ -201,6 +201,10 @@ namespace CompMs.App.Msdial.Model.DataObj
             return MsdialProteomicsSerializer.LoadProteinResultContainer(_alignmentFile.ProteinAssembledResultFilePath);
         }
 
+        public AlignmentResultContainer.AlignmentResultContainerSlim GetSlimData() {
+            return AlignmentResultContainer.GetSlimData(_alignmentFile);
+        }
+
         // Implements IFileBean interface
         int IFileBean.FileID => _alignmentFile.FileID;
         string IFileBean.FilePath => _alignmentFile.FilePath;
