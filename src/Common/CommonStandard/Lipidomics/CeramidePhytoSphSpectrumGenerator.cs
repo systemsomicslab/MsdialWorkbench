@@ -82,18 +82,15 @@ namespace CompMs.Common.Lipidomics
             var spectrum = new List<SpectrumPeak>();
             var nlmass = 0.0;
             spectrum.AddRange(GetCerNSSpectrum(lipid, adduct));
-            if (lipid.Chains is PositionLevelChains plChains)
+            if (lipid.Chains.GetChainByPosition(1) is SphingoChain sphingo)
             {
-                if (plChains.Chains[0] is SphingoChain sphingo)
-                {
-                    spectrum.AddRange(GetSphingoSpectrum(lipid, sphingo, adduct));
-                    spectrum.AddRange(spectrumGenerator.GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlmass, 30d));
-                }
-                if (plChains.Chains[1] is AcylChain acyl)
-                {
-                    spectrum.AddRange(GetAcylSpectrum(lipid, acyl, adduct));
-                    spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlmass, 30d));
-                }
+                spectrum.AddRange(GetSphingoSpectrum(lipid, sphingo, adduct));
+                spectrum.AddRange(spectrumGenerator.GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlmass, 30d));
+            }
+            if (lipid.Chains.GetChainByPosition(2) is AcylChain acyl)
+            {
+                spectrum.AddRange(GetAcylSpectrum(lipid, acyl, adduct));
+                spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlmass, 30d));
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
                 .Select(specs => new SpectrumPeak(specs.First().Mass, specs.Sum(n => n.Intensity), string.Join(", ", specs.Select(spec => spec.Comment)), specs.Aggregate(SpectrumComment.none, (a, b) => a | b.SpectrumComment)))
