@@ -10,7 +10,6 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
-using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialImmsCore.Algorithm.Alignment;
 using CompMs.MsdialImmsCore.Export;
@@ -41,6 +40,7 @@ namespace CompMs.App.Msdial.Model.Imms
         private readonly IMsdialDataStorage<MsdialImmsParameter> _storage;
         private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly FacadeMatchResultEvaluator _matchResultEvaluator;
+        private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _peakSpotFiltering;
 
         public ImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker)
             : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, projectBaseParameter) {
@@ -58,9 +58,15 @@ namespace CompMs.App.Msdial.Model.Imms
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All);
 
             List<AnalysisFileBean> analysisFiles = analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File).ToList();
+            var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Rt & ~FilterEnableStatus.Protein;
+            if (parameter.TargetOmics == TargetOmics.Proteomics) {
+                filterEnabled |= FilterEnableStatus.Protein;
+            }
+            _peakSpotFiltering = new PeakSpotFiltering<AlignmentSpotPropertyModel>(filterEnabled).AddTo(Disposables);
+            var filter = _peakSpotFiltering.CreateFilter(PeakFilterModel, _matchResultEvaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), filterEnabled);
             var metadataAccessorFactory = new ImmsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter);
             var currentAlignmentResult = this.ObserveProperty(m => m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(PeakFilterModel, _matchResultEvaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), currentAlignmentResult);
+            AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(currentAlignmentResult, filter);
             var peakGroup = new AlignmentExportGroupModel(
                 "Peaks",
                 new ExportMethod(
@@ -240,6 +246,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 _matchResultEvaluator,
                 _storage.DataBases,
                 _storage.DataBaseMapper,
+                _peakSpotFiltering,
                 PeakFilterModel,
                 _projectBaseParameter,
                 _storage.Parameter,
