@@ -203,9 +203,9 @@ namespace CompMs.Common.Lipidomics
         }
 
         public override string ToString() {
-            //return $"{CarbonCount}:{DoubleBond}{Oxidized}";
-            var OxidizedcountString = OxidizedCount == 1 ? ";O" : ";O" + OxidizedCount.ToString();
-            return $"{CarbonCount}:{DoubleBond}{OxidizedcountString}";
+            return $"{CarbonCount}:{DoubleBond}{Oxidized}";
+            //var OxidizedcountString = OxidizedCount == 1 ? ";O" : ";O" + OxidizedCount.ToString();
+            //return $"{CarbonCount}:{DoubleBond}{OxidizedcountString}";
         }
 
         public bool Includes(IChain chain) {

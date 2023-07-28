@@ -6,17 +6,20 @@
     <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
 	<IcdUrl>http://prime.psc.riken.jp/compms/code/InchikeyClassyfireDB-VS5.icd</IcdUrl>
 	<MsdUrl>http://prime.psc.riken.jp/compms/code/MINEs-StructureDB-vs1.msd</MsdUrl>
-	<EsdUrl>http://prime.psc.riken.jp/compms/code/MsfinderStructureDB-VS15.esd</EsdUrl>	  
+	<EsdUrl>http://prime.psc.riken.jp/compms/code/MsfinderStructureDB-VS15.esd</EsdUrl>
+  <EtmUrl>http://prime.psc.riken.jp/compms/code/MSMS-DBs-vs1.etm</EtmUrl>
   </PropertyGroup>
   <Target Name="DownloadContentFiles" BeforeTargets="Build">
 	  <ItemGroup>
 		  <_DeployToItemIcd Include="$(ProjectDir)\Resources\*.icd" />
 		  <_DeployToItemMsd Include="$(ProjectDir)\Resources\*.msd" />
 		  <_DeployToItemEsd Include="$(ProjectDir)\Resources\*.esd" />
+      <_DeployToItemEtm Include="$(ProjectDir)\Resources\*.etm" />
 	  </ItemGroup>
 	  <DownloadFile SourceUrl="$(IcdUrl)" DestinationFolder="$(ProjectDir)\Resources" Condition="!Exists('%(_DeployToItemIcd.FullPath)')"></DownloadFile>
 	  <DownloadFile SourceUrl="$(MsdUrl)" DestinationFolder="$(ProjectDir)\Resources" Condition="!Exists('%(_DeployToItemMsd.FullPath)')"></DownloadFile>
 	  <DownloadFile SourceUrl="$(EsdUrl)" DestinationFolder="$(ProjectDir)\Resources" Condition="!Exists('%(_DeployToItemEsd.FullPath)')"></DownloadFile>
+    <DownloadFile SourceUrl="$(EtmUrl)" DestinationFolder="$(ProjectDir)\Resources" Condition="!Exists('%(_DeployToItemEtm.FullPath)')"></DownloadFile>
   </Target>
 
   <ItemGroup>

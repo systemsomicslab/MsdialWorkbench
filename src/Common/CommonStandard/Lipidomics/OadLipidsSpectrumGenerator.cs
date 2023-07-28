@@ -64,21 +64,8 @@ namespace CompMs.Common.Lipidomics
                     nlMass = 0.0;
                     if (lipid.Chains is PositionLevelChains plChains)
                     {
-                        AlkylChain alkyl;
-                        AcylChain acyl;
-
-                        if (plChains.Chains[0] is AlkylChain)
-                        {
-                            alkyl = (AlkylChain)plChains.Chains[0];
-                            acyl = (AcylChain)plChains.Chains[1];
-                        }
-                        else
-                        {
-                            alkyl = (AlkylChain)plChains.Chains[1];
-                            acyl = (AcylChain)plChains.Chains[0];
-                        }
-
-                        if (alkyl.DoubleBond.Bonds.Any(b => b.Position == 1))
+                        (AlkylChain alkyl, AcylChain acyl) = lipid.Chains.Deconstruct<AlkylChain, AcylChain>();
+                        if (alkyl != null && acyl != null && alkyl.DoubleBond.Bonds.Any(b => b.Position == 1))
                         {
                             spectrum.AddRange
                             (
@@ -150,7 +137,7 @@ namespace CompMs.Common.Lipidomics
                     spectrum.Add(new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor });
                     if (lipid.Chains is PositionLevelChains tgChains)
                     {
-                        foreach (var chain in tgChains.Chains)
+                        foreach (var chain in lipid.Chains.GetDeterminedChains())
                         {
                             spectrum.Add(new SpectrumPeak(lipid.Mass - chain.Mass - MassDiffDictionary.OxygenMass, 200d, $"{chain} loss") { SpectrumComment = SpectrumComment.acylchain });
                         }
@@ -170,7 +157,7 @@ namespace CompMs.Common.Lipidomics
                     spectrum.Add(new SpectrumPeak(lipid.Mass - H2O + MassDiffDictionary.ProtonMass, 999d, "[M+H]+ -H2O") { SpectrumComment = SpectrumComment.metaboliteclass });
                     if (lipid.Chains is PositionLevelChains dgChains)
                     {
-                        foreach (var chain in dgChains.Chains)
+                        foreach (var chain in lipid.Chains.GetDeterminedChains())
                         {
                             spectrum.Add(new SpectrumPeak(lipid.Mass - chain.Mass - MassDiffDictionary.OxygenMass - Electron, 800d, $"{chain} loss") { SpectrumComment = SpectrumComment.acylchain });
                         }
