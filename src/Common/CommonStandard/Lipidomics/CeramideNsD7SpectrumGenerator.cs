@@ -94,7 +94,7 @@ namespace CompMs.Common.Lipidomics
             if (lipid.Chains.GetChainByPosition(1) is SphingoChain sphingo)
             {
                 spectrum.AddRange(GetSphingoSpectrum(lipid, sphingo, adduct));
-                spectrum.AddRange(GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, 0d, 100d));
+                spectrum.AddRange(GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlmass, 100d));
             }
             if (lipid.Chains.GetChainByPosition(2) is AcylChain acyl)
             {
