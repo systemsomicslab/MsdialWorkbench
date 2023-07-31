@@ -373,9 +373,9 @@ namespace CompMs.Common.Lipidomics.Tests
                 #endregion
             };
             var result = LipidEieioMsmsCharacterization.JudgeIfEtherpe(target, 0.01, 704.5589f, 34, 1, 16, 18, 0, 1, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
-            var result2 = LipidEieioMsmsCharacterization.JudgeIfEtherpe(target, 0.01, 704.5589f, 34, 1, 16, 18, 1, 0, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
+            //var result2 = LipidEieioMsmsCharacterization.JudgeIfEtherpe(target, 0.01, 704.5589f, 34, 1, 16, 18, 1, 0, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
             Console.WriteLine($"{result.LipidName} : {result.Score}");
-            Console.WriteLine($"{result2.LipidName} : {result2.Score}");
+            //Console.WriteLine($"{result2.LipidName} : {result2.Score}");
         }
         [TestMethod()]
         public void EtherPE_P_CharacterizationTest()

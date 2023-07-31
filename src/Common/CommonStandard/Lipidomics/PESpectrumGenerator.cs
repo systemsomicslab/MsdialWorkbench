@@ -191,16 +191,16 @@ namespace CompMs.Common.Lipidomics
             {
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chainMass - MassDiffDictionary.OxygenMass - CH2), 100d, "-CH2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
             };
-            if (adduct.AdductIonName == "[M+H]+")
-            {
-                spectrum.AddRange
-                (
-                     new[]
-                     {
-                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chainMass - C2H8NO4P - MassDiffDictionary.OxygenMass - CH2), 100d, "-Header -CH2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
-                     }
-                );
-            }
+            //if (adduct.AdductIonName == "[M+H]+")
+            //{
+            //    spectrum.AddRange
+            //    (
+            //         new[]
+            //         {
+            //            new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chainMass - C2H8NO4P - MassDiffDictionary.OxygenMass - CH2), 100d, "-Header -CH2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
+            //         }
+            //    );
+            //}
             return spectrum.ToArray();
         }
 
