@@ -51,10 +51,16 @@ namespace CompMs.Common.Lipidomics
             }
             var result = InnerEnumerateDoubleBond(carbon, doubleBond);
             if (carbon == 14 && doubleBond.Count == 1 && doubleBond.UnDecidedCount == 1) {
-                result = result.Prepend(new DoubleBond(DoubleBondInfo.Z(9)));
+                result = result.Prepend(new DoubleBond(DoubleBondInfo.Create(9)));
             }
             if (carbon == 16 && doubleBond.Count == 1 && doubleBond.UnDecidedCount == 1) {
-                result = result.Prepend(new DoubleBond(DoubleBondInfo.Z(9)));
+                result = result.Prepend(new DoubleBond(DoubleBondInfo.Create(9)));
+            }
+            if (carbon == 15 && doubleBond.Count == 1 && doubleBond.UnDecidedCount == 1) {
+                result = result.Prepend(new DoubleBond(DoubleBondInfo.Create(10)));
+            }
+            if (carbon == 17 && doubleBond.Count == 1 && doubleBond.UnDecidedCount == 1) {
+                result = result.Prepend(new DoubleBond(DoubleBondInfo.Create(10)));
             }
             return result;
         }

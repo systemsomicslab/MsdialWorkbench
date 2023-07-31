@@ -55,7 +55,7 @@ namespace CompMs.Common.Lipidomics
                     generator.Add(LbmClass.PG, new PGSpectrumGenerator());
                     generator.Add(LbmClass.PI, new PISpectrumGenerator());
                     generator.Add(LbmClass.PS, new PSSpectrumGenerator());
-                    generator.Add(LbmClass.MG, new MGSpectrumGenerator());
+                    //generator.Add(LbmClass.MG, new MGSpectrumGenerator());
                     generator.Add(LbmClass.DG, new DGSpectrumGenerator());
                     generator.Add(LbmClass.TG, new TGSpectrumGenerator());
                     generator.Add(LbmClass.BMP, new BMPSpectrumGenerator());
@@ -74,7 +74,7 @@ namespace CompMs.Common.Lipidomics
                     //generator.Add(LbmClass.Cer_HDS, new CeramideSpectrumGenerator());
                     generator.Add(LbmClass.HexCer_NS, new HexCerSpectrumGenerator());
                     generator.Add(LbmClass.HexCer_NDS, new HexCerSpectrumGenerator());
-                    generator.Add(LbmClass.Hex2Cer, new Hex2CerSpectrumGenerator());
+                    //generator.Add(LbmClass.Hex2Cer, new Hex2CerSpectrumGenerator());
                     generator.Add(LbmClass.DGTA, new DGTASpectrumGenerator());
                     generator.Add(LbmClass.DGTS, new DGTSSpectrumGenerator());
                     generator.Add(LbmClass.LDGTA, new LDGTASpectrumGenerator());
@@ -85,7 +85,7 @@ namespace CompMs.Common.Lipidomics
                     generator.Add(LbmClass.DMEDFAHFA, new DMEDFAHFASpectrumGenerator());
                     generator.Add(LbmClass.DMEDFA, new DMEDFASpectrumGenerator());
                     generator.Add(LbmClass.DMEDOxFA, new DMEDFASpectrumGenerator());
-                    generator.Add(LbmClass.CE, new CESpectrumGenerator());
+                    //generator.Add(LbmClass.CE, new CESpectrumGenerator());
                     generator.Add(LbmClass.PC_d5, new PCd5SpectrumGenerator());
                     generator.Add(LbmClass.PE_d5, new PEd5SpectrumGenerator());
                     generator.Add(LbmClass.PG_d5, new PGd5SpectrumGenerator());
