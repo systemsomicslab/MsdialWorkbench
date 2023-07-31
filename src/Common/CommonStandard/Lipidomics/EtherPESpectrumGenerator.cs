@@ -92,7 +92,7 @@ namespace CompMs.Common.Lipidomics
             spectrum.AddRange(GetEtherPESpectrum(lipid, adduct));
             if (lipid.Chains is PositionLevelChains plChains)
             {
-                spectrum.AddRange(GetSn1PositionSpectrum(lipid, plChains.Chains[0], adduct));
+                //spectrum.AddRange(GetSn1PositionSpectrum(lipid, plChains.Chains[0], adduct));
 
                 AlkylChain alkyl;
                 AcylChain acyl;
