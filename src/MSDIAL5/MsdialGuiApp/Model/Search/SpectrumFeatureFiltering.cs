@@ -18,6 +18,44 @@ namespace CompMs.App.Msdial.Model.Search
         private readonly Dictionary<ICollectionView, CompositeDisposable> _viewToDisposables = new Dictionary<ICollectionView, CompositeDisposable>();
         private bool _disposedValue;
 
+        public SpectrumFeatureFiltering()
+        {
+            var valueFilterManagers = new List<ValueFilterManager>();
+            var RtFilterModel = new ValueFilterModel("Retention time", 0d, 1d);
+            valueFilterManagers.Add(new ValueFilterManager(RtFilterModel, FilterEnableStatus.Rt, (Ms1BasedSpectrumFeature f) => f?.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value ?? 0d));
+            var keywordFilterManagers = new List<KeywordFilterManager>();
+            var MetaboliteFilterModel = new KeywordFilterModel("Name filter");
+            keywordFilterManagers.Add(new KeywordFilterManager(MetaboliteFilterModel, FilterEnableStatus.Metabolite, (Ms1BasedSpectrumFeature f) => f.Molecule.Name));
+            var OntologyFilterModel = new KeywordFilterModel("Ontology filter", KeywordFilteringType.ExactMatch);
+            keywordFilterManagers.Add(new KeywordFilterManager(OntologyFilterModel, FilterEnableStatus.Ontology, (Ms1BasedSpectrumFeature f) => f.Molecule.Ontology));
+            var CommentFilterModel = new KeywordFilterModel("Comment filter");
+            keywordFilterManagers.Add(new KeywordFilterManager(CommentFilterModel, FilterEnableStatus.Comment, (Ms1BasedSpectrumFeature f) => f.Comment));
+
+            ValueFilterManagers = valueFilterManagers;
+            KeywordFilterManagers = keywordFilterManagers;
+            AmplitudeFilterModel = new ValueFilterModel("Amplitude filter", 0d, 1d);
+            TagSearchQueryBuilder = new PeakSpotTagSearchQueryBuilderModel();
+        }
+
+        public List<ValueFilterManager> ValueFilterManagers { get; }
+        public List<KeywordFilterManager> KeywordFilterManagers { get; }
+        public ValueFilterModel AmplitudeFilterModel { get; }
+        public PeakSpotTagSearchQueryBuilderModel TagSearchQueryBuilder { get; }
+
+        public void AttachFilter(ICollectionView view, PeakFilterModel peakFilterModel, IMatchResultEvaluator<Ms1BasedSpectrumFeature> evaluator, FilterEnableStatus status) {
+            var pred = CreateFilter(peakFilterModel, evaluator, TagSearchQueryBuilder);
+            AttachFilterCore(pred.Invoke, view);
+            if ((status & FilterEnableStatus.Amplitude) != FilterEnableStatus.None) {
+                AttachFilter(AmplitudeFilterModel, (Ms1BasedSpectrumFeature f) => f?.QuantifiedChromatogramPeak.PeakShape.AmplitudeOrderValue ?? 0d, view);
+            }
+            foreach (var valueFilterManager in ValueFilterManagers) {
+                valueFilterManager.TryAttachFilter(this, view, status);
+            }
+            foreach (var keywordFilterManager in KeywordFilterManagers) {
+                keywordFilterManager.TryAttachFilter(this, view, status);
+            }
+        }
+
         public void AttachFilter(ICollectionView view, PeakFilterModel peakFilterModel, PeakSpotTagSearchQueryBuilderModel tagSearchQueryBuilder, IMatchResultEvaluator<Ms1BasedSpectrumFeature> evaluator) {
             var pred = CreateFilter(peakFilterModel, evaluator, tagSearchQueryBuilder);
             AttachFilterCore(pred.Invoke, view);
@@ -93,6 +131,64 @@ namespace CompMs.App.Msdial.Model.Search
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+
+        internal class ValueFilterManager {
+            private readonly ValueFilterModel _model;
+            private readonly FilterEnableStatus _status;
+            private readonly Func<Ms1BasedSpectrumFeature, double> _convert;
+
+            public ValueFilterManager(ValueFilterModel model, FilterEnableStatus status, Func<Ms1BasedSpectrumFeature, double> convert)
+            {
+                _model = model;
+                _status = status;
+                _convert = convert;
+            }
+
+            public ValueFilterModel Filter => _model;
+
+            public void AttchFilter(SpectrumFeatureFiltering filtering, ICollectionView collection) {
+                filtering.AttachFilter(_model, _convert, collection);
+            }
+
+            public bool TryAttachFilter(SpectrumFeatureFiltering filtering, ICollectionView collection, FilterEnableStatus status) {
+                if ((status & _status) == _status) {
+                    AttchFilter(filtering, collection);
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        internal class KeywordFilterManager : IDisposable {
+            private readonly KeywordFilterModel _model;
+            private readonly FilterEnableStatus _status;
+            private readonly Func<Ms1BasedSpectrumFeature, string> _convert;
+
+            public KeywordFilterManager(KeywordFilterModel model, FilterEnableStatus status, Func<Ms1BasedSpectrumFeature, string> convert)
+            {
+                _model = model;
+                _status = status;
+                _convert = convert;
+            }
+
+            public KeywordFilterModel Filter => _model;
+
+            public void AttchFilter(SpectrumFeatureFiltering filtering, ICollectionView collection) {
+                filtering.AttachFilter(_model, _convert, collection);
+            }
+
+            public bool TryAttachFilter(SpectrumFeatureFiltering filtering, ICollectionView collection, FilterEnableStatus status) {
+                if ((status & _status) == _status) {
+                    AttchFilter(filtering, collection);
+                    return true;
+                }
+                return false;
+            }
+
+            public void Dispose() {
+                _model.Dispose();
+            }
         }
     }
 }
