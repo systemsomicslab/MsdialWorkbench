@@ -103,9 +103,65 @@
                         </DataTemplate>
                     </TabControl.ContentTemplate>
                 </TabControl>
-                <TabControl Grid.Row="1" Grid.Column="1">
-                    <chart:SpectrumFeaturePlotView DataContext="{Binding AnalysisViewModel.Value.PeakPlotViewModel}"/>
+                <TabControl ItemsSource="{Binding ResultViewModels}"
+                            SelectedItem="{Binding SelectedViewModel}"
+                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                            ItemContainerStyle="{StaticResource MainWindowTabItemStyle}"
+                            Grid.Row="1" Grid.Column="1">
+                    <TabControl.ItemTemplate>
+                        <DataTemplate>
+                            <DataTemplate.Resources>
+                                <DataTemplate DataType="{x:Type vm:GcmsAnalysisViewModel}">
+                                    <TextBlock Name="TabItem_RtMzPairwisePlotPeakView"
+                                               Text="Peak spot viewer"
+                                               VerticalAlignment="Stretch"
+                                               DataContextChanged="PeaksTabItem_DataContextChanged"/>
+                                </DataTemplate>
+                                <!--
+                                <DataTemplate DataType="{x:Type vm:GcmsAlignmentViewModel}">
+                                    <TextBlock Name="TabItem_RtMzPairwisePlotAlignmentView"
+                                               Text="Alignment spot viewer"
+                                               VerticalAlignment="Stretch"
+                                               DataContextChanged="PeaksTabItem_DataContextChanged"/>
+                                </DataTemplate>
+                                -->
+                            </DataTemplate.Resources>
+                            <ContentPresenter Content="{Binding Value}"/>
+                        </DataTemplate>
+                    </TabControl.ItemTemplate>
+                    <TabControl.ContentTemplate>
+                        <DataTemplate>
+                            <DataTemplate.Resources>
+                                <DataTemplate DataType="{x:Type vm:GcmsAnalysisViewModel}">
+                                    <chart:SpectrumFeaturePlotView DataContext="{Binding PeakPlotViewModel}"/>
+                                </DataTemplate>
+                                <!--
+                                <DataTemplate DataType="{x:Type vm:GcmsAlignmentViewModel}">
+                                    <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}"
+                                                                 Focusable="True"
+                                                                 behavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Focus, Mode=OneWay}"/
+                                </DataTemplate>
+                                -->
+                            </DataTemplate.Resources>
+                            <ContentPresenter Content="{Binding Value}"/>
+                        </DataTemplate>
+                    </TabControl.ContentTemplate>
                 </TabControl>
+                <Grid Grid.Row="1" Grid.Column="1">
+                    <Button DataContext="{Binding SelectedViewModel.Value, Mode=OneWay}"
+                            Command="{Binding ShowIonTableCommand, Mode=OneWay}"
+                            Background="AliceBlue"
+                            HorizontalContentAlignment="Right"
+                            VerticalAlignment="Top" HorizontalAlignment="Right"
+                            Height="25" Width="110" Margin="0,2,0,0">
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="/Resources/Table.png"/>
+                                <TextBlock Text="Show ion table" Margin="8,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
+                </Grid>
             </Grid>
 
             <Grid Grid.Column="1">

@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 
 namespace CompMs.App.Msdial.View.Gcms
 {
@@ -10,6 +11,14 @@ namespace CompMs.App.Msdial.View.Gcms
         public GcmsMainView()
         {
             InitializeComponent();
+        }
+
+        private void PeaksTabItem_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {
+            if (sender is TabItem item) {
+                if (e.NewValue != null) {
+                    item.IsSelected = true;
+                }
+            }
         }
     }
 }
