@@ -2992,7 +2992,11 @@ namespace CompMs.Common.Lipidomics
             var totalCarbonCount = sn1CarbonCount + sn2CarbonCount + sn3CarbonCount;
             var totalDoubleBond = sn1DoubleBond + sn2DoubleBond + sn3DoubleBond;
             var totalOxidizedCount = sn1OxidizedCount + sn2OxidizedCount + sn3OxidizedCount;
-            var chainPrefix = sn1AcylChainString.StartsWith("O-") ? "O-" : sn1AcylChainString.StartsWith("P-") ? "P-" : string.Empty;
+            var chainPrefix = string.Empty;
+            if (lipidclass.ToString().Contains("Ether"))
+            {
+                chainPrefix = sn1AcylChainString.StartsWith("O-") ? "O-" : sn1AcylChainString.StartsWith("P-") ? "P-" : string.Empty;
+            }
             var totalChain = getTotalChainString(totalCarbonCount, totalDoubleBond, totalOxidizedCount, lipidclass, chainPrefix, 3);
 
             var sublevelLipidName = lipidHeader + " " + totalChain;
