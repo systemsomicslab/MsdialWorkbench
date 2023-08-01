@@ -21,13 +21,13 @@ namespace CompMs.App.Msdial.Model.Search
         public SpectrumFeatureFiltering()
         {
             var valueFilterManagers = new List<ValueFilterManager>();
+            var MzFilterModel = new ValueFilterModel("m/z range", 0d, 1d);
+            valueFilterManagers.Add(new ValueFilterManager(MzFilterModel, FilterEnableStatus.Mz, (Ms1BasedSpectrumFeature f) => f?.QuantifiedChromatogramPeak.PeakFeature.Mass ?? 0d));
             var RtFilterModel = new ValueFilterModel("Retention time", 0d, 1d);
             valueFilterManagers.Add(new ValueFilterManager(RtFilterModel, FilterEnableStatus.Rt, (Ms1BasedSpectrumFeature f) => f?.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value ?? 0d));
             var keywordFilterManagers = new List<KeywordFilterManager>();
             var MetaboliteFilterModel = new KeywordFilterModel("Name filter");
             keywordFilterManagers.Add(new KeywordFilterManager(MetaboliteFilterModel, FilterEnableStatus.Metabolite, (Ms1BasedSpectrumFeature f) => f.Molecule.Name));
-            var OntologyFilterModel = new KeywordFilterModel("Ontology filter", KeywordFilteringType.ExactMatch);
-            keywordFilterManagers.Add(new KeywordFilterManager(OntologyFilterModel, FilterEnableStatus.Ontology, (Ms1BasedSpectrumFeature f) => f.Molecule.Ontology));
             var CommentFilterModel = new KeywordFilterModel("Comment filter");
             keywordFilterManagers.Add(new KeywordFilterManager(CommentFilterModel, FilterEnableStatus.Comment, (Ms1BasedSpectrumFeature f) => f.Comment));
 
