@@ -29,9 +29,9 @@ namespace CompMs.App.Msdial.Model.Setting
         public IObservable<IReadOnlyList<string>> OrderedClasses => _orderedClasses;
 
         public IObservable<IReadOnlyList<string>> GetOrderedUsedClasses(AnalysisFileBeanModelCollection files) {
-            var includedNames = files.AnalysisFiles.Select(f => f.ObserveProperty(f_ => f_.AnalysisFileIncluded).Select(include => include ? f : null))
+            var includedNames = files.AnalysisFiles.Select(f => f.ObserveProperty(f_ => f_.AnalysisFileIncluded).Select(include => include ? f.ObserveProperty(f_ => f_.AnalysisFileClass) : Observable.Return<string>(null)).Switch())
                 .CombineLatest()
-                .Select(fs => fs.Where(f => !(f is null)).Select(f => f.AnalysisFileClass).ToHashSet());
+                .Select(fs => fs.Where(f => !(f is null)).ToHashSet());
             return new[]
             {
                 _list.CollectionChangedAsObservable().ToUnit(),
