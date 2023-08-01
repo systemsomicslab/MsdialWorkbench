@@ -23,12 +23,12 @@ namespace CompMs.App.Msdial.Model.Search
 
     internal sealed class PeakSpotNavigatorModel : DisposableModelBase
     {
-        public PeakSpotNavigatorModel(object peakSpots, IReadOnlyList<ValueFilterModel> valueFilterModels, IReadOnlyList<KeywordFilterModel> keywordFilterModels) {
-            PeakSpots = peakSpots;
-            AmplitudeFilterModel = new ValueFilterModel("Amplitude filter", 0d, 1d);
+        public PeakSpotNavigatorModel(IReadOnlyList<IFilterable> peakSpots, IReadOnlyList<ValueFilterModel> valueFilterModels, IReadOnlyList<KeywordFilterModel> keywordFilterModels, ValueFilterModel amplitudeFilterModel, PeakSpotTagSearchQueryBuilderModel tagSearchQueryBuilderModel) {
+            PeakSpots = peakSpots ?? throw new ArgumentNullException(nameof(peakSpots));
+            AmplitudeFilterModel = amplitudeFilterModel;
             ValueFilterModels = new ObservableCollection<ValueFilterModel>(valueFilterModels);
             KeywordFilterModels = new ObservableCollection<KeywordFilterModel>(keywordFilterModels);
-            TagSearchQueryBuilder = new PeakSpotTagSearchQueryBuilderModel();
+            TagSearchQueryBuilder = tagSearchQueryBuilderModel;
         }
 
         public string SelectedAnnotationLabel {

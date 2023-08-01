@@ -192,5 +192,26 @@ namespace CompMs.MsdialCore.DataObj {
         private static IEnumerable<AlignmentSpotProperty> Flatten(AlignmentSpotProperty spot) {
             return (spot.AlignmentDriftSpotFeatures?.SelectMany(Flatten) ?? Enumerable.Empty<AlignmentSpotProperty>()).Prepend(spot);
         }
+
+        public static AlignmentResultContainerSlim GetSlimData(AlignmentFileBean file) {
+            return MessagePackHandler.LoadFromFile<AlignmentResultContainerSlim>(file.FilePath);
+        }
+
+        ///<summary>
+        ///This is dummy class to check serialized AlignmentResultContainer properties.
+        ///This class doesn't contain peak spot informations.
+        ///</summary>
+        [MessagePackObject]
+        public sealed class AlignmentResultContainerSlim
+        {
+            [Key(0)]
+            public Ionization Ionization { get; set; }
+            [Key(1)]
+            public int AlignmentResultFileID { get; set; }
+            [Key(2)]
+            public int TotalAlignmentSpotCount { get; set; }
+            [Key(4)]
+            public bool IsNormalized { get; set; }
+        }
     }
 }

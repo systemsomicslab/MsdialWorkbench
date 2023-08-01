@@ -52,6 +52,7 @@ namespace CompMs.App.Msdial.Model.Imms
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseStorage databases,
             DataBaseMapper mapper,
+            PeakSpotFiltering<AlignmentSpotPropertyModel> peakSpotFiltering,
             PeakFilterModel peakFilterModel,
             ProjectBaseParameterModel projectBaseParameter,
             ParameterBase parameter,
@@ -77,13 +78,8 @@ namespace CompMs.App.Msdial.Model.Imms
             SelectedBrush = brushMapDataSelector.SelectedBrush;
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
 
-            var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Rt & ~FilterEnableStatus.Protein;
-            if (parameter.TargetOmics == TargetOmics.Proteomics) {
-                filterEnabled |= FilterEnableStatus.Protein;
-            }
-            var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(Ms1Spots, filterEnabled).AddTo(Disposables);
+            var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(Ms1Spots, peakSpotFiltering).AddTo(Disposables);
             PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
-            var peakSpotFiltering = filterRegistrationManager.PeakSpotFiltering;
             filterRegistrationManager.AttachFilter(Ms1Spots, peakFilterModel, evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: ~FilterEnableStatus.Rt);
 
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel);
@@ -153,7 +149,7 @@ namespace CompMs.App.Msdial.Model.Imms
             };
             var barItemsLoaderDataProperty = NormalizationSetModel.Normalized.ToConstant(normalizedHeightLoader).ToReactiveProperty(NormalizationSetModel.IsNormalized.Value ? normalizedHeightLoader : heightLoader).AddTo(Disposables);
             Disposables.Add(peakSpotAxisLabelAsObservable.Connect());
-            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, barItemLoaderDatas, Observable.Return(classBrush), projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
+            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, barItemLoaderDatas, Observable.Return(classBrush), projectBaseParameter, fileCollection, projectBaseParameter.ClassProperties).AddTo(Disposables);
 
             var classToColor = parameter.ClassnameToColorBytes
                 .ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));

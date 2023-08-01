@@ -9,7 +9,7 @@
 		<ApplicationIcon>Resources\msdial_icon.ico</ApplicationIcon>
 		<PlatformTarget>AnyCPU</PlatformTarget>
 		<Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
-		<Lbm2Url>http://prime.psc.riken.jp/compms/code/Msp20221205132019_conventional_converted_dev.lbm2</Lbm2Url>
+		<Lbm2Url>http://prime.psc.riken.jp/compms/code/Msp20230427074147_conventional_converted_dev.lbm2</Lbm2Url>
 	</PropertyGroup>
 	<Target Name="DownloadContentFiles" BeforeTargets="Build">
 		<ItemGroup>

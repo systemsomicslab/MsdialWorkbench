@@ -165,9 +165,10 @@ namespace CompMs.Common.Lipidomics
             }
             //if (!oxidized.Oxidises.Contains(1) || !oxidized.Oxidises.Contains(3))
             //{
-            if (!oxidized.Oxidises.Contains(1)) {
-                throw new ArgumentException(nameof(oxidized));
-            }
+            //if (!oxidized.Oxidises.Contains(1))
+            //{
+            //    throw new ArgumentException(nameof(oxidized));
+            //}
 
             CarbonCount = carbonCount;
             DoubleBond = doubleBond ?? throw new ArgumentNullException(nameof(doubleBond));
@@ -203,6 +204,8 @@ namespace CompMs.Common.Lipidomics
 
         public override string ToString() {
             return $"{CarbonCount}:{DoubleBond}{Oxidized}";
+            //var OxidizedcountString = OxidizedCount == 1 ? ";O" : ";O" + OxidizedCount.ToString();
+            //return $"{CarbonCount}:{DoubleBond}{OxidizedcountString}";
         }
 
         public bool Includes(IChain chain) {

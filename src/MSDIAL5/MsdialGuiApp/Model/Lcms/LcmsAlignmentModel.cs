@@ -60,6 +60,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentFileBeanModel alignmentFileBean,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseStorage databases,
+            PeakSpotFiltering<AlignmentSpotPropertyModel> peakSpotFiltering,
             PeakFilterModel peakFilterModel,
             DataBaseMapper mapper,
             MsdialLcmsParameter parameter,
@@ -91,12 +92,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Lcms).AddTo(Disposables);
             NormalizationSetModel = new NormalizationSetModel(Container, files, fileCollection, mapper, evaluator, InternalStandardSetModel, parameter, messageBroker).AddTo(Disposables);
 
-            var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Dt & ~FilterEnableStatus.Protein;
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
                 var proteinResultContainer = alignmentFileBean.LoadProteinResult();
                 var proteinResultContainerModel = new ProteinResultContainerModel(proteinResultContainer, Ms1Spots, Target);
                 ProteinResultContainerModel = proteinResultContainerModel;
-                filterEnabled |= FilterEnableStatus.Protein;
             }
 
             _msdecResult = Target.SkipNull()
@@ -105,7 +104,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(Ms1Spots, filterEnabled).AddTo(Disposables);
+            var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(Ms1Spots, peakSpotFiltering).AddTo(Disposables);
             PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
             filterRegistrationManager.AttachFilter(Ms1Spots, peakFilterModel, evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: FilterEnableStatus.All & ~FilterEnableStatus.Dt);
 
@@ -181,7 +180,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             };
             var barItemsLoaderDataProperty = NormalizationSetModel.Normalized.ToConstant(normalizedHeightLoader).ToReactiveProperty(NormalizationSetModel.IsNormalized.Value ? normalizedHeightLoader : heightLoader).AddTo(Disposables);
             Disposables.Add(peakSpotAxisLabelAsObservable.Connect());
-            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, barItemLoaderDatas, barBrush, projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
+            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, barItemLoaderDatas, barBrush, projectBaseParameter, fileCollection, projectBaseParameter.ClassProperties).AddTo(Disposables);
 
             // Class eic
             var fileIdToFileName = files.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileName);

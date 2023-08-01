@@ -60,6 +60,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             ProjectBaseParameterModel projectBaseParameter,
             MsdialLcImMsParameter parameter,
             List<AnalysisFileBean> files,
+            PeakSpotFiltering<AlignmentSpotPropertyModel> peakSpotFiltering,
             PeakFilterModel peakFilterModel,
             PeakFilterModel accumulatedPeakFilterModel,
             IMessageBroker broker)
@@ -128,11 +129,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }).AddTo(Disposables);
             Ms1Spots = propModels;
 
-            var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Protein;
-            if (parameter.TargetOmics == TargetOmics.Proteomics) {
-                filterEnabled |= FilterEnableStatus.Protein;
-            }
-            var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(driftProps, filterEnabled).AddTo(Disposables);
+            var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(driftProps, peakSpotFiltering).AddTo(Disposables);
             var filterableEvaluator = evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e));
             filterRegistrationManager.AttachFilter(driftProps, peakFilterModel, filterableEvaluator, status: FilterEnableStatus.All);
             filterRegistrationManager.AttachFilter(propModels, peakFilterModel, evaluator: filterableEvaluator, status: FilterEnableStatus.All);
@@ -253,8 +250,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             };
             var barItemsLoaderDataProperty = NormalizationSetModel.Normalized.ToConstant(normalizedHeightLoader).ToReactiveProperty(NormalizationSetModel.IsNormalized.Value ? normalizedHeightLoader : heightLoader).AddTo(Disposables);
             Disposables.Add(peakSpotAxisLabelAsObservable.Connect());
-            RtBarChartModel = new BarChartModel(accumulatedTarget, barItemsLoaderDataProperty, barItemLoaderDatas, Observable.Return(classBrush), projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
-            DtBarChartModel = new BarChartModel(target, barItemsLoaderDataProperty, barItemLoaderDatas, Observable.Return(classBrush), projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
+            RtBarChartModel = new BarChartModel(accumulatedTarget, barItemsLoaderDataProperty, barItemLoaderDatas, Observable.Return(classBrush), projectBaseParameter, fileCollection, projectBaseParameter.ClassProperties).AddTo(Disposables);
+            DtBarChartModel = new BarChartModel(target, barItemsLoaderDataProperty, barItemLoaderDatas, Observable.Return(classBrush), projectBaseParameter, fileCollection, projectBaseParameter.ClassProperties).AddTo(Disposables);
 
             var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
             AlignmentSpotTableModel = new LcimmsAlignmentSpotTableModel(driftProps, target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderProperty, PeakSpotNavigatorModel).AddTo(Disposables);

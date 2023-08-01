@@ -89,17 +89,10 @@ namespace CompMs.Common.Lipidomics
         {
             var spectrum = new List<SpectrumPeak>();
             spectrum.AddRange(GetPSSpectrum(lipid, adduct));
-            if (lipid.Chains is MolecularSpeciesLevelChains mlChains)
-            {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, mlChains.Chains, adduct));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.Chains.OfType<AcylChain>(), adduct, nlMass: C3H8NO6P));
-                spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, nlMass: C3H8NO6P, 200d));
-            }
-            if (lipid.Chains is PositionLevelChains plChains)
-            {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.Chains, adduct));
-                spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.Chains[0], adduct));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.Chains.OfType<AcylChain>(), adduct, nlMass: C3H8NO6P));
+            if (lipid.Description.Has(LipidDescription.Chain)) {
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetDeterminedChains(), adduct));
+                lipid.Chains.ApplyToChain(1, chain => spectrum.AddRange(GetAcylPositionSpectrum(lipid, chain, adduct)));
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, lipid.Chains.GetTypedChains<AcylChain>(), adduct, nlMass: C3H8NO6P));
                 spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, nlMass: C3H8NO6P, 200d));
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
@@ -180,7 +173,7 @@ namespace CompMs.Common.Lipidomics
             var spectrum = new List<SpectrumPeak>();
             if (lipid.Chains is SeparatedChains chains)
             {
-                foreach (var chain in chains.Chains)
+                foreach (var chain in lipid.Chains.GetDeterminedChains())
                 {
                     if (chain.DoubleBond.Count == 0 || chain.DoubleBond.UnDecidedCount > 0) continue;
                     if (chain.DoubleBond.Count <= 3) { intensity = intensity * 0.1; }

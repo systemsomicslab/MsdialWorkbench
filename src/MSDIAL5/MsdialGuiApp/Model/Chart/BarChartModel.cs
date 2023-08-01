@@ -15,7 +15,7 @@ using System.Reactive.Linq;
 namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class BarChartModel : DisposableModelBase {
-        public BarChartModel(IObservable<AlignmentSpotPropertyModel> source, IReactiveProperty<BarItemsLoaderData> barItemsLoaderData, IList<BarItemsLoaderData> barItemsLoaderDatas, IObservable<IBrushMapper<BarItem>> classBrush, ProjectBaseParameterModel projectBaseParameter, FileClassPropertiesModel fileClassProperties) {
+        public BarChartModel(IObservable<AlignmentSpotPropertyModel> source, IReactiveProperty<BarItemsLoaderData> barItemsLoaderData, IList<BarItemsLoaderData> barItemsLoaderDatas, IObservable<IBrushMapper<BarItem>> classBrush, ProjectBaseParameterModel projectBaseParameter, AnalysisFileBeanModelCollection fileModelCollection, FileClassPropertiesModel fileClassProperties) {
             var barItemsLoader = barItemsLoaderData.Where(data => data != null).SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
             var barItemCollectionSource = source.CombineLatest(barItemsLoader,
                     (src, loader) => src is null || loader is null
@@ -55,7 +55,8 @@ namespace CompMs.App.Msdial.Model.Chart
                 .Subscribe(label => Elements.VerticalTitle = label)
                 .AddTo(Disposables);
 
-            OrderedClasses = fileClassProperties.OrderedClasses;
+            var orderedClasses = fileClassProperties.GetOrderedUsedClasses(fileModelCollection).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            OrderedClasses = orderedClasses;
         }
 
         public IObservable<List<BarItem>> BarItemsSource { get; }
