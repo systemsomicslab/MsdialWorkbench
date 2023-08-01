@@ -147,23 +147,23 @@
 
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID"
-                                    Binding="{Binding Path=MasterPeakID}"
+                                    Binding="{Binding Path=Scan.ScanID}"
                                     IsReadOnly="True" 
                                     Width="50" />
                 <DataGridTextColumn Header="RT(min)"
-                                    Binding="{Binding Path=ChromXs.RT.Value, StringFormat=F3}"
+                                    Binding="{Binding Path=Scan.ChromXs.RT.Value, StringFormat=F3}"
                                     IsReadOnly="True"
                                     Width="70" />
                 <DataGridTextColumn Header="RI"
-                                    Binding="{Binding Path=ChromXs.RI.Value, StringFormat=F3}"
+                                    Binding="{Binding Path=Scan.ChromXs.RI.Value, StringFormat=F3}"
                                     IsReadOnly="True"
                                     Width="70" />
                 <DataGridTextColumn Header="Quant mass"
-                                    Binding="{Binding Path=QuantMass, StringFormat=F0}"
+                                    Binding="{Binding Path=QuantifiedChromatogramPeak.PeakFeature.Mass, StringFormat=F0}"
                                     IsReadOnly="True"
                                     Width="70" />
                 <DataGridTextColumn Header="Metabolite name"
-                                    Binding="{Binding Path=Name}"
+                                    Binding="{Binding Path=Molecule.Name}"
                                     IsReadOnly="False"
                                     Width="2*" >
                     <DataGridTextColumn.CellStyle>
@@ -181,23 +181,23 @@
                                         Width="Auto"
                                         CellTemplate="{StaticResource EditPeakSpotTag}"/>
                 <DataGridTextColumn Header="Height"
-                                    Binding="{Binding Path=Intensity, StringFormat=F3}"
+                                    Binding="{Binding Path=QuantifiedChromatogramPeak.PeakFeature.PeakHeightTop, StringFormat=F3}"
                                     IsReadOnly="True"
                                     Width="70" />
                 <DataGridTextColumn Header="Area"
-                                    Binding="{Binding Path=PeakArea, StringFormat=F3}"
+                                    Binding="{Binding Path=QuantifiedChromatogramPeak.PeakFeature.PeakAreaAboveZero, StringFormat=F3}"
                                     IsReadOnly="True"
                                     Width="70" />
                 <DataGridTextColumn Header="Annotation method"
-                                    Binding="{Binding Path=AnnotatorID}"
+                                    Binding="{Binding Path=MatchResults.Representative.AnnotatorID}"
                                     IsReadOnly="True"
                                     Width="120"/>
                 <DataGridTextColumn Header="Match score"
-                                    Binding="{Binding Path=ScanMatchResult.TotalScore, StringFormat=F4}"
+                                    Binding="{Binding Path=MatchResults.Representative.TotalScore, StringFormat=F4}"
                                     IsReadOnly="True"
                                     Width="80" />
                 <DataGridTextColumn Header="S/N"
-                                    Binding="{Binding Path=InnerModel.PeakShape.SignalToNoise, StringFormat=F1}"
+                                    Binding="{Binding Path=QuantifiedChromatogramPeak.PeakShape.SignalToNoise, StringFormat=F1}"
                                     IsReadOnly="True"
                                     Width="70" />
                 <DataGridTemplateColumn Header="Chromatogram"
