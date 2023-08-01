@@ -3,7 +3,9 @@ using CompMs.App.Msdial.Model.Gcms;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.WindowService;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -40,13 +42,13 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             return _model.LoadAnalysisFileAsync(analysisFile.File, token);
         }
 
-        public static GcmsMethodViewModel Create(GcmsMethodModel model, IMessageBroker broker) {
+        public static GcmsMethodViewModel Create(GcmsMethodModel model, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, IMessageBroker broker) {
             var focusControlManager = new FocusControlManager();
             var analysisAsObservable = Observable.Create<GcmsAnalysisModel>(observer => {
                 observer.OnNext(model.SelectedAnalysisModel);
                 return model.ObserveProperty(m => m.SelectedAnalysisModel, isPushCurrentValueAtFirst: false).Subscribe(observer);
             }).Where(m => m != null)
-            .Select(m => new GcmsAnalysisViewModel(m, focusControlManager))
+            .Select(m => new GcmsAnalysisViewModel(m, peakSpotTableService, focusControlManager))
             .ToReactiveProperty();
             var alignmentAsObservable = new ReactivePropertySlim<IAlignmentResultViewModel>();
 

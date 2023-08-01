@@ -5,7 +5,9 @@ using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -17,9 +19,11 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
     internal sealed class GcmsAnalysisViewModel : ViewModelBase, IAnalysisResultViewModel
     {
         private readonly GcmsAnalysisModel _model;
+        private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
 
-        public GcmsAnalysisViewModel(GcmsAnalysisModel model, FocusControlManager focusControlManager) {
+        public GcmsAnalysisViewModel(GcmsAnalysisModel model, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, FocusControlManager focusControlManager) {
             _model = model;
+            _peakSpotTableService = peakSpotTableService;
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
             PeakPlotViewModel = new SpectrumFeaturePlotViewModel(model.PeakPlotModel).AddTo(Disposables);
             EicViewModel = new EicViewModel(_model.EicModel, horizontalAxis: PeakPlotViewModel.HorizontalAxis as IAxisManager<double>).AddTo(Disposables);
@@ -57,7 +61,13 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 
         public ViewModelBase[] PeakDetailViewModels { get; }
 
-        public ICommand ShowIonTableCommand => null;
+        public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
+        private DelegateCommand _showIonTableCommand;
+
+        private void ShowIonTable() {
+            _peakSpotTableService.Show(PeakTableViewModel);
+        }
+
 
         public ICommand SetUnknownCommand { get; }
 
