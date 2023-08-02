@@ -96,16 +96,17 @@ namespace CompMs.Common.MessagePack {
 
         static ArraySegment<byte> ToLZ4BinaryCore(ArraySegment<byte> serializedData)
         {
-            if (serializedData.Count < NotCompressionSize)
-            {
-                return serializedData;
-            }
-            else
-            {
+            //if (serializedData.Count < NotCompressionSize)
+            //{
+            //    // This data couldn't decode.
+            //    return serializedData;
+            //}
+            //else
+            //{
                 var offset = 0;
                 var buffer = GetBufferLZ4();
                 var maxOutCount = LZ4Codec.MaximumOutputLength(serializedData.Count);
-                if (buffer.Length + 6 + 5 < maxOutCount) // (ext header size + fixed length size)
+                if (buffer.Length < 6 + 5 + maxOutCount) // (ext header size + fixed length size)
                 {
                     buffer = new byte[6 + 5 + maxOutCount];
                 }
@@ -124,7 +125,7 @@ namespace CompMs.Common.MessagePack {
                 MessagePackBinary.WriteInt32ForceInt32Block(ref buffer, extHeaderOffset, serializedData.Count);
 
                 return new ArraySegment<byte>(buffer, 0, 6 + 5 + lz4Length);
-            }
+            //}
         }
 
         public static List<T> Deserialize<T>(Stream stream, IFormatterResolver resolver = null)
