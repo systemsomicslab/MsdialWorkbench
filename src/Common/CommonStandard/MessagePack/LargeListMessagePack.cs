@@ -249,5 +249,87 @@ namespace CompMs.Common.MessagePack {
                 return list;
             }
         }
+
+        public static T DeserializeAt<T>(Stream stream, int index, IFormatterResolver resolver = null)
+        {
+            var buffer = GetBuffer();
+            // HeaderSize: extension header(always 6 bytes) + length(always 5 bytes) = 11
+            while (FillFromStream(stream, ref buffer, 0, HeaderSize))
+            {
+                var success = TryDeserializeAtOrSkip<T>(stream, buffer, resolver, index, out var result, out int skipArraySize);
+                if (success) {
+                    return result;
+                }
+                index -= skipArraySize;
+            }
+            return default;
+        }
+
+        static bool TryDeserializeAtOrSkip<T>(Stream stream, byte[] buffer, IFormatterResolver resolver, int index, out T result, out int skipArraySize)
+        {
+            var bytes = new ArraySegment<byte>(buffer, 0, HeaderSize);
+            if (MessagePackBinary.GetMessagePackType(bytes.Array, bytes.Offset) == MessagePackType.Extension)
+            {
+                var header = MessagePackBinary.ReadExtensionFormatHeader(bytes.Array, bytes.Offset, out int readSize);
+                if (header.TypeCode == ExtensionTypeCode)
+                {
+                    // decode lz4
+                    var offset = bytes.Offset + readSize;
+                    var length = MessagePackBinary.ReadInt32(bytes.Array, offset, out readSize);
+                    offset += readSize;
+                    int bufferLength = (int)header.Length - 5;
+                    buffer = GetBuffer(); // use LZ4 Pool
+
+                    if (buffer.Length < bufferLength)
+                    {
+                        buffer = new byte[bufferLength];
+                    }
+
+                    if (FillFromStream(stream, ref buffer, 0, bufferLength))
+                    {
+                        bytes = new ArraySegment<byte>(buffer, 0, bufferLength);
+                        offset = 0;
+                        // LZ4 Decode
+                        var len = bytes.Count;
+                        var bufferLz4 = new byte[length];
+                        LZ4Codec.Decode(bytes.Array, bytes.Offset, len, bufferLz4, 0, length);
+                        var success = TryDeserializeAt(bufferLz4, offset, resolver, index, out result, out skipArraySize);
+                        if (success) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            result = default;
+            skipArraySize = 0;
+            return false;
+        }
+
+        private static bool TryDeserializeAt<T>(byte[] bytes, int offset, IFormatterResolver formatterResolver, int index, out T result, out int skipArraySize) {
+            if (formatterResolver == null) formatterResolver = DefaultResolver;
+            if (MessagePackBinary.IsNil(bytes, offset))
+            {
+                skipArraySize = 1;
+                result = default;
+                return index == 0;
+            }
+            else
+            {
+                var formatter = formatterResolver.GetFormatterWithVerify<T>();
+                var len = MessagePackBinary.ReadArrayHeader(bytes, offset, out var readSize);
+                skipArraySize = len;
+                offset += 5;
+                if (len > index) {
+                    for (int i = 0; i < index; i++)
+                    {
+                        offset += MessagePackBinary.ReadNextBlock(bytes, offset);
+                    }
+                    result = formatter.Deserialize(bytes, offset, formatterResolver, out int tmpReadSize);
+                    return true;
+                }
+                result = default;
+                return false;
+            }
+        }
     }
 }
