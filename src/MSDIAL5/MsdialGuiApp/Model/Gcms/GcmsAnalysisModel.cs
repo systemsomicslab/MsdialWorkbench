@@ -51,7 +51,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             var brushMapDataSelector = BrushMapDataSelectorFactory.CreatePeakFeatureBrushes(projectParameter.TargetOmics);
             PeakPlotModel = new SpectrumFeaturePlotModel(_spectrumFeatures, _peaks, brushMapDataSelector).AddTo(_disposables);
 
-            var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Mz & ~FilterEnableStatus.Dt & ~FilterEnableStatus.Protein;
+            var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Dt & ~FilterEnableStatus.Protein;
             var filterRegistrationManager = new SpectrumFeatureFilterRegistrationManager(PeakPlotModel.Spectra, new SpectrumFeatureFiltering()).AddTo(_disposables);
             filterRegistrationManager.AttachFilter(PeakPlotModel.Spectra, peakFilterModel, evaluator.Contramap<Ms1BasedSpectrumFeature, MsScanMatchResult>(spectrumFeature => spectrumFeature.MatchResults.Representative), status: filterEnabled);
             PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
