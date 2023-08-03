@@ -51,15 +51,5 @@ namespace CompMs.App.Msdial.Model.Chart
         public ReactivePropertySlim<string> VerticalLabel { get; }
         public ReadOnlyReactivePropertySlim<string> Title { get; }
         public BrushMapDataSelector<ChromatogramPeakFeatureModel> BrushMapDataSelector { get; }
-
-        class SpectrumWrapper : BindableBase {
-            public SpectrumWrapper(Ms1BasedSpectrumFeature feature) {
-                Feature = feature;
-                ChromXValue = feature.Scan.ChromXs.RT.Value;
-            }
-
-            public double ChromXValue { get; }
-            public Ms1BasedSpectrumFeature Feature { get; }
-        }
     }
 }
