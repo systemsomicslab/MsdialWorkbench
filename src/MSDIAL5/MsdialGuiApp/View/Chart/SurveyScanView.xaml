@@ -38,8 +38,24 @@
                           HorizontalTitle="{Binding HorizontalTitle.Value}"
                           Background="WhiteSmoke"
                           BorderBrush="Black"
-                          Style="{StaticResource RotateLeftMulti}"
                           Grid.Row="1">
+            <chart:MultiChart.Style>
+                <Style TargetType="{x:Type chart:MultiChart}" BasedOn="{StaticResource RotateLeftMulti}">
+                    <Setter Property="VerticalTitle">
+                        <Setter.Value>
+                            <MultiBinding StringFormat="{}{0}({1})">
+                                <Binding Path="VerticalTitle.Value"/>
+                                <Binding Path="VerticalAxis.UnitLabel"/>
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding VerticalAxis.UnitLabel,TargetNullValue=''}" Value="">
+                            <Setter Property="VerticalTitle" Value="{Binding VerticalTitle.Value}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </chart:MultiChart.Style>
             <chart:MultiChart.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Save image using dialog"
@@ -66,12 +82,6 @@
                     </MenuItem>
                 </ContextMenu>
             </chart:MultiChart.ContextMenu>
-            <chart:MultiChart.VerticalTitle>
-                <MultiBinding StringFormat="{}{0}({1})">
-                    <Binding Path="VerticalTitle.Value"/>
-                    <Binding Path="VerticalAxis.UnitLabel"/>
-                </MultiBinding>
-            </chart:MultiChart.VerticalTitle>
             <!--
             <StackPanel VerticalAlignment="Center">
                 <StackPanel.Style>
