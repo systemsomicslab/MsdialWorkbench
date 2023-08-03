@@ -174,8 +174,7 @@
         </Label>
 
         <Button x:Name="Button_Run" Content="Run" 
-                Command="{Binding Run}" 
-                CommandParameter="{Binding ElementName=MolecularNetwokringSetView}"
+                Command="{Binding MolecularNetworkingCommand}" 
                 Grid.Row="7" 
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"

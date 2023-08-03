@@ -16,5 +16,24 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             }
             this.model = model;
         }
+        public string MassTolerance
+        {
+            get => _massTolerance;
+            set
+            {
+                if (SetProperty(ref _massTolerance, value))
+                {
+                    if (!ContainsError(nameof(MassTolerance)))
+                    {
+                        model.MassTolerance = double.Parse(value);
+                    }                    
+                }
+            }
+        }
+        private string _massTolerance;
+
+        public DelegateCommand MolecularNetworkingCommand => molecularNetworkingCommand ?? (molecularNetworkingCommand = new DelegateCommand(model.RunMolecularNetworking, () => !HasValidationErrors));//, Model.CanNormalize));
+        private DelegateCommand molecularNetworkingCommand;
+
     }
 }
