@@ -32,6 +32,30 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         }
         private string _massTolerance;
 
+        public string RelativeAbundanceCutoff {
+            get => _relativeAbundanceCutoff;
+            set {
+                if (SetProperty(ref _relativeAbundanceCutoff, value)) {
+                    if (!ContainsError(nameof(RelativeAbundanceCutoff))) {
+                        model.RelativeAbundanceCutoff = double.Parse(value);
+                    }
+                }
+            }
+        }
+        private string _relativeAbundanceCutoff;
+
+        public string SimilarityCutoff {
+            get => _similarityCutoff;
+            set {
+                if (SetProperty(ref _similarityCutoff, value)) {
+                    if (!ContainsError(nameof(SimilarityCutoff))) {
+                        model.SimilarityCutoff = double.Parse(value);
+                    }
+                }
+            }
+        }
+        private string _similarityCutoff;
+
         public DelegateCommand MolecularNetworkingCommand => molecularNetworkingCommand ?? (molecularNetworkingCommand = new DelegateCommand(model.RunMolecularNetworking, () => !HasValidationErrors));//, Model.CanNormalize));
         private DelegateCommand molecularNetworkingCommand;
 
