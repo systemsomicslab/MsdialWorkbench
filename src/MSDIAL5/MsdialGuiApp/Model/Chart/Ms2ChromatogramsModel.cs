@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Utility;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Algorithm.ChromSmoothing;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
@@ -12,10 +13,14 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Chart
@@ -25,8 +30,9 @@ namespace CompMs.App.Msdial.Model.Chart
         private static readonly int NUMBER_OF_CHROMATOGRAMS = 10;
         private static readonly ReadOnlyCollection<Pen> DECONVOLUTION_PENS = ChartBrushes.GetSolidColorPenList(1d, DashStyles.Solid);
         private static readonly ReadOnlyCollection<Pen> RAW_PENS = ChartBrushes.GetSolidColorPenList(1d, DashStyles.Dash);
+        private readonly IMessageBroker _broker;
 
-        public Ms2ChromatogramsModel(IObservable<ChromatogramPeakFeatureModel> peak, IObservable<MSDecResult> msScan, IMsSpectrumLoader<ChromatogramPeakFeatureModel> loader, IDataProvider provider, ParameterBase parameter, AcquisitionType acquisitionType) {
+        public Ms2ChromatogramsModel(IObservable<ChromatogramPeakFeatureModel> peak, IObservable<MSDecResult> msScan, IMsSpectrumLoader<ChromatogramPeakFeatureModel> loader, IDataProvider provider, ParameterBase parameter, AcquisitionType acquisitionType, IMessageBroker broker) {
             NumberOfChromatograms = new ReactiveProperty<int>(NUMBER_OF_CHROMATOGRAMS).AddTo(Disposables);
 
             var smoother = new Smoothing();
@@ -52,8 +58,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
             Loader = loader as MultiMsRawSpectrumLoader;
 
-            var isSwath = acquisitionType == CompMs.Common.Enum.AcquisitionType.SWATH ||
-                acquisitionType == CompMs.Common.Enum.AcquisitionType.AIF;
+            var isSwath = acquisitionType == AcquisitionType.SWATH || acquisitionType == AcquisitionType.AIF;
             IsRawSelected = new ReactivePropertySlim<bool>(!isSwath).AddTo(Disposables);
             IsDeconvolutedSelected = new ReactivePropertySlim<bool>(isSwath).AddTo(Disposables);
             IsBothSelected = new ReactivePropertySlim<bool>(false).AddTo(Disposables);
@@ -71,6 +76,7 @@ namespace CompMs.App.Msdial.Model.Chart
             .Switch()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
+            _broker = broker;
         }
 
         public ReadOnlyReactivePropertySlim<ChromatogramsModel> ChromatogramsModel { get; }
@@ -86,5 +92,34 @@ namespace CompMs.App.Msdial.Model.Chart
         public ReactiveProperty<int> NumberOfChromatograms { get; }
 
         public MultiMsRawSpectrumLoader Loader { get; }
+
+        public void CopyAsTable() {
+            if (!(ChromatogramsModel.Value is ChromatogramsModel chromatograms)) {
+                return;
+            }
+            using (var stream = new MemoryStream()) {
+                chromatograms.ExportAsync(stream, "\t").Wait();
+                Clipboard.SetDataObject(System.Text.Encoding.UTF8.GetString(stream.ToArray()));
+            }
+        }
+
+        public async Task SaveAsTableAsync() {
+            if (!(ChromatogramsModel.Value is ChromatogramsModel chromatograms)) {
+                return;
+            }
+            var fileName = string.Empty;
+            var request = new SaveFileNameRequest(name => fileName = name)
+            {
+                AddExtension = true,
+                Filter = "tab separated values|*.txt",
+                RestoreDirectory = true,
+            };
+            _broker.Publish(request);
+            if (request.Result == true) {
+                using (var stream = File.Open(fileName, FileMode.Create)) {
+                    await chromatograms.ExportAsync(stream, "\t").ConfigureAwait(false);
+                }
+            }
+        }
     }
 }

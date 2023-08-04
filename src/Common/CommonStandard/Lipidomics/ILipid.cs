@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj.Property;
+using CompMs.Common.DataStructure;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using System;
@@ -6,8 +7,9 @@ using System.Collections.Generic;
 
 namespace CompMs.Common.Lipidomics
 {
+    [Flags]
     public enum LipidDescription { None = 0, Class = 1, Chain = 2, SnPosition = 4, DoubleBondPosition = 8, EZ = 16 }
-    public interface ILipid : IEquatable<ILipid>
+    public interface ILipid : IEquatable<ILipid>, IVisitableElement
     {
         string Name { get; }
         LbmClass LipidClass { get; }
@@ -83,6 +85,13 @@ namespace CompMs.Common.Lipidomics
                 && AnnotationLevel == other.AnnotationLevel
                 && Description == other.Description
                 && Chains.Equals(other.Chains);
+        }
+
+        public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
+            if (decomposer is IDecomposer<TResult, ILipid> decomposer_) {
+                return decomposer_.Decompose(visitor, this);
+            }
+            return default;
         }
     }
 }

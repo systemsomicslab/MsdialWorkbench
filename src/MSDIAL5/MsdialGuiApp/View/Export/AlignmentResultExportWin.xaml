@@ -137,7 +137,7 @@
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:ProteinGroupExportViewModel}">
                     <Expander Header="Proteins" IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
-                        <Grid Margin="8">
+                        <Grid>
                             <CheckBox Content="Protein assembled"
                                       IsChecked="{Binding IsSelected.Value, Mode=TwoWay}"
                                       HorizontalAlignment="Left" VerticalAlignment="Center"
@@ -146,8 +146,8 @@
                     </Expander>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:AlignmentSpectraExportGroupViewModel}">
-                    <Expander Header="Spectra" IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
-                        <Grid Margin="8">
+                    <Expander Header="Spectra" IsExpanded="{Binding IsExpanded, Mode=TwoWay}" d:IsExpanded="True">
+                        <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                                 <RowDefinition Height="Auto"/>
@@ -186,6 +186,16 @@
                             </StackPanel>
                             <CheckBox Content="Export peaks individually" IsChecked="{Binding ExportIndividually.Value}"
                                       Margin="16,8,8,8" Height="30" Grid.Row="2"/>
+                        </Grid>
+                    </Expander>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:AlignmentMatchedSpectraExportViewModel}">
+                    <Expander Header="Deconvoluted spectra and reference" IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
+                        <Grid>
+                            <CheckBox Content="XML"
+                                      IsChecked="{Binding IsSelected.Value, Mode=TwoWay}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Center"
+                                      Margin="8,8,0,0" Width="180"/>
                         </Grid>
                     </Expander>
                 </DataTemplate>

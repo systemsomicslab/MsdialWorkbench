@@ -2,7 +2,6 @@
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.CommonMVVM;
-using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -17,14 +16,12 @@ namespace CompMs.App.Msdial.Model.Export
 {
     internal sealed class AlignmentPeakSpotSupplyer : BindableBase
     {
-        private readonly PeakFilterModel _peakFilterModel;
-        private readonly IMatchResultEvaluator<IFilterable> _evaluator;
         private readonly IReadOnlyReactiveProperty<IAlignmentModel> _currentResult;
+        private readonly PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter _filter;
 
-        public AlignmentPeakSpotSupplyer(PeakFilterModel peakFilterModel, IMatchResultEvaluator<IFilterable> evaluator, IReadOnlyReactiveProperty<IAlignmentModel> currentResult) {
-            _peakFilterModel = peakFilterModel ?? throw new ArgumentNullException(nameof(peakFilterModel));
-            _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
+        public AlignmentPeakSpotSupplyer(IReadOnlyReactiveProperty<IAlignmentModel> currentResult, PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter filter) {
             _currentResult = currentResult;
+            _filter = filter ?? throw new ArgumentNullException(nameof(filter));
         }
 
         public bool UseFilter {
@@ -43,7 +40,7 @@ namespace CompMs.App.Msdial.Model.Export
             }
             if (UseFilter) {
                 using (var disposable = new CompositeDisposable()) {
-                    return container.AlignmentSpotProperties.Where(spot => _peakFilterModel.PeakFilter(new AlignmentSpotPropertyModel(spot).AddTo(disposable), _evaluator)).ToList();
+                    return _filter.Filter(container.AlignmentSpotProperties.Select(spot => new AlignmentSpotPropertyModel(spot).AddTo(disposable))).Select(m => m.innerModel).ToList();
                 } 
             }
             return container.AlignmentSpotProperties;

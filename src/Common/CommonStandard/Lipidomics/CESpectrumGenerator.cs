@@ -64,8 +64,8 @@ namespace CompMs.Common.Lipidomics
             if (lipid.Chains is PositionLevelChains plChains)
             {
                 var nlMass = adduct.AdductIonName == "[M+NH4]+" ? adduct.AdductIonAccurateMass : 0.0;
-                //spectrum.AddRange(GetAcylLevelSpectrum(lipid, (AcylChain)plChains.Chains[0], adduct));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.Chains.OfType<AcylChain>(), adduct, nlMass));
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, (AcylChain)plChains.Chains[0], adduct));
+                //spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.Chains.OfType<AcylChain>(), adduct, nlMass));
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
                 .Select(specs => new SpectrumPeak(specs.First().Mass, specs.Sum(n => n.Intensity), string.Join(", ", specs.Select(spec => spec.Comment)), specs.Aggregate(SpectrumComment.none, (a, b) => a | b.SpectrumComment)))
@@ -103,26 +103,38 @@ namespace CompMs.Common.Lipidomics
                 spectrum.AddRange(
                     new[]
                     {
-                        new SpectrumPeak(skelton-H2O+MassDiffDictionary.ProtonMass , 500d, "skelton") { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true }, //172
+                        new SpectrumPeak(skelton-H2O+MassDiffDictionary.ProtonMass , 500d, "skelton") { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true }, 
                         new SpectrumPeak(lipid.Mass+MassDiffDictionary.ProtonMass , 50d, "[M+H]+"){ SpectrumComment = SpectrumComment.metaboliteclass },
+                    }
+                );
+            }
+            else if(adduct.AdductIonName=="[M+Na]+")
+            {
+                spectrum.AddRange(
+                    new[]
+                    {
+                        new SpectrumPeak(skelton-H2O , 500d, "skelton") { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true },
                     }
                 );
             }
             return spectrum.ToArray();
         }
-        //private SpectrumPeak[] GetAcylLevelSpectrum(ILipid lipid, AcylChain acylChain, AdductIon adduct)
-        //{
-        //    var chainMass = acylChain.Mass - MassDiffDictionary.HydrogenMass;
-        //    var spectrum = new List<SpectrumPeak>();
-        //    spectrum.AddRange
-        //   (
-        //        new[]
-        //        {
-        //                new SpectrumPeak(adduct.ConvertToMz(chainMass) , 50d, $"[Acyl]+"){ SpectrumComment = SpectrumComment.acylchain },
-        //        }
-        //   );
-        //    return spectrum.ToArray();
-        //}
+        private SpectrumPeak[] GetAcylLevelSpectrum(ILipid lipid, AcylChain acylChain, AdductIon adduct)
+        {
+            var chainMass = acylChain.Mass - MassDiffDictionary.HydrogenMass;
+            var spectrum = new List<SpectrumPeak>();
+            if (adduct.AdductIonName == "[M+Na]+")
+            {
+                spectrum.AddRange
+                   (
+                        new[]
+                        {
+                        new SpectrumPeak(adduct.ConvertToMz(chainMass + H2O), 200d, $"{acylChain}+O") { SpectrumComment = SpectrumComment.acylchain },
+                        }
+                   );
+            }
+            return spectrum.ToArray();
+        }
 
         private IEnumerable<SpectrumPeak> GetAcylDoubleBondSpectrum(ILipid lipid, IEnumerable<AcylChain> acylChains, AdductIon adduct, double nlMass = 0.0)
         {

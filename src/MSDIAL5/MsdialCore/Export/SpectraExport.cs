@@ -74,6 +74,21 @@ namespace CompMs.MsdialCore.Export
         }
         
         #region msp
+        public static void SaveSpectraTableAsNistFormat<T>(
+            Stream stream,
+            T chromPeakFeature,
+            IEnumerable<ISpectrumPeak> massSpectra,
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
+            ParameterBase parameter)
+            where T: IMoleculeProperty, IChromatogramPeak, IIonProperty, IAnnotatedObject {
+            using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true)) {
+                WriteChromPeakFeatureInfoAsMSP(sw, chromPeakFeature, refer);
+                WriteParameterInfoAsNist(sw, parameter);
+                WriteSpectrumPeakInfo(sw, massSpectra);
+                sw.WriteLine();
+            }
+        }
+
         public static void SaveSpectraTableAsNistFormat(
             string exportFilePath,
             ChromatogramPeakFeature chromPeakFeature,

@@ -7,12 +7,15 @@ using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
-    public interface ITotalChain : IEquatable<ITotalChain>
+    public interface ITotalChain : IEquatable<ITotalChain>, IVisitableElement
     {
         int CarbonCount { get; }
         int DoubleBondCount { get; }
         int OxidizedCount { get; }
         int ChainCount { get; }
+        int AcylChainCount { get; }
+        int AlkylChainCount { get; }
+        int SphingoChainCount { get; }
         double Mass { get; }
         LipidDescription Description { get; }
 
@@ -152,6 +155,13 @@ namespace CompMs.Common.Lipidomics
                 && AlkylChainCount == tChains.AlkylChainCount
                 && SphingoChainCount == tChains.SphingoChainCount;
         }
+
+        public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
+            if (decomposer is IDecomposer<TResult, TotalChain> decomposer_) {
+                return decomposer_.Decompose(visitor, this);
+            }
+            return default;
+        }
     }
 
     public abstract class SeparatedChains
@@ -169,6 +179,10 @@ namespace CompMs.Common.Lipidomics
         public int DoubleBondCount => Chains.Sum(c => c.DoubleBondCount);
 
         public int OxidizedCount => Chains.Sum(c => c.OxidizedCount);
+
+        public int AcylChainCount => Chains.OfType<AcylChain>().Count();
+        public int AlkylChainCount => Chains.OfType<AlkylChain>().Count();
+        public int SphingoChainCount => Chains.OfType<SphingoChain>().Count();
 
         public double Mass => Chains.Sum(c => c.Mass);
 
@@ -224,6 +238,13 @@ namespace CompMs.Common.Lipidomics
                 && Chains.Zip(mChains.Chains, (a, b) => a.Equals(b)).All(p => p);
         }
 
+        public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
+            if (decomposer is IDecomposer<TResult, MolecularSpeciesLevelChains> decomposer_) {
+                return decomposer_.Decompose(visitor, this);
+            }
+            return default;
+        }
+
         class ChainComparer : IComparer<IChain> {
             public int Compare(IChain x, IChain y) {
                 var priorityx = (TypeToOrder(x), x.DoubleBondCount, x.CarbonCount, x.OxidizedCount);
@@ -273,6 +294,13 @@ namespace CompMs.Common.Lipidomics
                 && OxidizedCount == other.OxidizedCount
                 && Description == other.Description
                 && Chains.Zip(pChains.Chains, (a, b) => a.Equals(b)).All(p => p);
+        }
+
+        public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
+            if (decomposer is IDecomposer<TResult, PositionLevelChains> decomposer_) {
+                return decomposer_.Decompose(visitor, this);
+            }
+            return default;
         }
     }
 }

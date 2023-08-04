@@ -3,6 +3,7 @@ using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -74,6 +75,45 @@ ID,Name,File 1,File 2,File 3,A,B
 2,Metabolite 3,100,400,500,250,500
 ",
                 System.Text.Encoding.ASCII.GetString(memory.GetBuffer()));
+        }
+
+        [TestMethod()]
+        public void ContainsDelimiterInFieldTest() {
+            var exporter = new AlignmentCSVExporter(",");
+            var spots = new List<AlignmentSpotProperty>
+            {
+                new AlignmentSpotProperty
+                {
+                    MasterAlignmentID = 0,
+                    Name = "Metabolite 1,2",
+                    AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+                    {
+                        new AlignmentChromPeakFeature { FileName = "File 1", PeakHeightTop = 400, },
+                        new AlignmentChromPeakFeature { FileName = "File 2", PeakHeightTop = 200, },
+                        new AlignmentChromPeakFeature { FileName = "File 3", PeakHeightTop = 500, },
+                    },
+                },
+            };
+            var msdecs = new List<MSDecResult> { null, null, null, };
+            var files = new List<AnalysisFileBean>
+            {
+                new AnalysisFileBean { AnalysisFileName = "File 1", AnalysisFileClass = "A", AnalysisFileType = AnalysisFileType.Sample, AnalysisFileAnalyticalOrder = 1, AnalysisBatch = 1, },
+                new AnalysisFileBean { AnalysisFileName = "File 2", AnalysisFileClass = "A", AnalysisFileType = AnalysisFileType.Sample, AnalysisFileAnalyticalOrder = 2, AnalysisBatch = 1,  },
+                new AnalysisFileBean { AnalysisFileName = "File 3", AnalysisFileClass = "B", AnalysisFileType = AnalysisFileType.Sample, AnalysisFileAnalyticalOrder = 3, AnalysisBatch = 1,  },
+            };
+
+            var memory = new MemoryStream();
+            exporter.Export(memory, spots, msdecs, files, new MockMetaAccessor(), new MockQuantAccessor(), new[] { StatsValue.Average, });
+
+            var newline = Environment.NewLine;
+            Assert.AreEqual(
+                ",Class,A,A,B,NA,NA" + newline +
+                ",File type,Sample,Sample,Sample,NA,NA" + newline +
+                ",Injection order,1,2,3,NA,NA" + newline +
+                ",Batch ID,1,1,1,Average,Average" + newline +
+                "ID,Name,File 1,File 2,File 3,A,B" + newline +
+                "0,\"Metabolite 1,2\",400,200,500,300,500" + newline,
+                System.Text.Encoding.ASCII.GetString(memory.ToArray()));
         }
 
         class MockMetaAccessor : IMetadataAccessor

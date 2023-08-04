@@ -80,13 +80,17 @@ namespace CompMs.MsdialCore.Export
             IReadOnlyList<RawSpectrum> spectrumList,
             AnalysisFileBean analysisFile) {
 
-            var comment = feature.Comment;
-            if (matchResult?.AnyMatched ?? false) {
-                if (!string.IsNullOrEmpty(comment)) {
-                    comment += "; ";
-                }
-                comment += $"Annotation method: {matchResult.AnnotatorID}";
+            IEnumerable<string> comments = Enumerable.Empty<string>();
+            if (!string.IsNullOrEmpty(feature.Comment)) {
+                comments = comments.Append(feature.Comment);
             }
+            if (matchResult?.AnyMatched ?? false) {
+                comments = comments.Append($"Annotation method: {matchResult.AnnotatorID}");
+            }
+            if (feature.TagCollection.Any()) {
+                comments = comments.Append($"Tag: {feature.TagCollection}");
+            }
+            var comment = string.Join("; ", comments);
             return new Dictionary<string, string> {
                 { "Peak ID", feature.MasterPeakID.ToString() },
                 { "Name", UnknownIfEmpty(feature.Name) },

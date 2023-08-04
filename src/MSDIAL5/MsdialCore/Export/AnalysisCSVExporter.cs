@@ -26,7 +26,14 @@ namespace CompMs.MsdialCore.Export
 
         protected override void WriteContent(StreamWriter sw, ChromatogramPeakFeature features, MSDecResult msdec, IDataProvider provider, IReadOnlyList<string> headers, IAnalysisMetadataAccessor metaAccessor, AnalysisFileBean analysisFile) {
             var metadata = metaAccessor.GetContent(features, msdec, provider, analysisFile);
-            sw.WriteLine(string.Join(Separator, headers.Select(header => metadata[header])));
+            sw.WriteLine(string.Join(Separator, headers.Select(header => WrapField(metadata[header]))));
+        }
+
+        private string WrapField(string field) {
+            if (field.Contains(Separator)) {
+                return $"\"{field}\"";
+            }
+            return field;
         }
     }
 }
