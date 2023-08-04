@@ -1,18 +1,18 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm.Clustering;
 using CompMs.MsdialLcmsApi.Parameter;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Setting {
-    public class MolecularNetworkingSettingModel : BindableBase {
+    internal sealed class MolecularNetworkingSettingModel : BindableBase {
 
         private readonly MsdialLcmsParameter _parameter;
+        private readonly MsmsClustering _clustering;
         
-        public MolecularNetworkingSettingModel(MsdialLcmsParameter parameter) {
+        public MolecularNetworkingSettingModel(MsdialLcmsParameter parameter, List<AlignmentSpotPropertyModel> spots) {
+            //_clustering = new MsmsClustering(spots.Select(s => s.innerModel).ToList());
             _parameter = parameter;
         }
         public double MassTolerance
@@ -22,8 +22,21 @@ namespace CompMs.App.Msdial.Model.Setting {
         }
         private double massTolerance;
 
+        public double RelativeAbundanceCutoff {
+            get => relativeAbundanceCutoff;
+            set => SetProperty(ref relativeAbundanceCutoff, value);
+        }
+        private double relativeAbundanceCutoff;
+
+        public double SimilarityCutoff {
+            get => similarityCutoff;
+            set => SetProperty(ref similarityCutoff, value);
+        }
+        private double similarityCutoff;
+
         public void RunMolecularNetworking() {
-            Console.WriteLine(MassTolerance);
+            //var edges =_clustering.GetEdgeInformations(RelativeAbundanceCutoff, MassTolerance, SimilarityCutoff);
+            //Console.WriteLine(MassTolerance);
         }
     }
 }
