@@ -12,35 +12,41 @@ namespace CompMs.MsdialCore.Normalize
     public static class Normalization
     {
         public static void None(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots) {
-            new NoneNormalize().Normalize(globalSpots);
+            new NoneNormalize(files).Normalize(globalSpots);
         }
 
         public static void InternalStandardNormalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IonAbundanceUnit unit) {
-            new InternalStandardNormalize().Normalize(globalSpots, unit);
+            new InternalStandardNormalize(files).Normalize(globalSpots, unit);
         }
 
         public static void LowessNormalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IonAbundanceUnit unit) {
-            new LowessNormalize().Normalize(files, globalSpots, unit);
+            new LowessNormalize(files).Normalize(files, globalSpots, unit);
         }
 
         public static void ISNormThenByLowessNormalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IonAbundanceUnit unit) {
-            new InternalStandardLowessNormalize().Normalize(files, globalSpots, unit);
+            new InternalStandardLowessNormalize(files).Normalize(files, globalSpots, unit);
         }
 
         public static void NormalizeByMaxPeak(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots) {
-            new TicNormalize().Normalize(globalSpots);
+            new TicNormalize(files).Normalize(globalSpots);
         }
 
         public static void NormalizeByMaxPeakOnNamedPeaks(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
-            new MTicNormalize().Normalize(globalSpots, evaluator);
+            new MTicNormalize(files).Normalize(globalSpots, evaluator);
         }
 
         public static void SplashNormalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IReadOnlyList<StandardCompound> splashLipids, IonAbundanceUnit unit, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
-            new SplashNormalize().Normalize(globalSpots, refer, splashLipids, unit, evaluator);
+            new SplashNormalize(files).Normalize(globalSpots, refer, splashLipids, unit, evaluator);
         }
     }
 
     internal sealed class NoneNormalize {
+        private readonly IReadOnlyList<AnalysisFileBean> _files;
+
+        public NoneNormalize(IReadOnlyList<AnalysisFileBean> files) {
+            _files = files;
+        }
+
         public void Normalize(IReadOnlyList<INormalizationTarget> spots) {
             var targets = new NormalizationTargetSpotCollection(spots);
             // initialize
@@ -53,6 +59,12 @@ namespace CompMs.MsdialCore.Normalize
     }
 
     internal sealed class InternalStandardNormalize {
+        private readonly IReadOnlyList<AnalysisFileBean> _files;
+
+        public InternalStandardNormalize(IReadOnlyList<AnalysisFileBean> files) {
+            _files = files;
+        }
+
         public void Normalize(IReadOnlyList<INormalizationTarget> globalSpots, IonAbundanceUnit unit) {
             var targets = new NormalizationTargetSpotCollection(globalSpots);
             // initialize
@@ -94,6 +106,12 @@ namespace CompMs.MsdialCore.Normalize
     }
 
     internal sealed class LowessNormalize {
+        private readonly IReadOnlyList<AnalysisFileBean> _files;
+
+        public LowessNormalize(IReadOnlyList<AnalysisFileBean> files) {
+            _files = files;
+        }
+
         public void Normalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IonAbundanceUnit unit) {
             var targets = new NormalizationTargetSpotCollection(globalSpots);
             // initialize
@@ -107,15 +125,27 @@ namespace CompMs.MsdialCore.Normalize
     }
 
     internal sealed class InternalStandardLowessNormalize {
+        private readonly IReadOnlyList<AnalysisFileBean> _files;
+
+        public InternalStandardLowessNormalize(IReadOnlyList<AnalysisFileBean> files) {
+            _files = files;
+        }
+
         public void Normalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IonAbundanceUnit unit) {
             var targets = new NormalizationTargetSpotCollection(globalSpots);
-            new InternalStandardNormalize().Normalize(targets.Spots, unit);
+            new InternalStandardNormalize(_files).Normalize(targets.Spots, unit);
             var optSpan = targets.LowessSpanTune(files);
             targets.LowessNormalize(files, optSpan);
         }
     }
 
     internal sealed class TicNormalize {
+        private readonly IReadOnlyList<AnalysisFileBean> _files;
+
+        public TicNormalize(IReadOnlyList<AnalysisFileBean> files) {
+            _files = files;
+        }
+
         public void Normalize(IReadOnlyList<INormalizationTarget> globalSpots) {
             var ticValues = new List<double>();
             var filecount = globalSpots[0].Values.Count;
@@ -135,6 +165,12 @@ namespace CompMs.MsdialCore.Normalize
     }
 
     internal sealed class MTicNormalize {
+        private readonly IReadOnlyList<AnalysisFileBean> _files;
+
+        public MTicNormalize(IReadOnlyList<AnalysisFileBean> files) {
+            _files = files;
+        }
+
         public void Normalize(IReadOnlyList<INormalizationTarget> globalSpots, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             var ticValues = new List<double>();
             var filecount = globalSpots[0].Values.Count;
@@ -156,6 +192,12 @@ namespace CompMs.MsdialCore.Normalize
     }
 
     internal sealed class SplashNormalize {
+        private readonly IReadOnlyList<AnalysisFileBean> _files;
+
+        public SplashNormalize(IReadOnlyList<AnalysisFileBean> files) {
+            _files = files;
+        }
+
         public void Normalize(IReadOnlyList<INormalizationTarget> globalSpots, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IReadOnlyList<StandardCompound> splashLipids, IonAbundanceUnit unit, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             var targets = new NormalizationTargetSpotCollection(globalSpots);
             var compounds = new StandardCompoundSet(splashLipids);
@@ -178,7 +220,7 @@ namespace CompMs.MsdialCore.Normalize
                     }
 
                 }
-                new InternalStandardNormalize().Normalize(globalSpots, unit);
+                new InternalStandardNormalize(_files).Normalize(globalSpots, unit);
                 return;
             }
 
