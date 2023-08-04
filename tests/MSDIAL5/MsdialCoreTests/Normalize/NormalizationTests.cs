@@ -1,12 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CompMs.MsdialCore.Normalize;
-using System;
-using System.Collections.Generic;
-using CompMs.MsdialCore.Algorithm.Annotation;
+﻿using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.Common.Components;
-using CompMs.MsdialCore.DataObj;
-using CompMs.Common.Enum;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
+using CompMs.MsdialCore.DataObj;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 
 namespace CompMs.MsdialCore.Normalize.Tests
 {
@@ -15,6 +13,11 @@ namespace CompMs.MsdialCore.Normalize.Tests
     {
         [TestMethod()]
         public void SplashNormalizeTest() {
+            var files = new List<AnalysisFileBean>
+            {
+                new AnalysisFileBean(),
+                new AnalysisFileBean(),
+            };
             var spots = new AlignmentSpotProperty[9];
             for (int i = 0; i < 9; i++) {
                 spots[i] = new AlignmentSpotProperty
@@ -61,7 +64,7 @@ namespace CompMs.MsdialCore.Normalize.Tests
                 new StandardCompound { Concentration = 5, TargetClass = "PE", PeakID = 8 },
             };
 
-            Normalization.SplashNormalize(spots, refer, lipids, IonAbundanceUnit.nmol_per_microL_plasma, new FacadeMatchResultEvaluator());
+            Normalization.SplashNormalize(files, spots, refer, lipids, IonAbundanceUnit.nmol_per_microL_plasma, new FacadeMatchResultEvaluator());
 
             // PC
             for (int i = 0; i < 2; i++) {
@@ -142,6 +145,11 @@ namespace CompMs.MsdialCore.Normalize.Tests
 
         [TestMethod()]
         public void SplashNormalizeTest2() {
+            var files = new List<AnalysisFileBean>
+            {
+                new AnalysisFileBean(),
+                new AnalysisFileBean(),
+            };
             var spots = new AlignmentSpotProperty[8];
             for (int i = 0; i < 8; i++) {
                 spots[i] = new AlignmentSpotProperty
@@ -187,7 +195,7 @@ namespace CompMs.MsdialCore.Normalize.Tests
                 new StandardCompound { Concentration = 3, TargetClass = StandardCompound.AnyOthers, PeakID = 7 },
             };
 
-            Normalization.SplashNormalize(spots, refer, lipids, IonAbundanceUnit.nmol_per_microL_plasma, new FacadeMatchResultEvaluator());
+            Normalization.SplashNormalize(files, spots, refer, lipids, IonAbundanceUnit.nmol_per_microL_plasma, new FacadeMatchResultEvaluator());
 
             // PC
             for (int i = 0; i < 2; i++) {

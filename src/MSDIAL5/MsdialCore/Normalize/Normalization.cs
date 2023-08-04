@@ -11,11 +11,11 @@ namespace CompMs.MsdialCore.Normalize
 {
     public static class Normalization
     {
-        public static void None(IReadOnlyList<INormalizationTarget> globalSpots) {
+        public static void None(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots) {
             new NoneNormalize().Normalize(globalSpots);
         }
 
-        public static void InternalStandardNormalize(IReadOnlyList<INormalizationTarget> globalSpots, IonAbundanceUnit unit) {
+        public static void InternalStandardNormalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IonAbundanceUnit unit) {
             new InternalStandardNormalize().Normalize(globalSpots, unit);
         }
 
@@ -27,15 +27,15 @@ namespace CompMs.MsdialCore.Normalize
             new InternalStandardLowessNormalize().Normalize(files, globalSpots, unit);
         }
 
-        public static void NormalizeByMaxPeak(IReadOnlyList<INormalizationTarget> globalSpots) {
+        public static void NormalizeByMaxPeak(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots) {
             new TicNormalize().Normalize(globalSpots);
         }
 
-        public static void NormalizeByMaxPeakOnNamedPeaks(IReadOnlyList<INormalizationTarget> globalSpots, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+        public static void NormalizeByMaxPeakOnNamedPeaks(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             new MTicNormalize().Normalize(globalSpots, evaluator);
         }
 
-        public static void SplashNormalize(IReadOnlyList<INormalizationTarget> globalSpots, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IReadOnlyList<StandardCompound> splashLipids, IonAbundanceUnit unit, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+        public static void SplashNormalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IReadOnlyList<StandardCompound> splashLipids, IonAbundanceUnit unit, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             new SplashNormalize().Normalize(globalSpots, refer, splashLipids, unit, evaluator);
         }
     }

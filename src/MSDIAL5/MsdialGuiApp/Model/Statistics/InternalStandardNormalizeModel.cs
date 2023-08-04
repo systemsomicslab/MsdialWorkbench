@@ -33,7 +33,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             var task = TaskNotification.Start("Normalize..");
             var publisher = new TaskProgressPublisher(_broker, task);
             using (publisher.Start()) {
-                Normalization.InternalStandardNormalize(_internalStandardSetModel.Spots, IonAbundanceUnit.NormalizedByInternalStandardPeakHeight);
+                Normalization.InternalStandardNormalize(_files, _internalStandardSetModel.Spots, IonAbundanceUnit.NormalizedByInternalStandardPeakHeight);
                 _container.IsNormalized = true;
             }
         }

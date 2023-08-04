@@ -29,7 +29,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             var task = TaskNotification.Start("Normalize..");
             var publisher = new TaskProgressPublisher(_broker, task);
             using (publisher.Start()) {
-                Normalization.None(_internalStandardSetModel.Spots);
+                Normalization.None(_files, _internalStandardSetModel.Spots);
                 _container.IsNormalized = true;
             }
         }

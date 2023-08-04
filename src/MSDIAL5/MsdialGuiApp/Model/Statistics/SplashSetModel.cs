@@ -131,7 +131,7 @@ namespace CompMs.App.Msdial.Model.Statistics
                     compound.Commit();
                 }
                 var compounds = compoundModels.Select(lipid => lipid.Compound).ToList();
-                Normalization.SplashNormalize(_internalStandardSetModel.Spots, _refer, compounds, OutputUnit.Unit, _evaluator);
+                Normalization.SplashNormalize(_files, _internalStandardSetModel.Spots, _refer, compounds, OutputUnit.Unit, _evaluator);
                 _parameter.StandardCompounds = compounds;
                 foreach (var compound in compoundModels) {
                     compound.Refresh();
