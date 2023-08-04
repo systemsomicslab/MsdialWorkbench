@@ -45,13 +45,13 @@ namespace CompMs.App.Msdial.Model.Statistics
             IsNormalizeTic = _dataNormalizationParameter.IsNormalizeTic;
             IsNormalizeMTic = _dataNormalizationParameter.IsNormalizeMTic;
 
-            NoneNormalizeModel = new NoneNormalizeModel(container, isSetModel, broker);
-            InternalStandardNormalizeModel = new InternalStandardNormalizeModel(container, isSetModel, broker);
+            NoneNormalizeModel = new NoneNormalizeModel(container, isSetModel, files, broker);
+            InternalStandardNormalizeModel = new InternalStandardNormalizeModel(container, isSetModel, files, broker);
             LowessNormalizeModel = new LowessNormalizeModel(container, isSetModel, files, fileCollection, broker).AddTo(Disposables);
             InternalStandardLowessNormalizeModel = new InternalStandardLowessNormalizeModel(container, files, fileCollection, isSetModel, broker).AddTo(Disposables);
-            SplashSetModel = new SplashSetModel(container, isSetModel, refer, parameter, evaluator, broker).AddTo(Disposables);
-            TicNormalizeModel = new TicNormalizeModel(container, isSetModel, broker);
-            MticNormalizeModel = new MticNormalizeModel(container, isSetModel, evaluator, broker);
+            SplashSetModel = new SplashSetModel(container, isSetModel, files, refer, parameter, evaluator, broker).AddTo(Disposables);
+            TicNormalizeModel = new TicNormalizeModel(container, isSetModel, files, broker);
+            MticNormalizeModel = new MticNormalizeModel(container, isSetModel, files, evaluator, broker);
 
             CanNormalizeProperty = new[]
             {

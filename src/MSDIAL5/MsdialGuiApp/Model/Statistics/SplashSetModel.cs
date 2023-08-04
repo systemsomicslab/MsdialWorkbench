@@ -28,15 +28,17 @@ namespace CompMs.App.Msdial.Model.Statistics
     {
         private readonly AlignmentResultContainer _container;
         private readonly InternalStandardSetModel _internalStandardSetModel;
+        private readonly IReadOnlyList<AnalysisFileBean> _files;
         private readonly IReadOnlyList<AlignmentSpotProperty> _spots;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
         private readonly ParameterBase _parameter;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
         private readonly IMessageBroker _broker;
 
-        public SplashSetModel(AlignmentResultContainer container, InternalStandardSetModel internalStandardSetModel, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMessageBroker broker) {
+        public SplashSetModel(AlignmentResultContainer container, InternalStandardSetModel internalStandardSetModel, IReadOnlyList<AnalysisFileBean> files, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMessageBroker broker) {
             _container = container;
             _internalStandardSetModel = internalStandardSetModel ?? throw new System.ArgumentNullException(nameof(internalStandardSetModel));
+            _files = files;
             _spots = container.AlignmentSpotProperties;
             _refer = refer;
             _parameter = parameter;

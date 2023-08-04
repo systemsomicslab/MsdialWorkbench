@@ -5,6 +5,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Normalize;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.Model.Statistics
 {
@@ -12,15 +13,17 @@ namespace CompMs.App.Msdial.Model.Statistics
     {
         private readonly AlignmentResultContainer _container;
         private readonly InternalStandardSetModel _internalStandardSetModel;
+        private readonly IReadOnlyList<AnalysisFileBean> _files;
         private readonly IMessageBroker _messageBroker;
 
-        public InternalStandardNormalizeModel(AlignmentResultContainer container, InternalStandardSetModel internalStandardSetModel, IMessageBroker messageBroker) {
+        public InternalStandardNormalizeModel(AlignmentResultContainer container, InternalStandardSetModel internalStandardSetModel, IReadOnlyList<AnalysisFileBean> files, IMessageBroker messageBroker) {
             if (internalStandardSetModel is null) {
                 throw new ArgumentNullException(nameof(internalStandardSetModel));
             }
 
             _container = container ?? throw new ArgumentNullException(nameof(container));
             _internalStandardSetModel = internalStandardSetModel;
+            _files = files;
             _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
             CanNormalize = internalStandardSetModel.SomeSpotSetInternalStandard;
         }
