@@ -121,7 +121,7 @@
     <value />
   </data>
   <data name="VDD_URI" xml:space="preserve">
-    <value>http://prime.psc.riken.jp/compms/msdial/vmsdial.json</value>
+    <value>https://api.github.com/repos/systemsomicslab/MsdialWorkbench/releases/latest</value>
   </data>
   <data name="VERSION" xml:space="preserve">
     <value>5.1.230517-dev</value>
