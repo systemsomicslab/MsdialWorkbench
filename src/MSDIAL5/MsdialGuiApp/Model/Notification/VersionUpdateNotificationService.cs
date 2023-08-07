@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Properties;
 using CompMs.App.Msdial.Utility;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -84,6 +85,39 @@ namespace CompMs.App.Msdial.Model.Notification
                 w.Timeout = 5 * 1000;
                 return w;
             }
+        }
+
+        [DataContract]
+        class ReleaseInfoDataTransferObject {
+            [DataMember(Name = "name")]
+            public string Name { get; set; }
+
+            [DataMember(Name = "tag_name")]
+            public string TagName { get; set; }
+
+            [DataMember(Name = "published_at")]
+            public string PublishedAt { get; set; }
+
+            [DataMember(Name = "html_url")]
+            public string HtmlUrl { get; set; } 
+
+            [DataMember(Name = "assets")]
+            public List<AssetsDataTransferObject> Assets { get; set; }
+
+            public VersionDescriptionDocument ToVersionDescriptionDocument() {
+                return new VersionDescriptionDocument
+                {
+                    LatestVersion = TagName.TrimStart("MSDIAL-v.".ToCharArray()),
+                    DatePublished = PublishedAt,
+                    DownloadUri = new Uri(HtmlUrl),
+                };
+            }
+        }
+
+        [DataContract]
+        class AssetsDataTransferObject {
+            [DataMember(Name = "browser_download_url")]
+            public string DownloadUrl { get; set; }
         }
     }
 }
