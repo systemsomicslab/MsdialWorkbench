@@ -11,32 +11,32 @@ namespace CompMs.MsdialCore.Normalize
 {
     public static class Normalization
     {
-        public static void None(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots) {
-            new NoneNormalize(files).Normalize(globalSpots);
+        public static void None(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, bool applyDilutionFactor) {
+            new NoneNormalize(files, applyDilutionFactor).Normalize(globalSpots);
         }
 
-        public static void InternalStandardNormalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IonAbundanceUnit unit) {
-            new InternalStandardNormalize(files).Normalize(globalSpots, unit);
+        public static void InternalStandardNormalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IonAbundanceUnit unit, bool applyDilutionFactor) {
+            new InternalStandardNormalize(files, applyDilutionFactor).Normalize(globalSpots, unit);
         }
 
-        public static void LowessNormalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IonAbundanceUnit unit) {
-            new LowessNormalize(files).Normalize(files, globalSpots, unit);
+        public static void LowessNormalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IonAbundanceUnit unit, bool applyDilutionFactor) {
+            new LowessNormalize(files, applyDilutionFactor).Normalize(files, globalSpots, unit);
         }
 
-        public static void ISNormThenByLowessNormalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IonAbundanceUnit unit) {
-            new InternalStandardLowessNormalize(files).Normalize(files, globalSpots, unit);
+        public static void ISNormThenByLowessNormalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IonAbundanceUnit unit, bool applyDilutionFactor) {
+            new InternalStandardLowessNormalize(files, applyDilutionFactor).Normalize(files, globalSpots, unit);
         }
 
-        public static void NormalizeByMaxPeak(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots) {
-            new TicNormalize(files).Normalize(globalSpots);
+        public static void NormalizeByMaxPeak(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, bool applyDilutionFactor) {
+            new TicNormalize(files, applyDilutionFactor).Normalize(globalSpots);
         }
 
-        public static void NormalizeByMaxPeakOnNamedPeaks(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
-            new MTicNormalize(files).Normalize(globalSpots, evaluator);
+        public static void NormalizeByMaxPeakOnNamedPeaks(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IMatchResultEvaluator<MsScanMatchResult> evaluator, bool applyDilutionFactor) {
+            new MTicNormalize(files, applyDilutionFactor).Normalize(globalSpots, evaluator);
         }
 
-        public static void SplashNormalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IReadOnlyList<StandardCompound> splashLipids, IonAbundanceUnit unit, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
-            new SplashNormalize(files).Normalize(globalSpots, refer, splashLipids, unit, evaluator);
+        public static void SplashNormalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IReadOnlyList<StandardCompound> splashLipids, IonAbundanceUnit unit, IMatchResultEvaluator<MsScanMatchResult> evaluator, bool applyDilutionFactor) {
+            new SplashNormalize(files, applyDilutionFactor).Normalize(globalSpots, refer, splashLipids, unit, evaluator);
         }
     }
 
@@ -44,8 +44,9 @@ namespace CompMs.MsdialCore.Normalize
         private readonly IReadOnlyList<AnalysisFileBean> _files;
         private readonly bool _applyDilutionFactor;
 
-        public NoneNormalize(IReadOnlyList<AnalysisFileBean> files) {
+        public NoneNormalize(IReadOnlyList<AnalysisFileBean> files, bool applyDilutionFactor) {
             _files = files;
+            _applyDilutionFactor = applyDilutionFactor;
         }
 
         public void Normalize(IReadOnlyList<INormalizationTarget> spots) {
@@ -72,8 +73,9 @@ namespace CompMs.MsdialCore.Normalize
         private readonly IReadOnlyList<AnalysisFileBean> _files;
         private readonly bool _applyDilutionFactor;
 
-        public InternalStandardNormalize(IReadOnlyList<AnalysisFileBean> files) {
+        public InternalStandardNormalize(IReadOnlyList<AnalysisFileBean> files, bool applyDilutionFactor) {
             _files = files;
+            _applyDilutionFactor = applyDilutionFactor;
         }
 
         public void Normalize(IReadOnlyList<INormalizationTarget> globalSpots, IonAbundanceUnit unit) {
@@ -129,8 +131,9 @@ namespace CompMs.MsdialCore.Normalize
         private readonly IReadOnlyList<AnalysisFileBean> _files;
         private readonly bool _applyDilutionFactor;
 
-        public LowessNormalize(IReadOnlyList<AnalysisFileBean> files) {
+        public LowessNormalize(IReadOnlyList<AnalysisFileBean> files, bool applyDilutionFactor) {
             _files = files;
+            _applyDilutionFactor = applyDilutionFactor;
         }
 
         public void Normalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IonAbundanceUnit unit) {
@@ -143,7 +146,7 @@ namespace CompMs.MsdialCore.Normalize
             var optSpan = targets.LowessSpanTune(files);
             targets.LowessNormalize(files, optSpan);
             foreach (var spot in globalSpots) {
-                spot.IonAbundanceUnit = IonAbundanceUnit.NormalizedByMaxPeakOnNamedPeaks;
+                spot.IonAbundanceUnit = unit;
             }
             if (_applyDilutionFactor) {
                 foreach (var target in targets.TargetSpots) {
@@ -161,13 +164,14 @@ namespace CompMs.MsdialCore.Normalize
         private readonly IReadOnlyList<AnalysisFileBean> _files;
         private readonly bool _applyDilutionFactor;
 
-        public InternalStandardLowessNormalize(IReadOnlyList<AnalysisFileBean> files) {
+        public InternalStandardLowessNormalize(IReadOnlyList<AnalysisFileBean> files, bool applyDilutionFactor) {
             _files = files;
+            _applyDilutionFactor = applyDilutionFactor;
         }
 
         public void Normalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IonAbundanceUnit unit) {
             var targets = new NormalizationTargetSpotCollection(globalSpots);
-            new InternalStandardNormalize(_files).Normalize(targets.Spots, unit);
+            new InternalStandardNormalize(_files, _applyDilutionFactor).Normalize(targets.Spots, unit);
             var optSpan = targets.LowessSpanTune(files);
             targets.LowessNormalize(files, optSpan);
             if (_applyDilutionFactor) {
@@ -186,8 +190,9 @@ namespace CompMs.MsdialCore.Normalize
         private readonly IReadOnlyList<AnalysisFileBean> _files;
         private readonly bool _applyDilutionFactor;
 
-        public TicNormalize(IReadOnlyList<AnalysisFileBean> files) {
+        public TicNormalize(IReadOnlyList<AnalysisFileBean> files, bool applyDilutionFactor) {
             _files = files;
+            _applyDilutionFactor = applyDilutionFactor;
         }
 
         public void Normalize(IReadOnlyList<INormalizationTarget> globalSpots) {
@@ -221,8 +226,9 @@ namespace CompMs.MsdialCore.Normalize
         private readonly IReadOnlyList<AnalysisFileBean> _files;
         private readonly bool _applyDilutionFactor;
 
-        public MTicNormalize(IReadOnlyList<AnalysisFileBean> files) {
+        public MTicNormalize(IReadOnlyList<AnalysisFileBean> files, bool applyDilutionFactor) {
             _files = files;
+            _applyDilutionFactor = applyDilutionFactor;
         }
 
         public void Normalize(IReadOnlyList<INormalizationTarget> globalSpots, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
@@ -258,8 +264,9 @@ namespace CompMs.MsdialCore.Normalize
         private readonly IReadOnlyList<AnalysisFileBean> _files;
         private readonly bool _applyDilutionFactor;
 
-        public SplashNormalize(IReadOnlyList<AnalysisFileBean> files) {
+        public SplashNormalize(IReadOnlyList<AnalysisFileBean> files, bool applyDilutionFactor) {
             _files = files;
+            _applyDilutionFactor = applyDilutionFactor;
         }
 
         public void Normalize(IReadOnlyList<INormalizationTarget> globalSpots, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IReadOnlyList<StandardCompound> splashLipids, IonAbundanceUnit unit, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
@@ -284,7 +291,7 @@ namespace CompMs.MsdialCore.Normalize
                     }
 
                 }
-                new InternalStandardNormalize(_files).Normalize(globalSpots, unit);
+                new InternalStandardNormalize(_files, _applyDilutionFactor).Normalize(globalSpots, unit);
                 return;
             }
 

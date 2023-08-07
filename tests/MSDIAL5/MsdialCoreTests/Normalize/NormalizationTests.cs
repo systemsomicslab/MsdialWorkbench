@@ -64,7 +64,7 @@ namespace CompMs.MsdialCore.Normalize.Tests
                 new StandardCompound { Concentration = 5, TargetClass = "PE", PeakID = 8 },
             };
 
-            Normalization.SplashNormalize(files, spots, refer, lipids, IonAbundanceUnit.nmol_per_microL_plasma, new FacadeMatchResultEvaluator());
+            Normalization.SplashNormalize(files, spots, refer, lipids, IonAbundanceUnit.nmol_per_microL_plasma, new FacadeMatchResultEvaluator(), applyDilutionFactor: false);
 
             // PC
             for (int i = 0; i < 2; i++) {
@@ -195,7 +195,7 @@ namespace CompMs.MsdialCore.Normalize.Tests
                 new StandardCompound { Concentration = 3, TargetClass = StandardCompound.AnyOthers, PeakID = 7 },
             };
 
-            Normalization.SplashNormalize(files, spots, refer, lipids, IonAbundanceUnit.nmol_per_microL_plasma, new FacadeMatchResultEvaluator());
+            Normalization.SplashNormalize(files, spots, refer, lipids, IonAbundanceUnit.nmol_per_microL_plasma, new FacadeMatchResultEvaluator(), applyDilutionFactor: false);
 
             // PC
             for (int i = 0; i < 2; i++) {

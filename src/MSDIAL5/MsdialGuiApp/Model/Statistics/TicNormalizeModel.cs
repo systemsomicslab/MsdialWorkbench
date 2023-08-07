@@ -24,12 +24,12 @@ namespace CompMs.App.Msdial.Model.Statistics
             _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
         }
 
-        public void Normalize() {
+        public void Normalize(bool applyDilutionFactor) {
             var _broker = _messageBroker;
             var task = TaskNotification.Start("Normalize..");
             var publisher = new TaskProgressPublisher(_broker, task);
             using (publisher.Start()) {
-                Normalization.NormalizeByMaxPeak(_files, _internalStandardSetModel.Spots);
+                Normalization.NormalizeByMaxPeak(_files, _internalStandardSetModel.Spots, applyDilutionFactor);
                 _container.IsNormalized = true;
             }
         }

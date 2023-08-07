@@ -114,6 +114,12 @@ namespace CompMs.App.Msdial.Model.Statistics
         public TicNormalizeModel TicNormalizeModel { get; }
         public MticNormalizeModel MticNormalizeModel { get; }
 
+        public bool ApplyDilutionFactor {
+            get => _applyDilutionFactor;
+            set => SetProperty(ref _applyDilutionFactor, value);
+        }
+        private bool _applyDilutionFactor = false;
+
         public ReadOnlyReactivePropertySlim<bool> CanNormalizeProperty { get; }
 
         public IObservable<Unit> Normalized => _normalized;
@@ -129,37 +135,37 @@ namespace CompMs.App.Msdial.Model.Statistics
             _dataNormalizationParameter.IsNormalizeMTic = false;
 
             if (IsNormalizeNone) {
-                NoneNormalizeModel.Normalize();
+                NoneNormalizeModel.Normalize(ApplyDilutionFactor);
                 _dataNormalizationParameter.IsNormalizeNone = true;
                 _normalized.OnNext(Unit.Default);
             }
             else if (IsNormalizeIS) {
-                InternalStandardNormalizeModel.Normalize();
+                InternalStandardNormalizeModel.Normalize(ApplyDilutionFactor);
                 _dataNormalizationParameter.IsNormalizeIS = true;
                 _normalized.OnNext(Unit.Default);
             }
             else if (IsNormalizeLowess) {
-                LowessNormalizeModel.Normalize();
+                LowessNormalizeModel.Normalize(ApplyDilutionFactor);
                 _dataNormalizationParameter.IsNormalizeLowess = true;
                 _normalized.OnNext(Unit.Default);
             }
             else if (IsNormalizeIsLowess) {
-                InternalStandardLowessNormalizeModel.Normalize();
+                InternalStandardLowessNormalizeModel.Normalize(ApplyDilutionFactor);
                 _dataNormalizationParameter.IsNormalizeIsLowess = true;
                 _normalized.OnNext(Unit.Default);
             }
             else if (IsNormalizeSplash) {
-                SplashSetModel.Normalize();
+                SplashSetModel.Normalize(ApplyDilutionFactor);
                 _dataNormalizationParameter.IsNormalizeSplash = true;
                 _normalized.OnNext(Unit.Default);
             }
             else if (IsNormalizeTic) {
-                TicNormalizeModel.Normalize();
+                TicNormalizeModel.Normalize(ApplyDilutionFactor);
                 _dataNormalizationParameter.IsNormalizeTic = true;
                 _normalized.OnNext(Unit.Default);
             }
             else if (IsNormalizeMTic) {
-                MticNormalizeModel.Normalize();
+                MticNormalizeModel.Normalize(ApplyDilutionFactor);
                 _dataNormalizationParameter.IsNormalizeMTic = true;
                 _normalized.OnNext(Unit.Default);
             }

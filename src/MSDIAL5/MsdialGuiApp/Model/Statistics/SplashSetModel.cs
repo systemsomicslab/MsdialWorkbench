@@ -117,7 +117,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             SplashProduct.Delete();
         }
 
-        public void Normalize() {
+        public void Normalize(bool applyDilutionFactor) {
             // TODO: For ion mobility, it need to flatten spots and check compound PeakID.
             var task = TaskNotification.Start("Normalize..");
             var publisher = new TaskProgressPublisher(_broker, task);
@@ -131,7 +131,7 @@ namespace CompMs.App.Msdial.Model.Statistics
                     compound.Commit();
                 }
                 var compounds = compoundModels.Select(lipid => lipid.Compound).ToList();
-                Normalization.SplashNormalize(_files, _internalStandardSetModel.Spots, _refer, compounds, OutputUnit.Unit, _evaluator);
+                Normalization.SplashNormalize(_files, _internalStandardSetModel.Spots, _refer, compounds, OutputUnit.Unit, _evaluator, applyDilutionFactor);
                 _parameter.StandardCompounds = compounds;
                 foreach (var compound in compoundModels) {
                     compound.Refresh();
