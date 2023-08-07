@@ -24,9 +24,9 @@ namespace CompMs.App.Msdial.Model.Notification
                 return;
             }
 
-            var serializer = new DataContractJsonSerializer(typeof(VersionDescriptionDocument));
+            var serializer = new DataContractJsonSerializer(typeof(ReleaseInfoDataTransferObject));
             try {
-                var vdd = (VersionDescriptionDocument)serializer.ReadObject(new MemoryStream(Encoding.UTF8.GetBytes(json)));
+                var vdd = ((ReleaseInfoDataTransferObject)serializer.ReadObject(new MemoryStream(Encoding.UTF8.GetBytes(json)))).ToVersionDescriptionDocument();
                 callback?.Invoke(vdd);
             }
             catch (SerializationException) {
