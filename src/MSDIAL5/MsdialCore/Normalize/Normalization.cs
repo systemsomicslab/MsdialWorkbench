@@ -42,6 +42,7 @@ namespace CompMs.MsdialCore.Normalize
 
     internal sealed class NoneNormalize {
         private readonly IReadOnlyList<AnalysisFileBean> _files;
+        private readonly bool _applyDilutionFactor;
 
         public NoneNormalize(IReadOnlyList<AnalysisFileBean> files) {
             _files = files;
@@ -55,11 +56,21 @@ namespace CompMs.MsdialCore.Normalize
                 // finalization
                 target.FillNormalizeProperties();
             }
+            if (_applyDilutionFactor) {
+                foreach (var target in targets.TargetSpots) {
+                    foreach (var (t, f) in target.Target.Values.Zip(_files, (t, f) => (t, f))) {
+                        t.NormalizedPeakHeight *= f.DilutionFactor;
+                        t.NormalizedPeakAreaAboveBaseline *= f.DilutionFactor;
+                        t.NormalizedPeakAreaAboveZero *= f.DilutionFactor;
+                    }
+                }
+            }
         }
     }
 
     internal sealed class InternalStandardNormalize {
         private readonly IReadOnlyList<AnalysisFileBean> _files;
+        private readonly bool _applyDilutionFactor;
 
         public InternalStandardNormalize(IReadOnlyList<AnalysisFileBean> files) {
             _files = files;
@@ -76,6 +87,15 @@ namespace CompMs.MsdialCore.Normalize
                 }
                 else {
                     NormalizeByInternalStandard(target.Target, isSpot, unit);
+                }
+            }
+            if (_applyDilutionFactor) {
+                foreach (var target in targets.TargetSpots) {
+                    foreach (var (t, f) in target.Target.Values.Zip(_files, (t, f) => (t, f))) {
+                        t.NormalizedPeakHeight *= f.DilutionFactor;
+                        t.NormalizedPeakAreaAboveBaseline *= f.DilutionFactor;
+                        t.NormalizedPeakAreaAboveZero *= f.DilutionFactor;
+                    }
                 }
             }
         }
@@ -107,6 +127,7 @@ namespace CompMs.MsdialCore.Normalize
 
     internal sealed class LowessNormalize {
         private readonly IReadOnlyList<AnalysisFileBean> _files;
+        private readonly bool _applyDilutionFactor;
 
         public LowessNormalize(IReadOnlyList<AnalysisFileBean> files) {
             _files = files;
@@ -121,11 +142,24 @@ namespace CompMs.MsdialCore.Normalize
             }
             var optSpan = targets.LowessSpanTune(files);
             targets.LowessNormalize(files, optSpan);
+            foreach (var spot in globalSpots) {
+                spot.IonAbundanceUnit = IonAbundanceUnit.NormalizedByMaxPeakOnNamedPeaks;
+            }
+            if (_applyDilutionFactor) {
+                foreach (var target in targets.TargetSpots) {
+                    foreach (var (t, f) in target.Target.Values.Zip(_files, (t, f) => (t, f))) {
+                        t.NormalizedPeakHeight *= f.DilutionFactor;
+                        t.NormalizedPeakAreaAboveBaseline *= f.DilutionFactor;
+                        t.NormalizedPeakAreaAboveZero *= f.DilutionFactor;
+                    }
+                }
+            }
         }
     }
 
     internal sealed class InternalStandardLowessNormalize {
         private readonly IReadOnlyList<AnalysisFileBean> _files;
+        private readonly bool _applyDilutionFactor;
 
         public InternalStandardLowessNormalize(IReadOnlyList<AnalysisFileBean> files) {
             _files = files;
@@ -136,11 +170,21 @@ namespace CompMs.MsdialCore.Normalize
             new InternalStandardNormalize(_files).Normalize(targets.Spots, unit);
             var optSpan = targets.LowessSpanTune(files);
             targets.LowessNormalize(files, optSpan);
+            if (_applyDilutionFactor) {
+                foreach (var target in targets.TargetSpots) {
+                    foreach (var (t, f) in target.Target.Values.Zip(_files, (t, f) => (t, f))) {
+                        t.NormalizedPeakHeight *= f.DilutionFactor;
+                        t.NormalizedPeakAreaAboveBaseline *= f.DilutionFactor;
+                        t.NormalizedPeakAreaAboveZero *= f.DilutionFactor;
+                    }
+                }
+            }
         }
     }
 
     internal sealed class TicNormalize {
         private readonly IReadOnlyList<AnalysisFileBean> _files;
+        private readonly bool _applyDilutionFactor;
 
         public TicNormalize(IReadOnlyList<AnalysisFileBean> files) {
             _files = files;
@@ -161,11 +205,21 @@ namespace CompMs.MsdialCore.Normalize
                 }
             }
             foreach (var spot in globalSpots) spot.IonAbundanceUnit = IonAbundanceUnit.NormalizedByMaxPeakOnTIC;
+            if (_applyDilutionFactor) {
+                foreach (var spot in globalSpots) {
+                    foreach (var (t, f) in spot.Values.Zip(_files, (t, f) => (t, f))) {
+                        t.NormalizedPeakHeight *= f.DilutionFactor;
+                        t.NormalizedPeakAreaAboveBaseline *= f.DilutionFactor;
+                        t.NormalizedPeakAreaAboveZero *= f.DilutionFactor;
+                    }
+                }
+            }
         }
     }
 
     internal sealed class MTicNormalize {
         private readonly IReadOnlyList<AnalysisFileBean> _files;
+        private readonly bool _applyDilutionFactor;
 
         public MTicNormalize(IReadOnlyList<AnalysisFileBean> files) {
             _files = files;
@@ -188,11 +242,21 @@ namespace CompMs.MsdialCore.Normalize
                 }
             }
             foreach (var spot in globalSpots) spot.IonAbundanceUnit = IonAbundanceUnit.NormalizedByMaxPeakOnNamedPeaks;
+            if (_applyDilutionFactor) {
+                foreach (var spot in globalSpots) {
+                    foreach (var (t, f) in spot.Values.Zip(_files, (t, f) => (t, f))) {
+                        t.NormalizedPeakHeight *= f.DilutionFactor;
+                        t.NormalizedPeakAreaAboveBaseline *= f.DilutionFactor;
+                        t.NormalizedPeakAreaAboveZero *= f.DilutionFactor;
+                    }
+                }
+            }
         }
     }
 
     internal sealed class SplashNormalize {
         private readonly IReadOnlyList<AnalysisFileBean> _files;
+        private readonly bool _applyDilutionFactor;
 
         public SplashNormalize(IReadOnlyList<AnalysisFileBean> files) {
             _files = files;
@@ -254,6 +318,15 @@ namespace CompMs.MsdialCore.Normalize
 
                 // finalization
                 target.FillNormalizeProperties();
+            }
+            if (_applyDilutionFactor) {
+                foreach (var spot in globalSpots) {
+                    foreach (var (t, f) in spot.Values.Zip(_files, (t, f) => (t, f))) {
+                        t.NormalizedPeakHeight *= f.DilutionFactor;
+                        t.NormalizedPeakAreaAboveBaseline *= f.DilutionFactor;
+                        t.NormalizedPeakAreaAboveZero *= f.DilutionFactor;
+                    }
+                }
             }
         }
     }
