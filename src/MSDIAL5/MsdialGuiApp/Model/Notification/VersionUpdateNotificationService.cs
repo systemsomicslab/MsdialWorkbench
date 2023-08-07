@@ -7,7 +7,6 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
-using System.Text;
 using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Notification
@@ -19,14 +18,14 @@ namespace CompMs.App.Msdial.Model.Notification
     {
         private static void FetchVersionDescriptionDocument(Uri uri, Action<VersionDescriptionDocument> callback)
         {
-            var json = FetchVersionDescriptionDocument(uri);
-            if (json is null) {
+            var jsonStream = FetchVersionDescriptionDocument(uri);
+            if (jsonStream is null) {
                 return;
             }
 
             var serializer = new DataContractJsonSerializer(typeof(ReleaseInfoDataTransferObject));
             try {
-                var vdd = ((ReleaseInfoDataTransferObject)serializer.ReadObject(new MemoryStream(Encoding.UTF8.GetBytes(json)))).ToVersionDescriptionDocument();
+                var vdd = ((ReleaseInfoDataTransferObject)serializer.ReadObject(jsonStream)).ToVersionDescriptionDocument();
                 callback?.Invoke(vdd);
             }
             catch (SerializationException) {
@@ -34,11 +33,13 @@ namespace CompMs.App.Msdial.Model.Notification
             }
         }
 
-        private static string FetchVersionDescriptionDocument(Uri uri)
+        private static Stream FetchVersionDescriptionDocument(Uri uri)
         {
             try {
                 using (var client = new MyWebClient()) {
-                    return client.DownloadString(uri);
+                    client.Headers.Add(HttpRequestHeader.UserAgent, "Msdial");
+                    client.Headers.Add(HttpRequestHeader.ContentType, "application/json");
+                    return client.OpenRead(uri);
                 }
             }
             catch (IOException) {
