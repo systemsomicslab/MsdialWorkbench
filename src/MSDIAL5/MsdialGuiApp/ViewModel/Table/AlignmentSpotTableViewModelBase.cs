@@ -5,6 +5,7 @@ using CompMs.App.Msdial.Model.Table;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Graphics.Base;
+using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -20,6 +21,7 @@ namespace CompMs.App.Msdial.ViewModel.Table
             ClassBrush = model.ClassBrush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             FileClassPropertiesModel = model.FileClassProperties;
             MarkAllAsConfirmedCommand = new ReactiveCommand().WithSubscribe(model.MarkAllAsConfirmed).AddTo(Disposables);
+            SwitchTagCommand = new ReactiveCommand<PeakSpotTag>().WithSubscribe(model.SwitchTag).AddTo(Disposables);
         }
 
         public IObservable<IBarItemsLoader> BarItemsLoader { get; }
@@ -27,5 +29,6 @@ namespace CompMs.App.Msdial.ViewModel.Table
         public FileClassPropertiesModel FileClassPropertiesModel { get; }
 
         public ReactiveCommand MarkAllAsConfirmedCommand { get; }
+        public ReactiveCommand<PeakSpotTag> SwitchTagCommand { get; }
     }
 }
