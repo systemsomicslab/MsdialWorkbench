@@ -10,7 +10,7 @@ using System.IO;
 
 namespace CompMs.MsdialCore.Export
 {
-    public sealed class AlignmentMspExporter : IAlignmentExporter, IAlignmentSpectraExporter
+    public sealed class AlignmentMspExporter : IAlignmentSpectraExporter
     {
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
         private readonly ParameterBase _parameter;
@@ -21,12 +21,6 @@ namespace CompMs.MsdialCore.Export
         }
 
         void IAlignmentSpectraExporter.Export(Stream stream, IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults) {
-            foreach (var spot in spots) {
-                SpectraExport.SaveSpectraTableAsNistFormat(stream, spot, msdecResults[spot.MasterAlignmentID].Spectrum, _refer, _parameter);
-            }
-        }
-
-        void IAlignmentExporter.Export(Stream stream, IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults, IReadOnlyList<AnalysisFileBean> files, IMetadataAccessor metaFormatter, IQuantValueAccessor quantAccessor, IReadOnlyList<StatsValue> stats) {
             foreach (var spot in spots) {
                 SpectraExport.SaveSpectraTableAsNistFormat(stream, spot, msdecResults[spot.MasterAlignmentID].Spectrum, _refer, _parameter);
             }

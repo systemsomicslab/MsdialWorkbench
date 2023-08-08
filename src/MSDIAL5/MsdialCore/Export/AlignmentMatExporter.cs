@@ -11,7 +11,7 @@ using System.IO;
 namespace CompMs.MsdialCore.Export
 {
     // TODO: Implement functions for isotope tracking analysis.
-    public sealed class AlignmentMatExporter : IAlignmentExporter, IAlignmentSpectraExporter
+    public sealed class AlignmentMatExporter : IAlignmentSpectraExporter
     {
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
         private readonly ParameterBase _parameter;
@@ -22,12 +22,6 @@ namespace CompMs.MsdialCore.Export
         }
 
         void IAlignmentSpectraExporter.Export(Stream stream, IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults) {
-            foreach (var spot in spots) {
-                SpectraExport.SaveSpectraTableAsMatFormat(stream, spot, msdecResults[spot.MasterAlignmentID].Spectrum, _refer, _parameter, isotopeTrackedLastSpot: null);
-            }
-        }
-
-        void IAlignmentExporter.Export(Stream stream, IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults, IReadOnlyList<AnalysisFileBean> files, IMetadataAccessor metaFormatter, IQuantValueAccessor quantAccessor, IReadOnlyList<StatsValue> stats) {
             foreach (var spot in spots) {
                 SpectraExport.SaveSpectraTableAsMatFormat(stream, spot, msdecResults[spot.MasterAlignmentID].Spectrum, _refer, _parameter, isotopeTrackedLastSpot: null);
             }

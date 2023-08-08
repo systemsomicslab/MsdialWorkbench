@@ -7,19 +7,7 @@ using System.Text;
 
 namespace CompMs.MsdialCore.Export
 {
-    public interface IAlignmentExporter
-    {
-        void Export(
-            Stream stream,
-            IReadOnlyList<AlignmentSpotProperty> spots,
-            IReadOnlyList<MSDecResult> msdecResults,
-            IReadOnlyList<AnalysisFileBean> files,
-            IMetadataAccessor metaFormatter,
-            IQuantValueAccessor quantAccessor,
-            IReadOnlyList<StatsValue> stats);
-    }
-
-    public abstract class BaseAlignmentExporter : IAlignmentExporter
+    public abstract class BaseAlignmentExporter
     {
         public virtual void Export(
             Stream stream,
