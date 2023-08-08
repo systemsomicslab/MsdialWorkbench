@@ -2,7 +2,6 @@
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Parser;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

@@ -16,7 +16,7 @@ namespace CompMs.App.Msdial.Model.Export
         }
 
         public string Label => _label;
-        public IAlignmentExporter CreateWideExporter() => new AlignmentCSVExporter(_separator);
+        public AlignmentCSVExporter CreateWideExporter() => new AlignmentCSVExporter(_separator);
         public AlignmentLongCSVExporter CreateLongExporter() =>  new AlignmentLongCSVExporter(_separator);
 
         public string WithExtension(string filename) {
