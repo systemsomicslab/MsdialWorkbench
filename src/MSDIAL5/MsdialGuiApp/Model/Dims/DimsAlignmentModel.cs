@@ -122,6 +122,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
             var target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
             Target = target;
+            CurrentRepresentativeFile = Target.Select(t => t is null ? null : fileCollection.GetById(t.RepresentativeFileID)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -282,6 +283,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public DimsAlignmentSpotTableModel AlignmentSpotTableModel { get; }
 
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
+        public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel> CurrentRepresentativeFile { get; }
         public ReadOnlyReactivePropertySlim<bool> CanSeachCompound { get; }
         public FocusNavigatorModel FocusNavigatorModel { get; }
         public PeakInformationAlignmentModel PeakInformationModel { get; }

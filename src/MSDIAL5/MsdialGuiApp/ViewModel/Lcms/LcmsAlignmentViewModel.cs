@@ -131,6 +131,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public ICollectionView PeakSpotsView => Ms1Spots;
 
         public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
+        public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel> CurrentRepresentativeFile => _model.CurrentRepresentativeFile;
 
         public AlignmentPeakPlotViewModel PlotViewModel { get; }
         public MsSpectrumViewModel Ms2SpectrumViewModel { get; }

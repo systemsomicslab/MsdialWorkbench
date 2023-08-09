@@ -118,6 +118,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => broker.Publish(TaskNotification.End(notification)));
         }
 
+        public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel> CurrentRepresentativeFile => _model.CurrentRepresentativeFile;
         public UndoManagerViewModel UndoManagerViewModel { get; }
         public AlignmentPeakPlotViewModel RtMzPlotViewModel { get; }
         public AlignmentPeakPlotViewModel DtMzPlotViewModel { get; }

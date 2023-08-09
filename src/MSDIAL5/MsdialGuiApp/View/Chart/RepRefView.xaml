@@ -45,6 +45,10 @@
             <RowDefinition Height="40" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
 
         <StackPanel Margin="10,5,0,5" Orientation="Horizontal"
                     Grid.Row="0">
@@ -80,9 +84,14 @@
                     HorizontalAlignment="Left"
                     Style="{StaticResource IconButton}"/>
         </StackPanel>
+        <TextBlock Text="{Binding CurrentRepresentativeFile.Value.AnalysisFileName}"
+                   FontSize="12"
+                   HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                   Margin="0,0,4,0"
+                   Grid.Row="0" Grid.Column="1"/>
 
         <local:MsSpectrumView DataContext="{Binding Ms2SpectrumViewModel}"
                               Margin="0,0,10,0"
-                              Grid.Row="1"/>
+                              Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
     </Grid>
 </UserControl>

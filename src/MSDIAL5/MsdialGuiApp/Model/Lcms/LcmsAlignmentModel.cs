@@ -88,6 +88,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             var spotsSource = new AlignmentSpotSource(alignmentFileBean, Container, CHROMATOGRAM_SPOT_SERIALIZER).AddTo(Disposables);
             Ms1Spots = spotsSource.Spots.Items;
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
+            CurrentRepresentativeFile = Target.Select(t => t is null ? null : fileCollection.GetById(t.RepresentativeFileID)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Lcms).AddTo(Disposables);
             NormalizationSetModel = new NormalizationSetModel(Container, files, fileCollection, mapper, evaluator, InternalStandardSetModel, parameter, messageBroker).AddTo(Disposables);
@@ -292,6 +293,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public ReadOnlyObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
+        public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel> CurrentRepresentativeFile { get; }
         public InternalStandardSetModel InternalStandardSetModel { get; }
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
         public FocusNavigatorModel FocusNavigatorModel { get; }
