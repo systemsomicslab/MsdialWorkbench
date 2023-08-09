@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Search;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace CompMs.App.Msdial.Model.Table
 
         IReactiveProperty Target { get; }
         void MarkAllAsConfirmed();
+        void SwitchTag(PeakSpotTag tag);
     }
 
     internal abstract class PeakSpotTableModelBase<T> : DisposableModelBase, IPeakSpotTableModelBase where T: class
@@ -29,5 +31,6 @@ namespace CompMs.App.Msdial.Model.Table
         IReadOnlyList<object> IPeakSpotTableModelBase.PeakSpots => PeakSpots;
         IReactiveProperty IPeakSpotTableModelBase.Target => _target;
         public abstract void MarkAllAsConfirmed();
+        public abstract void SwitchTag(PeakSpotTag tag);
     }
 }

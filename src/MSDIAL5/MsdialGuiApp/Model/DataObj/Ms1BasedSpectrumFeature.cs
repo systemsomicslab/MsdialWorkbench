@@ -70,6 +70,24 @@ namespace CompMs.App.Msdial.Model.DataObj
             return true;
         }
 
+        public void SwitchPeakSpotTag(PeakSpotTag tag) {
+            if (tag == PeakSpotTag.CONFIRMED) {
+                Confirmed = !Confirmed;
+            }
+            if (tag == PeakSpotTag.LOW_QUALITY_SPECTRUM) {
+                LowQualitySpectrum = !LowQualitySpectrum;
+            }
+            if (tag == PeakSpotTag.MISANNOTATION) {
+                Misannotation = !Misannotation;
+            }
+            if (tag == PeakSpotTag.COELUTION) {
+                Coelution = !Coelution;
+            }
+            if (tag == PeakSpotTag.OVERANNOTATION) {
+                Overannotation = !Overannotation;
+            }
+        }
+
         public PeakSpotTagCollection TagCollection => _spectrumFeature.TagCollection;
 
         public SpectrumFeature GetCurrentSpectrumFeature() => _spectrumFeature;

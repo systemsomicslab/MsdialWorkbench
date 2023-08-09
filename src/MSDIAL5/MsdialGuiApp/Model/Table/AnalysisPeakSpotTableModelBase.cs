@@ -15,7 +15,7 @@ namespace CompMs.App.Msdial.Model.Table
             _target = target;
         }
 
-        public void SwitchTag(PeakSpotTag tag) {
+        public override void SwitchTag(PeakSpotTag tag) {
             if (_target.Value is null) {
                 return;
             }

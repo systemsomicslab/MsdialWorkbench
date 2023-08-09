@@ -2,7 +2,6 @@
 using CompMs.App.Msdial.Model.Table;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
-using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -18,12 +17,8 @@ namespace CompMs.App.Msdial.ViewModel.Table
             }
 
             EicLoader = eicLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            MarkAllAsConfirmedCommand = new ReactiveCommand().WithSubscribe(model.MarkAllAsConfirmed).AddTo(Disposables);
-            SwitchTagCommand = new ReactiveCommand<PeakSpotTag>().WithSubscribe(model.SwitchTag).AddTo(Disposables);
         }
 
         public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
-        public ReactiveCommand MarkAllAsConfirmedCommand { get; }
-        public ReactiveCommand<PeakSpotTag> SwitchTagCommand { get; }
     }
 }
