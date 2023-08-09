@@ -41,5 +41,7 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
         public ImagingRoiViewModel ImagingRoiViewModel { get; }
 
         public ICommand ShowIonTableCommand => AnalysisViewModel.ShowIonTableCommand;
+
+        public ICommand SearchCompoundCommand => AnalysisViewModel.SearchCompoundCommand;
     }
 }

@@ -39,9 +39,27 @@
                               HorizontalTitle="{Binding ChromatogramsViewModel.HorizontalSelector.SelectedAxisItem.GraphLabel}"
                               GraphTitle="{Binding ChromatogramsViewModel.GraphTitle}"
                               ItemsSource="{Binding ChromatogramsViewModel.DisplayChromatograms}"
-                              Style="{StaticResource OverlapChartDisableMove}"
                               Background="WhiteSmoke"
                               BorderBrush="Black">
+                <chart:MultiChart.Style>
+                    <Style TargetType="{x:Type chart:MultiChart}" BasedOn="{StaticResource OverlapChartDisableMove}">
+                        <Setter Property="VerticalTitle">
+                            <Setter.Value>
+                                <MultiBinding StringFormat="{}{0}({1})">
+                                    <MultiBinding.Bindings>
+                                        <Binding Path="ChromatogramsViewModel.VerticalSelector.SelectedAxisItem.GraphLabel"/>
+                                        <Binding Path="ChromatogramsViewModel.VerticalSelector.SelectedAxisItem.AxisManager.UnitLabel"/>
+                                    </MultiBinding.Bindings>
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ChromatogramsViewModel.VerticalSelector.SelectedAxisItem.AxisManager.UnitLabel, TargetNullValue=''}" Value="">
+                                <Setter Property="VerticalTitle" Value="{Binding ChromatogramsViewModel.VerticalSelector.SelectedAxisItem.GraphLabel}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </chart:MultiChart.Style>
                 <chart:MultiChart.ItemTemplate>
                     <DataTemplate>
                         <Grid>
@@ -56,14 +74,6 @@
                         </Grid>
                     </DataTemplate>
                 </chart:MultiChart.ItemTemplate>
-                <chart:MultiChart.VerticalTitle>
-                    <MultiBinding StringFormat="{}{0}({1})">
-                        <MultiBinding.Bindings>
-                            <Binding Path="ChromatogramsViewModel.VerticalSelector.SelectedAxisItem.GraphLabel"/>
-                            <Binding Path="ChromatogramsViewModel.VerticalSelector.SelectedAxisItem.AxisManager.UnitLabel"/>
-                        </MultiBinding.Bindings>
-                    </MultiBinding>
-                </chart:MultiChart.VerticalTitle>
             </chart:MultiChart>
             <ItemsControl 
                 ItemsSource="{Binding ChromatogramsViewModel.DisplayChromatograms}"

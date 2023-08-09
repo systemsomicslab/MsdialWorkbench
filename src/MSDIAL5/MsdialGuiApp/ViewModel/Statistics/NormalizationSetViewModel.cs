@@ -21,6 +21,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             IsNormalizeSplash = model.ToReactivePropertySlimAsSynchronized(m => m.IsNormalizeSplash).AddTo(Disposables);
             IsNormalizeTic = model.ToReactivePropertySlimAsSynchronized(m => m.IsNormalizeTic).AddTo(Disposables);
             IsNormalizeMTic = model.ToReactivePropertySlimAsSynchronized(m => m.IsNormalizeMTic).AddTo(Disposables);
+            ApplyDilutionFactor = model.ToReactivePropertySlimAsSynchronized(m => m.ApplyDilutionFactor).AddTo(Disposables);
 
             SplashViewModel = new SplashSetViewModel(_model.SplashSetModel).AddTo(Disposables);
             IsSetViewModel = isSetViewModel;
@@ -43,6 +44,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public ReactivePropertySlim<bool> IsNormalizeSplash { get; }
         public ReactivePropertySlim<bool> IsNormalizeTic { get; }
         public ReactivePropertySlim<bool> IsNormalizeMTic { get; }
+        public ReactivePropertySlim<bool> ApplyDilutionFactor { get; }
 
         public SplashSetViewModel SplashViewModel { get; }
         public InternalStandardSetViewModel IsSetViewModel { get; }

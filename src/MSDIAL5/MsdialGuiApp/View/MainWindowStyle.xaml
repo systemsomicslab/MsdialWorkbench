@@ -490,11 +490,11 @@
         <StackPanel Orientation="Horizontal">
             <ToolTipService.ToolTip>
                 <TextBlock TextAlignment="Left">
-                    Check: Confirmed<LineBreak/>
-                    L: Low quality spectrum<LineBreak/>
-                    M: Misannotation<LineBreak/>
-                    C: Coelution(mixed spectra)<LineBreak/>
-                    O: Overannotation
+                    Check: Confirmed (Ctrl+1)<LineBreak/>
+                    L: Low quality spectrum (Ctrl+2)<LineBreak/>
+                    M: Misannotation (Ctrl+3)<LineBreak/>
+                    C: Coelution(mixed spectra) (Ctrl+4)<LineBreak/>
+                    O: Overannotation (Ctrl+5)
                 </TextBlock>
             </ToolTipService.ToolTip>
             <CheckBox IsChecked="{Binding Confirmed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="&#xE73E;" FontFamily="Segoe MDL2 Assets" Foreground="White" Background="Green" Style="{StaticResource IconCheckBox}"/>

@@ -133,18 +133,20 @@
                 </DataGridTemplateColumn>
 
                 <DataGridTemplateColumn SortMemberPath="AnalysisFileDilutionFactor.Value" Width="1*" 
-                                        Header="Dilution factor" IsReadOnly="False" ClipboardContentBinding="{Binding Path=DilutionFactor.Value}">
+                                        Header="Factor" IsReadOnly="False" ClipboardContentBinding="{Binding Path=DilutionFactor.Value}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBox Name="TextBox_DilutionFactor" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" VerticalContentAlignment="Center"
-                                     Text="{Binding Path=DilutionFactor.Value, UpdateSourceTrigger=PropertyChanged}"/>
+                                     Text="{Binding Path=DilutionFactor.Value, UpdateSourceTrigger=PropertyChanged}"
+                                     ToolTipService.ToolTip="Multiply this value after Normalization is performed."/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
 
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
                             <Grid  FocusManager.FocusedElement="{Binding ElementName=TextBox_DilutionFactor}">
-                                <TextBox Name="TextBox_DilutionFactor" Text="{Binding DilutionFactor.Value, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBox Name="TextBox_DilutionFactor" Text="{Binding DilutionFactor.Value, UpdateSourceTrigger=PropertyChanged}"
+                                         ToolTipService.ToolTip="Multiply this value after Normalization is performed."/>
                             </Grid>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>

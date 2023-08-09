@@ -76,8 +76,26 @@
                           HorizontalAxis="{Binding HorizontalSelector.SelectedAxisItem.AxisManager}"
                           VerticalAxis="{Binding VerticalSelector.SelectedAxisItem.AxisManager}"
                           ItemsSource="{Binding DisplayChromatograms}"
-                          Style="{StaticResource OverlapChart}"
                           Grid.Row="1">
+            <chart:MultiChart.Style>
+                <Style TargetType="{x:Type chart:MultiChart}" BasedOn="{StaticResource OverlapChart}">
+                    <Setter Property="VerticalTitle">
+                        <Setter.Value>
+                            <MultiBinding StringFormat="{}{0}({1})">
+                                <MultiBinding.Bindings>
+                                    <Binding Path="VerticalSelector.SelectedAxisItem.GraphLabel"/>
+                                    <Binding Path="VerticalSelector.SelectedAxisItem.AxisManager.UnitLabel"/>
+                                </MultiBinding.Bindings>
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding VerticalSelector.SelectedAxisItem.AxisManager.UnitLabel, TargetNullValue=''}" Value="">
+                            <Setter Property="VerticalTitle" Value="{Binding VerticalSelector.SelectedAxisItem.GraphLabel}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </chart:MultiChart.Style>
             <chart:MultiChart.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Save chromatograms as table"
@@ -135,14 +153,6 @@
                     </Grid>
                 </DataTemplate>
             </chart:MultiChart.ItemTemplate>
-            <chart:MultiChart.VerticalTitle>
-                <MultiBinding StringFormat="{}{0}({1})">
-                    <MultiBinding.Bindings>
-                        <Binding Path="VerticalSelector.SelectedAxisItem.GraphLabel"/>
-                        <Binding Path="VerticalSelector.SelectedAxisItem.AxisManager.UnitLabel"/>
-                    </MultiBinding.Bindings>
-                </MultiBinding>
-            </chart:MultiChart.VerticalTitle>
         </chart:MultiChart>
     </Grid>
 </UserControl>
