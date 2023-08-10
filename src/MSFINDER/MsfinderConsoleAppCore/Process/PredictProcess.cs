@@ -273,9 +273,9 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
             progress = 0;
             using (var sw = new StreamWriter(this.outputFormulaPath, false, Encoding.ASCII)) {
 
-                sw.WriteLine("File path\tFile name\tMS1 count\tMSMS count\t" +
-                    "Precursor mz\tPrecursor type\tRank\tFormula\tTheoretical mass\t" +
-                    "Mass error\tScore\tDatabase");
+                sw.WriteLine("File path\tFile name\tTitle\tMS1 count\tMSMS count\t" +
+                    "Precursor mz\tPrecursor type\tFormula\tTheoretical mass\t" +
+                    "Mass error\tFormula score\tDatabases");
 
                 foreach (var rawfile in this.queryFiles) {
                     var rawData = RawDataParcer.RawDataFileReader(rawfile.RawDataFilePath, param);
@@ -305,9 +305,8 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
             Console.WriteLine("Writing structure prediction results...");
             progress = 0;
             using (var sw = new StreamWriter(this.outputStructurePath, false, Encoding.ASCII)) {
-                sw.WriteLine("File path\tFile name\tMS1 count\tMSMS count\t" +
-                    "Precursor mz\tPrecursor type\tRank\tInChIKey\tSMILES\t" +
-                    "Score\tDatabase");
+                sw.WriteLine("File path\tFile name\tTitle\tMS1 count\tMSMS count\t" +
+                    "Precursor mz\tPrecursor type\tStructure rank\tTotal score\tDatabases\tFormula\tOntology\tInChIKey\tSMILES");
 
                 foreach (var rawfile in this.queryFiles) {
                     var rawData = RawDataParcer.RawDataFileReader(rawfile.RawDataFilePath, param);
@@ -323,7 +322,8 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
 
                             foreach (var sfdFile in sfdFiles) {
                                 var sfdResult = FragmenterResultParcer.FragmenterResultReader(sfdFile);
-                                sfdResultMerge(sfdResults, sfdResult);
+                                var formulaString = System.IO.Path.GetFileNameWithoutExtension(sfdFile);
+                                sfdResultMerge(sfdResults, sfdResult, formulaString);
                             }
                             sfdResults = sfdResults.OrderByDescending(n => n.TotalScore).ToList();
                             writeStructureResult(sw, rawData, sfdResults);
@@ -356,26 +356,31 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
 
                 sw.Write(filepath + "\t");
                 sw.Write(filename + "\t");
+                sw.Write(rawData.Name + "\t");
                 sw.Write(rawData.Ms1PeakNumber + "\t");
                 sw.Write(rawData.Ms2PeakNumber + "\t");
                 sw.Write(rawData.PrecursorMz + "\t");
                 sw.Write(rawData.PrecursorType + "\t");
 
-                sw.WriteLine(counter + "\t" +
+                sw.WriteLine(
+                    result.Title + "\t" +
+                    result.TotalScore + "\t" +
+                    result.Resources + "\t" +
+                    result.Formula + "\t" +
+                    result.Ontology + "\t" +
                     result.Inchikey + "\t" +
-                    result.Smiles + "\t" +
-                    result.TotalScore + "\t" + 
-                    result.Resources);
+                    result.Smiles);
 
                 counter++;
             }
             
         }
 
-        private static void sfdResultMerge(List<FragmenterResult> mergedList, List<FragmenterResult> results) {
+        private static void sfdResultMerge(List<FragmenterResult> mergedList, List<FragmenterResult> results, string formulaString="") {
             if (results == null || results.Count == 0) return;
 
             foreach (var result in results) {
+                result.Formula = formulaString;
                 mergedList.Add(result);
             }
         }
@@ -390,12 +395,13 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
                 if (result.TotalScore <= 0) continue;
                 sw.Write(filepath + "\t");
                 sw.Write(filename + "\t");
+                sw.Write(rawData.Name + "\t");
                 sw.Write(rawData.Ms1PeakNumber + "\t");
                 sw.Write(rawData.Ms2PeakNumber + "\t");
                 sw.Write(rawData.PrecursorMz + "\t");
                 sw.Write(rawData.PrecursorType + "\t");
 
-                sw.WriteLine(counter + "\t" + 
+                sw.WriteLine(
                     result.Formula.FormulaString + "\t" +
                     result.Formula.Mass + "\t" +
                     result.MassDiff + "\t" +

@@ -397,7 +397,7 @@
                         <TextBox Text="{Binding LowerValue, RelativeSource={RelativeSource Mode=TemplatedParent}, StringFormat=F4}"
                                  TextAlignment="Center"
                                  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
-                        <TextBlock Text="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                        <TextBlock Text="{TemplateBinding Tag}"
                                    Margin="10,0"
                                    Grid.Row="0" Grid.Column="2"/>
                         <TextBox Text="{Binding UpperValue, RelativeSource={RelativeSource Mode=TemplatedParent}, StringFormat=F4}"
@@ -411,17 +411,11 @@
                                    Height="5" Margin="5,0"
                                    Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"/>
                         <Slider x:Name="PART_LowerRange"
-                                Minimum="{Binding Minimum, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                Maximum="{Binding Maximum, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                Value="{Binding LowerValue, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                 VerticalAlignment="Center"
                                 Template="{StaticResource simpleSlider}"
                                 Margin="0,0,10,0"
                                 Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"/>
                         <Slider x:Name="PART_UpperRange"
-                                Minimum="{Binding Minimum, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                Maximum="{Binding Maximum, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                Value="{Binding UpperValue, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                 VerticalAlignment="Center"
                                 Template="{StaticResource simpleSlider}"
                                 Margin="10,0,0,0"
@@ -431,6 +425,99 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="CheckBox" x:Key="IconCheckBox">
+        <Setter Property="FontWeight" Value="Heavy"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <ControlTemplate.Resources>
+                        <Style TargetType="TextBlock" x:Key="BaseTextBlock">
+                            <Setter Property="FontSize" Value="8"/>
+                            <Setter Property="Height" Value="10"/>
+                            <Setter Property="Width" Value="10"/>
+                            <Setter Property="TextAlignment" Value="Center"/>
+                            <Setter Property="VerticalAlignment" Value="Top"/>
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                        </Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlock}" x:Key="IfCheckedStyle">
+                            <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}"/>
+                            <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}"/>
+                        </Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlock}" x:Key="IfNotCheckedStyle">
+                            <Setter Property="Foreground" Value="Gray"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                        </Style>
+                    </ControlTemplate.Resources>
+                    <Border BorderThickness="1" BorderBrush="LightGray"
+                            Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                            VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <Viewbox Stretch="Uniform">
+                            <Grid>
+                                <TextBlock x:Name="CheckMark"
+                                           Text="{TemplateBinding Content}"
+                                           FontFamily="{TemplateBinding FontFamily}"
+                                           FontStyle="{TemplateBinding FontStyle}"
+                                           FontWeight="{TemplateBinding FontWeight}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="FontSize" Value="8"/>
+                                            <Setter Property="Height" Value="10"/>
+                                            <Setter Property="Width" Value="10"/>
+                                            <Setter Property="TextAlignment" Value="Center"/>
+                                            <Setter Property="VerticalAlignment" Value="Top"/>
+                                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                            <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}}" Value="False">
+                                                    <Setter Property="Foreground" Value="Gray"/>
+                                                    <Setter Property="Background" Value="Transparent"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Grid>
+                        </Viewbox>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <DataTemplate x:Key="EditPeakSpotTag">
+        <StackPanel Orientation="Horizontal">
+            <ToolTipService.ToolTip>
+                <TextBlock TextAlignment="Left">
+                    Check: Confirmed (Ctrl+1)<LineBreak/>
+                    L: Low quality spectrum (Ctrl+2)<LineBreak/>
+                    M: Misannotation (Ctrl+3)<LineBreak/>
+                    C: Coelution(mixed spectra) (Ctrl+4)<LineBreak/>
+                    O: Overannotation (Ctrl+5)
+                </TextBlock>
+            </ToolTipService.ToolTip>
+            <CheckBox IsChecked="{Binding Confirmed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="&#xE73E;" FontFamily="Segoe MDL2 Assets" Foreground="White" Background="Green" Style="{StaticResource IconCheckBox}"/>
+            <CheckBox IsChecked="{Binding LowQualitySpectrum, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="L" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
+            <CheckBox IsChecked="{Binding Misannotation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="M" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
+            <CheckBox IsChecked="{Binding Coelution, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="C" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
+            <CheckBox IsChecked="{Binding Overannotation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="O" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="FilteringPeakSpotTag" DataType="{x:Type searchVM:PeakSpotTagSearchQueryBuilderViewModel}"
+                  xmlns:searchVM="clr-namespace:CompMs.App.Msdial.ViewModel.Search">
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Tag filter:" FontSize="12" Margin="0,0,8,0"/>
+            <CheckBox IsChecked="{Binding Confirmed.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="&#xE73E;" FontFamily="Segoe MDL2 Assets" Foreground="White" Background="Green" Style="{StaticResource IconCheckBox}"/>
+            <CheckBox IsChecked="{Binding LowQualitySpectrum.Value, Mode=TwoWay}" Content="L" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
+            <CheckBox IsChecked="{Binding Misannotation.Value, Mode=TwoWay}" Content="M" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
+            <CheckBox IsChecked="{Binding Coelution.Value, Mode=TwoWay}" Content="C" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
+            <CheckBox IsChecked="{Binding Overannotation.Value, Mode=TwoWay}" Content="O" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
+
+            <CheckBox Content="Exclude tagged peaks" IsChecked="{Binding Excludes.Value, Mode=TwoWay}" Margin="8,0" VerticalAlignment="Center" FontSize="12"/>
+        </StackPanel>
+    </DataTemplate>
 
     <Style TargetType="RadioButton" x:Key="IconRadioButton">
         <Setter Property="Height" Value="32"/>

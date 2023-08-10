@@ -40,13 +40,17 @@ namespace CompMs.Graphics.Behavior
         {
             if (!(sender is DataGrid datagrid)) return;
 
+            if (datagrid.SelectedCells.Count == 0) {
+                return;
+            }
+            var leftTopCell = datagrid.SelectedCells[0];
             if (e.Key == Key.V && Keyboard.Modifiers == ModifierKeys.Control)
             {
                 var clipText = Clipboard.GetText().Replace("\r\n", "\n").TrimEnd().Split('\n').Select(row => row.Split('\t')).ToArray();
 
                 var items = datagrid.Items.Cast<object>().ToList();
-                var startRow = items.IndexOf(datagrid.CurrentItem);
-                var startCol = datagrid.Columns.IndexOf(datagrid.CurrentCell.Column);
+                var startRow = items.IndexOf(leftTopCell.Item);
+                var startCol = leftTopCell.Column.DisplayIndex;
                 var errorRows = new PastingFailedRows();
 
                 for (int i = 0; i < clipText.Length; i++)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 
@@ -166,6 +167,7 @@ namespace Rfx.Riken.OsakaUniv
             { "LPG", "rgb(184, 134, 11)" },
             { "LPI", "rgb(255, 0, 255)" },
             { "LPA", "rgb(218, 102, 204)" },
+            { "BisMeLPA", "rgb(118, 102, 204)" },
             { "PA", "rgb(218, 112, 214)" },
             { "PC", "rgb(50, 205, 50)" },
             { "PE", "rgb(128, 0, 128)" },
@@ -254,6 +256,7 @@ namespace Rfx.Riken.OsakaUniv
             { "HexCer_NDS", "rgb(158, 0, 47)" },
             { "HexCer_EOS", "rgb(0, 0, 102)" },
             { "AHexCer", "rgb(10, 10, 92)" },
+            { "ASHexCer", "rgb(10, 30, 92)" },
             { "SHexCer", "rgb(255, 29, 0)" },
             { "SL", "rgb(245, 39, 10)" },
             { "CoQ", "rgb(235, 49, 20)" },
@@ -267,6 +270,14 @@ namespace Rfx.Riken.OsakaUniv
             { "NAGly", "rgb(235, 49, 20)" },
             { "NAGlySer", "rgb(225, 39, 30)" },
             { "NAOrn", "rgb(215, 29, 40)" },
+            { "NATryA", "rgb(215, 33, 90)" },
+            { "NA5HT", "rgb(215, 33, 60)"},
+            { "NAAla", "rgb(215, 63, 30)"},
+            { "NAGln", "rgb(215, 63, 120)"},
+            { "NALeu", "rgb(215, 63, 150)"},
+            { "NAVal", "rgb(215, 33, 70)"},
+            { "NASer", "rgb(215, 33, 100)"},
+            { "WE", "rgb(215, 29, 100)" },
             { "GM3", "rgb(168, 0, 47)" },
             { "GD1a", "rgb(158, 0, 47)" },
             { "GD1b", "rgb(148, 0, 47)" },

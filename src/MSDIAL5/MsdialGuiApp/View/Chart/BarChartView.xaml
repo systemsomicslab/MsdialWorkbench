@@ -65,17 +65,27 @@
         </Grid.ContextMenu>
         <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis}"
                           VerticalAxis="{Binding VerticalAxis}"
-                          HorizontalTitle="{Binding HorizontalTitle.Value}"
-                          Style="{StaticResource OverlapChart}">
+                          HorizontalTitle="{Binding HorizontalTitle.Value}">
+            <chart:MultiChart.Style>
+                <Style TargetType="{x:Type chart:MultiChart}" BasedOn="{StaticResource OverlapChart}">
+                    <Setter Property="VerticalTitle">
+                        <Setter.Value>
+                            <MultiBinding StringFormat="{}{0}({1})">
+                                <Binding Path="VerticalTitle.Value"/>
+                                <Binding Path="VerticalAxis.UnitLabel"/>
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding VerticalAxis.UnitLabel, TargetNullValue=''}" Value="">
+                            <Setter Property="VerticalTitle" Value="{Binding VerticalTitle.Value}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </chart:MultiChart.Style>
             <chart:MultiChart.Resources>
                 <converter:MultiplyConverter x:Key="ByHalf" By="0.5"/>
             </chart:MultiChart.Resources>
-            <chart:MultiChart.VerticalTitle>
-                <MultiBinding StringFormat="{}{0}({1})">
-                    <Binding Path="VerticalTitle.Value"/>
-                    <Binding Path="VerticalAxis.UnitLabel"/>
-                </MultiBinding>
-            </chart:MultiChart.VerticalTitle>
             <chart:BarControl x:Name="bar"
                               ItemsSource="{Binding BarItems.Value}"
                               HorizontalPropertyName="{Binding HorizontalProperty.Value}"

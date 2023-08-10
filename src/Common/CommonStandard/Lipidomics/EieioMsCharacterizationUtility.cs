@@ -45,26 +45,30 @@ namespace CompMs.Common.Lipidomics
             var director = new ShorthandNotationDirector(builder);
             director.SetSpeciesLevel();
             SPECIES_LEVEL = builder.Create();
+
             director.SetPositionLevel();
             director.SetDoubleBondPositionLevel();
             director.SetOxidizedPositionLevel();
             POSITION_AND_DOUBLEBOND_LEVEL = builder.Create();
+
             director.SetPositionLevel();
             director.SetDoubleBondNumberLevel();
             director.SetOxidizedNumberLevel();
             POSITION_LEVEL = builder.Create();
+
             director.SetMolecularSpeciesLevel();
             director.SetDoubleBondPositionLevel();
             director.SetOxidizedPositionLevel();
             MOLECULAR_SPECIES_AND_DOUBLEBOND_LEVEL = builder.Create();
+
             director.SetMolecularSpeciesLevel();
             director.SetDoubleBondNumberLevel();
             director.SetOxidizedNumberLevel();
             MOLECULAR_SPECIES_LEVEL = builder.Create();
+
             director.SetPositionLevel();
             director.SetDoubleBondNumberLevel();
             director.SetOxidizedNumberLevel();
-            ((ILipidomicsVisitorBuilder)builder).SetSphingoDoubleBond(DoubleBondIndeterminateState.AllCisTransIsomers);
             ((ILipidomicsVisitorBuilder)builder).SetSphingoOxidized(OxidizedIndeterminateState.Identity);
             CERAMIDE_POSITION_LEVEL = builder.Create();
         }
@@ -97,16 +101,19 @@ namespace CompMs.Common.Lipidomics
 
         public static (ILipid, double[]) GetDefaultCharacterizationResultForCeramides(ILipid molecule, LipidMsCharacterizationResult result)
         {
-            ILipid lipid = molecule;
+            IVisitor<ILipid, ILipid> converter;
             if (!result.IsChainIonsExisted)
             { // chain cannot determine
-                lipid = molecule.Accept(SPECIES_LEVEL, IdentityDecomposer<ILipid, ILipid>.Instance);
+                converter = SPECIES_LEVEL;
             }
             else if (!result.IsDoubleBondIonsExisted)
             { // chain existed expected: SM 18:1;2O/18:1
-                lipid = molecule.Accept(CERAMIDE_POSITION_LEVEL, IdentityDecomposer<ILipid, ILipid>.Instance);
+                converter = CERAMIDE_POSITION_LEVEL;
             }
-            return (lipid, new double[2] { result.TotalScore, result.TotalMatchedIonCount });
+            else {
+                converter = POSITION_AND_DOUBLEBOND_LEVEL;
+            }
+            return (molecule.Accept(converter, IdentityDecomposer<ILipid, ILipid>.Instance), new double[2] { result.TotalScore, result.TotalMatchedIonCount });
         }
 
         public static (ILipid, double[]) GetDefaultCharacterizationResultForGlycerophospholipid(ILipid molecule, LipidMsCharacterizationResult result)
@@ -147,7 +154,7 @@ namespace CompMs.Common.Lipidomics
                 converter = POSITION_AND_DOUBLEBOND_LEVEL;
             }
             else if (result.IsPositionIonsExisted)
-            { // chain existed expected: TG 16:0/18:1/18:2
+            { // chain existed expected: TG 16:0_18:1(sn2)_18:2 for TG, HBMP/DCL 16:0/18:0_20:4
                 converter = POSITION_LEVEL;
             }
             else if (result.IsDoubleBondIonsExisted)
@@ -177,17 +184,21 @@ namespace CompMs.Common.Lipidomics
 
         public static double GetMatchedCoefficient(List<SpectrumPeak> peaks)
         {
-            double sum1 = 0, sum2 = 0, mean1 = 0, mean2 = 0, covariance = 0, sqrt1 = 0, sqrt2 = 0;
+            double sum1 = 0, sum2 = 0, mean1 = 0, mean2 = 0, covariance = 0, sqrt1 = 0, sqrt2 = 0, counter = 0;
             for (int i = 0; i < peaks.Count; i++)
             {
+                if (!peaks[i].IsMatched) continue;
+                counter++;
                 sum1 += peaks[i].Resolution;
                 sum2 += peaks[i].Intensity;
             }
-            mean1 = (double)(sum1 / peaks.Count);
-            mean2 = (double)(sum2 / peaks.Count);
+            if (counter == 0) return 0;
+            mean1 = (double)(sum1 / counter);
+            mean2 = (double)(sum2 / counter);
 
             for (int i = 0; i < peaks.Count; i++)
             {
+                if (!peaks[i].IsMatched) continue;
                 covariance += (peaks[i].Resolution - mean1) * (peaks[i].Intensity - mean2);
                 sqrt1 += Math.Pow(peaks[i].Resolution - mean1, 2);
                 sqrt2 += Math.Pow(peaks[i].Intensity - mean2, 2);
@@ -214,12 +225,14 @@ namespace CompMs.Common.Lipidomics
         }
 
         public static bool IsDiagnosticFragmentsExist(IReadOnlyList<SpectrumPeak> spectrum, IReadOnlyList<DiagnosticIon> dIons) {
+            var missedCounter = 0;
             var isAllExisted = true;
             if (dIons.IsEmptyOrNull()) return true;
             foreach (var ion in dIons) {
                 if (!IsDiagnosticFragmentExist_ResolutionUsed4Intensity(spectrum, ion.MzTolerance, ion.Mz, ion.IonAbundanceCutOff)) {
-                    isAllExisted = false;
-                    break;
+                    missedCounter++;
+                    if (dIons.Count < 4 && missedCounter == 1) { isAllExisted = false; break; }
+                    if (dIons.Count >= 4 && missedCounter == 2) { isAllExisted = false; break; }
                 }
             }
             return isAllExisted;
@@ -388,7 +401,8 @@ namespace CompMs.Common.Lipidomics
 
             result.ClassIonsDetected = classionsDetected;
             result.IsClassIonsExisted = isClassIonExisted;
-            result.ClassIonScore = isClassIonExisted ? classions_matched.Sum(n => n.Resolution) / 100.0 : 0.0;
+            //result.ClassIonScore = isClassIonExisted ? classions_matched.Sum(n => n.Resolution) / 100.0 : 0.0;
+            result.ClassIonScore = isClassIonExisted ? (double)classions_matched.Count / (double)classions.Count : 0.0;
 
 
             // check lipid chain ion's existence
@@ -402,7 +416,8 @@ namespace CompMs.Common.Lipidomics
 
             result.ChainIonsDetected = chainIonsDetected;
             result.IsChainIonsExisted = isChainIonExisted;
-            result.ChainIonScore = isChainIonExisted ? chainIons_matched.Sum(n => n.Resolution) / 100.0 : 0.0;
+            //result.ChainIonScore = isChainIonExisted ? chainIons_matched.Sum(n => n.Resolution) / 100.0 : 0.0;
+            result.ChainIonScore = isChainIonExisted ? (double)chainIons_matched.Count / (double)chainIons.Count : 0.0;
 
             // check lipid position ion's existence
             var isPositionIonExisted = false;
@@ -418,7 +433,8 @@ namespace CompMs.Common.Lipidomics
                     ? true : false;
                 result.PositionIonsDetected = positionIonsDetected;
                 result.IsPositionIonsExisted = isPositionIonExisted;
-                result.PositionIonScore = isPositionIonExisted ? positionIons_matched.Sum(n => n.Resolution) / 100.0 : 0.0;
+                //result.PositionIonScore = isPositionIonExisted ? positionIons_matched.Sum(n => n.Resolution) / 100.0 : 0.0;
+                result.PositionIonScore = isPositionIonExisted ? (double)positionIons_matched.Count / (double)positionIons.Count : 0.0;
             }
 
             // check the dtected ion nudouble bond position
@@ -448,7 +464,7 @@ namespace CompMs.Common.Lipidomics
             result.DoubleBondIonsDetected = (int)matchedCount;
             result.DoubleBondMatchedPercent = matchedPercent;
             result.IsDoubleBondIonsExisted = isDoubleBondIdentified;
-            result.DoubleBondIonScore = matchedCoefficient;
+            result.DoubleBondIonScore = isDoubleBondIdentified ? matchedCoefficient + matchedPercent : 0;
 
             // total score
 

@@ -1,9 +1,8 @@
-﻿using CompMs.Common.Interfaces;
-using CompMs.MsdialCore.DataObj;
+﻿using CompMs.MsdialCore.DataObj;
 
 namespace CompMs.App.Msdial.Model.Search
 {
-    public interface IFilterable : IAnnotatedObject, IChromatogramPeak, IMoleculeProperty
+    public interface IFilterable
     {
         bool IsMsmsAssigned { get; }
         bool IsMonoIsotopicIon { get; }
@@ -22,5 +21,7 @@ namespace CompMs.App.Msdial.Model.Search
         string AdductIonName { get; }
 
         double RelativeAmplitudeValue { get; }
+
+        PeakSpotTagCollection TagCollection { get; }
     }
 }

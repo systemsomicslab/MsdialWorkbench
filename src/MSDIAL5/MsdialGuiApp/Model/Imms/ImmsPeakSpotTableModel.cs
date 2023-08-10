@@ -42,7 +42,7 @@ namespace CompMs.App.Msdial.Model.Imms
         public double DriftMax { get; }
     }
 
-    internal sealed class ImmsAnalysisPeakTableModel : PeakSpotTableModelBase<ChromatogramPeakFeatureModel>, IImmsPeakSpotTableModel
+    internal sealed class ImmsAnalysisPeakTableModel : AnalysisPeakSpotTableModelBase, IImmsPeakSpotTableModel
     {
         public ImmsAnalysisPeakTableModel(IReadOnlyList<ChromatogramPeakFeatureModel> peaks, IReactiveProperty<ChromatogramPeakFeatureModel> target, PeakSpotNavigatorModel peakSpotNavigatorModel)
             : base(peaks, target, peakSpotNavigatorModel) {

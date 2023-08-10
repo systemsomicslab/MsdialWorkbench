@@ -97,8 +97,7 @@ namespace CompMs.App.Msdial.Model.Loader
         }
 
         internal List<PeakItem> LoadEicTrace(double mass, double massTolerance) {
-            var eic = LoadEicCore(mass, massTolerance);
-            return eic;
+            return LoadEicCore(mass, massTolerance);
         }
 
         private static readonly double PEAK_WIDTH_FACTOR = 3d;
@@ -134,7 +133,7 @@ namespace CompMs.App.Msdial.Model.Loader
 
         protected virtual List<PeakItem> LoadEicCore(double mass, double massTolerance) {
             return RawSpectra
-                .GetMs1ExtractedChromatogram(mass, parameter.CentroidMs1Tolerance, _chromatogramRange)
+                .GetMs1ExtractedChromatogram(mass, massTolerance, _chromatogramRange)
                 .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
                 .Where(peak => peak != null)
                 .Select(peak => new PeakItem(peak))

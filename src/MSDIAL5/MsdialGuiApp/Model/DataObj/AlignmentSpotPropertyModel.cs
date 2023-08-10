@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Search;
+﻿using Accord.Statistics.Models.Regression.Fitting;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
@@ -18,7 +19,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class AlignmentSpotPropertyModel : DisposableModelBase, IPeakSpotModel, IFilterable, IAnnotatedObject
+    public sealed class AlignmentSpotPropertyModel : DisposableModelBase, IPeakSpotModel, IFilterable, IAnnotatedObject, IChromatogramPeak, IMoleculeProperty
     {
         public int AlignmentID => innerModel.AlignmentID;
         public int MasterAlignmentID => innerModel.MasterAlignmentID;
@@ -221,6 +222,59 @@ namespace CompMs.App.Msdial.Model.DataObj
             }
         }
 
+        public bool Confirmed {
+            get => innerModel.TagCollection.IsSelected(PeakSpotTag.CONFIRMED);
+            set => SetPeakSpotTag(PeakSpotTag.CONFIRMED, value, nameof(Confirmed));
+        }
+        public bool LowQualitySpectrum {
+            get => innerModel.TagCollection.IsSelected(PeakSpotTag.LOW_QUALITY_SPECTRUM);
+            set => SetPeakSpotTag(PeakSpotTag.LOW_QUALITY_SPECTRUM, value, nameof(LowQualitySpectrum));
+        }
+        public bool Misannotation {
+            get => innerModel.TagCollection.IsSelected(PeakSpotTag.MISANNOTATION);
+            set => SetPeakSpotTag(PeakSpotTag.MISANNOTATION, value, nameof(Misannotation));
+        }
+        public bool Coelution {
+            get => innerModel.TagCollection.IsSelected(PeakSpotTag.COELUTION);
+            set => SetPeakSpotTag(PeakSpotTag.COELUTION, value, nameof(Coelution));
+        }
+        public bool Overannotation {
+            get => innerModel.TagCollection.IsSelected(PeakSpotTag.OVERANNOTATION);
+            set => SetPeakSpotTag(PeakSpotTag.OVERANNOTATION, value, nameof(Overannotation));
+        }
+
+        private bool SetPeakSpotTag(PeakSpotTag tag, bool value, string propertyname) {
+            if (value == innerModel.TagCollection.IsSelected(tag)) {
+                return false;
+            }
+            if (value) {
+                innerModel.TagCollection.Select(tag);
+            }
+            else {
+                innerModel.TagCollection.Deselect(tag);
+            }
+            OnPropertyChanged(propertyname);
+            return true;
+        }
+
+        public void SwitchPeakSpotTag(PeakSpotTag tag) {
+            if (tag == PeakSpotTag.CONFIRMED) {
+                Confirmed = !Confirmed;
+            }
+            if (tag == PeakSpotTag.LOW_QUALITY_SPECTRUM) {
+                LowQualitySpectrum = !LowQualitySpectrum;
+            }
+            if (tag == PeakSpotTag.MISANNOTATION) {
+                Misannotation = !Misannotation;
+            }
+            if (tag == PeakSpotTag.COELUTION) {
+                Coelution = !Coelution;
+            }
+            if (tag == PeakSpotTag.OVERANNOTATION) {
+                Overannotation = !Overannotation;
+            }
+        }
+
         internal readonly AlignmentSpotProperty innerModel;
 
         public static readonly double KMIupacUnit;
@@ -286,5 +340,6 @@ namespace CompMs.App.Msdial.Model.DataObj
         double ISpectrumPeak.Intensity { get => ((ISpectrumPeak)innerModel).Intensity; set => ((ISpectrumPeak)innerModel).Intensity = value; }
 
         double IFilterable.RelativeAmplitudeValue => innerModel.RelativeAmplitudeValue;
+        PeakSpotTagCollection IFilterable.TagCollection => innerModel.TagCollection;
     }
 }

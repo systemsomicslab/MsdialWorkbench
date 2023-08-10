@@ -132,9 +132,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         private void SetAnnotationResult(ChromatogramPeakFeature chromPeakFeature, IAnnotationQuery<MsScanMatchResult> query, RawPeakElement[] spectrums) {
-            if (Math.Abs(chromPeakFeature.PrecursorMz - 766.6764) < 0.001) {
-                Console.WriteLine();
-            }
+            //if (Math.Abs(chromPeakFeature.PrecursorMz - 766.6764) < 0.001) {
+            //    Console.WriteLine();
+            //}
             var candidates = query.FindCandidates();
             var results = _evaluator.FilterByThreshold(candidates);
             if (results.Count > 0) {

@@ -279,6 +279,15 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             result.IsLipidDoubleBondPositionMatch = lipid.Description.HasFlag(LipidDescription.DoubleBondPosition);
             result.IsOtherLipidMatch = false;
             result.IsSpectrumMatch &= result.IsLipidChainsMatch | result.IsLipidClassMatch | result.IsLipidPositionMatch | result.IsOtherLipidMatch;
+
+            // TODO
+            if (reference.CompoundClass == "HBMP" && result.Name.Contains("/")) {
+                var lipidname = result.Name;
+                var lipidnames = lipidname.Split('/');
+                if (lipidnames.Length == 3) {
+                    result.Name = lipidnames[0] + "/" + lipidnames[1] + "_" + lipidnames[2];
+                }
+            }
         }
     }
 }

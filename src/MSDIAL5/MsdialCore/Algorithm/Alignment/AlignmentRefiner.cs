@@ -84,7 +84,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                     spot.PeakCharacter.IsotopeParentPeakID = spot.AlignmentID;
                     spot.PeakCharacter.IsotopeWeightNumber = 0;
                 }
-                if (!spot.IsReferenceMatched(evaluator)) {
+                if (!spot.IsReferenceMatched(evaluator) && !spot.IsAnnotationSuggested(evaluator)) {
                     spot.AdductType.Unset();
                 }
             }

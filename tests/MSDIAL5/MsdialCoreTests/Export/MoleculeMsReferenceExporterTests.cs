@@ -17,8 +17,9 @@ namespace CompMs.MsdialCore.Export.Tests
                 Name = "aaaa",
             };
             var expectedStream = new MemoryStream();
-            var writer = new StreamWriter(expectedStream, encoding: Encoding.UTF8, bufferSize: 1024, leaveOpen: true);
-            MspFileParser.WriteMspFields(reference, writer);
+            using (var writer = new StreamWriter(expectedStream, encoding: Encoding.UTF8, bufferSize: 1024, leaveOpen: true)) {
+                MspFileParser.WriteMspFields(reference, writer);
+            }
 
             var observable = new FakeObservable(reference);
             var exporter = new MoleculeMsReferenceExporter(observable);

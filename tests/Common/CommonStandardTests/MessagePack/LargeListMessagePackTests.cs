@@ -1,6 +1,7 @@
 ﻿using MessagePack;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace CompMs.Common.MessagePack.Tests
@@ -16,6 +17,9 @@ namespace CompMs.Common.MessagePack.Tests
         // [DataRow(1073741825)]
         public void SaveAndLoadLargeSampleTest(int size) {
             var datas = new LargeSample[size];
+            for (int i = 0; i < datas.Length; i++) {
+                datas[i] = new LargeSample();
+            }
             var memory = new MemoryStream();
             LargeListMessagePack.Serialize(memory, datas);
             memory.Seek(0, SeekOrigin.Begin);
@@ -31,6 +35,9 @@ namespace CompMs.Common.MessagePack.Tests
         // [DataRow(1073741825)]
         public void SaveAndLoadSmallSampleTest(int size) {
             var datas = new SmallSample[size];
+            for (int i = 0; i < datas.Length; i++) {
+                datas[i] = new SmallSample();
+            }
             var memory = new MemoryStream();
             LargeListMessagePack.Serialize(memory, datas);
             memory.Seek(0, SeekOrigin.Begin);
@@ -69,6 +76,49 @@ namespace CompMs.Common.MessagePack.Tests
             memory.Seek(0, SeekOrigin.Begin);
             var actual = LargeListMessagePack.Deserialize<FixedSample>(memory);
             Assert.AreEqual(datas.Length, actual.Count);
+        }
+
+        [DataTestMethod()]
+        [DataRow(1, 0)]
+        [DataRow(100, 64)]
+        [DataRow(13421775, 8388608)]
+        [DataRow(20000000, 16777216)]
+        public void LoadSpecificRandomSampleTest(int size, int index) {
+            var datas = new RandomSample[size];
+            for (int i = 0; i < datas.Length; i++) {
+                datas[i] = new RandomSample(8);
+            }
+            var memory = new MemoryStream();
+            LargeListMessagePack.Serialize(memory, datas);
+            memory.Seek(0, SeekOrigin.Begin);
+            var actual = LargeListMessagePack.DeserializeAt<RandomSample>(memory, index);
+            CollectionAssert.AreEqual(datas[index].Xs, actual.Xs);
+        }
+
+        [DataTestMethod()]
+        [DataRow(1, 0)]
+        [DataRow(100, 64)]
+        [DataRow(13421775, 8388608)]
+        [DataRow(20000000, 16777216)]
+        public void LoadSpecificFixedSampleTest(int size, int index) {
+            var datas = new FixedSample[size];
+            var random = new Random();
+            var timer = new Stopwatch();
+            for (int i = 0; i < datas.Length; i++) {
+                datas[i] = new FixedSample(8, 8);
+                random.NextBytes(datas[i].Xs);               
+                random.NextBytes(datas[i].Ys);               
+            }
+            var memory = new MemoryStream();
+            timer.Start();
+            LargeListMessagePack.Serialize(memory, datas);
+            Debug.WriteLine("Serialize: {0} ms", timer.ElapsedMilliseconds);
+            memory.Seek(0, SeekOrigin.Begin);
+            timer.Restart();
+            var actual = LargeListMessagePack.DeserializeAt<FixedSample>(memory, index);
+            Debug.WriteLine("Deserialize: {0} ms", timer.ElapsedMilliseconds);
+            CollectionAssert.AreEqual(datas[index].Xs, actual.Xs);
+            CollectionAssert.AreEqual(datas[index].Ys, actual.Ys);
         }
 
         [MessagePackObject]

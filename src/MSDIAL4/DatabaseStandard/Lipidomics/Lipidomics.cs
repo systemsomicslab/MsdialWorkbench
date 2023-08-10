@@ -451,7 +451,11 @@ namespace Riken.Metabolomics.Lipidomics
                         break;
                     case LbmClass.AHexCer:
                         result = LipidMsmsCharacterization.JudgeIfAcylhexceras(spectrum, ms2tol, refMz,
-                             totalCarbon, totalDbBond, sn3MinCarbon, sn3MaxCarbon, sn3MinDbBond, sn3MaxDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                             totalCarbon, totalDbBond, totalOxidized, sn3MinCarbon, sn3MaxCarbon, sn3MinDbBond, sn3MaxDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.ASHexCer:
+                        result = LipidMsmsCharacterization.JudgeIfAshexcer(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, totalOxidized, sn3MinCarbon, sn3MaxCarbon, sn3MinDbBond, sn3MaxDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
                         break;
 
                     //add 10/04/19

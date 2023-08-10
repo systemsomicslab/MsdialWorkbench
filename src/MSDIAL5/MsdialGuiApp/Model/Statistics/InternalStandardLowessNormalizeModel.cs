@@ -36,12 +36,12 @@ namespace CompMs.App.Msdial.Model.Statistics
             
         }
 
-        public void Normalize() {
+        public void Normalize(bool applyDilutionFactor) {
             var _broker = _messageBroker;
             var task = TaskNotification.Start("Normalize..");
             var publisher = new TaskProgressPublisher(_broker, task);
             using (publisher.Start()) {
-                Normalization.ISNormThenByLowessNormalize(_files, _internalStandardSetModel.Spots, IonAbundanceUnit.NormalizedByInternalStandardPeakHeight);
+                Normalization.ISNormThenByLowessNormalize(_files, _internalStandardSetModel.Spots, IonAbundanceUnit.NormalizedByInternalStandardPeakHeight, applyDilutionFactor);
                 _container.IsNormalized = true;
             }
         }

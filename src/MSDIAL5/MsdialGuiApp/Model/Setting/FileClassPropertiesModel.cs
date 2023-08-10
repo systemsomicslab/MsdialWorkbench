@@ -1,4 +1,5 @@
-﻿using Reactive.Bindings;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace CompMs.App.Msdial.Model.Setting
     public sealed class FileClassPropertiesModel : ReadOnlyObservableCollection<FileClassPropertyModel>, IDisposable
     {
         private readonly ReactiveProperty<List<string>> _orderedClasses;
+        private readonly ObservableCollection<FileClassPropertyModel> _list;
 
         public FileClassPropertiesModel(ObservableCollection<FileClassPropertyModel> list) : base(list) {
             _orderedClasses = new[]
@@ -21,9 +23,22 @@ namespace CompMs.App.Msdial.Model.Setting
             }.Merge().StartWith(Unit.Default)
             .Select(_ => list.OrderBy(prop => prop.Order).Select(prop => prop.Name).ToList())
             .ToReactiveProperty();
+            _list = list;
         }
 
         public IObservable<IReadOnlyList<string>> OrderedClasses => _orderedClasses;
+
+        public IObservable<IReadOnlyList<string>> GetOrderedUsedClasses(AnalysisFileBeanModelCollection files) {
+            var includedNames = files.AnalysisFiles.Select(f => f.ObserveProperty(f_ => f_.AnalysisFileIncluded).Select(include => include ? f.ObserveProperty(f_ => f_.AnalysisFileClass) : Observable.Return<string>(null)).Switch())
+                .CombineLatest()
+                .Select(fs => fs.Where(f => !(f is null)).ToHashSet());
+            return new[]
+            {
+                _list.CollectionChangedAsObservable().ToUnit(),
+                _list.ObserveElementProperty(p => p.Order).ToUnit(),
+            }.Merge().StartWith(Unit.Default)
+            .CombineLatest(includedNames, (_, names) => _list.Where(prop => names.Contains(prop.Name)).OrderBy(prop => prop.Order).Select(prop => prop.Name).ToList());
+        }
 
         // IDisposable interface
         private bool _disposedValue;

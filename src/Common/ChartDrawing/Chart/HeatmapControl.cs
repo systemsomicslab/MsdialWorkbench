@@ -38,13 +38,13 @@ namespace CompMs.Graphics.Chart
                     return;
                 }
 
-                if (type.GetProperties().Any(property => property.Name == chart.HorizontalPropertyName)) {
+                if (ExpressionHelper.ValidatePropertyString(type, chart.HorizontalPropertyName)) {
                     chart._hGetter = ExpressionHelper.GetConvertToAxisValueExpression(type, chart.HorizontalPropertyName).Compile();
                 }
-                if (type.GetProperties().Any(property => property.Name == chart.VerticalPropertyName)) {
+                if (ExpressionHelper.ValidatePropertyString(type, chart.VerticalPropertyName)) {
                     chart._vGetter = ExpressionHelper.GetConvertToAxisValueExpression(type, chart.VerticalPropertyName).Compile();
                 }
-                if (type.GetProperties().Any(property => property.Name == chart.DegreePropertyName)) {
+                if (ExpressionHelper.ValidatePropertyString(type, chart.DegreePropertyName)) {
                     chart._zGetter = ExpressionHelper.GetPropertyGetterExpression(type, chart.DegreePropertyName).Compile();
                 }
                 if (chart.SelectedItem != null) {
@@ -90,7 +90,7 @@ namespace CompMs.Graphics.Chart
         static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             if (d is HeatmapControl chart) {
                 if (chart.GetDataType() is Type type) {
-                    if (type.GetProperties().Any(property => property.Name == (string)e.NewValue)) {
+                    if (ExpressionHelper.ValidatePropertyString(type, (string)e.NewValue)) {
                         chart._hGetter = ExpressionHelper.GetConvertToAxisValueExpression(type, (string)e.NewValue).Compile();
                     }
                 }
@@ -113,7 +113,7 @@ namespace CompMs.Graphics.Chart
         static void OnVerticalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             if (d is HeatmapControl chart) {
                 if (chart.GetDataType() is Type type) {
-                    if (type.GetProperties().Any(property => property.Name == (string)e.NewValue)) {
+                    if (ExpressionHelper.ValidatePropertyString(type, (string)e.NewValue)) {
                         chart._vGetter = ExpressionHelper.GetConvertToAxisValueExpression(type, (string)e.NewValue).Compile();
                     }
                 }
@@ -136,7 +136,7 @@ namespace CompMs.Graphics.Chart
         static void OnDegreePropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             if (d is HeatmapControl chart) {
                 if (chart.GetDataType() is Type type) {
-                    if (type.GetProperties().Any(property => property.Name == (string)e.NewValue)) {
+                    if (ExpressionHelper.ValidatePropertyString(type, (string)e.NewValue)) {
                         chart._zGetter = ExpressionHelper.GetPropertyGetterExpression(type, (string)e.NewValue).Compile();
                     }
                 }
