@@ -91,6 +91,23 @@ namespace CompMs.App.MsdialConsole {
             var immsfile = @"D:\msdial_test\Msdial\out\infusion_neg_timsON_pasef\kidney1_3times_timsON_pasef_neg000001.d";
             var lcimmsfile = @"D:\BugReport\20201216_MS2missing\PS78_Plasma1_4_1_4029.d";
             var samplefile = @"D:\infusion_project\Bruker_20210521_original\Bruker_20210521\infusion\timsOFF_pos\kidney1_1-47_1_14919.d";
+
+
+            //MspCurator.ExtractCCSValues(
+            //    @"E:\0_SourceCode\lbm_versions\Msp20230725171853_LBM\Msp20230725171853_conventional_converted_dev.lbm2",
+            //    @"E:\0_SourceCode\lbm_versions\Msp20230725171853_LBM\Msp20230725171853_conventional_converted_dev_extracted.txt");
+
+            //MspCurator.MatchInChIKeyAndAdductToExtractCCS(
+            //    @"E:\0_SourceCode\lbm_versions\Msp20230725171853_LBM\20220725_timsTOFpro_TextLibrary_Brain_Neg.txt",
+            //    @"E:\0_SourceCode\lbm_versions\Msp20230725171853_LBM\Msp20230725171853_conventional_converted_dev_extracted.txt",
+            //    @"E:\0_SourceCode\lbm_versions\Msp20230725171853_LBM\20220725_timsTOFpro_TextLibrary_Brain_Neg_with_CCS.txt");
+
+            MspCurator.MatchNameAndAdductToExtractCCS(
+                @"E:\0_SourceCode\lbm_versions\Msp20230725171853_LBM\20220725_timsTOFpro_TextLibrary_Brain_Neg.txt",
+                @"E:\0_SourceCode\lbm_versions\Msp20230725171853_LBM\Msp20230725171853_conventional_converted_dev_extracted.txt",
+                @"E:\0_SourceCode\lbm_versions\Msp20230725171853_LBM\20220725_timsTOFpro_TextLibrary_Brain_Neg_with_CCS_v2.txt");
+
+
             //DumpSpectrum(samplefile, 1206, 800, 100);
 
             //new FileParser().FastaParserTest(@"E:\6_Projects\PROJECT_Proteomics\jPOST_files_JPST000200.0\human_proteins_ref_wrong.fasta");
@@ -324,9 +341,9 @@ namespace CompMs.App.MsdialConsole {
             //   @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp_ht\POS\MSMS-Pos-RIKEN_PlaSMA_Bio.msp",
             //   @"E:\6_Projects\PROJECT_GlycyrrhizaMetabolomics\glabra leaf\pos\cytoscape");
 
-            MoleculerSpectrumNetworkingTest.Run(
-                @"E:\0_SourceCode\BugReports\20230209_molecularnetwork\NEG\after_rt_correction\2023281539_spectra_0.msp",
-                @"E:\0_SourceCode\BugReports\20230209_molecularnetwork\NEG\after_rt_correction\", "4");
+            //MoleculerSpectrumNetworkingTest.Run(
+            //    @"E:\0_SourceCode\BugReports\20230209_molecularnetwork\NEG\after_rt_correction\2023281539_spectra_0.msp",
+            //    @"E:\0_SourceCode\BugReports\20230209_molecularnetwork\NEG\after_rt_correction\", "4");
 
             //MoleculerSpectrumNetworkingTest.Run(
             //    @"E:\0_SourceCode\BugReports\20230209_molecularnetwork\NEG\before_rt_correction\beforeRTcorrect.msp",

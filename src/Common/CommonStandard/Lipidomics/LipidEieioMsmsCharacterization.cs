@@ -735,7 +735,7 @@ namespace CompMs.Common.Lipidomics
                 if (adduct.AdductIonName == "[M+NH4]+")
                 {
                     // seek -189.040227 (C3H8O6P+NH4)
-                    var threshold = 10.0;
+                    var threshold = 5.0;
                     var diagnosticMz = theoreticalMz - C3H9O6P - NH3;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -1611,6 +1611,46 @@ namespace CompMs.Common.Lipidomics
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("SM", LbmClass.SM, "d", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
+                }
+            }
+            return null;
+        }
+
+        public static LipidMolecule JudgeIfAcylsm(IMSScanProperty msScanProp, double ms2Tolerance,
+            double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
+            int sphCarbon, int extCarbon, int sphDouble, int extDouble,
+            AdductIon adduct) {
+            var spectrum = msScanProp.Spectrum;
+            if (spectrum == null || spectrum.Count == 0) return null;
+
+            if (adduct.IonMode == IonMode.Positive) {
+                if (adduct.AdductIonName == "[M+H]+") {
+                    var threshold1 = 1.0;
+                    var diagnosticMz1 = 184.073;
+                    var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
+                    if (isClassIon1Found != true) return null;
+                    // from here, acyl level annotation is executed.
+                    var candidates = new List<LipidMolecule>();
+                    var acylCarbon = totalCarbon - sphCarbon - extCarbon;
+                    var acylDouble = totalDoubleBond - sphDouble - extDouble;
+
+                    var extAcylloss = theoreticalMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble) - MassDiffDictionary.HydrogenMass + Electron;  // 
+                    var query = new List<SpectrumPeak> {
+                                        new SpectrumPeak() { Mass = extAcylloss, Intensity = 1 },
+                                    };
+
+                    var foundCount = 0;
+                    var averageIntensity = 0.0;
+                    LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
+
+                    if (foundCount == 1) { // 
+                        var molecule = LipidMsmsCharacterizationUtility.getAsmMoleculeObjAsLevel2_0("SM", LbmClass.ASM, "d", sphCarbon + acylCarbon,
+                               sphDouble + acylDouble, extCarbon, extDouble, averageIntensity);
+                        candidates.Add(molecule);
+                    }
+                  
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("SM", LbmClass.ASM, "d", theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, 0, candidates, 3);
                 }
             }
             return null;
@@ -2738,7 +2778,7 @@ namespace CompMs.Common.Lipidomics
                     var diagnosticMz = theoreticalMz - C3H9O6P - NH3;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     // PG diagnostic
-                    var threshold2 = 5.0;
+                    var threshold2 = 1.0;
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C + Proton, threshold2);
                     var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O + Proton, threshold2);
                     if (!isClassIonFound || !isClassIonFound2 || !isClassIonFound3) return null;

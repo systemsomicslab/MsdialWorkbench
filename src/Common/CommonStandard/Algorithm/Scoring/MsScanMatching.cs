@@ -1576,9 +1576,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.ASM:
                     sn2Carbon = molecule.Sn2CarbonCount;
                     sn2DbBond = molecule.Sn2DoubleBondCount;
-                    return LipidMsmsCharacterization.JudgeIfAcylsm(msScanProp, ms2tol, refMz,
-                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, sn2Carbon,
-                         sn2Carbon, sn2DbBond, sn2DbBond, adduct);
+                    return LipidEieioMsmsCharacterization.JudgeIfAcylsm(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn2Carbon, sn1DbBond, sn2DbBond, adduct);
 
                 case LbmClass.Cer_EBDS:
                     sn2Carbon = molecule.Sn2CarbonCount;

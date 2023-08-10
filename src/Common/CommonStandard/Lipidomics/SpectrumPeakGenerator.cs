@@ -80,12 +80,7 @@ namespace CompMs.Common.Lipidomics
                         speccomment_radical |= SpectrumComment.doublebond_high;
                     }
                 }
-                else if (bondPositions.Contains(i) && bondPositions.Contains(i + 3) && bondPositions.Contains(i + 6))
-                {
-                    factorHGain = 4.0;
-                    speccomment_hgain |= SpectrumComment.doublebond_high;
-                    // now no modification
-                }
+                
                 // in the case of 18:2(9,12)
                 // i=8 means i+1=9=C9 and C9 in chain obj and C9 from omega terminal
                 // i=11 means i+1=12=C12 in bondPositions and C12 in chain obj and C6 from omega terminal
@@ -132,6 +127,12 @@ namespace CompMs.Common.Lipidomics
                     //    speccomment_hloss |= SpectrumComment.doublebond_high;
 
                     //}
+                }
+
+                if (bondPositions.Contains(i) && bondPositions.Contains(i + 3) && bondPositions.Contains(i + 6)) {
+                    factorHGain = 4.0;
+                    speccomment_hgain |= SpectrumComment.doublebond_high;
+                    // now no modification
                 }
 
                 if (i == 2)
