@@ -90,6 +90,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 .AddTo(Disposables);
         }
 
+        public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel> CurrentRepresentativeFile => _model.CurrentRepresentativeFile;
+
         public Chart.AlignmentPeakPlotViewModel PlotViewModel {
             get => _plotViewModel;
             set => SetProperty(ref _plotViewModel, value);

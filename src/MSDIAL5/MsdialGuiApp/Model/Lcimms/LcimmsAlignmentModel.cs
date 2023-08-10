@@ -111,6 +111,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 .ToReactiveProperty()
                 .AddTo(Disposables);
             Target = target;
+            CurrentRepresentativeFile = Target.Select(t => t is null ? null : fileCollection.GetById(t.RepresentativeFileID)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             var accumulatedPropModels = new ObservableCollection<AlignmentSpotPropertyModel>(orderedProps);
             var propModels = new ReactiveCollection<AlignmentSpotPropertyModel>(UIDispatcherScheduler.Default).AddTo(Disposables);
@@ -349,6 +350,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public UndoManager UndoManager => _undoManager;
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
         public ReactiveProperty<AlignmentSpotPropertyModel> Target { get; }
+        public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel> CurrentRepresentativeFile { get; }
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }

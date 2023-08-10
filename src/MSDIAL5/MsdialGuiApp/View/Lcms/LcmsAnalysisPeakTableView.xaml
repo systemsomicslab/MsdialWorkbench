@@ -12,6 +12,7 @@
              xmlns:converter="clr-namespace:CompMs.App.Msdial.ViewModel.Converter"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:commonmvvm="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
+             xmlns:dataobj="clr-namespace:CompMs.MsdialCore.DataObj;assembly=MsdialCore"
              d:DataContext="{d:DesignInstance Type=vm:LcmsAnalysisPeakTableViewModel}"
              d:DesignHeight="450" d:DesignWidth="1400">
     <d:DesignerProperties.DesignStyle>
@@ -23,6 +24,11 @@
         <KeyBinding Command="{Binding SetUnknownCommand}" Gesture="Ctrl+D"/>
         <KeyBinding Command="{Binding UndoManagerViewModel.UndoCommand}" Gesture="Ctrl+Z"/>
         <KeyBinding Command="{Binding UndoManagerViewModel.RedoCommand}" Gesture="Ctrl+Y"/>
+        <KeyBinding Command="{Binding SwitchTagCommand}" CommandParameter="{x:Static dataobj:PeakSpotTag.CONFIRMED}" Gesture="Ctrl+1"/>
+        <KeyBinding Command="{Binding SwitchTagCommand}" CommandParameter="{x:Static dataobj:PeakSpotTag.LOW_QUALITY_SPECTRUM}" Gesture="Ctrl+2"/>
+        <KeyBinding Command="{Binding SwitchTagCommand}" CommandParameter="{x:Static dataobj:PeakSpotTag.MISANNOTATION}" Gesture="Ctrl+3"/>
+        <KeyBinding Command="{Binding SwitchTagCommand}" CommandParameter="{x:Static dataobj:PeakSpotTag.COELUTION}" Gesture="Ctrl+4"/>
+        <KeyBinding Command="{Binding SwitchTagCommand}" CommandParameter="{x:Static dataobj:PeakSpotTag.OVERANNOTATION}" Gesture="Ctrl+5"/>
     </UserControl.InputBindings>
     <UserControl.Resources>
         <ResourceDictionary>

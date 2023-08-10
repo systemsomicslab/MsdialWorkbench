@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Search;
+﻿using Accord.Statistics.Models.Regression.Fitting;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
@@ -256,6 +257,23 @@ namespace CompMs.App.Msdial.Model.DataObj
             return true;
         }
 
+        public void SwitchPeakSpotTag(PeakSpotTag tag) {
+            if (tag == PeakSpotTag.CONFIRMED) {
+                Confirmed = !Confirmed;
+            }
+            if (tag == PeakSpotTag.LOW_QUALITY_SPECTRUM) {
+                LowQualitySpectrum = !LowQualitySpectrum;
+            }
+            if (tag == PeakSpotTag.MISANNOTATION) {
+                Misannotation = !Misannotation;
+            }
+            if (tag == PeakSpotTag.COELUTION) {
+                Coelution = !Coelution;
+            }
+            if (tag == PeakSpotTag.OVERANNOTATION) {
+                Overannotation = !Overannotation;
+            }
+        }
 
         internal readonly AlignmentSpotProperty innerModel;
 
