@@ -3,6 +3,7 @@ using CompMs.Common.DataObj.NodeEdge;
 using CompMs.Common.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -30,12 +31,14 @@ namespace CompMs.Common.Algorithm.Function {
             var counter = 0;
             var max = quries.Count * quries.Count;
             var node2links = new Dictionary<int, List<LinkNode>>();
+            Console.WriteLine(quries.Count);
             for (int i = 0; i < quries.Count; i++) {
+                Console.WriteLine(i);
                 for (int j = i + 1; j < quries.Count; j++) {
                     counter++;
                     
                     Console.Write("{0} / {1}", counter, max);
-                    Console.SetCursorPosition(0, Console.CursorTop);
+                    //Console.SetCursorPosition(0, Console.CursorTop);
                     
                     var prop1 = quries[i];
                     var prop2 = quries[j];
@@ -61,6 +64,8 @@ namespace CompMs.Common.Algorithm.Function {
                 }
             }
 
+            Console.WriteLine("aaa");
+
             var cNode2Links = new Dictionary<int, List<LinkNode>>();
             foreach (var item in node2links) {
                 var nitem = item.Value.OrderByDescending(n => n.Score[0]).ToList();
@@ -70,6 +75,8 @@ namespace CompMs.Common.Algorithm.Function {
                     cNode2Links[item.Key].Add(nitem[i]);
                 }
             }
+
+            Console.WriteLine("bbb");
 
             foreach (var item in cNode2Links) {
                 foreach (var link in item.Value) {
@@ -82,6 +89,16 @@ namespace CompMs.Common.Algorithm.Function {
                     edges.Add(edge);
                 }
             }
+            Console.WriteLine(edges.Count);
+
+            string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "WriteLines.txt"))) {
+                outputFile.WriteLine("source\ttarget\tscore\tmatchpeakcount\n");
+                foreach (var edge in edges) {
+                    outputFile.WriteLine(edge.source.ToString() + "\t" + edge.target.ToString() + "\t" + edge.score.ToString() + "\t" + edge.matchpeakcount.ToString() + "\n");
+                }
+            }
+            
             return edges;
         }
     }
