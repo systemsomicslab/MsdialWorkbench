@@ -63,10 +63,6 @@ namespace CompMs.Common.DataObj.Property
         [IgnoreMember]
         public bool IsHac => AdductIonName == "[M+CH3COO]-" || AdductIonName == "[M+Hac-H]-";
 
-        public void Unset() {
-            AdductIonName = string.Empty;
-        }
-
         public void SetStandard(int charge, IonMode ion) {
             switch (ion) {
                 case IonMode.Positive:

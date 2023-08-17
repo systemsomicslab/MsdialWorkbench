@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj.Database;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -85,7 +86,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                     spot.PeakCharacter.IsotopeWeightNumber = 0;
                 }
                 if (!spot.IsReferenceMatched(evaluator) && !spot.IsAnnotationSuggested(evaluator)) {
-                    spot.AdductType.Unset();
+                    spot.AdductType = AdductIon.Default;
                 }
             }
             if (_param.TrackingIsotopeLabels) return;
