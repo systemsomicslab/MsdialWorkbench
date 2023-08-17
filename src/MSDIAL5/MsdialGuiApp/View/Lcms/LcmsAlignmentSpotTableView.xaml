@@ -139,6 +139,9 @@
                   behavior:DataGridScrollToSelectionBehavior.Enable="True"
                   behavior:DataGridIsEdittingBehavior.IsEditting="{Binding PeakSpotNavigatorViewModel.IsEditting.Value, Mode=OneWayToSource}"
                   Grid.Row="1">
+            <DataGrid.Resources>
+                <commonmvvm:BindingProxy x:Key="TableVM" Data="{Binding Mode=OneTime}"/>
+            </DataGrid.Resources>
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -164,6 +167,10 @@
                                     Binding="{Binding Path=TimesCenter, StringFormat=F4}"
                                     IsReadOnly="True"
                                     Width="70" />
+                <DataGridComboBoxColumn Header="Type"
+                                        ItemsSource="{Binding Path=Data.AdductIons, Source={StaticResource TableVM}}"
+                                        SelectedItemBinding="{Binding Path=AdductType}"
+                                        Width="1*" />
                 <DataGridTextColumn Header="Type"
                                     Binding="{Binding Path=AdductType}"
                                     IsReadOnly="True"
