@@ -96,6 +96,11 @@ namespace CompMs.Common.DataObj.Property
             return AdductIonName;
         }
 
+        /// <summary>
+        /// This method returns the AdductIon class variable from the adduct string.
+        /// </summary>
+        /// <param name="adductName">Add the formula string such as "C6H12O6"</param>
+        /// <returns>AdductIon</returns>
         public static AdductIon GetAdductIon(string adductName) {
             AdductIon adduct = new AdductIon() { AdductIonName = adductName };
 
