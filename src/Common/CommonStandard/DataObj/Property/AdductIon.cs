@@ -11,6 +11,14 @@ namespace CompMs.Common.DataObj.Property
     [MessagePackObject]
     public class AdductIon
     {
+        /// <summary>
+        /// Initializes a new instance of the AdductIon class.
+        /// <para>
+        /// This constructor is preserved for use with MessagePack for C#, and direct usage is deprecated. If used as a default value,
+        /// consider using the AdductIon.Default property. If you know the AdductIonName, consider using the AdductIon.GetAdductIon method.
+        /// </para>
+        /// </summary>
+        [SerializationConstructor]
         public AdductIon() { }
 
         [Key(0)]

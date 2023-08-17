@@ -14,7 +14,7 @@ namespace CompMs.Common.DataObj {
         public float Pepmass { get; set; }
         public float Rt { get; set; }
         public List<SpectrumPeak> Spectrum { get; set; } = new List<SpectrumPeak>();
-        public AdductIon Adduct { get; set; } = new AdductIon();
+        public AdductIon Adduct { get; set; } = AdductIon.Default;
         public int Charge { get; set; } = 1;
         public int Mslevel { get; set; }
         public string Source_instrument { get; set; } = string.Empty;
