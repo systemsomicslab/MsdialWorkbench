@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Enum;
 using CompMs.Common.Parser;
 using MessagePack;
+using System.Collections.Concurrent;
 
 namespace CompMs.Common.DataObj.Property
 {
@@ -73,7 +74,7 @@ namespace CompMs.Common.DataObj.Property
         /// <param name="adductName">Add the formula string such as "C6H12O6"</param>
         /// <returns>AdductIon</returns>
         public static AdductIon GetAdductIon(string adductName) {
-            return GetAdductIonCore(adductName);
+            return ADDUCT_IONS.GetOrAdd(adductName);
         }
 
         private static AdductIon GetAdductIonCore(string adductName) {
@@ -126,6 +127,20 @@ namespace CompMs.Common.DataObj.Property
         }
 
         public static readonly AdductIon Default = new AdductIon();
+
+        private static readonly AdductIons ADDUCT_IONS = new AdductIons();
+
+        class AdductIons {
+            private readonly ConcurrentDictionary<string, AdductIon> _dictionary;
+            public AdductIons() {
+                _dictionary = new ConcurrentDictionary<string, AdductIon>();
+                _dictionary.TryAdd(Default.AdductIonName, Default);
+            }
+
+            public AdductIon GetOrAdd(string adduct) {
+                return _dictionary.GetOrAdd(adduct, GetAdductIonCore);
+            }
+        }
     }
 
 
