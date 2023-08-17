@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace CompMs.Common.Parser {
@@ -57,7 +56,7 @@ namespace CompMs.Common.Parser {
 
             var newAdductString = "[" + xMerString + "M" + adductContent + "]" + chargeString + ionString + radicalString;
 
-            var newAdduct = GetAdductIonBean(newAdductString);
+            var newAdduct = AdductIon.GetAdductIon(newAdductString);
             return newAdduct;
         }
 

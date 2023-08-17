@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Algorithm.IsotopeCalc;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.FormulaGenerator.Parser;
@@ -322,7 +323,7 @@ namespace CompMs.Common.Parser
 
                 case "precursortype":
                 case "precursor_type":
-                    mspObj.AdductType = AdductIonParser.GetAdductIonBean(fieldValue);
+                    mspObj.AdductType = AdductIon.GetAdductIon(fieldValue);
                     mspObj.IonMode = mspObj.IonMode;
                      return false;
 
