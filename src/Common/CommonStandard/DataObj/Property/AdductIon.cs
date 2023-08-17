@@ -121,6 +121,23 @@ namespace CompMs.Common.DataObj.Property
             return adduct;
         }
 
+        public static AdductIon GetStandardAdductIon(int charge, IonMode ionMode) {
+            switch (ionMode) {
+                case IonMode.Positive:
+                    if (charge >= 2)
+                        return GetAdductIon($"[M+{charge}H]{charge}+");
+                    else
+                        return GetAdductIon("[M+H]+");
+                case IonMode.Negative:
+                    if (charge >= 2)
+                        return GetAdductIon($"[M-{charge}H]{charge}-");
+                    else
+                        return GetAdductIon("[M-H]-");
+                default:
+                    return Default;
+            }
+        }
+
         public static readonly AdductIon Default = new AdductIon();
     }
 

@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj.Database;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -288,7 +289,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
 
         private static void SetAdducts(IEnumerable<AlignmentSpotProperty> spots) {
             foreach (var spot in spots) {
-                spot.AdductType.SetStandard(spot.AdductType.ChargeNumber, spot.AdductType.IonMode);
+                spot.AdductType = AdductIon.GetStandardAdductIon(spot.AdductType.ChargeNumber, spot.AdductType.IonMode);
             }
         }
     }

@@ -106,7 +106,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
         protected virtual void PostProcess(List<AlignmentSpotProperty> alignments) {
             foreach (var fcSpot in alignments.Where(spot => !spot.AdductType.HasAdduct)) {
-                fcSpot.AdductType.SetStandard(fcSpot.PeakCharacter.Charge, _param.IonMode);
+                fcSpot.AdductType = AdductIon.GetStandardAdductIon(fcSpot.PeakCharacter.Charge, _param.IonMode);
             }
         }
 
