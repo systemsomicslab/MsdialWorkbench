@@ -133,7 +133,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                                         var rAdductCharge = AdductIonParser.GetChargeNumber(rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType.AdductIonName);
                                         if (rAdductCharge != rSpot.PeakCharacter.Charge)
                                             break;
-                                        rSpot.AdductType.Set(rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType);
+                                        rSpot.AdductType = rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType;
                                     }
                                 }
                                 RegisterLinks(cSpot, rSpot, rLinkProp);
@@ -169,9 +169,9 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                                 if (fcSpot.PeakCharacter.Charge != adductCharge) continue;
 
                                 RegisterLinks(fcSpot, rSpot, rLinkProp);
-                                rSpot.AdductType.Set(rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType);
+                                rSpot.AdductType = rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType;
                                 if (!fcSpot.AdductType.HasAdduct) {
-                                    fcSpot.AdductType.Set(fcSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType);
+                                    fcSpot.AdductType = fcSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType;
                                 }
                             }
                             else {

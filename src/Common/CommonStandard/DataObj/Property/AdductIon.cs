@@ -63,12 +63,6 @@ namespace CompMs.Common.DataObj.Property
         [IgnoreMember]
         public bool IsHac => AdductIonName == "[M+CH3COO]-" || AdductIonName == "[M+Hac-H]-";
 
-        // UNDONE: replace 'A.AdductIonName = B.AdductIonName' to 'A.Set(B)' and 'AdductIonName = string.Empty' to 'A.Unset()'
-        // this method should (un)set other properties?
-        public void Set(AdductIon other) {
-            AdductIonName = other.AdductIonName;
-        }
-
         public void Unset() {
             AdductIonName = string.Empty;
         }
