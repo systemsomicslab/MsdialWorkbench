@@ -124,6 +124,8 @@ namespace CompMs.Common.DataObj.Property
 
             return adduct;
         }
+
+        public static readonly AdductIon Default = new AdductIon();
     }
 
 
