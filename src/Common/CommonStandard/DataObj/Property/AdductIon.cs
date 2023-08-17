@@ -73,6 +73,10 @@ namespace CompMs.Common.DataObj.Property
         /// <param name="adductName">Add the formula string such as "C6H12O6"</param>
         /// <returns>AdductIon</returns>
         public static AdductIon GetAdductIon(string adductName) {
+            return GetAdductIonCore(adductName);
+        }
+
+        private static AdductIon GetAdductIonCore(string adductName) {
             AdductIon adduct = new AdductIon() { AdductIonName = adductName };
 
             if (!AdductIonParser.IonTypeFormatChecker(adductName)) {
