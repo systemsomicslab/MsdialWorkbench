@@ -1,6 +1,8 @@
 ﻿using CompMs.Common.Enum;
 using CompMs.Common.Parser;
 using MessagePack;
+using MessagePack.Formatters;
+using MessagePack.Resolvers;
 using System.Collections.Concurrent;
 
 namespace CompMs.Common.DataObj.Property
@@ -9,6 +11,7 @@ namespace CompMs.Common.DataObj.Property
     /// This is the storage of adduct ion information.
     /// </summary>
     [MessagePackObject]
+    [MessagePackFormatter(typeof(AdductIonFormatter))]
     public class AdductIon
     {
         /// <summary>
@@ -147,6 +150,26 @@ namespace CompMs.Common.DataObj.Property
 
             public AdductIon GetOrAdd(string adduct) {
                 return _dictionary.GetOrAdd(adduct, GetAdductIonCore);
+            }
+        }
+
+        class AdductIonFormatter : IMessagePackFormatter<AdductIon>
+        {
+            AdductIon IMessagePackFormatter<AdductIon>.Deserialize(byte[] bytes, int offset, IFormatterResolver formatterResolver, out int readSize) {
+                readSize = MessagePackBinary.ReadNextBlock(bytes, offset);
+                var count = MessagePackBinary.ReadArrayHeader(bytes, offset, out var tmp);
+                if (count < 3) {
+                    return Default;
+                }
+                tmp += MessagePackBinary.ReadNext(bytes, offset + tmp);
+                tmp += MessagePackBinary.ReadNext(bytes, offset + tmp);
+                var name = MessagePackBinary.ReadString(bytes, offset + tmp, out _);
+                return GetAdductIon(name);
+            }
+
+            int IMessagePackFormatter<AdductIon>.Serialize(ref byte[] bytes, int offset, AdductIon value, IFormatterResolver formatterResolver) {
+                var formatter = DynamicObjectResolver.Instance.GetFormatterWithVerify<AdductIon>();
+                return formatter.Serialize(ref bytes, offset, value, formatterResolver);
             }
         }
     }
