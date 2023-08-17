@@ -175,6 +175,9 @@
                         </Style>
                     </DataGridTextColumn.CellStyle>
                 </DataGridTextColumn>
+                <DataGridTextColumn Header="Ontology"
+                                    Binding="{Binding Path=Ontology}"
+                                    Width="1.5*" />
                 <DataGridTextColumn Header="Comment"
                                     Binding="{Binding Path=Comment}"
                                     IsReadOnly="False"

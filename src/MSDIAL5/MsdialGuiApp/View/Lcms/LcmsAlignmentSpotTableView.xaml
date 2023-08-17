@@ -184,7 +184,6 @@
                 </DataGridTextColumn>
                 <DataGridTextColumn Header="Ontology"
                                     Binding="{Binding Path=Ontology}"
-                                    IsReadOnly="True"
                                     Width="1.5*" />
                 <DataGridTextColumn Header="Comment"
                                     Binding="{Binding Path=Comment}"
