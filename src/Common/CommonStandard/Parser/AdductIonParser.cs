@@ -35,6 +35,7 @@ namespace CompMs.Common.Parser {
         /// </summary>
         /// <param name="adductName">Add the formula string such as "C6H12O6"</param>
         /// <returns></returns>
+        [Obsolete("Use AdductIon.GetAddutIon instead of this method.")]
         public static AdductIon GetAdductIonBean(string adductName)
         {
             return AdductIon.GetAdductIon(adductName);
