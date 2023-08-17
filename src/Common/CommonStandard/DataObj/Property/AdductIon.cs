@@ -1,8 +1,6 @@
 ﻿using CompMs.Common.Enum;
-using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Parser;
 using MessagePack;
-using System;
 
 namespace CompMs.Common.DataObj.Property
 {
@@ -119,7 +117,10 @@ namespace CompMs.Common.DataObj.Property
             var ionType = AdductIonParser.GetIonType(adductName);
             var isRadical = AdductIonParser.GetRadicalInfo(adductName);
 
-            AdductIonParser.SetAccurateMassAndIsotopeRatio(adduct);
+            (var accurateMass, var m1Intensity, var m2Intensity) = AdductIonParser.CalculateAccurateMassAndIsotopeRatio(adduct.AdductIonName);
+            adduct.AdductIonAccurateMass += accurateMass;
+            adduct.M1Intensity += m1Intensity;
+            adduct.M2Intensity += m2Intensity;
 
             adduct.AdductIonXmer = adductIonXmer;
             adduct.ChargeNumber = chargeNum;

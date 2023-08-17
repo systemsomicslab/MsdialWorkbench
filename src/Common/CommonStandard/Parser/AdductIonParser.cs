@@ -88,14 +88,6 @@ namespace CompMs.Common.Parser {
             return contentString.Trim();
         }
 
-        public static void SetAccurateMassAndIsotopeRatio(AdductIon adductIonBean)
-        {
-            (var accurateMass, var m1Intensity, var m2Intensity) = CalculateAccurateMassAndIsotopeRatio(adductIonBean.AdductIonName);
-            adductIonBean.AdductIonAccurateMass += accurateMass;
-            adductIonBean.M1Intensity += m1Intensity;
-            adductIonBean.M2Intensity += m2Intensity;
-        }
-
         public static (double, double, double) CalculateAccurateMassAndIsotopeRatio(string adductName) {
             adductName = adductName.Split('[')[1].Split(']')[0].Trim();
 
