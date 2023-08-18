@@ -1,12 +1,12 @@
-﻿using CompMs.Common.Components;
+﻿using CompMs.Common.Algorithm.Scoring;
+using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
+using CompMs.Common.Extension;
 using CompMs.Common.Parser;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using CompMs.Common.Extension;
-using CompMs.Common.Algorithm.Scoring;
 
 namespace CompMs.App.MsdialConsole.LabelDataHandler {
 
@@ -420,7 +420,7 @@ namespace CompMs.App.MsdialConsole.LabelDataHandler {
 
             sw.WriteLine("PRECURSORTYPE: " + adduct);
 
-            var adductObj = AdductIonParser.GetAdductIonBean(adduct);
+            var adductObj = AdductIon.GetAdductIon(adduct);
 
             sw.WriteLine("IONMODE: " + adductObj.IonMode.ToString());
             sw.WriteLine("SPECTRUMTYPE: Centroid");
@@ -484,7 +484,7 @@ namespace CompMs.App.MsdialConsole.LabelDataHandler {
             sw.WriteLine("PRECURSORTYPE: " + adduct);
 
 
-            var adductObj = AdductIonParser.GetAdductIonBean(adduct);
+            var adductObj = AdductIon.GetAdductIon(adduct);
 
             sw.WriteLine("IONMODE: " + adductObj.IonMode.ToString());
             sw.WriteLine("SPECTRUMTYPE: Centroid");

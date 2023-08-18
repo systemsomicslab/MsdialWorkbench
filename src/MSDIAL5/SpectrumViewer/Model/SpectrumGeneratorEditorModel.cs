@@ -21,8 +21,8 @@ namespace CompMs.App.SpectrumViewer.Model
 
             Adducts = new List<AdductIon>
             {
-                AdductIonParser.GetAdductIonBean("[M+H]+"),
-                AdductIonParser.GetAdductIonBean("[M+Na]+"),
+                AdductIon.GetAdductIon("[M+H]+"),
+                AdductIon.GetAdductIon("[M+Na]+"),
             }.AsReadOnly();
             Adduct = Adducts[0];
 

@@ -71,137 +71,68 @@ namespace CompMs.Common.Parser.Tests
         }
 
         [TestMethod]
-        public void SetAccurateMassAndIsotopeRatioTest() {
-            double c13_c12 = 0.010815728;
-            double h2_h1 = 0.000115013;
-            double o17_o16 = 0.000380926;
-            double o18_o16 = 0.002054994;
-
-            var adduct = new AdductIon { AdductIonName = "[M-H]-" };
-            AdductIonParser.SetAccurateMassAndIsotopeRatio(adduct);
-            Assert.AreEqual(-MassDiffDictionary.HydrogenMass, adduct.AdductIonAccurateMass, 1e-10);
-            Assert.AreEqual(-h2_h1, adduct.M1Intensity, 1e-10);
-            Assert.AreEqual(-0, adduct.M2Intensity, 1e-10);
-
-            adduct = new AdductIon { AdductIonName = "[M+HCOO]-" };
-            AdductIonParser.SetAccurateMassAndIsotopeRatio(adduct);
-            Assert.AreEqual(MassDiffDictionary.HydrogenMass + MassDiffDictionary.CarbonMass + MassDiffDictionary.OxygenMass * 2, adduct.AdductIonAccurateMass, 1e-6);
-            Assert.AreEqual(c13_c12 + h2_h1 + 2 * o17_o16, adduct.M1Intensity, 1e-6);
-            Assert.AreEqual(c13_c12 * h2_h1 + c13_c12 * 2 * o17_o16 + h2_h1 * 2 * o17_o16 + 2 * o18_o16, adduct.M2Intensity, 1e-6);
-
-            adduct = new AdductIon { AdductIonName = "[M+H]+" };
-            AdductIonParser.SetAccurateMassAndIsotopeRatio(adduct);
-            Assert.AreEqual(MassDiffDictionary.HydrogenMass, adduct.AdductIonAccurateMass, 1e-10);
-            Assert.AreEqual(h2_h1, adduct.M1Intensity, 1e-10);
-            Assert.AreEqual(0, adduct.M2Intensity, 1e-10);
-
-            adduct = new AdductIon { AdductIonName = "[M+H+H]+" };
-            AdductIonParser.SetAccurateMassAndIsotopeRatio(adduct);
-            Assert.AreEqual(MassDiffDictionary.HydrogenMass * 2, adduct.AdductIonAccurateMass, 1e-10);
-            Assert.AreEqual(h2_h1 * 2, adduct.M1Intensity, 1e-10);
-            Assert.AreEqual(0 * 2, adduct.M2Intensity, 1e-10);
-
-            adduct = new AdductIon { AdductIonName = "[M+2H]2+" };
-            AdductIonParser.SetAccurateMassAndIsotopeRatio(adduct);
-            Assert.AreEqual(MassDiffDictionary.HydrogenMass * 2, adduct.AdductIonAccurateMass, 1e-10);
-            Assert.AreEqual(h2_h1 * 2, adduct.M1Intensity, 1e-10);
-            Assert.AreEqual(Math.Pow(0.000115013, 2), adduct.M2Intensity, 1e-10);
-
-            adduct = new AdductIon { AdductIonName = "[M+10H]10+", };
-            AdductIonParser.SetAccurateMassAndIsotopeRatio(adduct);
-            Assert.AreEqual(MassDiffDictionary.HydrogenMass * 10, adduct.AdductIonAccurateMass, 1e-10);
-            Assert.AreEqual(h2_h1 * 10, adduct.M1Intensity, 1e-10);
-            Assert.AreEqual(10 * 9 / 2 * Math.Pow(0.000115013, 2), adduct.M2Intensity, 1e-10);
-
-            adduct = new AdductIon { AdductIonName = "[M+Mg]2+", };
-            AdductIonParser.SetAccurateMassAndIsotopeRatio(adduct);
-            Assert.AreEqual(23.98504170000, adduct.AdductIonAccurateMass, 1e-10);
-            Assert.AreEqual(0, adduct.M1Intensity, 1e-10);
-            Assert.AreEqual(0, adduct.M2Intensity, 1e-10);
-
-            adduct = new AdductIon { AdductIonName = "[M+2Mg]4+", };
-            AdductIonParser.SetAccurateMassAndIsotopeRatio(adduct);
-            Assert.AreEqual(23.98504170000 * 2, adduct.AdductIonAccurateMass, 1e-10);
-            Assert.AreEqual(0, adduct.M1Intensity, 1e-10);
-            Assert.AreEqual(0, adduct.M2Intensity, 1e-10);
-
-            adduct = new AdductIon { AdductIonName = "[M+C6H12O6]+", };
-            AdductIonParser.SetAccurateMassAndIsotopeRatio(adduct);
-            var formula = new Formula(6, 12, 0, 6, 0, 0, 0, 0, 0, 0, 0);
-            Assert.AreEqual(formula.Mass, adduct.AdductIonAccurateMass, 1e-6);
-            Assert.AreEqual(SevenGoldenRulesCheck.GetM1IsotopicAbundance(formula), adduct.M1Intensity, 1e-6);
-            Assert.AreEqual(SevenGoldenRulesCheck.GetM2IsotopicAbundance(formula), adduct.M2Intensity, 1e-6);
-
-            adduct = new AdductIon { AdductIonName = "[M+He]", };
-            AdductIonParser.SetAccurateMassAndIsotopeRatio(adduct);
-            Assert.AreEqual(0, adduct.AdductIonAccurateMass, 1e-10);
-            Assert.AreEqual(0, adduct.M1Intensity, 1e-10);
-            Assert.AreEqual(0, adduct.M2Intensity, 1e-10);
-        }
-
-        [TestMethod]
         public void CalculateAccurateMassAndIsotopeRatioTest() {
             double c13_c12 = 0.010815728;
             double h2_h1 = 0.000115013;
             double o17_o16 = 0.000380926;
             double o18_o16 = 0.002054994;
 
-            var adduct = new AdductIon { AdductIonName = "[M-H]-" };
+            var adduct = AdductIon.GetAdductIon("[M-H]-");
             (var accurateMass, var m1Intensity, var m2Intensity) = AdductIonParser.CalculateAccurateMassAndIsotopeRatio(adduct.AdductIonName);
             Assert.AreEqual(-MassDiffDictionary.HydrogenMass, accurateMass, 1e-10);
             Assert.AreEqual(-h2_h1, m1Intensity, 1e-10);
             Assert.AreEqual(-0, m2Intensity, 1e-10);
 
-            adduct = new AdductIon { AdductIonName = "[M+HCOO]-" };
+            adduct = AdductIon.GetAdductIon("[M+HCOO]-");
             (accurateMass, m1Intensity, m2Intensity) = AdductIonParser.CalculateAccurateMassAndIsotopeRatio(adduct.AdductIonName);
             Assert.AreEqual(MassDiffDictionary.HydrogenMass + MassDiffDictionary.CarbonMass + MassDiffDictionary.OxygenMass * 2, accurateMass, 1e-6);
             Assert.AreEqual(c13_c12 + h2_h1 + 2 * o17_o16, m1Intensity, 1e-6);
             Assert.AreEqual(c13_c12 * h2_h1 + c13_c12 * 2 * o17_o16 + h2_h1 * 2 * o17_o16 + 2 * o18_o16, m2Intensity, 1e-6);
 
-            adduct = new AdductIon { AdductIonName = "[M+H]+" };
+            adduct = AdductIon.GetAdductIon("[M+H]+");
             (accurateMass, m1Intensity, m2Intensity) = AdductIonParser.CalculateAccurateMassAndIsotopeRatio(adduct.AdductIonName);
             Assert.AreEqual(MassDiffDictionary.HydrogenMass, accurateMass, 1e-10);
             Assert.AreEqual(h2_h1, m1Intensity, 1e-10);
             Assert.AreEqual(0, m2Intensity, 1e-10);
 
-            adduct = new AdductIon { AdductIonName = "[M+H+H]+" };
+            adduct = AdductIon.GetAdductIon("[M+H+H]+");
             (accurateMass, m1Intensity, m2Intensity) = AdductIonParser.CalculateAccurateMassAndIsotopeRatio(adduct.AdductIonName);
             Assert.AreEqual(MassDiffDictionary.HydrogenMass * 2, accurateMass, 1e-10);
             Assert.AreEqual(h2_h1 * 2, m1Intensity, 1e-10);
             Assert.AreEqual(0 * 2, m2Intensity, 1e-10);
 
-            adduct = new AdductIon { AdductIonName = "[M+2H]2+" };
+            adduct = AdductIon.GetAdductIon("[M+2H]2+");
             (accurateMass, m1Intensity, m2Intensity) = AdductIonParser.CalculateAccurateMassAndIsotopeRatio(adduct.AdductIonName);
             Assert.AreEqual(MassDiffDictionary.HydrogenMass * 2, accurateMass, 1e-10);
             Assert.AreEqual(h2_h1 * 2, m1Intensity, 1e-10);
             Assert.AreEqual(Math.Pow(0.000115013, 2), m2Intensity, 1e-10);
 
-            adduct = new AdductIon { AdductIonName = "[M+10H]10+", };
+            adduct = AdductIon.GetAdductIon("[M+10H]10+");
             (accurateMass, m1Intensity, m2Intensity) = AdductIonParser.CalculateAccurateMassAndIsotopeRatio(adduct.AdductIonName);
             Assert.AreEqual(MassDiffDictionary.HydrogenMass * 10, accurateMass, 1e-10);
             Assert.AreEqual(h2_h1 * 10, m1Intensity, 1e-10);
             Assert.AreEqual(10 * 9 / 2 * Math.Pow(0.000115013, 2), m2Intensity, 1e-10);
 
-            adduct = new AdductIon { AdductIonName = "[M+Mg]2+", };
+            adduct = AdductIon.GetAdductIon("[M+Mg]2+");
             (accurateMass, m1Intensity, m2Intensity) = AdductIonParser.CalculateAccurateMassAndIsotopeRatio(adduct.AdductIonName);
             Assert.AreEqual(23.98504170000, accurateMass, 1e-10);
             Assert.AreEqual(0, m1Intensity, 1e-10);
             Assert.AreEqual(0, m2Intensity, 1e-10);
 
-            adduct = new AdductIon { AdductIonName = "[M+2Mg]4+", };
+            adduct = AdductIon.GetAdductIon("[M+2Mg]4+");
             (accurateMass, m1Intensity, m2Intensity) = AdductIonParser.CalculateAccurateMassAndIsotopeRatio(adduct.AdductIonName);
             Assert.AreEqual(23.98504170000 * 2, accurateMass, 1e-10);
             Assert.AreEqual(0, m1Intensity, 1e-10);
             Assert.AreEqual(0, m2Intensity, 1e-10);
 
-            adduct = new AdductIon { AdductIonName = "[M+C6H12O6]+", };
+            adduct = AdductIon.GetAdductIon("[M+C6H12O6]+");
             (accurateMass, m1Intensity, m2Intensity) = AdductIonParser.CalculateAccurateMassAndIsotopeRatio(adduct.AdductIonName);
             var formula = new Formula(6, 12, 0, 6, 0, 0, 0, 0, 0, 0, 0);
             Assert.AreEqual(formula.Mass, accurateMass, 1e-6);
             Assert.AreEqual(SevenGoldenRulesCheck.GetM1IsotopicAbundance(formula), m1Intensity, 1e-6);
             Assert.AreEqual(SevenGoldenRulesCheck.GetM2IsotopicAbundance(formula), m2Intensity, 1e-6);
 
-            adduct = new AdductIon { AdductIonName = "[M+He]", };
+            adduct = AdductIon.GetAdductIon("[M+He]");
             (accurateMass, m1Intensity, m2Intensity) = AdductIonParser.CalculateAccurateMassAndIsotopeRatio(adduct.AdductIonName);
             Assert.AreEqual(0, accurateMass, 1e-10);
             Assert.AreEqual(0, m1Intensity, 1e-10);

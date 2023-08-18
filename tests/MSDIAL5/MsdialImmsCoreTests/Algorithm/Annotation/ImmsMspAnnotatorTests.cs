@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parameter;
 using CompMs.Common.Parser;
@@ -372,7 +373,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             var reference = new MoleculeMsReference {
                 Name = "PC 18:0_20:4", CompoundClass = "PC",
                 PrecursorMz = 810.601, CollisionCrossSection = 100,
-                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
+                AdductType = AdductIon.GetAdductIon("[M+H]+"),
                 Spectrum = new List<SpectrumPeak>
                 {
                     new SpectrumPeak { Mass = 184.073, Intensity = 100 },
@@ -456,7 +457,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             var reference = new MoleculeMsReference {
                 Name = "PC 18:0_20:4", CompoundClass = "PC",
                 PrecursorMz = 810.601, CollisionCrossSection = 100,
-                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
+                AdductType = AdductIon.GetAdductIon("[M+H]+"),
                 Spectrum = new List<SpectrumPeak>
                 {
                     new SpectrumPeak { Mass = 184.073, Intensity = 100 },

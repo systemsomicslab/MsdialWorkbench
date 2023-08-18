@@ -82,7 +82,7 @@ Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQ
             var sr = new StringReader(data);
             var references = TextLibraryParser.TextLibraryReader(sr, out _);
             var results = references.Select(reference => reference.AdductType).ToList();
-            var expected = data.Split("\r\n").Skip(1).Select(row => AdductIonParser.GetAdductIonBean(row.Split('\t')[3])).ToList();
+            var expected = data.Split("\r\n").Skip(1).Select(row => AdductIon.GetAdductIon(row.Split('\t')[3])).ToList();
             results.Sort((a, b) => a.AdductIonAccurateMass.CompareTo(b.AdductIonAccurateMass));
             expected.Sort((a, b) => a.AdductIonAccurateMass.CompareTo(b.AdductIonAccurateMass));
 

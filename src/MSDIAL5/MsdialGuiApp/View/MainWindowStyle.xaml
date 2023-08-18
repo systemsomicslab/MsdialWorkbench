@@ -292,7 +292,7 @@
                        HorizontalAlignment="Left"/>
             <Separator/>
             <ui:LabeledContent PrependLabel="Molecular species:"
-                               Content="{Binding Path=(if:IIonProperty.AdductType).AdductIonName, Mode=OneWay}"
+                               Content="{Binding Path=(if:IIonProperty.AdductType), Mode=OneWay}"
                                Style="{StaticResource CopyableDetailContent}"/>
             <ui:LabeledContent PrependLabel="Accurate mass:">
                 <TextBox Text="{Binding Path=(if:IMSProperty.PrecursorMz), StringFormat=N5, Mode=OneWay}" Style="{StaticResource ReadOnlyTextBox}"/>

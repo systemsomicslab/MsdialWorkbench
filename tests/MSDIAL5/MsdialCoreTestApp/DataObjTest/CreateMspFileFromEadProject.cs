@@ -1,5 +1,7 @@
 ﻿using CompMs.App.MsdialConsole.Export;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
+using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.FormulaGenerator.Parser;
 using CompMs.Common.Parser;
@@ -11,10 +13,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using CompMs.Common.Extension;
-using CompMs.Common.Components;
-using CompMs.RawDataHandler.Core;
 
 namespace MsdialPrivateConsoleApp {
 
@@ -213,8 +211,8 @@ namespace MsdialPrivateConsoleApp {
                         Formula = FormulaStringParcer.Convert2FormulaObjV2(lineArray[3]),
                         SMILES = lineArray[4],
                         InChIKey = lineArray[5],
-                        AdductPos = AdductIonParser.GetAdductIonBean(lineArray[6]),
-                        AdductNeg = AdductIonParser.GetAdductIonBean(lineArray[7]),
+                        AdductPos = AdductIon.GetAdductIon(lineArray[6]),
+                        AdductNeg = AdductIon.GetAdductIon(lineArray[7]),
                         Superclass = lineArray.Length > 9 ? lineArray[9] : string.Empty,
                         CClass = lineArray.Length > 10 ? lineArray[10] : string.Empty,
                         Subclass = lineArray.Length > 11 ? lineArray[11] : string.Empty,

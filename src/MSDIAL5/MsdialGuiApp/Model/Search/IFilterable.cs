@@ -1,4 +1,5 @@
-﻿using CompMs.MsdialCore.DataObj;
+﻿using CompMs.Common.DataObj.Property;
+using CompMs.MsdialCore.DataObj;
 
 namespace CompMs.App.Msdial.Model.Search
 {
@@ -19,6 +20,7 @@ namespace CompMs.App.Msdial.Model.Search
         string Comment { get; }
         string Protein { get; }
         string AdductIonName { get; }
+        AdductIon AdductType { get; }
 
         double RelativeAmplitudeValue { get; }
 

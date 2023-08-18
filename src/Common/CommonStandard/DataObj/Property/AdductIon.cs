@@ -1,8 +1,9 @@
 ﻿using CompMs.Common.Enum;
-using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Parser;
 using MessagePack;
-using System;
+using MessagePack.Formatters;
+using MessagePack.Resolvers;
+using System.Collections.Concurrent;
 
 namespace CompMs.Common.DataObj.Property
 {
@@ -10,8 +11,17 @@ namespace CompMs.Common.DataObj.Property
     /// This is the storage of adduct ion information.
     /// </summary>
     [MessagePackObject]
+    [MessagePackFormatter(typeof(AdductIonFormatter))]
     public class AdductIon
     {
+        /// <summary>
+        /// Initializes a new instance of the AdductIon class.
+        /// <para>
+        /// This constructor is preserved for use with MessagePack for C#, and direct usage is deprecated. If used as a default value,
+        /// consider using the AdductIon.Default property. If you know the AdductIonName, consider using the AdductIon.GetAdductIon method.
+        /// </para>
+        /// </summary>
+        [SerializationConstructor]
         public AdductIon() { }
 
         [Key(0)]
@@ -65,38 +75,20 @@ namespace CompMs.Common.DataObj.Property
         [IgnoreMember]
         public bool IsHac => AdductIonName == "[M+CH3COO]-" || AdductIonName == "[M+Hac-H]-";
 
-        // UNDONE: replace 'A.AdductIonName = B.AdductIonName' to 'A.Set(B)' and 'AdductIonName = string.Empty' to 'A.Unset()'
-        // this method should (un)set other properties?
-        public void Set(AdductIon other) {
-            AdductIonName = other.AdductIonName;
-        }
-
-        public void Unset() {
-            AdductIonName = string.Empty;
-        }
-
-        public void SetStandard(int charge, IonMode ion) {
-            switch (ion) {
-                case IonMode.Positive:
-                    if (charge >= 2)
-                        AdductIonName = $"[M+{charge}H]{charge}+";
-                    else
-                        AdductIonName = "[M+H]+";
-                    break;
-                case IonMode.Negative:
-                    if (charge >= 2)
-                        AdductIonName = $"[M-{charge}H]{charge}-";
-                    else
-                        AdductIonName = "[M-H]-";
-                    break;
-            }
-        }
-
         public override string ToString() {
             return AdductIonName;
         }
 
+        /// <summary>
+        /// This method returns the AdductIon class variable from the adduct string.
+        /// </summary>
+        /// <param name="adductName">Add the formula string such as "C6H12O6"</param>
+        /// <returns>AdductIon</returns>
         public static AdductIon GetAdductIon(string adductName) {
+            return ADDUCT_IONS.GetOrAdd(adductName);
+        }
+
+        private static AdductIon GetAdductIonCore(string adductName) {
             AdductIon adduct = new AdductIon() { AdductIonName = adductName };
 
             if (!AdductIonParser.IonTypeFormatChecker(adductName)) {
@@ -114,7 +106,10 @@ namespace CompMs.Common.DataObj.Property
             var ionType = AdductIonParser.GetIonType(adductName);
             var isRadical = AdductIonParser.GetRadicalInfo(adductName);
 
-            AdductIonParser.SetAccurateMassAndIsotopeRatio(adduct);
+            (var accurateMass, var m1Intensity, var m2Intensity) = AdductIonParser.CalculateAccurateMassAndIsotopeRatio(adduct.AdductIonName);
+            adduct.AdductIonAccurateMass += accurateMass;
+            adduct.M1Intensity += m1Intensity;
+            adduct.M2Intensity += m2Intensity;
 
             adduct.AdductIonXmer = adductIonXmer;
             adduct.ChargeNumber = chargeNum;
@@ -123,6 +118,59 @@ namespace CompMs.Common.DataObj.Property
             adduct.IsRadical = isRadical;
 
             return adduct;
+        }
+
+        public static AdductIon GetStandardAdductIon(int charge, IonMode ionMode) {
+            switch (ionMode) {
+                case IonMode.Positive:
+                    if (charge >= 2)
+                        return GetAdductIon($"[M+{charge}H]{charge}+");
+                    else
+                        return GetAdductIon("[M+H]+");
+                case IonMode.Negative:
+                    if (charge >= 2)
+                        return GetAdductIon($"[M-{charge}H]{charge}-");
+                    else
+                        return GetAdductIon("[M-H]-");
+                default:
+                    return Default;
+            }
+        }
+
+        public static readonly AdductIon Default = new AdductIon();
+
+        private static readonly AdductIons ADDUCT_IONS = new AdductIons();
+
+        class AdductIons {
+            private readonly ConcurrentDictionary<string, AdductIon> _dictionary;
+            public AdductIons() {
+                _dictionary = new ConcurrentDictionary<string, AdductIon>();
+                _dictionary.TryAdd(Default.AdductIonName, Default);
+            }
+
+            public AdductIon GetOrAdd(string adduct) {
+                return _dictionary.GetOrAdd(adduct, GetAdductIonCore);
+            }
+        }
+
+        class AdductIonFormatter : IMessagePackFormatter<AdductIon>
+        {
+            AdductIon IMessagePackFormatter<AdductIon>.Deserialize(byte[] bytes, int offset, IFormatterResolver formatterResolver, out int readSize) {
+                readSize = MessagePackBinary.ReadNextBlock(bytes, offset);
+                var count = MessagePackBinary.ReadArrayHeader(bytes, offset, out var tmp);
+                if (count < 3) {
+                    return Default;
+                }
+                tmp += MessagePackBinary.ReadNext(bytes, offset + tmp);
+                tmp += MessagePackBinary.ReadNext(bytes, offset + tmp);
+                var name = MessagePackBinary.ReadString(bytes, offset + tmp, out _);
+                return GetAdductIon(name);
+            }
+
+            int IMessagePackFormatter<AdductIon>.Serialize(ref byte[] bytes, int offset, AdductIon value, IFormatterResolver formatterResolver) {
+                var formatter = DynamicObjectResolver.Instance.GetFormatterWithVerify<AdductIon>();
+                return formatter.Serialize(ref bytes, offset, value, formatterResolver);
+            }
         }
     }
 

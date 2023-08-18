@@ -1,5 +1,5 @@
-﻿using CompMs.Common.Enum;
-using System;
+﻿using CompMs.Common.DataObj.Property;
+using CompMs.Common.Enum;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -85,7 +85,7 @@ namespace CompMs.Common.Parser {
                 if (lipid.ToString() == lbmClass) { query.LbmClass = lipid; break; }
             }
 
-            query.AdductType = AdductIonParser.GetAdductIonBean(adduct);
+            query.AdductType = AdductIon.GetAdductIon(adduct);
 
             if (ionmode == "Positive") query.IonMode = IonMode.Positive;
             else query.IonMode = IonMode.Negative;

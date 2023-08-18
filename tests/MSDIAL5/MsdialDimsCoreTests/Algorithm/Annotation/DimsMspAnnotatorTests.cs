@@ -97,7 +97,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
                 Name = "PC 18:0_20:4",
                 CompoundClass = "PC",
                 PrecursorMz = 810.601,
-                AdductType = CompMs.Common.Parser.AdductIonParser.GetAdductIonBean("[M+H]+"),
+                AdductType = Common.DataObj.Property.AdductIon.GetAdductIon("[M+H]+"),
                 Spectrum = new List<SpectrumPeak>
                 {
                     new SpectrumPeak { Mass = 184.073, Intensity = 100 },

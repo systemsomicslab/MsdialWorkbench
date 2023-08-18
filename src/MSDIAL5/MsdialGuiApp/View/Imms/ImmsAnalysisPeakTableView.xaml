@@ -169,7 +169,7 @@
                                     IsReadOnly="True"
                                     Width="70" />
                 <DataGridTextColumn Header="Type"
-                                    Binding="{Binding Path=AdductIonName}"
+                                    Binding="{Binding Path=AdductType}"
                                     IsReadOnly="True"
                                     Width="1*" />
                 <DataGridTextColumn Header="Metabolite name"

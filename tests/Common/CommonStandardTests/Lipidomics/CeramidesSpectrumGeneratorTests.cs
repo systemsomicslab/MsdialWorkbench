@@ -1,9 +1,8 @@
-﻿using CompMs.Common.Enum;
-using CompMs.Common.FormulaGenerator.DataObj;
+﻿using CompMs.Common.DataObj.Property;
+using CompMs.Common.Enum;
 using CompMs.Common.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics.Tests
@@ -19,7 +18,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.SM, 728.583225334, new PositionLevelChains(sphingo, acyl));
 
             var generator = new SMSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -107,7 +106,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.SM, 751.57244603, new PositionLevelChains(sphingo, acyl));
 
             var generator = new SMSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+Na]+"));
 
             var expects = new[]
             {
@@ -199,7 +198,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.Cer_NS, 645.6059954, new PositionLevelChains(sphingo, acyl));
 
             var generator = new CeramideSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -312,7 +311,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.Cer_NS, 645.6059954, new PositionLevelChains(sphingo, acyl));//Cer 18:2(4,8);2O/24:1(9)
 
             var generator = new CeramideSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H-H2O]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H-H2O]+"));
 
             var expects = new[]
             {
@@ -423,7 +422,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.Cer_NS, 645.6059954, new PositionLevelChains(sphingo, acyl));
 
             var generator = new CeramideSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+Na]+"));
 
             var expects = new[]
             {
@@ -532,7 +531,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.SHexCer,  891.646934, new PositionLevelChains(sphingo, acyl));
 
             var generator = new SHexCerSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -641,7 +640,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.GM3,1180.74446, new PositionLevelChains(sphingo, acyl));
 
             var generator = new GM3SpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -728,7 +727,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.GM3, 1180.74446, new PositionLevelChains(sphingo, acyl));
 
             var generator = new GM3SpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+NH4]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+NH4]+"));
 
             var expects = new[]
             {

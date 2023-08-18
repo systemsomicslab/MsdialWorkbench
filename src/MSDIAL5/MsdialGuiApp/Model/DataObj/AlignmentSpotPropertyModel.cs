@@ -103,6 +103,16 @@ namespace CompMs.App.Msdial.Model.DataObj
             }
         }
 
+        public AdductIon AdductType {
+            get => innerModel.AdductType;
+            set {
+                if (innerModel.AdductType != value) {
+                    innerModel.AdductType = value;
+                    OnPropertyChanged(nameof(AdductType));
+                }
+            }
+        }
+
         public string AdductIonName => innerModel.AdductType.AdductIonName;
 
         public string AnnotatorID => MatchResultsModel.Representative.AnnotatorID;

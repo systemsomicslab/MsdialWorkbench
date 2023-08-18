@@ -1,13 +1,12 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Proteomics.DataObj;
-using CompMs.Common.Proteomics.Function;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace CompMs.Common.Parser {
     public sealed class MsfPepFileParser {
@@ -18,7 +17,7 @@ namespace CompMs.Common.Parser {
             string msfile, string pepfile, List<Peptide> peptides, 
             Dictionary<string, int> Code2ID, double minMz, double maxMz, CollisionType type, out Stream fs) {
             var pepMsQueries = new List<PeptideMsReference>();
-            var adduct = AdductIonParser.GetAdductIonBean("[M+H]+");
+            var adduct = AdductIon.GetAdductIon("[M+H]+");
 
             fs = File.Open(msfile, FileMode.Create, FileAccess.ReadWrite); // stream of ms file is retained by the main project
             fs.Write(BitConverter.GetBytes(MSRefStorageFileVersionNumber), 0, 4);
@@ -50,7 +49,7 @@ namespace CompMs.Common.Parser {
             List<Peptide> peptides, Dictionary<string, int> Code2ID, 
             double minMz, double maxMz, CollisionType type, out Stream fs) {
             var pepMsQueries = new List<PeptideMsReference>();
-            var adduct = AdductIonParser.GetAdductIonBean("[M+H]+");
+            var adduct = AdductIon.GetAdductIon("[M+H]+");
 
             fs = File.Open(msfile, FileMode.Create, FileAccess.ReadWrite); // stream of ms file is retained by the main project
             fs.Write(BitConverter.GetBytes(MSRefStorageFileVersionNumber), 0, 4);
