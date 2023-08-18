@@ -114,6 +114,7 @@ namespace CompMs.App.Msdial.Model.DataObj
                 if (innerModel.AdductType != value) {
                     innerModel.AdductType = value;
                     OnPropertyChanged(nameof(AdductType));
+                    OnPropertyChanged(nameof(AdductIonName));
                 }
             }
         }
