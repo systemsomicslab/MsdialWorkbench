@@ -215,7 +215,9 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
             ValidateBase(result, property, reference, parameter);
 
-            var name = MsScanMatching.GetRefinedLipidAnnotationLevel(scan, reference, parameter.Ms2Tolerance, out var isLipidClassMatch, out var isLipidChainsMatch, out var isLipidPositionMatch, out var isOtherLipidMatch);
+            var molecule = MsScanMatching.GetRefinedLipidAnnotationLevel(scan, reference, parameter.Ms2Tolerance, 
+                out var isLipidClassMatch, out var isLipidChainsMatch, out var isLipidPositionMatch, out var isOtherLipidMatch, 
+                out var refinename);
             result.IsLipidChainsMatch = isLipidChainsMatch;
             result.IsLipidClassMatch = isLipidClassMatch;
             result.IsLipidPositionMatch = isLipidPositionMatch;
@@ -224,7 +226,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
             if (result.IsOtherLipidMatch)
                 return;
-            result.Name = string.IsNullOrEmpty(name) ? reference.Name : name;
+            result.Name = string.IsNullOrEmpty(refinename) ? reference.Name : refinename;
         }
 
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results) {

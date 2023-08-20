@@ -22,9 +22,13 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 return LipidMs2MatchResult.Empty;
             }
 
-            var name = MsScanMatching.GetRefinedLipidAnnotationLevel(
+            var molecule = MsScanMatching.GetRefinedLipidAnnotationLevel(
                 scan, reference, query.Ms2Tolerance,
-                out var isLipidClassMatch, out var isLipidChainsMatch, out var isLipidPositionMatch, out var isOtherLipidMatch);
+                out var isLipidClassMatch, out var isLipidChainsMatch, 
+                out var isLipidPositionMatch, out var isOtherLipidMatch,
+                out var refinedname);
+
+            //if (molecule == null) return LipidMs2MatchResult.Empty;
 
             var isSpectrumMatch =
                 weightedDotProduct >= query.WeightedDotProductCutOff
@@ -34,7 +38,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 && matchedPeaksScores[1] >= query.MinimumSpectrumMatch
                 && (isLipidClassMatch || isLipidChainsMatch || isLipidPositionMatch || isOtherLipidMatch);
             return new LipidMs2MatchResult(
-                name,
+                refinedname,
                 weightedDotProduct, simpleDotProduct, reverseDotProduct,
                 matchedPeaksScores[0], (int)matchedPeaksScores[1],
                 isSpectrumMatch, isLipidClassMatch, isLipidChainsMatch, isLipidPositionMatch, isOtherLipidMatch);
