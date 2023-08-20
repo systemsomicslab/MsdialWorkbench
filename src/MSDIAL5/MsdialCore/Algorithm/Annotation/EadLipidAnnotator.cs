@@ -98,8 +98,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         private IEnumerable<ILipid> GenerateLipid(ILipid lipid) {
-            if (_lipidDatabase.Source == DataBaseSource.OadLipid && lipid.AnnotationLevel < 2) {
-                return new[] { lipid };
+//            if (_lipidDatabase.Source == DataBaseSource.OadLipid && lipid.AnnotationLevel < 2) {
+            if (lipid.AnnotationLevel < 2) {
+                    return new[] { lipid };
             }
             return lipid.Generate(_lipidGenerator).
                 SelectMany(GenerateLipid).

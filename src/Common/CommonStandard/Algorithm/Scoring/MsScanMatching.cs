@@ -96,6 +96,10 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.Cer_AP:
                     return CeramideEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.HexCer_NS:
+                case LbmClass.HexCer_NDS:
+                case LbmClass.HexCer_AP:
+                case LbmClass.HexCer_HS:
+                case LbmClass.HexCer_HDS:
                     return HexCerEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.Hex2Cer:
                     return Hex2CerEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
@@ -422,13 +426,15 @@ namespace CompMs.Common.Algorithm.Scoring {
             var isLipidChainsMatch = false;
             var isLipidPositionMatch = false;
             var isOtherLipidMatch = false;
+            var refinedname = string.Empty;
 
-            var name = GetRefinedLipidAnnotationLevel(scanProp, refSpec, param.Ms2Tolerance,
-                out isLipidClassMatch, out isLipidChainsMatch, out isLipidPositionMatch, out isOtherLipidMatch);
-            if (name == string.Empty)
+            var molecule = GetRefinedLipidAnnotationLevel(scanProp, refSpec, param.Ms2Tolerance,
+                out isLipidClassMatch, out isLipidChainsMatch, out isLipidPositionMatch, out isOtherLipidMatch, 
+                out refinedname);
+            if (refinedname == string.Empty)
                 return null;
 
-            result.Name = name;
+            result.Name = refinedname;
             result.IsLipidChainsMatch = isLipidChainsMatch;
             result.IsLipidClassMatch = isLipidClassMatch;
             result.IsLipidPositionMatch = isLipidPositionMatch;
@@ -1118,14 +1124,15 @@ namespace CompMs.Common.Algorithm.Scoring {
             }
         }
 
-        public static string GetRefinedLipidAnnotationLevel(IMSScanProperty msScanProp, MoleculeMsReference molMsRef, double bin,
-            out bool isLipidClassMatched, out bool isLipidChainMatched, out bool isLipidPositionMatched, out bool isOthers) {
+        public static LipidMolecule GetRefinedLipidAnnotationLevel(IMSScanProperty msScanProp, MoleculeMsReference molMsRef, double bin,
+            out bool isLipidClassMatched, out bool isLipidChainMatched, out bool isLipidPositionMatched, out bool isOthers, out string refinedName) {
 
             isLipidClassMatched = false;
             isLipidChainMatched = false;
             isLipidPositionMatched = false;
             isOthers = false;
-            if (!IsComparedAvailable(msScanProp, molMsRef)) return string.Empty;
+            refinedName = string.Empty;
+            if (!IsComparedAvailable(msScanProp, molMsRef)) return null;
 
             // in lipidomics project, currently, the well-known lipid classes now including
             // PC, PE, PI, PS, PG, SM, TAG are now evaluated.
@@ -1136,24 +1143,24 @@ namespace CompMs.Common.Algorithm.Scoring {
             var comment = molMsRef.Comment;
            
             if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
+                var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
+                if (molecule == null || molecule.Adduct == null) {
+                    isOthers = true;
+                    refinedName = molMsRef.Name;
+                    return null;
+                }
 
                 if (compClass == "Cholesterol" || compClass == "CholesterolSulfate" ||
                     compClass == "Undefined" || compClass == "BileAcid" ||
                     compClass == "Ac2PIM1" || compClass == "Ac2PIM2" || compClass == "Ac3PIM2" || compClass == "Ac4PIM2" ||
                     compClass == "LipidA") {
                     isOthers = true;
-                    return molMsRef.Name; // currently default value is retured for these lipids
-                }
-
-                var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
-                if (molecule == null || molecule.Adduct == null) {
-                    isOthers = true;
-                    return molMsRef.Name;
+                    refinedName = molMsRef.Name;
+                    return null; // currently default value is retured for these lipids
                 }
 
                 var result = GetLipidMoleculeAnnotationResult(msScanProp, molecule, bin);
                 if (result != null) {
-                    var refinedName = string.Empty;
                     if (result.AnnotationLevel == 1) {
                         refinedName = result.SublevelLipidName;
                         isLipidClassMatched = true;
@@ -1172,28 +1179,32 @@ namespace CompMs.Common.Algorithm.Scoring {
                         }
                     }
                     else
-                        return string.Empty;
+                        return null;
                     
-                    return refinedName;
+                    return result;
                 }
                 else {
-                    return string.Empty;
+                    return null;
                 }
             }
             else { // currently default value is retured for other lipids
                 isOthers = true;
-                return molMsRef.Name;
+                refinedName = molMsRef.Name;
+                return null;
             }
         }
 
-        public static string GetRefinedLipidAnnotationLevelForEIEIO(IMSScanProperty msScanProp, MoleculeMsReference molMsRef, double bin,
-            out bool isLipidClassMatched, out bool isLipidChainMatched, out bool isLipidPositionMatched, out bool isOthers) {
+        public static LipidMolecule GetRefinedLipidAnnotationLevelForEIEIO(
+            IMSScanProperty msScanProp, MoleculeMsReference molMsRef, double bin,
+            out bool isLipidClassMatched, out bool isLipidChainMatched, out bool isLipidPositionMatched, out bool isOthers,
+            out string refinedName) {
 
             isLipidClassMatched = false;
             isLipidChainMatched = false;
             isLipidPositionMatched = false;
             isOthers = false;
-            if (!IsComparedAvailable(msScanProp, molMsRef)) return string.Empty;
+            refinedName = string.Empty;
+            if (!IsComparedAvailable(msScanProp, molMsRef)) return null;
 
             // in lipidomics project, currently, the well-known lipid classes now including
             // PC, PE, PI, PS, PG, SM, TAG are now evaluated.
@@ -1204,24 +1215,24 @@ namespace CompMs.Common.Algorithm.Scoring {
             var comment = molMsRef.Comment;
 
             if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
+                var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
+                if (molecule == null || molecule.Adduct == null) {
+                    isOthers = true;
+                    refinedName = molMsRef.Name;
+                    return null;
+                }
 
                 if (compClass == "Cholesterol" || compClass == "CholesterolSulfate" ||
                     compClass == "Undefined" || compClass == "BileAcid" ||
                     compClass == "Ac2PIM1" || compClass == "Ac2PIM2" || compClass == "Ac3PIM2" || compClass == "Ac4PIM2" ||
                     compClass == "LipidA") {
                     isOthers = true;
-                    return molMsRef.Name; // currently default value is retured for these lipids
-                }
-
-                var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
-                if (molecule == null || molecule.Adduct == null) {
-                    isOthers = true;
-                    return molMsRef.Name;
+                    refinedName = molMsRef.Name;
+                    return null; // currently default value is retured for these lipids
                 }
 
                 var result = GetLipidMoleculerSpeciesLevelAnnotationResultForEIEIO(msScanProp, molecule, bin);
                 if (result != null) {
-                    var refinedName = string.Empty;
                     if (result.AnnotationLevel == 1) {
                         refinedName = result.SublevelLipidName;
                         isLipidClassMatched = true;
@@ -1240,17 +1251,18 @@ namespace CompMs.Common.Algorithm.Scoring {
                         }
                     }
                     else
-                        return string.Empty;
+                        return null;
 
-                    return refinedName;
+                    return result;
                 }
                 else {
-                    return string.Empty;
+                    return null;
                 }
             }
             else { // currently default value is retured for other lipids
                 isOthers = true;
-                return molMsRef.Name;
+                refinedName = molMsRef.Name;
+                return null;
             }
         }
 

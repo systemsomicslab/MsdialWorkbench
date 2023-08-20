@@ -305,10 +305,10 @@ namespace CompMs.Common.Lipidomics
                             candidates.Add(molecule);
                         }
                     }
-                    else
-                    {
-                        return null;
-                    }
+                    //else
+                    //{
+                    //    return null;
+                    //}
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PC", LbmClass.PC, "", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
@@ -499,10 +499,10 @@ namespace CompMs.Common.Lipidomics
                             candidates.Add(molecule);
                         }
                     }
-                    else
-                    {
-                        return null;
-                    }
+                    //else
+                    //{
+                    //    return null;
+                    //}
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PE", LbmClass.PE, "", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
@@ -582,13 +582,13 @@ namespace CompMs.Common.Lipidomics
                             }
                         }
                     }
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("PE", LbmClass.PE, "", theoreticalMz, adduct,
+                totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
             }
-            if (candidates == null || candidates.Count == 0)
-                return null;
-
-            return LipidMsmsCharacterizationUtility.returnAnnotationResult("PE", LbmClass.PE, "", theoreticalMz, adduct,
-                totalCarbon, totalDoubleBond, 0, candidates, 2);
+            //if (candidates == null || candidates.Count == 0)
+            //    return null;
+            return null;
         }
 
         public static LipidMolecule JudgeIfPhosphatidylglycerol(IMSScanProperty msScanProp, double ms2Tolerance,
@@ -1037,30 +1037,30 @@ namespace CompMs.Common.Lipidomics
                                 new SpectrumPeak() { Mass = nl_SN2_H2O_CH2, Intensity = 1.0 },
                             };
 
-                                var foundCountSN2 = 0;
-                                var averageIntensitySN2 = 0.0;
-                                LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, queryCh2, ms2Tolerance, out foundCountSN2, out averageIntensitySN2);
-                                if (foundCountSN2 > 0)
+                            var foundCountSN2 = 0;
+                            var averageIntensitySN2 = 0.0;
+                            LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, queryCh2, ms2Tolerance, out foundCountSN2, out averageIntensitySN2);
+                            if (foundCountSN2 > 0)
+                            {
+                                if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_SN1_H2O_CH2, nl_SN2_H2O_CH2))
                                 {
-                                    if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_SN1_H2O_CH2, nl_SN2_H2O_CH2))
-                                    {
-                                        var molecule = getTwoChainLipidMoleculeObjAsPositionChain("PI", LbmClass.PI, sn1CarbonNum, sn1DoubleNum,
-                                            sn2CarbonNum, sn2DoubleNum, averageIntensity);
-                                        candidates.Add(molecule);
-                                    }
-                                    else
-                                    {
-                                        var molecule = getTwoChainLipidMoleculeObjAsPositionChain("PI", LbmClass.PI, sn2CarbonNum, sn2DoubleNum,
-                                            sn1CarbonNum, sn1DoubleNum, averageIntensity);
-                                        candidates.Add(molecule);
-                                    }
+                                    var molecule = getTwoChainLipidMoleculeObjAsPositionChain("PI", LbmClass.PI, sn1CarbonNum, sn1DoubleNum,
+                                        sn2CarbonNum, sn2DoubleNum, averageIntensity);
+                                    candidates.Add(molecule);
                                 }
                                 else
                                 {
-                                    var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PI", LbmClass.PI, sn1CarbonNum, sn1DoubleNum,
-                                    sn2CarbonNum, sn2DoubleNum, averageIntensity);
+                                    var molecule = getTwoChainLipidMoleculeObjAsPositionChain("PI", LbmClass.PI, sn2CarbonNum, sn2DoubleNum,
+                                        sn1CarbonNum, sn1DoubleNum, averageIntensity);
                                     candidates.Add(molecule);
                                 }
+                            }
+                            else
+                            {
+                                var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PI", LbmClass.PI, sn1CarbonNum, sn1DoubleNum,
+                                sn2CarbonNum, sn2DoubleNum, averageIntensity);
+                                candidates.Add(molecule);
+                            }
                             }
                         }
                     }
@@ -1555,10 +1555,10 @@ namespace CompMs.Common.Lipidomics
                             acylCarbon, acylDouble, averageIntensity);
                         candidates.Add(molecule);
                     }
-                    else
-                    {
-                        return null;
-                    }
+                    //else
+                    //{
+                    //    return null;
+                    //}
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("SM", LbmClass.SM, "d", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
@@ -1606,8 +1606,8 @@ namespace CompMs.Common.Lipidomics
                             }
                         }
                     }
-                    if (candidates == null || candidates.Count == 0)
-                        return null;
+                    //if (candidates == null || candidates.Count == 0)
+                    //    return null;
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("SM", LbmClass.SM, "d", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
@@ -1737,9 +1737,10 @@ namespace CompMs.Common.Lipidomics
                     var threshold = 2.5;
                     var diagnosticMz = theoreticalMz - C2H8NO4P;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
-                    var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C, threshold);
-                    var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O, threshold);
-                    if (!isClassIonFound || !isClassIonFound2 || !isClassIonFound3) return null;
+                    //var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C, threshold);
+                    //var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O, threshold);
+                    //if (!isClassIonFound || !isClassIonFound2 || !isClassIonFound3) return null;
+                    if (!isClassIonFound) return null;
 
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
@@ -1806,7 +1807,7 @@ namespace CompMs.Common.Lipidomics
                             candidates.Add(molecule);
                         }
                     }
-                    if (candidates.Count == 0) return null;
+                   // if (candidates.Count == 0) return null;
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PE", LbmClass.EtherPE, "e", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
@@ -2283,7 +2284,7 @@ namespace CompMs.Common.Lipidomics
                             candidates.Add(molecule);
                         }
                     }
-                    else { return null; }
+                    //else { return null; }
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PC", LbmClass.EtherPC, "e", theoreticalMz, adduct,
                 totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
@@ -2465,10 +2466,10 @@ namespace CompMs.Common.Lipidomics
                             candidates.Add(molecule);
                         }
                     }
-                    else
-                    {
-                        return null;
-                    }
+                    //else
+                    //{
+                    //    return null;
+                    //}
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PC_d5", LbmClass.PC_d5, "", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
@@ -2731,8 +2732,8 @@ namespace CompMs.Common.Lipidomics
                             }
                         }
                     }
-                    if (candidates == null || candidates.Count == 0)
-                        return null;
+                    //if (candidates == null || candidates.Count == 0)
+                    //    return null;
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PE_d5", LbmClass.PE_d5, "", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
@@ -3862,7 +3863,7 @@ namespace CompMs.Common.Lipidomics
                             acylCarbon, acylDouble, averageIntensity);
                         candidates.Add(molecule);
                     }
-                    else return null;
+                   // else return null;
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("SM_d9", LbmClass.SM_d9, "d", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
 
@@ -3908,8 +3909,8 @@ namespace CompMs.Common.Lipidomics
                             }
                         }
                     }
-                    if (candidates == null || candidates.Count == 0)
-                        return null;
+                    //if (candidates == null || candidates.Count == 0)
+                    //    return null;
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("SM_d9", LbmClass.SM_d9, "d", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
