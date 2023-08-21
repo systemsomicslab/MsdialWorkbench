@@ -1,5 +1,4 @@
-﻿using Accord.Statistics.Models.Regression.Fitting;
-using CompMs.App.Msdial.Model.Search;
+﻿using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
@@ -109,6 +108,7 @@ namespace CompMs.App.Msdial.Model.DataObj
                 if (innerModel.AdductType != value) {
                     innerModel.AdductType = value;
                     OnPropertyChanged(nameof(AdductType));
+                    OnPropertyChanged(nameof(AdductIonName));
                 }
             }
         }

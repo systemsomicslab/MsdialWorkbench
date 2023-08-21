@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Table;
+using CompMs.Common.DataObj.Property;
 using CompMs.Graphics.Base;
 using Reactive.Bindings;
 using System;
@@ -19,8 +20,8 @@ namespace CompMs.App.Msdial.Model.Dims
 
     internal sealed class DimsAnalysisPeakTableModel : AnalysisPeakSpotTableModelBase, IDimsPeakSpotTableModel
     {
-        public DimsAnalysisPeakTableModel(IReadOnlyList<ChromatogramPeakFeatureModel> peaks, IReactiveProperty<ChromatogramPeakFeatureModel> target, PeakSpotNavigatorModel peakSpotNavigatorModel)
-            : base(peaks, target, peakSpotNavigatorModel) {
+        public DimsAnalysisPeakTableModel(IReadOnlyList<ChromatogramPeakFeatureModel> peaks, IReactiveProperty<ChromatogramPeakFeatureModel> target, PeakSpotNavigatorModel peakSpotNavigatorModel, IReadOnlyList<AdductIon> adductIons)
+            : base(peaks, target, peakSpotNavigatorModel, adductIons) {
             MassMin = peaks.Select(s => s.Mass).DefaultIfEmpty().Min();
             MassMax = peaks.Select(s => s.Mass).DefaultIfEmpty().Max();
         }
@@ -37,8 +38,9 @@ namespace CompMs.App.Msdial.Model.Dims
             IObservable<IBrushMapper<BarItem>> classBrush,
             FileClassPropertiesModel classProperties,
             IObservable<IBarItemsLoader> barItemsLoader,
-            PeakSpotNavigatorModel peakSpotNavigatorModel)
-            : base(spots, target, classBrush, classProperties, barItemsLoader, peakSpotNavigatorModel) {
+            PeakSpotNavigatorModel peakSpotNavigatorModel,
+            IReadOnlyList<AdductIon> adductIons)
+            : base(spots, target, classBrush, classProperties, barItemsLoader, peakSpotNavigatorModel, adductIons) {
             MassMin = spots.Select(s => s.Mass).DefaultIfEmpty().Min();
             MassMax = spots.Select(s => s.Mass).DefaultIfEmpty().Max();
         }
