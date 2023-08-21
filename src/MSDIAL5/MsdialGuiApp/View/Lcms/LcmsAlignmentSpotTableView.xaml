@@ -170,11 +170,13 @@
                 <DataGridComboBoxColumn Header="Type"
                                         ItemsSource="{Binding Path=Data.AdductIons, Source={StaticResource TableVM}}"
                                         SelectedItemBinding="{Binding Path=AdductType}"
-                                        Width="1*" />
-                <DataGridTextColumn Header="Type"
-                                    Binding="{Binding Path=AdductType}"
-                                    IsReadOnly="True"
-                                    Width="1*" />
+                                        Width="*">
+                    <DataGridComboBoxColumn.EditingElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="Padding" Value="1"/>
+                        </Style>
+                    </DataGridComboBoxColumn.EditingElementStyle>
+                </DataGridComboBoxColumn>
                 <DataGridTextColumn Header="Fill %"
                                     Binding="{Binding Path=FillPercentage, StringFormat=F2}"
                                     IsReadOnly="True"

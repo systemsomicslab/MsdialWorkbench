@@ -139,6 +139,9 @@
                   behavior:DataGridCommitBehavior.Enable="True"
                   behavior:DataGridScrollToSelectionBehavior.Enable="True"
                   Grid.Row="1">
+            <DataGrid.Resources>
+                <commonmvvm:BindingProxy x:Key="TableVM" Data="{Binding Mode=OneTime}"/>
+            </DataGrid.Resources>
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -164,10 +167,16 @@
                                     Binding="{Binding Path=ChromXValue, StringFormat=F3}"
                                     IsReadOnly="True"
                                     Width="70" />
-                <DataGridTextColumn Header="Type"
-                                    Binding="{Binding Path=AdductType}"
-                                    IsReadOnly="True"
-                                    Width="1*" />
+                <DataGridComboBoxColumn Header="Type"
+                                        ItemsSource="{Binding Path=Data.AdductIons, Source={StaticResource TableVM}}"
+                                        SelectedItemBinding="{Binding Path=AdductType}"
+                                        Width="*">
+                    <DataGridComboBoxColumn.EditingElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="Padding" Value="1"/>
+                        </Style>
+                    </DataGridComboBoxColumn.EditingElementStyle>
+                </DataGridComboBoxColumn>
                 <DataGridTextColumn Header="PG ID"
                                     Binding="{Binding Path=ProteinGroupID}"
                                     IsReadOnly="True" 
