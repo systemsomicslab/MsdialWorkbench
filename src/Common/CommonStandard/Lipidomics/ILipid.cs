@@ -98,5 +98,9 @@ namespace CompMs.Common.Lipidomics
             }
             return default;
         }
+
+        public static Lipid FromLipidMolecule(LipidMolecule molecule) {
+            return new Lipid(molecule.LipidClass, molecule.Adduct.ConvertToExactMass(molecule.Mz), molecule.GetChains());
+        }
     }
 }

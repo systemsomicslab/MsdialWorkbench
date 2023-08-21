@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Interfaces;
+using CompMs.Common.DataStructure;
+using CompMs.Common.Lipidomics;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -46,29 +47,33 @@ namespace CompMs.MsdialCore.Parser.Tests
 
         public bool Called { get; private set; } = false;
 
-        public ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(StandardRestorationKey key, MoleculeDataBase database) {
+        public ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit((StandardRestorationKey key, MoleculeDataBase database) item) {
             throw new NotImplementedException();
         }
 
-        public ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(MspDbRestorationKey key, MoleculeDataBase database) {
-            Assert.AreEqual(expected, key);
+        public ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit((MspDbRestorationKey key, MoleculeDataBase database) item) {
+            Assert.AreEqual(expected, item.key);
             Called = true;
             return null;
         }
 
-        public ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(TextDbRestorationKey key, MoleculeDataBase database) {
+        public ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit((TextDbRestorationKey key, MoleculeDataBase database) item) {
             throw new NotImplementedException();
         }
 
-        public ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> Visit(TextDbRestorationKey key, EadLipidDatabase database) {
+        public ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> Visit((TextDbRestorationKey key, EadLipidDatabase database) item) {
             throw new NotImplementedException();
         }
 
-        public ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> Visit(ShotgunProteomicsRestorationKey key, ShotgunProteomicsDB database) {
+        public ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> Visit((ShotgunProteomicsRestorationKey key, ShotgunProteomicsDB database) item) {
             throw new NotImplementedException();
         }
 
-        public ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> Visit(EadLipidDatabaseRestorationKey key, EadLipidDatabase database) {
+        public ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> Visit((EadLipidDatabaseRestorationKey key, EadLipidDatabase database) item) {
+            throw new NotImplementedException();
+        }
+
+        ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, ILipid), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> IVisitor<ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, ILipid), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>, (EadLipidDatabaseRestorationKey key, EadLipidDatabase database)>.Visit((EadLipidDatabaseRestorationKey key, EadLipidDatabase database) item) {
             throw new NotImplementedException();
         }
     }

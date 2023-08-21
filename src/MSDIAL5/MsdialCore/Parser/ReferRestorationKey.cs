@@ -1,5 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.DataStructure;
+using CompMs.Common.Lipidomics;
 using CompMs.Common.Parameter;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -34,11 +36,11 @@ namespace CompMs.MsdialCore.Parser
         }
 
         public override ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database) {
-            return visitor.Visit(this, database);
+            return visitor.Visit((this, database));
         }
 
         public override IAnnotationQueryFactory<MsScanMatchResult> Accept(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, MoleculeDataBase database) {
-            return factoryVisitor.Visit(this, annotatorVisitor.Visit(this, database));
+            return factoryVisitor.Visit((this, annotatorVisitor.Visit((this, database))));
         }
     }
 
@@ -50,11 +52,11 @@ namespace CompMs.MsdialCore.Parser
         }
 
         public override ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database) {
-            return visitor.Visit(this, database);
+            return visitor.Visit((this, database));
         }
 
         public override IAnnotationQueryFactory<MsScanMatchResult> Accept(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, MoleculeDataBase database) {
-            return factoryVisitor.Visit(this, annotatorVisitor.Visit(this, database));
+            return factoryVisitor.Visit((this, annotatorVisitor.Visit((this, database))));
         }
     }
 
@@ -73,11 +75,11 @@ namespace CompMs.MsdialCore.Parser
         public SourceType SourceType { get; set; }
 
         public override ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database) {
-            return visitor.Visit(this, database);
+            return visitor.Visit((this, database));
         }
 
         public override IAnnotationQueryFactory<MsScanMatchResult> Accept(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, MoleculeDataBase database) {
-            return factoryVisitor.Visit(this, annotatorVisitor.Visit(this, database));
+            return factoryVisitor.Visit((this, annotatorVisitor.Visit((this, database))));
         }
     }
 
@@ -121,16 +123,18 @@ namespace CompMs.MsdialCore.Parser
         public SourceType SourceType { get; set; }
 
         public override ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> Accept(ILoadAnnotatorVisitor visitor, ShotgunProteomicsDB database) {
-            return visitor.Visit(this, database);
+            return visitor.Visit((this, database));
         }
 
         public override IAnnotationQueryFactory<MsScanMatchResult> Accept(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, ShotgunProteomicsDB database) {
-            return factoryVisitor.Visit(this, annotatorVisitor.Visit(this, database));
+            return factoryVisitor.Visit((this, annotatorVisitor.Visit((this, database))));
         }
     }
 
     [MessagePack.MessagePackObject]
-    public class EadLipidDatabaseRestorationKey : IReferRestorationKey<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>
+    public class EadLipidDatabaseRestorationKey :
+        IReferRestorationKey<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>,
+        IReferRestorationKey<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, ILipid), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>
     {
         public EadLipidDatabaseRestorationKey(string key, int priority, MsRefSearchParameterBase msRefSearchParameter, SourceType sourceType) {
             Key = key;
@@ -151,12 +155,16 @@ namespace CompMs.MsdialCore.Parser
         [MessagePack.Key(nameof(SourceType))]
         public SourceType SourceType { get; set; }
 
-        public ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> Accept(ILoadAnnotatorVisitor visitor, EadLipidDatabase database) {
-            return visitor.Visit(this, database);
+        public IAnnotationQueryFactory<MsScanMatchResult> Accept(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, EadLipidDatabase database) {
+            return factoryVisitor.Visit((this, ((IVisitor<ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>, (EadLipidDatabaseRestorationKey key, EadLipidDatabase database)>)annotatorVisitor).Visit((this, database))));
         }
 
-        public IAnnotationQueryFactory<MsScanMatchResult> Accept(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, EadLipidDatabase database) {
-            return factoryVisitor.Visit(this, annotatorVisitor.Visit(this, database));
+        ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> IReferRestorationKey<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>.Accept(ILoadAnnotatorVisitor visitor, EadLipidDatabase database) {
+            return ((IVisitor<ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>, (EadLipidDatabaseRestorationKey key, EadLipidDatabase database)>)visitor).Visit((this, database));
+        }
+
+        ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, ILipid), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> IReferRestorationKey<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, ILipid), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>.Accept(ILoadAnnotatorVisitor visitor, EadLipidDatabase database) {
+            return ((IVisitor<ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, ILipid), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>, (EadLipidDatabaseRestorationKey key, EadLipidDatabase database)>)visitor).Visit((this, database));
         }
     }
 }
