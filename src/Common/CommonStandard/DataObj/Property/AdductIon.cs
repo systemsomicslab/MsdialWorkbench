@@ -85,7 +85,7 @@ namespace CompMs.Common.DataObj.Property
         /// <param name="adductName">Add the formula string such as "C6H12O6"</param>
         /// <returns>AdductIon</returns>
         public static AdductIon GetAdductIon(string adductName) {
-            return ADDUCT_IONS.GetOrAdd(adductName);
+            return ADDUCT_IONS.GetOrAdd(adductName ?? string.Empty);
         }
 
         private static AdductIon GetAdductIonCore(string adductName) {
