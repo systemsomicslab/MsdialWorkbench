@@ -73,7 +73,7 @@
                         <StackPanel Orientation="Vertical">
                             <TextBlock Text="{Binding FocusedItem.MasterAlignmentID, StringFormat=ID: {0}}"/>
                             <TextBlock Text="{Binding FocusedItem.Name, StringFormat=Name: {0}}"/>
-                            <TextBlock Text="{Binding FocusedItem.AdductIonName, StringFormat=Ionform: {0}}"/>
+                            <TextBlock Text="{Binding FocusedItem.AdductType, StringFormat=Ionform: {0}}"/>
                             <TextBlock Text="{Binding FocusedItem.TimesCenter, StringFormat=Time: {0:0.000}}"/>
                             <TextBlock Text="{Binding FocusedItem.MassCenter, StringFormat=m/z: {0:0.0000}}"/>
                             <TextBlock Text="{Binding FocusedItem.HeightAverage, StringFormat=HeightAve: {0:0}}"/>

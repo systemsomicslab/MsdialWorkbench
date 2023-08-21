@@ -81,18 +81,11 @@ namespace CompMs.Common.Lipidomics
         {
             var spectrum = new List<SpectrumPeak>();
             spectrum.AddRange(GetPCSpectrum(lipid, adduct));
-            if (lipid.Chains is MolecularSpeciesLevelChains mlChains)
-            {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, mlChains.Chains, adduct));
+            if (lipid.Description.Has(LipidDescription.Chain)) {
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetDeterminedChains(), adduct));
+                lipid.Chains.ApplyToChain(1, chain => spectrum.AddRange(GetAcylPositionSpectrum(lipid, chain, adduct)));
                 spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, 0d, 200d));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.Chains.OfType<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct));
-            }
-            if (lipid.Chains is PositionLevelChains plChains)
-            {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.Chains, adduct));
-                spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.Chains[0], adduct));
-                spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, 0d, 200d));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.Chains.OfType<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct));
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, lipid.Chains.GetTypedChains<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct));
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
                 .Select(specs => new SpectrumPeak(specs.First().Mass, specs.Sum(n => n.Intensity), string.Join(", ", specs.Select(spec => spec.Comment)), specs.Aggregate(SpectrumComment.none, (a, b) => a | b.SpectrumComment)))
@@ -163,7 +156,7 @@ namespace CompMs.Common.Lipidomics
             var spectrum = new List<SpectrumPeak>();
             if (lipid.Chains is SeparatedChains chains)
             {
-                foreach (var chain in chains.Chains)
+                foreach (var chain in lipid.Chains.GetDeterminedChains())
                 {
                     if (chain.DoubleBond.Count == 0 || chain.DoubleBond.UnDecidedCount > 0) continue;
                     if (chain.DoubleBondCount == 2) continue;

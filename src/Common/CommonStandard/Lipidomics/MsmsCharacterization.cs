@@ -1,18 +1,11 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data.SqlTypes;
-using System.Diagnostics;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CompMs.Common.Lipidomics
 {
@@ -11813,7 +11806,7 @@ AdductIon adduct)
                                                                                                                                                                                                 //Console.WriteLine("ASM {0} Unique mass {1}", "d" + sphCarbon + acylCarbon + ":" + sphDouble + acylDouble + "-O-" + extCarbon + ":" + extDouble, extAcylloss);
 
                                     var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = extAcylloss, Intensity = 0.01 },
+                                        new SpectrumPeak() { Mass = extAcylloss, Intensity = 1 },
                                     };
 
                                     var foundCount = 0;

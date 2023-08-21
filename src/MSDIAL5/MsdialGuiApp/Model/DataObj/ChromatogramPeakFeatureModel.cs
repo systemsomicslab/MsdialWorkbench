@@ -108,6 +108,17 @@ namespace CompMs.App.Msdial.Model.DataObj
             }
         }
 
+        public AdductIon AdductType {
+            get => innerModel.AdductType;
+            set {
+                if (innerModel.AdductType != value) {
+                    innerModel.AdductType = value;
+                    OnPropertyChanged(nameof(AdductType));
+                    OnPropertyChanged(nameof(AdductIonName));
+                }
+            }
+        }
+
         public string AnnotatorID => MatchResultsModel.Representative.AnnotatorID;
 
         public string Comment {
@@ -172,6 +183,24 @@ namespace CompMs.App.Msdial.Model.DataObj
             }
             OnPropertyChanged(propertyname);
             return true;
+        }
+
+        public void SwitchPeakSpotTag(PeakSpotTag tag) {
+            if (tag == PeakSpotTag.CONFIRMED) {
+                Confirmed = !Confirmed;
+            }
+            if (tag == PeakSpotTag.LOW_QUALITY_SPECTRUM) {
+                LowQualitySpectrum = !LowQualitySpectrum;
+            }
+            if (tag == PeakSpotTag.MISANNOTATION) {
+                Misannotation = !Misannotation;
+            }
+            if (tag == PeakSpotTag.COELUTION) {
+                Coelution = !Coelution;
+            }
+            if (tag == PeakSpotTag.OVERANNOTATION) {
+                Overannotation = !Overannotation;
+            }
         }
 
         public static readonly double KMIupacUnit;

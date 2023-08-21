@@ -1,20 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using CompMs.MsdialGcMsApi.Parameter;
+﻿using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
-using CompMs.MsdialCore.Parameter;
 using CompMs.Common.Extension;
-using CompMs.MsdialCore.DataObj;
 using CompMs.Common.Parser;
+using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialDimsCore.Parameter;
+using CompMs.MsdialGcMsApi.Parameter;
+using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
-using CompMs.MsdialDimsCore.Parameter;
-using Accord.Math;
-using CompMs.Common.DataObj.Property;
-using CompMs.MsdialImmsCore.Parameter;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.IO;
 
 namespace CompMs.App.MsdialConsole.Parser
 {
@@ -281,7 +279,7 @@ namespace CompMs.App.MsdialConsole.Parser
                         param.SearchedAdductIons = new List<AdductIon>();
                         var aStrings = value.Split(',');
                         foreach (var adductString in aStrings) {
-                            var adductObj = AdductIonParser.GetAdductIonBean(adductString);
+                            var adductObj = AdductIon.GetAdductIon(adductString);
                             if (adductObj.FormatCheck) param.SearchedAdductIons.Add(adductObj);
                         }
                     }

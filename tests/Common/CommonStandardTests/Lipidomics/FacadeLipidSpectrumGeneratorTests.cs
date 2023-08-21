@@ -3,7 +3,6 @@ using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataStructure;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
-using CompMs.Common.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
@@ -20,15 +19,15 @@ namespace CompMs.Common.Lipidomics.Tests
             generators.Add(LbmClass.PE, MockSpectrumGenerator.Create(LbmClass.PE, "[M+H]+", 100d));
             generators.Add(LbmClass.FA, MockSpectrumGenerator.Create(LbmClass.FA, "[M+HCOO]-", 100d));
 
-            Assert.IsTrue(generators.CanGenerate(new MockLipid(LbmClass.PC), AdductIonParser.GetAdductIonBean("[M+H]+")));
-            Assert.IsTrue(generators.CanGenerate(new MockLipid(LbmClass.PC), AdductIonParser.GetAdductIonBean("[M+Na]+")));
-            Assert.IsTrue(generators.CanGenerate(new MockLipid(LbmClass.PE), AdductIonParser.GetAdductIonBean("[M+H]+")));
-            Assert.IsTrue(generators.CanGenerate(new MockLipid(LbmClass.FA), AdductIonParser.GetAdductIonBean("[M+HCOO]-")));
+            Assert.IsTrue(generators.CanGenerate(new MockLipid(LbmClass.PC), AdductIon.GetAdductIon("[M+H]+")));
+            Assert.IsTrue(generators.CanGenerate(new MockLipid(LbmClass.PC), AdductIon.GetAdductIon("[M+Na]+")));
+            Assert.IsTrue(generators.CanGenerate(new MockLipid(LbmClass.PE), AdductIon.GetAdductIon("[M+H]+")));
+            Assert.IsTrue(generators.CanGenerate(new MockLipid(LbmClass.FA), AdductIon.GetAdductIon("[M+HCOO]-")));
 
-            Assert.IsFalse(generators.CanGenerate(new MockLipid(LbmClass.PC), AdductIonParser.GetAdductIonBean("[M-H]-")));
-            Assert.IsFalse(generators.CanGenerate(new MockLipid(LbmClass.PG), AdductIonParser.GetAdductIonBean("[M+Na]+")));
-            Assert.IsFalse(generators.CanGenerate(new MockLipid(LbmClass.PE), AdductIonParser.GetAdductIonBean("[M+Na]+")));
-            Assert.IsFalse(generators.CanGenerate(new MockLipid(LbmClass.OxFA), AdductIonParser.GetAdductIonBean("[M+HCOO]-")));
+            Assert.IsFalse(generators.CanGenerate(new MockLipid(LbmClass.PC), AdductIon.GetAdductIon("[M-H]-")));
+            Assert.IsFalse(generators.CanGenerate(new MockLipid(LbmClass.PG), AdductIon.GetAdductIon("[M+Na]+")));
+            Assert.IsFalse(generators.CanGenerate(new MockLipid(LbmClass.PE), AdductIon.GetAdductIon("[M+Na]+")));
+            Assert.IsFalse(generators.CanGenerate(new MockLipid(LbmClass.OxFA), AdductIon.GetAdductIon("[M+HCOO]-")));
         }
 
         [TestMethod()]
@@ -39,13 +38,13 @@ namespace CompMs.Common.Lipidomics.Tests
             generators.Add(LbmClass.PE, MockSpectrumGenerator.Create(LbmClass.PE, "[M+H]+", 300d));
             generators.Add(LbmClass.FA, MockSpectrumGenerator.Create(LbmClass.FA, "[M+HCOO]-", 400d));
 
-            var actual = new MockLipid(LbmClass.PC).GenerateSpectrum(generators, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var actual = new MockLipid(LbmClass.PC).GenerateSpectrum(generators, AdductIon.GetAdductIon("[M+H]+"));
             Assert.AreEqual(100, actual.Spectrum[0].Intensity);
-            actual = new MockLipid(LbmClass.PC).GenerateSpectrum(generators, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+            actual = new MockLipid(LbmClass.PC).GenerateSpectrum(generators, AdductIon.GetAdductIon("[M+Na]+"));
             Assert.AreEqual(200, actual.Spectrum[0].Intensity);
-            actual = new MockLipid(LbmClass.PE).GenerateSpectrum(generators, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            actual = new MockLipid(LbmClass.PE).GenerateSpectrum(generators, AdductIon.GetAdductIon("[M+H]+"));
             Assert.AreEqual(300, actual.Spectrum[0].Intensity);
-            actual = new MockLipid(LbmClass.FA).GenerateSpectrum(generators, AdductIonParser.GetAdductIonBean("[M+HCOO]-"));
+            actual = new MockLipid(LbmClass.FA).GenerateSpectrum(generators, AdductIon.GetAdductIon("[M+HCOO]-"));
             Assert.AreEqual(400, actual.Spectrum[0].Intensity);
         }
     }

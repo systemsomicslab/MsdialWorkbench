@@ -1,4 +1,5 @@
-﻿using CompMs.MsdialCore.Algorithm.Annotation;
+﻿using CompMs.Common.Interfaces;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings.Extensions;
 using System;
@@ -18,9 +19,71 @@ namespace CompMs.App.Msdial.Model.Search
         private readonly Dictionary<ICollectionView, CompositeDisposable> _viewToDisposables = new Dictionary<ICollectionView, CompositeDisposable>();
         private bool _disposedValue;
 
-        public void AttachFilter(ICollectionView view, PeakFilterModel peakFilterModel, PeakSpotTagSearchQueryBuilderModel tagSearchQueryBuilder, IMatchResultEvaluator<T> evaluator) {
-            var pred = CreateFilter(peakFilterModel, evaluator, tagSearchQueryBuilder);
+        public PeakSpotFiltering(FilterEnableStatus status) {
+            var valueFilterManagers = new List<ValueFilterManager<T>>();
+            if ((status & FilterEnableStatus.Mz) != FilterEnableStatus.None) {
+                var MzFilterModel = new ValueFilterModel("m/z range", 0d, 1d);
+                valueFilterManagers.Add(new ValueFilterManager<T>(MzFilterModel, FilterEnableStatus.Mz, obj => ((ISpectrumPeak)obj)?.Mass ?? 0d));
+            }
+            if ((status & FilterEnableStatus.Rt) != FilterEnableStatus.None) {
+                var RtFilterModel = new ValueFilterModel("Retention time", 0d, 1d);
+                valueFilterManagers.Add(new ValueFilterManager<T>(RtFilterModel, FilterEnableStatus.Rt, obj => ((IChromatogramPeak)obj)?.ChromXs.RT.Value ?? 0d));
+            }
+            if ((status & FilterEnableStatus.Dt) != FilterEnableStatus.None) {
+                var DtFilterModel = new ValueFilterModel("Mobility", 0d, 1d);
+                valueFilterManagers.Add(new ValueFilterManager<T>(DtFilterModel, FilterEnableStatus.Dt, obj => ((IChromatogramPeak)obj)?.ChromXs.Drift.Value ?? 0d));
+            }
+            var keywordFilterManagers = new List<KeywordFilterManager<T>>();
+            if ((status & FilterEnableStatus.Metabolite) != FilterEnableStatus.None) {
+                var MetaboliteFilterModel = new KeywordFilterModel("Name filter");
+                keywordFilterManagers.Add(new KeywordFilterManager<T>(MetaboliteFilterModel, FilterEnableStatus.Metabolite, obj => ((IMoleculeProperty)obj).Name));
+            }
+            if ((status & FilterEnableStatus.Protein) != FilterEnableStatus.None) {
+                var ProteinFilterModel = new KeywordFilterModel("Protein filter", KeywordFilteringType.KeepIfWordIsNull);
+                keywordFilterManagers.Add(new KeywordFilterManager<T>(ProteinFilterModel, FilterEnableStatus.Protein, obj => ((IFilterable)obj).Protein));
+            }
+            if ((status & FilterEnableStatus.Ontology) != FilterEnableStatus.None) {
+                var OntologyFilterModel = new KeywordFilterModel("Ontology filter", KeywordFilteringType.ExactMatch);
+                keywordFilterManagers.Add(new KeywordFilterManager<T>(OntologyFilterModel, FilterEnableStatus.Ontology, obj => ((IMoleculeProperty)obj).Ontology));
+            }
+            if ((status & FilterEnableStatus.Adduct) != FilterEnableStatus.None) {
+                var AdductFilterModel = new KeywordFilterModel("Adduct filter", KeywordFilteringType.KeepIfWordIsNull);
+                keywordFilterManagers.Add(new KeywordFilterManager<T>(AdductFilterModel, FilterEnableStatus.Adduct, obj => ((IFilterable)obj).AdductType.AdductIonName));
+            }
+            if ((status & FilterEnableStatus.Comment) != FilterEnableStatus.None) {
+                var CommentFilterModel = new KeywordFilterModel("Comment filter");
+                keywordFilterManagers.Add(new KeywordFilterManager<T>(CommentFilterModel, FilterEnableStatus.Comment, obj => ((IFilterable)obj).Comment));
+            }
+            var amplitudeFilterModel = new ValueFilterModel("Amplitude filter", 0d, 1d);
+            var tagSearchQueryBuilder = new PeakSpotTagSearchQueryBuilderModel();
+
+            ValueFilterManagers = valueFilterManagers;
+            KeywordFilterManagers = keywordFilterManagers;
+            AmplitudeFilterModel = amplitudeFilterModel;
+            TagSearchQueryBuilder = tagSearchQueryBuilder;
+        }
+
+        public List<ValueFilterManager<T>> ValueFilterManagers { get; }
+        public List<KeywordFilterManager<T>> KeywordFilterManagers { get; }
+        public ValueFilterModel AmplitudeFilterModel { get; }
+        public PeakSpotTagSearchQueryBuilderModel TagSearchQueryBuilder { get; }
+
+        public PeakSpotFilter CreateFilter(PeakFilterModel peakFilterModel, IMatchResultEvaluator<T> evaluator, FilterEnableStatus status) {
+            return new PeakSpotFilter(this, peakFilterModel, evaluator, status);
+        }
+
+        public void AttachFilter(ICollectionView view, PeakFilterModel peakFilterModel, IMatchResultEvaluator<T> evaluator, FilterEnableStatus status) {
+            var pred = CreateFilter(peakFilterModel, evaluator, TagSearchQueryBuilder);
             AttachFilterCore(pred.Invoke, view);
+            if ((status & FilterEnableStatus.Amplitude) != FilterEnableStatus.None) {
+                AttachFilter(AmplitudeFilterModel, obj => ((IFilterable)obj)?.RelativeAmplitudeValue ?? 0d, view);
+            }
+            foreach (var valueFilterManager in ValueFilterManagers) {
+                valueFilterManager.TryAttachFilter(this, view, status);
+            }
+            foreach (var keywordFilterManager in KeywordFilterManagers) {
+                keywordFilterManager.TryAttachFilter(this, view, status);
+            }
         }
 
         public void AttachFilter(ValueFilterModel filterModel, Func<T, double> convert, ICollectionView view) {
@@ -78,6 +141,9 @@ namespace CompMs.App.Msdial.Model.Search
         private void Dispose(bool disposing) {
             if (!_disposedValue) {
                 if (disposing) {
+                    foreach (var manager in KeywordFilterManagers) {
+                        manager.Dispose();
+                    }
                 }
                 var views = _viewToFilterMethods.Keys.ToArray();
                 foreach (var view in views) {
@@ -85,6 +151,8 @@ namespace CompMs.App.Msdial.Model.Search
                 }
                 _viewToFilterMethods.Clear();
                 _viewToDisposables.Clear();
+                ValueFilterManagers.Clear();
+                KeywordFilterManagers.Clear();
                 _disposedValue = true;
             }
         }
@@ -154,5 +222,36 @@ namespace CompMs.App.Msdial.Model.Search
                 _disposables.Dispose();
             }
         }
+
+        public sealed class PeakSpotFilter {
+            private readonly IMatchResultEvaluator<T> _evaluator;
+            private readonly FilterEnableStatus _status;
+            private readonly PeakFilterModel _peakFilterModel;
+            private readonly PeakSpotFiltering<T> _peakSpotFiltering;
+
+            public PeakSpotFilter(PeakSpotFiltering<T> peakSpotFiltering, PeakFilterModel peakFilterModel, IMatchResultEvaluator<T> evaluator, FilterEnableStatus status) {
+                _evaluator = evaluator;
+                _status = status;
+                _peakFilterModel = peakFilterModel;
+                _peakSpotFiltering = peakSpotFiltering;
+            }
+
+            public IEnumerable<T> Filter(IEnumerable<T> peaks) {
+                peaks = peaks.Where(p => _peakFilterModel.PeakFilter(p, _evaluator));
+                var query = _peakSpotFiltering.TagSearchQueryBuilder.CreateQuery();
+                peaks = peaks.Where(p => p.TagCollection.IsSelected(query));
+
+                if ((_status & FilterEnableStatus.Amplitude) != FilterEnableStatus.None) {
+                    peaks = peaks.Where(p => _peakSpotFiltering.AmplitudeFilterModel.Contains(p.RelativeAmplitudeValue));
+                }
+                foreach (var valueFilterManager in _peakSpotFiltering.ValueFilterManagers) {
+                    peaks = valueFilterManager.Apply(peaks, _status);
+                }
+                foreach (var keywordFilterManager in _peakSpotFiltering.KeywordFilterManagers) {
+                    peaks = keywordFilterManager.Apply(peaks, _status);
+                }
+                return peaks;
+            }
+        } 
     }
 }

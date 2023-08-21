@@ -1,7 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
-using System.Linq;
 using CompMs.Common.Parser;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
 
 namespace CompMs.Common.Lipidomics.Tests
 {
@@ -17,7 +18,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.DG, 666.5223253, new PositionLevelChains(acyl1, acyl2));
 
             var generator = new DGSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -151,7 +152,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.DG, 666.5223253, new PositionLevelChains(acyl1, acyl2));
 
             var generator = new DGSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+NH4]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+NH4]+"));
 
             var expects = new[]
             {
@@ -286,7 +287,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.DG, 666.5223253, new PositionLevelChains(acyl1, acyl2));
 
             var generator = new DGSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+Na]+"));
 
             var expects = new[]
             {
@@ -421,7 +422,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.TG, 856.7519909, new PositionLevelChains(acyl1, acyl2, acyl3));
 
             var generator = new TGSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -550,7 +551,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.TG, 856.7519909, new PositionLevelChains(acyl1, acyl2, acyl3));
 
             var generator = new TGSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+NH4]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+NH4]+"));
 
             var expects = new[]
             {
@@ -680,7 +681,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.TG, 856.7519909, new PositionLevelChains(acyl1, acyl2, acyl3));
 
             var generator = new TGSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+Na]+"));
 
             var expects = new[]
             {
@@ -807,7 +808,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.BMP, 774.5410857, new PositionLevelChains(acyl1, acyl2));
 
             var generator = new BMPSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -892,7 +893,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.BMP, 774.5410857, new PositionLevelChains(acyl1, acyl2));
 
             var generator = new BMPSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+NH4]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+NH4]+"));
 
             var expects = new[]
             {
@@ -977,7 +978,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.BMP, 774.5410857, new PositionLevelChains(acyl1, acyl2));
 
             var generator = new BMPSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+Na]+"));
 
             var expects = new[]
             {
@@ -1062,7 +1063,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.DGTS, 737.61695, new PositionLevelChains(acyl1, acyl2));
 
             var generator = new DGTSSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -1166,7 +1167,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.DGTA, 737.61695, new PositionLevelChains(acyl1, acyl2));
 
             var generator = new DGTASpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -1267,7 +1268,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.LDGTS, 519.35599, new PositionLevelChains(acyl1));
 
             var generator = new LDGTSSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -1360,7 +1361,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.LDGTA, 519.35599, new PositionLevelChains(acyl1));
 
             var generator = new LDGTASpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -1450,7 +1451,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.MG, 328.2614, new PositionLevelChains(acyl1));
 
             var generator = new MGSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -1519,7 +1520,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.MG, 328.2614, new PositionLevelChains(acyl1));
 
             var generator = new MGSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+NH4]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+NH4]+"));
 
             var expects = new[]
             {
@@ -1591,7 +1592,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.CAR, 425.350509, new PositionLevelChains(acyl1));
 
             var generator = new CARSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {

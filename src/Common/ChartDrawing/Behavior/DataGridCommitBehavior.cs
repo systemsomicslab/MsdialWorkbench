@@ -34,7 +34,7 @@ namespace CompMs.Graphics.Behavior
 
         private static void DataGrid_Unloaded(object sender, RoutedEventArgs e) {
             if (sender is DataGrid grid) {
-                grid.CommitEdit();
+                grid.CommitEdit(DataGridEditingUnit.Row, true);
             }
         }
     }

@@ -49,20 +49,18 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
         }
 
         protected override List<ChromatogramPeak> GetPeaksFirst(RawSpectra rawSpectra, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
-            var mzTol = Math.Max(this.mzTol, 0.005f);
             peakWidth = Math.Max(peakWidth, 0.2f);
 
             var chromatogramRange = new ChromatogramRange(center.RT.Value - peakWidth * 1.5, center.RT.Value + peakWidth * 1.5, ChromXType.RT, ChromXUnit.Min);
-            var peaklist = rawSpectra.GetMs1ExtractedChromatogram(center.Mz.Value, mzTol, chromatogramRange);
+            var peaklist = rawSpectra.GetMs1ExtractedChromatogram(center.Mz.Value, this.mzTol, chromatogramRange);
             return peaklist.Smoothing(smoothingMethod, smoothingLevel);
         }
 
         protected override List<ChromatogramPeak> GetPeaksSecond(IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
-            var mzTol = Math.Max(this.mzTol, 0.005);
             peakWidth = Math.Max(peakWidth, 0.2f);
             var peaklist = DataAccess.GetDriftChromatogramByRtMz(
                 spectrum, (float)center.RT.Value, (float)rtTol,
-                (float)center.Mz.Value, (float)mzTol,
+                (float)center.Mz.Value, (float)this.mzTol,
                 (float)(center.Drift.Value - peakWidth * 1.5), (float)(center.Drift.Value + peakWidth * 1.5));
             return new Chromatogram(peaklist, ChromXType.Drift, ChromXUnit.Msec).Smoothing(smoothingMethod, smoothingLevel);
         }

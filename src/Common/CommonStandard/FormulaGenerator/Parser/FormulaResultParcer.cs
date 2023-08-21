@@ -2,7 +2,6 @@
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.FormulaGenerator.Function;
-using CompMs.Common.Parser;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -443,7 +442,7 @@ namespace CompMs.Common.FormulaGenerator.Parser {
             var adduct = new AnnotatedIon() { PeakType = AnnotatedIon.AnnotationType.Adduct};
             double value;
 
-            adduct.AdductIon = AdductIonParser.GetAdductIonBean(array[0]);
+            adduct.AdductIon = AdductIon.GetAdductIon(array[0]);
             if (double.TryParse(array[1], out value)) adduct.AccurateMass = value; else { error = errorValue(); return false; }
             if (double.TryParse(array[2], out value)) adduct.LinkedAccurateMass = value; else { error = errorValue(); return false; }
             
