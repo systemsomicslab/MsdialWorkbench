@@ -16,7 +16,6 @@ namespace CompMs.MsdialCore.DataObj
     {
         private readonly string _id;
         private readonly ILipidSpectrumGenerator _lipidGenerator;
-        private readonly IEqualityComparer<(ILipid, AdductIon)> _comparer;
         private readonly ConcurrentDictionary<(ILipid, AdductIon), Lazy<MoleculeMsReference>> _lipidToReference;
         private readonly List<MoleculeMsReference> _references;
         private readonly object _syncObject = new object();
@@ -34,8 +33,7 @@ namespace CompMs.MsdialCore.DataObj
                     _lipidGenerator = FacadeLipidSpectrumGenerator.EidLipidGenerator;
                     break;
             }
-            _comparer = new LipidNameAdductPairComparer();
-            _lipidToReference = new ConcurrentDictionary<(ILipid, AdductIon), Lazy<MoleculeMsReference>>(_comparer);
+            _lipidToReference = new ConcurrentDictionary<(ILipid, AdductIon), Lazy<MoleculeMsReference>>();
             _references = new List<MoleculeMsReference>();
         }
 
@@ -135,17 +133,6 @@ namespace CompMs.MsdialCore.DataObj
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
-        }
-
-        class LipidNameAdductPairComparer : IEqualityComparer<(ILipid, AdductIon)>
-        {
-            public bool Equals((ILipid, AdductIon) x, (ILipid, AdductIon) y) {
-                return Equals(x.Item1?.Name, y.Item1?.Name) && Equals(x.Item2?.AdductIonName, y.Item2?.AdductIonName);
-            }
-
-            public int GetHashCode((ILipid, AdductIon) obj) {
-                return (obj.Item1.Name, obj.Item2.AdductIonName).GetHashCode();
-            }
         }
     }
 }
