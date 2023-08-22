@@ -72,6 +72,11 @@ namespace CompMs.Common.Lipidomics
                 && DoubleBond.Equals(other.DoubleBond)
                 && Oxidized.Equals(other.Oxidized);
         }
+
+        public override int GetHashCode() {
+            const int p = 61;
+            return ((CarbonCount.GetHashCode() * p + DoubleBond.GetHashCode()) * p + Oxidized.GetHashCode()) * p;
+        }
     }
 
     public class AlkylChain : IChain
@@ -155,6 +160,11 @@ namespace CompMs.Common.Lipidomics
                 && DoubleBond.Equals(other.DoubleBond)
                 && Oxidized.Equals(other.Oxidized);
         }
+
+        public override int GetHashCode() {
+            const int p = 61;
+            return ((CarbonCount.GetHashCode() * p + DoubleBond.GetHashCode()) * p + Oxidized.GetHashCode()) * p + 1;
+        }
     }
 
     public class SphingoChain : IChain
@@ -222,6 +232,11 @@ namespace CompMs.Common.Lipidomics
                 && CarbonCount == other.CarbonCount
                 && DoubleBond.Equals(other.DoubleBond)
                 && Oxidized.Equals(other.Oxidized);
+        }
+
+        public override int GetHashCode() {
+            const int p = 61;
+            return ((CarbonCount.GetHashCode() * p + DoubleBond.GetHashCode()) * p + Oxidized.GetHashCode()) * p + 2;
         }
     }
 }

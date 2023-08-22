@@ -36,14 +36,13 @@ namespace CompMs.Common.Lipidomics
             Mass = mass;
             AnnotationLevel = GetAnnotationLevel(chains);
             Chains = chains ?? throw new System.ArgumentNullException(nameof(chains));
-            Description = chains.Description;
         }
 
         public string Name => ToString();
         public LbmClass LipidClass { get; }
         public double Mass { get; }
         public int AnnotationLevel { get; } = 1;
-        public LipidDescription Description { get; } = LipidDescription.None;
+        public LipidDescription Description => Chains.Description;
 
         public int ChainCount => Chains.CarbonCount;
         public ITotalChain Chains { get; }
@@ -88,8 +87,12 @@ namespace CompMs.Common.Lipidomics
         public bool Equals(ILipid other) {
             return LipidClass == other.LipidClass
                 && AnnotationLevel == other.AnnotationLevel
-                && Description == other.Description
                 && Chains.Equals(other.Chains);
+        }
+
+        public override int GetHashCode() {
+            const int p = 71;
+            return (Chains.GetHashCode() * p + AnnotationLevel) * p + LipidClass.GetHashCode();
         }
 
         public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {

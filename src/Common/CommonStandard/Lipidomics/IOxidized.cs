@@ -73,5 +73,9 @@ namespace CompMs.Common.Lipidomics
             return Count == other.Count && DecidedCount == other.DecidedCount &&
                 Oxidises.All(ox => other.Oxidises.Any(ox.Equals));
         }
+
+        public override int GetHashCode() {
+            return Count.GetHashCode() ^ Oxidises.Aggregate(0, (acc, x) => acc ^ x.GetHashCode());
+        }
     }
 }

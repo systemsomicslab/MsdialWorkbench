@@ -56,7 +56,8 @@ namespace CompMs.Common.Lipidomics
         bool ITotalChain.Includes(ITotalChain chains) {
             return CarbonCount == chains.CarbonCount
                 && DoubleBondCount == chains.DoubleBondCount
-                && OxidizedCount == chains.OxidizedCount;
+                && OxidizedCount == chains.OxidizedCount
+                && (chains.Description & Description) != LipidDescription.None;
         }
 
         IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator) {
@@ -101,6 +102,17 @@ namespace CompMs.Common.Lipidomics
                 && AcylChainCount == tChains.AcylChainCount
                 && AlkylChainCount == tChains.AlkylChainCount
                 && SphingoChainCount == tChains.SphingoChainCount;
+        }
+
+        public override int GetHashCode() {
+            return ChainCount.GetHashCode()
+                ^ CarbonCount.GetHashCode()
+                ^ DoubleBondCount.GetHashCode()
+                ^ OxidizedCount.GetHashCode()
+                ^ Description.GetHashCode()
+                ^ AcylChainCount.GetHashCode()
+                ^ AlkylChainCount.GetHashCode()
+                ^ SphingoChainCount.GetHashCode();
         }
 
         public TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {

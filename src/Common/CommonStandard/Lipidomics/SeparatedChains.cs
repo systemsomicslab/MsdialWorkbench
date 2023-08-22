@@ -149,6 +149,10 @@ namespace CompMs.Common.Lipidomics
             return true;
         }
 
+        public override int GetHashCode() {
+            return Description.GetHashCode() ^ _chains.Aggregate(0, (acc, x) => acc ^ x.GetHashCode());
+        }
+
         public virtual TResult Accept<TResult>(IAcyclicVisitor visitor, IAcyclicDecomposer<TResult> decomposer) {
             if (decomposer is IDecomposer<TResult, SeparatedChains> decomposer_) {
                 return decomposer_.Decompose(visitor, this);
@@ -173,6 +177,11 @@ namespace CompMs.Common.Lipidomics
             /// If position is indetermined, -1 assigned.
             /// </summary>
             public int Position { get; }
+
+            private readonly int[] _primes = new[] { 2, 3, 5, 7, 11, 13, 17, };
+            public override int GetHashCode() {
+                return Chain.GetHashCode() * (Position >= 0 && Position < 7 ? _primes[Position] : 1);
+            }
         }
 
         class GenerateChain {

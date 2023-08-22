@@ -61,7 +61,7 @@ namespace CompMs.Common.Lipidomics
         }
 
         public override int GetHashCode() {
-            return (Position, State).GetHashCode();
+            return Position.GetHashCode() + State.GetHashCode() * 31;
         }
 
         public bool Includes(IDoubleBondInfo info) {

@@ -91,5 +91,9 @@ namespace CompMs.Common.Lipidomics
             return Count == other.Count && DecidedCount == other.DecidedCount
                 && Bonds.All(bond => other.Bonds.Any(bond.Equals));
         }
+
+        public override int GetHashCode() {
+            return Count.GetHashCode() ^ Bonds.Aggregate(0, (acc, x) => acc ^ x.GetHashCode());
+        }
     }
 }
