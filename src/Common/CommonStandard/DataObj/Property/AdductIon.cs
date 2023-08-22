@@ -146,6 +146,12 @@ namespace CompMs.Common.DataObj.Property
             public AdductIons() {
                 _dictionary = new ConcurrentDictionary<string, AdductIon>();
                 _dictionary.TryAdd(Default.AdductIonName, Default);
+                var hac = GetAdductIonCore("[M+CH3COO]-");
+                _dictionary.TryAdd("[M+CH3COO]-", hac);
+                _dictionary.TryAdd("[M+Hac-H]-", hac);
+                var fa = GetAdductIonCore("[M+HCOO]-");
+                _dictionary.TryAdd("[M+HCOO]-", fa);
+                _dictionary.TryAdd("[M+FA-H]-", fa);
             }
 
             public AdductIon GetOrAdd(string adduct) {
