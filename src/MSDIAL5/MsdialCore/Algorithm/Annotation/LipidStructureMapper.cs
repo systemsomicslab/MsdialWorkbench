@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.DataObj.Result;
 using CompMs.Common.Lipidomics;
 using System.Collections.Concurrent;
+using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
@@ -12,7 +13,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             if (_map.TryGetValue(result, out var lipid)) {
                 return lipid;
             }
-            var estimatedName = result.Name.Split('|')[0];
+            var estimatedName = result.Name.Split('|').LastOrDefault();
             lipid = FacadeLipidParser.Default.Parse(estimatedName);
             if (lipid is null) {
                 return null;
