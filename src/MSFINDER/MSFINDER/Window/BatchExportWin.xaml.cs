@@ -21,6 +21,7 @@ namespace Rfx.Riken.OsakaUniv
         private MainWindow mainWindow;
         private MainWindowVM mainWindowVM;
         private bool isSingleFileExport;
+        private bool isWiderTableExport;
 
         public BatchExportWin(MainWindow mainWindow, MainWindowVM mainWindowVM)
         {
@@ -29,6 +30,7 @@ namespace Rfx.Riken.OsakaUniv
             this.mainWindow = mainWindow;
             this.mainWindowVM = mainWindowVM;
             this.isSingleFileExport = true;
+            this.isWiderTableExport = true;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -66,6 +68,16 @@ namespace Rfx.Riken.OsakaUniv
 
             Mouse.OverrideCursor = null;
             this.Close();
+        }
+
+        private void RadioButton_ExportToWiderTable_Checked(object sender, RoutedEventArgs e)
+        {
+            if (this.mainWindowVM == null) return;
+            this.isWiderTableExport = true;
+        }
+        private void RadioButton_ExportToLongerTable_Checked(object sender, RoutedEventArgs e) {
+            if (this.mainWindowVM == null) return;
+            this.isWiderTableExport = false;
         }
 
         private void CheckBox_ExportToSingleFile_Checked(object sender, RoutedEventArgs e)
