@@ -18,8 +18,131 @@ namespace CompMs.App.Msdial.Model.Setting
 
         internal readonly AnalysisParamOfMsfinder parameter;
         public InternalMsfinderSettingModel(IonMode ionMode) {
+        public InternalMsfinderSettingModel(ProjectBaseParameter projectParameter, AlignmentSpectraExportGroupModel exporter, ReadOnlyReactivePropertySlim<AlignmentFileBeanModel> currentAlignmentFile)
+        {
+            this.exporter = exporter;
+            this.CurrentAlignmentFile = currentAlignmentFile;
             parameter = new AnalysisParamOfMsfinder();
-            FormulaFinderAdductIonSetting = new FormulaFinderAdductIonSettingModel(parameter, ionMode);
+            parameter.MS1PositiveAdductIonList = AdductResourceParser.GetAdductIonInformationList(IonMode.Positive);
+            parameter.MS1NegativeAdductIonList = AdductResourceParser.GetAdductIonInformationList(IonMode.Negative);
+            parameter.MS2PositiveAdductIonList = AdductResourceParser.GetAdductIonInformationList(IonMode.Positive);
+            parameter.MS2NegativeAdductIonList = AdductResourceParser.GetAdductIonInformationList(IonMode.Negative);
+            parameter.MS2PositiveAdductIonList[0].IsIncluded = true;
+            parameter.MS2NegativeAdductIonList[0].IsIncluded = true;
+            FormulaFinderAdductIonSetting = new FormulaFinderAdductIonSettingModel(parameter, projectParameter.IonMode);
+
+            massTolType = parameter.MassTolType;
+            mass1Tolerance = parameter.Mass1Tolerance;
+            mass2Tolerance = parameter.Mass2Tolerance;
+            isotopicAbundanceTolerance = parameter.IsotopicAbundanceTolerance;
+            massRangeMin = parameter.MassRangeMin;
+            massRangeMax = parameter.MassRangeMax;
+            relativeAbundanceCutOff = parameter.RelativeAbundanceCutOff;
+            solventType = parameter.SolventType;
+            retentionType = parameter.RetentionType;
+            coverRange = parameter.CoverRange;
+            isLewisAndSeniorCheck = parameter.IsLewisAndSeniorCheck;
+            isElementProbabilityCheck = parameter.IsElementProbabilityCheck;
+            isOcheck = parameter.IsOcheck;
+            isNcheck = parameter.IsNcheck;
+            isPcheck = parameter.IsPcheck;
+            isScheck = parameter.IsScheck;
+            isFcheck = parameter.IsFcheck;
+            isClCheck = parameter.IsClCheck;
+            isBrCheck = parameter.IsBrCheck;
+            isIcheck = parameter.IsIcheck;
+            isSiCheck = parameter.IsSiCheck;
+            isNitrogenRule = parameter.IsNitrogenRule;
+            formulaScoreCutOff = parameter.FormulaScoreCutOff;
+            canExcuteMS1AdductSearch = parameter.CanExcuteMS1AdductSearch;
+            canExcuteMS2AdductSearch = parameter.CanExcuteMS2AdductSearch;
+            formulaMaximumReportNumber = parameter.FormulaMaximumReportNumber;
+            isNeutralLossCheck = parameter.IsNeutralLossCheck;
+            treeDepth = parameter.TreeDepth;
+            structureScoreCutOff = parameter.StructureScoreCutOff;
+            structureMaximumReportNumber = parameter.StructureMaximumReportNumber;
+            isUserDefinedDB = parameter.IsUserDefinedDB;
+            userDefinedDbFilePath = parameter.UserDefinedDbFilePath;
+            isAllProcess = parameter.IsAllProcess;
+            isUseEiFragmentDB = parameter.IsUseEiFragmentDB;
+            tryTopNmolecularFormulaSearch = parameter.TryTopNmolecularFormulaSearch;
+            isFormulaFinder = parameter.IsFormulaFinder;
+            isStructureFinder = parameter.IsStructureFinder;
+            databaseQuery = parameter.DatabaseQuery;
+            isPubChemNeverUse = parameter.IsPubChemNeverUse;
+            isPubChemOnlyUseForNecessary = parameter.IsPubChemOnlyUseForNecessary;
+            isPubChemAllTime = parameter.IsPubChemAllTime;
+            isMinesNeverUse = parameter.IsMinesNeverUse;
+            isMinesOnlyUseForNecessary = parameter.IsMinesOnlyUseForNecessary;
+            isMinesAllTime = parameter.IsMinesAllTime;
+            cLabelMass = parameter.CLabelMass;
+            hLabelMass = parameter.HLabelMass;
+            nLabelMass = parameter.NLabelMass;
+            oLabelMass = parameter.OLabelMass;
+            pLabelMass = parameter.PLabelMass;
+            sLabelMass = parameter.SLabelMass;
+            fLabelMass = parameter.FLabelMass;
+            clLabelMass = parameter.ClLabelMass;
+            brLabelMass = parameter.BrLabelMass;
+            iLabelMass = parameter.ILabelMass;
+            siLabelMass = parameter.SiLabelMass;
+            isTmsMeoxDerivative = parameter.IsTmsMeoxDerivative;
+            minimumTmsCount = parameter.MinimumTmsCount;
+            minimumMeoxCount = parameter.MinimumMeoxCount;
+            isRunSpectralDbSearch = parameter.IsRunSpectralDbSearch;
+            isRunInSilicoFragmenterSearch = parameter.IsRunInSilicoFragmenterSearch;
+            isPrecursorOrientedSearch = parameter.IsPrecursorOrientedSearch;
+            isUseInternalExperimentalSpectralDb = parameter.IsUseInternalExperimentalSpectralDb;
+            isUseInSilicoSpectralDbForLipids = parameter.IsUseInSilicoSpectralDbForLipids;
+            isUseUserDefinedSpectralDb = parameter.IsUseUserDefinedSpectralDb;
+            userDefinedSpectralDbFilePath = parameter.UserDefinedSpectralDbFilePath;
+            lipidQueryBean = parameter.LipidQueryBean;
+            scoreCutOffForSpectralMatch = parameter.ScoreCutOffForSpectralMatch;
+            isUsePredictedRtForStructureElucidation = parameter.IsUsePredictedRtForStructureElucidation;
+            rtSmilesDictionaryFilepath = parameter.RtSmilesDictionaryFilepath;
+            coeff_RtPrediction = parameter.Coeff_RtPrediction;
+            intercept_RtPrediction = parameter.Intercept_RtPrediction;
+            rtToleranceForStructureElucidation = parameter.RtToleranceForStructureElucidation;
+            isUseRtInchikeyLibrary = parameter.IsUseRtInchikeyLibrary;
+            isUseXlogpPrediction = parameter.IsUseXlogpPrediction;
+            rtInChIKeyDictionaryFilepath = parameter.RtInChIKeyDictionaryFilepath;
+            isUseRtForFilteringCandidates = parameter.IsUseRtForFilteringCandidates;
+            isUseExperimentalRtForSpectralSearching = parameter.IsUseExperimentalRtForSpectralSearching;
+            rtToleranceForSpectralSearching = parameter.RtToleranceForSpectralSearching;
+            rtPredictionSummaryReport = parameter.RtPredictionSummaryReport;
+            fseaRelativeAbundanceCutOff = parameter.FseaRelativeAbundanceCutOff;
+            fseanonsignificantDef = parameter.FseanonsignificantDef;
+            fseaPvalueCutOff = parameter.FseaPvalueCutOff;
+            isMmnLocalCytoscape = parameter.IsMmnLocalCytoscape;
+            isMmnMsdialOutput = parameter.IsMmnMsdialOutput;
+            isMmnFormulaBioreaction = parameter.IsMmnFormulaBioreaction;
+            isMmnRetentionRestrictionUsed = parameter.IsMmnRetentionRestrictionUsed;
+            isMmnOntologySimilarityUsed = parameter.IsMmnOntologySimilarityUsed;
+            mmnMassTolerance = parameter.MmnMassTolerance;
+            mmnRelativeCutoff = parameter.MmnRelativeCutoff;
+            mmnMassSimilarityCutOff = parameter.MmnMassSimilarityCutOff;
+            mmnRtTolerance = parameter.MmnRtTolerance;
+            mmnOntologySimilarityCutOff = parameter.MmnOntologySimilarityCutOff;
+            mmnOutputFolderPath = parameter.MmnOutputFolderPath;
+            mmnRtToleranceForReaction = parameter.MmnRtToleranceForReaction;
+            isMmnSelectedFileCentricProcess = parameter.IsMmnSelectedFileCentricProcess;
+            formulaPredictionTimeOut = parameter.FormulaPredictionTimeOut;
+            structurePredictionTimeOut = parameter.StructurePredictionTimeOut;
+            mS1PositiveAdductIonList = parameter.MS1PositiveAdductIonList;
+            mS2PositiveAdductIonList = parameter.MS2PositiveAdductIonList;
+            mS1NegativeAdductIonList = parameter.MS1NegativeAdductIonList;
+            mS2NegativeAdductIonList = parameter.MS2NegativeAdductIonList;
+            ccsToleranceForStructureElucidation = parameter.CcsToleranceForStructureElucidation;
+            isUsePredictedCcsForStructureElucidation = parameter.IsUsePredictedCcsForStructureElucidation;
+            isUseCcsInchikeyAdductLibrary = parameter.IsUseCcsInchikeyAdductLibrary;
+            ccsAdductInChIKeyDictionaryFilepath = parameter.CcsAdductInChIKeyDictionaryFilepath;
+            isUseExperimentalCcsForSpectralSearching = parameter.IsUseExperimentalCcsForSpectralSearching;
+            ccsToleranceForSpectralSearching = parameter.CcsToleranceForSpectralSearching;
+            isUseCcsForFilteringCandidates = parameter.IsUseCcsForFilteringCandidates;
+            isCreateNewProject = true;
+            isUseAutoDefinedFolderName = true;
+            userDefinedProjectFolderName = "";
+            existProjectPath = projectParameter.ProjectFolderPath;
         }
 
         public void Commit()
@@ -135,6 +258,8 @@ namespace CompMs.App.Msdial.Model.Setting
 
             FormulaFinderAdductIonSetting.Commit();
         }
+
+        public ReadOnlyReactivePropertySlim<AlignmentFileBeanModel> CurrentAlignmentFile { get; }
 
         public FormulaFinderAdductIonSettingModel FormulaFinderAdductIonSetting { get;  }
         public MassToleranceType MassTolType
@@ -893,5 +1018,32 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private bool isUseCcsForFilteringCandidates;
 
+        public bool IsCreateNewProject
+        {
+            get => isCreateNewProject;
+            set => SetProperty(ref isCreateNewProject, value);
+        }
+        private bool isCreateNewProject;
+
+        public bool IsUseAutoDefinedFolderName
+        {
+            get => isUseAutoDefinedFolderName;
+            set => SetProperty(ref isUseAutoDefinedFolderName, value);
+        }
+        private bool isUseAutoDefinedFolderName;
+
+        public string UserDefinedProjectFolderName
+        {
+            get => userDefinedProjectFolderName;
+            set => SetProperty(ref userDefinedProjectFolderName, value);
+        }
+        private string userDefinedProjectFolderName;
+
+        public string ExistProjectPath
+        {
+            get => existProjectPath;
+            set => SetProperty(ref existProjectPath, value);
+        }
+        private string existProjectPath;
     }
 }
