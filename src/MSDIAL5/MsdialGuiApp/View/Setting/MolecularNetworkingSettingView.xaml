@@ -72,7 +72,7 @@
                 Select a project folder.
             </ui:ExecutableBar.ToolTip>
             <TextBox x:Name="TextBox_ExportFolderPath"
-                         Text="{Binding ExportFolderPath, UpdateSourceTrigger=PropertyChanged}"
+                         Text="{Binding ExportFolderPath.Value, UpdateSourceTrigger=PropertyChanged}"
                          VerticalContentAlignment="Center"
                          Margin="8,0"
                          TabIndex="0"/>

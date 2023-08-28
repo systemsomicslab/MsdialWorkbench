@@ -92,7 +92,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             ).SetValidateAttribute(() => MaxPrecursorDifferenceAsPercent).AddTo(Disposables);
 
             MsmsSimilarityCalc = this.model.ToReactivePropertySlimAsSynchronized(m => m.MsmsSimilarityCalc).AddTo(Disposables);
-            ExportFolderPath = this.model.ExportFolderPath;
+            ExportFolderPath = model.ToReactivePropertyAsSynchronized(m => m.ExportFolderPath, ignoreValidationErrorValue: true)
+                .SetValidateAttribute(() => ExportFolderPath).AddTo(Disposables);
             ValidateProperty(nameof(ExportFolderPath), ExportFolderPath);
 
             ObserveHasErrors = new[]
@@ -107,6 +108,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 MaxEdgeNumberPerNode.ObserveHasErrors,
                 MaxPrecursorDifference.ObserveHasErrors,
                 MaxPrecursorDifferenceAsPercent.ObserveHasErrors,
+                ExportFolderPath.ObserveHasErrors,
             }.CombineLatestValuesAreAllFalse()
             .Inverse()
             .ToReadOnlyReactivePropertySlim()
@@ -175,17 +177,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         [Required(ErrorMessage = "Please enter the folder which the results will be exported.")]
         [PathExists(ErrorMessage = "This folder does not exist.", IsDirectory = true)]
-        public string ExportFolderPath {
-            get => _exportFolderPath;
-            set {
-                if (SetProperty(ref _exportFolderPath, value)) {
-                    if (!ContainsError(nameof(ExportFolderPath))) {
-                        model.ExportFolderPath = _exportFolderPath;
-                    }
-                }
-            }
-        }
-        private string _exportFolderPath;
+        public ReactiveProperty<string> ExportFolderPath { get; }
 
         public ReactivePropertySlim<bool> IsAlignSpotViewSelected { get; }
 
@@ -202,7 +194,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             };
 
             if (fbd.ShowDialog() == Graphics.Window.DialogResult.OK) {
-                ExportFolderPath = fbd.SelectedPath;
+                ExportFolderPath.Value = fbd.SelectedPath;
             }
         }
 
