@@ -1,4 +1,4 @@
-﻿<Window x:Class="CompMs.App.Msdial.View.Setting.IntrenalMsfinderSettingView"
+﻿<Window x:Class="CompMs.App.Msdial.View.Setting.InternalMsfinderSettingView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -107,7 +107,6 @@
                                         <RadioButton Name="RadioButton_DaAsTolerance"
                                                      Content="Da"
                                                      IsChecked="{Binding MassTolType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Da}"
-                                                     d:IsChecked="True"
                                                      VerticalAlignment="Center"
                                                      Margin="0,0,15,0"/>
                                         <RadioButton Name="RadioButton_PpmAsTolerance"
@@ -553,23 +552,51 @@
                                     <StackPanel>
                                         <StackPanel Margin="10, 8" Orientation="Horizontal">
                                             <RadioButton Content="From user-library"
-                                                     IsChecked="{Binding IsUseRtInchikeyLibrary.Value}"/>
+                                                         IsChecked="{Binding IsUseRtInchikeyLibrary.Value}"
+                                                         d:IsChecked="True"/>
                                             <RadioButton Content="Calculated by XLogP based equation"
                                                      IsChecked="{Binding IsUseXlogpPrediction.Value}"
                                                      Margin="20, 0, 0, 0"/>
                                         </StackPanel>
                                         <StackPanel>
+                                            <StackPanel.Resources>
+                                                <Style TargetType="{x:Type ui:ExecutableBar}" BasedOn="{StaticResource AlignedExecutableBar}">
+                                                    <Setter Property="ButtonHeight" Value="45"/>
+                                                </Style>
+                                                <Style TargetType="{x:Type ui:LabeledContent}" x:Key="AlignedContentTemp">
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="ui:LabeledContent">
+                                                                <Grid HorizontalAlignment="Stretch">
+                                                                    
+                                                                </Grid>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </StackPanel.Resources>
                                             <GroupBox Header="User-defined InChIKey-RT text library"
                                                       IsEnabled="{Binding IsUseRtInchikeyLibrary.Value}"
                                                       BorderThickness="0"
                                                       FontStyle="Italic"
                                                       Margin="0,8,0,0">
-                                                <ui:ExecutableBar LabelWidth="200"
-                                                                  ButtonContent="Select"
-                                                                  Command="ApplicationCommands.Open"
-                                                                  CommandIsEnabled="{Binding IsUseRtInchikeyLibrary.Value}"
-                                                                  Margin="0,5,0,0">
-                                                    <ui:ExecutableBar.ToolTip>
+                                                <Grid Margin="0,8,0,0">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="210"/>
+                                                        <ColumnDefinition Width="274"/>
+                                                        <ColumnDefinition Width="60"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Label Grid.Column="0"
+                                                           Content="File path:"
+                                                           FontStyle="Italic"
+                                                           Margin="8,0,0,0"/>
+                                                    <TextBox Grid.Column="1"
+                                                             Name="TextBox_RtInChIKeyDictionaryFilepath"
+                                                             Text="{Binding RtInChIKeyDictionaryFilepath.Value}"
+                                                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
+                                                             Height="18"
+                                                             VerticalAlignment="Center">
+                                                        <TextBox.ToolTip>
                                                         <TextBlock>
                                                             File format (tab-delimited text) <LineBreak />
                                                             Header: [0] InChIKey [1] RT (min) <LineBreak />
@@ -579,27 +606,37 @@
                                                             CCCCCCCCCCCCCC-CCCCCCCCCC-C (tab) 2.6 <LineBreak />
                                                             DDDDDDDDDDDDDD-DDDDDDDDDD-D (tab) 3.3
                                                         </TextBlock>
-                                                    </ui:ExecutableBar.ToolTip>
-                                                    <ui:ExecutableBar.Label>
-                                                        <Label Content="File path:"/>
-                                                    </ui:ExecutableBar.Label>
-                                                    <TextBox Name="TextBox_RtInChIKeyDictionaryFilepath"
-                                                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
-                                                             Text="{Binding RtInChIKeyDictionaryFilepath.Value}"
-                                                             Width="300"/>
-                                                </ui:ExecutableBar>
+                                                        </TextBox.ToolTip>
+                                                    </TextBox>
+                                                    <Button Grid.Column="2"
+                                                            Name="Button_RtInChIKeyDictionaryFilepath_Browse"
+                                                            Content="Select"
+                                                            Click="Button_RtInChiKeyDictionaryFilepath_Browse_Click"
+                                                            Margin="8,0,0,0"/>
+                                                </Grid>
                                             </GroupBox>
                                             <GroupBox Header="XLogP based RT prediction and cut off setting for structure elucidation"
                                                       IsEnabled="{Binding IsUseXlogpPrediction.Value}"
                                                       BorderThickness="0"
                                                       FontStyle="Italic"
                                                       Margin="0,8,0,0">
-                                                <ui:ExecutableBar LabelWidth="200"
-                                                                  ButtonContent="Select"
-                                                                  Command="ApplicationCommands.Open"
-                                                                  CommandIsEnabled="{Binding IsUseXlogpPrediction.Value}"
-                                                                  Margin="0,8,0,0">
-                                                    <ui:ExecutableBar.ToolTip>
+                                                <Grid Margin="0,8,0,0">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="210"/>
+                                                        <ColumnDefinition Width="274"/>
+                                                        <ColumnDefinition Width="60"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Label Grid.Column="0"
+                                                           Content="File path:"
+                                                           FontStyle="Italic"
+                                                           Margin="8,0,0,0"/>
+                                                    <TextBox Grid.Column="1"
+                                                             Name="TextBox_RtSmilesDictionaryFilepath"
+                                                             Text="{Binding RtSmilesDictionaryFilepath.Value}"
+                                                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
+                                                             Height="18"
+                                                             VerticalAlignment="Center">
+                                                        <TextBox.ToolTip>
                                                         <TextBlock>
                                                             File format (tab-delimited text) <LineBreak />
                                                             Header: [0] Name [1] RT (min) [2] SMILES <LineBreak />
@@ -609,15 +646,14 @@
                                                             Compound C (tab) 2.6 (tab) CCCO <LineBreak />
                                                             Compound D (tab) 3.3 (tab) CCCCN
                                                         </TextBlock>
-                                                    </ui:ExecutableBar.ToolTip>
-                                                    <ui:ExecutableBar.Label>
-                                                        <Label Content="File path:"/>
-                                                    </ui:ExecutableBar.Label>
-                                                    <TextBox Name="TextBox_RtSmilesDictionaryFilepath"
-                                                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
-                                                             Text="{Binding RtSmilesDictionaryFilepath.Value}"
-                                                             Width="300"/>
-                                                </ui:ExecutableBar>
+                                                        </TextBox.ToolTip>
+                                                    </TextBox>
+                                                    <Button Grid.Column="2"
+                                                            Name="Button_RtSmilesDictionaryFilepath_Browse"
+                                                            Content="Select"
+                                                            Click="Button_RtSmilesDictionaryFilepath_Browse_Click"
+                                                            Margin="8,0,0,0"/>
+                                                </Grid>
                                             </GroupBox>
                                         </StackPanel>
                                     </StackPanel>
@@ -649,7 +685,7 @@
                                                  IsChecked="{Binding RetentionType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=RT}"
                                                  d:IsChecked="True"/>
                                     <RadioButton Name="RadioButton_RetentionIndex"
-                                                 Content="Retention time"
+                                                 Content="Retention index"
                                                  IsEnabled="{Binding IsUseExperimentalRtForSpectralSearching.Value}"
                                                  IsChecked="{Binding RetentionType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=RI}"
                                                  Margin="20,0,0,0"/>
@@ -692,17 +728,30 @@
                                                    AppendLabel="Ao^2"
                                                    Style="{StaticResource AlignedContent}">
                                     <TextBox IsEnabled="{Binding IsUsePredictedCcsForStructureElucidation.Value}"
-                                             Text="{Binding CcsToleranceForStructureElucidation}"/>
+                                             Text="{Binding CcsToleranceForStructureElucidation.Value}"/>
                                 </ui:LabeledContent>
-                                <Label Content="User-defined InChIKey-Adduct-CCS text library"
+                                <GroupBox Header="User-defined InChIKey-Adduct-CCS text library"
+                                                      IsEnabled="{Binding IsUsePredictedCcsForStructureElucidation.Value}"
+                                                      BorderThickness="0"
+                                                      FontStyle="Italic"
+                                                      Margin="0,8,0,0">
+                                    <Grid Margin="0,8,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="210"/>
+                                            <ColumnDefinition Width="274"/>
+                                            <ColumnDefinition Width="60"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0"
+                                                           Content="File path:"
                                        FontStyle="Italic"
-                                       Margin="0,8,0,0"/>
-                                <ui:ExecutableBar LabelWidth="200"
-                                                  ButtonContent="Select"
-                                                  Command="ApplicationCommands.Open"
-                                                  CommandIsEnabled="{Binding IsUsePredictedCcsForStructureElucidation.Value}"
-                                                  Margin="8,5,0,0">
-                                    <ui:ExecutableBar.ToolTip>
+                                                           Margin="8,0,0,0"/>
+                                        <TextBox Grid.Column="1"
+                                                             Name="TextBox_CcsAdductInChIKeyDictionaryFilepath"
+                                                             Text="{Binding CcsAdductInChIKeyDictionaryFilepath.Value}"
+                                                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
+                                                             Height="18"
+                                                             VerticalAlignment="Center">
+                                            <TextBox.ToolTip>
                                         <TextBlock>
                                             File format (tab-delimited text) <LineBreak />
                                             Header: [0] InChIKey [1] Adduct type [2] CCS <LineBreak />
@@ -712,15 +761,15 @@
                                             CCCCCCCCCCCCCC-CCCCCCCCCC-C (tab) [M+Na]+ (tab) 2.6 <LineBreak />
                                             DDDDDDDDDDDDDD-DDDDDDDDDD-D (tab) [M+H]+ (tab) 3.3
                                         </TextBlock>
-                                    </ui:ExecutableBar.ToolTip>
-                                    <ui:ExecutableBar.Label>
-                                        <Label Content="File path:"/>
-                                    </ui:ExecutableBar.Label>
-                                    <TextBox Name="TextBox_CcsAdductInChIKeyDictionaryFilepath"
-                                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
-                                             Text="{Binding CcsAdductInChIKeyDictionaryFilepath.Value}"
-                                             Width="300"/>
-                                </ui:ExecutableBar>
+                                            </TextBox.ToolTip>
+                                        </TextBox>
+                                        <Button Grid.Column="2"
+                                                Name="Button_CcsAdductInChIKeyDictionaryFilepath_Browse"
+                                                Content="Select"
+                                                Click="Button_CcsAdductInChiKeyDictionaryFilepath_Browse_Click"
+                                                Margin="8,0,0,0"/>
+                                    </Grid>
+                                </GroupBox>
                             </StackPanel>
                         </GroupBox>
                         <GroupBox Grid.Row="1" BorderThickness="0" Margin="0,5,0,0">
