@@ -93,6 +93,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
             MsmsSimilarityCalc = this.model.ToReactivePropertySlimAsSynchronized(m => m.MsmsSimilarityCalc).AddTo(Disposables);
             ExportFolderPath = this.model.ExportFolderPath;
+            ValidateProperty(nameof(ExportFolderPath), ExportFolderPath);
 
             ObserveHasErrors = new[]
             {
@@ -115,57 +116,57 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         [Required(ErrorMessage = "Required field")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0, int.MaxValue, ErrorMessage = "Tolerance should be positive value.")]
+        [Range(0d, double.MaxValue, ErrorMessage = "Tolerance should be positive value.")]
         public ReactiveProperty<string> RtTolerance { get; }
 
         [Required(ErrorMessage = "Required field")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0, int.MaxValue, ErrorMessage = "Similarity should be positive value.")]
+        [Range(0d, double.MaxValue, ErrorMessage = "Similarity should be positive value.")]
         public ReactiveProperty<string> IonCorrelationSimilarityCutoff { get; }
 
         [Required(ErrorMessage = "Required field")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0, int.MaxValue, ErrorMessage = "Similarity should be positive value.")]
+        [Range(0d, double.MaxValue, ErrorMessage = "Similarity should be positive value.")]
         public ReactiveProperty<string> SpectrumSimilarityCutOff { get; }
 
         [Required(ErrorMessage = "Required field")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0, int.MaxValue, ErrorMessage = "Cut-off value should be positive value.")]
+        [Range(0d, double.MaxValue, ErrorMessage = "Cut-off value should be positive value.")]
         public ReactiveProperty<string> RelativeAbundanceCutoff { get; }
 
         [Required(ErrorMessage = "Required field")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0, int.MaxValue, ErrorMessage = "Cut-off value should be positive value.")]
+        [Range(0d, double.MaxValue, ErrorMessage = "Cut-off value should be positive value.")]
         public ReactiveProperty<string> AbsoluteAbundanceCutoff { get; }
 
         [Required(ErrorMessage = "Required field")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0, double.MaxValue, ErrorMessage = "Tolerance should be positive value.")]
+        [Range(0d, double.MaxValue, ErrorMessage = "Tolerance should be positive value.")]
         public ReactiveProperty<string> MassTolerance { get; }
 
         [Required(ErrorMessage = "Required field")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0, int.MaxValue, ErrorMessage = "Tolerance should be positive value.")]
+        [Range(0d, double.MaxValue, ErrorMessage = "Tolerance should be positive value.")]
         public ReactivePropertySlim<bool> IsExportIonCorrelation { get; }
 
         [Required(ErrorMessage = "Required field")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0, int.MaxValue, ErrorMessage = "Peak match count should be positive value.")]
+        [Range(0d, double.MaxValue, ErrorMessage = "Peak match count should be positive value.")]
         public ReactiveProperty<string> MinimumPeakMatch { get; }
 
         [Required(ErrorMessage = "Required field")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0, int.MaxValue, ErrorMessage = "The number should be positive value.")]
+        [Range(0d, int.MaxValue, ErrorMessage = "The number should be positive value.")]
         public ReactiveProperty<string> MaxEdgeNumberPerNode { get; }
 
         [Required(ErrorMessage = "Required field")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0, int.MaxValue, ErrorMessage = "The difference value should be positive value.")]
+        [Range(0d, double.MaxValue, ErrorMessage = "The difference value should be positive value.")]
         public ReactiveProperty<string> MaxPrecursorDifference { get; }
 
         [Required(ErrorMessage = "Required field")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0, int.MaxValue, ErrorMessage = "The percent value should be positive value.")]
+        [Range(0d, double.MaxValue, ErrorMessage = "The percent value should be positive value.")]
         public ReactiveProperty<string> MaxPrecursorDifferenceAsPercent { get; }
 
         public ReactivePropertySlim<MsmsSimilarityCalc> MsmsSimilarityCalc { get; }
