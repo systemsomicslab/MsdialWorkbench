@@ -55,7 +55,13 @@ namespace Rfx.Riken.OsakaUniv
                 MessageBox.Show("Choose a folder and add the number for exporting the candidates", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            
+
+            if (RadioButton_LongerTable.IsChecked == true) {
+                this.isWiderTableExport = false;
+            } else if (RadioButton_WiderTable.IsChecked == true) {
+                this.isWiderTableExport = true;
+            }
+
             int number = 10;
             if (int.TryParse(this.TextBox_Number.Text, out number)){}
 

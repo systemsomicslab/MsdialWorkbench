@@ -12,14 +12,12 @@
         <RadioButton Content="Wider table" 
                      Grid.Row="0"
                      Name="RadioButton_WiderTable" 
-                     IsChecked="{Binding Path=IsWiderTable}" 
                      HorizontalAlignment="Left" 
                      VerticalAlignment="Top" 
                      VerticalContentAlignment="Center" Margin="101,13,0,0" />
         <RadioButton Content="Longer table"
                      Grid.Row="0"
                      Name="RadioButton_LongerTable" 
-                     IsChecked="{Binding Path=IsLongerTable}" 
                      HorizontalAlignment="Left" 
                      VerticalAlignment="Top" 
                      VerticalContentAlignment="Center" 
@@ -28,7 +26,7 @@
 
         <Label Content="Folder path: " HorizontalAlignment="Left" VerticalAlignment="Top" Margin="4,37,0,0" />
         <TextBox Name="TextBox_FolderPath" Width="330" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center" Margin="101,37,0,0" Grid.ColumnSpan="3" />
-        <Button Content="Browse" Click="Button_Click" Width="80" Height="25" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,37,110,0" Grid.Column="2" />
+        <Button Content="Browse" Click="Button_Click" Width="80" Height="25" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10,37,110,0" Grid.Column="2" />
         <Button Content="Export" Click="Button_Export" Width="80" Height="25" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,38,10,0" Grid.Column="2" />
 
         <CheckBox Content="Export all results in a single file" Name="CheckBox_ExportToSingleFile" IsChecked="True" Checked="CheckBox_ExportToSingleFile_Checked" Unchecked="CheckBox_ExportToSingleFile_Unchecked" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center" Margin="10,74,0,0" />
