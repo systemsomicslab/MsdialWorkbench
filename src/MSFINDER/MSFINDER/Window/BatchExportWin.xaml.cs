@@ -62,7 +62,7 @@ namespace Rfx.Riken.OsakaUniv
             Mouse.OverrideCursor = Cursors.Wait;
 
             if (this.isSingleFileExport)
-                ExportUtility.BatchExport(this.mainWindow, this.mainWindowVM, this.TextBox_FolderPath.Text, number);
+                ExportUtility.BatchExport(this.mainWindow, this.mainWindowVM, this.TextBox_FolderPath.Text, number, this.isWiderTableExport);
             else
                 ExportUtility.BatchExportForEachFile(this.mainWindow, this.mainWindowVM, this.TextBox_FolderPath.Text, number);
 

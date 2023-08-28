@@ -182,7 +182,7 @@ namespace Rfx.Riken.OsakaUniv
         }
 
     */
-        public static void BatchExport(MainWindow mainWindow, MainWindowVM mainWindowVM, string exportFolderPath, int exportNumber)
+        public static void BatchExport(MainWindow mainWindow, MainWindowVM mainWindowVM, string exportFolderPath, int exportNumber, bool isWiderTableExport)
         {
             var dt = DateTime.Now;
             var dateString = dt.Year + dt.Month + dt.Day + dt.Hour + dt.Minute;
@@ -195,7 +195,11 @@ namespace Rfx.Riken.OsakaUniv
 
             using (var sw = new StreamWriter(formulaFile, false, Encoding.ASCII))
             {
-                writeFormulaResultHeader(sw, exportNumber);
+                if (isWiderTableExport == true) {
+                    writeFormulaResultHeaderWide(sw, exportNumber);
+                } else {
+                    writeFormulaResultHeader(sw, exportNumber);
+                }
 
                 foreach (var rawfile in files)
                 {
@@ -208,13 +212,22 @@ namespace Rfx.Riken.OsakaUniv
                     if (formulaResults.Count > 0) {
                         formulaResults = formulaResults.OrderByDescending(n => n.TotalScore).ToList();
                     }
-                    writeFormulaResult(sw, rawData, formulaResults, exportNumber);
+
+                    if (isWiderTableExport == true) {
+                        writeFormulaResultWide(sw, rawData, formulaResults, exportNumber);
+                    } else {
+                        writeFormulaResult(sw, rawData, formulaResults, exportNumber);
+                    }
                 }
             }
 
             using (var sw = new StreamWriter(structureFile, false, Encoding.ASCII))
             {
-                writeStructureResultHeader(sw, exportNumber);
+                if (isWiderTableExport == true) {
+                    writeStructureResultHeaderWide(sw, exportNumber);
+                } else {
+                    writeStructureResultHeader(sw, exportNumber);
+                }
 
                 foreach (var rawfile in files)
                 {
@@ -240,10 +253,17 @@ namespace Rfx.Riken.OsakaUniv
                             sfdResults = sfdResults.OrderByDescending(n => n.TotalScore).ToList();
                         }
                     }
-                    writeStructureResult(sw, rawData, sfdResults, exportNumber);
+
+                    if (isWiderTableExport == true) {
+                        writeStructureResultWide(sw, rawData, sfdResults, exportNumber);
+                    } else {
+                        writeStructureResult(sw, rawData, sfdResults, exportNumber);
+                    }
+
                 }
             }
         }
+
 
         public static void BatchExportForEachFile(MainWindow mainWindow, MainWindowVM mainWindowVM, string exportFolderPath, int exportNumber)
         {
@@ -399,6 +419,32 @@ namespace Rfx.Riken.OsakaUniv
             }            
         }
 
+        private static void writeFormulaResultWide(StreamWriter sw, RawData rawData, List<FormulaResult> formulaResults,
+            int count)
+        {
+            var filepath = rawData.RawdataFilePath;
+            var filename = System.IO.Path.GetFileNameWithoutExtension(rawData.RawdataFilePath);
+
+            sw.Write(filepath + "\t");
+            sw.Write(filename + "\t");
+            sw.Write(rawData.Name + "\t");
+            sw.Write(rawData.Ms1PeakNumber + "\t");
+            sw.Write(rawData.Ms2PeakNumber + "\t");
+            sw.Write(rawData.PrecursorMz + "\t");
+            sw.Write(rawData.PrecursorType + "\t");
+
+            for (int i = 0; i < count; i++)
+            {
+                if (formulaResults.Count - 1 < i)
+                    sw.Write("" + "\t" + "" + "\t" + "" + "\t" + "" + "\t" + "" + "\t");
+                else
+                    sw.Write(formulaResults[i].Formula.FormulaString + "\t" + formulaResults[i].Formula.Mass + "\t" +
+                             formulaResults[i].MassDiff + "\t" + formulaResults[i].TotalScore + "\t" +
+                             formulaResults[i].ResourceNames + "\t");
+            }
+            sw.WriteLine();
+        }
+
         private static void writeStructureResult(StreamWriter sw, RawData rawData, List<FragmenterResult> sfdResults, int count)
         {
             var filepath = rawData.RawdataFilePath;
@@ -429,6 +475,31 @@ namespace Rfx.Riken.OsakaUniv
             }
         }
 
+        private static void writeStructureResultWide(StreamWriter sw, RawData rawData, List<FragmenterResult> sfdResults, int count)
+        {
+            var filepath = rawData.RawdataFilePath;
+            var filename = System.IO.Path.GetFileNameWithoutExtension(rawData.RawdataFilePath);
+
+            sw.Write(filepath + "\t");
+            sw.Write(filename + "\t");
+            sw.Write(rawData.Name + "\t");
+            sw.Write(rawData.Ms1PeakNumber + "\t");
+            sw.Write(rawData.Ms2PeakNumber + "\t");
+            sw.Write(rawData.PrecursorMz + "\t");
+            sw.Write(rawData.PrecursorType + "\t");
+
+            for (int i = 0; i < count; i++) {
+                if (sfdResults.Count - 1 < i)
+                    sw.Write("" + "\t" + "" + "\t" + "" + "\t" + "" + "\t" + "" + "\t" + "" + "\t" + "" + "\t");
+                else if (sfdResults[i].Title == null || sfdResults[i].Title == string.Empty)
+                    sw.Write("" + "\t" + "" + "\t" + "" + "\t" + "" + "\t" + "" + "\t" + "" + "\t" + "" + "\t");
+                else
+                    sw.Write(sfdResults[i].Title + "\t" + sfdResults[i].TotalScore + "\t" + sfdResults[i].Resources + "\t" +
+                             sfdResults[i].Formula + "\t" + sfdResults[i].Ontology + "\t" + sfdResults[i].Inchikey + "\t" + sfdResults[i].Smiles + "\t");
+            }
+            sw.WriteLine();
+        }
+
 
         private static void writeFormulaResultHeader(StreamWriter sw, int count)
         {
@@ -446,6 +517,22 @@ namespace Rfx.Riken.OsakaUniv
             sw.Write("Formula score\t");
             sw.Write("Databases");
             
+            sw.WriteLine();
+        }
+
+        private static void writeFormulaResultHeaderWide(StreamWriter sw, int count)
+        {
+            sw.Write("File path\t");
+            sw.Write("File name\t");
+            sw.Write("Title\t");
+            sw.Write("MS1 count\t");
+            sw.Write("MSMS count\t");
+            sw.Write("Precursor mz\t");
+            sw.Write("Precursor type\t");
+
+            for (int i = 1; i <= count; i++)
+                sw.Write("Formula rank " + i.ToString() + "\t" + "Theoretical mass" + "\t" + "Mass error" + "\t" + "Formula score" + "\t" + "Databases" + "\t");
+
             sw.WriteLine();
         }
 
@@ -469,5 +556,23 @@ namespace Rfx.Riken.OsakaUniv
 
             sw.WriteLine();
         }
+
+        private static void writeStructureResultHeaderWide(StreamWriter sw, int count) {
+            sw.Write("File path\t");
+            sw.Write("File name\t");
+            sw.Write("Title\t");
+            sw.Write("MS1 count\t");
+            sw.Write("MSMS count\t");
+            sw.Write("Precursor mz\t");
+            sw.Write("Precursor type\t");
+
+            for (int i = 1; i <= count; i++)
+                sw.Write(string.Format("Structure rank {0}\tTotal score {0}\tDatabases {0}\tFormula {0}\tOntology {0}\tInChIKey {0}\tSMILES {0}\t", i));
+
+            sw.WriteLine();
+        }
+
+
+
     }
 }
