@@ -103,7 +103,7 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<InternalMsfinderSettingViewModel>()
                 .Subscribe(ShowInternalMsfinderSettingView);
             broker.ToObservable<FormulaFinderAdductIonSettingViewModel>()
-                .Subscribe(ShowChildDialog<Window>);
+                .Subscribe(ShowChildDialog<FormulaFinderAdductIonSettingView>);
 #if RELEASE
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
 #elif DEBUG
@@ -369,7 +369,7 @@ namespace CompMs.App.Msdial.View.Core
         private void ShowInternalMsfinderSettingView(InternalMsfinderSettingViewModel vm) {
             Dispatcher.Invoke(() =>
             {
-                var dialog = new IntrenalMsfinderSettingView
+                var dialog = new InternalMsfinderSettingView
                 {
                     DataContext = vm,
                     Owner = this,

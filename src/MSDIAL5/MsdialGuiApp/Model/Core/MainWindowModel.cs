@@ -38,7 +38,7 @@ namespace CompMs.App.Msdial.Model.Core
             _previousProjects = _settings.PreviousProjects;
             PreviousProjects = _previousProjects.AsReadOnly();
 
-            InternalMsfinderSettingModel = new InternalMsfinderSettingModel(IonMode.Positive);
+            //InternalMsfinderSettingModel = new InternalMsfinderSettingModel(IonMode.Negative);
         }
 
         public InternalMsfinderSettingModel InternalMsfinderSettingModel { get; }
