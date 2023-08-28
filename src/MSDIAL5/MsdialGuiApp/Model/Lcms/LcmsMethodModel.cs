@@ -114,8 +114,30 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
 
             AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, this.ObserveProperty(m => m.AlignmentFile), alignmentFileBeanModelCollection.Files, peakSpotSupplyer, storage.Parameter.DataExportParam).AddTo(Disposables);
+
+            AlignmentPeakSpotSupplyer peakSpotSupplyerForMsfinder = new AlignmentPeakSpotSupplyer(currentAlignmentResult, filter)
+            {
+                UseFilter = true,
+            };
+            var exportMatForMsfinder = new AlignmentSpectraExportGroupModel(
+                new[]
+                {
+                    ExportspectraType.deconvoluted,
+                },
+                peakSpotSupplyerForMsfinder,
+                new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter))
+                {
+                    IsSelected = true,
+                })
+            {
+                ExportIndividually = true,
+            };
+
+            var currentAlignmentFile = this.ObserveProperty(m => m.AlignmentFile).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            InternalMsfinderSettingModel = new InternalMsfinderSettingModel(storage.Parameter.ProjectParam, exportMatForMsfinder, currentAlignmentFile);
         }
 
+        public InternalMsfinderSettingModel InternalMsfinderSettingModel { get; }
         public PeakFilterModel PeakFilterModel { get; }
 
         public IObservable<bool> CanShowProteinGroupTable { get; }
