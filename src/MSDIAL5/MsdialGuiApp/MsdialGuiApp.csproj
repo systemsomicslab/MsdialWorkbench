@@ -10,14 +10,24 @@
 		<PlatformTarget>AnyCPU</PlatformTarget>
 		<Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
 		<Lbm2Url>http://prime.psc.riken.jp/compms/code/Msp20230427074147_conventional_converted_dev.lbm2</Lbm2Url>
+		<IcdUrl>http://prime.psc.riken.jp/compms/code/InchikeyClassyfireDB-VS5.icd</IcdUrl>
+		<MsdUrl>http://prime.psc.riken.jp/compms/code/MINEs-StructureDB-vs1.msd</MsdUrl>
+		<EsdUrl>http://prime.psc.riken.jp/compms/code/MsfinderStructureDB-VS15.esd</EsdUrl>
+		<EtmUrl>http://prime.psc.riken.jp/compms/code/MSMS-DBs-vs1.etm</EtmUrl>
 	</PropertyGroup>
 	<Target Name="DownloadContentFiles" BeforeTargets="Build">
 		<ItemGroup>
 			<_DeployToItem Include="$(OutputPath)\*.lbm*" />
+			<_DeployToItemIcd Include="$(OutputPath)\Resources\msfinderLibrary\*.icd" />
+			<_DeployToItemMsd Include="$(OutputPath)\Resources\msfinderLibrary\*.msd" />
+			<_DeployToItemEsd Include="$(OutputPath)\Resources\msfinderLibrary\*.esd" />
+			<_DeployToItemEtm Include="$(OutputPath)\Resources\msfinderLibrary\*.etm" />
 		</ItemGroup>
-		<DownloadFile SourceUrl="$(Lbm2Url)"
-                  DestinationFolder="$(OutputPath)"
-                  Condition="!Exists('%(_DeployToItem.FullPath)')" />
+		<DownloadFile SourceUrl="$(Lbm2Url)" DestinationFolder="$(OutputPath)" Condition="!Exists('%(_DeployToItem.FullPath)')" />
+		<DownloadFile SourceUrl="$(IcdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemIcd.FullPath)')" />
+		<DownloadFile SourceUrl="$(MsdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemMsd.FullPath)')" />
+		<DownloadFile SourceUrl="$(EsdUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemEsd.FullPath)')" />
+		<DownloadFile SourceUrl="$(EtmUrl)" DestinationFolder="$(OutputPath)\Resources\msfinderLibrary" Condition="!Exists('%(_DeployToItemEtm.FullPath)')" />
 	</Target>
 	<PropertyGroup>
 		<HighEntropyVA>false</HighEntropyVA>
@@ -100,5 +110,31 @@
 	    <Generator>SettingsSingleFileGenerator</Generator>
 	    <LastGenOutput>Settings.Designer.cs</LastGenOutput>
 	  </None>
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="Resources\msfinderLibrary\ChemOntologyDB_vs2.cho">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Resources\msfinderLibrary\EiFragmentDB_vs1.eif">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Resources\msfinderLibrary\EIMS-DBs-vs1.egm">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Resources\msfinderLibrary\MsfinderFormulaDB-VS13.efd">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Resources\msfinderLibrary\Msp20201228141756_converted.lbm2">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Resources\msfinderLibrary\NeutralLossDB_vs2.ndb">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Resources\msfinderLibrary\ProductIonLib_vs1.pid">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Resources\msfinderLibrary\UniqueFragmentLib_vs1.ufd">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 </Project>
