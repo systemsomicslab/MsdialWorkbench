@@ -23,5 +23,13 @@ namespace CompMs.App.Msdial.View.Setting
         {
             InitializeComponent();
         }
+
+        private void Run_Click(object sender, RoutedEventArgs e) {
+            Close();
+        }
+
+        private void Cancel_Click(object sender, RoutedEventArgs e) {
+            Close();
+        }
     }
 }

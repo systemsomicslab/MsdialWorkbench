@@ -6,20 +6,14 @@
         xmlns:common="clr-namespace:CompMs.Common.Enum;assembly=Common"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:CompMs.App.Msdial.View.Setting"
+        xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
+        xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+        xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
+        d:DataContext="{d:DesignInstance Type={x:Type vm:MolecularNetworkingSettingViewModel}}"
         mc:Ignorable="d"
-        Title="MolecularNetworkingSettingView" Height="450" Width="800">
+        
+        Title="Molecular spectrum networking setting" Height="595" Width="450">
 
-    <!--interaction trigers-->
-    <i:Interaction.Triggers>
-        <i:EventTrigger EventName="Loaded">
-            <i:InvokeCommandAction
-                    Command="{Binding WindowLoaded}"
-                    CommandParameter="{Binding ElementName=MolecularNetwokringSetView}"/>
-        </i:EventTrigger>
-    </i:Interaction.Triggers>
-
-    <!--Window resources-->
     <Window.Resources>
         <ControlTemplate x:Key="InputErrorTemplate">
             <DockPanel>
@@ -32,18 +26,24 @@
             <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
             <Style.Triggers>
                 <Trigger Property="Validation.HasError" Value="True">
-                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)/ErrorContent, RelativeSource={RelativeSource Self}}" />
                     <Setter Property="BorderBrush" Value="Pink" />
                 </Trigger>
             </Style.Triggers>
         </Style>
 
-        <ObjectDataProvider x:Key="SearchType" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="common:SearchType" />
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
+        <Style x:Key="ToolTipErrorStyleDataGrid" TargetType="{x:Type DataGrid}">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)/ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Pink" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
 
+        <converter:CBoolNegativeConverter x:Key="CBoolNegConverter" />
+        <converter:BooleanToEnumConverter x:Key="EnumToBooleanConverter" />
     </Window.Resources>
 
     <Grid>
@@ -54,25 +54,47 @@
             <RowDefinition Height="40"/>
             <RowDefinition Height="40"/>
             <RowDefinition Height="40"/>
-            <RowDefinition Height="70"/>
-            <RowDefinition Height="*"/>
             <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="65"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <GroupBox Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <ui:ExecutableBar Label="Export folder path:"
+                              LabelWidth="110"
+                              ButtonContent="Browse"
+                              Command="{Binding BrowseDirectoryCommand}" 
+                              ButtonWidth="72"
+                              ButtonHeight="25"
+                              Margin="12,7.5,7.5,5">
+            <ui:ExecutableBar.ToolTip>
+                Select a project folder.
+            </ui:ExecutableBar.ToolTip>
+            <TextBox x:Name="TextBox_ExportFolderPath"
+                         Text="{Binding ExportFolderPath, UpdateSourceTrigger=PropertyChanged}"
+                         VerticalContentAlignment="Center"
+                         Margin="8,0"
+                         TabIndex="0"/>
+        </ui:ExecutableBar>
+
+        <GroupBox Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid>
                 <Label Content="Search viewer: " Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0" />
                 <RadioButton Content="Peak spots" 
                      Name="RadioButton_PeakSpots" 
                      Grid.Row="0"
-                     IsChecked="{Binding Path=IsPeakSpots}" 
+                     IsChecked="{Binding Path=IsAlignSpotViewSelected.Value, Converter={StaticResource CBoolNegConverter}}" 
                      HorizontalAlignment="Left" 
                      VerticalAlignment="Center" 
                      VerticalContentAlignment="Center" Margin="100,0,0,0" />
                 <RadioButton Content="Alignment spots"
                      Name="RadioButton_AlignmentSpots" 
                      Grid.Row="0" 
-                     IsChecked="{Binding Path=IsAlignmentSpots}" 
+                     IsChecked="{Binding Path=IsAlignSpotViewSelected.Value}" 
                      HorizontalAlignment="Left" 
                      VerticalAlignment="Center" 
                      VerticalContentAlignment="Center" 
@@ -80,102 +102,109 @@
             </Grid>
         </GroupBox>
 
-        <Label Content="Mass tolerance [Da]: " Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
-        <TextBox Name="TextBox_MassTolerance" Grid.Row="1"
-                 HorizontalAlignment="Right" VerticalAlignment="Center" VerticalContentAlignment="Center" Width="120" Height="25" Margin="0,0,5,0">
-            <TextBox.Text>
-                <Binding Path="MassTolerance" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
-                    <!--<Binding.ValidationRules>
-                        <local:PositiveDoubleNumericValidation />
-                    </Binding.ValidationRules>-->
-                </Binding>
-            </TextBox.Text>
-        </TextBox>
+        <GroupBox Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid>
+                <Label Content="Method: " Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0" />
+                <RadioButton Content="Modified dot product" 
+                     Name="RadioButton_ModifiedDot" 
+                     Grid.Row="1"
+                     IsChecked="{Binding Path=MsmsSimilarityCalc.Value, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=ModDot}" 
+                     HorizontalAlignment="Left" 
+                     VerticalAlignment="Center" 
+                     VerticalContentAlignment="Center" Margin="100,0,0,0" />
+                <RadioButton Content="Bonanza score"
+                     Name="RadioButton_Bonanza" 
+                     Grid.Row="1" 
+                     IsChecked="{Binding Path=MsmsSimilarityCalc.Value, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Bonanza}" 
+                     HorizontalAlignment="Left" 
+                     VerticalAlignment="Center" 
+                     VerticalContentAlignment="Center" 
+                     Margin="260,0,0,0" />
 
-        <Label Content="Relative abundance cut off [%]:" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
-        <TextBox Name="TextBox_RelativeAbundanceCutoff" Grid.Row="2" 
-                 HorizontalAlignment="Right" VerticalAlignment="Center" VerticalContentAlignment="Center" Width="120" Height="25" Margin="0,0,5,0">
-            <TextBox.Text>
-                <Binding Path="RelativeAbundanceCutoff" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
-                    <!--<Binding.ValidationRules>
-                        <local:PositiveDoubleNumericValidation />
-                    </Binding.ValidationRules>-->
-                </Binding>
-            </TextBox.Text>
-        </TextBox>
+            </Grid>
+        </GroupBox>
 
-        <Label Content="Similarity cut off [%]:" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
-        <TextBox Name="TextBox_SimilarityCutoff" Grid.Row="3" 
-                 HorizontalAlignment="Right" VerticalAlignment="Center" VerticalContentAlignment="Center" Width="120" Height="25" Margin="0,0,5,0">
-            <TextBox.Text>
-                <Binding Path="SimilarityCutoff" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
-                    <!--<Binding.ValidationRules>
-                        <local:PositiveDoubleNumericValidation />
-                    </Binding.ValidationRules>-->
-                </Binding>
-            </TextBox.Text>
-        </TextBox>
+        <Label Content="Mass tolerance [Da]: " Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
+        <TextBox Name="TextBox_MassTolerance" Grid.Row="3"
+                 Text="{Binding MassTolerance.Value}"
+                 HorizontalAlignment="Right" VerticalAlignment="Center" 
+                 VerticalContentAlignment="Center" Width="120" Height="25" Margin="0,0,5,0" />
 
-        <Label Content="Retention time tolerance [min]:" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
-        <TextBox Name="TextBox_RtTolerance" Grid.Row="4" 
-                 HorizontalAlignment="Right" VerticalAlignment="Center" VerticalContentAlignment="Center" Width="120" Height="25" Margin="0,0,5,0">
-            <TextBox.Text>
-                <Binding Path="RtTolerance" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
-                    <!--<Binding.ValidationRules>
-                        <local:PositiveDoubleNumericValidation />
-                    </Binding.ValidationRules>-->
-                </Binding>
-            </TextBox.Text>
-        </TextBox>
 
+        <Label Content="Relative abundance cut off [%]:" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
+        <TextBox Name="TextBox_RelativeAbundanceCutoff" Grid.Row="4" 
+                 Text="{Binding RelativeAbundanceCutoff.Value}"
+                 HorizontalAlignment="Right" VerticalAlignment="Center"
+                 VerticalContentAlignment="Center" Width="120" Height="25"
+                 Margin="0,0,5,0" />
+
+        <Label Content="Absolute abundance cut off:" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
+        <TextBox Name="TextBox_AbsoluteAbundanceCutoff" Grid.Row="5" 
+                 Text="{Binding AbsoluteAbundanceCutoff.Value}"
+                 HorizontalAlignment="Right" VerticalAlignment="Center"
+                 VerticalContentAlignment="Center" Width="120" Height="25"
+                 Margin="0,0,5,0" />
+
+        <Label Content="Similarity cut off [%]:" Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
+        <TextBox Name="TextBox_SimilarityCutoff" Grid.Row="6" 
+                 Text="{Binding SpectrumSimilarityCutOff.Value}"
+                 HorizontalAlignment="Right" VerticalAlignment="Center" 
+                 VerticalContentAlignment="Center" Width="120" Height="25" Margin="0,0,5,0" />
+
+        <Label Content="Minimum peak match:" Grid.Row="7" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
+        <TextBox Name="TextBox_MinimumPeakMatch" Grid.Row="7" 
+                 Text="{Binding MinimumPeakMatch.Value}"
+                 HorizontalAlignment="Right" VerticalAlignment="Center" 
+                 VerticalContentAlignment="Center" Width="120" Height="25" Margin="0,0,5,0" />
+
+        <Label Content="Max edge number per node:" Grid.Row="8" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
+        <TextBox Name="TextBox_MaxEdgeNumberPerNode" Grid.Row="8" 
+                 Text="{Binding MaxEdgeNumberPerNode.Value}"
+                 HorizontalAlignment="Right" VerticalAlignment="Center" 
+                 VerticalContentAlignment="Center" Width="120" Height="25" Margin="0,0,5,0" />
+
+        <Label Content="Max precursor difference:" Grid.Row="9" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
+        <TextBox Name="TextBox_MaxPrecursorDifference" Grid.Row="9" 
+                 Text="{Binding MaxPrecursorDifference.Value}"
+                 HorizontalAlignment="Right" VerticalAlignment="Center" 
+                 VerticalContentAlignment="Center" Width="120" Height="25" Margin="0,0,5,0" />
+
+        <Label Content="Retention time tolerance [min]:" Grid.Row="10" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
+        <TextBox Name="TextBox_RtTolerance" Grid.Row="10" 
+                 Text="{Binding RtTolerance.Value}"
+                 HorizontalAlignment="Right" VerticalAlignment="Center" 
+                 VerticalContentAlignment="Center" Width="120" Height="25" Margin="0,0,5,0" />
+
+        
         <CheckBox Name="CheckBox_IonAbundanceCorrelation"
                   Content="Export ion abundance correlation among samples"
-                  IsChecked="{Binding Path=IsExportIonCorrelation}"
-                  Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Top"
+                  IsChecked="{Binding Path=IsExportIonCorrelation.Value}"
+                  Grid.Row="11" HorizontalAlignment="Left" VerticalAlignment="Top"
                   Margin="10,5,0,0">
             <ToolTipService.ToolTip>
                 <ToolTip Content="This option is available when the imported files are more than 6." />
             </ToolTipService.ToolTip>
         </CheckBox>
 
-        <Label Content="Similarity cut off [%]:" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,30,0,0" />
-        <TextBox Name="TextBox_IonCorrelationSimilarityCutoff" Grid.Row="5" 
-                 HorizontalAlignment="Right" VerticalAlignment="Top" VerticalContentAlignment="Center" Width="120" Height="25" Margin="0,31,5,0">
-            <TextBox.Text>
-                <Binding Path="IonCorrelationSimilarityCutoff" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
-                    <!--<Binding.ValidationRules>
-                        <local:PositiveDoubleNumericValidation />
-                    </Binding.ValidationRules>-->
-                </Binding>
-            </TextBox.Text>
-        </TextBox>
+        <Label Content="Similarity cut off [%]:" Grid.Row="11" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,30,0,0" />
+        <TextBox Name="TextBox_IonCorrelationSimilarityCutoff" Grid.Row="11" 
+                 Text="{Binding IonCorrelationSimilarityCutoff.Value}"
+                 HorizontalAlignment="Right" VerticalAlignment="Top" VerticalContentAlignment="Center"
+                 Width="120" Height="25" Margin="0,31,5,0" />
 
-
-
-
-
-        <Label Grid.Row="6" 
-               HorizontalAlignment="Left" 
+        <Label Grid.Row="12" 
+               HorizontalAlignment="Stretch" 
                Name="Label_Explanation"
-               VerticalAlignment="Top" Margin="10, 5,0,5">
-            <TextBlock>
-                1. Please set 'Firefox' as the default html viewer,
-                <LineBreak />
-                beacuse Google chrome and IE does not work well yet.
-                <LineBreak />
-                2. Owing to the limitation of local browser,
-                <LineBreak />
-                a total of 5000 edges is the maximum for showing.
-                <LineBreak />
-                Please export all of egdes from alignment result export, then
-                <LineBreak />
-                use 'Cytoscape' software for the visualization.
+               VerticalAlignment="Center" Margin="10, 5,0,5">
+            <TextBlock TextWrapping="WrapWithOverflow">
+                *The output files can be imported by cytoscape. 
             </TextBlock>
         </Label>
 
         <Button x:Name="Button_Run" Content="Run" 
+                Click="Run_Click"
                 Command="{Binding MolecularNetworkingCommand}" 
-                Grid.Row="7" 
+                Grid.Row="12" 
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
                 Height="25" 
@@ -183,9 +212,8 @@
 
         <Button x:Name="Button_Cancel" 
                 Content="Cancel" 
-                Command="{Binding Cancel}" 
-                CommandParameter="{Binding ElementName=MolecularNetwokringSetView}"
-                Grid.Row="7"
+                Click="Cancel_Click"
+                Grid.Row="12"
                 HorizontalAlignment="Right" 
                 VerticalAlignment="Center" 
                 Height="25" Width="70"

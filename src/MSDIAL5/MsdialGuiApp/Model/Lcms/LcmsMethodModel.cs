@@ -422,7 +422,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (AlignmentModel is null) {
                 return null;
             }
-            return new MolecularNetworkingSettingModel(_storage.Parameter, AlignmentFile);
+            return new MolecularNetworkingSettingModel(_storage.Parameter.MolecularSpectrumNetworkingBaseParam, AnalysisModel, AlignmentModel);
         }
 
         public MscleanrSettingModel ShowShowMscleanrFilterSettingView() {

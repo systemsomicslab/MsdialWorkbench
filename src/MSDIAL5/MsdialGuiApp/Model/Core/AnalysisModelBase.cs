@@ -1,12 +1,16 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Utility;
+using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.Common.Algorithm.Function;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -63,6 +67,29 @@ namespace CompMs.App.Msdial.Model.Core {
 
         public abstract void SearchFragment();
         public abstract void InvokeMsfinder();
+        public void RunMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
+
+            var broker = MessageBroker.Default;
+            var task = TaskNotification.Start($"Exporting MN results in {parameter.ExportFolderPath}");
+            broker.Publish(task);
+
+            var spots = Ms1Peaks;
+            var peaks = MsdecResultsReader.ReadMSDecResults(AnalysisFileModel.DeconvolutionFilePath, out _, out _);
+
+            void notify(double counter) {
+                broker.Publish(task.Progress(counter, $"Exporting MN results in {parameter.ExportFolderPath}"));
+            }
+
+            var nodes = MoleculerNetworkingBase.GetSimpleNodes(spots, peaks);
+            var edges = MoleculerNetworkingBase.GenerateEdgesBySpectralSimilarity(
+                spots, peaks, parameter.MsmsSimilarityCalc, parameter.MnMassTolerance,
+                parameter.MnAbsoluteAbundanceCutOff, parameter.MnRelativeAbundanceCutOff, parameter.MnSpectrumSimilarityCutOff,
+                parameter.MinimumPeakMatch, parameter.MaxEdgeNumberPerNode, parameter.MaxPrecursorDifference, parameter.MaxPrecursorDifferenceAsPercent, notify);
+
+            MoleculerNetworkingBase.ExportNodesEdgesFiles(parameter.ExportFolderPath, nodes, edges);
+
+            broker.Publish(task.End());
+        }
 
         public Task SaveAsync(CancellationToken token) {
             return _peakCollection.SerializeAsync(AnalysisFileModel.File, token);
@@ -86,5 +113,7 @@ namespace CompMs.App.Msdial.Model.Core {
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+
+        
     }
 }
