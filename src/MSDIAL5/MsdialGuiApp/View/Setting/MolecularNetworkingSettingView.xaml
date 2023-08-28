@@ -201,7 +201,7 @@
 
         <Button x:Name="Button_Run" Content="Run" 
                 Click="Run_Click"
-                Command="{Binding MolecularNetworkingCommand}" 
+                Command="{Binding MolecularNetworkingAsyncCommand, Mode=OneTime}" 
                 Grid.Row="12" 
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"

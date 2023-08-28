@@ -2,6 +2,7 @@
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Setting {
     internal sealed class MolecularNetworkingSettingModel : BindableBase {
@@ -143,6 +144,18 @@ namespace CompMs.App.Msdial.Model.Setting {
             else {
                 _singleFileModel.RunMoleculerNetworking(_parameter);
             }
+        }
+
+        public Task RunMolecularNetworkingAsync() {
+            return Task.Run(() => {
+                Commit();
+                if (isAlignSpotViewSelected) {
+                    _alignmentFileModel.RunMoleculerNetworking(_parameter);
+                }
+                else {
+                    _singleFileModel.RunMoleculerNetworking(_parameter);
+                }
+            });
         }
     }
 }

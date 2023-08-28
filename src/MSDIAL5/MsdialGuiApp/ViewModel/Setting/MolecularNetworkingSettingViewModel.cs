@@ -112,6 +112,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
            
+            MolecularNetworkingAsyncCommand = ObserveHasErrors.Inverse().ToAsyncReactiveCommand()
+                .WithSubscribe(model.RunMolecularNetworkingAsync).AddTo(Disposables);
         }
 
         [Required(ErrorMessage = "Required field")]
@@ -187,9 +189,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         public ReactivePropertySlim<bool> IsAlignSpotViewSelected { get; }
 
-        public DelegateCommand MolecularNetworkingCommand => molecularNetworkingCommand ?? 
-            (molecularNetworkingCommand = new DelegateCommand(model.RunMolecularNetworking, () => !HasValidationErrors)); 
-        private DelegateCommand molecularNetworkingCommand;
+        public AsyncReactiveCommand MolecularNetworkingAsyncCommand { get; }
 
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
 
