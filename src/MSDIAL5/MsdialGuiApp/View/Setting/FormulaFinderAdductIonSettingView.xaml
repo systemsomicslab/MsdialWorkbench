@@ -1,0 +1,95 @@
+﻿<Window x:Class="CompMs.App.Msdial.View.Setting.FormulaFinderAdductIonSettingView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CompMs.App.Msdial.View.Setting"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type={x:Type vm:FormulaFinderAdductIonSettingViewModel}}"
+        Title="Adduct ion setting" Height="450" Width="800">
+    <TabControl>
+        <TabItem Header="MS1">
+            <Grid IsEnabled="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <DataGrid Name="DataGrid_MS1AdductIonSetting" 
+                          ItemsSource="{Binding Path=Ms1AdductIonSettingViewModel.AdductIons}" 
+                          SelectedItem="{Binding Ms1AdductIonSettingViewModel.SelectedAdduct.Value, Mode=OneWayToSource}"
+                          CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" 
+                          CanUserSortColumns="False" SelectionUnit="FullRow" IsReadOnly="True" 
+                          HeadersVisibility="All" AutoGenerateColumns="False"
+                          Margin="8" Grid.Row="1">
+
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader" >
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Molecular species" Width="2*" Binding="{Binding AdductIonName}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Charge" Width="*" Binding="{Binding ChargeNumber}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Accurate mass [Da]" Width="2*" Binding="{Binding AdductIonAccurateMass}" IsReadOnly="True" />
+
+                        <DataGridTemplateColumn Width="80" Header="Included">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsChecked="{Binding Path=IsIncluded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                          HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                          HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </TabItem>
+        <TabItem Header="MS2">
+            <GroupBox BorderThickness="0">
+                <GroupBox.Header>
+                    <Label Content="Adduct ion setting" FontStyle="Italic"/>
+                </GroupBox.Header>
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <DataGrid Name="DataGrid_MS2AdductIonSetting" 
+                              ItemsSource="{Binding Path=Ms2AdductIonSettingViewModel.AdductIons}" 
+                              SelectedItem="{Binding Ms2AdductIonSettingViewModel.SelectedAdduct.Value, Mode=OneWayToSource}"
+                              CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" 
+                              CanUserSortColumns="False" SelectionUnit="FullRow" IsReadOnly="False" 
+                              HeadersVisibility="All" AutoGenerateColumns="False"
+                              Margin="8" Grid.Row="1">
+
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="DataGridColumnHeader" >
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Molecular species" Width="2*" Binding="{Binding AdductIonName}" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Charge" Width="*" Binding="{Binding ChargeNumber}" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Accurate mass [Da]" Width="2*" Binding="{Binding AdductIonAccurateMass}" IsReadOnly="True" />
+
+                            <DataGridTemplateColumn Width="80" Header="Included">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding Path=IsIncluded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                          HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                          HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </GroupBox>
+        </TabItem>
+    </TabControl>
+    
+</Window>
