@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace CompMs.App.Msdial.View.Setting
 {
@@ -22,6 +11,20 @@ namespace CompMs.App.Msdial.View.Setting
         public MolecularNetworkingSettingView()
         {
             InitializeComponent();
+            CommandBindings.AddRange(new[] {
+                new CommandBinding(ApplicationCommands.Open, Browse_Click),
+                new CommandBinding(ApplicationCommands.Close, Cancel_Click),
+            });
+        }
+
+        private void Browse_Click(object sender, RoutedEventArgs e) {
+            var fbd = new Graphics.Window.SelectFolderDialog {
+                Title = "Chose a export folder.",
+            };
+
+            if (fbd.ShowDialog() == Graphics.Window.DialogResult.OK) {
+                TextBox_ExportFolderPath.Text = fbd.SelectedPath;
+            }
         }
 
         private void Run_Click(object sender, RoutedEventArgs e) {

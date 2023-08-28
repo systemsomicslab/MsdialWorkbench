@@ -64,7 +64,7 @@
         <ui:ExecutableBar Label="Export folder path:"
                               LabelWidth="110"
                               ButtonContent="Browse"
-                              Command="{Binding BrowseDirectoryCommand}" 
+                              Command="ApplicationCommands.Open" 
                               ButtonWidth="72"
                               ButtonHeight="25"
                               Margin="12,7.5,7.5,5">
@@ -210,13 +210,11 @@
 
         <Button x:Name="Button_Cancel" 
                 Content="Cancel" 
-                Click="Cancel_Click"
+                Command="ApplicationCommands.Close"
                 Grid.Row="12"
                 HorizontalAlignment="Right" 
                 VerticalAlignment="Center" 
                 Height="25" Width="70"
                 Margin="5,5,5,5" />
-
-
     </Grid>
 </Window>

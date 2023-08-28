@@ -184,20 +184,5 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         public AsyncReactiveCommand MolecularNetworkingAsyncCommand { get; }
 
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
-
-        public DelegateCommand BrowseDirectoryCommand => _browseDirectoryCommand ?? (_browseDirectoryCommand = new DelegateCommand(BrowseDirectory));
-        private DelegateCommand _browseDirectoryCommand;
-
-        private void BrowseDirectory() {
-            var fbd = new Graphics.Window.SelectFolderDialog {
-                Title = "Chose a export folder.",
-            };
-
-            if (fbd.ShowDialog() == Graphics.Window.DialogResult.OK) {
-                ExportFolderPath.Value = fbd.SelectedPath;
-            }
-        }
-
-
     }
 }
