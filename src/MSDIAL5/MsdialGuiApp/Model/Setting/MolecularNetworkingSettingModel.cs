@@ -136,16 +136,6 @@ namespace CompMs.App.Msdial.Model.Setting {
             _parameter.ExportFolderPath = ExportFolderPath;
         }
 
-        public void RunMolecularNetworking() {
-            Commit();
-            if (isAlignSpotViewSelected) {
-                _alignmentFileModel.RunMoleculerNetworking(_parameter);
-            }
-            else {
-                _singleFileModel.RunMoleculerNetworking(_parameter);
-            }
-        }
-
         public Task RunMolecularNetworkingAsync() {
             return Task.Run(() => {
                 Commit();
