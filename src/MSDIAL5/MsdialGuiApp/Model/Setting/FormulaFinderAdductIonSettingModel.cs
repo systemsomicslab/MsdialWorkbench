@@ -25,9 +25,20 @@ namespace CompMs.App.Msdial.Model.Setting
         {
             this.parameter = parameter;
             this.ionMode = ionMode;
-            adductIons = AdductResourceParser.GetAdductIonInformationList(ionMode);
-            ms1adductIons = new ObservableCollection<AdductIon>(adductIons);
-            ms2adductIons = new ObservableCollection<AdductIon>(adductIons);
+            switch (ionMode)
+            {
+                case IonMode.Positive:
+                    ms1adductIons = new ObservableCollection<AdductIon>(parameter.MS1PositiveAdductIonList);
+                    ms2adductIons = new ObservableCollection<AdductIon>(parameter.MS2PositiveAdductIonList);
+                    break;
+                case IonMode.Negative:
+                    ms1adductIons = new ObservableCollection<AdductIon>(parameter.MS1NegativeAdductIonList);
+                    ms2adductIons = new ObservableCollection<AdductIon>(parameter.MS2NegativeAdductIonList);
+                    break;
+            }
+            //adductIons = AdductResourceParser.GetAdductIonInformationList(ionMode);
+            //ms1adductIons = new ObservableCollection<AdductIon>(adductIons);
+            //ms2adductIons = new ObservableCollection<AdductIon>(adductIons);
 
             Ms1AdductIonSetting = new MsfinderAdductIonSettingModel(ms1adductIons);
             Ms2AdductIonSetting = new MsfinderAdductIonSettingModel(ms2adductIons);
