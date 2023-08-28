@@ -1,9 +1,13 @@
 ﻿using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.Validator;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
@@ -430,6 +434,15 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             IsUseCcsForFilteringCandidates = model.ToReactivePropertySlimAsSynchronized(m => m.IsUseCcsForFilteringCandidates).AddTo(Disposables);
 
+            IsCreateNewProject = model.ToReactivePropertySlimAsSynchronized(m => m.IsCreateNewProject).AddTo(Disposables);
+            IsUseAutoDefinedFolderName = model.ToReactivePropertySlimAsSynchronized(m => m.IsUseAutoDefinedFolderName).AddTo(Disposables);
+
+            char[] invalidChars = System.IO.Path.GetInvalidFileNameChars();
+            UserDefinedProjectFolderName = model.ToReactivePropertyAsSynchronized(m => m.UserDefinedProjectFolderName, ignoreValidationErrorValue: true)
+                .SetValidateAttribute(() => UserDefinedProjectFolderName)
+                .SetValidateNotifyError(path => path.IndexOfAny(invalidChars) >= 0 ? "Invalid character contains." : null).AddTo(Disposables);
+            ExistProjectPath = model.ToReactivePropertyAsSynchronized(m => m.ExistProjectPath, ignoreValidationErrorValue: true).SetValidateAttribute(() => ExistProjectPath).AddTo(Disposables);
+
             //LipidQueryBean = model.ToReactivePropertyAsSynchronized(m => m.LipidQueryBean).AddTo(Disposables);
             //FseanonsignificantDef = model.ToReactivePropertyAsSynchronized(m => m.FseanonsignificantDef).AddTo(Disposables);
             //MS1PositiveAdductIonList = model.ToReactivePropertyAsSynchronized(m => m.MS1PositiveAdductIonList).AddTo(Disposables);
@@ -443,6 +456,36 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 {
                     broker.Publish(FormulaFinderAdductIonSettingViewModel);
                 });
+
+            var folderDoesNotExists = ExistProjectPath.ObserveHasErrors;
+            var loadProjectSelected = IsCreateNewProject.Inverse();
+            var loadProjectAndFolderDoesNotExists = new[]
+            {
+                loadProjectSelected,
+                folderDoesNotExists,
+            }.CombineLatestValuesAreAllTrue();
+            var createNewFolder = IsCreateNewProject;
+            var invalidUserDefinedProjectFolderName = UserDefinedProjectFolderName.ObserveHasErrors;
+            var createNewFolderAndInvalidFolderName = new[]
+            {
+                createNewFolder,
+                IsUseAutoDefinedFolderName.Inverse(),
+                invalidUserDefinedProjectFolderName,
+            }.CombineLatestValuesAreAllTrue();
+            Run = new[] {
+                model.CurrentAlignmentFile.Select(f => f != null),
+                loadProjectAndFolderDoesNotExists.Inverse(),
+                createNewFolderAndInvalidFolderName.Inverse(),
+            }.CombineLatestValuesAreAllTrue() // Commandが実行できる条件
+                .ToReactiveCommand().WithSubscribe(() =>
+                {
+                    model.Process();
+                }).AddTo(Disposables);
+            //Run = new ReactiveCommand().WithSubscribe(() => model.Process()).AddTo(Disposables);
+
+            Cancel = new ReactiveCommand().WithSubscribe(() => {
+                model.Cancel();
+            }).AddTo(Disposables);
         }
 
         private readonly InternalMsfinderSettingModel model;    
@@ -513,15 +556,15 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReactiveProperty<string> UserDefinedDbFilePath { get; }
 
-        public ReactivePropertySlim<bool> IsAllProcess { get; }
+        public ReactivePropertySlim<bool> IsAllProcess { get; set; }
 
         public ReactivePropertySlim<bool> IsUseEiFragmentDB { get; }
 
         public ReactiveProperty<string> TryTopNmolecularFormulaSearch { get; }
 
-        public ReactivePropertySlim<bool> IsFormulaFinder { get; }
+        public ReactivePropertySlim<bool> IsFormulaFinder { get; set; }
 
-        public ReactivePropertySlim<bool> IsStructureFinder { get; }
+        public ReactivePropertySlim<bool> IsStructureFinder { get; set; }
 
         // Check
         public ReactivePropertySlim<bool> Chebi { get; }
@@ -714,5 +757,16 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReactiveCommand OpenSetAdductTypeWindow { get; }
 
+        public ReactiveCommand Run { get; }
+
+        public ReactiveCommand Cancel { get; }
+
+        public ReactivePropertySlim<bool> IsCreateNewProject { get; }
+        public ReactivePropertySlim<bool> IsUseAutoDefinedFolderName { get; }
+
+        [Required(ErrorMessage = "Folder name is required.")]
+        public ReactiveProperty<string> UserDefinedProjectFolderName { get; }
+        [PathExists(ErrorMessage = "hogehoge", IsDirectory = true)]
+        public ReactiveProperty<string> ExistProjectPath { get; }
     }
 }

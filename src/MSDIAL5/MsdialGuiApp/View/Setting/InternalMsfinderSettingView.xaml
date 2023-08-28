@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:common="clr-namespace:CompMs.Common.Enum;assembly=Common"
+        xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
         xmlns:enum="clr-namespace:CompMs.Common.Enum;assembly=Common"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
@@ -16,7 +17,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-
+            <converter:CBoolNegativeConverter x:Key="InverseBool"/>
             <Style x:Key="AlignedContent" TargetType="ui:LabeledContent">
                 <Setter Property="Template">
                     <Setter.Value>
@@ -27,13 +28,12 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="100"/>
                                 </Grid.ColumnDefinitions>
-
                                 <Label Content="{TemplateBinding PrependLabel}"
-                               VerticalAlignment="Center" VerticalContentAlignment="Center"
-                               Margin="0,0,8,0"
-                               Grid.Column="0"/>
+                                       VerticalAlignment="Center" VerticalContentAlignment="Center"
+                                       Margin="0,0,8,0"
+                                       Grid.Column="0"/>
                                 <ContentPresenter VerticalAlignment="Center"
-                                          Grid.Column="1"/>
+                                                  Grid.Column="1"/>
                                 <Label Content="{TemplateBinding AppendLabel}"
                                VerticalAlignment="Center" VerticalContentAlignment="Center"
                                Grid.Column="2"/>
@@ -54,12 +54,7 @@
                 </ObjectDataProvider.MethodParameters>
             </ObjectDataProvider>
 
-            <ControlTemplate x:Key="InputErrorTemplate">
-                <DockPanel>
-                    <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
-                    <AdornedElementPlaceholder/>
-                </DockPanel>
-            </ControlTemplate>
+
 
             <Style x:Key="ReadOnlyTextBox" TargetType="TextBox">
                 <Setter Property="Background" Value="Transparent" />
@@ -77,6 +72,80 @@
                 <RowDefinition Height="40" />
             </Grid.RowDefinitions>
             <TabControl Grid.Row="0" Name="TabControl_ParameterSetting" Grid.ColumnSpan="2">
+                <TabItem Name="TabItem_BatchProcess" Header="Batch" Height="20" VerticalAlignment="Bottom">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="10,10,0,0">
+                            <CheckBox Content="Molecular formula finder" IsChecked="{Binding IsFormulaFinder.Value}" VerticalAlignment="Center"/>
+                            <CheckBox Content="Structure finder" IsChecked="{Binding IsStructureFinder.Value}" VerticalAlignment="Center" Margin="20,0,0,0" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Row="1"  Margin="10,10,0,0">
+                            <Label Content="Top N hits:"  FontStyle="Italic" VerticalAlignment="Center" Height="25" Margin="5,0,0,0"/>
+                            <TextBox Text="{Binding TryTopNmolecularFormulaSearch.Value}" VerticalAlignment="Center" Width="90" Height="25" Margin="5,0,0,0"/>
+
+                            <Label Content="(automatically applied to structure finder program)" VerticalAlignment="Center" Height="25" Margin="0,0,0,0"/>
+                        </StackPanel>
+                        <GroupBox Grid.Row="2" BorderThickness="0" Margin="0,20,0,0">
+                            <GroupBox.Header>
+                                <Label Content="Project path" FontStyle="Italic"/>
+                            </GroupBox.Header>
+                            <StackPanel Margin="8,0">
+                                <StackPanel Margin="8,0">
+                                    <RadioButton Content="Create a project"
+                                                 IsChecked="{Binding IsCreateNewProject.Value}"
+                                                 d:IsChecked="True"/>
+                                    <StackPanel Margin="20,8,0,0"
+                                                IsEnabled="{Binding IsCreateNewProject.Value}">
+                                        <CheckBox Content="Use automatically determined folder name"
+                                                  IsChecked="{Binding IsUseAutoDefinedFolderName.Value}"/>
+                                        <ui:LabeledContent PrependLabel="Folder name:"
+                                                           Margin="0,8,0,0"
+                                                           IsEnabled="{Binding IsUseAutoDefinedFolderName.Value, Converter={StaticResource InverseBool}}">
+                                            <TextBox Text="{Binding UserDefinedProjectFolderName.Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"/>
+                                        </ui:LabeledContent>
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel Margin="8,10,8,0">
+                                    <RadioButton Content="Load a project"
+                                                 IsChecked="{Binding Path=IsCreateNewProject.Value, Converter={StaticResource InverseBool}}"/>
+                                    <Grid Margin="20,8,0,0"
+                                          IsEnabled="{Binding Path=IsCreateNewProject.Value, Converter={StaticResource InverseBool}}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="210"/>
+                                            <ColumnDefinition Width="274"/>
+                                            <ColumnDefinition Width="60"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0"
+                                                           Content="File path:"
+                                                           FontStyle="Italic"
+                                                           Margin="8,0,0,0"/>
+                                        <TextBox Grid.Column="1"
+                                                 Name="TextBox_ExistProjectPath"
+                                                 Text="{Binding ExistProjectPath.Value, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
+                                                 Height="18"
+                                                 VerticalAlignment="Center">
+                                            <TextBox.ToolTip>
+                                                <TextBlock></TextBlock>
+                                            </TextBox.ToolTip>
+                                        </TextBox>
+                                        <Button Grid.Column="2"
+                                                Name="Button_ExistProjectPath_Browse"
+                                                Content="Select"
+                                                Click="Button_ExistProjectPath_Browse_Click"
+                                                Margin="8,0,0,0"/>
+                                    </Grid>
+                                </StackPanel>
+                            </StackPanel>
+
+                        </GroupBox>
+                    </Grid>
+                </TabItem>
                 <TabItem Name="TabItem_MassSpectrum" Header="Basic">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -555,8 +624,8 @@
                                                          IsChecked="{Binding IsUseRtInchikeyLibrary.Value}"
                                                          d:IsChecked="True"/>
                                             <RadioButton Content="Calculated by XLogP based equation"
-                                                     IsChecked="{Binding IsUseXlogpPrediction.Value}"
-                                                     Margin="20, 0, 0, 0"/>
+                                                         IsChecked="{Binding IsUseXlogpPrediction.Value}"
+                                                         Margin="20, 0, 0, 0"/>
                                         </StackPanel>
                                         <StackPanel>
                                             <StackPanel.Resources>
@@ -597,15 +666,15 @@
                                                              Height="18"
                                                              VerticalAlignment="Center">
                                                         <TextBox.ToolTip>
-                                                        <TextBlock>
-                                                            File format (tab-delimited text) <LineBreak />
-                                                            Header: [0] InChIKey [1] RT (min) <LineBreak />
-                                                            From second row (ex.):  <LineBreak />
-                                                            AAAAAAAAAAAAAA-AAAAAAAAAA-A (tab) 3.2 <LineBreak />
-                                                            BBBBBBBBBBBBBB-BBBBBBBBBB-B (tab) 3.5 <LineBreak />
-                                                            CCCCCCCCCCCCCC-CCCCCCCCCC-C (tab) 2.6 <LineBreak />
-                                                            DDDDDDDDDDDDDD-DDDDDDDDDD-D (tab) 3.3
-                                                        </TextBlock>
+                                                            <TextBlock>
+                                                                File format (tab-delimited text) <LineBreak />
+                                                                Header: [0] InChIKey [1] RT (min) <LineBreak />
+                                                                From second row (ex.):  <LineBreak />
+                                                                AAAAAAAAAAAAAA-AAAAAAAAAA-A (tab) 3.2 <LineBreak />
+                                                                BBBBBBBBBBBBBB-BBBBBBBBBB-B (tab) 3.5 <LineBreak />
+                                                                CCCCCCCCCCCCCC-CCCCCCCCCC-C (tab) 2.6 <LineBreak />
+                                                                DDDDDDDDDDDDDD-DDDDDDDDDD-D (tab) 3.3
+                                                            </TextBlock>
                                                         </TextBox.ToolTip>
                                                     </TextBox>
                                                     <Button Grid.Column="2"
@@ -637,15 +706,15 @@
                                                              Height="18"
                                                              VerticalAlignment="Center">
                                                         <TextBox.ToolTip>
-                                                        <TextBlock>
-                                                            File format (tab-delimited text) <LineBreak />
-                                                            Header: [0] Name [1] RT (min) [2] SMILES <LineBreak />
-                                                            From second row (ex.):  <LineBreak />
-                                                            Compound A (tab) 3.2 (tab) CCCCO <LineBreak />
-                                                            Compound B (tab) 3.5 (tab) CCOCCO <LineBreak />
-                                                            Compound C (tab) 2.6 (tab) CCCO <LineBreak />
-                                                            Compound D (tab) 3.3 (tab) CCCCN
-                                                        </TextBlock>
+                                                            <TextBlock>
+                                                                File format (tab-delimited text) <LineBreak />
+                                                                Header: [0] Name [1] RT (min) [2] SMILES <LineBreak />
+                                                                From second row (ex.):  <LineBreak />
+                                                                Compound A (tab) 3.2 (tab) CCCCO <LineBreak />
+                                                                Compound B (tab) 3.5 (tab) CCOCCO <LineBreak />
+                                                                Compound C (tab) 2.6 (tab) CCCO <LineBreak />
+                                                                Compound D (tab) 3.3 (tab) CCCCN
+                                                            </TextBlock>
                                                         </TextBox.ToolTip>
                                                     </TextBox>
                                                     <Button Grid.Column="2"
@@ -743,7 +812,7 @@
                                         </Grid.ColumnDefinitions>
                                         <Label Grid.Column="0"
                                                            Content="File path:"
-                                       FontStyle="Italic"
+                                                           FontStyle="Italic"
                                                            Margin="8,0,0,0"/>
                                         <TextBox Grid.Column="1"
                                                              Name="TextBox_CcsAdductInChIKeyDictionaryFilepath"
@@ -752,15 +821,15 @@
                                                              Height="18"
                                                              VerticalAlignment="Center">
                                             <TextBox.ToolTip>
-                                        <TextBlock>
-                                            File format (tab-delimited text) <LineBreak />
-                                            Header: [0] InChIKey [1] Adduct type [2] CCS <LineBreak />
-                                            From second row (ex.):  <LineBreak />
-                                            AAAAAAAAAAAAAA-AAAAAAAAAA-A (tab) [M+H]+ (tab) 3.2 <LineBreak />
-                                            BBBBBBBBBBBBBB-BBBBBBBBBB-B (tab) [M+NH4]+ (tab) 3.5 <LineBreak />
-                                            CCCCCCCCCCCCCC-CCCCCCCCCC-C (tab) [M+Na]+ (tab) 2.6 <LineBreak />
-                                            DDDDDDDDDDDDDD-DDDDDDDDDD-D (tab) [M+H]+ (tab) 3.3
-                                        </TextBlock>
+                                                <TextBlock>
+                                                    File format (tab-delimited text) <LineBreak />
+                                                    Header: [0] InChIKey [1] Adduct type [2] CCS <LineBreak />
+                                                    From second row (ex.):  <LineBreak />
+                                                    AAAAAAAAAAAAAA-AAAAAAAAAA-A (tab) [M+H]+ (tab) 3.2 <LineBreak />
+                                                    BBBBBBBBBBBBBB-BBBBBBBBBB-B (tab) [M+NH4]+ (tab) 3.5 <LineBreak />
+                                                    CCCCCCCCCCCCCC-CCCCCCCCCC-C (tab) [M+Na]+ (tab) 2.6 <LineBreak />
+                                                    DDDDDDDDDDDDDD-DDDDDDDDDD-D (tab) [M+H]+ (tab) 3.3
+                                                </TextBlock>
                                             </TextBox.ToolTip>
                                         </TextBox>
                                         <Button Grid.Column="2"
@@ -799,6 +868,14 @@
                     </Grid>
                 </TabItem>
             </TabControl>
+            <StackPanel Grid.Row="1"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Height="24"
+                        Margin="0,0,10,0">
+                <Button Content="Run" Command="{Binding Run}" Width="64"/>
+                <Button Content="Cancel" Click="Click_Cancel" Command="{Binding Cancel}" Width="64" Margin="10,0,0,0"/>
+            </StackPanel>
         </Grid>
     </Grid>
 </Window>
