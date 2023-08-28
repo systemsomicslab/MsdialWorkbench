@@ -66,6 +66,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             var _proteinGroupTableViewModel = new ProteinGroupTableViewModel(proteinResultContainerAsObservable).AddTo(Disposables);
             ShowProteinGroupTableCommand = model.CanShowProteinGroupTable.ToReactiveCommand().AddTo(Disposables);
             ShowProteinGroupTableCommand.Subscribe(() => broker.Publish(_proteinGroupTableViewModel)).AddTo(Disposables);
+
+            InternalMsfinderSettingViewModel = new InternalMsfinderSettingViewModel(model.InternalMsfinderSettingModel, broker).AddTo(Disposables);
+            ShowMsfinderSettingViewCommand = new ReactiveCommand().WithSubscribe(() => _broker.Publish(InternalMsfinderSettingViewModel)).AddTo(Disposables);
         }
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
@@ -179,6 +182,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 m.Search();
             }
         }
+
+        public InternalMsfinderSettingViewModel InternalMsfinderSettingViewModel { get; }
+
+        public ReactiveCommand ShowMsfinderSettingViewCommand { get; }
 
         public DelegateCommand<Window> ShowMassqlSearchSettingCommand => _massqlSearchSettingCommand ??
             (_massqlSearchSettingCommand= new DelegateCommand<Window>(MassqlSearchSettingMethod));
