@@ -188,9 +188,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private void ValidateBase(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
            
             if (omics == TargetOmics.Lipidomics) {
-                result.IsSpectrumMatch = result.WeightedDotProduct >= parameter.WeightedDotProductCutOff
+                result.IsSpectrumMatch = (result.WeightedDotProduct >= parameter.WeightedDotProductCutOff
                 || result.SimpleDotProduct >= parameter.SimpleDotProductCutOff
-                || result.ReverseDotProduct >= parameter.ReverseDotProductCutOff;
+                || result.ReverseDotProduct >= parameter.ReverseDotProductCutOff) 
+                && result.MatchedPeaksPercentage >= parameter.MatchedPeaksPercentageCutOff
+                && result.MatchedPeaksCount >= parameter.MinimumSpectrumMatch;
                 if ((reference.CompoundClass == "EtherTG" || reference.CompoundClass == "EtherDG") && result.SimpleDotProduct < parameter.SimpleDotProductCutOff) {
                     result.IsSpectrumMatch = false;
                 }

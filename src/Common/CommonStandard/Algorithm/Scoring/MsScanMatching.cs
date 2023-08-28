@@ -96,6 +96,10 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.Cer_AP:
                     return CeramideEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.HexCer_NS:
+                case LbmClass.HexCer_NDS:
+                case LbmClass.HexCer_AP:
+                case LbmClass.HexCer_HS:
+                case LbmClass.HexCer_HDS:
                     return HexCerEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.Hex2Cer:
                     return Hex2CerEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
