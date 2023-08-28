@@ -1,13 +1,7 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.CommonMVVM;
-using CompMs.MsdialLcmsApi.Parameter;
-using CompMs.Common.Algorithm.Function;
-using System;
-using System.Collections.Generic;
-using CompMs.App.Msdial.Model.Lcms;
-using CompMs.MsdialCore.Parameter;
+﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.Common.Enum;
-using CompMs.App.Msdial.Model.Core;
+using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Parameter;
 
 namespace CompMs.App.Msdial.Model.Setting {
     internal sealed class MolecularNetworkingSettingModel : BindableBase {

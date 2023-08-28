@@ -5,7 +5,6 @@ using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Parser;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
@@ -68,7 +67,6 @@ namespace CompMs.App.Msdial.Model.Core
 
             MoleculerNetworkingBase.ExportNodesEdgesFiles(parameter.ExportFolderPath, nodes, edges);
             broker.Publish(task.End());
-
         }
 
         protected readonly CompositeDisposable Disposables = new CompositeDisposable();

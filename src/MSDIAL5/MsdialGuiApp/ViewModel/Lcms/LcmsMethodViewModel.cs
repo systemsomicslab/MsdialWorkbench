@@ -1,7 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Utility;
-using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
