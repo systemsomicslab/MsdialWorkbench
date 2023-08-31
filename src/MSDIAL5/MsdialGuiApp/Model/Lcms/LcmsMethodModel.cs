@@ -419,9 +419,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public MolecularNetworkingSettingModel ShowMolecularNetworkingSettingView() {
-            if (AlignmentModel is null) {
-                return null;
-            }
             return new MolecularNetworkingSettingModel(_storage.Parameter.MolecularSpectrumNetworkingBaseParam, AnalysisModel, AlignmentModel);
         }
 

@@ -228,24 +228,15 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         private void MolecularNetworkingSettingMethod(Window owner)
         {
-            if (SelectedViewModel.Value is IAlignmentResultViewModel)
+            var m = _model.ShowMolecularNetworkingSettingView();
+            var vm = new MolecularNetworkingSettingViewModel(m);
+            var dialog = new MolecularNetworkingSettingView()
             {
-                var m = _model.ShowMolecularNetworkingSettingView();
-                var vm = new MolecularNetworkingSettingViewModel(m);
-                var dialog = new MolecularNetworkingSettingView()
-                {
-                    DataContext = vm,
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner
-                };
-                dialog.Show();
-            }
-            else
-            {
-                MessageBox.Show("Please select an alignment result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-                //Console.WriteLine("Please select an item in Alignment navigator!!");
-            }
+                DataContext = vm,
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            dialog.Show();
         }
 
         private static IReadOnlyReactiveProperty<LcmsAnalysisViewModel> ConvertToAnalysisViewModelAsObservable(
