@@ -122,7 +122,8 @@
                 <DataGridTextColumn Header="Concentaration"
                                     Binding="{Binding Path=Concentration}"
                                     Width="*"/>
-                <DataGridTemplateColumn Header="Target class" IsReadOnly="True"
+                <DataGridTemplateColumn Header="Target class"
+                                        ClipboardContentBinding="{Binding Path=TargetClass}"
                                         Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
