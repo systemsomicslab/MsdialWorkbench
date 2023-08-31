@@ -222,11 +222,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
         }
 
-        public DelegateCommand<Window> ShowMolecularNetworkingSettingCommand => _molecularNetworkingSettingCommand ??
-    (_molecularNetworkingSettingCommand = new DelegateCommand<Window>(MolecularNetworkingSettingMethod));
-        private DelegateCommand<Window> _molecularNetworkingSettingCommand;
+        public DelegateCommand ShowMolecularNetworkingSettingCommand => _molecularNetworkingSettingCommand ?? (_molecularNetworkingSettingCommand = new DelegateCommand(MolecularNetworkingSettingMethod));
+        private DelegateCommand _molecularNetworkingSettingCommand;
 
-        private void MolecularNetworkingSettingMethod(Window owner)
+        private void MolecularNetworkingSettingMethod()
         {
             var m = _model.ShowMolecularNetworkingSettingView();
             var vm = new MolecularNetworkingSettingViewModel(m);
