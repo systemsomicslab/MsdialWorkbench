@@ -22,9 +22,8 @@ namespace CompMs.Common.Algorithm.Function {
 
         public static void ExportNodesEdgesFiles(string folder, IReadOnlyList<Node> nodes, IReadOnlyList<Edge> edges) {
             var dt = DateTime.Now;
-            var dtString = dt.Year + dt.Month + dt.Day + dt.Hour + dt.Minute + ".txt";
-            var nodepath = Path.Combine(folder, "node-" + dtString);
-            var edgepath = Path.Combine(folder, "edge-" + dtString);
+            var nodepath = Path.Combine(folder, $"node-{dt:yyMMddhhmm}.txt");
+            var edgepath = Path.Combine(folder, $"edge-{dt:yyMMddhhmm}.txt");
 
             using (StreamWriter sw = new StreamWriter(nodepath, false, Encoding.ASCII)) {
 
