@@ -230,13 +230,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         {
             var m = _model.ShowMolecularNetworkingSettingView();
             var vm = new MolecularNetworkingSettingViewModel(m);
-            var dialog = new MolecularNetworkingSettingView()
-            {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            dialog.Show();
+            _broker.Publish(vm);
         }
 
         private static IReadOnlyReactiveProperty<LcmsAnalysisViewModel> ConvertToAnalysisViewModelAsObservable(
