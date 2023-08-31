@@ -3,9 +3,9 @@ using CompMs.Common.DataObj.NodeEdge;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
-using CompMs.Common.Mathematics.Basic;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -136,10 +136,11 @@ namespace CompMs.Common.Algorithm.Function {
             var counter = 0;
             var max = quries.Count;
             var node2links = new Dictionary<int, List<LinkNode>>();
-            Console.WriteLine(quries.Count);
+            Debug.WriteLine(quries.Count);
             for (int i = 0; i < quries.Count; i++) {
                 counter++;
-                Console.Write("{0} / {1}", counter, max);
+                Debug.WriteLine("{0} / {1}", counter, max);
+                report?.Invoke(counter / (double)max);
                 for (int j = i + 1; j < quries.Count; j++) {
                     var prop1 = quries[i];
                     var prop2 = quries[j];
