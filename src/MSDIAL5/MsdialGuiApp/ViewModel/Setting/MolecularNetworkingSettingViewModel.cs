@@ -110,7 +110,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             .Inverse()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
-           
+
             MolecularNetworkingAsyncCommand = ObserveHasErrors.Inverse().ToAsyncReactiveCommand()
                 .WithSubscribe(model.RunMolecularNetworkingAsync).AddTo(Disposables);
         }
@@ -178,6 +178,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         public ReactivePropertySlim<bool> IsAlignSpotViewSelected { get; }
 
+        public ReadOnlyReactivePropertySlim<bool> AvailableFileResult => _model.AvailableFileResult;
+        public ReadOnlyReactivePropertySlim<bool> AvailableAlignmentResult => _model.AvailableAlignmentResult;
         public ReadOnlyReactivePropertySlim<bool> AvailableIonEdgeExport => _model.AvailableIonEdge;
 
         public AsyncReactiveCommand MolecularNetworkingAsyncCommand { get; }

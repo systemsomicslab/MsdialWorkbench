@@ -39,6 +39,8 @@ namespace CompMs.App.Msdial.Model.Setting {
             MsmsSimilarityCalc = _parameter.MsmsSimilarityCalc;
             ExportFolderPath = _parameter.ExportFolderPath;
 
+            AvailableFileResult = currentFileModel.Select(m => m != null).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            AvailableAlignmentResult = currentAlignmentModel.Select(m => m != null).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             AvailableIonEdge = new[]
             {
                 this.ObserveProperty(m => m.IsAlignSpotViewSelected),
@@ -131,6 +133,8 @@ namespace CompMs.App.Msdial.Model.Setting {
         }
         private bool isAlignSpotViewSelected;
 
+        public ReadOnlyReactivePropertySlim<bool> AvailableFileResult { get; }
+        public ReadOnlyReactivePropertySlim<bool> AvailableAlignmentResult { get; }
         public ReadOnlyReactivePropertySlim<bool> AvailableIonEdge { get; }
 
         public void Commit() {
