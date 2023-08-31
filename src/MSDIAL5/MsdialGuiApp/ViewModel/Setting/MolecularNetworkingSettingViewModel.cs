@@ -181,6 +181,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         public ReactivePropertySlim<bool> IsAlignSpotViewSelected { get; }
 
+        public ReadOnlyReactivePropertySlim<bool> AvailableIonEdgeExport => _model.AvailableIonEdge;
+
         public AsyncReactiveCommand MolecularNetworkingAsyncCommand { get; }
 
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }

@@ -3,18 +3,20 @@ using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Setting {
     internal sealed class MolecularNetworkingSettingModel : DisposableModelBase {
 
         private readonly MolecularSpectrumNetworkingBaseParameter _parameter;
-        private readonly IReadOnlyReactiveProperty<IAnalysisModel> _singleFileModel;
-        private readonly IReadOnlyReactiveProperty<IAlignmentModel> _alignmentFileModel;
+        private readonly IReadOnlyReactiveProperty<IAnalysisModel> _currentFileModel;
+        private readonly IReadOnlyReactiveProperty<IAlignmentModel> _currentAlignmentModel;
 
-        public MolecularNetworkingSettingModel(MolecularSpectrumNetworkingBaseParameter parameter, IReadOnlyReactiveProperty<IAnalysisModel> singleFileModel, IReadOnlyReactiveProperty<IAlignmentModel> alignmentFileModel) {
-            _singleFileModel = singleFileModel;
-            _alignmentFileModel = alignmentFileModel;
+        public MolecularNetworkingSettingModel(MolecularSpectrumNetworkingBaseParameter parameter, IReadOnlyReactiveProperty<IAnalysisModel> currentFileModel, IReadOnlyReactiveProperty<IAlignmentModel> currentAlignmentModel) {
+            _currentFileModel = currentFileModel;
+            _currentAlignmentModel = currentAlignmentModel;
 
             if (parameter.MaxEdgeNumberPerNode == 0) {
                 parameter.MinimumPeakMatch = 3;
@@ -36,6 +38,13 @@ namespace CompMs.App.Msdial.Model.Setting {
             MaxPrecursorDifferenceAsPercent = _parameter.MaxPrecursorDifferenceAsPercent;
             MsmsSimilarityCalc = _parameter.MsmsSimilarityCalc;
             ExportFolderPath = _parameter.ExportFolderPath;
+
+            AvailableIonEdge = new[]
+            {
+                this.ObserveProperty(m => m.IsAlignSpotViewSelected),
+                currentAlignmentModel.Select(m => (m?.AlignmentFile.CountRawFiles ?? 0) >= 6),
+            }.CombineLatestValuesAreAllTrue()
+            .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
         public double RtTolerance {
             get => rtTolerance;
@@ -122,6 +131,8 @@ namespace CompMs.App.Msdial.Model.Setting {
         }
         private bool isAlignSpotViewSelected;
 
+        public ReadOnlyReactivePropertySlim<bool> AvailableIonEdge { get; }
+
         public void Commit() {
             _parameter.MnRtTolerance = RtTolerance;
             _parameter.MnIonCorrelationSimilarityCutOff = IonCorrelationSimilarityCutOff;
@@ -141,11 +152,11 @@ namespace CompMs.App.Msdial.Model.Setting {
         public Task RunMolecularNetworkingAsync() {
             return Task.Run(() => {
                 Commit();
-                if (isAlignSpotViewSelected) {
-                    _alignmentFileModel.Value?.RunMoleculerNetworking(_parameter);
+                if (IsAlignSpotViewSelected) {
+                    _currentAlignmentModel.Value?.RunMoleculerNetworking(_parameter);
                 }
                 else {
-                    _singleFileModel.Value?.RunMoleculerNetworking(_parameter);
+                    _currentFileModel.Value?.RunMoleculerNetworking(_parameter);
                 }
             });
         }

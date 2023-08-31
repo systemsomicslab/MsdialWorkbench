@@ -177,8 +177,10 @@
         <CheckBox Name="CheckBox_IonAbundanceCorrelation"
                   Content="Export ion abundance correlation among samples"
                   IsChecked="{Binding Path=IsExportIonCorrelation.Value}"
+                  IsEnabled="{Binding Path=AvailableIonEdgeExport.Value, Mode=OneWay}"
                   Grid.Row="11" HorizontalAlignment="Left" VerticalAlignment="Top"
-                  Margin="10,5,0,0">
+                  Margin="10,5,0,0"
+                  ToolTipService.ShowOnDisabled="True">
             <ToolTipService.ToolTip>
                 <ToolTip Content="This option is available when the imported files are more than 6." />
             </ToolTipService.ToolTip>
