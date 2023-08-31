@@ -8,90 +8,87 @@ using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace CompMs.App.Msdial.ViewModel.Setting {
-    class MolecularNetworkingSettingViewModel : ViewModelBase {
-        private readonly MolecularNetworkingSettingModel model;
+    internal sealed class MolecularNetworkingSettingViewModel : ViewModelBase {
+        private readonly MolecularNetworkingSettingModel _model;
 
         public MolecularNetworkingSettingViewModel(MolecularNetworkingSettingModel model) {
-            if (model == null) {
-                throw new ArgumentNullException(nameof(model));
-            }
-            this.model = model;
+            _model = model ?? throw new ArgumentNullException(nameof(model));
 
-            IsAlignSpotViewSelected = this.model.ToReactivePropertySlimAsSynchronized(m => m.IsAlignSpotViewSelected).AddTo(Disposables);
+            IsAlignSpotViewSelected = model.ToReactivePropertySlimAsSynchronized(m => m.IsAlignSpotViewSelected).AddTo(Disposables);
 
-            RtTolerance = this.model.ToReactivePropertyAsSynchronized(
+            RtTolerance = model.ToReactivePropertyAsSynchronized(
                 m => m.RtTolerance,
                 m => m.ToString(),
                 vm => double.Parse(vm),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => RtTolerance).AddTo(Disposables);
 
-            IonCorrelationSimilarityCutoff = this.model.ToReactivePropertyAsSynchronized(
+            IonCorrelationSimilarityCutoff = model.ToReactivePropertyAsSynchronized(
                 m => m.IonCorrelationSimilarityCutOff,
                 m => m.ToString(),
                 vm => double.Parse(vm),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => IonCorrelationSimilarityCutoff).AddTo(Disposables);
 
-            SpectrumSimilarityCutOff = this.model.ToReactivePropertyAsSynchronized(
+            SpectrumSimilarityCutOff = model.ToReactivePropertyAsSynchronized(
                 m => m.SpectrumSimilarityCutOff,
                 m => m.ToString(),
                 vm => double.Parse(vm),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => SpectrumSimilarityCutOff).AddTo(Disposables);
 
-            RelativeAbundanceCutoff = this.model.ToReactivePropertyAsSynchronized(
+            RelativeAbundanceCutoff = model.ToReactivePropertyAsSynchronized(
                 m => m.RelativeAbundanceCutoff,
                 m => m.ToString(),
                 vm => double.Parse(vm),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => RelativeAbundanceCutoff).AddTo(Disposables);
 
-            AbsoluteAbundanceCutoff = this.model.ToReactivePropertyAsSynchronized(
+            AbsoluteAbundanceCutoff = model.ToReactivePropertyAsSynchronized(
                 m => m.AbsluteAbundanceCutoff,
                 m => m.ToString(),
                 vm => double.Parse(vm),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => AbsoluteAbundanceCutoff).AddTo(Disposables);
 
-            MassTolerance = this.model.ToReactivePropertyAsSynchronized(
+            MassTolerance = model.ToReactivePropertyAsSynchronized(
                 m => m.MassTolerance,
                 m => m.ToString(),
                 vm => double.Parse(vm),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MassTolerance).AddTo(Disposables);
 
-            IsExportIonCorrelation = this.model.ToReactivePropertySlimAsSynchronized(m => m.IsExportIonCorrelation).AddTo(Disposables);
+            IsExportIonCorrelation = model.ToReactivePropertySlimAsSynchronized(m => m.IsExportIonCorrelation).AddTo(Disposables);
 
-            MinimumPeakMatch = this.model.ToReactivePropertyAsSynchronized(
+            MinimumPeakMatch = model.ToReactivePropertyAsSynchronized(
                m => m.MinimumPeakMatch,
                m => m.ToString(),
                vm => double.Parse(vm),
                ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MinimumPeakMatch).AddTo(Disposables);
 
-            MaxEdgeNumberPerNode = this.model.ToReactivePropertyAsSynchronized(
+            MaxEdgeNumberPerNode = model.ToReactivePropertyAsSynchronized(
                m => m.MaxEdgeNumberPerNode,
                m => m.ToString(),
                vm => double.Parse(vm),
                ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MaxEdgeNumberPerNode).AddTo(Disposables);
 
-            MaxPrecursorDifference = this.model.ToReactivePropertyAsSynchronized(
+            MaxPrecursorDifference = model.ToReactivePropertyAsSynchronized(
                m => m.MaxPrecursorDifference,
                m => m.ToString(),
                vm => double.Parse(vm),
                ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MaxPrecursorDifference).AddTo(Disposables);
 
-            MaxPrecursorDifferenceAsPercent = this.model.ToReactivePropertyAsSynchronized(
+            MaxPrecursorDifferenceAsPercent = model.ToReactivePropertyAsSynchronized(
                m => m.MaxPrecursorDifferenceAsPercent,
                m => m.ToString(),
                vm => double.Parse(vm),
                ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MaxPrecursorDifferenceAsPercent).AddTo(Disposables);
 
-            MsmsSimilarityCalc = this.model.ToReactivePropertySlimAsSynchronized(m => m.MsmsSimilarityCalc).AddTo(Disposables);
+            MsmsSimilarityCalc = model.ToReactivePropertySlimAsSynchronized(m => m.MsmsSimilarityCalc).AddTo(Disposables);
             ExportFolderPath = model.ToReactivePropertyAsSynchronized(m => m.ExportFolderPath, ignoreValidationErrorValue: true)
                 .SetValidateAttribute(() => ExportFolderPath).AddTo(Disposables);
             ValidateProperty(nameof(ExportFolderPath), ExportFolderPath);
