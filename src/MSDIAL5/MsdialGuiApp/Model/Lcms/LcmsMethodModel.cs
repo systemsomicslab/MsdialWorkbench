@@ -117,6 +117,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
 
             AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam);
+            var currentFileResult = this.ObserveProperty(m => m.AnalysisModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            MolecularNetworkingSettingModel = new MolecularNetworkingSettingModel(storage.Parameter.MolecularSpectrumNetworkingBaseParam, currentFileResult, currentAlignmentResult).AddTo(Disposables);
         }
 
         public PeakFilterModel PeakFilterModel { get; }
@@ -136,6 +138,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private LcmsAlignmentModel _alignmentModel;
 
         public AlignmentResultExportModel AlignmentResultExportModel { get; }
+        public MolecularNetworkingSettingModel MolecularNetworkingSettingModel { get; }
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             if (AnalysisModel != null) {
@@ -416,10 +419,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                 return null;
             }
             return new MassqlSettingModel(model, _storage.Parameter.AdvancedProcessOptionBaseParam);
-        }
-
-        public MolecularNetworkingSettingModel ShowMolecularNetworkingSettingView() {
-            return new MolecularNetworkingSettingModel(_storage.Parameter.MolecularSpectrumNetworkingBaseParam, AnalysisModel, AlignmentModel);
         }
 
         public MscleanrSettingModel ShowShowMscleanrFilterSettingView() {

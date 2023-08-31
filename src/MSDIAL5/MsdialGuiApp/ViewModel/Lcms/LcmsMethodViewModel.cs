@@ -27,6 +27,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     internal sealed class LcmsMethodViewModel : MethodViewModel {
         private readonly LcmsMethodModel _model;
         private readonly IMessageBroker _broker;
+        private readonly MolecularNetworkingSettingViewModel _molecularNetworkingSettingViewModel;
 
         private LcmsMethodViewModel(
             LcmsMethodModel model,
@@ -65,6 +66,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             var _proteinGroupTableViewModel = new ProteinGroupTableViewModel(proteinResultContainerAsObservable).AddTo(Disposables);
             ShowProteinGroupTableCommand = model.CanShowProteinGroupTable.ToReactiveCommand().AddTo(Disposables);
             ShowProteinGroupTableCommand.Subscribe(() => broker.Publish(_proteinGroupTableViewModel)).AddTo(Disposables);
+
+            _molecularNetworkingSettingViewModel = new MolecularNetworkingSettingViewModel(_model.MolecularNetworkingSettingModel).AddTo(Disposables);
         }
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
@@ -227,9 +230,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         private void MolecularNetworkingSettingMethod()
         {
-            var m = _model.ShowMolecularNetworkingSettingView();
-            var vm = new MolecularNetworkingSettingViewModel(m);
-            _broker.Publish(vm);
+            _broker.Publish(_molecularNetworkingSettingViewModel);
         }
 
         private static IReadOnlyReactiveProperty<LcmsAnalysisViewModel> ConvertToAnalysisViewModelAsObservable(

@@ -2,15 +2,17 @@
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
+using Reactive.Bindings;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Setting {
-    internal sealed class MolecularNetworkingSettingModel : BindableBase {
+    internal sealed class MolecularNetworkingSettingModel : DisposableModelBase {
 
         private readonly MolecularSpectrumNetworkingBaseParameter _parameter;
-        private readonly IAnalysisModel _singleFileModel;
-        private readonly IAlignmentModel _alignmentFileModel;
-        public MolecularNetworkingSettingModel(MolecularSpectrumNetworkingBaseParameter parameter, IAnalysisModel singleFileModel, IAlignmentModel alignmentFileModel) {
+        private readonly IReadOnlyReactiveProperty<IAnalysisModel> _singleFileModel;
+        private readonly IReadOnlyReactiveProperty<IAlignmentModel> _alignmentFileModel;
+
+        public MolecularNetworkingSettingModel(MolecularSpectrumNetworkingBaseParameter parameter, IReadOnlyReactiveProperty<IAnalysisModel> singleFileModel, IReadOnlyReactiveProperty<IAlignmentModel> alignmentFileModel) {
             _singleFileModel = singleFileModel;
             _alignmentFileModel = alignmentFileModel;
 
@@ -140,10 +142,10 @@ namespace CompMs.App.Msdial.Model.Setting {
             return Task.Run(() => {
                 Commit();
                 if (isAlignSpotViewSelected) {
-                    _alignmentFileModel.RunMoleculerNetworking(_parameter);
+                    _alignmentFileModel.Value?.RunMoleculerNetworking(_parameter);
                 }
                 else {
-                    _singleFileModel.RunMoleculerNetworking(_parameter);
+                    _singleFileModel.Value?.RunMoleculerNetworking(_parameter);
                 }
             });
         }
