@@ -68,27 +68,23 @@ namespace CompMs.App.Msdial.Model.Core {
         public abstract void SearchFragment();
         public abstract void InvokeMsfinder();
         public void RunMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
+            var publisher = new TaskProgressPublisher(MessageBroker.Default, $"Exporting MN results in {parameter.ExportFolderPath}");
+            using (publisher.Start()) {
+                var spots = Ms1Peaks;
+                var peaks = MsdecResultsReader.ReadMSDecResults(AnalysisFileModel.DeconvolutionFilePath, out _, out _);
 
-            var broker = MessageBroker.Default;
-            var task = TaskNotification.Start($"Exporting MN results in {parameter.ExportFolderPath}");
-            broker.Publish(task);
+                void notify(double progressRate) {
+                    publisher.Progress(progressRate, $"Exporting MN results in {parameter.ExportFolderPath}");
+                }
 
-            var spots = Ms1Peaks;
-            var peaks = MsdecResultsReader.ReadMSDecResults(AnalysisFileModel.DeconvolutionFilePath, out _, out _);
+                var nodes = MoleculerNetworkingBase.GetSimpleNodes(spots, peaks);
+                var edges = MoleculerNetworkingBase.GenerateEdgesBySpectralSimilarity(
+                    spots, peaks, parameter.MsmsSimilarityCalc, parameter.MnMassTolerance,
+                    parameter.MnAbsoluteAbundanceCutOff, parameter.MnRelativeAbundanceCutOff, parameter.MnSpectrumSimilarityCutOff,
+                    parameter.MinimumPeakMatch, parameter.MaxEdgeNumberPerNode, parameter.MaxPrecursorDifference, parameter.MaxPrecursorDifferenceAsPercent, notify);
 
-            void notify(double counter) {
-                broker.Publish(task.Progress(counter, $"Exporting MN results in {parameter.ExportFolderPath}"));
+                MoleculerNetworkingBase.ExportNodesEdgesFiles(parameter.ExportFolderPath, nodes, edges);
             }
-
-            var nodes = MoleculerNetworkingBase.GetSimpleNodes(spots, peaks);
-            var edges = MoleculerNetworkingBase.GenerateEdgesBySpectralSimilarity(
-                spots, peaks, parameter.MsmsSimilarityCalc, parameter.MnMassTolerance,
-                parameter.MnAbsoluteAbundanceCutOff, parameter.MnRelativeAbundanceCutOff, parameter.MnSpectrumSimilarityCutOff,
-                parameter.MinimumPeakMatch, parameter.MaxEdgeNumberPerNode, parameter.MaxPrecursorDifference, parameter.MaxPrecursorDifferenceAsPercent, notify);
-
-            MoleculerNetworkingBase.ExportNodesEdgesFiles(parameter.ExportFolderPath, nodes, edges);
-
-            broker.Publish(task.End());
         }
 
         public Task SaveAsync(CancellationToken token) {

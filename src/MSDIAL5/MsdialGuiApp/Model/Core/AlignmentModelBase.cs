@@ -43,30 +43,28 @@ namespace CompMs.App.Msdial.Model.Core
         public abstract void SearchFragment();
         public abstract void InvokeMsfinder();
         public void RunMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
-            var broker = MessageBroker.Default;
-            var task = TaskNotification.Start($"Exporting MN results in {parameter.ExportFolderPath}");
-            broker.Publish(task);
+            var publisher = new TaskProgressPublisher(MessageBroker.Default, $"Exporting MN results in {parameter.ExportFolderPath}");
+            using (publisher.Start()) {
+                var spots = Container.AlignmentSpotProperties;
+                var peaks = _alignmentFileModel.LoadMSDecResults();
 
-            var spots = Container.AlignmentSpotProperties;
-            var peaks = _alignmentFileModel.LoadMSDecResults();
+                void notify(double progressRate) {
+                    publisher.Progress(progressRate, $"Exporting MN results in {parameter.ExportFolderPath}");
+                }
 
-            void notify(double counter) {
-                broker.Publish(task.Progress(counter, $"Exporting MN results in {parameter.ExportFolderPath}"));
+                var nodes = MoleculerNetworkingBase.GetSimpleNodes(spots, peaks);
+                var edges = MoleculerNetworkingBase.GenerateEdgesBySpectralSimilarity(
+                    spots, peaks, parameter.MsmsSimilarityCalc, parameter.MnMassTolerance,
+                    parameter.MnAbsoluteAbundanceCutOff, parameter.MnRelativeAbundanceCutOff, parameter.MnSpectrumSimilarityCutOff,
+                    parameter.MinimumPeakMatch, parameter.MaxEdgeNumberPerNode, parameter.MaxPrecursorDifference, parameter.MaxPrecursorDifferenceAsPercent, notify);
+                
+                if (parameter.MnIsExportIonCorrelation && _alignmentFileModel.CountRawFiles >= 6) {
+                    var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots, parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode);
+                    edges.AddRange(ion_edges);
+                }
+
+                MoleculerNetworkingBase.ExportNodesEdgesFiles(parameter.ExportFolderPath, nodes, edges);
             }
-
-            var nodes = MoleculerNetworkingBase.GetSimpleNodes(spots, peaks);
-            var edges = MoleculerNetworkingBase.GenerateEdgesBySpectralSimilarity(
-                spots, peaks, parameter.MsmsSimilarityCalc, parameter.MnMassTolerance,
-                parameter.MnAbsoluteAbundanceCutOff, parameter.MnRelativeAbundanceCutOff, parameter.MnSpectrumSimilarityCutOff,
-                parameter.MinimumPeakMatch, parameter.MaxEdgeNumberPerNode, parameter.MaxPrecursorDifference, parameter.MaxPrecursorDifferenceAsPercent, notify);
-            
-            if (parameter.MnIsExportIonCorrelation && _alignmentFileModel.CountRawFiles >= 6) {
-                var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots, parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode);
-                edges.AddRange(ion_edges);
-            }
-
-            MoleculerNetworkingBase.ExportNodesEdgesFiles(parameter.ExportFolderPath, nodes, edges);
-            broker.Publish(task.End());
         }
 
         protected readonly CompositeDisposable Disposables = new CompositeDisposable();
