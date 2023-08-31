@@ -24,9 +24,11 @@ namespace CompMs.App.Msdial.Model.Core {
     public abstract class AnalysisModelBase : BindableBase, IAnalysisModel, IDisposable
     {
         private readonly ChromatogramPeakFeatureCollection _peakCollection;
+        private readonly IMessageBroker _broker;
 
-        public AnalysisModelBase(AnalysisFileBeanModel analysisFileModel) {
+        public AnalysisModelBase(AnalysisFileBeanModel analysisFileModel, IMessageBroker broker) {
             AnalysisFileModel = analysisFileModel;
+            _broker = broker;
             var peaks = MsdialPeakSerializer.LoadChromatogramPeakFeatures(analysisFileModel.PeakAreaBeanInformationFilePath);
             _peakCollection = new ChromatogramPeakFeatureCollection(peaks);
             Ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(
@@ -68,7 +70,7 @@ namespace CompMs.App.Msdial.Model.Core {
         public abstract void SearchFragment();
         public abstract void InvokeMsfinder();
         public void RunMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
-            var publisher = new TaskProgressPublisher(MessageBroker.Default, $"Exporting MN results in {parameter.ExportFolderPath}");
+            var publisher = new TaskProgressPublisher(_broker, $"Exporting MN results in {parameter.ExportFolderPath}");
             using (publisher.Start()) {
                 var spots = Ms1Peaks;
                 var peaks = MsdecResultsReader.ReadMSDecResults(AnalysisFileModel.DeconvolutionFilePath, out _, out _);
