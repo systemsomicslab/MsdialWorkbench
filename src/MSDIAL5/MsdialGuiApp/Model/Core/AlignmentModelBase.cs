@@ -17,9 +17,11 @@ namespace CompMs.App.Msdial.Model.Core
     public abstract class AlignmentModelBase : BindableBase, IAlignmentModel, IDisposable
     {
         private readonly AlignmentFileBeanModel _alignmentFileModel;
+        private readonly IMessageBroker _broker;
 
-        public AlignmentModelBase(AlignmentFileBeanModel alignmentFileModel) {
+        public AlignmentModelBase(AlignmentFileBeanModel alignmentFileModel, IMessageBroker broker) {
             _alignmentFileModel = alignmentFileModel ?? throw new ArgumentNullException(nameof(alignmentFileModel));
+            _broker = broker;
             Container = alignmentFileModel.LoadAlignmentResultAsync().Result;
             if (Container == null) {
                 MessageBox.Show("No aligned spot information."); // TODO: Move to view.
@@ -43,7 +45,7 @@ namespace CompMs.App.Msdial.Model.Core
         public abstract void SearchFragment();
         public abstract void InvokeMsfinder();
         public void RunMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
-            var publisher = new TaskProgressPublisher(MessageBroker.Default, $"Exporting MN results in {parameter.ExportFolderPath}");
+            var publisher = new TaskProgressPublisher(_broker, $"Exporting MN results in {parameter.ExportFolderPath}");
             using (publisher.Start()) {
                 var spots = Container.AlignmentSpotProperties;
                 var peaks = _alignmentFileModel.LoadMSDecResults();

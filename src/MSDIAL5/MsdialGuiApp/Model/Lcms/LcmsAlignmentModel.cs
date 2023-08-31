@@ -68,7 +68,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             List<AnalysisFileBean> files,
             AnalysisFileBeanModelCollection fileCollection,
             IMessageBroker messageBroker)
-            : base(alignmentFileBean) {
+            : base(alignmentFileBean, messageBroker) {
             if (databases is null) {
                 throw new ArgumentNullException(nameof(databases));
             }
