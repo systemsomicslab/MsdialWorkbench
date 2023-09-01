@@ -58,7 +58,7 @@ namespace CompMs.App.Msdial.Model.Imms
             ParameterBase parameter,
             List<AnalysisFileBean> files,
             IMessageBroker broker)
-            : base(alignmentFileModel) {
+            : base(alignmentFileModel, broker) {
 
             _alignmentFile = alignmentFileModel;
             _parameter = parameter;

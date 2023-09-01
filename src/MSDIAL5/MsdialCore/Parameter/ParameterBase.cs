@@ -416,9 +416,23 @@ namespace CompMs.MsdialCore.Parameter
         [IgnoreMember]
         public double MnRelativeAbundanceCutOff { get => MolecularSpectrumNetworkingBaseParam.MnRelativeAbundanceCutOff; set => MolecularSpectrumNetworkingBaseParam.MnRelativeAbundanceCutOff = value; }
         [IgnoreMember]
+        public double MnAbsoluteAbundanceCutOff { get => MolecularSpectrumNetworkingBaseParam.MnAbsoluteAbundanceCutOff; set => MolecularSpectrumNetworkingBaseParam.MnAbsoluteAbundanceCutOff = value; }
+        [IgnoreMember]
         public double MnMassTolerance { get => MolecularSpectrumNetworkingBaseParam.MnMassTolerance; set => MolecularSpectrumNetworkingBaseParam.MnMassTolerance = value; }
         [IgnoreMember]
         public bool MnIsExportIonCorrelation { get => MolecularSpectrumNetworkingBaseParam.MnIsExportIonCorrelation; set => MolecularSpectrumNetworkingBaseParam.MnIsExportIonCorrelation = value; }
+        [IgnoreMember]
+        public double MinimumPeakMatch { get => MolecularSpectrumNetworkingBaseParam.MinimumPeakMatch; set => MolecularSpectrumNetworkingBaseParam.MinimumPeakMatch = value; }
+        [IgnoreMember]
+        public double MaxEdgeNumberPerNode { get => MolecularSpectrumNetworkingBaseParam.MaxEdgeNumberPerNode; set => MolecularSpectrumNetworkingBaseParam.MaxEdgeNumberPerNode = value; }
+        [IgnoreMember]
+        public double MaxPrecursorDifference { get => MolecularSpectrumNetworkingBaseParam.MaxPrecursorDifference; set => MolecularSpectrumNetworkingBaseParam.MaxPrecursorDifference = value; }
+        [IgnoreMember]
+        public double MaxPrecursorDifferenceAsPercent { get => MolecularSpectrumNetworkingBaseParam.MaxPrecursorDifferenceAsPercent; set => MolecularSpectrumNetworkingBaseParam.MaxPrecursorDifferenceAsPercent = value; }
+        [IgnoreMember]
+        public MsmsSimilarityCalc MsmsSimilarityCalc { get => MolecularSpectrumNetworkingBaseParam.MsmsSimilarityCalc; set => MolecularSpectrumNetworkingBaseParam.MsmsSimilarityCalc = value; }
+        [IgnoreMember]
+        public string MnExportFolderPath { get => MolecularSpectrumNetworkingBaseParam.ExportFolderPath; set => MolecularSpectrumNetworkingBaseParam.ExportFolderPath = value; }
 
         //Tracking of isotope labeles
         [Key(14)]
@@ -1274,6 +1288,20 @@ namespace CompMs.MsdialCore.Parameter
         public double MnMassTolerance { get; set; } = 0.025;
         [Key(5)]
         public bool MnIsExportIonCorrelation { get; set; } = false;
+        [Key(6)]
+        public double MinimumPeakMatch { get; set; } = 6;
+        [Key(7)]
+        public double MaxEdgeNumberPerNode { get; set; } = 5;
+        [Key(8)]
+        public double MaxPrecursorDifference { get; set; } = 400;
+        [Key(9)]
+        public double MaxPrecursorDifferenceAsPercent { get; set; } = 50;
+        [Key(10)]
+        public MsmsSimilarityCalc MsmsSimilarityCalc { get; set; } = MsmsSimilarityCalc.Bonanza;
+        [Key(11)]
+        public string ExportFolderPath { get; set; } = string.Empty;
+        [Key(12)]
+        public double MnAbsoluteAbundanceCutOff { get; set; } = 0.0;
     }
 
     [MessagePackObject]
