@@ -102,10 +102,10 @@ namespace CompMs.App.MsdialConsole {
             //    @"E:\0_SourceCode\lbm_versions\Msp20230725171853_LBM\Msp20230725171853_conventional_converted_dev_extracted.txt",
             //    @"E:\0_SourceCode\lbm_versions\Msp20230725171853_LBM\20220725_timsTOFpro_TextLibrary_Brain_Neg_with_CCS.txt");
 
-            MspCurator.MatchNameAndAdductToExtractCCS(
-                @"E:\0_SourceCode\lbm_versions\Msp20230725171853_LBM\20220725_timsTOFpro_TextLibrary_Brain_Neg.txt",
-                @"E:\0_SourceCode\lbm_versions\Msp20230725171853_LBM\Msp20230725171853_conventional_converted_dev_extracted.txt",
-                @"E:\0_SourceCode\lbm_versions\Msp20230725171853_LBM\20220725_timsTOFpro_TextLibrary_Brain_Neg_with_CCS_v2.txt");
+            //MspCurator.MatchNameAndAdductToExtractCCS(
+            //    @"E:\0_SourceCode\lbm_versions\Msp20230725171853_LBM\20220725_timsTOFpro_TextLibrary_Brain_Neg.txt",
+            //    @"E:\0_SourceCode\lbm_versions\Msp20230725171853_LBM\Msp20230725171853_conventional_converted_dev_extracted.txt",
+            //    @"E:\0_SourceCode\lbm_versions\Msp20230725171853_LBM\20220725_timsTOFpro_TextLibrary_Brain_Neg_with_CCS_v2.txt");
 
 
             //DumpSpectrum(samplefile, 1206, 800, 100);
@@ -342,12 +342,16 @@ namespace CompMs.App.MsdialConsole {
             //   @"E:\6_Projects\PROJECT_GlycyrrhizaMetabolomics\glabra leaf\pos\cytoscape");
 
             //MoleculerSpectrumNetworkingTest.Run(
-            //    @"E:\0_SourceCode\BugReports\20230209_molecularnetwork\NEG\after_rt_correction\2023281539_spectra_0.msp",
-            //    @"E:\0_SourceCode\BugReports\20230209_molecularnetwork\NEG\after_rt_correction\", "4");
+            //    @"D:\AMAMO_lipid\MN\POS_total_MSMS.msp",
+            //    @"D:\AMAMO_lipid\MN\POS\", "85_match2");
+
+            MoleculerInput.Which();
 
             //MoleculerSpectrumNetworkingTest.Run(
             //    @"E:\0_SourceCode\BugReports\20230209_molecularnetwork\NEG\before_rt_correction\beforeRTcorrect.msp",
             //    @"E:\0_SourceCode\BugReports\20230209_molecularnetwork\NEG\before_rt_correction\", "4");
+
+
         }
 
         private static void DumpN(string file, int n) {

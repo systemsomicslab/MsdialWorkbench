@@ -8,26 +8,59 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace CompMs.App.MsdialConsole.MolecularNetwork {
+namespace CompMs.App.MsdialConsole.MolecularNetwork
+{
+    internal class MoleculerInput
+    {
+        private MoleculerInput() { }
 
-  
-    public sealed class MoleculerSpectrumNetworkingTest {
-        private MoleculerSpectrumNetworkingTest() { }
+        public static void Which() {
+            Console.WriteLine("VS Raw ->0   VS Ref ->1");
+            string type = Console.ReadLine();
+            Console.WriteLine("input minimumPeakMatch");
+            string match = Console.ReadLine();
+            Console.WriteLine("input scoreThreshold(0-1)");
+            string threshold = Console.ReadLine();
+            Console.WriteLine("input maxEdgeperNode");
+            string node = Console.ReadLine();
 
-        public static void Run(string input, string outputdir, string version) {
+            var matchs = double.Parse(match);
+            var thresholds = double.Parse(threshold);
+            var nodes = double.Parse(node);
+
+            if (type == "0") {
+                Console.WriteLine("input file");
+                string input = Console.ReadLine();
+                Console.WriteLine("input output directory");
+                string output = Console.ReadLine();
+                Run(input, output, matchs, thresholds, nodes);
+            }
+
+            if (type == "1") {
+                Console.WriteLine("input raw data file");
+                string input = Console.ReadLine();
+                Console.WriteLine("input library file");
+                string reffile = Console.ReadLine();
+                Console.WriteLine("input output directory");
+                string output = Console.ReadLine();
+                refRun(input, reffile, output, matchs, thresholds, nodes);
+            }
+        }
+
+        public static void Run(string input, string outputdir, double matchs, double thresholds, double nodes) {
             if (!Directory.Exists(outputdir)) {
                 Directory.CreateDirectory(outputdir);
             }
 
-            var minimumPeakMatch = 2;
-            var matchThreshold = 0.85;
-            var maxEdgeNumPerNode = 5;
+            var minimumPeakMatch = matchs;
+            var matchThreshold = thresholds;
+            var maxEdgeNumPerNode = nodes;
             var maxPrecursorDiff = 400.0;
             var maxPrecursorDiff_Percent = 100;
 
             var inputfilename = Path.GetFileNameWithoutExtension(input);
-            var output_node_file = Path.Combine(outputdir, inputfilename + "_" + version + "_node.txt");
-            var output_edge_file = Path.Combine(outputdir, inputfilename + "_" + version + "_edge.txt");
+            var output_node_file = Path.Combine(outputdir, inputfilename  + "_node.txt");
+            var output_edge_file = Path.Combine(outputdir, inputfilename  + "_edge.txt");
 
             var spectra = MspFileParser.MspFileReader(input);
 
@@ -104,14 +137,14 @@ namespace CompMs.App.MsdialConsole.MolecularNetwork {
                     var lines = new List<string>() {
                         key, record.PrecursorMz.ToString(), record.ChromXs.Value.ToString(),
                         record.Name,
-                        record.AdductType.ToString(), 
+                        record.AdductType.ToString(),
                     };
                     sw.WriteLine(String.Join("\t", lines));
                 }
             }
         }
 
-        public static void refRun(string input, string reffile, string outputdir, string version) {
+        public static void refRun(string input, string reffile, string outputdir, double matchs, double thresholds, double nodes) {
             if (!Directory.Exists(outputdir)) {
                 Directory.CreateDirectory(outputdir);
             } //reffile追加
@@ -121,8 +154,8 @@ namespace CompMs.App.MsdialConsole.MolecularNetwork {
             var maxPrecursorDiff = 400.0; //400.0
             var maxPrecursorDiff_Percent = 100;
             var inputfilename = Path.GetFileNameWithoutExtension(input);
-            var output_node_file = Path.Combine(outputdir, inputfilename + "_" + version + "_node.txt");
-            var output_edge_file = Path.Combine(outputdir, inputfilename + "_" + version + "_edge.txt");
+            var output_node_file = Path.Combine(outputdir, inputfilename + "_node.txt");
+            var output_edge_file = Path.Combine(outputdir, inputfilename + "_edge.txt");
             var spectra = MspFileParser.MspFileReader(input);
             var refspectra = MspFileParser.MspFileReader(reffile);
             Console.WriteLine("Converting to normalized spectra");
@@ -208,8 +241,6 @@ namespace CompMs.App.MsdialConsole.MolecularNetwork {
                 }
             }
         }
-    
-}
 
-
+    }
 }
