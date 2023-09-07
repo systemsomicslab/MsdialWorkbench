@@ -27,8 +27,12 @@ namespace CompMs.App.Msdial.Model.Notification
             var serializer = new DataContractJsonSerializer(typeof(List<ReleaseInfoDataTransferObject>));
             try {
                 var releaseInfoDataTransferObjects = (List<ReleaseInfoDataTransferObject>)serializer.ReadObject(jsonStream);
-                var vdd = releaseInfoDataTransferObjects.Last(dto => dto.TagName.StartsWith("MSDIAL")).ToVersionDescriptionDocument();
-                callback?.Invoke(vdd);
+                foreach (var dto in releaseInfoDataTransferObjects) {
+                    if (dto.TagName.StartsWith("MSDIAL-v5")) {
+                        var vdd = dto.ToVersionDescriptionDocument();
+                        callback?.Invoke(vdd);
+                    }
+                }
             }
             catch (SerializationException) {
 
@@ -110,7 +114,7 @@ namespace CompMs.App.Msdial.Model.Notification
             public VersionDescriptionDocument ToVersionDescriptionDocument() {
                 return new VersionDescriptionDocument
                 {
-                    LatestVersion = TagName.TrimStart("MSDIAL-v.".ToCharArray()),
+                    LatestVersion = TagName.TrimStart("MSDIAL-v".ToCharArray()),
                     DatePublished = PublishedAt,
                     DownloadUri = new Uri(HtmlUrl),
                 };
@@ -122,5 +126,6 @@ namespace CompMs.App.Msdial.Model.Notification
             [DataMember(Name = "browser_download_url")]
             public string DownloadUrl { get; set; }
         }
+
     }
 }
