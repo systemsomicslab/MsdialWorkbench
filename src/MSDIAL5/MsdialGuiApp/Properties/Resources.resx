@@ -121,9 +121,9 @@
     <value />
   </data>
   <data name="VDD_URI" xml:space="preserve">
-    <value>https://api.github.com/repos/systemsomicslab/MsdialWorkbench/releases/latest</value>
+    <value>https://api.github.com/repos/systemsomicslab/MsdialWorkbench/releases?per_page=100</value>
   </data>
   <data name="VERSION" xml:space="preserve">
-    <value>5.1.230517-dev</value>
+    <value>5.1.230517</value>
   </data>
 </root>

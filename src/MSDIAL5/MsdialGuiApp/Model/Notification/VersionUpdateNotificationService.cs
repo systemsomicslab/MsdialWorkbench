@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Runtime.Serialization;
@@ -23,9 +24,10 @@ namespace CompMs.App.Msdial.Model.Notification
                 return;
             }
 
-            var serializer = new DataContractJsonSerializer(typeof(ReleaseInfoDataTransferObject));
+            var serializer = new DataContractJsonSerializer(typeof(List<ReleaseInfoDataTransferObject>));
             try {
-                var vdd = ((ReleaseInfoDataTransferObject)serializer.ReadObject(jsonStream)).ToVersionDescriptionDocument();
+                var releaseInfoDataTransferObjects = (List<ReleaseInfoDataTransferObject>)serializer.ReadObject(jsonStream);
+                var vdd = releaseInfoDataTransferObjects.Last(dto => dto.TagName.StartsWith("MSDIAL")).ToVersionDescriptionDocument();
                 callback?.Invoke(vdd);
             }
             catch (SerializationException) {
