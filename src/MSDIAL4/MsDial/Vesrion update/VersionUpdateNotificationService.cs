@@ -44,7 +44,6 @@ namespace Rfx.Riken.OsakaUniv
                         var vdd = dto.ToVersionDescriptionDocument();
                         callback?.Invoke(vdd);
                         break;
-                        break;
                     }
                 }
             }

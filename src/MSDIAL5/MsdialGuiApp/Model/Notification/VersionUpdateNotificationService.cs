@@ -32,7 +32,6 @@ namespace CompMs.App.Msdial.Model.Notification
                         var vdd = dto.ToVersionDescriptionDocument();
                         callback?.Invoke(vdd);
                         break;
-                        break;
                     }
                 }
             }
