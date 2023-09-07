@@ -1097,7 +1097,7 @@ namespace CompMs.MsdialCore.Utility {
             var maxIntensity = spectrum.Max(n => n.Intensity);
             foreach (var peak in spectrum) {
                 if (peak.Intensity > maxIntensity * relcutoff && peak.Intensity > abscutoff) {
-                    massSpec.Add(new SpectrumPeak() { Mass = peak.Mass, Intensity = peak.Intensity / maxIntensity * 100.0 });
+                    massSpec.Add(new SpectrumPeak() { Mass = peak.Mass, Intensity = peak.Intensity / maxIntensity * 100.0, Resolution = peak.Intensity });
                 }
             }
             return massSpec;

@@ -72,13 +72,17 @@ namespace CompMs.Common.Lipidomics
                 // i=15 means i-1=14=C14 in bondPositions and C16 in chain obj and C4 from omega terminal
                 if (bondPositions.Contains(i - 1))
                 { // in the case of 18:2(9,12), Radical is big, and H loss is next
-                    if (nlMass < 0.001)
-                    {
-                        factor = 4.0;
-                        factorHLoss = 2.0;
-                        factorHGain = 0.05;
-                        speccomment_radical |= SpectrumComment.doublebond_high;
-                    }
+                    factor = 4.0;
+                    factorHLoss = 2.0;
+                    factorHGain = 0.05;
+                    speccomment_radical |= SpectrumComment.doublebond_high;
+                    //if (nlMass < 0.001)
+                    //{
+                    //    factor = 4.0;
+                    //    factorHLoss = 2.0;
+                    //    factorHGain = 0.05;
+                    //    speccomment_radical |= SpectrumComment.doublebond_high;
+                    //}
                 }
                 
                 // in the case of 18:2(9,12)
@@ -161,10 +165,16 @@ namespace CompMs.Common.Lipidomics
                 {
                     speccomment_hgain |= SpectrumComment.doublebond_high;
                 }
-
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), factorHLoss * abundance, $"{chain} C{i + 1}-H") { SpectrumComment = speccomment_hloss });
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i]), factor * abundance, $"{chain} C{i + 1}") { SpectrumComment = speccomment_radical });
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), factorHGain * abundance, $"{chain} C{i + 1}+H") { SpectrumComment = speccomment_hgain });
+                if (chain.DoubleBond.Bonds.Count >= 3) {
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), factorHLoss * abundance, $"{chain} C{i + 1}-H_p3") { SpectrumComment = speccomment_hloss });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i]), factor * abundance, $"{chain} C{i + 1}_p3") { SpectrumComment = speccomment_radical });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), factorHGain * abundance, $"{chain} C{i + 1}+H_p3") { SpectrumComment = speccomment_hgain });
+                }
+                else {
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), factorHLoss * abundance, $"{chain} C{i + 1}-H") { SpectrumComment = speccomment_hloss });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i]), factor * abundance, $"{chain} C{i + 1}") { SpectrumComment = speccomment_radical });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), factorHGain * abundance, $"{chain} C{i + 1}+H") { SpectrumComment = speccomment_hgain });
+                }
             }
 
             return peaks;
