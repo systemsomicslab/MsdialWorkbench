@@ -63,7 +63,7 @@ namespace CompMs.App.Msdial.Model.Notification
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes) {
-                    System.Diagnostics.Process.Start("http://prime.psc.riken.jp/compms/index.html");
+                    System.Diagnostics.Process.Start("https://github.com/systemsomicslab/MsdialWorkbench/releases");
                 }
 
             }
