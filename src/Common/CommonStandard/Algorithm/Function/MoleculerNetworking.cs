@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace CompMs.Common.Algorithm.Function {
 
@@ -44,8 +45,29 @@ namespace CompMs.Common.Algorithm.Function {
                 foreach (var edgeObj in edges) {
                     var edge = edgeObj.data;
                     sw.WriteLine(edge.source + "\t" + edge.target + "\t" + edge.score + "\t" + edgeObj.classes);
+
+                    CyjsEdgeData cyed = new CyjsEdgeData();
+                    cyed.Source = edge.source;
+                    cyed.Target = edge.target;
+                    cyed.Score = edge.score;
+                    cyed.Type = edgeObj.classes;
+                    var jsonData = JsonConvert.SerializeObject(cyed);
+                    Console.WriteLine(jsonData);
                 }
             }
+        }
+
+        [JsonObject("CyjsEdgeData")]
+        class CyjsEdgeData
+        {
+            [JsonProperty("source")]
+            public int Source { get; set; }
+            [JsonProperty("target")]
+            public int Target { get; set; }
+            [JsonProperty("score")]
+            public double Score { get; set; }
+            [JsonProperty("shared_interaction")]
+            public string Type { get; set; }
         }
 
         private static string getMsString(List<List<double>> msList) {
