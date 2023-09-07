@@ -965,16 +965,19 @@ namespace CompMs.Common.Algorithm.Scoring {
                     continue;
                 }
                 var sumintensity = 0.0;
+                var sumintensity_original = 0.0;
                 for (int i = remaindIndexM; i < peaks1.Count; i++) {
                     if (peaks1[i].Mass < focusedMz - bin) continue;
                     else if (Math.Abs(focusedMz - peaks1[i].Mass) < bin) {
                         sumintensity += peaks1[i].Intensity;
+                        sumintensity_original += peaks1[i].Resolution;
                         spectrumPeak.IsMatched = true;
                     }
                     else { remaindIndexM = i; break; }
                 }
 
                 spectrumPeak.Resolution = sumintensity;
+                spectrumPeak.Charge = (int)sumintensity_original;
                 searchedPeaks.Add(spectrumPeak);
 
                 if (focusedMz + bin > peaks2[peaks2.Count - 1].Mass) break;
@@ -1093,6 +1096,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 }
             }
             else { // currently default value is retured for other lipids
+                if (comment == "SPLASH" && compClass == "CE") return new double[] { -1, -1 };
                 return resultArray;
             }
         }
