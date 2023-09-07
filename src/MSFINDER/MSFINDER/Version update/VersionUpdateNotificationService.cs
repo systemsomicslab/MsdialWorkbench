@@ -43,6 +43,7 @@ namespace Rfx.Riken.OsakaUniv
                     if (dto.TagName.StartsWith("MSFINDER")) { 
                         var vdd = dto.ToVersionDescriptionDocument();
                         callback?.Invoke(vdd);
+                        break;
                     }
                 }
             }

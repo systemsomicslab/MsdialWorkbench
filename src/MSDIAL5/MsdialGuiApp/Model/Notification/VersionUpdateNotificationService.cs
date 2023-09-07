@@ -31,6 +31,7 @@ namespace CompMs.App.Msdial.Model.Notification
                     if (dto.TagName.StartsWith("MSDIAL-v5")) {
                         var vdd = dto.ToVersionDescriptionDocument();
                         callback?.Invoke(vdd);
+                        break;
                     }
                 }
             }

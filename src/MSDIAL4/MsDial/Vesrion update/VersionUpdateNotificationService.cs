@@ -43,6 +43,7 @@ namespace Rfx.Riken.OsakaUniv
                     if (dto.TagName.StartsWith("MSDIAL-v4")) {
                         var vdd = dto.ToVersionDescriptionDocument();
                         callback?.Invoke(vdd);
+                        break;
                     }
                 }
             }
