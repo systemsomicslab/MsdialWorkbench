@@ -280,7 +280,7 @@
             <RibbonButton Label="Molecular spectrum networking export" LargeImageSource="{StaticResource Molecular_network_result_export_is}"
                           IsEnabled="False"
                           KeyTip="M"/>
-            <RibbonButton Label="Parameter export (Tab-delimited text)" LargeImageSource="{StaticResource Parameter_file_export_is}"
+            <RibbonButton Label="Export parameter" LargeImageSource="{StaticResource Parameter_file_export_is}"
                           Command="{Binding ExportParameterCommand, Mode=OneTime}"
                           KeyTip="T"/>
             <RibbonButton Label="Export as lipoquality database format"
