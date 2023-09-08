@@ -159,12 +159,12 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         private void SetDataBaseParameterAsSimpleText<T>(System.Text.StringBuilder sb, DataBaseItem<T> dbPair) where T: IReferenceDataBase {
-            sb.AppendLine($"DataBaseID={dbPair.DataBaseID}");
+            sb.AppendLine($"DataBaseID: {dbPair.DataBaseID}");
             foreach (var annotatorPair in dbPair.Pairs) {
-                sb.AppendLine($"AnnotationMethod={annotatorPair.AnnotatorID}");
+                sb.AppendLine($"AnnotationMethod: {annotatorPair.AnnotatorID}");
                 var factory = annotatorPair.AnnotationQueryFactory;
                 var parameter = factory.PrepareParameter();
-                sb.AppendLine($"Parameter={parameter}");
+                sb.AppendLine($"Parameter: {parameter}");
             }
         }
     }
