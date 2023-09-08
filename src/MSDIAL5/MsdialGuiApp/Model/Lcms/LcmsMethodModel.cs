@@ -119,6 +119,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam);
             var currentFileResult = this.ObserveProperty(m => m.AnalysisModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             MolecularNetworkingSettingModel = new MolecularNetworkingSettingModel(storage.Parameter.MolecularSpectrumNetworkingBaseParam, currentFileResult, currentAlignmentResult).AddTo(Disposables);
+
+            ParameterExportModel = new ParameterExportModel(storage.DataBases, storage.Parameter, broker);
         }
 
         public PeakFilterModel PeakFilterModel { get; }
@@ -139,6 +141,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public AlignmentResultExportModel AlignmentResultExportModel { get; }
         public MolecularNetworkingSettingModel MolecularNetworkingSettingModel { get; }
+        public ParameterExportModel ParameterExportModel { get; }
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             if (AnalysisModel != null) {
