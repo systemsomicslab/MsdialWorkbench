@@ -38,7 +38,7 @@ namespace CompMs.App.Msdial.Model.Export
             using (publisher.Start())
             using (var writer = new StreamWriter(filename)) {
                 await writer.WriteAsync(string.Join(Environment.NewLine, _baseParmaeter.ParametersAsText())).ConfigureAwait(false);
-                await writer.WriteLineAsync().ConfigureAwait(false);
+                await writer.WriteAsync(Environment.NewLine + Environment.NewLine).ConfigureAwait(false);
                 await writer.WriteAsync(_dbs.ParameterAsSimpleText()).ConfigureAwait(false);
             }
         }

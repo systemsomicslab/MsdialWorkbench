@@ -164,8 +164,9 @@ namespace CompMs.MsdialCore.DataObj
                 sb.AppendLine($"AnnotationMethod: {annotatorPair.AnnotatorID}");
                 var factory = annotatorPair.AnnotationQueryFactory;
                 var parameter = factory.PrepareParameter();
-                sb.AppendLine($"Parameter: {parameter}");
+                sb.Append(parameter.ParameterAsString());
             }
+            sb.AppendLine();
         }
     }
 }
