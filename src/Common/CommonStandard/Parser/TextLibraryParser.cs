@@ -1,10 +1,10 @@
-﻿using System;
+﻿using CompMs.Common.Algorithm.IsotopeCalc;
+using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using CompMs.Common.Algorithm.IsotopeCalc;
-using CompMs.Common.Components;
 
 namespace CompMs.Common.Parser
 {
@@ -104,7 +104,7 @@ namespace CompMs.Common.Parser
                         continue;
                     }
                 if (n > 3)
-                    reference.AdductType = AdductIonParser.GetAdductIonBean(lineArray[3]);
+                    reference.AdductType = AdductIon.GetAdductIon(lineArray[3]);
                 if (n > 4)
                     reference.InChIKey = lineArray[4];
                 if (n > 5)

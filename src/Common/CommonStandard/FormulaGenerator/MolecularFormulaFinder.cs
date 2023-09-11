@@ -2,14 +2,8 @@
 using CompMs.Common.DataObj.Ion;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.FormulaGenerator.DataObj;
-using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Parameter;
-using CompMs.Common.Parser;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CompMs.Common.FormulaGenerator {
     public sealed class MolecularFormulaFinder
@@ -19,7 +13,7 @@ namespace CompMs.Common.FormulaGenerator {
             List<NeutralLoss> neutralLossDB, List<ExistFormulaQuery> existFormulaDB, 
             RawData rawData, AnalysisParamOfMsfinder param)
         {
-            var adductIon = AdductIonParser.GetAdductIonBean(rawData.PrecursorType);
+            var adductIon = AdductIon.GetAdductIon(rawData.PrecursorType);
 
             double monoIsotopicMass = adductIon.ConvertToExactMass(rawData.PrecursorMz);
 
@@ -51,7 +45,7 @@ namespace CompMs.Common.FormulaGenerator {
         public static FormulaResult GetMolecularFormulaScore(List<ProductIon> productIonDB, List<NeutralLoss> neutralLossDB, 
             List<ExistFormulaQuery> existFormulaDB, RawData rawData, AnalysisParamOfMsfinder analysisParam)
         {
-            var adductIon = AdductIonParser.GetAdductIonBean(rawData.PrecursorType);
+            var adductIon = AdductIon.GetAdductIon(rawData.PrecursorType);
 
             double monoIsotopicMass = adductIon.ConvertToExactMass(rawData.PrecursorMz);
 

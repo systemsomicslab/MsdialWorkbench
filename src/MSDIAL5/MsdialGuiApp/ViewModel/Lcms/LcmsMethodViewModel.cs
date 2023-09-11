@@ -1,7 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Utility;
-using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
@@ -28,6 +27,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     internal sealed class LcmsMethodViewModel : MethodViewModel {
         private readonly LcmsMethodModel _model;
         private readonly IMessageBroker _broker;
+        private readonly MolecularNetworkingSettingViewModel _molecularNetworkingSettingViewModel;
 
         private LcmsMethodViewModel(
             LcmsMethodModel model,
@@ -66,6 +66,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             var _proteinGroupTableViewModel = new ProteinGroupTableViewModel(proteinResultContainerAsObservable).AddTo(Disposables);
             ShowProteinGroupTableCommand = model.CanShowProteinGroupTable.ToReactiveCommand().AddTo(Disposables);
             ShowProteinGroupTableCommand.Subscribe(() => broker.Publish(_proteinGroupTableViewModel)).AddTo(Disposables);
+
+            _molecularNetworkingSettingViewModel = new MolecularNetworkingSettingViewModel(_model.MolecularNetworkingSettingModel).AddTo(Disposables);
         }
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
@@ -221,6 +223,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 return;
                 //Console.WriteLine("Please select an item in Alignment navigator!!");
             }
+        }
+
+        public DelegateCommand ShowMolecularNetworkingSettingCommand => _molecularNetworkingSettingCommand ?? (_molecularNetworkingSettingCommand = new DelegateCommand(MolecularNetworkingSettingMethod));
+        private DelegateCommand _molecularNetworkingSettingCommand;
+
+        private void MolecularNetworkingSettingMethod()
+        {
+            _broker.Publish(_molecularNetworkingSettingViewModel);
         }
 
         private static IReadOnlyReactiveProperty<LcmsAnalysisViewModel> ConvertToAnalysisViewModelAsObservable(

@@ -56,11 +56,11 @@ namespace CompMs.Common.Lipidomics.Tests
             //    int minSphCarbon, int maxSphCarbon, int minSphDoubleBond, int maxSphDoubleBond,
             //    AdductIon adduct)
 
-            var result = LipidMsmsCharacterization.JudgeIfAshexcer(target, 0.025, 
-                1126.8536f,totalCarbon, totalDbBond, totalOxidized,
+            var result = LipidMsmsCharacterization.JudgeIfAshexcer(target, 0.025,
+                1126.8536f, totalCarbon, totalDbBond, totalOxidized,
                          sn3Carbon, sn3Carbon, sn3DbBond, sn3DbBond,
-                         sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, 
-                         adduct = new AdductIon() { AdductIonName = "[M-H]-", IonMode=IonMode.Negative});
+                         sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
+                         adduct = AdductIon.GetAdductIon("[M-H]-"));
             Console.WriteLine($"{result.LipidName}");
             Console.WriteLine($"{result.AnnotationLevel}");
         }
@@ -103,7 +103,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 1144.8643f, totalCarbon, totalDbBond, totalOxidized,
                          sn3Carbon, sn3Carbon, sn3DbBond, sn3DbBond,
                          sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
-                         adduct = new AdductIon() { AdductIonName = "[M-H]-", IonMode = IonMode.Negative });
+                         adduct = AdductIon.GetAdductIon("[M-H]-"));
             Console.WriteLine($"{result.LipidName}");
             Console.WriteLine($"{result.AnnotationLevel}");
         }
@@ -147,7 +147,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 1128.8693f, totalCarbon, totalDbBond, totalOxidized,
                          sn3Carbon, sn3Carbon, sn3DbBond, sn3DbBond,
                          sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
-                         adduct = new AdductIon() { AdductIonName = "[M-H]-", IonMode = IonMode.Negative });
+                         adduct = AdductIon.GetAdductIon("[M-H]-"));
             //var result2 = LipidAnnotation.Characterize(1128.8693f, 0.025,
             //             target, 
             //             new List<LipidMolecule>() {

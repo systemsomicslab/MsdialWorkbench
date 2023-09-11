@@ -1,6 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.Common.Algorithm.Function;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parameter;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
@@ -12,9 +17,11 @@ namespace CompMs.App.Msdial.Model.Core
     public abstract class AlignmentModelBase : BindableBase, IAlignmentModel, IDisposable
     {
         private readonly AlignmentFileBeanModel _alignmentFileModel;
+        private readonly IMessageBroker _broker;
 
-        public AlignmentModelBase(AlignmentFileBeanModel alignmentFileModel) {
+        public AlignmentModelBase(AlignmentFileBeanModel alignmentFileModel, IMessageBroker broker) {
             _alignmentFileModel = alignmentFileModel ?? throw new ArgumentNullException(nameof(alignmentFileModel));
+            _broker = broker;
             Container = alignmentFileModel.LoadAlignmentResultAsync().Result;
             if (Container == null) {
                 MessageBox.Show("No aligned spot information."); // TODO: Move to view.
@@ -37,6 +44,30 @@ namespace CompMs.App.Msdial.Model.Core
 
         public abstract void SearchFragment();
         public abstract void InvokeMsfinder();
+        public void RunMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
+            var publisher = new TaskProgressPublisher(_broker, $"Exporting MN results in {parameter.ExportFolderPath}");
+            using (publisher.Start()) {
+                var spots = Container.AlignmentSpotProperties;
+                var peaks = _alignmentFileModel.LoadMSDecResults();
+
+                void notify(double progressRate) {
+                    publisher.Progress(progressRate, $"Exporting MN results in {parameter.ExportFolderPath}");
+                }
+
+                var nodes = MoleculerNetworkingBase.GetSimpleNodes(spots, peaks);
+                var edges = MoleculerNetworkingBase.GenerateEdgesBySpectralSimilarity(
+                    spots, peaks, parameter.MsmsSimilarityCalc, parameter.MnMassTolerance,
+                    parameter.MnAbsoluteAbundanceCutOff, parameter.MnRelativeAbundanceCutOff, parameter.MnSpectrumSimilarityCutOff,
+                    parameter.MinimumPeakMatch, parameter.MaxEdgeNumberPerNode, parameter.MaxPrecursorDifference, parameter.MaxPrecursorDifferenceAsPercent, notify);
+                
+                if (parameter.MnIsExportIonCorrelation && _alignmentFileModel.CountRawFiles >= 6) {
+                    var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots, parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode);
+                    edges.AddRange(ion_edges);
+                }
+
+                MoleculerNetworkingBase.ExportNodesEdgesFiles(parameter.ExportFolderPath, nodes, edges);
+            }
+        }
 
         protected readonly CompositeDisposable Disposables = new CompositeDisposable();
 

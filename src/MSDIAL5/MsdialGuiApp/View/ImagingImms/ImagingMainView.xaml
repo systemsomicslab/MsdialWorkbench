@@ -198,7 +198,39 @@
                     <chart:EicView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.AnalysisViewModel.EicViewModel}"/>
                 </TabItem>
             </TabControl>
-            <chart:PeakView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.PeakPlotViewModel}" Grid.Row="1" Grid.Column="1"/>
+            <Grid Grid.Row="1" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <StackPanel
+                    Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button DataContext="{Binding SelectedImageViewModel.ImageResultViewModel}"
+                            Command="{Binding SearchCompoundCommand, Mode=OneWay}"
+                            Background="AliceBlue"
+                        >Compound search
+                    </Button>
+                    <Button Name="Button_TableViewer"
+                            DataContext="{Binding SelectedImageViewModel.ImageResultViewModel}"
+                            Command="{Binding ShowIonTableCommand, Mode=OneWay}"
+                            Background="AliceBlue"
+                            Margin="0,2,0,0" 
+                            HorizontalContentAlignment="Right"
+                            VerticalAlignment="Top" HorizontalAlignment="Right"
+                            Height="25" Width="110"
+                            Grid.Row="0">
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="/Resources/Table.png"/>
+                                <TextBlock Text=" Show ion table " VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
+                </StackPanel>
+
+                <chart:PeakView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.PeakPlotViewModel}"
+                                Grid.Row="1"/>
+            </Grid>
             <GridSplitter Width="2" Foreground="Gray"
                           VerticalAlignment="Stretch" HorizontalAlignment="Left"
                           Grid.RowSpan="2" Grid.Column="1"/>

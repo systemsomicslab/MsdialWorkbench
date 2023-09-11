@@ -3,7 +3,6 @@ using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
-using CompMs.Common.Parser;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -70,7 +69,7 @@ namespace CompMs.MsdialCore.Export.Tests
                 MasterPeakID = 100,
                 Name = "Metabolite",
                 MS1RawSpectrumIdTop = 2,
-                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
+                AdductType = AdductIon.GetAdductIon("[M+H]+"),
                 Comment = "nice comment",
                 MatchResults = new MsScanMatchResultContainer(),
             };

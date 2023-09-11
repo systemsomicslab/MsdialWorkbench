@@ -87,6 +87,7 @@
                                     <DataTemplate>
                                         <CheckBox Content="{Binding Label}"
                                                   IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                  IsEnabled="{Binding Enabled.Value}"
                                                   HorizontalAlignment="Left" VerticalAlignment="Center"
                                                   Margin="8,8,0,0" Width="180"/>
                                     </DataTemplate>

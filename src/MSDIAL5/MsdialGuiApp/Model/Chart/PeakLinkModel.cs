@@ -67,10 +67,10 @@ namespace CompMs.App.Msdial.Model.Chart
                 annotations.Add(new SpotAnnotator(spot, spot.Isotope, (int)SpotLabelType.Isotope){ LabelHorizontalOffset = 10, LabelVerticalOffset = 5, });
                 if (spot.IsotopeWeightNumber == 0) {
                     if (spot.InnerModel.PeakCharacter.AdductTypeByAmalgamationProgram?.FormatCheck ?? false) {
-                        annotations.Add(new SpotAnnotator(spot, spot.AdductIonName + " (Amal.)", (int)SpotLabelType.AdductAmalgam){ LabelVerticalOffset = 20, });
+                        annotations.Add(new SpotAnnotator(spot, spot.AdductType.AdductIonName + " (Amal.)", (int)SpotLabelType.AdductAmalgam){ LabelVerticalOffset = 20, });
                     }
                     else {
-                        annotations.Add(new SpotAnnotator(spot, spot.AdductIonName, (int)SpotLabelType.Adduct){ LabelVerticalOffset = 20, });
+                        annotations.Add(new SpotAnnotator(spot, spot.AdductType.AdductIonName, (int)SpotLabelType.Adduct){ LabelVerticalOffset = 20, });
                     }
                 }
             }

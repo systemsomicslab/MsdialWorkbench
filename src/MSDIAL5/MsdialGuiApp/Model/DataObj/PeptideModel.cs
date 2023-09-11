@@ -30,7 +30,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             var idx = orderedPeaks.BinarySearch(peptideMsResult.ChromatogramPeakFeature, COMPARER);
             var peak = idx >= 0 ? orderedPeaks[idx] : null;
             AnnotatedSpot = peak;
-            AdductType = peak.AdductIonName;
+            AdductType = peak.AdductType.AdductIonName;
             PeptideSeq = peptideMsResult.Peptide.Sequence;
             DatabaseOrigin = peptideMsResult.Peptide.DatabaseOrigin;
             DatabaseOriginID = peptideMsResult.Peptide.DatabaseOriginID;
@@ -51,7 +51,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             var idx = orderedSpots.BinarySearch(peptideMsResult.AlignmentSpotProperty, COMPARER);
             var peak = idx >= 0 ? orderedSpots[idx] : null;
             AnnotatedSpot = peak;
-            AdductType = peak.AdductIonName;
+            AdductType = peak.AdductType.AdductIonName;
             PeptideSeq = peptideMsResult.Peptide.Sequence;
             DatabaseOrigin = peptideMsResult.Peptide.DatabaseOrigin;
             DatabaseOriginID = peptideMsResult.Peptide.DatabaseOriginID;

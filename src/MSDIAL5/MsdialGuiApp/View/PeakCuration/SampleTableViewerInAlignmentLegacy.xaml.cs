@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -18,7 +19,6 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace CompMs.App.Msdial.View.PeakCuration
 {
@@ -203,7 +203,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
             ParameterBase parameter) {
             var classnameToBytes = parameter.ClassnameToColorBytes;
             var classnameToBrushes = ChartBrushes.ConvertToSolidBrushDictionary(classnameToBytes);
-            return alignmentProp.Select(prop => {
+            return alignmentProp.ObserveOn(TaskPoolScheduler.Default).Select(prop => {
                 var observablePeaks = prop?.AlignedPeakPropertiesModelProperty ?? Observable.Never<ReadOnlyCollection<AlignmentChromPeakFeatureModel>>();
                 return observablePeaks.CombineLatest(chromatogramSource, (peaks, chromatograms) => {
                     var chromatograms_ = chromatograms ?? Enumerable.Empty<Chromatogram>();
@@ -335,11 +335,11 @@ namespace CompMs.App.Msdial.View.PeakCuration
         public ChromatogramXicViewModelLegacy ChromVM { get; set; }
         public string AnalysisClass { set; get; }
         public int CheckForRep { get; set; }
-        public BitmapSource Image {
-            get => _image;
-            set => SetProperty(ref _image, value);
+        public Drawing Drawing {
+            get => _drawing;
+            set => SetProperty(ref _drawing, value);
         }
-        private BitmapSource _image;
+        private Drawing _drawing;
         public SolidColorBrush BackgroundColInt { set; get; }
         public SolidColorBrush BackgroundColArea { set; get; }
         #endregion
@@ -377,10 +377,12 @@ namespace CompMs.App.Msdial.View.PeakCuration
 
             Task.Run(() =>
             {
-                var image = new PlainChromatogramXicForTableViewerLegacy(40, 200, 100, 100).DrawChromatogramXic2BitmapSource(chromatogramXicVM);
-                image?.Freeze();
-                Image = image;
+                Drawing = new PlainChromatogramXicForTableViewerLegacy(40, 200, 100, 100).GetChromatogramDrawing(chromatogramXicVM);
             });
+        }
+
+        public void UpdateDrawing() {
+            Drawing = new PlainChromatogramXicForTableViewerLegacy(40, 200, 100, 100).GetChromatogramDrawing(ChromVM);
         }
         
         public void UpdateBackgroundColor() {

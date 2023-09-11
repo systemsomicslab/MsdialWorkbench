@@ -982,7 +982,6 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         private static void gapfillingVS2(ObservableCollection<RawSpectrum> spectrumCollection, AlignmentPropertyBean alignmentProperty, 
             AlignedPeakPropertyBean alignedPeakProperty, ProjectPropertyBean projectProperty, AnalysisParametersBean param, 
             float centralRT, float centralMZ, float rtTol, float mzTol, float averagePeakWidth) {
-            if (mzTol < 0.005) mzTol = 0.005F;
             if (averagePeakWidth < 0.2) averagePeakWidth = 0.2F;
 
             var peaklist = DataAccessLcUtility.GetMs1Peaklist(spectrumCollection, projectProperty, centralMZ,

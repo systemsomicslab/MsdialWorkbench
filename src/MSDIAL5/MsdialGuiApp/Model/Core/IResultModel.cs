@@ -6,5 +6,6 @@ namespace CompMs.App.Msdial.Model.Core
     {
         void SearchFragment();
         void InvokeMsfinder();
+        void RunMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter);
     }
 }

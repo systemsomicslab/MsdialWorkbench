@@ -1,18 +1,11 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data.SqlTypes;
-using System.Diagnostics;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CompMs.Common.Lipidomics
 {
@@ -871,7 +864,7 @@ namespace CompMs.Common.Lipidomics
             return new LipidMolecule()
             {
                 LipidClass = lbmClass,
-                AnnotationLevel = 1,
+                AnnotationLevel = 2,
                 SublevelLipidName = totalName,
                 LipidName = lipidName,
                 TotalCarbonCount = totalCarbon,
@@ -11813,7 +11806,7 @@ AdductIon adduct)
                                                                                                                                                                                                 //Console.WriteLine("ASM {0} Unique mass {1}", "d" + sphCarbon + acylCarbon + ":" + sphDouble + acylDouble + "-O-" + extCarbon + ":" + extDouble, extAcylloss);
 
                                     var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = extAcylloss, Intensity = 0.01 },
+                                        new SpectrumPeak() { Mass = extAcylloss, Intensity = 1 },
                                     };
 
                                     var foundCount = 0;
@@ -12255,14 +12248,16 @@ AdductIon adduct)
                                     var acylDouble = totalDoubleBond - sphDouble - extDouble;
 
                                     var extAcylFa = LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble);
-                                    var sphLoss = theoreticalMz - ((sphCarbon - 2) * 12 + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2) - sphDouble * 2);  //[M-Sph+C2H6NO]-
+                                    var sphMass = sphCarbon * 12 + (2 * sphCarbon - 2 * sphDouble + 3) * MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass;
+                                    //var sphLoss = theoreticalMz - ((sphCarbon - 2) * 12 + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2) - sphDouble * 2);  //[M-Sph+C2H6NO]-
+                                    var sphLoss = theoreticalMz - sphMass + 12 * 2 + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.NitrogenMass;  //"[M-Sph+C2H4N]-"
                                     var sphLoss2 = sphLoss - H2O;      //[M-Sph+C2H4N]-
                                     var queryExtAcyl = new List<SpectrumPeak> {
                                         new SpectrumPeak() { Mass = extAcylFa, Intensity = 1.0 },
                                     };
                                     var querySph = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = sphLoss, Intensity = 0.1 },
-                                        new SpectrumPeak() { Mass = sphLoss2, Intensity = 0.1 },
+                                        new SpectrumPeak() { Mass = sphLoss, Intensity = 0.005 },
+                                        new SpectrumPeak() { Mass = sphLoss2, Intensity = 0.005 },
                                     };
                                     LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, queryExtAcyl, ms2Tolerance, out int queryExtAcylFoundCount, out double queryExtAcylAverageInt);
                                     LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, querySph, ms2Tolerance, out int querySphFoundCount, out double querySphAverageInt);

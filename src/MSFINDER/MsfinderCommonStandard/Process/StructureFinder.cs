@@ -195,6 +195,8 @@ namespace Riken.Metabolomics.MsfinderCommon.Process
         private FragmenterResult getFragmenterResult(Rfx.Riken.OsakaUniv.RawData rawData, ObservableCollection<double[]> eSpectrum, MspFormatCompoundInformationBean mspRecord, AnalysisParamOfMsfinder param)
         {
             var ms1tol = (float)param.Mass1Tolerance;
+            if (param.MassTolType == MassToleranceType.Ppm) ms1tol = (float)MolecularFormulaUtility.ConvertPpmToMassAccuracy(200.0000, param.Mass1Tolerance); // use 200.0000 for ppm -> Da convert of MS2
+
             var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms1tol));
             #region // practical parameter changes
             if (rawData.PrecursorMz > 500) {
@@ -202,7 +204,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Process
             }
             #endregion
 
-            var ms2tol = (float)param.Mass2Tolerance; 
+            var ms2tol = (float)param.Mass2Tolerance;
             if (param.MassTolType == MassToleranceType.Ppm) ms2tol = (float)MolecularFormulaUtility.ConvertPpmToMassAccuracy(200.0000, param.Mass2Tolerance); // use 200.0000 for ppm -> Da convert of MS2
             var ccsTol = param.CcsToleranceForSpectralSearching;
 

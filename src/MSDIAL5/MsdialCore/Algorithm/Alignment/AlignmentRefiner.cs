@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj.Database;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -84,8 +85,8 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                     spot.PeakCharacter.IsotopeParentPeakID = spot.AlignmentID;
                     spot.PeakCharacter.IsotopeWeightNumber = 0;
                 }
-                if (!spot.IsReferenceMatched(evaluator)) {
-                    spot.AdductType.Unset();
+                if (!spot.IsReferenceMatched(evaluator) && !spot.IsAnnotationSuggested(evaluator)) {
+                    spot.AdductType = AdductIon.Default;
                 }
             }
             if (_param.TrackingIsotopeLabels) return;
@@ -105,7 +106,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
         protected virtual void PostProcess(List<AlignmentSpotProperty> alignments) {
             foreach (var fcSpot in alignments.Where(spot => !spot.AdductType.HasAdduct)) {
-                fcSpot.AdductType.SetStandard(fcSpot.PeakCharacter.Charge, _param.IonMode);
+                fcSpot.AdductType = AdductIon.GetStandardAdductIon(fcSpot.PeakCharacter.Charge, _param.IonMode);
             }
         }
 
@@ -133,7 +134,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                                         var rAdductCharge = AdductIonParser.GetChargeNumber(rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType.AdductIonName);
                                         if (rAdductCharge != rSpot.PeakCharacter.Charge)
                                             break;
-                                        rSpot.AdductType.Set(rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType);
+                                        rSpot.AdductType = rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType;
                                     }
                                 }
                                 RegisterLinks(cSpot, rSpot, rLinkProp);
@@ -169,9 +170,9 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                                 if (fcSpot.PeakCharacter.Charge != adductCharge) continue;
 
                                 RegisterLinks(fcSpot, rSpot, rLinkProp);
-                                rSpot.AdductType.Set(rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType);
+                                rSpot.AdductType = rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType;
                                 if (!fcSpot.AdductType.HasAdduct) {
-                                    fcSpot.AdductType.Set(fcSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType);
+                                    fcSpot.AdductType = fcSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType;
                                 }
                             }
                             else {

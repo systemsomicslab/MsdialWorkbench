@@ -55,8 +55,5 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
         public DelegateCommand DeleteCommand => _deleteCommand ?? (_deleteCommand = new DelegateCommand(_model.Delete));
         private DelegateCommand _deleteCommand;
-
-        public DelegateCommand NormalizeCommand => _normalizeCommand ?? (_normalizeCommand = new DelegateCommand(_model.Normalize));//, Model.CanNormalize));
-        private DelegateCommand _normalizeCommand;
     }
 }

@@ -84,29 +84,15 @@ namespace CompMs.Common.Lipidomics
                 "OAD12+O+2H",
                 //"OAD01+H"
                 } ;
-            if (lipid.Chains is PositionLevelChains plChains)
-            {
-                AlkylChain alkyl;
-                AcylChain acyl;
-
-                if (plChains.Chains[0] is AlkylChain)
-                {
-                    alkyl = (AlkylChain)plChains.Chains[0];
-                    acyl = (AcylChain)plChains.Chains[1];
-                }
-                else
-                {
-                    alkyl = (AlkylChain)plChains.Chains[1];
-                    acyl = (AcylChain)plChains.Chains[0];
-                }
-
+            (AlkylChain alkyl, AcylChain acyl) = lipid.Chains.Deconstruct<AlkylChain, AcylChain>();
+            if (alkyl != null && acyl != null) {
                 if (alkyl.DoubleBond.Bonds.Any(b => b.Position == 1))
                 {
-                    spectrum.AddRange(GetEtherPCPSpectrum(lipid, alkyl, plChains.Chains[1], adduct));
+                    spectrum.AddRange(GetEtherPCPSpectrum(lipid, alkyl, acyl, adduct));
                 }
                 else
                 {
-                    spectrum.AddRange(GetEtherPCOSpectrum(lipid, plChains.Chains[0], plChains.Chains[1], adduct));
+                    spectrum.AddRange(GetEtherPCOSpectrum(lipid, alkyl, acyl, adduct));
                 }
                 spectrum.AddRange(spectrumGenerator.GetAlkylDoubleBondSpectrum(lipid, alkyl, adduct, nlMass, abundance, oadId));
                 spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlMass, abundance, oadId));
