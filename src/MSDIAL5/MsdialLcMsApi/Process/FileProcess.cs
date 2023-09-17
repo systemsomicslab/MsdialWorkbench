@@ -39,9 +39,12 @@ namespace CompMs.MsdialLcMsApi.Process
             _peakAnnotationProcess = new PeakAnnotationProcess(annotationProcess, storage, evaluator);
         }       
 
-        public async Task RunAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token = default) {
+        public Task RunAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token = default) {
             var provider = _factory.Create(file);
+            return RunAsync(file, provider, reportAction, token);
+        }
 
+        public async Task RunAsync(AnalysisFileBean file, IDataProvider provider, Action<int> reportAction, CancellationToken token = default) {
             // feature detections
             token.ThrowIfCancellationRequested();
             Console.WriteLine("Peak picking started");
