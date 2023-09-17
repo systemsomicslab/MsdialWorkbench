@@ -1,11 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
+using CompMs.Common.Parameter;
+using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.DataObj;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using CompMs.Common.Components;
-using CompMs.Common.Parameter;
-using CompMs.MsdialCore.DataObj;
-using CompMs.Common.DataObj.Result;
-using CompMs.MsdialCore.Algorithm.Annotation;
 using System.Linq;
 
 namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
@@ -94,7 +94,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
                 Name = "PC 18:0_20:4",
                 CompoundClass = "PC",
                 PrecursorMz = 810.601,
-                AdductType = CompMs.Common.Parser.AdductIonParser.GetAdductIonBean("[M+H]+"),
+                AdductType = Common.DataObj.Property.AdductIon.GetAdductIon("[M+H]+"),
                 Spectrum = new List<SpectrumPeak>
                 {
                     new SpectrumPeak { Mass = 184.073, Intensity = 100 },

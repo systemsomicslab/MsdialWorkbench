@@ -138,6 +138,9 @@
                   behavior:DataGridCommitBehavior.Enable="True"
                   behavior:DataGridScrollToSelectionBehavior.Enable="True"
                   Grid.Row="1">
+            <DataGrid.Resources>
+                <commonmvvm:BindingProxy x:Key="TableVM" Data="{Binding Mode=OneTime}"/>
+            </DataGrid.Resources>
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -164,9 +167,8 @@
                                     IsReadOnly="True"
                                     Width="70" />
                 <DataGridTextColumn Header="Type"
-                                    Binding="{Binding Path=AdductIonName}"
-                                    IsReadOnly="True"
-                                    Width="1*" />
+                                    Binding="{Binding Path=AdductType, Converter={StaticResource AdductIonConverter}}"
+                                    Width="*"/>
                 <DataGridTextColumn Header="Fill %"
                                     Binding="{Binding Path=FillPercentage, StringFormat=F2}"
                                     IsReadOnly="True"

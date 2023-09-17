@@ -1,5 +1,4 @@
-﻿using Accord.Statistics.Models.Regression.Fitting;
-using CompMs.App.Msdial.Model.Search;
+﻿using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
@@ -99,6 +98,17 @@ namespace CompMs.App.Msdial.Model.DataObj
                 if (innerModel.InChIKey != value) {
                     ((IMoleculeProperty)innerModel).InChIKey = value;
                     OnPropertyChanged(nameof(InChIKey));
+                }
+            }
+        }
+
+        public AdductIon AdductType {
+            get => innerModel.AdductType;
+            set {
+                if (innerModel.AdductType != value) {
+                    innerModel.AdductType = value;
+                    OnPropertyChanged(nameof(AdductType));
+                    OnPropertyChanged(nameof(AdductIonName));
                 }
             }
         }

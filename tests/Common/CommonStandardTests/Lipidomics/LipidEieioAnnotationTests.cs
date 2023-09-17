@@ -1,13 +1,8 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
-using CompMs.Common.DataObj.Result;
-using CompMs.Common.Enum;
-using CompMs.Common.Parameter;
-using CompMs.Common.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace CompMs.Common.Lipidomics.Tests
 {
@@ -296,7 +291,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var parser = FacadeLipidParser.Default;
             ILipid lipid = parser.Parse("MG 16:1");
             var generator = new MGSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+NH4]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+NH4]+"));
             var reference = new MoleculeMsReference()
             {
                 AdductType = AdductIon.GetAdductIon("[M+NH4]+"),
@@ -468,7 +463,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var parser = FacadeLipidParser.Default;
             ILipid lipid = parser.Parse("LPI_d5 15:0/0:0");
             var generator = new LPId5SpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
             var reference = new MoleculeMsReference()
             {
                 AdductType = AdductIon.GetAdductIon("[M+H]+"),
@@ -780,7 +775,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var parser = FacadeLipidParser.Default;
             ILipid lipid = parser.Parse("LPG 18:1/0:0");
             var generator = new LPGSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
             var reference = new MoleculeMsReference()
             {
                 AdductType = AdductIon.GetAdductIon("[M+H]+"),
@@ -2213,8 +2208,8 @@ namespace CompMs.Common.Lipidomics.Tests
             ILipid lipid = parser.Parse("PC P-18:0/18:1(9)");
             ILipid lipid2 = parser.Parse("PC O-18:1(9)/18:1(9)");
             var generator = new EtherPCSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
-            var scan2 = lipid2.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
+            var scan2 = lipid2.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
             var reference = new MoleculeMsReference()
             {
                 AdductType = AdductIon.GetAdductIon("[M+H]+"),

@@ -331,7 +331,7 @@ namespace CompMs.App.Msdial.View.PeakCuration {
             this.SelectedData.ChromVM.TargetRightRt = prop.RtRight;
             var isPeakDetected = prop.RtTop > 0;
             this.SelectedData.ChromVM.setInitialValuesByChromatogramBeanCollection(this.SelectedData.ChromVM.ChromatogramBean, prop.RtTop, isPeakDetected);
-            this.SelectedData.Image = new PlainChromatogramXicForTableViewerLegacy(40, 200, 100, 100).DrawChromatogramXic2BitmapSource(this.SelectedData.ChromVM);
+            this.SelectedData.UpdateDrawing();
         }
     }
 }

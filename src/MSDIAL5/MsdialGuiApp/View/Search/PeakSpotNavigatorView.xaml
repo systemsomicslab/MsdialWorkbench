@@ -44,7 +44,7 @@
                 <TextBlock Text="Mass" Tag="Mass"/>
                 <TextBlock Text="Metabolite" Tag="Name"/>
                 <TextBlock Text="Isotope" Tag="Isotope"/>
-                <TextBlock Text="Adduct" Tag="AdductIonName"/>
+                <TextBlock Text="Adduct" Tag="AdductType"/>
             </ComboBox>
         </StackPanel>
 

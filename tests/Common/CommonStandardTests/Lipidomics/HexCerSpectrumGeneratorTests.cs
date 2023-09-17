@@ -1,9 +1,8 @@
-﻿using CompMs.Common.Enum;
-using CompMs.Common.FormulaGenerator.DataObj;
+﻿using CompMs.Common.DataObj.Property;
+using CompMs.Common.Enum;
 using CompMs.Common.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics.Tests
@@ -19,7 +18,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.HexCer_NS, 811.690119, new PositionLevelChains(sphingo, acyl));
 
             var generator = new HexCerSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -124,7 +123,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.HexCer_NS, 811.690119, new PositionLevelChains(sphingo, acyl));
 
             var generator = new HexCerSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H-H2O]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H-H2O]+"));
 
             var expects = new[]
             {
@@ -229,7 +228,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.HexCer_NS, 811.690119, new PositionLevelChains(sphingo, acyl));
 
             var generator = new HexCerSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+Na]+"));
 
             var expects = new[]
             {

@@ -10,7 +10,6 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Interfaces;
-using CompMs.Common.Lipidomics;
 using CompMs.Common.Parameter;
 using CompMs.Common.Parser;
 using CompMs.Common.Proteomics.DataObj;
@@ -1098,7 +1097,7 @@ namespace CompMs.MsdialCore.Utility {
             var maxIntensity = spectrum.Max(n => n.Intensity);
             foreach (var peak in spectrum) {
                 if (peak.Intensity > maxIntensity * relcutoff && peak.Intensity > abscutoff) {
-                    massSpec.Add(new SpectrumPeak() { Mass = peak.Mass, Intensity = peak.Intensity / maxIntensity * 100.0 });
+                    massSpec.Add(new SpectrumPeak() { Mass = peak.Mass, Intensity = peak.Intensity / maxIntensity * 100.0, Resolution = peak.Intensity });
                 }
             }
             return massSpec;
@@ -1156,7 +1155,7 @@ namespace CompMs.MsdialCore.Utility {
             var chargeNum = feature.PeakCharacter.Charge;
             var chargeString = chargeNum == 1 ? string.Empty : chargeNum.ToString();
             var adductString = "[M+" + chargeString + "H]" + chargeString + "+";
-            var type = AdductIonParser.GetAdductIonBean(adductString);
+            var type = AdductIon.GetAdductIon(adductString);
 
             feature.SetAdductType(type);
         }
@@ -1175,7 +1174,7 @@ namespace CompMs.MsdialCore.Utility {
             var chargeNum = feature.PeakCharacter.Charge;
             var chargeString = chargeNum == 1 ? string.Empty : chargeNum.ToString();
             var adductString = "[M+" + chargeString + "H]" + chargeString + "+";
-            var type = AdductIonParser.GetAdductIonBean(adductString);
+            var type = AdductIon.GetAdductIon(adductString);
 
             feature.SetAdductType(type);
             feature.Name = "w/o MS2: " + result.Name;

@@ -58,7 +58,7 @@ namespace CompMs.App.Msdial.Model.Imms
             ParameterBase parameter,
             List<AnalysisFileBean> files,
             IMessageBroker broker)
-            : base(alignmentFileModel) {
+            : base(alignmentFileModel, broker) {
 
             _alignmentFile = alignmentFileModel;
             _parameter = parameter;
@@ -211,7 +211,7 @@ namespace CompMs.App.Msdial.Model.Imms
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
             var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
-            AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(Ms1Spots, Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderProperty, PeakSpotNavigatorModel).AddTo(Disposables);
+            AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(Ms1Spots, Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderProperty, PeakSpotNavigatorModel, parameter.ReferenceFileParam.SearchedAdductIons).AddTo(Disposables);
 
             MsdecResult = Target.SkipNull()
                 .Select(t => _alignmentFile.LoadMSDecResultByIndexAsync(t.MasterAlignmentID))

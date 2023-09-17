@@ -224,15 +224,19 @@ namespace CompMs.Common.Lipidomics
             return isAllExisted;
         }
 
-        public static bool IsDiagnosticFragmentsExist(IReadOnlyList<SpectrumPeak> spectrum, IReadOnlyList<DiagnosticIon> dIons) {
+        public static bool IsDiagnosticFragmentsExist(
+            IReadOnlyList<SpectrumPeak> spectrum, 
+            IReadOnlyList<DiagnosticIon> dIons, 
+            double minimumIntensity,
+            double minimumIntensityFactor) {
             var missedCounter = 0;
             var isAllExisted = true;
             if (dIons.IsEmptyOrNull()) return true;
             foreach (var ion in dIons) {
-                if (!IsDiagnosticFragmentExist_ResolutionUsed4Intensity(spectrum, ion.MzTolerance, ion.Mz, ion.IonAbundanceCutOff)) {
+                if (!IsDiagnosticFragmentExist_ResolutionUsed4Intensity(spectrum, ion.MzTolerance, ion.Mz, ion.IonAbundanceCutOff, minimumIntensity, minimumIntensityFactor)) {
                     missedCounter++;
-                    if (dIons.Count < 4 && missedCounter == 1) { isAllExisted = false; break; }
-                    if (dIons.Count >= 4 && missedCounter == 2) { isAllExisted = false; break; }
+                    if (dIons.Count < 5 && missedCounter == 1) { isAllExisted = false; break; }
+                    if (dIons.Count >= 5 && missedCounter == 2) { isAllExisted = false; break; }
                 }
             }
             return isAllExisted;
@@ -256,15 +260,22 @@ namespace CompMs.Common.Lipidomics
             return false;
         }
 
-        public static bool IsDiagnosticFragmentExist_ResolutionUsed4Intensity(IReadOnlyList<SpectrumPeak> spectrum,
+        public static bool IsDiagnosticFragmentExist_ResolutionUsed4Intensity(
+            IReadOnlyList<SpectrumPeak> spectrum,
             double mzTolerance,
             double diagnosticMz,
-            double threshold) {
+            double threshold,
+            double minimumIntensity,
+            double minimumIntensityFactor) {
             for (int i = 0; i < spectrum.Count; i++) {
                 var mz = spectrum[i].Mass;
-                var intensity = spectrum[i].Resolution; // should be normalized by max intensity to 100
+                var relative_intensity = spectrum[i].Resolution; // should be normalized by max intensity to 100
+                var original_intensity = spectrum[i].Charge; // this is temporal value
 
-                if (intensity > threshold && Math.Abs(mz - diagnosticMz) < mzTolerance) {
+                if (relative_intensity > threshold &&
+                    relative_intensity > minimumIntensity * minimumIntensityFactor &&
+                    original_intensity > 12 &&
+                    Math.Abs(mz - diagnosticMz) < mzTolerance) {
                     return true;
                 }
             }
@@ -387,13 +398,15 @@ namespace CompMs.Common.Lipidomics
             var adduct = reference.AdductType;
 
             var result = new LipidMsCharacterizationResult();
+            var minimumPeakIntensity = exp_spectrum.Min(n => n.Intensity);
+            var minimumPeakIntensityFactor = 2.0;
 
             var matchedpeaks = MsScanMatching.GetMachedSpectralPeaks(exp_spectrum, ref_spectrum, tolerance, mzBegin, mzEnd);
 
             // check lipid class ion's existence
             var classions = matchedpeaks.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.metaboliteclass)).ToList();
             var isClassMustIonsExisted = classions.All(ion => !ion.IsAbsolutelyRequiredFragmentForAnnotation || ion.IsMatched);
-            var isClassAdvancedFilter = StandardMsCharacterizationUtility.IsDiagnosticFragmentsExist(classions, dIons4class);
+            var isClassAdvancedFilter = StandardMsCharacterizationUtility.IsDiagnosticFragmentsExist(classions, dIons4class, minimumPeakIntensity, minimumPeakIntensityFactor);
             var classions_matched = classions.Where(n => n.IsMatched).ToList();
             var classionsDetected = classions_matched.Count();
             var isClassIonExisted = isClassMustIonsExisted && isClassAdvancedFilter && classionsDetected >= classIonCutoff
@@ -408,7 +421,7 @@ namespace CompMs.Common.Lipidomics
             // check lipid chain ion's existence
             var chainIons = matchedpeaks.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.acylchain)).ToList();
             var isChainMustIonsExisted = chainIons.All(ion => !ion.IsAbsolutelyRequiredFragmentForAnnotation || ion.IsMatched);
-            var isChainAdvancedFilter = StandardMsCharacterizationUtility.IsDiagnosticFragmentsExist(chainIons, dIons4chain);
+            var isChainAdvancedFilter = StandardMsCharacterizationUtility.IsDiagnosticFragmentsExist(chainIons, dIons4chain, minimumPeakIntensity, minimumPeakIntensityFactor);
             var chainIons_matched = chainIons.Where(n => n.IsMatched).ToList();
             var chainIonsDetected = chainIons_matched.Count();
             var isChainIonExisted = isChainMustIonsExisted && isChainAdvancedFilter && chainIonsDetected >= chainIonCutoff
@@ -425,7 +438,7 @@ namespace CompMs.Common.Lipidomics
             if (positionIonCutoff > 0) {
                 var positionIons = matchedpeaks.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.snposition)).ToList();
                 var isPositionMustIonsExisted = positionIons.All(ion => !ion.IsAbsolutelyRequiredFragmentForAnnotation || ion.IsMatched);
-                var isPositionAdvancedFilter = StandardMsCharacterizationUtility.IsDiagnosticFragmentsExist(positionIons, dIons4position);
+                var isPositionAdvancedFilter = StandardMsCharacterizationUtility.IsDiagnosticFragmentsExist(positionIons, dIons4position, minimumPeakIntensity, minimumPeakIntensityFactor);
                 var positionIons_matched = positionIons.Where(n => n.IsMatched).ToList();
                 
                 positionIonsDetected = positionIons_matched.Count();
@@ -446,13 +459,14 @@ namespace CompMs.Common.Lipidomics
                 .Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_high))
                 .Select(n => new DiagnosticIon() { Mz = n.Mass, IonAbundanceCutOff = 0.0000001, MzTolerance = tolerance })
                 .ToList();
-            var doublebondHighAndLowIons =
-               ref_spectrum
-               .Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_high) || n.SpectrumComment.HasFlag(SpectrumComment.doublebond_low))
-               .Select(n => new DiagnosticIon() { Mz = n.Mass, IonAbundanceCutOff = 0.0000001, MzTolerance = tolerance })
-               .ToList();
 
-            var isDoublebondAdvancedFilter = StandardMsCharacterizationUtility.IsDiagnosticFragmentsExist(doublebondIons_matched, doublebondHighIons);
+            //var doublebondHighAndLowIons =
+            //   ref_spectrum
+            //   .Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_high) || n.SpectrumComment.HasFlag(SpectrumComment.doublebond_low))
+            //   .Select(n => new DiagnosticIon() { Mz = n.Mass, IonAbundanceCutOff = 0.0000001, MzTolerance = tolerance })
+            //   .ToList();
+
+            var isDoublebondAdvancedFilter = StandardMsCharacterizationUtility.IsDiagnosticFragmentsExist(doublebondIons_matched, doublebondHighIons, minimumPeakIntensity, minimumPeakIntensityFactor);
             //var isDoublebondAdvancedFilter = StandardMsCharacterizationUtility.IsDiagnosticFragmentsExist(doublebondIons_matched, doublebondHighAndLowIons);
             //var isDoublebondAdvancedFilter = StandardMsCharacterizationUtility.IsDiagnosticFragmentsExist(doublebondIons_matched, dIons4db);
             var matchedCount = doublebondIons_matched.Count;
@@ -461,10 +475,36 @@ namespace CompMs.Common.Lipidomics
 
             var isDoubleBondIdentified = isDoublebondAdvancedFilter && matchedPercent > doublebondIonCutoff * 0.5 ? true : false;
 
+            var hGrainBonusForPufa = false;
+            if (doublebondIons.Count(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_high) && n.Comment.Contains("+H_p3")) > 0) {
+                var hGrainFragments = doublebondIons.Where(n => n.Comment.Contains("+H_p3")).ToList();
+                // the peaks are sorted by "oder by decessing with mz"
+                var count = 0;
+                var hGrainPeakAve = 0.0;
+                //if (reference.Name == "PS_d5 17:0/20:3(8,11,14)") {
+                //    Console.WriteLine();
+                //}
+                for (int i = hGrainFragments.Count - 1; i >= 0; i--) {
+                    count++;
+                    var peak = hGrainFragments[i];
+                    if (peak.SpectrumComment.HasFlag(SpectrumComment.doublebond_high)) {
+                        hGrainPeakAve /= (double)count;
+                        if (peak.Resolution > hGrainPeakAve * 3.0) {
+                            hGrainBonusForPufa = true;
+                        }
+                        break;
+                    }
+                    else {
+                        hGrainPeakAve += peak.Resolution;
+                    }
+                }
+            }
+
             result.DoubleBondIonsDetected = (int)matchedCount;
             result.DoubleBondMatchedPercent = matchedPercent;
             result.IsDoubleBondIonsExisted = isDoubleBondIdentified;
             result.DoubleBondIonScore = isDoubleBondIdentified ? matchedCoefficient + matchedPercent : 0;
+            if (hGrainBonusForPufa) result.DoubleBondIonScore += 0.5;
 
             // total score
 
