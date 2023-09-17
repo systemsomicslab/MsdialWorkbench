@@ -238,9 +238,9 @@ namespace CompMs.Common.Lipidomics
                     //  seek PC diagnostic
                     var threshold = 3.0;
                     var isClassIonFound1 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, C5H14NO4P + Proton, threshold);
-                    var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C + Proton, threshold);
-                    var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O + Proton, threshold);
-                    if (!isClassIonFound1 || !isClassIonFound2 || !isClassIonFound3) return null;
+                    //var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C + Proton, threshold);
+                    //var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O + Proton, threshold);
+                    if (!isClassIonFound1) return null;
                     // reject Na+ adduct
                     var diagnosticMz3 = theoreticalMz - C3H9N;
                     var isNaTypicalFound1 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, 10.0);
@@ -305,10 +305,6 @@ namespace CompMs.Common.Lipidomics
                             candidates.Add(molecule);
                         }
                     }
-                    //else
-                    //{
-                    //    return null;
-                    //}
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PC", LbmClass.PC, "", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
@@ -447,9 +443,9 @@ namespace CompMs.Common.Lipidomics
                     var threshold = 2.5;
                     var diagnosticMz = theoreticalMz - C2H8NO4P;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
-                    var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C + Proton, threshold);
-                    var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O + Proton, threshold);
-                    if (!isClassIonFound || !isClassIonFound2 || !isClassIonFound3) return null;
+                    //var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C + Proton, threshold);
+                    //var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O + Proton, threshold);
+                    if (!isClassIonFound) return null;
 
                     // from here, acyl level annotation is executed.
                     var sn1 = LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - Electron;
@@ -498,10 +494,6 @@ namespace CompMs.Common.Lipidomics
                             sn2Carbon, sn2Double, averageIntensity);
                             candidates.Add(molecule);
                         }
-                    }
-                    else
-                    {
-                        return null;
                     }
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PE", LbmClass.PE, "", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
@@ -999,10 +991,10 @@ namespace CompMs.Common.Lipidomics
                     var diagnosticMz = theoreticalMz - C6H13O9P - NH3;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     // PI diagnostic
-                    var threshold2 = 5.0;
-                    var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C + Proton, threshold2);
-                    var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O + Proton, threshold2);
-                    if (!isClassIonFound || !isClassIonFound2 || !isClassIonFound3) return null;
+                    //var threshold2 = 5.0;
+                    //var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C + Proton, threshold2);
+                    //var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O + Proton, threshold2);
+                    if (!isClassIonFound) return null;
 
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
@@ -1292,9 +1284,9 @@ namespace CompMs.Common.Lipidomics
                     var threshold = 2.5;
                     var diagnosticMz = theoreticalMz - C2H8NO4P;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
-                    var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C, threshold);
-                    var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O, threshold);
-                    if (!isClassIonFound || !isClassIonFound2 || !isClassIonFound3) return null;
+                    //var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C, threshold);
+                    //var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O, threshold);
+                    if (!isClassIonFound) return null;
 
                     //// seek PreCursor -141(C2H8NO4P)
                     //var threshold = 2.5;
@@ -1736,12 +1728,10 @@ namespace CompMs.Common.Lipidomics
                         MassDiffDictionary.PhosphorusMass,
                     }.Sum();
                     // seek -141.019094261 (C2H8NO4P)
-                    var threshold = 2.5;
+                    var threshold = 1.0;
                     var diagnosticMz = theoreticalMz - C2H8NO4P;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
-                    var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C, threshold);
-                    var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O, threshold);
-                    if (!isClassIonFound || !isClassIonFound2 || !isClassIonFound3) return null;
+                    if (!isClassIonFound) return null;
 
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
@@ -1754,9 +1744,9 @@ namespace CompMs.Common.Lipidomics
                     var sn1_rearrange = sn1alkyl + C2H8NO4P; //sn1(carbon chain) + C2H8NO4P 
 
                     var query = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = NL_sn1, Intensity = 5.0 },
-                                    new SpectrumPeak() { Mass = NL_sn2, Intensity = 5.0 },
-                                    new SpectrumPeak() { Mass = sn1_rearrange, Intensity = 10.0 },
+                                    new SpectrumPeak() { Mass = NL_sn1, Intensity = 1.0 },
+                                    new SpectrumPeak() { Mass = NL_sn2, Intensity = 1.0 },
+                                    new SpectrumPeak() { Mass = sn1_rearrange, Intensity = 1.0 },
                                 };
 
                     var foundCount = 0;
@@ -2221,11 +2211,9 @@ namespace CompMs.Common.Lipidomics
                         Proton
                     }.Sum();
                     // 
-                    var threshold = 3.0;
+                    var threshold = 1.0;
                     var isClassIonFound1 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, C5H14NO4P, threshold);
-                    var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C, threshold);
-                    var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O, threshold);
-                    if (!isClassIonFound1 || !isClassIonFound2 || !isClassIonFound3) return null;
+                    if (!isClassIonFound1) return null;
                     // reject Na+ adduct
                     var diagnosticMz3 = theoreticalMz - 59.0735;
                     var isNaTypicalFound1 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, 10.0);
@@ -2248,7 +2236,7 @@ namespace CompMs.Common.Lipidomics
                     var foundCount = 0;
                     var averageIntensity = 0.0;
                     LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
-                    if (foundCount == 2)
+                    if (foundCount == 1)
                     { // 
                         var EtherString = "O-" + sn1Carbon + ":" + sn1Double;
                         var AcylString = sn2Carbon + ":" + sn2Double;
@@ -2401,9 +2389,9 @@ namespace CompMs.Common.Lipidomics
                     //  seek PC diabnostic
                     var threshold = 3.0;
                     var isClassIonFound1 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, C5H14NO4P + Proton, threshold);
-                    var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C + Proton, threshold);
-                    var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O + Proton, threshold);
-                    if (!isClassIonFound1 || !isClassIonFound2 || !isClassIonFound3) return null;
+                    //var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C + Proton, threshold);
+                    //var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O + Proton, threshold);
+                    if (!isClassIonFound1) return null;
                     // reject Na+ adduct
                     var diagnosticMz3 = theoreticalMz - C3H9N;
                     var isNaTypicalFound1 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, 10.0);
@@ -2467,10 +2455,6 @@ namespace CompMs.Common.Lipidomics
                             candidates.Add(molecule);
                         }
                     }
-                    //else
-                    //{
-                    //    return null;
-                    //}
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PC_d5", LbmClass.PC_d5, "", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
@@ -2602,9 +2586,9 @@ namespace CompMs.Common.Lipidomics
                     var threshold = 2.5;
                     var diagnosticMz = theoreticalMz - C2H8NO4P;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
-                    var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C + Proton, threshold);
-                    var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O + Proton, threshold);
-                    if (!isClassIonFound || !isClassIonFound2 || !isClassIonFound3) return null;
+                    //var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C + Proton, threshold);
+                    //var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O + Proton, threshold);
+                    if (!isClassIonFound) return null;
 
                     // from here, acyl level annotation is executed.
                     var sn1 = LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - Electron;
@@ -2733,9 +2717,6 @@ namespace CompMs.Common.Lipidomics
                             }
                         }
                     }
-                    //if (candidates == null || candidates.Count == 0)
-                    //    return null;
-
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PE_d5", LbmClass.PE_d5, "", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
@@ -2779,11 +2760,6 @@ namespace CompMs.Common.Lipidomics
                     var threshold = 10.0;
                     var diagnosticMz = theoreticalMz - C3H9O6P - NH3;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
-                    // PG diagnostic
-                    var threshold2 = 1.0;
-                    //var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C + Proton, threshold2);
-                    //var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O + Proton, threshold2);
-                    //if (!isClassIonFound || !isClassIonFound2 || !isClassIonFound3) return null;
                     if (!isClassIonFound) return null;
 
                     // from here, acyl level annotation is executed.
@@ -2904,11 +2880,6 @@ namespace CompMs.Common.Lipidomics
                     var threshold = 10.0;
                     var diagnosticMz = theoreticalMz - C3H8NO6P;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
-                    // PS diagnostic
-                    var threshold2 = 5.0;
-                    //var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C + Proton, threshold2);
-                    //var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O + Proton, threshold2);
-                    //if (!isClassIonFound || !isClassIonFound2 || !isClassIonFound3) return null;
                     if (!isClassIonFound) return null;
 
                     // from here, acyl level annotation is executed.
@@ -3094,12 +3065,6 @@ namespace CompMs.Common.Lipidomics
                     var threshold = 10.0;
                     var diagnosticMz = theoreticalMz - C6H13O9P - NH3;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
-                    // PI diagnostic
-
-                    //var threshold2 = 5.0;
-                    //var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C + Proton, threshold2);
-                    //var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O + Proton, threshold2);
-                    //if (!isClassIonFound || !isClassIonFound2 || !isClassIonFound3) return null;
                     if (!isClassIonFound) return null;
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
@@ -3391,13 +3356,6 @@ namespace CompMs.Common.Lipidomics
                     var threshold = 2.5;
                     var diagnosticMz = theoreticalMz - C2H8NO4P;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
-                    //var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_C, threshold);
-                    //var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O, threshold);
-                    //if ((isClassIonFound ? 1 : 0) + (isClassIonFound2 ? 1 : 0) + (isClassIonFound3 ? 1 : 0) < 2)
-                    //{
-                    //    return null;
-                    //}
-                    //if (!isClassIonFound || !isClassIonFound2 || !isClassIonFound3) return null;
                     if (!isClassIonFound) return null;
 
                     // reject EtherPE 
