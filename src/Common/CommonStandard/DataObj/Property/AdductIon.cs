@@ -163,6 +163,9 @@ namespace CompMs.Common.DataObj.Property
         {
             AdductIon IMessagePackFormatter<AdductIon>.Deserialize(byte[] bytes, int offset, IFormatterResolver formatterResolver, out int readSize) {
                 readSize = MessagePackBinary.ReadNextBlock(bytes, offset);
+                if (MessagePackBinary.IsNil(bytes, offset)) {
+                    return Default;
+                }
                 var count = MessagePackBinary.ReadArrayHeader(bytes, offset, out var tmp);
                 if (count < 3) {
                     return Default;
