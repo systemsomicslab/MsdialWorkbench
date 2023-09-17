@@ -4567,17 +4567,14 @@ namespace CompMs.Common.Lipidomics
                     var diagnosticMz2 = 104.106990;
                     var diagnosticMz3 = 124.99982;
 
-                    var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
+                    var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     if (!isClassIon1Found) return null;
-                    //var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
-                    //var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold);
-                    //if (isClassIon2Found != true || isClassIon3Found != true) return null;
-                    //
+
+                    threshold = 1.0;
+                    var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
+                    var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold);
+                    if (isClassIon2Found != true && isClassIon3Found != true) return null;
                     var candidates = new List<LipidMolecule>();
-                    //var averageIntensity = 0.0;
-                    //var molecule = LipidMsmsCharacterizationUtility.getSingleacylchainwithsuffixMoleculeObjAsLevel2("LPC", LbmClass.EtherLPC, totalCarbon,
-                    //                totalDoubleBond, averageIntensity, "e");
-                    //candidates.Add(molecule);
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("LPC", LbmClass.EtherLPC, "e", theoreticalMz, adduct,
                        totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
@@ -4596,12 +4593,7 @@ namespace CompMs.Common.Lipidomics
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     if (isClassIon1Found != true || isClassIon2Found != true) return null;
 
-                    //
                     var candidates = new List<LipidMolecule>();
-                    //var averageIntensity = 0.0;
-                    //var molecule = LipidMsmsCharacterizationUtility.getSingleacylchainwithsuffixMoleculeObjAsLevel2("LPC", LbmClass.EtherLPC, totalCarbon,
-                    //                totalDoubleBond, averageIntensity, "e");
-                    //candidates.Add(molecule);
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("LPC", LbmClass.EtherLPC, "e", theoreticalMz, adduct,
                        totalCarbon, totalDoubleBond, 0, candidates, 1);
 
