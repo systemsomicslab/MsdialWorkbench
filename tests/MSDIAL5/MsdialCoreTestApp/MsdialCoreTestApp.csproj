@@ -9,6 +9,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <HighEntropyVA>false</HighEntropyVA>
+    <Product>MsdialConsoleApp</Product>
   </PropertyGroup>
 
   <ItemGroup>

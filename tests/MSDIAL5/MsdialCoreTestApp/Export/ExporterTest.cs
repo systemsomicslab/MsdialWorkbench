@@ -22,7 +22,7 @@ namespace CompMs.App.MsdialConsole.Export
 
             var container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(alignmentFile.FilePath);
             var decResults = MsdecResultsReader.ReadMSDecResults(alignmentFile.SpectraFilePath, out _, out _);
-
+            
             var curatedSpots = curator?.MsCleanRCurator(container.AlignmentSpotProperties, decResults, storage.AnalysisFiles, storage.Parameter) ?? container.AlignmentSpotProperties;
 
             var metadataAccessor = new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter, false);
