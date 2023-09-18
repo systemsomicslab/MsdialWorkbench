@@ -2229,7 +2229,7 @@ namespace CompMs.Common.Lipidomics
                     var EtherLoss = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - MassDiffDictionary.HydrogenMass * 2;
 
                     var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = AcylLoss, Intensity = 0.1 },
+                                //new SpectrumPeak() { Mass = AcylLoss, Intensity = 0.1 },
                                 new SpectrumPeak() { Mass = EtherLoss, Intensity = 1.0 },
                              };
 
