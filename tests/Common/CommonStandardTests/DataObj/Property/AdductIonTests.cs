@@ -34,5 +34,14 @@ namespace CompMs.Common.DataObj.Property.Tests
             var newAdduct = MessagePackDefaultHandler.LoadFromStream<AdductIon>(memory);
             Assert.AreEqual(adductIon, newAdduct);
         }
+
+        [DataTestMethod()]
+        public void SerializeNullAdductTest() {
+            var adductIon = (AdductIon)null;
+            var memory = new MemoryStream();
+            MessagePackDefaultHandler.SaveToStream(adductIon, memory);
+            var newAdduct = MessagePackDefaultHandler.LoadFromStream<AdductIon>(memory);
+            Assert.AreEqual(AdductIon.Default, newAdduct);
+        }
     }
 }

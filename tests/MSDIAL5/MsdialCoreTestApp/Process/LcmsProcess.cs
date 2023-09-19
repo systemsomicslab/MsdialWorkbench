@@ -2,10 +2,13 @@
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
@@ -14,6 +17,7 @@ using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm.Alignment;
 using CompMs.MsdialLcMsApi.Algorithm.Annotation;
 using CompMs.MsdialLcMsApi.DataObj;
+using CompMs.MsdialLcMsApi.Export;
 using CompMs.MsdialLcMsApi.Process;
 using System;
 using System.Collections.Generic;
@@ -65,13 +69,24 @@ namespace CompMs.App.MsdialConsole.Process
                 },
                 evaluator,
                 mapper);
-            var process = new FileProcess(new StandardDataProviderFactory(5, false), storage, annotationProcess, evaluator);
+            var providerFactory = new StandardDataProviderFactory(5, false);
+            var process = new FileProcess(providerFactory, storage, annotationProcess, evaluator);
             var sem = new SemaphoreSlim(Environment.ProcessorCount / 2);
             foreach ((var file, var idx) in files.WithIndex()) {
                 tasks[idx] = Task.Run(async () => {
                     await sem.WaitAsync();
                     try {
-                        await process.RunAsync(file, null).ConfigureAwait(false);
+                        var provider = providerFactory.Create(file);
+                        await process.RunAsync(file, provider, null).ConfigureAwait(false);
+
+                        var peak_outputfile = Path.Combine(outputFolder, file.AnalysisFileName + ".mdpeak");
+                        using (var stream = File.Open(peak_outputfile, FileMode.Create, FileAccess.Write)) {
+                            var peak_container = await ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath).ConfigureAwait(false);
+                            var peak_decResults = MsdecResultsReader.ReadMSDecResults(file.DeconvolutionFilePath, out _, out _);
+                            var peak_accessor = new LcmsAnalysisMetadataAccessor(storage.DataBaseMapper, storage.Parameter, ExportspectraType.deconvoluted);
+                            var peak_Exporter = new AnalysisCSVExporter();
+                            peak_Exporter.Export(stream, peak_container.Items, peak_decResults, provider, peak_accessor, file);
+                        }
                     }
                     finally {
                         sem.Release();
@@ -87,7 +102,18 @@ namespace CompMs.App.MsdialConsole.Process
             var result = aligner.Alignment(files, alignmentFile, serializer);
 
             Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
-            MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result?.AlignmentSpotProperties).ToList());
+            
+            var align_outputfile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdalign");
+            var align_decResults = LoadRepresentativeDeconvolutions(storage, result?.AlignmentSpotProperties).ToList();
+            var align_accessor = new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter, false);
+            var align_quantAccessor = new LegacyQuantValueAccessor("Height", storage.Parameter);
+            using (var stream = File.Open(align_outputfile, FileMode.Create, FileAccess.Write)) {
+                var align_exporter = new AlignmentCSVExporter();
+                align_exporter.Export(stream, result.AlignmentSpotProperties, align_decResults, files,
+                    align_accessor, align_quantAccessor, new[] { StatsValue.Average, StatsValue.Stdev });
+            }
+
+            MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
 
             if (isProjectSaved) {
                 using (var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create))

@@ -4,30 +4,43 @@ using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.FormulaGenerator.Function;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 
 namespace CompMs.Common.Parser.Tests
 {
     [TestClass()]
     public class AdductIonParserTests
     {
-        [TestMethod()]
-        public void IonTypeFormatCheckerTest() {
-            Assert.IsTrue(AdductIonParser.IonTypeFormatChecker("[M+H]+"));
-            Assert.IsTrue(AdductIonParser.IonTypeFormatChecker("[M].+"));
+        [DataTestMethod()]
+        [DynamicData(nameof(IonTypeFormatCheckerTestData))]
+        public void IonTypeFormatCheckerTest(bool expected, string adduct) {
+            var actual = AdductIonParser.IonTypeFormatChecker(adduct);
+            Assert.AreEqual(expected, actual);
+        }
 
-            Assert.IsFalse(AdductIonParser.IonTypeFormatChecker("M+H+"));
-            Assert.IsFalse(AdductIonParser.IonTypeFormatChecker("[+"));
-            Assert.IsFalse(AdductIonParser.IonTypeFormatChecker("[[]]+"));
-            Assert.IsFalse(AdductIonParser.IonTypeFormatChecker("[M+H]"));
-            Assert.IsFalse(AdductIonParser.IonTypeFormatChecker("[M+H]+]"));
-            Assert.IsFalse(AdductIonParser.IonTypeFormatChecker("[(M+H)]+"));
-            Assert.IsFalse(AdductIonParser.IonTypeFormatChecker("[(M+H]+"));
-            Assert.IsFalse(AdductIonParser.IonTypeFormatChecker("[M+H)]+"));
-            Assert.IsFalse(AdductIonParser.IonTypeFormatChecker("[M+H])+"));
-            Assert.IsFalse(AdductIonParser.IonTypeFormatChecker("[M+H](+"));
-            Assert.IsFalse(AdductIonParser.IonTypeFormatChecker("[[]+"));
-            Assert.IsFalse(AdductIonParser.IonTypeFormatChecker("[][+"));
-            Assert.IsFalse(AdductIonParser.IonTypeFormatChecker("[]+"));
+        public static IEnumerable<object[]> IonTypeFormatCheckerTestData {
+            get {
+                yield return new object[] { true, "[M+H]+" };
+                yield return new object[] { true, "[M]+" };
+                yield return new object[] { true, "[M].+" };
+                yield return new object[] { true, "[2M+H]+" };
+                yield return new object[] { true, "[M+2H]2+" };
+                yield return new object[] { true, "[M-H]-" };
+                yield return new object[] { false, "M+H+" };
+                yield return new object[] { false, "[+" };
+                yield return new object[] { false, "[[]]+" };
+                yield return new object[] { false, "[M+H]" };
+                yield return new object[] { false, "[M+H]+]" };
+                yield return new object[] { false, "[(M+H)]+" };
+                yield return new object[] { false, "[(M+H]+" };
+                yield return new object[] { false, "[M+H)]+" };
+                yield return new object[] { false, "[M+H])+" };
+                yield return new object[] { false, "[M+H](+" };
+                yield return new object[] { false, "[[]+" };
+                yield return new object[] { false, "[][+" };
+                yield return new object[] { false, "[]+" };
+                yield return new object[] { false, "[100]+" };
+            }
         }
 
         [TestMethod()]

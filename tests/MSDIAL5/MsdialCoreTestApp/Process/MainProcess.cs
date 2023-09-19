@@ -23,7 +23,6 @@ namespace CompMs.App.MsdialConsole.Process {
                 else if (args[i] == "-m" && i + 1 < args.Length) methodFile = args[i + 1];
                 else if (args[i] == "-o" && i + 1 < args.Length) outputFolder = args[i + 1];
                 else if (args[i] == "-p") isProjectStore = true;
-                else if (args[i] == "-mCE") isAif = true;
                 else if (args[i] == "-target" && i + 1 < args.Length) {
                     if (!float.TryParse(args[i + 1], out targetMz)) {
                         return argsError2();
@@ -53,7 +52,7 @@ namespace CompMs.App.MsdialConsole.Process {
             catch (Exception ex) {
                 var msg = String.Format("{0} -- {1} -- {2}", ex.InnerException, ex.Message, ex.StackTrace);
                 Console.WriteLine(msg);
-                return ex.GetHashCode(); ;
+                return ex.GetHashCode(); 
             }
         }
 
@@ -68,8 +67,7 @@ namespace CompMs.App.MsdialConsole.Process {
 							   <input folder>	is the folder containing the files to be processed	(required)
 							   <output folder>	is the folder to save results	(required)
 							   <method file>	is a file holding processing properties	(required)
-                               <option -p>           is an option to generate MTB file to be loaded in MSDIAL GUI application.
-                               <option -mCE>    is an option to select multi collision energies mode";
+                               <option -p>           is an option to generate MTB file to be loaded in MSDIAL GUI application.";
 
             Console.Error.WriteLine(error);
 
@@ -83,7 +81,6 @@ namespace CompMs.App.MsdialConsole.Process {
 							   <output folder>	is the folder to save results	(required)
 							   <method file>	is a file holding processing properties	(required)
                                <option -p>           is an option to generate MTB file to be loaded in MSDIAL GUI application.
-                               <option -mCE>    is an option to select multi collision energies mode
                                <option -target> is an option to run as target mode. please set m/z";
 
             Console.Error.WriteLine(error);
