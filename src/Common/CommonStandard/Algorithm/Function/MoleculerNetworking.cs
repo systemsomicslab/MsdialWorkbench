@@ -15,6 +15,7 @@ namespace CompMs.Common.Algorithm.Function {
     public class LinkNode {
         public double[] Score { get; set; }
         public IMSScanProperty Node { get; set; }
+        public int Index { get; set; }
     }
 
     public sealed class MoleculerNetworkingBase {
@@ -112,16 +113,19 @@ namespace CompMs.Common.Algorithm.Function {
         public static List<Edge> GenerateEdgesBySpectralSimilarity<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans,
             MsmsSimilarityCalc msmsSimilarityCalc, double masstolerance, double absoluteAbsCutoff, double relativeAbsCutoff, double spectrumSimilarityCutoff,
             double minimumPeakMatch, double maxEdgeNumberPerNode, double maxPrecursorDifference, double maxPrecursorDifferenceAsPercent, Action<double> report) where T:IMoleculeProperty, IChromatogramPeak {
-            var cScans = scans.Where(n => n.Spectrum.Count() > 0).ToList();
-            foreach (var cScan in cScans) cScan.Spectrum = MsScanMatching.GetProcessedSpectrum(cScan.Spectrum, cScan.PrecursorMz, absoluteAbundanceCutOff: absoluteAbsCutoff, relativeAbundanceCutOff: relativeAbsCutoff);
-            var edges = GenerateEdges(cScans, masstolerance, minimumPeakMatch, spectrumSimilarityCutoff, 
-                maxEdgeNumberPerNode, maxPrecursorDifference, maxPrecursorDifferenceAsPercent, msmsSimilarityCalc == MsmsSimilarityCalc.Bonanza ? true : false, report);
+            foreach (var scan in scans) {
+                if (scan.Spectrum.Count > 0)
+                    scan.Spectrum = MsScanMatching.GetProcessedSpectrum(scan.Spectrum, scan.PrecursorMz, absoluteAbundanceCutOff: absoluteAbsCutoff, relativeAbundanceCutOff: relativeAbsCutoff);
+            }
+            var edges = GenerateEdges(spots, scans, masstolerance, minimumPeakMatch, spectrumSimilarityCutoff, 
+            maxEdgeNumberPerNode, maxPrecursorDifference, maxPrecursorDifferenceAsPercent, msmsSimilarityCalc == MsmsSimilarityCalc.Bonanza ? true : false, report);
 
             return edges.Select(n => new Edge() { data = n, classes = "ms_similarity" }).ToList();
         }
 
-        public static List<EdgeData> GenerateEdges(
-            IReadOnlyList<IMSScanProperty> quries, 
+        public static List<EdgeData> GenerateEdges<T>(
+            IReadOnlyList<T> spots,
+            IReadOnlyList<IMSScanProperty> peaks, 
             double massTolerance,
             double minimumPeakMatch, 
             double matchThreshold, 
@@ -129,20 +133,22 @@ namespace CompMs.Common.Algorithm.Function {
             double maxPrecursorDiff,
             double maxPrecursorDiff_Percent,
             bool isBonanza,
-            Action<double> report) {
+            Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
 
             var edges = new List<EdgeData>();
             var counter = 0;
-            var max = quries.Count;
+            var max = peaks.Count;
             var node2links = new Dictionary<int, List<LinkNode>>();
-            Debug.WriteLine(quries.Count);
-            for (int i = 0; i < quries.Count; i++) {
+            Debug.WriteLine(peaks.Count);
+            for (int i = 0; i < peaks.Count; i++) {
+                if (peaks[i].Spectrum.Count <= 0) continue;
                 counter++;
                 Debug.WriteLine("{0} / {1}", counter, max);
                 report?.Invoke(counter / (double)max);
-                for (int j = i + 1; j < quries.Count; j++) {
-                    var prop1 = quries[i];
-                    var prop2 = quries[j];
+                for (int j = i + 1; j < peaks.Count; j++) {
+                    if (peaks[j].Spectrum.Count <= 0) continue;
+                    var prop1 = peaks[i];
+                    var prop2 = peaks[j];
                     var massDiff = Math.Abs(prop1.PrecursorMz - prop2.PrecursorMz);
                     if (massDiff > maxPrecursorDiff) continue;
                    // if (Math.Max(prop1.PrecursorMz, prop2.PrecursorMz) * maxPrecursorDiff_Percent * 0.01 - Math.Min(prop1.PrecursorMz, prop2.PrecursorMz) < 0) continue;
@@ -157,10 +163,10 @@ namespace CompMs.Common.Algorithm.Function {
                     if (scoreitem[0] < matchThreshold * 0.01) continue;
 
                     if (node2links.ContainsKey(i)) {
-                        node2links[i].Add(new LinkNode() { Score = scoreitem, Node = quries[j] });
+                        node2links[i].Add(new LinkNode() { Score = scoreitem, Node = peaks[j], Index = j });
                     }
                     else {
-                        node2links[i] = new List<LinkNode>() { new LinkNode() { Score = scoreitem, Node = quries[j] } };
+                        node2links[i] = new List<LinkNode>() { new LinkNode() { Score = scoreitem, Node = peaks[j], Index = j } };
                     }
                 }
             }
@@ -177,8 +183,8 @@ namespace CompMs.Common.Algorithm.Function {
 
             foreach (var item in cNode2Links) {
                 foreach (var link in item.Value) {
-                    var source_node_id = quries[item.Key].ScanID;
-                    var target_node_id = link.Node.ScanID;
+                    var source_node_id = spots[item.Key].ID;
+                    var target_node_id = spots[link.Index].ID;
 
                     var edge = new EdgeData() {
                         score = link.Score[0], matchpeakcount = link.Score[1], source = source_node_id, target = target_node_id
