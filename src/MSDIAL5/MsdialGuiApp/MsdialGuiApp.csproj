@@ -44,7 +44,6 @@
 		<None Remove="CytoscapeLocalBrowser\assembly\Chart.js" />
 		<None Remove="CytoscapeLocalBrowser\assembly\contextmenu.js" />
 		<None Remove="CytoscapeLocalBrowser\assembly\cytoscape.js" />
-		<None Remove="CytoscapeLocalBrowser\assembly\cytoscape.min.js" />
 		<None Remove="CytoscapeLocalBrowser\assembly\fakeLoader.css" />
 		<None Remove="CytoscapeLocalBrowser\assembly\fakeLoader.min.js" />
 		<None Remove="CytoscapeLocalBrowser\assembly\images\iconHelp.png" />
@@ -83,10 +82,7 @@
 		<None Remove="CytoscapeLocalBrowser\assembly\smiles-drawer.min.js" />
 		<None Remove="CytoscapeLocalBrowser\assembly\style.css" />
 		<None Remove="CytoscapeLocalBrowser\assembly\view.core.js" />
-		<None Remove="CytoscapeLocalBrowser\assembly\workingspace.js" />
-		<None Remove="CytoscapeLocalBrowser\data\elements.js" />
 		<None Remove="CytoscapeLocalBrowser\data\style.js" />
-		<None Remove="CytoscapeLocalBrowser\MsdialCytoscapeViewer.html" />
 		<None Remove="Resources\BinVestigate.ico" />
 		<None Remove="Resources\CompoundSearchIcon.ico" />
 		<None Remove="Resources\Deconvoluted.ico" />
@@ -103,7 +99,6 @@
 	  <Content Include="CytoscapeLocalBrowser\assembly\Chart.js" />
 	  <Content Include="CytoscapeLocalBrowser\assembly\contextmenu.js" />
 	  <Content Include="CytoscapeLocalBrowser\assembly\cytoscape.js" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\cytoscape.min.js" />
 	  <Content Include="CytoscapeLocalBrowser\assembly\fakeLoader.css" />
 	  <Content Include="CytoscapeLocalBrowser\assembly\fakeLoader.min.js" />
 	  <Content Include="CytoscapeLocalBrowser\assembly\jquery-1.12.4.min.js" />
@@ -127,10 +122,9 @@
 	  <Content Include="CytoscapeLocalBrowser\assembly\smiles-drawer.min.js" />
 	  <Content Include="CytoscapeLocalBrowser\assembly\style.css" />
 	  <Content Include="CytoscapeLocalBrowser\assembly\view.core.js" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\workingspace.js" />
-	  <Content Include="CytoscapeLocalBrowser\data\elements.js" />
-	  <Content Include="CytoscapeLocalBrowser\data\style.js" />
-	  <Content Include="CytoscapeLocalBrowser\MsdialCytoscapeViewer.html" />
+	  <Content Include="CytoscapeLocalBrowser\data\style.js">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 	<ItemGroup>
 	  <EmbeddedResource Include="Resources\SplashLipids.xml" />
@@ -188,6 +182,28 @@
 	  </Compile>
 	</ItemGroup>
 	<ItemGroup>
+
+	  <None Update="CytoscapeLocalBrowser\assembly\bluebird.min.js">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+
+	  <None Update="CytoscapeLocalBrowser\assembly\cytoscape.min.js">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+
+	  <None Update="CytoscapeLocalBrowser\assembly\workingspace.js">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="CytoscapeLocalBrowser\data\elements.js">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="CytoscapeLocalBrowser\data\style.js">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="CytoscapeLocalBrowser\MsdialCytoscapeViewer.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+
 	  <None Update="Properties\Settings.settings">
 	    <Generator>SettingsSingleFileGenerator</Generator>
 	    <LastGenOutput>Settings.Designer.cs</LastGenOutput>

@@ -21,15 +21,16 @@ namespace CompMs.Common.Algorithm.Function {
     public class CyNode
     {
         public CyNodeData data { get; set; }
-        public string classes { get; set; }
+        public string selected { get; set; }
 
         public CyNode() {
             data = new CyNodeData();
+            selected = "false";
         }
     }
 
     public class CyNodeData {
-        public int id { get; set; }
+        public string id { get; set; }
         public string Name { get; set; }
         public string Rt { get; set; }
         public string Mz { get; set; }
@@ -43,17 +44,29 @@ namespace CompMs.Common.Algorithm.Function {
     }
 
     public class CyEdgeData {
-        public int source { get; set; }
-        public int target { get; set; }
+        public string source { get; set; }
+        public string target { get; set; }
         public double score { get; set; }
+        public string type { get; set; }
     }
 
     public class CyEdge {
         public CyEdgeData data { get; set; }
-        public string classes { get; set; }
+        public string selected { get; set; }
         public CyEdge() {
             data = new CyEdgeData();
+            selected = "false";
         }
+    }
+
+    public class RootObject {
+        public List<CyNode> nodes { get; set; }
+        public List<CyEdge> edges { get; set; }
+    }
+
+    internal class RootObject2
+    {
+        public RootObject elements { get; set; }
     }
 
     public sealed class MoleculerNetworkingBase {
@@ -64,8 +77,14 @@ namespace CompMs.Common.Algorithm.Function {
             var nodepath = Path.Combine(folder, $"node-{dt:yyMMddhhmm}.txt");
             var edgepath = Path.Combine(folder, $"edge-{dt:yyMMddhhmm}.txt");
 
-            var jsonpath = Path.Combine(folder, $"node-{dt:yyMMddhhmm}.cyjs");
+            var curDir = System.AppDomain.CurrentDomain.BaseDirectory;
+            var url = curDir + "CytoscapeLocalBrowser/MsdialCytoscapeViewer.html";
+            var cyjsexportpath = curDir + "CytoscapeLocalBrowser/data/elements.js";
+            // var jsonpath = Path.Combine(folder, $"elements-{dt:yyMMddhhmm}.cyjs");
 
+            var rootObj = new RootObject();
+            var rootObj2 = new RootObject2();
+            
             var cytoscapeNodes = new List<CyNode>();
             var cytoscapeEdges = new List<CyEdge>();
 
@@ -79,15 +98,10 @@ namespace CompMs.Common.Algorithm.Function {
 
                     var ms2String = getMsString(node.MSMS);
                     sw.WriteLine(ms2String);
-                }
-            }
 
-            using (StreamWriter sw = new StreamWriter(jsonpath, false, Encoding.ASCII)) {
-                foreach (var nodeObj in nodes) {
-                    var node = nodeObj.data;
                     var cynode = new CyNode() {
                         data = new CyNodeData() {
-                            id = node.id,
+                            id = node.id.ToString(),
                             Name = node.Name,
                             Rt = node.Rt,
                             Mz = node.Mz,
@@ -102,42 +116,37 @@ namespace CompMs.Common.Algorithm.Function {
                     };
                     cytoscapeNodes.Add(cynode);
                 }
-                var json = JsonConvert.SerializeObject(cytoscapeNodes, Formatting.Indented);
-                sw.WriteLine(json.ToString());
             }
             
-            //CyjsNodeData cynd = new CyjsNodeData();
-            //cynd.Id = node.id;
-            //cynd.Name = node.Name;
-            //cynd.Rt = node.Rt;
-            //cynd.Mz = node.Mz;
-            //var jsonData = JsonConvert.SerializeObject(cynd);
-            //Console.WriteLine(jsonData);
-
-
-
             using (StreamWriter sw = new StreamWriter(edgepath, false, Encoding.ASCII)) {
 
                 sw.WriteLine("SourceID\tTargetID\tScore\tType");
                 foreach (var edgeObj in edges) {
                     var edge = edgeObj.data;
+
+                    var cyedge = new CyEdge() {
+                        data = new CyEdgeData() {
+                            source = edge.source.ToString(),
+                            target = edge.target.ToString(),
+                            score = edge.score,
+                            type = edgeObj.classes
+                        }
+                    };
+                    cytoscapeEdges.Add(cyedge);
+
                     sw.WriteLine(edge.source + "\t" + edge.target + "\t" + edge.score + "\t" + edgeObj.classes);
                 }
             }
-        }
 
-        //[JsonObject("CyjsNodeData")]
-        //class CyjsNodeData
-        //{
-        //    [JsonProperty("id")]
-        //    public int Id { get; set; }
-        //    [JsonProperty("Name")]
-        //    public string Name { get; set; }
-        //    [JsonProperty("Rt")]
-        //    public string Rt { get; set; }
-        //    [JsonProperty("Mz")]
-        //    public string Mz { get; set; }
-        //}
+            rootObj.nodes = cytoscapeNodes;
+            rootObj.edges = cytoscapeEdges;
+            rootObj2.elements = rootObj;
+            using (StreamWriter sw = new StreamWriter(cyjsexportpath, false, Encoding.ASCII)) {
+                var json = JsonConvert.SerializeObject(rootObj2, Formatting.Indented);
+                sw.WriteLine(json.ToString());
+            }
+            System.Diagnostics.Process.Start(url);
+        }
 
         private static string getMsString(List<List<double>> msList) {
             if (msList == null || msList.Count == 0) return string.Empty;
