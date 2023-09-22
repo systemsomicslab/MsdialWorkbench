@@ -26,23 +26,24 @@ namespace CompMs.App.Msdial.Model.Setting
             IsReadOnly = false;
         }
 
-        public DatasetFileSettingModel(IEnumerable<AnalysisFileBean> analysisFiles) {
-            _fileModels = new ObservableCollection<AnalysisFileBeanModel>(analysisFiles.Select(f => new AnalysisFileBeanModel(f)));
-            FileModels = new ReadOnlyObservableCollection<AnalysisFileBeanModel>(_fileModels);
+        public DatasetFileSettingModel(AnalysisFileBeanModelCollection analysisFiles) {
+            _fileModels = null;
+            FileModels = analysisFiles.AnalysisFiles;
             IsReadOnly = true;
-            ProjectFolderPath = _fileModels.Select(f => Path.GetDirectoryName(f.AnalysisFilePath)).Distinct().SingleOrDefault() ?? string.Empty;
+            ProjectFolderPath = analysisFiles.AnalysisFiles.Select(f => Path.GetDirectoryName(f.AnalysisFilePath)).Distinct().SingleOrDefault() ?? string.Empty;
         }
 
         public ReadOnlyObservableCollection<AnalysisFileBeanModel> FileModels { get; }
-        public IEnumerable<AnalysisFileBeanModel> IncludedFileModels => _fileModels.Where(f => f.AnalysisFileIncluded);
+
+        public IEnumerable<AnalysisFileBeanModel> IncludedFileModels => FileModels.Where(f => f.AnalysisFileIncluded);
 
         public bool IsReadOnly { get; }
 
         public string ProjectFolderPath {
-            get => projectFolderPath;
-            private set => SetProperty(ref projectFolderPath, value);
+            get => _projectFolderPath;
+            private set => SetProperty(ref _projectFolderPath, value);
         }
-        private string projectFolderPath = string.Empty;
+        private string _projectFolderPath = string.Empty;
 
         public AcquisitionType SelectedAcquisitionType {
             get => _selectedAcquisiolationType;
@@ -51,7 +52,7 @@ namespace CompMs.App.Msdial.Model.Setting
         private AcquisitionType _selectedAcquisiolationType = AcquisitionType.DDA;
 
         public void SetFiles(IEnumerable<string> files) {
-            if (IsReadOnly) {
+            if (IsReadOnly || _fileModels is null) {
                 return;
             }
 

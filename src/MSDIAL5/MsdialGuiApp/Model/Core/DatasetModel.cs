@@ -186,5 +186,7 @@ namespace CompMs.App.Msdial.Model.Core
                 return storage;
             }
         }
+
+        AnalysisFileBeanModelCollection IDatasetModel.AnalysisFiles => _analysisFileBeanModelCollection;
     }
 }
