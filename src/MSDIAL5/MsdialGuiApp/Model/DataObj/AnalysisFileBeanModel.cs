@@ -8,7 +8,7 @@ namespace CompMs.App.Msdial.Model.DataObj
     {
         private readonly AnalysisFileBean _file;
 
-        public AnalysisFileBeanModel(AnalysisFileBean file) {
+        internal AnalysisFileBeanModel(AnalysisFileBean file) {
             _file = file;
         }
 
