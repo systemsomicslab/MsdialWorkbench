@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Algorithm.Function;
@@ -79,13 +80,16 @@ namespace CompMs.App.Msdial.Model.Core {
                     publisher.Progress(progressRate, $"Exporting MN results in {parameter.ExportFolderPath}");
                 }
 
-                var nodes = MoleculerNetworkingBase.GetSimpleNodes(spots, peaks);
-                var edges = MoleculerNetworkingBase.GenerateEdgesBySpectralSimilarity(
-                    spots, peaks, parameter.MsmsSimilarityCalc, parameter.MnMassTolerance,
-                    parameter.MnAbsoluteAbundanceCutOff, parameter.MnRelativeAbundanceCutOff, parameter.MnSpectrumSimilarityCutOff,
-                    parameter.MinimumPeakMatch, parameter.MaxEdgeNumberPerNode, parameter.MaxPrecursorDifference, parameter.MaxPrecursorDifferenceAsPercent, notify);
+                var rootObj = MoleculerNetworkingBase.GetMoleculerNetworkingRootObj(spots, peaks, parameter.MsmsSimilarityCalc, parameter.MnMassTolerance,
+                   parameter.MnAbsoluteAbundanceCutOff, parameter.MnRelativeAbundanceCutOff, parameter.MnSpectrumSimilarityCutOff,
+                   parameter.MinimumPeakMatch, parameter.MaxEdgeNumberPerNode, parameter.MaxPrecursorDifference, parameter.MaxPrecursorDifferenceAsPercent, notify);
 
-                MoleculerNetworkingBase.ExportNodesEdgesFiles(parameter.ExportFolderPath, nodes, edges);
+                for (int i = 0; i < rootObj.nodes.Count; i++) {
+                    var node = rootObj.nodes[i];
+                    node.data.BarGraph = CytoscapejsModel.GetBarGraphProperty(spots[i], AnalysisFileModel.AnalysisFileName);
+                }
+
+                MoleculerNetworkingBase.ExportNodesEdgesFiles(parameter.ExportFolderPath, rootObj.nodes, rootObj.edges);
             }
         }
 

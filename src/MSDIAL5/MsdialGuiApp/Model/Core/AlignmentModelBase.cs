@@ -16,7 +16,7 @@ namespace CompMs.App.Msdial.Model.Core
 {
     public abstract class AlignmentModelBase : BindableBase, IAlignmentModel, IDisposable
     {
-        private readonly AlignmentFileBeanModel _alignmentFileModel;
+        protected readonly AlignmentFileBeanModel _alignmentFileModel;
         private readonly IMessageBroker _broker;
 
         public AlignmentModelBase(AlignmentFileBeanModel alignmentFileModel, IMessageBroker broker) {
@@ -44,7 +44,8 @@ namespace CompMs.App.Msdial.Model.Core
 
         public abstract void SearchFragment();
         public abstract void InvokeMsfinder();
-        public void RunMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
+        public virtual void RunMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
+
             var publisher = new TaskProgressPublisher(_broker, $"Exporting MN results in {parameter.ExportFolderPath}");
             using (publisher.Start()) {
                 var spots = Container.AlignmentSpotProperties;
@@ -54,18 +55,16 @@ namespace CompMs.App.Msdial.Model.Core
                     publisher.Progress(progressRate, $"Exporting MN results in {parameter.ExportFolderPath}");
                 }
 
-                var nodes = MoleculerNetworkingBase.GetSimpleNodes(spots, peaks);
-                var edges = MoleculerNetworkingBase.GenerateEdgesBySpectralSimilarity(
-                    spots, peaks, parameter.MsmsSimilarityCalc, parameter.MnMassTolerance,
+                var rootObj = MoleculerNetworkingBase.GetMoleculerNetworkingRootObj(spots, peaks, parameter.MsmsSimilarityCalc, parameter.MnMassTolerance,
                     parameter.MnAbsoluteAbundanceCutOff, parameter.MnRelativeAbundanceCutOff, parameter.MnSpectrumSimilarityCutOff,
                     parameter.MinimumPeakMatch, parameter.MaxEdgeNumberPerNode, parameter.MaxPrecursorDifference, parameter.MaxPrecursorDifferenceAsPercent, notify);
                 
                 if (parameter.MnIsExportIonCorrelation && _alignmentFileModel.CountRawFiles >= 6) {
                     var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots, parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode);
-                    edges.AddRange(ion_edges);
+                    rootObj.edges.AddRange(ion_edges);
                 }
 
-                MoleculerNetworkingBase.ExportNodesEdgesFiles(parameter.ExportFolderPath, nodes, edges);
+                MoleculerNetworkingBase.ExportNodesEdgesFiles(parameter.ExportFolderPath, rootObj.nodes, rootObj.edges);
             }
         }
 

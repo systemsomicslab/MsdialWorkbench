@@ -67,6 +67,17 @@ namespace CompMs.Common.Algorithm.Function {
             return specString;
         }
 
+        public static RootObject GetMoleculerNetworkingRootObj<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans,
+            MsmsSimilarityCalc msmsSimilarityCalc, double masstolerance, double absoluteAbsCutoff, double relativeAbsCutoff, double spectrumSimilarityCutoff,
+            double minimumPeakMatch, double maxEdgeNumberPerNode, double maxPrecursorDifference, double maxPrecursorDifferenceAsPercent, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
+            var nodes = GetSimpleNodes(spots, scans);
+            var edges = GenerateEdgesBySpectralSimilarity(
+                    spots, scans, msmsSimilarityCalc, masstolerance,
+                    absoluteAbsCutoff, relativeAbsCutoff, spectrumSimilarityCutoff,
+                    minimumPeakMatch, maxEdgeNumberPerNode, maxPrecursorDifference, maxPrecursorDifferenceAsPercent, report);
+            return new RootObject() { nodes = nodes, edges = edges };
+        }
+
         public static List<Node> GetSimpleNodes<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans) where T : IMoleculeProperty, IChromatogramPeak {
             var nodes = new List<Node>();
             var minValue = Math.Log10(spots.Min(n => n.Intensity));
