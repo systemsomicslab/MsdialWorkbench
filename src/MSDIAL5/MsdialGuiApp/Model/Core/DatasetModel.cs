@@ -13,7 +13,6 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -27,7 +26,7 @@ namespace CompMs.App.Msdial.Model.Core
         private readonly IMessageBroker _broker;
         private readonly ProjectBaseParameterModel _projectBaseParameter;
 
-        public DatasetModel(IMsdialDataStorage<ParameterBase> storage, IMessageBroker broker) : this(storage, new AnalysisFileBeanModelCollection(storage.AnalysisFiles.Select(file => new AnalysisFileBeanModel(file))), broker) {
+        public DatasetModel(IMsdialDataStorage<ParameterBase> storage, IMessageBroker broker) : this(storage, new AnalysisFileBeanModelCollection(storage.AnalysisFiles), broker) {
 
         }
 

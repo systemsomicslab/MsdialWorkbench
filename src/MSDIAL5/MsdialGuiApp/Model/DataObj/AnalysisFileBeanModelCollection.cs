@@ -20,6 +20,10 @@ namespace CompMs.App.Msdial.Model.DataObj
             
         }
 
+        public AnalysisFileBeanModelCollection(IEnumerable<AnalysisFileBean> analysisFiles) : this(analysisFiles.Select(f => new AnalysisFileBeanModel(f))) {
+
+        }
+
         public AnalysisFileBeanModelCollection(IEnumerable<AnalysisFileBeanModel> analysisFiles) {
             var observableAnalysisFiles = new ObservableCollection<AnalysisFileBeanModel>(analysisFiles);
             foreach (var file in analysisFiles) {
