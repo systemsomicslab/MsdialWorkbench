@@ -22,6 +22,9 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public AnalysisFileBeanModelCollection(IEnumerable<AnalysisFileBeanModel> analysisFiles) {
             var observableAnalysisFiles = new ObservableCollection<AnalysisFileBeanModel>(analysisFiles);
+            foreach (var file in analysisFiles) {
+                Disposables.Add(file);
+            }
             _observableAnalysisFiles = observableAnalysisFiles;
             AnalysisFiles = new ReadOnlyObservableCollection<AnalysisFileBeanModel>(observableAnalysisFiles);
             IncludedAnalysisFiles = observableAnalysisFiles.ToFilteredReadOnlyObservableCollection(file => file.AnalysisFileIncluded).AddTo(Disposables);
