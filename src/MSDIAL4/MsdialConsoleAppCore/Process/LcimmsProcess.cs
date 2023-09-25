@@ -115,7 +115,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process {
             }
 
             AlignmentResultBean alignmentResult = null;
-            if (analysisFiles.Count > 1) {
+            if (analysisFiles.Count > 1 && lcmsParam.TogetherWithAlignment) {
                 alignmentResult = new AlignmentResultBean();
                 ProcessJointAligner.Execute(rdamProperty, projectProp, new ObservableCollection<AnalysisFileBean>(analysisFiles),
                     lcmsParam, alignmentResult, null);

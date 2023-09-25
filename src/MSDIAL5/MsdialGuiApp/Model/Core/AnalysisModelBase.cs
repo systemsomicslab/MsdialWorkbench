@@ -70,7 +70,17 @@ namespace CompMs.App.Msdial.Model.Core {
 
         public abstract void SearchFragment();
         public abstract void InvokeMsfinder();
-        public void RunMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
+        public void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter) {
+            var rootObj = GetMoleculerNetworkingRootObj(parameter);
+            MoleculerNetworkingBase.ExportNodesEdgesFiles(parameter.ExportFolderPath, rootObj);
+        }
+
+        public void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
+            var rootObj = GetMoleculerNetworkingRootObj(parameter);
+            MoleculerNetworkingBase.SendToCytoscapeJs(rootObj);
+        }
+
+        public CompMs.Common.DataObj.NodeEdge.RootObject GetMoleculerNetworkingRootObj(MolecularSpectrumNetworkingBaseParameter parameter) {
             var publisher = new TaskProgressPublisher(_broker, $"Exporting MN results in {parameter.ExportFolderPath}");
             using (publisher.Start()) {
                 var spots = Ms1Peaks;
@@ -88,8 +98,7 @@ namespace CompMs.App.Msdial.Model.Core {
                     var node = rootObj.nodes[i];
                     node.data.BarGraph = CytoscapejsModel.GetBarGraphProperty(spots[i], AnalysisFileModel.AnalysisFileName);
                 }
-
-                MoleculerNetworkingBase.ExportNodesEdgesFiles(parameter.ExportFolderPath, rootObj.nodes, rootObj.edges);
+                return rootObj;
             }
         }
 

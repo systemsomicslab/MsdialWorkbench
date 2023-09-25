@@ -27,7 +27,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     internal sealed class LcmsMethodViewModel : MethodViewModel {
         private readonly LcmsMethodModel _model;
         private readonly IMessageBroker _broker;
-        private readonly MolecularNetworkingSettingViewModel _molecularNetworkingSettingViewModel;
+        private readonly MolecularNetworkingExportSettingViewModel _molecularNetworkingExportSettingViewModel;
+        private readonly MolecularNetworkingSendingToCytoscapeJsSettingViewModel _molecularNetworkingSendingToCytoscapeJsSettingViewModel;
 
         private LcmsMethodViewModel(
             LcmsMethodModel model,
@@ -67,7 +68,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             ShowProteinGroupTableCommand = model.CanShowProteinGroupTable.ToReactiveCommand().AddTo(Disposables);
             ShowProteinGroupTableCommand.Subscribe(() => broker.Publish(_proteinGroupTableViewModel)).AddTo(Disposables);
 
-            _molecularNetworkingSettingViewModel = new MolecularNetworkingSettingViewModel(_model.MolecularNetworkingSettingModel).AddTo(Disposables);
+
+            _molecularNetworkingExportSettingViewModel = new MolecularNetworkingExportSettingViewModel(_model.MolecularNetworkingSettingModel).AddTo(Disposables);
+            _molecularNetworkingSendingToCytoscapeJsSettingViewModel = new MolecularNetworkingSendingToCytoscapeJsSettingViewModel(_model.MolecularNetworkingSettingModel).AddTo(Disposables);
         }
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
@@ -225,12 +228,19 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
         }
 
-        public DelegateCommand ShowMolecularNetworkingSettingCommand => _molecularNetworkingSettingCommand ?? (_molecularNetworkingSettingCommand = new DelegateCommand(MolecularNetworkingSettingMethod));
-        private DelegateCommand _molecularNetworkingSettingCommand;
+        public DelegateCommand ShowMolecularNetworkingExportSettingCommand => _molecularNetworkingExportSettingCommand ?? (_molecularNetworkingExportSettingCommand = new DelegateCommand(MolecularNetworkingExportSettingMethod));
+        private DelegateCommand _molecularNetworkingExportSettingCommand;
 
-        private void MolecularNetworkingSettingMethod()
+        private void MolecularNetworkingExportSettingMethod()
         {
-            _broker.Publish(_molecularNetworkingSettingViewModel);
+            _broker.Publish(_molecularNetworkingExportSettingViewModel);
+        }
+
+        public DelegateCommand ShowMolecularNetworkingVisualizationSettingCommand => _molecularNetworkingVisualizationSettingCommand ?? (_molecularNetworkingVisualizationSettingCommand = new DelegateCommand(MolecularNetworkingVisualizationSettingMethod));
+        private DelegateCommand _molecularNetworkingVisualizationSettingCommand;
+
+        private void MolecularNetworkingVisualizationSettingMethod() {
+            _broker.Publish(_molecularNetworkingSendingToCytoscapeJsSettingViewModel);
         }
 
         private static IReadOnlyReactiveProperty<LcmsAnalysisViewModel> ConvertToAnalysisViewModelAsObservable(

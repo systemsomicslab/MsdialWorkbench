@@ -215,7 +215,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
             }
 
             AlignmentResultBean alignmentResult = null;
-            if (analysisFiles.Count > 1)
+            if (analysisFiles.Count > 1 && gcmsParam.TogetherWithAlignment)
             {
                 alignmentResult = new AlignmentResultBean();
 

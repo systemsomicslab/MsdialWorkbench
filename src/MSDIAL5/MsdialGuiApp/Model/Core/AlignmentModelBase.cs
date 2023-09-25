@@ -44,8 +44,8 @@ namespace CompMs.App.Msdial.Model.Core
 
         public abstract void SearchFragment();
         public abstract void InvokeMsfinder();
-        public virtual void RunMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
 
+        public CompMs.Common.DataObj.NodeEdge.RootObject GetMoleculerNetworkingRootObj(MolecularSpectrumNetworkingBaseParameter parameter) {
             var publisher = new TaskProgressPublisher(_broker, $"Exporting MN results in {parameter.ExportFolderPath}");
             using (publisher.Start()) {
                 var spots = Container.AlignmentSpotProperties;
@@ -58,14 +58,23 @@ namespace CompMs.App.Msdial.Model.Core
                 var rootObj = MoleculerNetworkingBase.GetMoleculerNetworkingRootObj(spots, peaks, parameter.MsmsSimilarityCalc, parameter.MnMassTolerance,
                     parameter.MnAbsoluteAbundanceCutOff, parameter.MnRelativeAbundanceCutOff, parameter.MnSpectrumSimilarityCutOff,
                     parameter.MinimumPeakMatch, parameter.MaxEdgeNumberPerNode, parameter.MaxPrecursorDifference, parameter.MaxPrecursorDifferenceAsPercent, notify);
-                
+
                 if (parameter.MnIsExportIonCorrelation && _alignmentFileModel.CountRawFiles >= 6) {
                     var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots, parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode);
                     rootObj.edges.AddRange(ion_edges);
                 }
-
-                MoleculerNetworkingBase.ExportNodesEdgesFiles(parameter.ExportFolderPath, rootObj.nodes, rootObj.edges);
+                return rootObj;
             }
+        }
+
+        public virtual void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter) {
+            var rootObj = GetMoleculerNetworkingRootObj(parameter);
+            MoleculerNetworkingBase.ExportNodesEdgesFiles(parameter.ExportFolderPath, rootObj);
+        }
+
+        public virtual void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
+            var rootObj = GetMoleculerNetworkingRootObj(parameter);
+            MoleculerNetworkingBase.SendToCytoscapeJs(rootObj);
         }
 
         protected readonly CompositeDisposable Disposables = new CompositeDisposable();
