@@ -34,17 +34,17 @@ namespace CompMs.App.MsdialConsole {
             // };
 
             // lcms
-            args = new string[]
-            {
-                "lcms"
-                , "-i"
-                , @"D:\BugReport\20220718_Failed_to_load\Brain atlas files_CSHneg"
-                , "-o"
-                , @"D:\BugReport\20220718_Failed_to_load\Brain atlas files_CSHneg"
-                , "-m"
-                , @"D:\BugReport\20220718_Failed_to_load\lcms_param.txt"
-                , "-p"
-            };
+            //args = new string[]
+            //{
+            //    "lcms"
+            //    , "-i"
+            //    , @"D:\BugReport\20220718_Failed_to_load\Brain atlas files_CSHneg"
+            //    , "-o"
+            //    , @"D:\BugReport\20220718_Failed_to_load\Brain atlas files_CSHneg"
+            //    , "-m"
+            //    , @"D:\BugReport\20220718_Failed_to_load\lcms_param.txt"
+            //    , "-p"
+            //};
 
             // dims
             // args = new string[]
@@ -83,6 +83,19 @@ namespace CompMs.App.MsdialConsole {
             //    , @"D:\msdial_test\Msdial\out\IonMobilityDemoFiles\IonMobilityDemoFiles\IBF\lcimms_param.txt"
             //    , "-p"
             //};
+
+            // moleculer networking
+            args = new string[] {
+                "msn"
+                , "-i"
+                , @"E:\6_Projects\PROJECT_MsMachineLearning\MTBKS157\peakpick\pos"
+                , "-o"
+                , @"E:\6_Projects\PROJECT_MsMachineLearning\MTBKS157\peakpick\msn"
+                , "-m"
+                , @"E:\6_Projects\PROJECT_MsMachineLearning\MTBKS157\peakpick\msn_param.txt"
+                , "-ionmode"
+                , "Positive"
+            };
 
             MainProcess.Run(args);
         }

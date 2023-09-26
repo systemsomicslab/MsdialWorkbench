@@ -60,6 +60,23 @@ namespace CompMs.App.MsdialConsole.Parser
             return param;
         }
 
+        public static MolecularSpectrumNetworkingBaseParameter ReadForMoleculerNetworkingParameter(string filepath) {
+            var param = new MolecularSpectrumNetworkingBaseParameter();
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
+                    if (isReadable) {
+                        if (!ReadMoleculerNetworkingParameter(param, method, value)) {
+                            // write something if needed
+                        }
+                    }
+                }
+            }
+            return param;
+        }
+
+       
+
         public static MsdialDimsParameter ReadForDimsParameter(string filepath) {
             var param = new MsdialDimsParameter();
             using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
@@ -180,6 +197,39 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "ion mobility type":
                     if (value == "tims" || value == "dtims" || value == "twims" || value == "ccs")
                         param.IonMobilityType = (IonMobilityType)Enum.Parse(typeof(IonMobilityType), value, true); return true;
+                default: return false;
+            }
+        }
+
+        private static bool ReadMoleculerNetworkingParameter(MolecularSpectrumNetworkingBaseParameter param, string method, string value) {
+            if (value.IsEmptyOrNull()) return false;
+            if (method.IsEmptyOrNull()) return false;
+            method = method.ToLower();
+            var valueLower = value.ToLower();
+            switch (method) {
+                case "mnrttolerance":
+                    if (float.TryParse(valueLower, out float mnrttolerance)) param.MnRtTolerance = mnrttolerance; return true;
+                case "mnioncorrelationsimilaritycutoff":
+                    if (float.TryParse(valueLower, out float mnioncorrelationsimilaritycutoff)) param.MnIonCorrelationSimilarityCutOff = mnioncorrelationsimilaritycutoff; return true;
+                case "mnspectrumsimilaritycutoff":
+                    if (float.TryParse(valueLower, out float mnspectrumsimilaritycutoff)) param.MnSpectrumSimilarityCutOff = mnspectrumsimilaritycutoff; return true;
+                case "mnrelativeabundancecutoff":
+                    if (float.TryParse(valueLower, out float mnrelativeabundancecutoff)) param.MnRelativeAbundanceCutOff = mnrelativeabundancecutoff; return true;
+                case "mnmasstolerance":
+                    if (float.TryParse(valueLower, out float mnmasstolerance)) param.MnMassTolerance = mnmasstolerance; return true;
+                case "minimumpeakmatch":
+                    if (float.TryParse(valueLower, out float minimumpeakmatch)) param.MinimumPeakMatch = minimumpeakmatch; return true;
+                case "maxedgenumberpernode":
+                    if (float.TryParse(valueLower, out float maxedgenumberpernode)) param.MaxEdgeNumberPerNode = maxedgenumberpernode; return true;
+                case "maxprecursordifference":
+                    if (float.TryParse(valueLower, out float maxprecursordifference)) param.MaxPrecursorDifference = maxprecursordifference; return true;
+                case "mnabsoluteabundancecutoff":
+                    if (float.TryParse(valueLower, out float mnabsoluteabundancecutoff)) param.MnAbsoluteAbundanceCutOff = mnabsoluteabundancecutoff; return true;
+                case "msmssimilaritycalc":
+                    if (value == "Bonanza" || value == "ModDot")
+                        param.MsmsSimilarityCalc = (MsmsSimilarityCalc)Enum.Parse(typeof(MsmsSimilarityCalc), value, true); return true;
+                case "mnisexportioncorrelation":
+                    if (valueLower == "true" || valueLower == "false") param.MnIsExportIonCorrelation = bool.Parse(valueLower); return true;
                 default: return false;
             }
         }

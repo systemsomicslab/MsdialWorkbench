@@ -306,5 +306,81 @@ namespace CompMs.Common.Algorithm.Function {
             }
             return edges;
         }
+
+        public static List<EdgeData> GenerateEdges(
+           IReadOnlyList<IMoleculeMsProperty> peaks1,
+           IReadOnlyList<IMoleculeMsProperty> peaks2,
+           double massTolerance,
+           double minimumPeakMatch,
+           double matchThreshold,
+           double maxEdgeNumPerNode,
+           double maxPrecursorDiff,
+           double maxPrecursorDiff_Percent,
+           bool isBonanza,
+           Action<double> report) {
+
+            var edges = new List<EdgeData>();
+            var counter = 0;
+            var max = peaks1.Count;
+            var node2links = new Dictionary<int, List<LinkNode>>();
+            Console.WriteLine("Query1 {0}, Query2 {1}, Total {2}", peaks1.Count, peaks2.Count, peaks1.Count * peaks2.Count);
+            for (int i = 0; i < peaks1.Count; i++) {
+                if (peaks1[i].Spectrum.Count <= 0) continue;
+                counter++;
+                report?.Invoke(counter / (double)max);
+                if (counter % 100 == 0) {
+                    Console.Write("{0} / {1}", counter, max);
+                    Console.SetCursorPosition(0, Console.CursorTop);
+                }
+
+                for (int j = 0; j < peaks2.Count; j++) {
+                    if (peaks2[j].Spectrum.Count <= 0) continue;
+                    var prop1 = peaks1[i];
+                    var prop2 = peaks2[j];
+                    var massDiff = Math.Abs(prop1.PrecursorMz - prop2.PrecursorMz);
+                    if (massDiff > maxPrecursorDiff) continue;
+                    double[] scoreitem = new double[2];
+                    if (isBonanza) {
+                        scoreitem = MsScanMatching.GetBonanzaScore(prop1, prop2, massTolerance);
+                    }
+                    else {
+                        scoreitem = MsScanMatching.GetModifiedDotProductScore(prop1, prop2, massTolerance);
+                    }
+                    if (scoreitem[1] < minimumPeakMatch) continue;
+                    if (scoreitem[0] < matchThreshold * 0.01) continue;
+
+                    if (node2links.ContainsKey(i)) {
+                        node2links[i].Add(new LinkNode() { Score = scoreitem, Node = peaks2[j], Index = j });
+                    }
+                    else {
+                        node2links[i] = new List<LinkNode>() { new LinkNode() { Score = scoreitem, Node = peaks2[j], Index = j } };
+                    }
+                }
+            }
+
+            var cNode2Links = new Dictionary<int, List<LinkNode>>();
+            foreach (var item in node2links) {
+                var nitem = item.Value.OrderByDescending(n => n.Score[0]).ToList();
+                cNode2Links[item.Key] = new List<LinkNode>();
+                for (int i = 0; i < nitem.Count; i++) {
+                    if (i > maxEdgeNumPerNode - 1) break;
+                    cNode2Links[item.Key].Add(nitem[i]);
+                }
+            }
+
+            foreach (var item in cNode2Links) {
+                foreach (var link in item.Value) {
+                    var source_node_id = peaks1[item.Key].ScanID;
+                    var target_node_id = peaks2[link.Index].ScanID;
+
+                    var edge = new EdgeData() {
+                        score = link.Score[0], matchpeakcount = link.Score[1], source = source_node_id, target = target_node_id
+                    };
+                    edges.Add(edge);
+                }
+            }
+            return edges;
+        }
+
     }
 }

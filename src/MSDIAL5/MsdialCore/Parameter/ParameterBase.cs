@@ -1281,7 +1281,7 @@ namespace CompMs.MsdialCore.Parameter
         [Key(1)]
         public double MnIonCorrelationSimilarityCutOff { get; set; } = 95;
         [Key(2)]
-        public double MnSpectrumSimilarityCutOff { get; set; } = 75;
+        public double MnSpectrumSimilarityCutOff { get; set; } = 50;
         [Key(3)]
         public double MnRelativeAbundanceCutOff { get; set; } = 1;
         [Key(4)]
@@ -1289,9 +1289,9 @@ namespace CompMs.MsdialCore.Parameter
         [Key(5)]
         public bool MnIsExportIonCorrelation { get; set; } = false;
         [Key(6)]
-        public double MinimumPeakMatch { get; set; } = 6;
+        public double MinimumPeakMatch { get; set; } = 2;
         [Key(7)]
-        public double MaxEdgeNumberPerNode { get; set; } = 5;
+        public double MaxEdgeNumberPerNode { get; set; } = 6;
         [Key(8)]
         public double MaxPrecursorDifference { get; set; } = 400;
         [Key(9)]
