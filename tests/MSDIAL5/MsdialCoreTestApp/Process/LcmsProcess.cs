@@ -33,8 +33,10 @@ namespace CompMs.App.MsdialConsole.Process
         public int Run(string inputFolder, string outputFolder, string methodFile, bool isProjectSaved, float targetMz)
         {
             var param = ConfigParser.ReadForLcmsParameter(methodFile);
+            if (param.ProjectParam.AcquisitionType == AcquisitionType.None) param.ProjectParam.AcquisitionType = AcquisitionType.DDA;
             var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile);
             if (!isCorrectlyImported) return -1;
+
             CommonProcess.ParseLibraries(param, targetMz, out IupacDatabase iupacDB,
                 out List<MoleculeMsReference> mspDB, out List<MoleculeMsReference> txtDB, 
                 out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode,

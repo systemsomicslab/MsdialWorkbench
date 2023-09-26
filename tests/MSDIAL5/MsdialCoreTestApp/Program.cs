@@ -39,7 +39,6 @@ namespace CompMs.App.MsdialConsole {
                 "lcms"
                 , "-i"
                 , @"E:\3_RIKEN\MedicalMS\data\neg"
-//@"E:\6_Projects\PROJECT_AHexCer\Marmoset_brain\NEG"
                 , "-o"
                 , @"E:\3_RIKEN\MedicalMS\data\neg_output"
                 , "-m"
