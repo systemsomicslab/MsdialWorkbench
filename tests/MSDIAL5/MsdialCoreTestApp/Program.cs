@@ -34,17 +34,18 @@ namespace CompMs.App.MsdialConsole {
             // };
 
             // lcms
-            //args = new string[]
-            //{
-            //    "lcms"
-            //    , "-i"
-            //    , @"D:\BugReport\20220718_Failed_to_load\Brain atlas files_CSHneg"
-            //    , "-o"
-            //    , @"D:\BugReport\20220718_Failed_to_load\Brain atlas files_CSHneg"
-            //    , "-m"
-            //    , @"D:\BugReport\20220718_Failed_to_load\lcms_param.txt"
-            //    , "-p"
-            //};
+            args = new string[]
+            {
+                "lcms"
+                , "-i"
+                , @"E:\3_RIKEN\MedicalMS\data\neg"
+//@"E:\6_Projects\PROJECT_AHexCer\Marmoset_brain\NEG"
+                , "-o"
+                , @"E:\3_RIKEN\MedicalMS\data\neg_output"
+                , "-m"
+                , @"E:\3_RIKEN\MedicalMS\data\neg\lipidomics_neg_library.txt"
+                , "-p"
+            };
 
             // dims
             // args = new string[]
@@ -85,17 +86,17 @@ namespace CompMs.App.MsdialConsole {
             //};
 
             // moleculer networking
-            args = new string[] {
-                "msn"
-                , "-i"
-                , @"E:\6_Projects\PROJECT_MsMachineLearning\MTBKS157\peakpick\pos_temp"
-                , "-o"
-                , @"E:\6_Projects\PROJECT_MsMachineLearning\MTBKS157\peakpick\msn"
-                , "-m"
-                , @"E:\6_Projects\PROJECT_MsMachineLearning\MTBKS157\peakpick\msn_param.txt"
-                , "-ionmode"
-                , "Positive"
-            };
+            //args = new string[] {
+            //    "msn"
+            //    , "-i"
+            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\MTBKS157\peakpick\pos_temp"
+            //    , "-o"
+            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\MTBKS157\peakpick\msn"
+            //    , "-m"
+            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\MTBKS157\peakpick\msn_param.txt"
+            //    , "-ionmode"
+            //    , "Positive"
+            //};
 
             MainProcess.Run(args);
         }

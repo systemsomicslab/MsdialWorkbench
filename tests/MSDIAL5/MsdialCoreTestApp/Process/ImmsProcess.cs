@@ -23,7 +23,7 @@ namespace CompMs.App.MsdialConsole.Process
             var param = ConfigParser.ReadForImmsParameter(methodFile);
             var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out var analysisFiles, out var alignmentFile);
             if (!isCorrectlyImported) return -1;
-            CommonProcess.ParseLibraries(param, targetMz, out var iupacDB, out var mspDB, out var txtDB, out var isotopeTextDB, out var compoundsInTargetMode);
+            CommonProcess.ParseLibraries(param, targetMz, out var iupacDB, out var mspDB, out var txtDB, out var isotopeTextDB, out var compoundsInTargetMode, out var lbmDB);
 
             var container = new MsdialImmsDataStorage
             {

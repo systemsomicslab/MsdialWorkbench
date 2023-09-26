@@ -97,7 +97,7 @@ namespace CompMs.App.MsdialConsole.Process
                 }
             }
 
-            CommonProcess.ParseLibraries(param, -1, out IupacDatabase iupacDB, out _, out var txtDB, out var isotopeTextDB, out _);
+            CommonProcess.ParseLibraries(param, -1, out IupacDatabase iupacDB, out _, out var txtDB, out var isotopeTextDB, out _, out var lbmDB);
 
             var container = new MsdialGcmsDataStorage() {
                 AnalysisFiles = analysisFiles, AlignmentFiles = new List<AlignmentFileBean>() { alignmentFile },

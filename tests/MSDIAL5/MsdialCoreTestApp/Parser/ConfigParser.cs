@@ -13,6 +13,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using CompMs.Common.Query;
+using System.Linq;
 
 namespace CompMs.App.MsdialConsole.Parser
 {
@@ -269,17 +271,54 @@ namespace CompMs.App.MsdialConsole.Parser
 #pragma warning restore CS0618 // Type or member is obsolete
                     return true;
 
+                //{ GCMS, LCMS, IMMS, LCIMMS, IFMS, IIMMS, IDIMS, }
+                case "machine category":
+                    if (value == "GCMS" || value == "LCMS" || value == "IMMS" || value == "LCIMMS" || value == "IFMS" || value == "IIMMS" || value == "IDIMS")
+                        param.ProjectParam.MachineCategory = (MachineCategory)Enum.Parse(typeof(MachineCategory), valueLower, true);
+                    return true;
+
                 case "slovent type":
                     if (value == "CH3COONH4" || value == "HCOONH4")
                         param.LipidQueryContainer.SolventType = (SolventType)Enum.Parse(typeof(SolventType), valueLower, true);
                     return true;
 
+                case "searched lipid class":
+                    if (!value.IsEmptyOrNull()) {
+                        param.LipidQueryContainer = new LipidQueryBean() {
+                            SolventType = SolventType.CH3COONH4,
+                            LbmQueries = LbmQueryParcer.GetLbmQueries(isLabUseOnly: param.IsLabPrivate)
+                        };
+
+                        param.LipidQueryContainer.LbmQueries = param.LipidQueryContainer.LbmQueries.Where(n => n.IonMode == param.IonMode).ToList();
+                        foreach (var l in param.LipidQueryContainer.LbmQueries) l.IsSelected = false;
+
+                        var aStrings = value.Split(';');
+                        foreach (var lipidString in aStrings) {
+                            if (lipidString.Split(' ').Length >= 2) {
+                                var lipidclass = lipidString.Split(' ')[0];
+                                var adducttype = lipidString.Split(' ')[1];
+                                if (!Enum.IsDefined(typeof(LbmClass), lipidclass)) continue;
+                                var adductObj = AdductIon.GetAdductIon(adducttype);
+                                if (!adductObj.FormatCheck) continue;
+
+                                foreach (var l in param.LipidQueryContainer.LbmQueries) {
+                                    if (l.LbmClass.ToString() == lipidclass && adductObj.ToString() == l.AdductType.ToString()) {
+                                        l.IsSelected = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    return true;
+
                 //File paths
                 case "msp file path": param.MspFilePath = value; return true;
+                case "lbm file path": param.LbmFilePath = value; return true;
                 case "text db file path": param.TextDBFilePath = value; return true;
                 case "isotope text db file path": param.IsotopeTextDBFilePath = value; return true;
                 case "compounds library file path for target detection": param.CompoundListInTargetModePath = value; return true;
-                case "compounds library file path for rt correction": 
+                case "compounds library file path for rt correction":
                     param.CompoundListForRtCorrectionPath = value;
                     if (System.IO.File.Exists(value)) {
                         var error = string.Empty;
@@ -294,6 +333,10 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "is private version of tada":
                     if (valueLower == "true")
                         param.IsLabPrivateVersionTada = true;
+                    return true;
+                case "is private version":
+                    if (valueLower == "true")
+                        param.IsLabPrivate = true;
                     return true;
 
                 //Data correction
@@ -335,6 +378,8 @@ namespace CompMs.App.MsdialConsole.Parser
                     }
                     return true;
 
+                
+
 
                 //Deconvolution
                 case "sigma window valueLower": if (float.TryParse(valueLower, out float sigmaWindow)) param.SigmaWindowValue = sigmaWindow; return true;
@@ -352,11 +397,11 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "mass range end for msp-based annotation": if (float.TryParse(valueLower, out float msend_ident)) param.MspSearchParam.MassRangeEnd = msend_ident; return true;
                 case "relative amplitude cutoff for msp-based annotation": if (float.TryParse(valueLower, out float relamp_ident)) param.MspSearchParam.RelativeAmpCutoff = relamp_ident; return true;
                 case "absolute amplitude cutoff for msp-based annotation": if (float.TryParse(valueLower, out float absamp_ident)) param.MspSearchParam.AbsoluteAmpCutoff = absamp_ident; return true;
-                case "weighted dot product cutoff": if (float.TryParse(valueLower, out float dotproduct)) param.MspSearchParam.WeightedDotProductCutOff = dotproduct; return true;
-                case "simple dot product cutoff": if (float.TryParse(valueLower, out float simpleproduct)) param.MspSearchParam.SimpleDotProductCutOff = simpleproduct; return true;
-                case "reverse dot product cutoff": if (float.TryParse(valueLower, out float revdotproduct)) param.MspSearchParam.ReverseDotProductCutOff = revdotproduct; return true;
-                case "matched peaks percentage cutoff": if (float.TryParse(valueLower, out float matchedpeakspercent)) param.MspSearchParam.MatchedPeaksPercentageCutOff = matchedpeakspercent; return true;
-                case "minimum spectrum match": if (float.TryParse(valueLower, out float minpeakmatch)) param.MspSearchParam.MinimumSpectrumMatch = minpeakmatch; return true;
+                case "weighted dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float dotproduct)) param.MspSearchParam.WeightedDotProductCutOff = dotproduct; return true;
+                case "simple dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float simpleproduct)) param.MspSearchParam.SimpleDotProductCutOff = simpleproduct; return true;
+                case "reverse dot product cutoff for msp-based annotation": if (float.TryParse(valueLower, out float revdotproduct)) param.MspSearchParam.ReverseDotProductCutOff = revdotproduct; return true;
+                case "matched peaks percentage cutoff for msp-based annotation": if (float.TryParse(valueLower, out float matchedpeakspercent)) param.MspSearchParam.MatchedPeaksPercentageCutOff = matchedpeakspercent; return true;
+                case "minimum spectrum match for msp-based annotation": if (float.TryParse(valueLower, out float minpeakmatch)) param.MspSearchParam.MinimumSpectrumMatch = minpeakmatch; return true;
                 case "total score cutoff for msp-based annotation": if (float.TryParse(valueLower, out float cutoff_ident)) param.MspSearchParam.TotalScoreCutoff = cutoff_ident; return true;
                 case "ms1 tolerance for msp-based annotation": if (float.TryParse(valueLower, out float ms1tol_ident)) param.MspSearchParam.Ms1Tolerance = ms1tol_ident; return true;
                 case "ms2 tolerance for msp-based annotation": if (float.TryParse(valueLower, out float ms2tol_ident)) param.MspSearchParam.Ms2Tolerance = ms2tol_ident; return true;
@@ -365,7 +410,30 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "use ccs for msp-based annotation scoring": if (valueLower == "true" || valueLower == "false") param.MspSearchParam.IsUseCcsForAnnotationScoring = bool.Parse(valueLower); return true;
                 case "use ccs for msp-based annotation filtering": if (valueLower == "true" || valueLower == "false") param.MspSearchParam.IsUseCcsForAnnotationFiltering = bool.Parse(valueLower); return true;
                 case "only report top hit for msp-based annotation": if (valueLower == "true" || valueLower == "false") param.OnlyReportTopHitInMspSearch = bool.Parse(valueLower); return true;
-                case "execute annotation process only for alignment file": if (valueLower == "true" || valueLower == "false") param.IsIdentificationOnlyPerformedForAlignmentFile = bool.Parse(valueLower); return true;
+                case "execute annotation process only for alignment file for msp-based annotation": if (valueLower == "true" || valueLower == "false") param.IsIdentificationOnlyPerformedForAlignmentFile = bool.Parse(valueLower); return true;
+
+                //Identification
+                case "rt tolerance for lbm-based annotation": if (float.TryParse(valueLower, out float rttol_lbm_ident)) param.LbmSearchParam.RtTolerance = rttol_lbm_ident; return true;
+                case "ri tolerance for lbm-based annotation": if (float.TryParse(valueLower, out float ritol_lbm_ident)) param.LbmSearchParam.RiTolerance = ritol_lbm_ident; return true;
+                case "ccs tolerance for lbm-based annotation": if (float.TryParse(valueLower, out float ccstol_lbm_ident)) param.LbmSearchParam.CcsTolerance = ccstol_lbm_ident; return true;
+                case "mass range begin for lbm-based annotation": if (float.TryParse(valueLower, out float msbegin_lbm_ident)) param.LbmSearchParam.MassRangeBegin = msbegin_lbm_ident; return true;
+                case "mass range end for lbm-based annotation": if (float.TryParse(valueLower, out float msend_lbm_ident)) param.LbmSearchParam.MassRangeEnd = msend_lbm_ident; return true;
+                case "relative amplitude cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float relamp_lbm_ident)) param.LbmSearchParam.RelativeAmpCutoff = relamp_lbm_ident; return true;
+                case "absolute amplitude cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float absamp_lbm_ident)) param.LbmSearchParam.AbsoluteAmpCutoff = absamp_lbm_ident; return true;
+                case "weighted dot product cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float lbm_dotproduct)) param.LbmSearchParam.WeightedDotProductCutOff = lbm_dotproduct; return true;
+                case "simple dot product cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float lbm_simpleproduct)) param.LbmSearchParam.SimpleDotProductCutOff = lbm_simpleproduct; return true;
+                case "reverse dot product cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float lbm_revdotproduct)) param.LbmSearchParam.ReverseDotProductCutOff = lbm_revdotproduct; return true;
+                case "matched peaks percentage cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float lbm_matchedpeakspercent)) param.LbmSearchParam.MatchedPeaksPercentageCutOff = lbm_matchedpeakspercent; return true;
+                case "minimum spectrum match for lbm-based annotation": if (float.TryParse(valueLower, out float lbm_minpeakmatch)) param.LbmSearchParam.MinimumSpectrumMatch = lbm_minpeakmatch; return true;
+                case "total score cutoff for lbm-based annotation": if (float.TryParse(valueLower, out float cutoff_lbm_ident)) param.LbmSearchParam.TotalScoreCutoff = cutoff_lbm_ident; return true;
+                case "ms1 tolerance for lbm-based annotation": if (float.TryParse(valueLower, out float ms1tol_lbm_ident)) param.LbmSearchParam.Ms1Tolerance = ms1tol_lbm_ident; return true;
+                case "ms2 tolerance for lbm-based annotation": if (float.TryParse(valueLower, out float ms2tol_lbm_ident)) param.LbmSearchParam.Ms2Tolerance = ms2tol_lbm_ident; return true;
+                case "use retention information for lbm-based annotation scoring": if (valueLower == "true" || valueLower == "false") param.LbmSearchParam.IsUseTimeForAnnotationScoring = bool.Parse(valueLower); return true;
+                case "use retention information for lbm-based annotation filtering": if (valueLower == "true" || valueLower == "false") param.LbmSearchParam.IsUseTimeForAnnotationFiltering = bool.Parse(valueLower); return true;
+                case "use ccs for lbm-based annotation scoring": if (valueLower == "true" || valueLower == "false") param.LbmSearchParam.IsUseCcsForAnnotationScoring = bool.Parse(valueLower); return true;
+                case "use ccs for lbm-based annotation filtering": if (valueLower == "true" || valueLower == "false") param.MspSearchParam.IsUseCcsForAnnotationFiltering = bool.Parse(valueLower); return true;
+                case "execute annotation process only for alignment file for lbm-based annotation": if (valueLower == "true" || valueLower == "false") param.IsIdentificationOnlyPerformedForAlignmentFile = bool.Parse(valueLower); return true;
+
 
                 //Post identification
                 case "rt tolerance for text-based annotation": if (float.TryParse(valueLower, out float rttol_textident)) param.TextDbSearchParam.RtTolerance = rttol_textident; return true;

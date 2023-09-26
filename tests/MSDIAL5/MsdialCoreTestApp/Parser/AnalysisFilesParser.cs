@@ -64,6 +64,7 @@ namespace CompMs.App.MsdialConsole.Parser
 
             foreach (var file in filepathes) {
                 if (DataAccess.IsDataFormatSupported(file)) {
+                    //if (Path.GetExtension(file) == ".wiff") continue;
                     importableFiles.Add(file);
                 }
             }
