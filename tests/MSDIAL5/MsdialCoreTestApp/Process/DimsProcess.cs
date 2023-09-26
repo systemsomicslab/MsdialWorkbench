@@ -55,7 +55,7 @@ namespace CompMs.App.MsdialConsole.Process
             foreach (var file in files) {
                 ProcessFile.Run(file, providerFactory.Create(file), storage, annotationProcess, evaluator);
             }
-
+            if (!storage.MsdialDimsParameter.TogetherWithAlignment) return 0;
             var alignmentFile = storage.AlignmentFiles.First();
             var factory = new DimsAlignmentProcessFactory(storage, evaluator);
             var aligner = factory.CreatePeakAligner();

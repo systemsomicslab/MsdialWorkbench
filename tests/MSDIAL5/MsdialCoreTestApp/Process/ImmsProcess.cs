@@ -58,6 +58,8 @@ namespace CompMs.App.MsdialConsole.Process
             var processor = new FileProcess(storage, mspAnnotator, textDBAnnotator, evaluator);
             processor.RunAllAsync(files, files.Select(providerFactory.Create), files.Select(_ => (Action<int>)null), storage.Parameter.NumThreads, () => { }).Wait();
 
+            if (!storage.Parameter.TogetherWithAlignment) return 0;
+
             var alignmentFile = storage.AlignmentFiles.First();
             var factory = new ImmsAlignmentProcessFactory(storage, evaluator);
             var aligner = factory.CreatePeakAligner();

@@ -88,7 +88,7 @@ namespace CompMs.App.MsdialConsole {
             args = new string[] {
                 "msn"
                 , "-i"
-                , @"E:\6_Projects\PROJECT_MsMachineLearning\MTBKS157\peakpick\pos"
+                , @"E:\6_Projects\PROJECT_MsMachineLearning\MTBKS157\peakpick\pos_temp"
                 , "-o"
                 , @"E:\6_Projects\PROJECT_MsMachineLearning\MTBKS157\peakpick\msn"
                 , "-m"

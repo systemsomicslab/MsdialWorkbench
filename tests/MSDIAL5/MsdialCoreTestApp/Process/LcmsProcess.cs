@@ -80,12 +80,18 @@ namespace CompMs.App.MsdialConsole.Process
                         await process.RunAsync(file, provider, null).ConfigureAwait(false);
 
                         var peak_outputfile = Path.Combine(outputFolder, file.AnalysisFileName + ".mdpeak");
+                        var peak_outputmspfile = Path.Combine(outputFolder, file.AnalysisFileName + ".mdmsp");
                         using (var stream = File.Open(peak_outputfile, FileMode.Create, FileAccess.Write)) {
-                            var peak_container = await ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath).ConfigureAwait(false);
-                            var peak_decResults = MsdecResultsReader.ReadMSDecResults(file.DeconvolutionFilePath, out _, out _);
-                            var peak_accessor = new LcmsAnalysisMetadataAccessor(storage.DataBaseMapper, storage.Parameter, ExportspectraType.deconvoluted);
-                            var peak_Exporter = new AnalysisCSVExporter();
-                            peak_Exporter.Export(stream, peak_container.Items, peak_decResults, provider, peak_accessor, file);
+                            using (var mspstream = File.Open(peak_outputmspfile, FileMode.Create, FileAccess.Write)) {
+                                var peak_container = await ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath).ConfigureAwait(false);
+                                var peak_decResults = MsdecResultsReader.ReadMSDecResults(file.DeconvolutionFilePath, out _, out _);
+                                var peak_accessor = new LcmsAnalysisMetadataAccessor(storage.DataBaseMapper, storage.Parameter, ExportspectraType.deconvoluted);
+                                var peak_Exporter = new AnalysisCSVExporter();
+                                peak_Exporter.Export(stream, peak_container.Items, peak_decResults, provider, peak_accessor, file);
+
+                                IAnalysisExporter peak_MspExporter = new AnalysisMspExporter(mapper, storage.Parameter);
+                                peak_MspExporter.Export(mspstream, file, peak_container);
+                            }
                         }
                     }
                     finally {
@@ -94,6 +100,7 @@ namespace CompMs.App.MsdialConsole.Process
                 });
             }
             Task.WaitAll(tasks);
+            if (!storage.Parameter.TogetherWithAlignment) return 0;
 
             var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
             var alignmentFile = storage.AlignmentFiles.First();
@@ -102,15 +109,21 @@ namespace CompMs.App.MsdialConsole.Process
             var result = aligner.Alignment(files, alignmentFile, serializer);
 
             Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
-            
+
             var align_outputfile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdalign");
+            var align_outputmspfile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdmsp");
             var align_decResults = LoadRepresentativeDeconvolutions(storage, result?.AlignmentSpotProperties).ToList();
             var align_accessor = new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter, false);
             var align_quantAccessor = new LegacyQuantValueAccessor("Height", storage.Parameter);
+            var align_stats = new[] { StatsValue.Average, StatsValue.Stdev };
             using (var stream = File.Open(align_outputfile, FileMode.Create, FileAccess.Write)) {
-                var align_exporter = new AlignmentCSVExporter();
-                align_exporter.Export(stream, result.AlignmentSpotProperties, align_decResults, files,
-                    align_accessor, align_quantAccessor, new[] { StatsValue.Average, StatsValue.Stdev });
+                using (var streammsp = File.Open(align_outputmspfile, FileMode.Create, FileAccess.Write)) {
+                    var align_exporter = new AlignmentCSVExporter();
+                    align_exporter.Export(stream, result.AlignmentSpotProperties, align_decResults, files,
+                        align_accessor, align_quantAccessor, align_stats);
+                    IAlignmentExporter align_mspexporter = new AlignmentMspExporter(mapper, storage.Parameter);
+                    align_mspexporter.Export(streammsp, result.AlignmentSpotProperties, align_decResults, files, align_accessor, align_quantAccessor, align_stats);
+                }
             }
 
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);

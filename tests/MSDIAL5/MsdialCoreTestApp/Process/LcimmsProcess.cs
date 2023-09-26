@@ -73,6 +73,8 @@ namespace CompMs.App.MsdialConsole.Process {
                 }
                 ((IStreamManager)streamManager).Complete();
             }
+            if (!container.MsdialLcImMsParameter.TogetherWithAlignment) return 0;
+
             return 0;
         }
     }

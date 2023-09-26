@@ -176,7 +176,7 @@ namespace CompMs.App.MsdialConsole.Process
 
                 ResultExporter.ExportChromPeakFeatures(file, outputFolder, storage, null, chromPeakFeatures, msdecResults);
             }
-
+            if (!storage.MsdialGcmsParameter.TogetherWithAlignment) return 0;
             var alignmentFile = storage.AlignmentFiles.First();
             var factory = new GcmsAlignmentProcessFactory(files, storage, FacadeMatchResultEvaluator.FromDataBases(storage.DataBases));
             var aligner = factory.CreatePeakAligner();
