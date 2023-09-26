@@ -281,7 +281,7 @@
                           Command="{Binding ShowMolecularNetworkingExportSettingCommand}"
                           KeyTip="M"/>
             <RibbonButton Label="Parameter export (Tab-delimited text)" LargeImageSource="{StaticResource Parameter_file_export_is}"
-                          IsEnabled="False"
+                          Command="{Binding ExportParameterCommand, Mode=OneTime}"
                           KeyTip="T"/>
             <RibbonButton Label="Export as lipoquality database format"
                           IsEnabled="False"

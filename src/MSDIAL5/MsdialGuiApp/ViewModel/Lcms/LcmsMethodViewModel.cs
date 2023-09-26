@@ -68,9 +68,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             ShowProteinGroupTableCommand = model.CanShowProteinGroupTable.ToReactiveCommand().AddTo(Disposables);
             ShowProteinGroupTableCommand.Subscribe(() => broker.Publish(_proteinGroupTableViewModel)).AddTo(Disposables);
 
-
             _molecularNetworkingExportSettingViewModel = new MolecularNetworkingExportSettingViewModel(_model.MolecularNetworkingSettingModel).AddTo(Disposables);
             _molecularNetworkingSendingToCytoscapeJsSettingViewModel = new MolecularNetworkingSendingToCytoscapeJsSettingViewModel(_model.MolecularNetworkingSettingModel).AddTo(Disposables);
+            ExportParameterCommand = new AsyncReactiveCommand().WithSubscribe(model.ParameterExportModel.ExportAsync).AddTo(Disposables);
         }
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
@@ -242,6 +242,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private void MolecularNetworkingVisualizationSettingMethod() {
             _broker.Publish(_molecularNetworkingSendingToCytoscapeJsSettingViewModel);
         }
+
+        public AsyncReactiveCommand ExportParameterCommand { get; }
 
         private static IReadOnlyReactiveProperty<LcmsAnalysisViewModel> ConvertToAnalysisViewModelAsObservable(
             LcmsMethodModel method,
