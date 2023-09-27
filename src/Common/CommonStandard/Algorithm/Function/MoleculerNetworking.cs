@@ -9,21 +9,80 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace CompMs.Common.Algorithm.Function {
 
     public class LinkNode {
         public double[] Score { get; set; }
         public IMSScanProperty Node { get; set; }
+        public int Index { get; set; }
     }
+
+    //public class CyNode
+    //{
+    //    public CyNodeData data { get; set; }
+    //    public string selected { get; set; }
+
+    //    public CyNode() {
+    //        data = new CyNodeData();
+    //        selected = "false";
+    //    }
+    //}
+
+    //public class CyNodeData {
+    //    public string id { get; set; }
+    //    public string Name { get; set; }
+    //    public string Rt { get; set; }
+    //    public string Mz { get; set; }
+    //    public string Formula { get; set; }
+    //    public string Ontology { get; set; }
+    //    public string InChiKey { get; set; }
+    //    public string Smiles { get; set; }
+    //    public int Size { get; set; }
+    //    public string bordercolor { get; set; }
+    //    public string backgroundcolor { get; set; }
+    //}
+
+    //public class CyEdgeData {
+    //    public string source { get; set; }
+    //    public string target { get; set; }
+    //    public double score { get; set; }
+    //    public string type { get; set; }
+    //}
+
+    //public class CyEdge {
+    //    public CyEdgeData data { get; set; }
+    //    public string selected { get; set; }
+    //    public CyEdge() {
+    //        data = new CyEdgeData();
+    //        selected = "false";
+    //    }
+    //}
+
+    //public class RootObject {
+    //    public List<CyNode> nodes { get; set; }
+    //    public List<CyEdge> edges { get; set; }
+    //}
+
+    //internal class RootObject2
+    //{
+    //    public RootObject elements { get; set; }
+    //}
 
     public sealed class MoleculerNetworkingBase {
         private MoleculerNetworkingBase() { }
 
-        public static void ExportNodesEdgesFiles(string folder, IReadOnlyList<Node> nodes, IReadOnlyList<Edge> edges) {
+        public static void ExportNodesEdgesFiles(string folder, RootObject rootObj) {
+
+            var nodes = rootObj.nodes;
+            var edges = rootObj.edges;
+
             var dt = DateTime.Now;
             var nodepath = Path.Combine(folder, $"node-{dt:yyMMddhhmm}.txt");
             var edgepath = Path.Combine(folder, $"edge-{dt:yyMMddhhmm}.txt");
+            var cypath = Path.Combine(folder, $"cyelements-{dt:yyMMddhhmm}.js");
+        
 
             using (StreamWriter sw = new StreamWriter(nodepath, false, Encoding.ASCII)) {
 
@@ -37,7 +96,7 @@ namespace CompMs.Common.Algorithm.Function {
                     sw.WriteLine(ms2String);
                 }
             }
-
+            
             using (StreamWriter sw = new StreamWriter(edgepath, false, Encoding.ASCII)) {
 
                 sw.WriteLine("SourceID\tTargetID\tScore\tType");
@@ -46,6 +105,48 @@ namespace CompMs.Common.Algorithm.Function {
                     sw.WriteLine(edge.source + "\t" + edge.target + "\t" + edge.score + "\t" + edgeObj.classes);
                 }
             }
+
+            var rootCy = new RootObj4Cytoscape() { elements = rootObj };
+            using (StreamWriter sw = new StreamWriter(cypath, false, Encoding.ASCII)) {
+                var json = JsonConvert.SerializeObject(rootCy, Formatting.Indented);
+                sw.WriteLine(json.ToString());
+            }
+        }
+
+        public static void SendToCytoscapeJs(RootObject rootObj) {
+            if (rootObj.nodes.IsEmptyOrNull() || rootObj.edges.IsEmptyOrNull()) return;
+            var curDir = System.AppDomain.CurrentDomain.BaseDirectory;
+            var cytoDir = Path.Combine(curDir, "CytoscapeLocalBrowser");
+            var url = Path.Combine(cytoDir, "MsdialCytoscapeViewer.html");
+            var cyjsexportpath = Path.Combine(Path.Combine(cytoDir, "data"), "elements.js");
+
+            var counter = 0;
+            var edges = new List<Edge>();
+            var nodekeys = new List<int>();
+            foreach (var edge in rootObj.edges.OrderByDescending(n => n.data.score)) {
+                if (counter > 3000) break;
+                edges.Add(edge);
+
+                if (!nodekeys.Contains(edge.data.source))
+                    nodekeys.Add(edge.data.source);
+                if (!nodekeys.Contains(edge.data.target))
+                    nodekeys.Add(edge.data.target);
+
+                counter++;
+            }
+
+            var nodes = new List<Node>();
+            foreach (var node in rootObj.nodes.Where(n => n.data.MsmsMin > 0)) {
+                if (nodekeys.Contains(node.data.id))
+                    nodes.Add(node);
+            }
+            var nRootObj = new RootObject() { nodes = nodes, edges = edges };
+
+            var json = JsonConvert.SerializeObject(nRootObj, Formatting.Indented);
+            using (StreamWriter sw = new StreamWriter(cyjsexportpath, false, Encoding.ASCII)) {
+                sw.WriteLine("var dataElements =\r\n" + json.ToString() + "\r\n;");
+            }
+            System.Diagnostics.Process.Start(url);
         }
 
         private static string getMsString(List<List<double>> msList) {
@@ -66,6 +167,17 @@ namespace CompMs.Common.Algorithm.Function {
             return specString;
         }
 
+        public static RootObject GetMoleculerNetworkingRootObj<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans,
+            MsmsSimilarityCalc msmsSimilarityCalc, double masstolerance, double absoluteAbsCutoff, double relativeAbsCutoff, double spectrumSimilarityCutoff,
+            double minimumPeakMatch, double maxEdgeNumberPerNode, double maxPrecursorDifference, double maxPrecursorDifferenceAsPercent, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
+            var nodes = GetSimpleNodes(spots, scans);
+            var edges = GenerateEdgesBySpectralSimilarity(
+                    spots, scans, msmsSimilarityCalc, masstolerance,
+                    absoluteAbsCutoff, relativeAbsCutoff, spectrumSimilarityCutoff,
+                    minimumPeakMatch, maxEdgeNumberPerNode, maxPrecursorDifference, maxPrecursorDifferenceAsPercent, report);
+            return new RootObject() { nodes = nodes, edges = edges };
+        }
+
         public static List<Node> GetSimpleNodes<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans) where T : IMoleculeProperty, IChromatogramPeak {
             var nodes = new List<Node>();
             var minValue = Math.Log10(spots.Min(n => n.Intensity));
@@ -79,6 +191,7 @@ namespace CompMs.Common.Algorithm.Function {
                         Name = spot.Name,
                         Rt = spot.ChromXs.RT.Value.ToString(),
                         Mz = spot.Mass.ToString(),
+                        Method = "MSMS",
                         Property = "RT " + Math.Round(spot.ChromXs.RT.Value, 3).ToString() + "_m/z " + Math.Round(spot.Mass, 5).ToString(),
                         Formula = spot.Formula.FormulaString,
                         InChiKey = spot.InChIKey,
@@ -112,16 +225,19 @@ namespace CompMs.Common.Algorithm.Function {
         public static List<Edge> GenerateEdgesBySpectralSimilarity<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans,
             MsmsSimilarityCalc msmsSimilarityCalc, double masstolerance, double absoluteAbsCutoff, double relativeAbsCutoff, double spectrumSimilarityCutoff,
             double minimumPeakMatch, double maxEdgeNumberPerNode, double maxPrecursorDifference, double maxPrecursorDifferenceAsPercent, Action<double> report) where T:IMoleculeProperty, IChromatogramPeak {
-            var cScans = scans.Where(n => n.Spectrum.Count() > 0).ToList();
-            foreach (var cScan in cScans) cScan.Spectrum = MsScanMatching.GetProcessedSpectrum(cScan.Spectrum, cScan.PrecursorMz, absoluteAbundanceCutOff: absoluteAbsCutoff, relativeAbundanceCutOff: relativeAbsCutoff);
-            var edges = GenerateEdges(cScans, masstolerance, minimumPeakMatch, spectrumSimilarityCutoff, 
-                maxEdgeNumberPerNode, maxPrecursorDifference, maxPrecursorDifferenceAsPercent, msmsSimilarityCalc == MsmsSimilarityCalc.Bonanza ? true : false, report);
+            foreach (var scan in scans) {
+                if (scan.Spectrum.Count > 0)
+                    scan.Spectrum = MsScanMatching.GetProcessedSpectrum(scan.Spectrum, scan.PrecursorMz, absoluteAbundanceCutOff: absoluteAbsCutoff, relativeAbundanceCutOff: relativeAbsCutoff);
+            }
+            var edges = GenerateEdges(spots, scans, masstolerance, minimumPeakMatch, spectrumSimilarityCutoff, 
+            maxEdgeNumberPerNode, maxPrecursorDifference, maxPrecursorDifferenceAsPercent, msmsSimilarityCalc == MsmsSimilarityCalc.Bonanza ? true : false, report);
 
             return edges.Select(n => new Edge() { data = n, classes = "ms_similarity" }).ToList();
         }
 
-        public static List<EdgeData> GenerateEdges(
-            IReadOnlyList<IMSScanProperty> quries, 
+        public static List<EdgeData> GenerateEdges<T>(
+            IReadOnlyList<T> spots,
+            IReadOnlyList<IMSScanProperty> peaks, 
             double massTolerance,
             double minimumPeakMatch, 
             double matchThreshold, 
@@ -129,20 +245,22 @@ namespace CompMs.Common.Algorithm.Function {
             double maxPrecursorDiff,
             double maxPrecursorDiff_Percent,
             bool isBonanza,
-            Action<double> report) {
+            Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
 
             var edges = new List<EdgeData>();
             var counter = 0;
-            var max = quries.Count;
+            var max = peaks.Count;
             var node2links = new Dictionary<int, List<LinkNode>>();
-            Debug.WriteLine(quries.Count);
-            for (int i = 0; i < quries.Count; i++) {
+            Debug.WriteLine(peaks.Count);
+            for (int i = 0; i < peaks.Count; i++) {
+                if (peaks[i].Spectrum.Count <= 0) continue;
                 counter++;
                 Debug.WriteLine("{0} / {1}", counter, max);
                 report?.Invoke(counter / (double)max);
-                for (int j = i + 1; j < quries.Count; j++) {
-                    var prop1 = quries[i];
-                    var prop2 = quries[j];
+                for (int j = i + 1; j < peaks.Count; j++) {
+                    if (peaks[j].Spectrum.Count <= 0) continue;
+                    var prop1 = peaks[i];
+                    var prop2 = peaks[j];
                     var massDiff = Math.Abs(prop1.PrecursorMz - prop2.PrecursorMz);
                     if (massDiff > maxPrecursorDiff) continue;
                    // if (Math.Max(prop1.PrecursorMz, prop2.PrecursorMz) * maxPrecursorDiff_Percent * 0.01 - Math.Min(prop1.PrecursorMz, prop2.PrecursorMz) < 0) continue;
@@ -157,10 +275,10 @@ namespace CompMs.Common.Algorithm.Function {
                     if (scoreitem[0] < matchThreshold * 0.01) continue;
 
                     if (node2links.ContainsKey(i)) {
-                        node2links[i].Add(new LinkNode() { Score = scoreitem, Node = quries[j] });
+                        node2links[i].Add(new LinkNode() { Score = scoreitem, Node = peaks[j], Index = j });
                     }
                     else {
-                        node2links[i] = new List<LinkNode>() { new LinkNode() { Score = scoreitem, Node = quries[j] } };
+                        node2links[i] = new List<LinkNode>() { new LinkNode() { Score = scoreitem, Node = peaks[j], Index = j } };
                     }
                 }
             }
@@ -177,8 +295,8 @@ namespace CompMs.Common.Algorithm.Function {
 
             foreach (var item in cNode2Links) {
                 foreach (var link in item.Value) {
-                    var source_node_id = quries[item.Key].ScanID;
-                    var target_node_id = link.Node.ScanID;
+                    var source_node_id = spots[item.Key].ID;
+                    var target_node_id = spots[link.Index].ID;
 
                     var edge = new EdgeData() {
                         score = link.Score[0], matchpeakcount = link.Score[1], source = source_node_id, target = target_node_id
@@ -188,5 +306,81 @@ namespace CompMs.Common.Algorithm.Function {
             }
             return edges;
         }
+
+        public static List<EdgeData> GenerateEdges(
+           IReadOnlyList<IMoleculeMsProperty> peaks1,
+           IReadOnlyList<IMoleculeMsProperty> peaks2,
+           double massTolerance,
+           double minimumPeakMatch,
+           double matchThreshold,
+           double maxEdgeNumPerNode,
+           double maxPrecursorDiff,
+           double maxPrecursorDiff_Percent,
+           bool isBonanza,
+           Action<double> report) {
+
+            var edges = new List<EdgeData>();
+            var counter = 0;
+            var max = peaks1.Count;
+            var node2links = new Dictionary<int, List<LinkNode>>();
+            Console.WriteLine("Query1 {0}, Query2 {1}, Total {2}", peaks1.Count, peaks2.Count, peaks1.Count * peaks2.Count);
+            for (int i = 0; i < peaks1.Count; i++) {
+                if (peaks1[i].Spectrum.Count <= 0) continue;
+                counter++;
+                report?.Invoke(counter / (double)max);
+                if (counter % 100 == 0) {
+                    Console.Write("{0} / {1}", counter, max);
+                    Console.SetCursorPosition(0, Console.CursorTop);
+                }
+
+                for (int j = 0; j < peaks2.Count; j++) {
+                    if (peaks2[j].Spectrum.Count <= 0) continue;
+                    var prop1 = peaks1[i];
+                    var prop2 = peaks2[j];
+                    var massDiff = Math.Abs(prop1.PrecursorMz - prop2.PrecursorMz);
+                    if (massDiff > maxPrecursorDiff) continue;
+                    double[] scoreitem = new double[2];
+                    if (isBonanza) {
+                        scoreitem = MsScanMatching.GetBonanzaScore(prop1, prop2, massTolerance);
+                    }
+                    else {
+                        scoreitem = MsScanMatching.GetModifiedDotProductScore(prop1, prop2, massTolerance);
+                    }
+                    if (scoreitem[1] < minimumPeakMatch) continue;
+                    if (scoreitem[0] < matchThreshold * 0.01) continue;
+
+                    if (node2links.ContainsKey(i)) {
+                        node2links[i].Add(new LinkNode() { Score = scoreitem, Node = peaks2[j], Index = j });
+                    }
+                    else {
+                        node2links[i] = new List<LinkNode>() { new LinkNode() { Score = scoreitem, Node = peaks2[j], Index = j } };
+                    }
+                }
+            }
+
+            var cNode2Links = new Dictionary<int, List<LinkNode>>();
+            foreach (var item in node2links) {
+                var nitem = item.Value.OrderByDescending(n => n.Score[0]).ToList();
+                cNode2Links[item.Key] = new List<LinkNode>();
+                for (int i = 0; i < nitem.Count; i++) {
+                    if (i > maxEdgeNumPerNode - 1) break;
+                    cNode2Links[item.Key].Add(nitem[i]);
+                }
+            }
+
+            foreach (var item in cNode2Links) {
+                foreach (var link in item.Value) {
+                    var source_node_id = peaks1[item.Key].ScanID;
+                    var target_node_id = peaks2[link.Index].ScanID;
+
+                    var edge = new EdgeData() {
+                        score = link.Score[0], matchpeakcount = link.Score[1], source = source_node_id, target = target_node_id
+                    };
+                    edges.Add(edge);
+                }
+            }
+            return edges;
+        }
+
     }
 }

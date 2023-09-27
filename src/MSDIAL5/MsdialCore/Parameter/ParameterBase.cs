@@ -95,6 +95,8 @@ namespace CompMs.MsdialCore.Parameter
         [IgnoreMember]
         public string MspFilePath { get => ReferenceFileParam.MspFilePath; set => ReferenceFileParam.MspFilePath = value; }
         [IgnoreMember]
+        public string LbmFilePath { get => ReferenceFileParam.LbmFilePath; set => ReferenceFileParam.LbmFilePath = value; }
+        [IgnoreMember]
         public string TextDBFilePath { get => ReferenceFileParam.TextDBFilePath; set => ReferenceFileParam.TextDBFilePath = value; }
         [IgnoreMember]
         public string IsotopeTextDBFilePath { get => ReferenceFileParam.IsotopeTextDBFilePath; set => ReferenceFileParam.IsotopeTextDBFilePath = value; }
@@ -238,6 +240,8 @@ namespace CompMs.MsdialCore.Parameter
         public bool IsIdentificationOnlyPerformedForAlignmentFile { get => RefSpecMatchBaseParam.IsIdentificationOnlyPerformedForAlignmentFile; set => RefSpecMatchBaseParam.IsIdentificationOnlyPerformedForAlignmentFile = value; }
         [IgnoreMember]
         public Dictionary<int, RiDictionaryInfo> FileIdRiInfoDictionary { get => RefSpecMatchBaseParam.FileIdRiInfoDictionary; set => RefSpecMatchBaseParam.FileIdRiInfoDictionary = value; }
+        [IgnoreMember]
+        public MsRefSearchParameterBase LbmSearchParam { get => RefSpecMatchBaseParam.LbmSearchParam; set => RefSpecMatchBaseParam.LbmSearchParam = value; }
 
         // deconvolution
         [Key(7)]
@@ -525,6 +529,7 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "Comment", Comment.ToString() }));
 
             pStrings.Add(String.Join(": ", new string[] { "Msp file path", MspFilePath.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Lbm file path", LbmFilePath.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Text DB file path", TextDBFilePath.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Isotope text DB file path", IsotopeTextDBFilePath.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Compounds library file path for target detection", CompoundListInTargetModePath.ToString() }));
@@ -962,6 +967,8 @@ namespace CompMs.MsdialCore.Parameter
         public string CompoundListForRtCorrectionPath { get; set; } = string.Empty;
         [Key(5)]
         public List<AdductIon> SearchedAdductIons { get; set; } = new List<AdductIon>();
+        [Key(6)]
+        public string LbmFilePath { get; set; } = string.Empty;
     }
 
     [MessagePackObject]
@@ -1146,7 +1153,8 @@ namespace CompMs.MsdialCore.Parameter
         public bool IsIdentificationOnlyPerformedForAlignmentFile { get; set; } = false;
         [Key(6)]
         public Dictionary<int, RiDictionaryInfo> FileIdRiInfoDictionary { get; set; } = new Dictionary<int, RiDictionaryInfo>();
-
+        [Key(7)]
+        public MsRefSearchParameterBase LbmSearchParam { get; set; } = new MsRefSearchParameterBase();
     }
 
     [MessagePackObject]
@@ -1281,7 +1289,7 @@ namespace CompMs.MsdialCore.Parameter
         [Key(1)]
         public double MnIonCorrelationSimilarityCutOff { get; set; } = 95;
         [Key(2)]
-        public double MnSpectrumSimilarityCutOff { get; set; } = 75;
+        public double MnSpectrumSimilarityCutOff { get; set; } = 50;
         [Key(3)]
         public double MnRelativeAbundanceCutOff { get; set; } = 1;
         [Key(4)]
@@ -1289,9 +1297,9 @@ namespace CompMs.MsdialCore.Parameter
         [Key(5)]
         public bool MnIsExportIonCorrelation { get; set; } = false;
         [Key(6)]
-        public double MinimumPeakMatch { get; set; } = 6;
+        public double MinimumPeakMatch { get; set; } = 2;
         [Key(7)]
-        public double MaxEdgeNumberPerNode { get; set; } = 5;
+        public double MaxEdgeNumberPerNode { get; set; } = 6;
         [Key(8)]
         public double MaxPrecursorDifference { get; set; } = 400;
         [Key(9)]

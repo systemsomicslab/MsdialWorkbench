@@ -13,8 +13,24 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Utility {
-    public sealed class LibraryHandler {
-        private LibraryHandler() { }
+    public static class LibraryHandler {
+        public static List<MoleculeMsReference> ReadMsLibrary(string filepath, ParameterBase param, out string error) {
+            var extension = Path.GetExtension(filepath).ToLower();
+            error = string.Empty;
+            switch (extension) {
+                case ".msp":
+                    return MspFileParser.MspFileReader(filepath);
+                case ".lbm":
+                case ".lbm2":
+                    return ReadLipidMsLibrary(filepath, param);
+                case ".text":
+                    return TextLibraryParser.TextLibraryReader(filepath, out error);
+                //case ".fasta":
+                default:
+                    error = "The file extension is not supported.";
+                    return null;
+            }
+        }
 
         public static List<MoleculeMsReference> ReadLipidMsLibrary(string filepath, ParameterBase param) {
             return ReadLipidMsLibrary(filepath, param.LipidQueryContainer, param.IonMode);

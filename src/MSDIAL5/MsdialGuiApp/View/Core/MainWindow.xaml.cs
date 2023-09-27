@@ -99,8 +99,10 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(OpenTargetCompoundLibrarySettingView);
             broker.ToObservable<FindTargetCompoundsSpotViewModel>()
                 .Subscribe(ShowFindTargetCompoundsSpotView);
-            broker.ToObservable<MolecularNetworkingSettingViewModel>()
-                .Subscribe(ShowChildView<MolecularNetworkingSettingView>);
+            broker.ToObservable<MolecularNetworkingExportSettingViewModel>()
+                .Subscribe(ShowChildView<MolecularNetworkingExportSettingView>);
+            broker.ToObservable<MolecularNetworkingSendingToCytoscapeJsSettingViewModel>()
+                .Subscribe(ShowChildView<MolecularNetworkingToCytoscapeJsSettingView>);
 #if RELEASE
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
 #elif DEBUG

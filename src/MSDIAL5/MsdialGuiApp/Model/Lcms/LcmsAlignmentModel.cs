@@ -9,6 +9,8 @@ using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.Model.Table;
 using CompMs.App.Msdial.Utility;
+using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.Common.Algorithm.Function;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -17,6 +19,7 @@ using CompMs.Common.Proteomics.DataObj;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
@@ -51,10 +54,12 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         private readonly AlignmentFileBeanModel _alignmentFile;
         private readonly DataBaseMapper _dataBaseMapper;
+        private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly List<AnalysisFileBean> _files;
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly UndoManager _undoManager;
         private readonly ReadOnlyReactivePropertySlim<MSDecResult> _msdecResult;
+        private readonly IMessageBroker _messageBroker;
 
         public LcmsAlignmentModel(
             AlignmentFileBeanModel alignmentFileBean,
@@ -80,10 +85,12 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             _alignmentFile = alignmentFileBean;
             Parameter = parameter;
+            _projectBaseParameter = projectBaseParameter;
             _files = files ?? throw new ArgumentNullException(nameof(files));
             _dataBaseMapper = mapper;
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper);
             _undoManager = new UndoManager().AddTo(Disposables);
+            _messageBroker = messageBroker;
 
             var spotsSource = new AlignmentSpotSource(alignmentFileBean, Container, CHROMATOGRAM_SPOT_SERIALIZER).AddTo(Disposables);
             Ms1Spots = spotsSource.Spots.Items;
@@ -224,6 +231,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 normalizedHeightLoader, normalizedAreaBaselineLoader, normalizedAreaZeroLoader,
             };
             var barItemsLoaderDataProperty = NormalizationSetModel.Normalized.ToConstant(normalizedHeightLoader).ToReactiveProperty(NormalizationSetModel.IsNormalized.Value ? normalizedHeightLoader : heightLoader).AddTo(Disposables);
+            _barItemsLoaderDataProperty = barItemsLoaderDataProperty;
             BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, barItemLoaderDatas, barBrush, projectBaseParameter, fileCollection, projectBaseParameter.ClassProperties).AddTo(Disposables);
 
             // Class eic
@@ -299,6 +307,9 @@ namespace CompMs.App.Msdial.Model.Lcms
         public FocusNavigatorModel FocusNavigatorModel { get; }
         public AlignmentPeakPlotModel PlotModel { get; }
         public MsSpectrumModel Ms2SpectrumModel { get; }
+
+        private readonly ReactiveProperty<BarItemsLoaderData> _barItemsLoaderDataProperty;
+
         public BarChartModel BarChartModel { get; }
         public AlignmentEicModel AlignmentEicModel { get; }
         public LcmsAlignmentSpotTableModel AlignmentSpotTableModel { get; private set; }
@@ -349,6 +360,48 @@ namespace CompMs.App.Msdial.Model.Lcms
                 _msdecResult.Value,
                 _dataBaseMapper,
                 Parameter);
+        }
+
+        public CompMs.Common.DataObj.NodeEdge.RootObject GetMoleculerNetworkingRootObj(MolecularSpectrumNetworkingBaseParameter parameter) {
+            var param = _projectBaseParameter;
+            var loaderProperty = _barItemsLoaderDataProperty.Value;
+            var loader = loaderProperty.ObservableLoader.ToReactiveProperty().Value;
+            var publisher = new TaskProgressPublisher(_messageBroker, $"Exporting MN results in {parameter.ExportFolderPath}");
+
+            using (publisher.Start()) {
+                var spots = Ms1Spots;
+                var peaks = _alignmentFileModel.LoadMSDecResults();
+
+                void notify(double progressRate) {
+                    publisher.Progress(progressRate, $"Exporting MN results in {parameter.ExportFolderPath}");
+                }
+                var rootObj = MoleculerNetworkingBase.GetMoleculerNetworkingRootObj(spots, peaks, parameter.MsmsSimilarityCalc, parameter.MnMassTolerance,
+                    parameter.MnAbsoluteAbundanceCutOff, parameter.MnRelativeAbundanceCutOff, parameter.MnSpectrumSimilarityCutOff,
+                    parameter.MinimumPeakMatch, parameter.MaxEdgeNumberPerNode, parameter.MaxPrecursorDifference, parameter.MaxPrecursorDifferenceAsPercent, notify);
+
+                for (int i = 0; i < rootObj.nodes.Count; i++) {
+                    var node = rootObj.nodes[i];
+                    node.data.BarGraph = CytoscapejsModel.GetBarGraphProperty(spots[i], loader, param.ClassProperties.ClassToColor);
+                }
+
+                if (parameter.MnIsExportIonCorrelation && _alignmentFileModel.CountRawFiles >= 6) {
+                    var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots.Select(n => n.innerModel).ToList(), parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode);
+                    rootObj.edges.AddRange(ion_edges);
+                }
+                return rootObj;
+            }
+        }
+
+        public override void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter) {
+            //base.RunMoleculerNetworking(parameter);
+            var rootObj = GetMoleculerNetworkingRootObj(parameter);
+            MoleculerNetworkingBase.ExportNodesEdgesFiles(parameter.ExportFolderPath, rootObj);
+        }
+
+        public override void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
+            //base.InvokeMoleculerNetworking(parameter);
+            var rootObj = GetMoleculerNetworkingRootObj(parameter);
+            MoleculerNetworkingBase.SendToCytoscapeJs(rootObj);
         }
     }
 }

@@ -160,7 +160,7 @@
                           KeyTip="H"/>
             <RibbonButton Label="Molecular spectrum networking" LargeImageSource="{StaticResource Molecular_networking_is}"
                           IsEnabled="True"
-                          Command="{Binding ShowMolecularNetworkingSettingCommand, Mode=OneTime}"
+                          Command="{Binding ShowMolecularNetworkingVisualizationSettingCommand, Mode=OneTime}"
                           KeyTip="M"/>
             <RibbonButton Label="Pathway" LargeImageSource="{StaticResource Pathway_is}"
                           IsEnabled="False"
@@ -278,10 +278,10 @@
                           IsEnabled="False"
                           KeyTip="N"/>
             <RibbonButton Label="Molecular spectrum networking export" LargeImageSource="{StaticResource Molecular_network_result_export_is}"
-                          IsEnabled="False"
+                          Command="{Binding ShowMolecularNetworkingExportSettingCommand}"
                           KeyTip="M"/>
             <RibbonButton Label="Parameter export (Tab-delimited text)" LargeImageSource="{StaticResource Parameter_file_export_is}"
-                          IsEnabled="False"
+                          Command="{Binding ExportParameterCommand, Mode=OneTime}"
                           KeyTip="T"/>
             <RibbonButton Label="Export as lipoquality database format"
                           IsEnabled="False"
