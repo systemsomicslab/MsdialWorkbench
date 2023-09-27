@@ -461,11 +461,11 @@ namespace CompMs.MsdialCore.Export
 
         private static string GetNameField(ChromatogramPeakFeature feature) {
             if (feature.Name.IsEmptyOrNull() || feature.Name.ToLower() == "unknown") {
-                var id = "|ID=" + feature.MasterPeakID;
+                var id = "|ID=" + feature.MasterPeakID.ToString();
                 var rt = feature.ChromXsTop.RT.Value > 0 ? "|RT=" + Math.Round(feature.ChromXsTop.RT.Value, 3) : string.Empty;
                 var ri = feature.ChromXsTop.RI.Value > 0 ? "|RI=" + Math.Round(feature.ChromXsTop.RI.Value, 3) : string.Empty;
                 var dt = feature.ChromXsTop.Drift.Value > 0 ? "|DT=" + Math.Round(feature.ChromXsTop.Drift.Value, 3) : string.Empty;
-                var mz = Math.Round(feature.PrecursorMz, 4).ToString();
+                var mz = "|MZ=" + Math.Round(feature.PrecursorMz, 4).ToString();
                 return "Unknown" + id + mz + rt + ri + dt;
             }
             else {
@@ -479,7 +479,7 @@ namespace CompMs.MsdialCore.Export
                 var rt = feature.TimesCenter.RT.Value > 0 ? "|RT=" + Math.Round(feature.TimesCenter.RT.Value, 3) : string.Empty;
                 var ri = feature.TimesCenter.RI.Value > 0 ? "|RI=" + Math.Round(feature.TimesCenter.RI.Value, 3) : string.Empty;
                 var dt = feature.TimesCenter.Drift.Value > 0 ? "|DT=" + Math.Round(feature.TimesCenter.Drift.Value, 3) : string.Empty;
-                var mz = Math.Round(feature.MassCenter, 4).ToString();
+                var mz = "|MZ=" + Math.Round(feature.MassCenter, 4).ToString();
                 return "Unknown" + id + mz + rt + ri + dt;
             }
             else {

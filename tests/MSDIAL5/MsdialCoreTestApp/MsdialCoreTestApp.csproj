@@ -10,6 +10,7 @@
   <PropertyGroup>
     <HighEntropyVA>false</HighEntropyVA>
     <Product>MsdialConsoleApp</Product>
+    <AssemblyName>MSDIALCUI</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

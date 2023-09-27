@@ -33,7 +33,6 @@ namespace CompMs.App.MsdialConsole.Process {
                 else if (args[i] == "-ionmode" && i + 1 < args.Length) ionmode = args[i + 1];
             }
             if (inputFolder == string.Empty || methodFile == string.Empty || outputFolder == string.Empty) return argsError();
-
             var analysisType = args[0];
             try {
                 switch (analysisType) {

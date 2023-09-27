@@ -456,6 +456,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "ms1 tolerance for alignment": if (float.TryParse(valueLower, out float ms1aligntol)) param.Ms1AlignmentTolerance = ms1aligntol; return true;
                 case "ms1 factor for alignment": if (float.TryParse(valueLower, out float ms1alignfactor)) param.Ms1AlignmentFactor = ms1alignfactor; return true;
                 case "force insert peaks in gap filling": if (valueLower == "true" || valueLower == "false") param.IsForceInsertForGapFilling = bool.Parse(valueLower); return true;
+                case "together with alignment": if (valueLower == "true" || valueLower == "false") param.TogetherWithAlignment = bool.Parse(valueLower); return true;
 
                 //Filtering
                 case "peak count filter": if (float.TryParse(valueLower, out float peakcountfilter)) param.PeakCountFilter = peakcountfilter; return true;
