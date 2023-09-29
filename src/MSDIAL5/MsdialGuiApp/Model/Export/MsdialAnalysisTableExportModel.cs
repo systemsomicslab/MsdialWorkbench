@@ -109,7 +109,13 @@ namespace CompMs.App.Msdial.Model.Export
         public IAnalysisMetadataAccessor Accessor { get; }
 
         public IReadOnlyList<MSDecResult> GetSpectra(AnalysisFileBeanModel file) {
-            return MsdecResultsReader.ReadMSDecResults(file.DeconvolutionFilePath, out _, out _);
+            switch (Type) {
+                //case ExportspectraType.centroid:
+                //case ExportspectraType.profile:
+                case ExportspectraType.deconvoluted:
+                default:
+                    return file.MSDecLoader.LoadMSDecResults();
+            }
         }
     }
 }

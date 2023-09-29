@@ -63,10 +63,6 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
 
         public IObservable<Unit> ObserveChanges { get; }
 
-        public AnalysisFileBeanViewModel(AnalysisFileBean file) : this(new AnalysisFileBeanModel(file)) {
-
-        }
-
         public AnalysisFileBeanViewModel(AnalysisFileBeanModel model) : base(model) {
             AnalysisFilePath = new ReactiveProperty<string>(model.AnalysisFilePath)
                 .SetValidateAttribute(() => AnalysisFilePath)

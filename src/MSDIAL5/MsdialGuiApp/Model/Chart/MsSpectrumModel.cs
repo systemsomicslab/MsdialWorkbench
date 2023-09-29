@@ -87,7 +87,6 @@ namespace CompMs.App.Msdial.Model.Chart
             var lowerVerticalRangeProperty = lowerMsSpectrum
                 .Select(msSpectrum => msSpectrum.GetSpectrumRange(spec => verticalPropertySelector.Selector(spec)))
                 .Publish();
-            var lowerVerticalAxis = lowerVerticalRangeProperty.ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent);
             var lowerContinuousVerticalAxis = lowerVerticalRangeProperty
                 .ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent)
                 .AddTo(Disposables);

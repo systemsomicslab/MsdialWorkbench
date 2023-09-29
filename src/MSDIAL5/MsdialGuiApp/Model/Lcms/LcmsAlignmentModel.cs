@@ -60,6 +60,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private readonly UndoManager _undoManager;
         private readonly ReadOnlyReactivePropertySlim<MSDecResult> _msdecResult;
         private readonly IMessageBroker _messageBroker;
+        private readonly ReactiveProperty<BarItemsLoaderData> _barItemsLoaderDataProperty;
 
         public LcmsAlignmentModel(
             AlignmentFileBeanModel alignmentFileBean,
@@ -194,15 +195,14 @@ namespace CompMs.App.Msdial.Model.Lcms
             IMsSpectrumLoader<AlignmentSpotPropertyModel> msDecSpectrumLoader = new AlignmentMSDecSpectrumLoader(_alignmentFile);
             var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             var spectraExporter = new NistSpectraExporter<AlignmentSpotProperty>(Target.Select(t => t?.innerModel), mapper, Parameter).AddTo(Disposables);
-            Ms2SpectrumModel = new MsSpectrumModel(
-                Target.SelectSwitch(msDecSpectrumLoader.LoadSpectrumAsObservable),
-                refSpectrum,
+            Ms2SpectrumModel = new AlignmentMs2SpectrumModel(
+                Target, refSpectrum, fileCollection,
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Mass), peak => peak.Mass),
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Intensity), peak => peak.Intensity),
-                new GraphLabels("Representative vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity)),
-                nameof(SpectrumPeak.SpectrumComment),
                 Observable.Return(upperSpecBrush),
                 Observable.Return(lowerSpecBrush),
+                nameof(SpectrumPeak.SpectrumComment),
+                new GraphLabels("Representative vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity)),
                 Observable.Return(spectraExporter),
                 Observable.Return(referenceExporter),
                 null,
@@ -306,10 +306,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
         public FocusNavigatorModel FocusNavigatorModel { get; }
         public AlignmentPeakPlotModel PlotModel { get; }
-        public MsSpectrumModel Ms2SpectrumModel { get; }
-
-        private readonly ReactiveProperty<BarItemsLoaderData> _barItemsLoaderDataProperty;
-
+        public AlignmentMs2SpectrumModel Ms2SpectrumModel { get; }
         public BarChartModel BarChartModel { get; }
         public AlignmentEicModel AlignmentEicModel { get; }
         public LcmsAlignmentSpotTableModel AlignmentSpotTableModel { get; private set; }
