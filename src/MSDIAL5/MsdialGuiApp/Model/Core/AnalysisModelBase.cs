@@ -41,7 +41,7 @@ namespace CompMs.App.Msdial.Model.Core {
 
             Target = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
 
-            decLoader = new MSDecLoader(analysisFileModel.DeconvolutionFilePath).AddTo(Disposables);
+            decLoader = analysisFileModel.MSDecLoader;
             MsdecResult = Target.SkipNull()
                 .Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation))
                 .ToReadOnlyReactivePropertySlim()
@@ -89,7 +89,8 @@ namespace CompMs.App.Msdial.Model.Core {
             var publisher = new TaskProgressPublisher(_broker, $"Exporting MN results in {parameter.ExportFolderPath}");
             using (publisher.Start()) {
                 var spots = Ms1Peaks;
-                var peaks = MsdecResultsReader.ReadMSDecResults(AnalysisFileModel.DeconvolutionFilePath, out _, out _);
+                var loader = AnalysisFileModel.MSDecLoader;
+                var peaks = loader.LoadMSDecResults();
 
                 void notify(double progressRate) {
                     publisher.Progress(progressRate, $"Exporting MN results in {parameter.ExportFolderPath}");

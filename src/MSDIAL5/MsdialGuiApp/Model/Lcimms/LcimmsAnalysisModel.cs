@@ -246,7 +246,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 },
                 true);
             var spectraExporter = new NistSpectraExporter<ChromatogramPeakFeature>(target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
-            var decLoader = new MSDecLoader(analysisFileModel.DeconvolutionFilePath).AddTo(Disposables);
+            var decLoader = analysisFileModel.MSDecLoader;
             _decLoader = decLoader;
             var msdecResult = target.SkipNull()
                 .Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation))

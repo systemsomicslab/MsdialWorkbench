@@ -168,20 +168,19 @@ namespace CompMs.App.Msdial.Model.Dims
             IMsSpectrumLoader<AlignmentSpotPropertyModel> decSpecLoader = new AlignmentMSDecSpectrumLoader(_alignmentFile);
             var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             var spectraExporter = new NistSpectraExporter<AlignmentSpotProperty>(Target.Select(t => t?.innerModel), mapper, parameter).AddTo(Disposables);
-            Ms2SpectrumModel = new MsSpectrumModel(
-                Target.SelectSwitch(decSpecLoader.LoadSpectrumAsObservable),
-                refSpectrum,
+            Ms2SpectrumModel = new AlignmentMs2SpectrumModel(
+                Target, refSpectrum, fileCollection,
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Mass), spot => spot.Mass),
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Intensity), spot => spot.Intensity),
+                Observable.Return(upperSpecBrush),
+                Observable.Return(lowerSpecBrush),
+                nameof(SpectrumPeak.SpectrumComment),
                 new GraphLabels(
                     "Representation vs. Reference",
                     "m/z",
                     "Relative abundance",
                     nameof(SpectrumPeak.Mass),
                     nameof(SpectrumPeak.Intensity)),
-                nameof(SpectrumPeak.SpectrumComment),
-                Observable.Return(upperSpecBrush),
-                Observable.Return(lowerSpecBrush),
                 Observable.Return(spectraExporter),
                 Observable.Return(referenceExporter),
                 null,
@@ -274,7 +273,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
         public AlignmentPeakPlotModel PlotModel { get; }
 
-        public MsSpectrumModel Ms2SpectrumModel { get; }
+        public AlignmentMs2SpectrumModel Ms2SpectrumModel { get; }
 
         public AlignmentEicModel AlignmentEicModel { get; }
 

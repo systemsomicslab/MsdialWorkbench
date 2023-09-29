@@ -58,7 +58,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             PlotViewModel = new AlignmentPeakPlotViewModel(_model.PlotModel, focus: peakPlotViewFocusAction, isFocused: peakPlotViewFocused).AddTo(Disposables);
 
             var (msSpectrumViewFocusAction, msSpectrumViewFocused) = focusControlManager.Request();
-            Ms2SpectrumViewModel = new MsSpectrumViewModel(_model.Ms2SpectrumModel, focusAction: msSpectrumViewFocusAction, isFocused: msSpectrumViewFocused).AddTo(Disposables);
+            Ms2SpectrumViewModel = new AlignmentMs2SpectrumViewModel(_model.Ms2SpectrumModel, broker, focusAction: msSpectrumViewFocusAction, isFocused: msSpectrumViewFocused).AddTo(Disposables);
             AlignmentEicViewModel = new AlignmentEicViewModel(_model.AlignmentEicModel).AddTo(Disposables);
 
             var (barChartViewFocusAction, barChartViewFocused) = focusControlManager.Request();
@@ -91,7 +91,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public AlignmentPeakPlotViewModel PlotViewModel { get; }
-        public MsSpectrumViewModel Ms2SpectrumViewModel { get; }
+        public AlignmentMs2SpectrumViewModel Ms2SpectrumViewModel { get; }
         public AlignmentEicViewModel AlignmentEicViewModel { get; }
         public BarChartViewModel BarChartViewModel { get; }
         public DimsAlignmentSpotTableViewModel AlignmentSpotTableViewModel { get; }
