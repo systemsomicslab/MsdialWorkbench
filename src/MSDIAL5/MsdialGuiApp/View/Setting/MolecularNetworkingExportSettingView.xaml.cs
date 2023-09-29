@@ -6,9 +6,9 @@ namespace CompMs.App.Msdial.View.Setting
     /// <summary>
     /// Interaction logic for MolecularNetworkingSettingView.xaml
     /// </summary>
-    public partial class MolecularNetworkingSettingView : Window
+    public partial class MolecularNetworkingExportSettingView : Window
     {
-        public MolecularNetworkingSettingView()
+        public MolecularNetworkingExportSettingView()
         {
             InitializeComponent();
             CommandBindings.AddRange(new[] {
