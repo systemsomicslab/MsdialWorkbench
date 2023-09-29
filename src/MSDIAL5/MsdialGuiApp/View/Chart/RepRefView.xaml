@@ -5,24 +5,19 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Chart"
              mc:Ignorable="d" 
-             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
-             Name="RepRefPlot"
-             d:DataContext="{d:DesignInstance Type={x:Type vm:ImmsAlignmentViewModel}}"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:LcmsAlignmentViewModel}}"
+             d:Background="White"
              d:DesignHeight="600" d:DesignWidth="370">
-    <d:DesingerProperties.DesignStyle>
-        <Style TargetType="UserControl">
-            <Setter Property="Background" Value="White"/>
-        </Style>
-    </d:DesingerProperties.DesignStyle>
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <Style TargetType="Button" x:Key="IconButton">
-                <Setter Property="Height" Value="30"/>
-                <Setter Property="Width" Value="30"/>
-                <Setter Property="Margin" Value="5,0,0,0"/>
+                <Setter Property="Height" Value="32"/>
+                <Setter Property="Width" Value="32"/>
+                <Setter Property="Margin" Value="4,0,0,0"/>
                 <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="ContentTemplate">
@@ -50,7 +45,7 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel Margin="10,5,0,5" Orientation="Horizontal"
+        <StackPanel Margin="8,4,0,4" Orientation="Horizontal"
                     Grid.Row="0">
 
             <Button Name="Button_CompoundSearchAlignmentViewer"
@@ -90,8 +85,8 @@
                    Margin="0,0,4,0"
                    Grid.Row="0" Grid.Column="1"/>
 
-        <local:MsSpectrumView DataContext="{Binding Ms2SpectrumViewModel}"
-                              Margin="0,0,10,0"
-                              Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
+        <local:AlignmentMs2SpectrumView DataContext="{Binding Ms2SpectrumViewModel}"
+                                        Margin="0,0,8,0"
+                                        Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
     </Grid>
 </UserControl>

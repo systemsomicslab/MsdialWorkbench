@@ -100,12 +100,12 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                 new SpectraType(
                     ExportspectraType.deconvoluted,
                     new ImmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.deconvoluted)),
-                new SpectraType(
-                    ExportspectraType.centroid,
-                    new ImmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.centroid)),
-                new SpectraType(
-                    ExportspectraType.profile,
-                    new ImmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.profile)),
+                //new SpectraType(
+                //    ExportspectraType.centroid,
+                //    new ImmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.centroid)),
+                //new SpectraType(
+                //    ExportspectraType.profile,
+                //    new ImmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.profile)),
             };
             var spectraFormats = new[]
             {

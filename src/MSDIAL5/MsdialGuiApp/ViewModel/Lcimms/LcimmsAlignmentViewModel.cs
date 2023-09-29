@@ -66,7 +66,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             DtMzPlotViewModel = new AlignmentPeakPlotViewModel(model.DtMzPlotModel, peakPlotFocusAction, peakPlotFocused).AddTo(Disposables);
 
             var (msSpectrumViewFocusAction, msSpectrumViewFocused) = focusControlManager.Request();
-            Ms2SpectrumViewModel = new MsSpectrumViewModel(model.Ms2SpectrumModel, focusAction: msSpectrumViewFocusAction, isFocused: msSpectrumViewFocused).AddTo(Disposables);
+            Ms2SpectrumViewModel = new AlignmentMs2SpectrumViewModel(model.Ms2SpectrumModel, broker, focusAction: msSpectrumViewFocusAction, isFocused: msSpectrumViewFocused).AddTo(Disposables);
 
             var (barChartViewFocusAction, barChartViewFocused) = focusControlManager.Request();
             RtBarChartViewModel = new BarChartViewModel(model.RtBarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
@@ -122,7 +122,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public UndoManagerViewModel UndoManagerViewModel { get; }
         public AlignmentPeakPlotViewModel RtMzPlotViewModel { get; }
         public AlignmentPeakPlotViewModel DtMzPlotViewModel { get; }
-        public MsSpectrumViewModel Ms2SpectrumViewModel { get; }
+        public AlignmentMs2SpectrumViewModel Ms2SpectrumViewModel { get; }
         public BarChartViewModel RtBarChartViewModel { get; }
         public BarChartViewModel DtBarChartViewModel { get; }
         public MultiBarChartViewModel BarChartViewModels { get; }
