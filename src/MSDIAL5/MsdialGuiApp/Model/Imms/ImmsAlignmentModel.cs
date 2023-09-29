@@ -335,6 +335,9 @@ namespace CompMs.App.Msdial.Model.Imms
                 _dataBaseMapper,
                 _parameter);
         }
+        public override void InvokeMoleculerNetworkingForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter) {
+            throw new NotImplementedException();
+        }
 
         public void SaveProject() {
             _alignmentFile.SaveAlignmentResultAsync(Container).Wait();

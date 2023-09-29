@@ -20,6 +20,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
 using CompMs.MsdialLcImMsApi.Parameter;
@@ -411,7 +412,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 _dataBaseMapper,
                 _parameter);
         }
-
+        public override void InvokeMoleculerNetworkingForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter) {
+            throw new NotImplementedException();
+        }
         public void SaveProject() {
             _alignmentFileBean.SaveAlignmentResultAsync(Container).Wait();
         }

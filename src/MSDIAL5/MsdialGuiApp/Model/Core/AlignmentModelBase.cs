@@ -77,6 +77,8 @@ namespace CompMs.App.Msdial.Model.Core
             MoleculerNetworkingBase.SendToCytoscapeJs(rootObj);
         }
 
+        public abstract void InvokeMoleculerNetworkingForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter);
+
         protected readonly CompositeDisposable Disposables = new CompositeDisposable();
 
         // IAlignmentModel interface
