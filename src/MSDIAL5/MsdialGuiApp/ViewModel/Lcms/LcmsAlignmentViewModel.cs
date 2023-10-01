@@ -27,15 +27,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     {
         private readonly LcmsAlignmentModel _model;
         private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
-        private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
-        private readonly IWindowService<PeakSpotTableViewModelBase> _proteomicsTableService;
         private readonly IMessageBroker _broker;
 
         public LcmsAlignmentViewModel(
             LcmsAlignmentModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
             IMessageBroker broker,
             FocusControlManager focusControlManager) {
             if (focusControlManager is null) {
@@ -44,8 +40,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _compoundSearchService = compoundSearchService ?? throw new ArgumentNullException(nameof(compoundSearchService));
-            _peakSpotTableService = peakSpotTableService ?? throw new ArgumentNullException(nameof(peakSpotTableService));
-            _proteomicsTableService = proteomicsTableService ?? throw new ArgumentNullException(nameof(proteomicsTableService));
             _broker = broker ?? throw new ArgumentNullException(nameof(broker));
 
             Target = _model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -66,13 +60,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
             
-            AlignmentSpotTableViewModel = new LcmsAlignmentSpotTableViewModel(
-                _model.AlignmentSpotTableModel,
-                PeakSpotNavigatorViewModel,
-                SetUnknownCommand,
-                UndoManagerViewModel)
-                .AddTo(Disposables);
-            ProteomicsAlignmentTableViewModel = new LcmsProteomicsAlignmentTableViewModel(
+            AlignmentSpotTableViewModel = LcmsTableViewModelHelper.CreateViewModel(
                 _model.AlignmentSpotTableModel,
                 PeakSpotNavigatorViewModel,
                 SetUnknownCommand,
@@ -137,8 +125,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public AlignmentMs2SpectrumViewModel Ms2SpectrumViewModel { get; }
         public BarChartViewModel BarChartViewModel { get; }
         public AlignmentEicViewModel AlignmentEicViewModel { get; }
-        public LcmsAlignmentSpotTableViewModel AlignmentSpotTableViewModel { get; }
-        public LcmsProteomicsAlignmentTableViewModel ProteomicsAlignmentTableViewModel { get; }
+        public AlignmentSpotTableViewModelBase AlignmentSpotTableViewModel { get; }
         public AlignedChromatogramModificationViewModelLegacy AlignedChromatogramModificationViewModel { get; }
         public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
         public PeakInformationViewModel PeakInformationViewModel { get; }
@@ -184,12 +171,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private DelegateCommand _showIonTableCommand;
 
         private void ShowIonTable() {
-            if (_model.Parameter.TargetOmics == TargetOmics.Proteomics) {
-                _proteomicsTableService.Show(ProteomicsAlignmentTableViewModel);
-            }
-            else {
-                _peakSpotTableService.Show(AlignmentSpotTableViewModel);
-            }
+            _broker.Publish(AlignmentSpotTableViewModel);
         }
 
         public ReactiveCommand ShowFindCompoundSpotViewCommand { get; }

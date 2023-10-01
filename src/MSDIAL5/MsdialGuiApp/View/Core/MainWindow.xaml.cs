@@ -11,6 +11,7 @@ using CompMs.App.Msdial.View.Table;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Export;
+using CompMs.App.Msdial.ViewModel.Lcms;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
@@ -103,6 +104,14 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildView<MolecularNetworkingExportSettingView>);
             broker.ToObservable<MolecularNetworkingSendingToCytoscapeJsSettingViewModel>()
                 .Subscribe(ShowChildView<MolecularNetworkingToCytoscapeJsSettingView>);
+            broker.ToObservable<LcmsAnalysisPeakTableViewModel>()
+                .Subscribe(ShowChildView<AlignmentSpotTable>);
+            broker.ToObservable<LcmsProteomicsPeakTableViewModel>()
+                .Subscribe(ShowChildView<ProteomicsSpotTable>);
+            broker.ToObservable<LcmsAlignmentSpotTableViewModel>()
+                .Subscribe(ShowChildView<AlignmentSpotTable>);
+            broker.ToObservable<LcmsProteomicsAlignmentTableViewModel>()
+                .Subscribe(ShowChildView<ProteomicsSpotTable>);
 #if RELEASE
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
 #elif DEBUG
