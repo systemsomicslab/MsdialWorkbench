@@ -120,7 +120,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         private DelegateCommand _searchAnalysisSpectrumByMoleculerNetworkingCommand;
 
         private void SearchAnalysisSpectrumByMoleculerNetworkingMethod() {
-            _model.InvokeMoleculerNetworkingForTargetSpot(_model._parameter.MolecularSpectrumNetworkingBaseParam);
+            _model.InvokeMoleculerNetworkingForTargetSpot();
         }
 
         public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ?? (_goToMsfinderCommand = new DelegateCommand(GoToMsfinderMethod));

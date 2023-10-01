@@ -53,7 +53,7 @@ namespace CompMs.App.Msdial.Model.Dims
             ParameterBase parameter,
             PeakFilterModel peakFilterModel,
             IMessageBroker broker)
-            : base(analysisFileModel, broker) {
+            : base(analysisFileModel, parameter.MolecularSpectrumNetworkingBaseParam, broker) {
             if (evaluator is null) {
                 throw new ArgumentNullException(nameof(evaluator));
             }

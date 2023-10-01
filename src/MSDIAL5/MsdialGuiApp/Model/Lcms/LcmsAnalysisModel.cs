@@ -50,7 +50,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             ParameterBase parameter,
             PeakFilterModel peakFilterModel,
             IMessageBroker broker)
-            : base(analysisFileModel, broker) {
+            : base(analysisFileModel, parameter.MolecularSpectrumNetworkingBaseParam, broker) {
             if (provider is null) {
                 throw new ArgumentNullException(nameof(provider));
             }

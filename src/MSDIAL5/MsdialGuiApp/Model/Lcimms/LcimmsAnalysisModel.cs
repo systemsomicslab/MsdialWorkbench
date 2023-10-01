@@ -466,7 +466,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             throw new NotImplementedException();
         }
 
-        public void InvokeMoleculerNetworkingForTargetSpot(MsdialCore.Parameter.MolecularSpectrumNetworkingBaseParameter parameter) {
+        public void InvokeMoleculerNetworkingForTargetSpot() {
             throw new NotImplementedException();
         }
     }

@@ -25,10 +25,12 @@ namespace CompMs.App.Msdial.Model.Core {
     public abstract class AnalysisModelBase : BindableBase, IAnalysisModel, IDisposable
     {
         private readonly ChromatogramPeakFeatureCollection _peakCollection;
+        private readonly MolecularSpectrumNetworkingBaseParameter _molecularSpectrumNetworkingParameter;
         private readonly IMessageBroker _broker;
 
-        public AnalysisModelBase(AnalysisFileBeanModel analysisFileModel, IMessageBroker broker) {
+        public AnalysisModelBase(AnalysisFileBeanModel analysisFileModel, MolecularSpectrumNetworkingBaseParameter molecularSpectrumNetworkingParameter, IMessageBroker broker) {
             AnalysisFileModel = analysisFileModel;
+            _molecularSpectrumNetworkingParameter = molecularSpectrumNetworkingParameter;
             _broker = broker;
             var peaks = MsdialPeakSerializer.LoadChromatogramPeakFeatures(analysisFileModel.PeakAreaBeanInformationFilePath);
             _peakCollection = new ChromatogramPeakFeatureCollection(peaks);
@@ -80,8 +82,8 @@ namespace CompMs.App.Msdial.Model.Core {
             MoleculerNetworkingBase.SendToCytoscapeJs(rootObj);
         }
 
-        public void InvokeMoleculerNetworkingForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter) {
-            var rootObj = GetMoleculerNetworkingRootObjForTargetSpot(parameter);
+        public void InvokeMoleculerNetworkingForTargetSpot() {
+            var rootObj = GetMoleculerNetworkingRootObjForTargetSpot(_molecularSpectrumNetworkingParameter);
             MoleculerNetworkingBase.SendToCytoscapeJs(rootObj);
         }
 

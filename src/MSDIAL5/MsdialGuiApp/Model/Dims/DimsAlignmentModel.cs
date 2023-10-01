@@ -344,7 +344,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 _parameter);
         }
 
-        public override void InvokeMoleculerNetworkingForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter) {
+        public override void InvokeMoleculerNetworkingForTargetSpot() {
             throw new NotImplementedException();
         }
         public void Undo() => _undoManager.Undo();

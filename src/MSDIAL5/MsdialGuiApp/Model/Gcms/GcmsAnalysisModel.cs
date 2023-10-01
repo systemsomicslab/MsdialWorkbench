@@ -31,7 +31,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             throw new NotImplementedException();
         }
 
-        void IResultModel.InvokeMoleculerNetworkingForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter) {
+        void IResultModel.InvokeMoleculerNetworkingForTargetSpot() {
             throw new NotImplementedException();
         }
     }

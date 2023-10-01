@@ -440,8 +440,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             MoleculerNetworkingBase.SendToCytoscapeJs(rootObj);
         }
 
-        public override void InvokeMoleculerNetworkingForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter) {
-            var rootObj = GetMoleculerNetworkingRootObjForTargetSpot(parameter);
+        public override void InvokeMoleculerNetworkingForTargetSpot() {
+            var rootObj = GetMoleculerNetworkingRootObjForTargetSpot(Parameter.MolecularSpectrumNetworkingBaseParam);
             MoleculerNetworkingBase.SendToCytoscapeJs(rootObj);
         }
     }

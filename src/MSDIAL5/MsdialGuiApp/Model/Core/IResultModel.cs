@@ -8,6 +8,6 @@ namespace CompMs.App.Msdial.Model.Core
         void InvokeMsfinder();
         void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter);
         void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter);
-        void InvokeMoleculerNetworkingForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter);
+        void InvokeMoleculerNetworkingForTargetSpot();
     }
 }
