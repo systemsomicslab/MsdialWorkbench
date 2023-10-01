@@ -49,7 +49,7 @@ namespace CompMs.App.Msdial.Model.Dims
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _matchResultEvaluator;
         private readonly ReadOnlyReactivePropertySlim<MSDecResult> _msdecResult;
-        public ParameterBase _parameter;
+        private readonly ParameterBase _parameter;
         private readonly List<AnalysisFileBean> _files;
         private readonly AnalysisFileBeanModelCollection _fileCollection;
         private readonly CompoundSearcherCollection _compoundSearchers;

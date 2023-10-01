@@ -51,7 +51,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly AnalysisFileBeanModel _analysisFileModel;
         private readonly IDataProvider _spectrumProvider;
         private readonly DataBaseMapper _dataBaseMapper;
-        public MsdialLcImMsParameter _parameter;
+        private readonly MsdialLcImMsParameter _parameter;
         private readonly UndoManager _undoManager;
         private readonly MSDecLoader _decLoader;
         private readonly ReadOnlyReactivePropertySlim<MSDecResult> _msdecResult;

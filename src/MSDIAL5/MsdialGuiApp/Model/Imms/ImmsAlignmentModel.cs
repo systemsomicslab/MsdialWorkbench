@@ -41,7 +41,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
         private readonly AlignmentFileBeanModel _alignmentFile;
         private readonly List<AnalysisFileBean> _files;
-        public ParameterBase _parameter;
+        private readonly ParameterBase _parameter;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly UndoManager _undoManager;

@@ -40,7 +40,7 @@ namespace CompMs.App.Msdial.Model.Imms
         private static readonly double MZ_TOLELANCE = 20;
         private static readonly double DT_TOLELANCE = 0.01;
 
-        public MsdialImmsParameter _parameter;
+        private readonly MsdialImmsParameter _parameter;
         private readonly UndoManager _undoManager;
         private readonly IDataProvider _provider;
         private readonly DataBaseMapper _dataBaseMapper;
