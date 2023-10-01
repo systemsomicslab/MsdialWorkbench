@@ -39,7 +39,7 @@ namespace CompMs.App.Msdial.Model.Lcms
     internal sealed class LcmsAnalysisModel : AnalysisModelBase {
         private readonly IDataProvider _provider;
         private readonly CompoundSearcherCollection _compoundSearchers;
-
+        private readonly ParameterBase _parameter;
 
         public LcmsAnalysisModel(
             AnalysisFileBeanModel analysisFileModel,
@@ -69,7 +69,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             _provider = provider;
             DataBaseMapper = mapper;
-            Parameter = parameter;
+            _parameter = parameter;
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper);
             _undoManager = new UndoManager().AddTo(Disposables);
 
@@ -104,7 +104,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     "Intensity");
             var brushes = new[] { intensityBrush, ontologyBrush, };
             BrushMapData<ChromatogramPeakFeatureModel> selectedBrush;
-            switch (Parameter.TargetOmics) {
+            switch (parameter.TargetOmics) {
                 case TargetOmics.Lipidomics:
                     selectedBrush = ontologyBrush;
                     break;
@@ -132,8 +132,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 .AddTo(Disposables);
 
             // Eic chart
-            var eicLoader = EicLoader.BuildForAllRange(analysisFileModel.File, provider, Parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
-            EicLoader = EicLoader.BuildForPeakRange(analysisFileModel.File, provider, Parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
+            var eicLoader = EicLoader.BuildForAllRange(analysisFileModel.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
+            EicLoader = EicLoader.BuildForPeakRange(analysisFileModel.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
             EicModel = new EicModel(Target, eicLoader) {
                 HorizontalTitle = PlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
@@ -147,7 +147,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 .DisposePreviousValue()
                 .CombineLatest(
                     Target.SkipNull(),
-                    (model, t) => new ExperimentSpectrumModel(model, AnalysisFileModel, provider, t.InnerModel, DataBaseMapper, Parameter))
+                    (model, t) => new ExperimentSpectrumModel(model, AnalysisFileModel, provider, t.InnerModel, DataBaseMapper, parameter))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -157,7 +157,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             // Ms2 spectrum
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-               Parameter.ProjectParam.SpectrumCommentToColorBytes
+               parameter.ProjectParam.SpectrumCommentToColorBytes
                .ToDictionary(
                    kvp => kvp.Key,
                    kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
@@ -166,11 +166,11 @@ namespace CompMs.App.Msdial.Model.Lcms
                Colors.Blue);
             Color mapToColor(SpectrumComment comment) {
                 var commentString = comment.ToString();
-                if (Parameter.ProjectParam.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
+                if (parameter.ProjectParam.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
                     return Color.FromRgb(color[0], color[1], color[2]);
                 }
                 else if ((comment & SpectrumComment.doublebond) == SpectrumComment.doublebond
-                    && Parameter.ProjectParam.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
+                    && parameter.ProjectParam.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
                     return Color.FromRgb(color[0], color[1], color[2]);
                 }
                 else {
@@ -178,7 +178,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 }
             }
             var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(mapToColor, true);
-            var spectraExporter = new NistSpectraExporter<ChromatogramPeakFeature>(Target.Select(t => t?.InnerModel), mapper, Parameter).AddTo(Disposables);
+            var spectraExporter = new NistSpectraExporter<ChromatogramPeakFeature>(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
             MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
@@ -201,15 +201,32 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Observable.Return(spectraExporter),
                 Observable.Return(referenceExporter),
                 MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers)).AddTo(Disposables);
-            
 
             // Raw vs Purified spectrum model
+            var purifiedSpecBrush = new DelegateBrushMapper<SpectrumComment>(
+                comment =>
+                {
+                    var commentString = comment.ToString();
+                    if (parameter.ProjectParam.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
+                        return Color.FromRgb(color[0], color[1], color[2]);
+                    }
+                    else if ((comment & SpectrumComment.doublebond) == SpectrumComment.doublebond
+                        && parameter.ProjectParam.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
+                        return Color.FromRgb(color[0], color[1], color[2]);
+                    }
+                    else {
+                        return Colors.Red;
+                    }
+                },
+                true);
             RawPurifiedSpectrumsModel = new RawPurifiedSpectrumsModel(
                 Target,
                 rawSpectrumLoader,
                 decSpectrumLoader,
                 peak => peak.Mass,
-                peak => peak.Intensity) {
+                peak => peak.Intensity,
+                Observable.Return(upperSpecBrush),
+                Observable.Return(purifiedSpecBrush)) {
                 GraphTitle = "Raw vs. Purified spectrum",
                 HorizontalTitle = "m/z",
                 VerticalTitle = "Absolute abundance",
@@ -220,10 +237,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             }.AddTo(Disposables);
 
             // Ms2 chromatogram
-            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawSpectrumLoader, provider, Parameter, analysisFileModel.AcquisitionType, broker).AddTo(Disposables);
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawSpectrumLoader, provider, parameter, analysisFileModel.AcquisitionType, broker).AddTo(Disposables);
 
             // SurveyScan
-            var msdataType = Parameter.MSDataType;
+            var msdataType = parameter.MSDataType;
             var surveyScanSpectrum = new SurveyScanSpectrum(Target, t =>
             {
                 if (t is null) {
@@ -247,7 +264,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
 
             // Peak table
-            PeakTableModel = new LcmsAnalysisPeakTableModel(Ms1Peaks, Target, PeakSpotNavigatorModel, parameter.ReferenceFileParam.SearchedAdductIons).AddTo(Disposables);
+            PeakTableModel = new LcmsAnalysisPeakTableModel(Ms1Peaks, Target, PeakSpotNavigatorModel, parameter.ReferenceFileParam.SearchedAdductIons, parameter.ProjectParam.TargetOmics).AddTo(Disposables);
 
             var rtSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, RtTol, Target.Select(t => t?.ChromXValue ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
             var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, MzTol, Target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
@@ -293,7 +310,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         public UndoManager UndoManager => _undoManager;
 
         public DataBaseMapper DataBaseMapper { get; }
-        public ParameterBase Parameter { get; }
 
         public EicLoader EicLoader { get; }
 
@@ -329,7 +345,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
         public override void SearchFragment() {
-            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Peaks.Select(n => n.InnerModel).ToList(), decLoader, Parameter);
+            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Peaks.Select(n => n.InnerModel).ToList(), decLoader, _parameter);
         }
 
         public void SaveSpectra(string filename) {
@@ -341,7 +357,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     MsdecResult.Value,
                     _provider.LoadMs1Spectrums(),
                     DataBaseMapper,
-                    Parameter);
+                    _parameter);
             }
         }
 
@@ -358,7 +374,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     new MSScanProperty() { Spectrum = spectrum },
                     _provider.LoadMs1Spectrums(),
                     DataBaseMapper,
-                    Parameter);
+                    _parameter);
             }
         }
 
@@ -379,7 +395,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 MsdecResult.Value,
                 _provider.LoadMs1Spectrums(),
                 DataBaseMapper,
-                Parameter);
+                _parameter);
         }
 
         
