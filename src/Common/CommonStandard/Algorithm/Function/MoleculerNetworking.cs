@@ -198,10 +198,11 @@ namespace CompMs.Common.Algorithm.Function {
             }
             var nSpots = new List<T>();
             var nScans = new List<IMSScanProperty>();
+
             for (int i = 0; i < spots.Count; i++) {
                 if (idlist.Contains(spots[i].ID)) {
                     nSpots.Add(spots[i]);
-                    nScans.Add(nScans[i]);
+                    nScans.Add(scans[i]);
                 }
             }
 
@@ -211,6 +212,7 @@ namespace CompMs.Common.Algorithm.Function {
 
         public static List<Node> GetSimpleNodes<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans) where T : IMoleculeProperty, IChromatogramPeak {
             var nodes = new List<Node>();
+            if (spots.IsEmptyOrNull()) return nodes;
             var minValue = Math.Log10(spots.Min(n => n.Intensity));
             var maxValue = Math.Log10(spots.Max(n => n.Intensity));
             for (int i = 0; i < spots.Count; i++) {
