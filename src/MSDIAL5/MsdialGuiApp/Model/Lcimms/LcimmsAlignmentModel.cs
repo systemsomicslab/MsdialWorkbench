@@ -47,7 +47,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         private readonly AlignmentFileBeanModel _alignmentFileBean;
         private readonly DataBaseMapper _dataBaseMapper;
-        private readonly MsdialLcImMsParameter _parameter;
+        public MsdialLcImMsParameter _parameter;
         private readonly List<AnalysisFileBean> _files;
         private readonly IMessageBroker _broker;
         private readonly UndoManager _undoManager;

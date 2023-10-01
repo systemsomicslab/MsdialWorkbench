@@ -157,6 +157,20 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
         private DelegateCommand showIonTableCommand;
 
+        public DelegateCommand SearchAlignmentSpectrumByMoleculerNetworkingCommand => _searchAlignmentSpectrumByMoleculerNetworkingCommand ?? (_searchAlignmentSpectrumByMoleculerNetworkingCommand = new DelegateCommand(SearchAlignmentSpectrumByMoleculerNetworkingMethod));
+        private DelegateCommand _searchAlignmentSpectrumByMoleculerNetworkingCommand;
+
+        private void SearchAlignmentSpectrumByMoleculerNetworkingMethod() {
+            _model.InvokeMoleculerNetworkingForTargetSpot(_model._parameter.MolecularSpectrumNetworkingBaseParam);
+        }
+
+        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ?? (_goToMsfinderCommand = new DelegateCommand(GoToMsfinderMethod));
+        private DelegateCommand _goToMsfinderCommand;
+
+        private void GoToMsfinderMethod() {
+            _model.InvokeMsfinder();
+        }
+
         private void ShowIonTable() {
             _peakSpotTableService.Show(AlignmentSpotTableViewModel);
         }

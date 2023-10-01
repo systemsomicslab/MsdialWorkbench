@@ -42,7 +42,7 @@ namespace CompMs.App.Msdial.Model.Dims
         private readonly UndoManager _undoManager;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly IDataProvider _provider;
-        private readonly ParameterBase _parameter;
+        public ParameterBase _parameter;
 
         public DimsAnalysisModel(
             AnalysisFileBeanModel analysisFileModel,
