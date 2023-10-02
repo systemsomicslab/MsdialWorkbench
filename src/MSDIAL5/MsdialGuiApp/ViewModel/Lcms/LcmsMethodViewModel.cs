@@ -275,7 +275,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             ReadOnlyReactivePropertySlim<LcmsAnalysisViewModel> result;
             using (var subject = new Subject<LcmsAnalysisModel>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AnalysisModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
-                    .Select(m => m is null ? null : new LcmsAnalysisViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService, broker, focusManager))
+                    .Select(m => m is null ? null : new LcmsAnalysisViewModel(m, compoundSearchService, broker, focusManager))
                     .DisposePreviousValue()
                     .ToReadOnlyReactivePropertySlim();
                 subject.OnNext(method.AnalysisModel);
@@ -314,7 +314,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             ReadOnlyReactivePropertySlim<LcmsAlignmentViewModel> result;
             using (var subject = new Subject<LcmsAlignmentModel>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AlignmentModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
-                    .Select(m => m is null ? null : new LcmsAlignmentViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService, broker, focusControlManager))
+                    .Select(m => m is null ? null : new LcmsAlignmentViewModel(m, compoundSearchService, broker, focusControlManager))
                     .DisposePreviousValue()
                     .ToReadOnlyReactivePropertySlim();
                 subject.OnNext(method.AlignmentModel);

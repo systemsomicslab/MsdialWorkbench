@@ -57,12 +57,14 @@
 
             <Button Name="Button_MsFinderSearchAlignmentViewer"
                     Content="/Resources/msfinder_icon.ico"
+                    Command="{Binding GoToMsfinderCommand}"
                     ToolTip="MS-FINDER search"
                     HorizontalAlignment="Left"
                     Style="{StaticResource IconButton}"/>
 
             <Button Name="Button_MolecularNetworkAlignmentViewer"
                     Content="/Resources/MolecularNetworking.ico"
+                    Command="{Binding SearchAlignmentSpectrumByMoleculerNetworkingCommand}"
                     ToolTip="Molecular-spectrum networking for selected alignment spot"
                     HorizontalAlignment="Left"
                     Style="{StaticResource IconButton}"/>

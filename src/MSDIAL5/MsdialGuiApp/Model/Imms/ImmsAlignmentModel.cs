@@ -334,7 +334,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 _dataBaseMapper,
                 _parameter);
         }
-        public override void InvokeMoleculerNetworkingForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter) {
+        public override void InvokeMoleculerNetworkingForTargetSpot() {
             throw new NotImplementedException();
         }
 

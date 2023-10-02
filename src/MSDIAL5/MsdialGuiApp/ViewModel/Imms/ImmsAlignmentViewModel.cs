@@ -138,6 +138,20 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             _peakSpotTableService.Show(AlignmentSpotTableViewModel);
         }
 
+        public DelegateCommand SearchAlignmentSpectrumByMoleculerNetworkingCommand => _searchAlignmentSpectrumByMoleculerNetworkingCommand ?? (_searchAlignmentSpectrumByMoleculerNetworkingCommand = new DelegateCommand(SearchAlignmentSpectrumByMoleculerNetworkingMethod));
+        private DelegateCommand _searchAlignmentSpectrumByMoleculerNetworkingCommand;
+
+        private void SearchAlignmentSpectrumByMoleculerNetworkingMethod() {
+            _model.InvokeMoleculerNetworkingForTargetSpot();
+        }
+
+        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ?? (_goToMsfinderCommand = new DelegateCommand(GoToMsfinderMethod));
+        private DelegateCommand _goToMsfinderCommand;
+
+        private void GoToMsfinderMethod() {
+            _model.InvokeMsfinder();
+        }
+
         public ICommand SaveSpectraCommand => _saveSpectraCommand ?? (_saveSpectraCommand = new DelegateCommand(SaveSpectra, CanSaveSpectra));
 
         private DelegateCommand _saveSpectraCommand;
