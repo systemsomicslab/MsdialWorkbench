@@ -200,6 +200,16 @@
                         </Grid>
                     </Expander>
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:AlignmentResultMassBankRecordExportViewModel}">
+                    <Expander Header="MassBank" IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
+                        <Grid>
+                            <CheckBox Content="Record"
+                                      IsChecked="{Binding IsSelected.Value, Mode=TwoWay}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Center"
+                                      Margin="8,8,0,0" Width="180"/>
+                        </Grid>
+                    </Expander>
+                </DataTemplate>
             </ItemsControl.Resources>
         </ItemsControl>
 
