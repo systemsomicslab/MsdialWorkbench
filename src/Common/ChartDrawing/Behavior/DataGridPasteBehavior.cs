@@ -44,6 +44,9 @@ namespace CompMs.Graphics.Behavior
                 return;
             }
             var leftTopCell = datagrid.SelectedCells[0];
+            if (datagrid.SelectionUnit == DataGridSelectionUnit.FullRow) {
+                leftTopCell = datagrid.CurrentCell;
+            }
             if (e.Key == Key.V && Keyboard.Modifiers == ModifierKeys.Control)
             {
                 var clipText = Clipboard.GetText().Replace("\r\n", "\n").TrimEnd().Split('\n').Select(row => row.Split('\t')).ToArray();
@@ -60,13 +63,13 @@ namespace CompMs.Graphics.Behavior
                     var item = items[i + startRow];
 
                     datagrid.BeginEdit();
-                    var row = datagrid.ItemContainerGenerator.ContainerFromItem(item);
                     for (int j = 0; j < datas.Length; j++)
                     {
                         if (j + startCol >= datagrid.Columns.Count) break;
                         var data = datas[j];
                         datagrid.Columns[j + startCol].OnPastingCellClipboardContent(item, data);
                     }
+                    var row = datagrid.ItemContainerGenerator.ContainerFromItem(item);
                     if (Validation.GetHasError(row)) {
                         datagrid.CancelEdit(DataGridEditingUnit.Row);
                         errorRows.Add(i + 1, string.Join("\t", datas));

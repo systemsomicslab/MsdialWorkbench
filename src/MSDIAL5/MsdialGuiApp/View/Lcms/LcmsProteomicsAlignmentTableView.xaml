@@ -135,6 +135,7 @@
                   HeadersVisibility="All"
                   AutoGenerateColumns="False"
                   VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                  behavior:DataGridPasteBehavior.Enable="True"
                   behavior:DataGridCommitBehavior.Enable="True"
                   behavior:DataGridScrollToSelectionBehavior.Enable="True"
                   Grid.Row="1">
