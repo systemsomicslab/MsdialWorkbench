@@ -39,7 +39,7 @@ namespace CompMs.App.Msdial.Model.Export
         private readonly ObservableCollection<ExportspectraType> _spectraTypes;
         private readonly AlignmentPeakSpotSupplyer _peakSpotSupplyer;
 
-        public int CountExportFiles() {
+        public int CountExportFiles(AlignmentFileBeanModel alignmentFile) {
             if (ExportMethod.IsLongFormat) {
                 return 2;
             }
