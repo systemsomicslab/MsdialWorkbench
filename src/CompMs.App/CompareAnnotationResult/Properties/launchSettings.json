@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CompareAnnotationResult": {
+      "commandName": "Project",
+      "commandLineArgs": "--input E:\\6_Projects\\PAPERWORK_MSDIAL5\\04_MSDIAL5_validation_eieio\\StandardMix\\KE14\\AlignmentResult_2023_09_18_11_15_19.arf2 --output E:\\6_Projects\\PAPERWORK_MSDIAL5\\04_MSDIAL5_validation_eieio\\StandardMix\\KE14_output --library E:\\6_Projects\\PAPERWORK_MSDIAL5\\04_MSDIAL5_validation_eieio\\StandardMix\\KE14_output\\library_only_included.txt --mz-tolerance 0.005 --rt-tolerance 0.1 --amplitude-threshold 100"
+    }
+  }
+}

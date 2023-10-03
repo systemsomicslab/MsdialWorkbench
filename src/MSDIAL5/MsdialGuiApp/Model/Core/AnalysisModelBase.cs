@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Algorithm.Function;
@@ -24,10 +25,12 @@ namespace CompMs.App.Msdial.Model.Core {
     public abstract class AnalysisModelBase : BindableBase, IAnalysisModel, IDisposable
     {
         private readonly ChromatogramPeakFeatureCollection _peakCollection;
+        private readonly MolecularSpectrumNetworkingBaseParameter _molecularSpectrumNetworkingParameter;
         private readonly IMessageBroker _broker;
 
-        public AnalysisModelBase(AnalysisFileBeanModel analysisFileModel, IMessageBroker broker) {
+        public AnalysisModelBase(AnalysisFileBeanModel analysisFileModel, MolecularSpectrumNetworkingBaseParameter molecularSpectrumNetworkingParameter, IMessageBroker broker) {
             AnalysisFileModel = analysisFileModel;
+            _molecularSpectrumNetworkingParameter = molecularSpectrumNetworkingParameter;
             _broker = broker;
             var peaks = MsdialPeakSerializer.LoadChromatogramPeakFeatures(analysisFileModel.PeakAreaBeanInformationFilePath);
             _peakCollection = new ChromatogramPeakFeatureCollection(peaks);
@@ -40,7 +43,7 @@ namespace CompMs.App.Msdial.Model.Core {
 
             Target = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
 
-            decLoader = new MSDecLoader(analysisFileModel.DeconvolutionFilePath).AddTo(Disposables);
+            decLoader = analysisFileModel.MSDecLoader;
             MsdecResult = Target.SkipNull()
                 .Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation))
                 .ToReadOnlyReactivePropertySlim()
@@ -69,23 +72,70 @@ namespace CompMs.App.Msdial.Model.Core {
 
         public abstract void SearchFragment();
         public abstract void InvokeMsfinder();
-        public void RunMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
+        public void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter) {
+            var rootObj = GetMoleculerNetworkingRootObj(parameter);
+            MoleculerNetworkingBase.ExportNodesEdgesFiles(parameter.ExportFolderPath, rootObj);
+        }
+
+        public void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
+            var rootObj = GetMoleculerNetworkingRootObj(parameter);
+            MoleculerNetworkingBase.SendToCytoscapeJs(rootObj);
+        }
+
+        public void InvokeMoleculerNetworkingForTargetSpot() {
+            var rootObj = GetMoleculerNetworkingRootObjForTargetSpot(_molecularSpectrumNetworkingParameter);
+            MoleculerNetworkingBase.SendToCytoscapeJs(rootObj);
+        }
+
+        public CompMs.Common.DataObj.NodeEdge.RootObject GetMoleculerNetworkingRootObj(MolecularSpectrumNetworkingBaseParameter parameter) {
             var publisher = new TaskProgressPublisher(_broker, $"Exporting MN results in {parameter.ExportFolderPath}");
             using (publisher.Start()) {
                 var spots = Ms1Peaks;
-                var peaks = MsdecResultsReader.ReadMSDecResults(AnalysisFileModel.DeconvolutionFilePath, out _, out _);
+                var loader = AnalysisFileModel.MSDecLoader;
+                var peaks = loader.LoadMSDecResults();
 
                 void notify(double progressRate) {
                     publisher.Progress(progressRate, $"Exporting MN results in {parameter.ExportFolderPath}");
                 }
 
-                var nodes = MoleculerNetworkingBase.GetSimpleNodes(spots, peaks);
-                var edges = MoleculerNetworkingBase.GenerateEdgesBySpectralSimilarity(
-                    spots, peaks, parameter.MsmsSimilarityCalc, parameter.MnMassTolerance,
+                var rootObj = MoleculerNetworkingBase.GetMoleculerNetworkingRootObj(spots, peaks, parameter.MsmsSimilarityCalc, parameter.MnMassTolerance,
+                   parameter.MnAbsoluteAbundanceCutOff, parameter.MnRelativeAbundanceCutOff, parameter.MnSpectrumSimilarityCutOff,
+                   parameter.MinimumPeakMatch, parameter.MaxEdgeNumberPerNode, parameter.MaxPrecursorDifference, parameter.MaxPrecursorDifferenceAsPercent, notify);
+
+                for (int i = 0; i < rootObj.nodes.Count; i++) {
+                    var node = rootObj.nodes[i];
+                    node.data.BarGraph = CytoscapejsModel.GetBarGraphProperty(spots[i], AnalysisFileModel.AnalysisFileName);
+                }
+                return rootObj;
+            }
+        }
+
+        public CompMs.Common.DataObj.NodeEdge.RootObject GetMoleculerNetworkingRootObjForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter) {
+            if (parameter.MaxEdgeNumberPerNode == 0) {
+                parameter.MinimumPeakMatch = 3;
+                parameter.MaxEdgeNumberPerNode = 6;
+                parameter.MaxPrecursorDifference = 400;
+            }
+            var publisher = new TaskProgressPublisher(_broker, $"Preparing MN results");
+            using (publisher.Start()) {
+                var spots = Ms1Peaks;
+                var peaks = MsdecResultsReader.ReadMSDecResults(AnalysisFileModel.DeconvolutionFilePath, out _, out _);
+
+                var targetSpot = Target.Value;
+                var targetPeak = peaks[targetSpot.MasterPeakID];
+
+                void notify(double progressRate) {
+                    publisher.Progress(progressRate, $"Preparing MN results");
+                }
+                var rootObj = MoleculerNetworkingBase.GetMoleculerNetworkingRootObjForTargetSpot(targetSpot, targetPeak, spots, peaks, parameter.MsmsSimilarityCalc, parameter.MnMassTolerance,
                     parameter.MnAbsoluteAbundanceCutOff, parameter.MnRelativeAbundanceCutOff, parameter.MnSpectrumSimilarityCutOff,
                     parameter.MinimumPeakMatch, parameter.MaxEdgeNumberPerNode, parameter.MaxPrecursorDifference, parameter.MaxPrecursorDifferenceAsPercent, notify);
 
-                MoleculerNetworkingBase.ExportNodesEdgesFiles(parameter.ExportFolderPath, nodes, edges);
+                for (int i = 0; i < rootObj.nodes.Count; i++) {
+                    var node = rootObj.nodes[i];
+                    node.data.BarGraph = CytoscapejsModel.GetBarGraphProperty(spots[node.data.id], AnalysisFileModel.AnalysisFileName);
+                }
+                return rootObj;
             }
         }
 

@@ -23,7 +23,15 @@ namespace CompMs.App.Msdial.Model.Gcms
             throw new NotImplementedException();
         }
 
-        void IResultModel.RunMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
+        void IResultModel.ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter) {
+            throw new NotImplementedException();
+        }
+
+        void IResultModel.InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
+            throw new NotImplementedException();
+        }
+
+        void IResultModel.InvokeMoleculerNetworkingForTargetSpot() {
             throw new NotImplementedException();
         }
     }

@@ -1030,16 +1030,16 @@ namespace CompMs.Common.Algorithm.Scoring {
                 if (result != null) {
                     if (result.AnnotationLevel == 1) {
                         if (compClass == "SM" && (molecule.LipidName.Contains("3O") || molecule.LipidName.Contains("O3"))) {
-                            resultArray[0] += 1.0;
+                            resultArray[0] = 2.0;
                             return resultArray; // add bonus
                         }
                         else {
-                            resultArray[0] += 0.5;
+                            resultArray[0] = 1.0;
                             return resultArray; // add bonus
                         }
                     }
                     else if (result.AnnotationLevel == 2) {
-                        resultArray[0] += 1.0;
+                        resultArray[0] = 2.0;
                         return resultArray; // add bonus
                     }
                     else
@@ -1076,16 +1076,16 @@ namespace CompMs.Common.Algorithm.Scoring {
                 if (result != null) {
                     if (result.AnnotationLevel == 1) {
                         if (compClass == "SM" && (molecule.LipidName.Contains("3O") || molecule.LipidName.Contains("O3"))) {
-                            resultArray[0] += 1.0;
+                            resultArray[0] = 2.0;
                             return resultArray; // add bonus
                         }
                         else {
-                            resultArray[0] += 0.5;
+                            resultArray[0] = 1.0;
                             return resultArray; // add bonus
                         }
                     }
                     else if (result.AnnotationLevel == 2) {
-                        resultArray[0] += 1.0;
+                        resultArray[0] = 2.0;
                         return resultArray; // add bonus
                     }
                     else

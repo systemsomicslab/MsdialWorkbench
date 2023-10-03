@@ -23,7 +23,7 @@ namespace CompMs.Common.DataObj.NodeEdge {
         public string Smiles { get; set; }
         public double MsMin { get; set; }
         public double MsmsMin { get; set; }
-
+        public Chart BarGraph { get; set; }
         public List<List<double>> MS { get; set; }
         public List<List<double>> MSMS { get; set; }
         public List<string> MsLabel { get; set; }
@@ -86,6 +86,10 @@ namespace CompMs.Common.DataObj.NodeEdge {
     public class RootObject {
         public List<Node> nodes { get; set; }
         public List<Edge> edges { get; set; }
+    }
+
+    public class RootObj4Cytoscape {
+        public RootObject elements { get; set; }
     }
 
     public sealed class MetaboliteColorCode {

@@ -268,12 +268,12 @@ namespace CompMs.App.Msdial.Model.Imms
                 new SpectraType(
                     ExportspectraType.deconvoluted,
                     new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.deconvoluted)),
-                new SpectraType(
-                    ExportspectraType.centroid,
-                    new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.centroid)),
-                new SpectraType(
-                    ExportspectraType.profile,
-                    new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.profile)),
+                //new SpectraType(
+                //    ExportspectraType.centroid,
+                //    new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.centroid)),
+                //new SpectraType(
+                //    ExportspectraType.profile,
+                //    new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.profile)),
             };
             var spectraFormats = new List<SpectraFormat>
             {

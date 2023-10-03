@@ -324,7 +324,7 @@ namespace CompMs.Common.Parser
                 case "precursortype":
                 case "precursor_type":
                     mspObj.AdductType = AdductIon.GetAdductIon(fieldValue);
-                    mspObj.IonMode = mspObj.IonMode;
+                    mspObj.IonMode = mspObj.AdductType.IonMode;
                      return false;
 
                 case "DB#":

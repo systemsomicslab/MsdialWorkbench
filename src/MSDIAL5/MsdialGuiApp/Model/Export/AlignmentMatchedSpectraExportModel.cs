@@ -98,7 +98,7 @@ namespace CompMs.App.Msdial.Model.Export
                 if (file is null) {
                     return null;
                 }
-                return new MSDecLoader(file.DeconvolutionFilePath);
+                return file.MSDecLoader;
             });
         }
 

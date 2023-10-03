@@ -23,7 +23,7 @@ namespace CompMs.App.MsdialConsole.Process
             var param = ConfigParser.ReadForImmsParameter(methodFile);
             var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out var analysisFiles, out var alignmentFile);
             if (!isCorrectlyImported) return -1;
-            CommonProcess.ParseLibraries(param, targetMz, out var iupacDB, out var mspDB, out var txtDB, out var isotopeTextDB, out var compoundsInTargetMode);
+            CommonProcess.ParseLibraries(param, targetMz, out var iupacDB, out var mspDB, out var txtDB, out var isotopeTextDB, out var compoundsInTargetMode, out var lbmDB);
 
             var container = new MsdialImmsDataStorage
             {
@@ -57,6 +57,8 @@ namespace CompMs.App.MsdialConsole.Process
             var providerFactory = new ImmsAverageDataProviderFactory(0.001, 0.002, 5, false);
             var processor = new FileProcess(storage, mspAnnotator, textDBAnnotator, evaluator);
             processor.RunAllAsync(files, files.Select(providerFactory.Create), files.Select(_ => (Action<int>)null), storage.Parameter.NumThreads, () => { }).Wait();
+
+            if (!storage.Parameter.TogetherWithAlignment) return 0;
 
             var alignmentFile = storage.AlignmentFiles.First();
             var factory = new ImmsAlignmentProcessFactory(storage, evaluator);

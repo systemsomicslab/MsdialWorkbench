@@ -46,7 +46,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         private readonly AlignmentFileBeanModel _alignmentFileBean;
         private readonly DataBaseMapper _dataBaseMapper;
-        private readonly MsdialLcImMsParameter _parameter;
+        private readonly  MsdialLcImMsParameter _parameter;
         private readonly List<AnalysisFileBean> _files;
         private readonly IMessageBroker _broker;
         private readonly UndoManager _undoManager;
@@ -260,20 +260,19 @@ namespace CompMs.App.Msdial.Model.Lcimms
             IMsSpectrumLoader<AlignmentSpotPropertyModel> decLoader = new AlignmentMSDecSpectrumLoader(_alignmentFileBean);
             var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             var spectraExporter = new NistSpectraExporter<AlignmentSpotProperty>(Target.Select(t => t?.innerModel), mapper, parameter).AddTo(Disposables);
-            Ms2SpectrumModel = new MsSpectrumModel(
-                Target.SelectSwitch(decLoader.LoadSpectrumAsObservable),
-                refSpectrum,
+            Ms2SpectrumModel = new AlignmentMs2SpectrumModel(
+                Target, refSpectrum, fileCollection,
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Mass), spot => spot.Mass),
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Intensity), spot => spot.Intensity),
+                Observable.Return(upperSpecBrush),
+                Observable.Return(lowerSpecBrush),
+                nameof(SpectrumPeak.SpectrumComment),
                 new GraphLabels(
                     "Representation vs. Reference",
                     "m/z",
                     "Relative abundance",
                     nameof(SpectrumPeak.Mass),
                     nameof(SpectrumPeak.Intensity)),
-                nameof(SpectrumPeak.SpectrumComment),
-                Observable.Return(upperSpecBrush),
-                Observable.Return(lowerSpecBrush),
                 Observable.Return(spectraExporter),
                 Observable.Return(referenceExporter),
                 null,
@@ -359,7 +358,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public AlignmentPeakPlotModel RtMzPlotModel { get; }
         public AlignmentPeakPlotModel DtMzPlotModel { get; }
 
-        public MsSpectrumModel Ms2SpectrumModel { get; }
+        public AlignmentMs2SpectrumModel Ms2SpectrumModel { get; }
 
         public BarChartModel RtBarChartModel { get; }
         public BarChartModel DtBarChartModel { get; }
@@ -411,7 +410,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 _dataBaseMapper,
                 _parameter);
         }
-
+        public override void InvokeMoleculerNetworkingForTargetSpot() {
+            throw new NotImplementedException();
+        }
         public void SaveProject() {
             _alignmentFileBean.SaveAlignmentResultAsync(Container).Wait();
         }

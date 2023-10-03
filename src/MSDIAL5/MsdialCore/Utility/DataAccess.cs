@@ -33,7 +33,9 @@ namespace CompMs.MsdialCore.Utility {
         // raw data support
         public static bool IsDataFormatSupported(string filepath) {
             if (System.IO.File.Exists(filepath)) {
-                var extension = System.IO.Path.GetExtension(filepath).ToLower().Substring(1); // .abf -> abf
+                var extension = System.IO.Path.GetExtension(filepath).ToLower();
+                if (extension.Length <= 1) return false;
+                extension = extension.Substring(1); // .abf -> abf
                 foreach (var item in System.Enum.GetNames(typeof(SupportMsRawDataExtension))) {
                     if (item == extension) return true;
                 }

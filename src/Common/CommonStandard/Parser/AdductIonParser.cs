@@ -146,7 +146,7 @@ namespace CompMs.Common.Parser {
             return 1;
         }
 
-        private static readonly Regex FormatCheckTemplate = new Regex(@"^\[[^\]\[\(\)]+\](?!.*[\]\[\(\)]).*[+-].*$");
+        private static readonly Regex FormatCheckTemplate = new Regex(@"^\[\d*M\s?[ A-Za-z0-9+-]*\]\.?\d*[+-]\.?$");
         public static bool IonTypeFormatChecker(string adductName)
         {
             return adductName != null && FormatCheckTemplate.IsMatch(adductName);
