@@ -36,7 +36,8 @@ namespace CompMs.App.Msdial.Model.Export
 
             var publisher = new TaskProgressPublisher(_broker, $"Exporting {filename}");
             using (publisher.Start())
-            using (var writer = new StreamWriter(filename)) {
+            using (var stream = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None, 4096, FileOptions.Asynchronous | FileOptions.SequentialScan))
+            using (var writer = new StreamWriter(stream)) {
                 await writer.WriteAsync(string.Join(Environment.NewLine, _baseParmaeter.ParametersAsText())).ConfigureAwait(false);
                 await writer.WriteAsync(Environment.NewLine + Environment.NewLine).ConfigureAwait(false);
                 await writer.WriteAsync(_dbs.ParameterAsSimpleText()).ConfigureAwait(false);

@@ -35,6 +35,8 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             _providerFactory = storage.Parameter.ProviderFactoryParameter.Create().ContraMap((AnalysisFileBeanModel file) => file.File.LoadRawMeasurement(true, true, 5, 5000));
             ImageModels = new ObservableCollection<ImagingImmsImageModel>();
             Image = ImageModels.FirstOrDefault();
+
+            ParameterExporModel = new ParameterExportModel(storage.DataBases, storage.Parameter, broker);
         }
 
         public ObservableCollection<ImagingImmsImageModel> ImageModels { get; }
@@ -44,6 +46,8 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             set => SetProperty(ref _image, value);
         }
         private ImagingImmsImageModel _image;
+
+        public ParameterExportModel ParameterExporModel { get; }
 
         public override async Task RunAsync(ProcessOption option, CancellationToken token) {
             if (option.HasFlag(ProcessOption.Identification | ProcessOption.PeakSpotting)) {

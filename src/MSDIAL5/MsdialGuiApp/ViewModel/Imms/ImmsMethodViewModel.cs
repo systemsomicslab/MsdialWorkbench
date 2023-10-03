@@ -32,7 +32,10 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             this.model = model;
             _broker = broker;
             _focusControlManager = focusControlmanager.AddTo(Disposables);
+            ExportParameterCommand = new AsyncReactiveCommand().WithSubscribe(model.ParameterExportModel.ExportAsync).AddTo(Disposables);
         }
+
+        public AsyncReactiveCommand ExportParameterCommand { get; }
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
             if (analysisFile?.File == null || analysisFile.File == model.AnalysisFileModel) {
