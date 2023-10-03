@@ -137,6 +137,9 @@
                   VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                   Unloaded="DataGrid_Unloaded"
                   SelectionChanged="PeakSpotView_SelectionChanged"
+                  behavior:DataGridPasteBehavior.Enable="True"
+                  behavior:DataGridCommitBehavior.Enable="True"
+                  behavior:DataGridScrollToSelectionBehavior.Enable="True"
                   behavior:DataGridIsEdittingBehavior.IsEditting="{Binding PeakSpotNavigatorViewModel.IsEditting.Value, Mode=OneWayToSource}"
                   Grid.Row="1">
             <DataGrid.Resources>
