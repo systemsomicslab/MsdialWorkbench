@@ -133,6 +133,12 @@ namespace CompMs.App.Msdial.Model.DataObj
         }
         private MSDecLoader _mSDecLoader;
 
+        public void ReleaseMSDecLoader() {
+            var loader = _mSDecLoader;
+            _mSDecLoader = null;
+            loader?.Dispose();
+        }
+
         int IFileBean.FileID => AnalysisFileId;
         string IFileBean.FileName => AnalysisFileName;
         string IFileBean.FilePath => AnalysisFilePath;
