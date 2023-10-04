@@ -80,6 +80,7 @@ namespace CompMs.App.Msdial.Model.Core
             AllProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, _analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, Storage, HandlerAsync, _projectBaseParameter, _broker);
             IdentificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, _analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, Storage, HandlerAsync, _projectBaseParameter, _broker);
             AlignmentProcessMethodSettingModel = new MethodSettingModel(ProcessOption.Alignment, _analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, Storage, HandlerAsync, _projectBaseParameter, _broker);
+            _analysisFileBeanModelCollection.ReleaseMSDecLoaders();
             return Method.RunAsync(setting.Option, token);
         }
 
