@@ -119,7 +119,7 @@ namespace CompMs.Graphics.AxisManager.Generic
                     case LabelType.Standard:
                     case LabelType.Order:
                     default:
-                        return _labelGenerator is LogScaleLabelGenerator ? _labelGenerator : _labelGenerator = new LogScaleLabelGenerator();
+                        return _labelGenerator is LogScaleLabelGenerator || _labelGenerator is BaseSelectableLogScaleLabelGenerator ? _labelGenerator : _labelGenerator = new LogScaleLabelGenerator();
                 }
             }
         }
