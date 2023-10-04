@@ -78,7 +78,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             if (m is null) {
                 return;
             }
-            var vm = new ChromatogramsViewModel(m);
+            var vm = new ChromatogramsViewModel(m, _broker);
             _broker.Publish(vm);
         } 
 
@@ -90,7 +90,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             if (m is null) {
                 return;
             }
-            var vm = new ChromatogramsViewModel(m);
+            var vm = new ChromatogramsViewModel(m, _broker);
             _broker.Publish(vm);
         }
 
@@ -102,7 +102,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             if (m is null) {
                 return;
             }
-            var vm = new ChromatogramsViewModel(m);
+            var vm = new ChromatogramsViewModel(m, _broker);
             _broker.Publish(vm);
         }
 
@@ -124,7 +124,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             if (chromatograms is null) {
                 return;
             }
-            var vm = new ChromatogramsViewModel(chromatograms);
+            var vm = new ChromatogramsViewModel(chromatograms, _broker);
             _broker.Publish(vm);
         }
 
