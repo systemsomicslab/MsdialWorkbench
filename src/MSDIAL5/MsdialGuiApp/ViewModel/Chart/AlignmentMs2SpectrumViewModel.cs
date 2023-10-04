@@ -1,8 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -103,6 +103,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> LowerVerticalAxis { get; }
         public ReactivePropertySlim<AxisItemModel> LowerVerticalAxisItem => _model.LowerVerticalAxisItem;
         public ReadOnlyObservableCollection<AxisItemModel> LowerVerticalAxisItemCollection { get; }
+
+        public ReadOnlyObservableCollection<AnalysisFileBeanModel> Files => _model.Files;
+        public ReactiveProperty<AnalysisFileBeanModel> SelectedFile => _model.SelectedFile;
 
         public ReadOnlyReactivePropertySlim<string> GraphTitle { get; }
 

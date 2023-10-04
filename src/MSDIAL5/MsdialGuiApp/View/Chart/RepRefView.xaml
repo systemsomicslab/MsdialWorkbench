@@ -81,11 +81,12 @@
                     HorizontalAlignment="Left"
                     Style="{StaticResource IconButton}"/>
         </StackPanel>
-        <TextBlock Text="{Binding CurrentRepresentativeFile.Value.AnalysisFileName}"
-                   FontSize="12"
-                   HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                   Margin="0,0,4,0"
-                   Grid.Row="0" Grid.Column="1"/>
+        <ComboBox ItemsSource="{Binding Ms2SpectrumViewModel.Files}"
+                  SelectedItem="{Binding Ms2SpectrumViewModel.SelectedFile.Value}"
+                  DisplayMemberPath="AnalysisFileName"
+                  HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                  Margin="0,0,4,0"
+                  Grid.Row="0" Grid.Column="1"/>
 
         <local:AlignmentMs2SpectrumView DataContext="{Binding Ms2SpectrumViewModel}"
                                         Margin="0,0,8,0"
