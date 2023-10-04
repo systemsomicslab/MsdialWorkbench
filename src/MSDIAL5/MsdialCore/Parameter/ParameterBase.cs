@@ -529,7 +529,7 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "Comment", Comment.ToString() }));
 
             pStrings.Add(String.Join(": ", new string[] { "Msp file path", MspFilePath.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Lbm file path", LbmFilePath.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Lbm file path", LbmFilePath?.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Text DB file path", TextDBFilePath.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Isotope text DB file path", IsotopeTextDBFilePath.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Compounds library file path for target detection", CompoundListInTargetModePath.ToString() }));
