@@ -90,6 +90,12 @@ namespace CompMs.App.Msdial.Model.DataObj
             return AnalysisFiles.FirstOrDefault(f => f.AnalysisFileId == id);
         }
 
+        public void ReleaseMSDecLoaders() {
+            foreach (var file in _observableAnalysisFiles) {
+                file.ReleaseMSDecLoader();
+            }
+        }
+
         private static bool AreAnalyticalOrdersUnique(IEnumerable<AnalysisFileBeanModel> files) {
             return files.GroupBy(file_ => file_.AnalysisBatch).All(files_ => files_.Select(f => f.AnalysisFileAnalyticalOrder).Distinct().Count() == files_.Count());
         }
