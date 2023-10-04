@@ -35,6 +35,8 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             _providerFactory = storage.Parameter.ProviderFactoryParameter.Create().ContraMap((AnalysisFileBeanModel file) => file.File.LoadRawMeasurement(true, true, 5, 5000));
             ImageModels = new ObservableCollection<ImagingImmsImageModel>();
             Image = ImageModels.FirstOrDefault();
+
+            ParameterExporModel = new ParameterExportModel(storage.DataBases, storage.Parameter, broker);
         }
 
         public ObservableCollection<ImagingImmsImageModel> ImageModels { get; }
@@ -44,6 +46,8 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             set => SetProperty(ref _image, value);
         }
         private ImagingImmsImageModel _image;
+
+        public ParameterExportModel ParameterExporModel { get; }
 
         public override async Task RunAsync(ProcessOption option, CancellationToken token) {
             if (option.HasFlag(ProcessOption.Identification | ProcessOption.PeakSpotting)) {
@@ -84,18 +88,28 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             return null;
         }
 
+        public override Task SaveAsync()
+        {
+            if (Image is null || Image.ImageResult is null)
+            {
+                return Task.CompletedTask;
+            }
+
+            return Image.ImageResult.SaveAsync();
+        }
+
         public AnalysisResultExportModel CreateExportAnalysisModel() {
             var spectraTypes = new[]
             {
                 new SpectraType(
                     ExportspectraType.deconvoluted,
                     new ImmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.deconvoluted)),
-                new SpectraType(
-                    ExportspectraType.centroid,
-                    new ImmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.centroid)),
-                new SpectraType(
-                    ExportspectraType.profile,
-                    new ImmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.profile)),
+                //new SpectraType(
+                //    ExportspectraType.centroid,
+                //    new ImmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.centroid)),
+                //new SpectraType(
+                //    ExportspectraType.profile,
+                //    new ImmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.profile)),
             };
             var spectraFormats = new[]
             {

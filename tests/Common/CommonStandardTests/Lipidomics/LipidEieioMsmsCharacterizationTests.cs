@@ -15,8 +15,6 @@ namespace CompMs.Common.Lipidomics.Tests
     [TestClass()]
     public class LipidEieioMsmsCharacterizationTests
     {
-        private AdductIon adduct;
-
         [TestMethod()]
         public void CarCharacterizationTest()
         {
@@ -136,7 +134,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfAcylcarnitine(target, 0.01, 426.3578f, 18, 1, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfAcylcarnitine(target, 0.01, 426.3578f, 18, 1, adduct: AdductIon.GetAdductIon("[M+H]+"));
             Console.WriteLine($"{result.LipidName}");
 
         }
@@ -373,7 +371,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfEtherpe(target, 0.01, 704.5589f, 34, 1, 16, 18, 0, 1, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfEtherpe(target, 0.01, 704.5589f, 34, 1, 16, 18, 0, 1, adduct: AdductIon.GetAdductIon("[M+H]+"));
             //var result2 = LipidEieioMsmsCharacterization.JudgeIfEtherpe(target, 0.01, 704.5589f, 34, 1, 16, 18, 1, 0, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
             Console.WriteLine($"{result.LipidName} : {result.Score}");
             //Console.WriteLine($"{result2.LipidName} : {result2.Score}");
@@ -848,7 +846,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfEtherpe(target, 0.01, 730.5745f, 36, 2, 18, 18, 1, 1, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfEtherpe(target, 0.01, 730.5745f, 36, 2, 18, 18, 1, 1, adduct: AdductIon.GetAdductIon("[M+H]+"));
             Console.WriteLine($"{result.LipidName}");
         }
 
@@ -2540,7 +2538,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfSphingomyelin(target, 0.01, 753.58807f, 36, 1, 36, 0, 1, 0, adduct = new AdductIon() { AdductIonName = "[M+Na]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfSphingomyelin(target, 0.01, 753.58807f, 36, 1, 36, 0, 1, 0, adduct: AdductIon.GetAdductIon("[M+Na]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -2689,7 +2687,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfEtherpc(target, 0.01, 772.61991f, 36, 2, 18, 18, 1, 1, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfEtherpc(target, 0.01, 772.61991f, 36, 2, 18, 18, 1, 1, adduct: AdductIon.GetAdductIon("[M+H]+"));
             Console.WriteLine($"{result.LipidName}: {result.Score}");
             //var result2 = LipidEieioMsmsCharacterization.JudgeIfEtherpc(target, 0.01, 772.61991f, 36, 2, 18, 18, 2, 0, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
             //Console.WriteLine($"{result2.LipidName}: {result2.Score}");
@@ -3603,7 +3601,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholine(target, 0.01, 786.6007f, 36, 2, 18, 18, 1, 1, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholine(target, 0.01, 786.6007f, 36, 2, 18, 18, 1, 1, adduct: AdductIon.GetAdductIon("[M+H]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -3854,7 +3852,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholine(target, 0.01, 808.5827f, 36, 2, 36, 0, 2, 0, adduct = new AdductIon() { AdductIonName = "[M+Na]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholine(target, 0.01, 808.5827f, 36, 2, 36, 0, 2, 0, adduct: AdductIon.GetAdductIon("[M+Na]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -4781,7 +4779,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylethanolamine(target, 0.02, 744.5538f, 36, 2, 18, 18, 1, 1, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylethanolamine(target, 0.02, 744.5538f, 36, 2, 18, 18, 1, 1, adduct: AdductIon.GetAdductIon("[M+H]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -6084,7 +6082,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylethanolamine(target, 0.01, 766.5357f, 36, 2, 36, 0, 2, 0, adduct = new AdductIon() { AdductIonName = "[M+Na]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylethanolamine(target, 0.01, 766.5357f, 36, 2, 36, 0, 2, 0, adduct: AdductIon.GetAdductIon("[M+Na]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -7107,7 +7105,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylglycerol(target, 0.01, 792.5749f, 36, 2, 18, 18, 1, 1, adduct = new AdductIon() { AdductIonName = "[M+NH4]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylglycerol(target, 0.01, 792.5749f, 36, 2, 18, 18, 1, 1, adduct: AdductIon.GetAdductIon("[M+NH4]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -8042,7 +8040,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylserine(target, 0.01, 788.5436f, 36, 2, 18, 18, 1, 1, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylserine(target, 0.01, 788.5436f, 36, 2, 18, 18, 1, 1, adduct: AdductIon.GetAdductIon("[M+H]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -8329,7 +8327,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylserine(target, 0.01, 810.5256f, 36, 2, 36, 0, 2, 0, adduct = new AdductIon() { AdductIonName = "[M+Na]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylserine(target, 0.01, 810.5256f, 36, 2, 36, 0, 2, 0, adduct: AdductIon.GetAdductIon("[M+Na]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -9169,7 +9167,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylinositol(target, 0.01, 880.591f, 36, 2, 36, 0, 2, 0, adduct = new AdductIon() { AdductIonName = "[M+NH4]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylinositol(target, 0.01, 880.591f, 36, 2, 36, 0, 2, 0, adduct: AdductIon.GetAdductIon("[M+NH4]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -10206,7 +10204,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylinositol(target, 0.01, 909.5464f, 38, 4, 38, 0, 4, 0, adduct = new AdductIon() { AdductIonName = "[M+Na]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylinositol(target, 0.01, 909.5464f, 38, 4, 38, 0, 4, 0, adduct: AdductIon.GetAdductIon("[M+Na]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -11174,7 +11172,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholineD5(target, 0.02, 803.6321f, 37, 3, 17, 20, 0, 3, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholineD5(target, 0.02, 803.6321f, 37, 3, 17, 20, 0, 3, adduct: AdductIon.GetAdductIon("[M+H]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -11287,7 +11285,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholineD5(target, 0.02, 745.55027f, 31, 1, 31, 0, 1, 0, adduct = new AdductIon() { AdductIonName = "[M+Na]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholineD5(target, 0.02, 745.55027f, 31, 1, 31, 0, 1, 0, adduct: AdductIon.GetAdductIon("[M+Na]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -11684,7 +11682,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylethanolamineD5(target, 0.05, 787.6008f, 39, 4, 17, 22, 0, 4, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylethanolamineD5(target, 0.05, 787.6008f, 39, 4, 17, 22, 0, 4, adduct: AdductIon.GetAdductIon("[M+H]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -11877,7 +11875,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylethanolamineD5(target, 0.05, 759.56428f, 35, 1, 35, 0, 1, 0, adduct = new AdductIon() { AdductIonName = "[M+Na]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylethanolamineD5(target, 0.05, 759.56428f, 35, 1, 35, 0, 1, 0, adduct: AdductIon.GetAdductIon("[M+Na]+"));
             Console.WriteLine($"{result.LipidName}");
         }
 

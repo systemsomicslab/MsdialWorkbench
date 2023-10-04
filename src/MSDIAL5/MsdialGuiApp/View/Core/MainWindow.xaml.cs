@@ -43,15 +43,11 @@ namespace CompMs.App.Msdial.View.Core
 
             var compoundSearchService = new DialogService<CompoundSearchWindow, CompoundSearchVM>(this);
             var peakSpotTableService = new DialogService<AlignmentSpotTable, PeakSpotTableViewModelBase>(this);
-            var proteomicsTableService = new DialogService<ProteomicsSpotTable, PeakSpotTableViewModelBase>(this);
-            var analysisFilePropertyResetService = new DialogService<AnalysisFilePropertyResettingWindow, AnalysisFilePropertyResetViewModel>(this);
-            var processSettingDialogService = new DialogService<ProjectSettingDialog, ProcessSettingViewModel>(this);
+            var proteomicsTableService = new DialogService<AlignmentSpotTable, PeakSpotTableViewModelBase>(this);
             DataContext = new MainWindowVM(
                 compoundSearchService,
                 peakSpotTableService,
-                analysisFilePropertyResetService,
-                proteomicsTableService,
-                processSettingDialogService);
+                proteomicsTableService);
 
             broker = MessageBroker.Default;
 
@@ -64,7 +60,7 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<ProcessMessageRequest>()
                 .Subscribe(ShowProcessMessageDialog);
             broker.ToObservable<FileClassSetViewModel>()
-                .Subscribe(ShowFileClassSetView);
+                .Subscribe(ShowChildSettingDialog<FileClassSetView>("Class property setting", height: 450, width: 400));
             broker.ToObservable<SaveFileNameRequest>()
                 .Subscribe(GetSaveFilePath);
             broker.ToObservable<OpenFileRequest>()
@@ -76,7 +72,7 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<SampleTableViewerInAlignmentViewModelLegacy>()
                 .Subscribe(CreateSampleTableViewerDialog);
             broker.ToObservable<InternalStandardSetViewModel>()
-                .Subscribe(OpenInternalStandardSetView);
+                .Subscribe(ShowChildSettingDialog<InternalStandardSetView>("Internal standard settting", height: 600, width: 800));
             broker.ToObservable<PCAPLSResultViewModel>()
                 .Subscribe(OpenPCAPLSResultView);
             broker.ToObservable<ExperimentSpectrumViewModel>()
@@ -96,9 +92,29 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<AlignmentResultExportViewModel>()
                 .Subscribe(ShowChildDialog<AlignmentResultExportWin>);
             broker.ToObservable<TargetCompoundLibrarySettingViewModel>()
-                .Subscribe(OpenTargetCompoundLibrarySettingView);
+                .Subscribe(ShowChildSettingDialog<TargetCompoundsLibrarySettingView>("Select library file", height: 600, width: 400));
             broker.ToObservable<FindTargetCompoundsSpotViewModel>()
-                .Subscribe(ShowFindTargetCompoundsSpotView);
+                .Subscribe(ShowChildSettingDialog<FindTargetCompoundsSpotView>("Find match peak spots", height: 800, width: 400));
+            broker.ToObservable<MolecularNetworkingExportSettingViewModel>()
+                .Subscribe(ShowChildView<MolecularNetworkingExportSettingView>);
+            broker.ToObservable<MolecularNetworkingSendingToCytoscapeJsSettingViewModel>()
+                .Subscribe(ShowChildView<MolecularNetworkingToCytoscapeJsSettingView>);
+            broker.ToObservable<AnalysisPeakTableViewModelBase>()
+                .Subscribe(ShowChildView<AlignmentSpotTable>);
+            broker.ToObservable<AlignmentSpotTableViewModelBase>()
+                .Subscribe(ShowChildView<AlignmentSpotTable>);
+            broker.ToObservable<AnalysisFilePropertyResetViewModel>()
+                .Subscribe(ShowChildSettingDialog<AnalysisFilePropertyResettingView>("Analysis property setting", height: 700, width: 1000));
+            broker.ToObservable<ProcessSettingViewModel>()
+                .Subscribe(ShowChildDialog<ProjectSettingDialog>);
+            /*
+            broker.ToObservable<CompoundSearchVM>()
+                .Subscribe(ShowChildDialog<CompoundSearchWindow>);
+            broker.ToObservable<PeakSpotTableViewModelBase>()
+                .Subscribe(ShowChildView<AlignmentSpotTable>);
+            broker.ToObservable<PeakSpotTableViewModelBase>()
+                .Subscribe(ShowChildView<ProteomicsSpotTable>);
+            */
 #if RELEASE
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
 #elif DEBUG
@@ -148,6 +164,22 @@ namespace CompMs.App.Msdial.View.Core
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
             };
             view.ShowDialog();
+        }
+
+        private Action<object> ShowChildSettingDialog<TView>(string title, double height, double width) where TView: FrameworkElement, new() {
+            void InnerShowDialog(object viewmodel) {
+                var dialog = new SettingDialog
+                {
+                    Height = height, Width = width,
+                    Title = title,
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    DataContext = viewmodel,
+                    Content = new TView(),
+                };
+                dialog.ShowDialog();
+            }
+            return InnerShowDialog;
         }
 
         private void ShowMultiProgressBarWindow(ProgressBarMultiContainerRequest request) {
@@ -215,78 +247,6 @@ namespace CompMs.App.Msdial.View.Core
                 });
             };
             request.Result = dialog.ShowDialog();
-        }
-
-        private void ShowFileClassSetView(FileClassSetViewModel viewmodel) {
-            var dialog = new SettingDialog
-            {
-                Height = 450, Width = 400,
-                Title = "Class property setting",
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Content = new FileClassSetView
-                {
-                    DataContext = viewmodel,
-                },
-                ApplyCommand = viewmodel.ApplyCommand,
-                FinishCommand = viewmodel.ApplyCommand,
-                CancelCommand = viewmodel.CancelCommand,
-            };
-            dialog.Show();
-        }
-
-        private void OpenInternalStandardSetView(InternalStandardSetViewModel viewmodel) {
-            var dialog = new SettingDialog
-            {
-                Height = 600, Width = 800,
-                Title = "Internal standard settting",
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Content = new InternalStandardSetView
-                {
-                    DataContext = viewmodel,
-                },
-                ApplyCommand = null,
-                FinishCommand = viewmodel.ApplyCommand,
-                CancelCommand = viewmodel.CancelCommand,
-            };
-            dialog.Show();
-        }
-
-        private void ShowFindTargetCompoundsSpotView(FindTargetCompoundsSpotViewModel viewmodel) {
-            var dialog = new SettingDialog
-            {
-                Height = 800, Width = 400,
-                Title = "Find match peak spots",
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Content = new FindTargetCompoundsSpotView
-                {
-                    DataContext = viewmodel,
-                },
-                ApplyCommand = CommonMVVM.NeverCommand.Instance,
-                FinishCommand = CommonMVVM.IdentityCommand.Instance,
-                CancelCommand = CommonMVVM.NeverCommand.Instance,
-            };
-            dialog.Show();
-        }
-
-        private void OpenTargetCompoundLibrarySettingView(TargetCompoundLibrarySettingViewModel viewmodel) {
-            var dialog = new SettingDialog
-            {
-                Height = 600, Width = 400,
-                Title = "Select library file",
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Content = new TargetCompoundsLibrarySettingView
-                {
-                    DataContext = viewmodel,
-                },
-                ApplyCommand = CommonMVVM.NeverCommand.Instance,
-                FinishCommand = CommonMVVM.IdentityCommand.Instance,
-                CancelCommand = CommonMVVM.NeverCommand.Instance,
-            };
-            dialog.ShowDialog();
         }
 
         private void OpenPCAPLSResultView(PCAPLSResultViewModel viewmodel) {

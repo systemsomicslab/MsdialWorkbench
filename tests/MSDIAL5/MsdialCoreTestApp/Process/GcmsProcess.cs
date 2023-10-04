@@ -97,7 +97,7 @@ namespace CompMs.App.MsdialConsole.Process
                 }
             }
 
-            CommonProcess.ParseLibraries(param, -1, out IupacDatabase iupacDB, out _, out var txtDB, out var isotopeTextDB, out _);
+            CommonProcess.ParseLibraries(param, -1, out IupacDatabase iupacDB, out _, out var txtDB, out var isotopeTextDB, out _, out var lbmDB);
 
             var container = new MsdialGcmsDataStorage() {
                 AnalysisFiles = analysisFiles, AlignmentFiles = new List<AlignmentFileBean>() { alignmentFile },
@@ -176,7 +176,7 @@ namespace CompMs.App.MsdialConsole.Process
 
                 ResultExporter.ExportChromPeakFeatures(file, outputFolder, storage, null, chromPeakFeatures, msdecResults);
             }
-
+            if (!storage.MsdialGcmsParameter.TogetherWithAlignment) return 0;
             var alignmentFile = storage.AlignmentFiles.First();
             var factory = new GcmsAlignmentProcessFactory(files, storage, FacadeMatchResultEvaluator.FromDataBases(storage.DataBases));
             var aligner = factory.CreatePeakAligner();

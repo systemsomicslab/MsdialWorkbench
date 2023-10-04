@@ -14,11 +14,19 @@ using System.Windows.Shapes;
 
 namespace CompMs.App.Msdial.View.Setting {
     /// <summary>
-    /// Interaction logic for AnalysisFilePropertyResettingWindow.xaml
+    /// Interaction logic for MolecularNetworkingToCytoscapeJsSettingView.xaml
     /// </summary>
-    public partial class AnalysisFilePropertyResettingWindow : Window {
-        public AnalysisFilePropertyResettingWindow() {
+    public partial class MolecularNetworkingToCytoscapeJsSettingView : Window {
+        public MolecularNetworkingToCytoscapeJsSettingView() {
             InitializeComponent();
+        }
+
+        private void Run_Click(object sender, RoutedEventArgs e) {
+            Close();
+        }
+
+        private void Cancel_Click(object sender, RoutedEventArgs e) {
+            Close();
         }
     }
 }

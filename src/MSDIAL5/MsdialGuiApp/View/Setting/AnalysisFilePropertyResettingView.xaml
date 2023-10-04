@@ -1,19 +1,18 @@
-﻿<Window x:Class="CompMs.App.Msdial.View.Setting.AnalysisFilePropertyResettingWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:system="clr-namespace:System;assembly=mscorlib"
-        xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
-        xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
-        xmlns:common="clr-namespace:CompMs.Common.Enum;assembly=Common"
-        xmlns:reactiveProperty="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
-        mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisFilePropertyResetViewModel}}"
-        Title="Analysis property setting" Height="700" Width="1000"
-        Name="AnalysisFilePropertyResetView">
-    <Window.Resources>
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Setting.AnalysisFilePropertyResettingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:common="clr-namespace:CompMs.Common.Enum;assembly=Common"
+             xmlns:reactiveProperty="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisFilePropertyResetViewModel}}"
+             Name="AnalysisFilePropertyResetView">
+    <UserControl.Resources>
         <ControlTemplate x:Key="InputErrorTemplate">
             <DockPanel>
                 <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
@@ -46,7 +45,7 @@
                 <x:Type TypeName="common:AnalysisFileType"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
-    </Window.Resources>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -133,18 +132,20 @@
                 </DataGridTemplateColumn>
 
                 <DataGridTemplateColumn SortMemberPath="AnalysisFileDilutionFactor.Value" Width="1*" 
-                                        Header="Dilution factor" IsReadOnly="False" ClipboardContentBinding="{Binding Path=DilutionFactor.Value}">
+                                        Header="Factor" IsReadOnly="False" ClipboardContentBinding="{Binding Path=DilutionFactor.Value}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBox Name="TextBox_DilutionFactor" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" VerticalContentAlignment="Center"
-                                     Text="{Binding Path=DilutionFactor.Value, UpdateSourceTrigger=PropertyChanged}"/>
+                                     Text="{Binding Path=DilutionFactor.Value, UpdateSourceTrigger=PropertyChanged}"
+                                     ToolTipService.ToolTip="Multiply this value after Normalization is performed."/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
 
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
                             <Grid  FocusManager.FocusedElement="{Binding ElementName=TextBox_DilutionFactor}">
-                                <TextBox Name="TextBox_DilutionFactor" Text="{Binding DilutionFactor.Value, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBox Name="TextBox_DilutionFactor" Text="{Binding DilutionFactor.Value, UpdateSourceTrigger=PropertyChanged}"
+                                         ToolTipService.ToolTip="Multiply this value after Normalization is performed."/>
                             </Grid>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
@@ -178,25 +179,5 @@
 
             </DataGrid.Columns>
         </DataGrid>
-
-        <Button x:Name="Cancel" Content="Cancel"
-                Grid.Row="1" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,20,5">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="Click">
-                    <i:ChangePropertyAction TargetObject="{Binding ElementName=AnalysisFilePropertyResetView}" PropertyName="DialogResult" Value="False"/>
-                    <i:CallMethodAction TargetObject="{Binding ElementName=AnalysisFilePropertyResetView}" MethodName="Close"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </Button>
-        <Button x:Name="Apply" Content="Apply" 
-                Command="{Binding ContinueProcessCommand, Mode=OneTime}"
-                Grid.Row="1" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,95,5">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="Click">
-                    <i:ChangePropertyAction TargetObject="{Binding ElementName=AnalysisFilePropertyResetView}" PropertyName="DialogResult" Value="True"/>
-                    <i:CallMethodAction TargetObject="{Binding ElementName=AnalysisFilePropertyResetView}" MethodName="Close"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </Button>
     </Grid>
-</Window>
+</UserControl>

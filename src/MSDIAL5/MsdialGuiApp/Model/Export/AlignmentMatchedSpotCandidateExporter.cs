@@ -14,7 +14,7 @@ namespace CompMs.App.Msdial.Model.Export
         protected override async Task<XElement> ToXmlElement(AlignmentSpotPropertyModel spot, MoleculeMsReference reference, MatchedSpotCandidateCalculator calculator) {
             var spotElement = new XElement("AlignedSpot",
                 new XElement("SpotId", spot.MasterAlignmentID),
-                new XElement("Adduct", spot.AdductIonName),
+                new XElement("Adduct", spot.AdductType.AdductIonName),
                 new XElement("Mz", spot.Mass),
                 ToXmlElement(((IChromatogramPeak)spot).ChromXs),
                 new XElement("IsMsmsAssigned", spot.IsMsmsAssigned));

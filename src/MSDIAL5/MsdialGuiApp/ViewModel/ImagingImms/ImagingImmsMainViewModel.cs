@@ -34,11 +34,11 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
             var focusManager = new FocusControlManager().AddTo(Disposables);
             ImageViewModels = model.ImageModels.ToReadOnlyReactiveCollection(m => new ImagingImmsImageViewModel(m, focusManager, broker, compoundSearchService, peakSpotTableService)).AddTo(Disposables);
             RoiCompareViewModels = new ReadOnlyObservableCollection<ImagingRoiCompareViewModel>(new ObservableCollection<ImagingRoiCompareViewModel>());
+            ExportParameterCommand = new AsyncReactiveCommand().WithSubscribe(model.ParameterExporModel.ExportAsync).AddTo(Disposables);
         }
 
         public ReadOnlyObservableCollection<ImagingImmsImageViewModel> ImageViewModels { get; }
         public ReadOnlyObservableCollection<ImagingRoiCompareViewModel> RoiCompareViewModels { get; }
-
         public ImagingImmsImageViewModel SelectedImageViewModel {
             get => _selectedImageViewModel;
             set => SetProperty(ref _selectedImageViewModel, value);
@@ -50,6 +50,8 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
             set => SetProperty(ref _selectedRoiCompareViewModel, value);
         }
         private ImagingRoiCompareViewModel _selectedRoiCompareViewModel;
+
+        public AsyncReactiveCommand ExportParameterCommand { get; }
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
             return _model.LoadAnalysisFileAsync(analysisFile.File, token);

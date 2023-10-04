@@ -965,16 +965,19 @@ namespace CompMs.Common.Algorithm.Scoring {
                     continue;
                 }
                 var sumintensity = 0.0;
+                var sumintensity_original = 0.0;
                 for (int i = remaindIndexM; i < peaks1.Count; i++) {
                     if (peaks1[i].Mass < focusedMz - bin) continue;
                     else if (Math.Abs(focusedMz - peaks1[i].Mass) < bin) {
                         sumintensity += peaks1[i].Intensity;
+                        sumintensity_original += peaks1[i].Resolution;
                         spectrumPeak.IsMatched = true;
                     }
                     else { remaindIndexM = i; break; }
                 }
 
                 spectrumPeak.Resolution = sumintensity;
+                spectrumPeak.Charge = (int)sumintensity_original;
                 searchedPeaks.Add(spectrumPeak);
 
                 if (focusedMz + bin > peaks2[peaks2.Count - 1].Mass) break;
@@ -1027,16 +1030,16 @@ namespace CompMs.Common.Algorithm.Scoring {
                 if (result != null) {
                     if (result.AnnotationLevel == 1) {
                         if (compClass == "SM" && (molecule.LipidName.Contains("3O") || molecule.LipidName.Contains("O3"))) {
-                            resultArray[0] += 1.0;
+                            resultArray[0] = 2.0;
                             return resultArray; // add bonus
                         }
                         else {
-                            resultArray[0] += 0.5;
+                            resultArray[0] = 1.0;
                             return resultArray; // add bonus
                         }
                     }
                     else if (result.AnnotationLevel == 2) {
-                        resultArray[0] += 1.0;
+                        resultArray[0] = 2.0;
                         return resultArray; // add bonus
                     }
                     else
@@ -1073,16 +1076,16 @@ namespace CompMs.Common.Algorithm.Scoring {
                 if (result != null) {
                     if (result.AnnotationLevel == 1) {
                         if (compClass == "SM" && (molecule.LipidName.Contains("3O") || molecule.LipidName.Contains("O3"))) {
-                            resultArray[0] += 1.0;
+                            resultArray[0] = 2.0;
                             return resultArray; // add bonus
                         }
                         else {
-                            resultArray[0] += 0.5;
+                            resultArray[0] = 1.0;
                             return resultArray; // add bonus
                         }
                     }
                     else if (result.AnnotationLevel == 2) {
-                        resultArray[0] += 1.0;
+                        resultArray[0] = 2.0;
                         return resultArray; // add bonus
                     }
                     else
@@ -1093,6 +1096,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 }
             }
             else { // currently default value is retured for other lipids
+                if (comment == "SPLASH" && compClass == "CE") return new double[] { -1, -1 };
                 return resultArray;
             }
         }
@@ -1576,9 +1580,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.ASM:
                     sn2Carbon = molecule.Sn2CarbonCount;
                     sn2DbBond = molecule.Sn2DoubleBondCount;
-                    return LipidMsmsCharacterization.JudgeIfAcylsm(msScanProp, ms2tol, refMz,
-                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, sn2Carbon,
-                         sn2Carbon, sn2DbBond, sn2DbBond, adduct);
+                    return LipidEieioMsmsCharacterization.JudgeIfAcylsm(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn2Carbon, sn1DbBond, sn2DbBond, adduct);
 
                 case LbmClass.Cer_EBDS:
                     sn2Carbon = molecule.Sn2CarbonCount;

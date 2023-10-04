@@ -66,7 +66,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             DtMzPlotViewModel = new AlignmentPeakPlotViewModel(model.DtMzPlotModel, peakPlotFocusAction, peakPlotFocused).AddTo(Disposables);
 
             var (msSpectrumViewFocusAction, msSpectrumViewFocused) = focusControlManager.Request();
-            Ms2SpectrumViewModel = new MsSpectrumViewModel(model.Ms2SpectrumModel, focusAction: msSpectrumViewFocusAction, isFocused: msSpectrumViewFocused).AddTo(Disposables);
+            Ms2SpectrumViewModel = new AlignmentMs2SpectrumViewModel(model.Ms2SpectrumModel, broker, focusAction: msSpectrumViewFocusAction, isFocused: msSpectrumViewFocused).AddTo(Disposables);
 
             var (barChartViewFocusAction, barChartViewFocused) = focusControlManager.Request();
             RtBarChartViewModel = new BarChartViewModel(model.RtBarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
@@ -118,10 +118,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => broker.Publish(TaskNotification.End(notification)));
         }
 
+        public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel> CurrentRepresentativeFile => _model.CurrentRepresentativeFile;
         public UndoManagerViewModel UndoManagerViewModel { get; }
         public AlignmentPeakPlotViewModel RtMzPlotViewModel { get; }
         public AlignmentPeakPlotViewModel DtMzPlotViewModel { get; }
-        public MsSpectrumViewModel Ms2SpectrumViewModel { get; }
+        public AlignmentMs2SpectrumViewModel Ms2SpectrumViewModel { get; }
         public BarChartViewModel RtBarChartViewModel { get; }
         public BarChartViewModel DtBarChartViewModel { get; }
         public MultiBarChartViewModel BarChartViewModels { get; }
@@ -155,6 +156,20 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public ICommand ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand(ShowIonTable));
 
         private DelegateCommand showIonTableCommand;
+
+        public DelegateCommand SearchAlignmentSpectrumByMoleculerNetworkingCommand => _searchAlignmentSpectrumByMoleculerNetworkingCommand ?? (_searchAlignmentSpectrumByMoleculerNetworkingCommand = new DelegateCommand(SearchAlignmentSpectrumByMoleculerNetworkingMethod));
+        private DelegateCommand _searchAlignmentSpectrumByMoleculerNetworkingCommand;
+
+        private void SearchAlignmentSpectrumByMoleculerNetworkingMethod() {
+            _model.InvokeMoleculerNetworkingForTargetSpot();
+        }
+
+        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ?? (_goToMsfinderCommand = new DelegateCommand(GoToMsfinderMethod));
+        private DelegateCommand _goToMsfinderCommand;
+
+        private void GoToMsfinderMethod() {
+            _model.InvokeMsfinder();
+        }
 
         private void ShowIonTable() {
             _peakSpotTableService.Show(AlignmentSpotTableViewModel);

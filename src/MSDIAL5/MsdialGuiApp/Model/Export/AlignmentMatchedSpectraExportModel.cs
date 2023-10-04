@@ -36,7 +36,7 @@ namespace CompMs.App.Msdial.Model.Export
         }
         private bool _isSelected = false;
 
-        public int CountExportFiles() {
+        public int CountExportFiles(AlignmentFileBeanModel alignmentFile) {
             return IsSelected ? 1 : 0;
         }
 
@@ -98,7 +98,7 @@ namespace CompMs.App.Msdial.Model.Export
                 if (file is null) {
                     return null;
                 }
-                return new MSDecLoader(file.DeconvolutionFilePath);
+                return file.MSDecLoader;
             });
         }
 

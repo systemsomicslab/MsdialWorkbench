@@ -12,6 +12,7 @@
              xmlns:converter="clr-namespace:CompMs.App.Msdial.ViewModel.Converter"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:commonmvvm="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
+             xmlns:dataobj="clr-namespace:CompMs.MsdialCore.DataObj;assembly=MsdialCore"
              d:DataContext="{d:DesignInstance Type=vm:LcmsAnalysisPeakTableViewModel}"
              d:DesignHeight="450" d:DesignWidth="1400">
     <d:DesignerProperties.DesignStyle>
@@ -23,6 +24,11 @@
         <KeyBinding Command="{Binding SetUnknownCommand}" Gesture="Ctrl+D"/>
         <KeyBinding Command="{Binding UndoManagerViewModel.UndoCommand}" Gesture="Ctrl+Z"/>
         <KeyBinding Command="{Binding UndoManagerViewModel.RedoCommand}" Gesture="Ctrl+Y"/>
+        <KeyBinding Command="{Binding SwitchTagCommand}" CommandParameter="{x:Static dataobj:PeakSpotTag.CONFIRMED}" Gesture="Ctrl+1"/>
+        <KeyBinding Command="{Binding SwitchTagCommand}" CommandParameter="{x:Static dataobj:PeakSpotTag.LOW_QUALITY_SPECTRUM}" Gesture="Ctrl+2"/>
+        <KeyBinding Command="{Binding SwitchTagCommand}" CommandParameter="{x:Static dataobj:PeakSpotTag.MISANNOTATION}" Gesture="Ctrl+3"/>
+        <KeyBinding Command="{Binding SwitchTagCommand}" CommandParameter="{x:Static dataobj:PeakSpotTag.COELUTION}" Gesture="Ctrl+4"/>
+        <KeyBinding Command="{Binding SwitchTagCommand}" CommandParameter="{x:Static dataobj:PeakSpotTag.OVERANNOTATION}" Gesture="Ctrl+5"/>
     </UserControl.InputBindings>
     <UserControl.Resources>
         <ResourceDictionary>
@@ -130,10 +136,14 @@
                   HeadersVisibility="All"
                   AutoGenerateColumns="False"
                   VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                  behavior:DataGridPasteBehavior.Enable="True"
                   behavior:DataGridCommitBehavior.Enable="True"
                   behavior:DataGridScrollToSelectionBehavior.Enable="True"
                   behavior:DataGridIsEdittingBehavior.IsEditting="{Binding PeakSpotNavigatorViewModel.IsEditting.Value, Mode=OneWayToSource}"
                   Grid.Row="1">
+            <DataGrid.Resources>
+                <commonmvvm:BindingProxy x:Key="TableVM" Data="{Binding Mode=OneTime}"/>
+            </DataGrid.Resources>
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -160,9 +170,8 @@
                                     IsReadOnly="True"
                                     Width="70" />
                 <DataGridTextColumn Header="Type"
-                                    Binding="{Binding Path=AdductIonName}"
-                                    IsReadOnly="True"
-                                    Width="1*" />
+                                    Binding="{Binding Path=AdductType, Converter={StaticResource AdductIonConverter}}"
+                                    Width="*"/>
                 <DataGridTextColumn Header="Metabolite name"
                                     Binding="{Binding Path=Name}"
                                     IsReadOnly="False"
@@ -173,12 +182,9 @@
                         </Style>
                     </DataGridTextColumn.CellStyle>
                 </DataGridTextColumn>
-
                 <DataGridTextColumn Header="Ontology"
                                     Binding="{Binding Path=Ontology}"
-                                    IsReadOnly="True"
                                     Width="1.5*" />
-                
                 <DataGridTextColumn Header="Comment"
                                     Binding="{Binding Path=Comment}"
                                     IsReadOnly="False"

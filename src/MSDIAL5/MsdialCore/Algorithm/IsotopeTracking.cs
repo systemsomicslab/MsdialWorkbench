@@ -266,12 +266,12 @@ namespace CompMs.MsdialCore.Algorithm
 
         private static void setDefaultCompoundInformation(AlignmentSpotProperty alignmentSpot)
         {
-            alignmentSpot.MSRawID2MspBasedMatchResult = new Dictionary<int, Common.DataObj.Result.MsScanMatchResult>();
+            alignmentSpot.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
             alignmentSpot.TextDbBasedMatchResult = null;
             alignmentSpot.MatchResults.ClearResults();
             alignmentSpot.MatchResults.ClearMspResults();
             alignmentSpot.MatchResults.ClearTextDbResults();
-            alignmentSpot.AdductType.Unset();
+            alignmentSpot.AdductType = AdductIon.Default;
             alignmentSpot.Name = string.Empty;
         }
 

@@ -2,17 +2,19 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netcoreapp3.0;net472</TargetFrameworks>
+    <TargetFrameworks>net472;netcoreapp3.0</TargetFrameworks>
     <RootNamespace>CompMs.App.MsdialConsole</RootNamespace>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
   </PropertyGroup>
   <PropertyGroup>
     <HighEntropyVA>false</HighEntropyVA>
+    <Product>MsdialConsoleApp</Product>
+    <AssemblyName>MSDIALCUI</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>

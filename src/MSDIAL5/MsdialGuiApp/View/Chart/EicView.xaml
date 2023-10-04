@@ -30,9 +30,27 @@
                           VerticalAxis="{Binding VerticalAxis}"
                           HorizontalTitle="{Binding HorizontalTitle.Value}"
                           GraphTitle="{Binding GraphTitle.Value}"
-                          Style="{StaticResource OverlapChart}"
                           Background="WhiteSmoke"
                           BorderBrush="Black">
+            <chart:MultiChart.Style>
+                <Style TargetType="{x:Type chart:MultiChart}" BasedOn="{StaticResource OverlapChart}">
+                    <Setter Property="VerticalTitle">
+                        <Setter.Value>
+                            <MultiBinding StringFormat="{}{0}({1})">
+                                <MultiBinding.Bindings>
+                                    <Binding Path="VerticalTitle.Value"/>
+                                    <Binding Path="VerticalAxis.UnitLabel"/>
+                                </MultiBinding.Bindings>
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding VerticalAxis.UnitLabel, TargetNullValue=''}" Value="">
+                            <Setter Property="VerticalTitle" Value="{Binding VerticalTitle.Value}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </chart:MultiChart.Style>
             <chart:MultiChart.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Save image using dialog"
@@ -101,14 +119,6 @@
                 <TextBlock Text="Loading ..." HorizontalAlignment="Center" FontSize="12" Margin="16"/>
                 <ProgressBar IsIndeterminate="True" HorizontalAlignment="Center" Width="160" Height="12"/>
             </StackPanel>
-            <chart:MultiChart.VerticalTitle>
-                <MultiBinding StringFormat="{}{0}({1})">
-                    <MultiBinding.Bindings>
-                        <Binding Path="VerticalTitle.Value"/>
-                        <Binding Path="VerticalAxis.UnitLabel"/>
-                    </MultiBinding.Bindings>
-                </MultiBinding>
-            </chart:MultiChart.VerticalTitle>
         </chart:MultiChart>
     </Grid>
 </UserControl>

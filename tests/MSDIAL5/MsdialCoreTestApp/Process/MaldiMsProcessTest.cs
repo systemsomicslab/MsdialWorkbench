@@ -151,7 +151,8 @@ namespace CompMs.App.MsdialConsole.Process
                 out var mspDB, 
                 out var txtDB, 
                 out var isotopeTextDB, 
-                out var compoundsInTargetMode);
+                out var compoundsInTargetMode,
+                out var lbmDB);
             param.TextDbSearchParam.CcsTolerance = 20.0F;
             param.TextDbSearchParam.IsUseCcsForAnnotationFiltering = true;
 
@@ -255,7 +256,8 @@ namespace CompMs.App.MsdialConsole.Process
                 out var mspDB,
                 out var txtDB,
                 out var isotopeTextDB,
-                out var compoundsInTargetMode);
+                out var compoundsInTargetMode,
+                out var lbmDB);
 
             RawMeasurement rawobj = null;
             Console.WriteLine("Reading data...");

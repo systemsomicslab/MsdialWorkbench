@@ -246,7 +246,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 },
                 true);
             var spectraExporter = new NistSpectraExporter<ChromatogramPeakFeature>(target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
-            var decLoader = new MSDecLoader(analysisFileModel.DeconvolutionFilePath).AddTo(Disposables);
+            var decLoader = analysisFileModel.MSDecLoader;
             _decLoader = decLoader;
             var msdecResult = target.SkipNull()
                 .Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation))
@@ -312,7 +312,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             SurveyScanModel.Elements.HorizontalProperty = nameof(SpectrumPeakWrapper.Mass);
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
 
-            PeakTableModel = new LcimmsAnalysisPeakTableModel(new ReadOnlyObservableCollection<ChromatogramPeakFeatureModel>(driftPeaks), target, PeakSpotNavigatorModel).AddTo(Disposables);
+            PeakTableModel = new LcimmsAnalysisPeakTableModel(new ReadOnlyObservableCollection<ChromatogramPeakFeatureModel>(driftPeaks), target, PeakSpotNavigatorModel, parameter.ReferenceFileParam.SearchedAdductIons).AddTo(Disposables);
 
             switch (parameter.TargetOmics) {
                 case TargetOmics.Lipidomics:
@@ -457,5 +457,17 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public void Undo() => _undoManager.Undo();
         public void Redo() => _undoManager.Redo();
+
+        void IResultModel.ExportMoleculerNetworkingData(MsdialCore.Parameter.MolecularSpectrumNetworkingBaseParameter parameter) {
+            throw new NotImplementedException();
+        }
+
+        void IResultModel.InvokeMoleculerNetworking(MsdialCore.Parameter.MolecularSpectrumNetworkingBaseParameter parameter) {
+            throw new NotImplementedException();
+        }
+
+        public void InvokeMoleculerNetworkingForTargetSpot() {
+            throw new NotImplementedException();
+        }
     }
 }

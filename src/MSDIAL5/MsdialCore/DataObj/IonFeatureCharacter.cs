@@ -7,8 +7,8 @@ namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
     public class IonFeatureCharacter {
         public IonFeatureCharacter() {
-            AdductType = new AdductIon();
-            AdductTypeByAmalgamationProgram = new AdductIon();
+            AdductType = AdductIon.Default;
+            AdductTypeByAmalgamationProgram = AdductIon.Default;
             PeakLinks = new List<LinkedPeakFeature>();
         }
 

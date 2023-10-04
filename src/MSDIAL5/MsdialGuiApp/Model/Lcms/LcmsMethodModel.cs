@@ -110,13 +110,18 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
+            var massBank = new AlignmentResultMassBankRecordExportModel(peakSpotSupplyer, _matchResultEvaluator, storage.DataBaseMapper, storage.Parameter.ProjectParam);
             var spectraAndReference = new AlignmentMatchedSpectraExportModel(peakSpotSupplyer, storage.DataBaseMapper, analysisFileBeanModelCollection.IncludedAnalysisFiles, CompoundSearcherCollection.BuildSearchers(storage.DataBases, storage.DataBaseMapper));
-            var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, spectraAndReference, };
+            var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, massBank, spectraAndReference, };
             if (storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
                 exportGroups.Add(new ProteinGroupExportModel(new ProteinGroupExporter(), analysisFiles));
             }
 
             AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam);
+            var currentFileResult = this.ObserveProperty(m => m.AnalysisModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            MolecularNetworkingSettingModel = new MolecularNetworkingSettingModel(storage.Parameter.MolecularSpectrumNetworkingBaseParam, currentFileResult, currentAlignmentResult).AddTo(Disposables);
+
+            ParameterExportModel = new ParameterExportModel(storage.DataBases, storage.Parameter, broker);
         }
 
         public PeakFilterModel PeakFilterModel { get; }
@@ -136,6 +141,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         private LcmsAlignmentModel _alignmentModel;
 
         public AlignmentResultExportModel AlignmentResultExportModel { get; }
+        public MolecularNetworkingSettingModel MolecularNetworkingSettingModel { get; }
+        public ParameterExportModel ParameterExportModel { get; }
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             if (AnalysisModel != null) {
@@ -329,12 +336,12 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new SpectraType(
                     ExportspectraType.deconvoluted,
                     new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.deconvoluted)),
-                new SpectraType(
-                    ExportspectraType.centroid,
-                    new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.centroid)),
-                new SpectraType(
-                    ExportspectraType.profile,
-                    new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.profile)),
+                //new SpectraType(
+                //    ExportspectraType.centroid,
+                //    new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.centroid)),
+                //new SpectraType(
+                //    ExportspectraType.profile,
+                //    new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.profile)),
             };
             var spectraFormats = new List<SpectraFormat>
             {

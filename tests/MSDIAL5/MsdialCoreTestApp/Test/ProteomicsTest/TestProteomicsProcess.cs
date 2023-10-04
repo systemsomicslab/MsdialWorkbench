@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Parser;
@@ -39,7 +40,7 @@ namespace CompMs.App.MsdialConsole.ProteomicsTest {
 
             var enzymeList = new List<string>() { "Trypsin/P" };
             var fasta_file = @"E:\6_Projects\PROJECT_Proteomics\test\human_liver.fasta";
-            var adduct = AdductIonParser.GetAdductIonBean("[M+H]+");
+            var adduct = AdductIon.GetAdductIon("[M+H]+");
 
             var cleavageSites = ProteinDigestion.GetCleavageSites(this.Enzymes, enzymeList);
             var modContainer = ModificationUtility.GetModificationContainer(this.FixedModifications, this.VariableModifications, fixedMods, variableMods);

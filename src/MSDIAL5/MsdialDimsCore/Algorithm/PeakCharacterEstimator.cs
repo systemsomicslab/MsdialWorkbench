@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -129,7 +128,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
                 SearchedAdducts.Add(adduct);
             }
             if (SearchedAdducts.Count == 0) {
-                var protonAdduct = param.IonMode == IonMode.Positive ? AdductIonParser.GetAdductIonBean("[M+H]+") : AdductIonParser.GetAdductIonBean("[M-H]-");
+                var protonAdduct = param.IonMode == IonMode.Positive ? AdductIon.GetAdductIon("[M+H]+") : AdductIon.GetAdductIon("[M-H]-");
                 SearchedAdducts.Add(protonAdduct);
             }
         }
@@ -151,7 +150,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
                     else {
                         adductString = "[M-" + peak.PeakCharacter.Charge + "H]" + peak.PeakCharacter.Charge + "-";
                     }
-                    var estimatedAdduct = AdductIonParser.GetAdductIonBean(adductString);
+                    var estimatedAdduct = AdductIon.GetAdductIon(adductString);
                     peak.SetAdductType(estimatedAdduct);
                 }
                 else {

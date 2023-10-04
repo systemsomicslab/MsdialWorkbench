@@ -58,7 +58,7 @@ namespace CompMs.App.Msdial.Model.Imms
             ParameterBase parameter,
             List<AnalysisFileBean> files,
             IMessageBroker broker)
-            : base(alignmentFileModel) {
+            : base(alignmentFileModel, broker) {
 
             _alignmentFile = alignmentFileModel;
             _parameter = parameter;
@@ -102,6 +102,7 @@ namespace CompMs.App.Msdial.Model.Imms
             }
 
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
+            CurrentRepresentativeFile = Target.Select(t => t is null ? null : fileCollection.GetById(t.RepresentativeFileID)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(Ms1Spots, peakSpotFiltering).AddTo(Disposables);
             PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
@@ -151,20 +152,19 @@ namespace CompMs.App.Msdial.Model.Imms
             IMsSpectrumLoader<AlignmentSpotPropertyModel> decLoader = new AlignmentMSDecSpectrumLoader(_alignmentFile);
             var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             var spectraExporter = new NistSpectraExporter<AlignmentSpotProperty>(Target.Select(t => t?.innerModel), mapper, parameter).AddTo(Disposables);
-            Ms2SpectrumModel = new MsSpectrumModel(
-                Target.SelectSwitch(decLoader.LoadSpectrumAsObservable),
-                refSpectrum,
+            Ms2SpectrumModel = new AlignmentMs2SpectrumModel(
+                Target, refSpectrum, fileCollection,
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Mass), spot => spot.Mass),
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Intensity), spot => spot.Intensity),
+                Observable.Return(upperSpecBrush),
+                Observable.Return(lowerSpecBrush),
+                nameof(SpectrumPeak.SpectrumComment),
                 new GraphLabels(
                     "Representation vs. Reference",
                     "m/z",
                     "Relative abundance",
                     nameof(SpectrumPeak.Mass),
                     nameof(SpectrumPeak.Intensity)),
-                nameof(SpectrumPeak.SpectrumComment),
-                Observable.Return(upperSpecBrush),
-                Observable.Return(lowerSpecBrush),
                 Observable.Return(spectraExporter),
                 Observable.Return(referenceExporter),
                 null,
@@ -180,7 +180,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 Colors.Blue);
 
             var fileIdToClassNameAsObservable = projectBaseParameter.ObserveProperty(p => p.FileIdToClassName).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            var peakSpotAxisLabelAsObservable = Target.OfType<AlignmentSpotPropertyModel>().SelectSwitch(t => t.ObserveProperty(t_ => t_.IonAbundanceUnit).Select(t_ => t_.ToLabel())).Publish();
+            var peakSpotAxisLabelAsObservable = Target.OfType<AlignmentSpotPropertyModel>().SelectSwitch(t => t.ObserveProperty(t_ => t_.IonAbundanceUnit).Select(t_ => t_.ToLabel())).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             var normalizedAreaZeroLoader = new BarItemsLoaderData("Normalized peak area above zero", peakSpotAxisLabelAsObservable, new NormalizedAreaAboveZeroBarItemsLoader(fileIdToClassNameAsObservable, fileCollection), NormalizationSetModel.IsNormalized);
             var normalizedAreaBaselineLoader = new BarItemsLoaderData("Normalized peak area above base line", peakSpotAxisLabelAsObservable, new NormalizedAreaAboveBaseLineBarItemsLoader(fileIdToClassNameAsObservable, fileCollection), NormalizationSetModel.IsNormalized);
             var normalizedHeightLoader = new BarItemsLoaderData("Normalized peak height", peakSpotAxisLabelAsObservable, new NormalizedHeightBarItemsLoader(fileIdToClassNameAsObservable, fileCollection), NormalizationSetModel.IsNormalized);
@@ -193,7 +193,6 @@ namespace CompMs.App.Msdial.Model.Imms
                 normalizedHeightLoader, normalizedAreaBaselineLoader, normalizedAreaZeroLoader,
             };
             var barItemsLoaderDataProperty = NormalizationSetModel.Normalized.ToConstant(normalizedHeightLoader).ToReactiveProperty(NormalizationSetModel.IsNormalized.Value ? normalizedHeightLoader : heightLoader).AddTo(Disposables);
-            Disposables.Add(peakSpotAxisLabelAsObservable.Connect());
             BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, barItemLoaderDatas, Observable.Return(classBrush), projectBaseParameter, fileCollection, projectBaseParameter.ClassProperties).AddTo(Disposables);
 
             var classToColor = parameter.ClassnameToColorBytes
@@ -211,7 +210,7 @@ namespace CompMs.App.Msdial.Model.Imms
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
             var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
-            AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(Ms1Spots, Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderProperty, PeakSpotNavigatorModel).AddTo(Disposables);
+            AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(Ms1Spots, Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderProperty, PeakSpotNavigatorModel, parameter.ReferenceFileParam.SearchedAdductIons).AddTo(Disposables);
 
             MsdecResult = Target.SkipNull()
                 .Select(t => _alignmentFile.LoadMSDecResultByIndexAsync(t.MasterAlignmentID))
@@ -257,12 +256,13 @@ namespace CompMs.App.Msdial.Model.Imms
         public InternalStandardSetModel InternalStandardSetModel { get; }
         public NormalizationSetModel NormalizationSetModel { get; }
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
+        public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel> CurrentRepresentativeFile { get; }
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
 
         public AlignmentPeakPlotModel PlotModel { get; }
 
-        public MsSpectrumModel Ms2SpectrumModel { get; }
+        public AlignmentMs2SpectrumModel Ms2SpectrumModel { get; }
 
         public BarChartModel BarChartModel { get; }
 
@@ -333,6 +333,9 @@ namespace CompMs.App.Msdial.Model.Imms
                 MsdecResult.Value,
                 _dataBaseMapper,
                 _parameter);
+        }
+        public override void InvokeMoleculerNetworkingForTargetSpot() {
+            throw new NotImplementedException();
         }
 
         public void SaveProject() {

@@ -25,7 +25,7 @@ namespace CompMs.App.Msdial.Model.Export
         }
         private bool _isSelected = false;
 
-        public int CountExportFiles() {
+        public int CountExportFiles(AlignmentFileBeanModel alignmentFile) {
             return 1;
         }
 

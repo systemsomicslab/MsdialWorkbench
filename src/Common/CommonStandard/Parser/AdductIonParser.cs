@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace CompMs.Common.Parser {
@@ -36,6 +35,7 @@ namespace CompMs.Common.Parser {
         /// </summary>
         /// <param name="adductName">Add the formula string such as "C6H12O6"</param>
         /// <returns></returns>
+        [Obsolete("Use AdductIon.GetAddutIon instead of this method.")]
         public static AdductIon GetAdductIonBean(string adductName)
         {
             return AdductIon.GetAdductIon(adductName);
@@ -57,7 +57,7 @@ namespace CompMs.Common.Parser {
 
             var newAdductString = "[" + xMerString + "M" + adductContent + "]" + chargeString + ionString + radicalString;
 
-            var newAdduct = GetAdductIonBean(newAdductString);
+            var newAdduct = AdductIon.GetAdductIon(newAdductString);
             return newAdduct;
         }
 
@@ -86,14 +86,6 @@ namespace CompMs.Common.Parser {
                 }
             }
             return contentString.Trim();
-        }
-
-        public static void SetAccurateMassAndIsotopeRatio(AdductIon adductIonBean)
-        {
-            (var accurateMass, var m1Intensity, var m2Intensity) = CalculateAccurateMassAndIsotopeRatio(adductIonBean.AdductIonName);
-            adductIonBean.AdductIonAccurateMass += accurateMass;
-            adductIonBean.M1Intensity += m1Intensity;
-            adductIonBean.M2Intensity += m2Intensity;
         }
 
         public static (double, double, double) CalculateAccurateMassAndIsotopeRatio(string adductName) {
@@ -154,7 +146,7 @@ namespace CompMs.Common.Parser {
             return 1;
         }
 
-        private static readonly Regex FormatCheckTemplate = new Regex(@"^\[[^\]\[\(\)]+\](?!.*[\]\[\(\)]).*[+-].*$");
+        private static readonly Regex FormatCheckTemplate = new Regex(@"^\[\d*M\s?[ A-Za-z0-9+-]*\]\.?\d*[+-]\.?$");
         public static bool IonTypeFormatChecker(string adductName)
         {
             return adductName != null && FormatCheckTemplate.IsMatch(adductName);

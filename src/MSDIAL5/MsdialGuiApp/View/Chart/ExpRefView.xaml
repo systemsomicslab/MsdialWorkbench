@@ -62,11 +62,13 @@
                     Style="{StaticResource IconButton}"/>
 
             <Button Name="Button_MsFinderSearchPeakViewer"
+                    Command="{Binding GoToMsfinderCommand}"
                     Content="/Resources/msfinder_icon.ico"
                     ToolTip="MS-FINDER search"
                     Style="{StaticResource IconButton}"/>
 
             <Button Name="Button_MolecularNetworkPeakViewer"
+                    Command="{Binding SearchAnalysisSpectrumByMoleculerNetworkingCommand}"
                     Content="/Resources/MolecularNetworking.ico"
                     ToolTip="Molecular-spectrum networking for selected peak spot"
                     Style="{StaticResource IconButton}"/>

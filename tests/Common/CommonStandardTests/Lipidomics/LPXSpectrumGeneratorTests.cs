@@ -1,7 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
-using System.Linq;
 using CompMs.Common.Parser;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
+using System.Xml.Linq;
 
 namespace CompMs.Common.Lipidomics.Tests
 {
@@ -16,7 +18,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.LPC, 521.348140016, new PositionLevelChains(acyl1));
 
             var generator = new LPCSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -97,7 +99,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.LPC, 521.348140016, new PositionLevelChains(acyl1));
 
             var generator = new LPCSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+Na]+"));
 
             var expects = new[]
             {
@@ -183,7 +185,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.LPE, 479.3011898, new PositionLevelChains(acyl1));
 
             var generator = new LPESpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -193,7 +195,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 173.0214997 ,//C3H9O6P
                 182.058 ,//Gly-C
                 184.0369696 ,//-CH2(Sn1),Gly-O
-                //199.0604447 ,//-acylChain-O
+                198.052586 ,//-acylChain-O
                 216.0631844 ,//-acylChain
                 242.0424489 ,//Sn1-1-H
                 243.0502739 ,//Sn1-1
@@ -266,13 +268,14 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.LPE, 479.3011898, new PositionLevelChains(acyl1));
 
             var generator = new LPESpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+Na]+"));
 
             var expects = new[]
             {
                 164.0072207 ,//Header
                 204.0399442 ,//Gly-C
                 206.0189138 ,//-CH2(Sn1),Gly-O
+                220.034530, // -18:1(9) - O
                 238.0451286 ,//-acylChain
                 264.0243931 ,//Sn1-1-H
                 265.0322182 ,//Sn1-1
@@ -352,15 +355,16 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.LPG, 510.2957701, new PositionLevelChains(acyl1));
 
             var generator = new LPGSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
                     155.010386 ,//Header - H2O
                     173.0209525 ,//Header
+                    197.020951, // -H2O -CH2(Sn1)
                     213.0522526 ,//Gly-C
                     215.0315172 ,//Gly-O
-                    //229.0480197 ,//-Sn1-H2O
+                    229.0480197 ,//-Sn1-H2O
                     247.0585844 ,//-Sn1
                     265.25259 ,//18:1(9) acyl+
                     273.0378489 ,//Sn1-1-H
@@ -437,15 +441,16 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.LPG, 510.2957701, new PositionLevelChains(acyl1));
 
             var generator = new LPGSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+Na]+"));
 
             var expects = new[]
             {
                 176.99233 ,//Header - H2O
                 195.0028967 ,//Header
+                219.002896, // -H2O -CH2(Sn1)
                 235.0341968 ,//Gly-C
                 237.0134614 ,//Gly-O
-                //251.0299639 ,//-Sn1-H2O
+                251.0299639 ,//-Sn1-H2O
                 265.25259 ,//18:1(9) acyl+
                 269.0405286 ,//-Sn1
                 295.0197931 ,//Sn1-1-H
@@ -522,15 +527,17 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.LPI, 598.311814080, new PositionLevelChains(acyl1));
 
             var generator = new LPISpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
                 155.0109,// C3H9O6P-H2O
                 173.0215,// C3H9O6P
+                243.0270,// Header -H2O
                 261.0375,// Header
                 265.2526,// 18:1(9)acyl+
                 301.0688,// Gly-C
+                303.0481,// -CH2(Sn1)
                 303.0481,// Gly-O
                 317.0638,// -18:1(9)-H2O
                 335.0743,// -18:1(9)
@@ -611,7 +618,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.LPS, 523.291019063, new PositionLevelChains(acyl1));
 
             var generator = new LPSSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -620,6 +627,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 186.01749   ,//Header
                 226.05066   ,//Gly-C
                 228.0253    ,//Gly-O, -CH2(SN1)
+                242.042415 , // -18:1(9)-O
                 260.05353    ,// -acylChain
                 265.25259 ,//18:1(9) acyl+
                 286.0322489 ,//Sn1-1-H
@@ -695,13 +703,14 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.LPS, 523.291019063, new PositionLevelChains(acyl1));
 
             var generator = new LPSSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+Na]+"));
 
             var expects = new[]
             {
                 207.9994342 ,//Header
                 248.0326042 ,//Gly-C
                 250.0072442 ,//Gly-O
+                264.0243594345,// -18:1(9) - O
                 265.25259 ,//18:1(9) acyl+
                 282.0349286 ,// -acylChain
                 308.0141931 ,//Sn1-1-H
