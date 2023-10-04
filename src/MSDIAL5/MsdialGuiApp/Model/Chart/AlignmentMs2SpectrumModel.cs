@@ -144,6 +144,9 @@ namespace CompMs.App.Msdial.Model.Chart
         public PropertySelector<SpectrumPeak, double> HorizontalPropertySelector { get; }
         public PropertySelector<SpectrumPeak, double> VerticalPropertySelector { get; }
 
+        public ReadOnlyObservableCollection<AnalysisFileBeanModel> Files => _spectraManager.Files;
+        public ReactiveProperty<AnalysisFileBeanModel> SelectedFile => _spectraManager.SelectedFile;
+
         public GraphLabels GraphLabels { get; }
         public ReadOnlyReactivePropertySlim<bool> SpectrumLoaded { get; }
         public ReadOnlyReactivePropertySlim<bool> ReferenceHasSpectrumInformation { get; }
@@ -198,7 +201,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 _target = target ?? throw new ArgumentNullException(nameof(target));
                 _files = files ?? throw new ArgumentNullException(nameof(files));
 
-                SelectedFile = _target.Select(t => files.AnalysisFiles.FirstOrDefault(f => f.AnalysisFileId == t?.RepresentativeFileID) ?? files.AnalysisFiles[0]).ToReactiveProperty().AddTo(_disposables);
+                SelectedFile = target.Select(t => t != null && files.GetById(t.RepresentativeFileID) is AnalysisFileBeanModel repFile ? repFile : files.AnalysisFiles[0]).ToReactiveProperty().AddTo(_disposables);
                 ReferenceSpectrum = referenceSpectrum.Select(spec => new MsSpectrum(spec)).ToReadOnlyReactivePropertySlim(new MsSpectrum(new List<SpectrumPeak>(0))).AddTo(_disposables);
 
                 var spectraLoader = new SpectraLoader(target, files).AddTo(_disposables);
