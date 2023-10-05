@@ -14,8 +14,6 @@ using CompMs.Common.DataStructure;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Proteomics.DataObj;
-using CompMs.Graphics.AxisManager.Generic;
-using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -210,7 +208,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             var spectraExporter = new NistSpectraExporter<AlignmentSpotProperty>(Target.Select(t => t?.innerModel), mapper, parameter).AddTo(Disposables);
             Ms2SpectrumModel = new AlignmentMs2SpectrumModel(
-                Target, MatchResultCandidatesModel.SelectedCandidate.DefaultIfNull(refLoader.LoadSpectrumAsObservable, Observable.Return(new List<SpectrumPeak>(0))).Switch(), fileCollection,
+                Target, MatchResultCandidatesModel.SelectedCandidate, fileCollection,
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Mass), spot => spot.Mass),
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Intensity), spot => spot.Intensity),
                 new ChartHueItem(projectBaseParameter, Colors.Blue),
@@ -224,7 +222,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 Observable.Return(spectraExporter),
                 Observable.Return(referenceExporter),
                 null,
-                MatchResultCandidatesModel.GetCandidatesScorer(searcherCollection)).AddTo(Disposables);
+                MatchResultCandidatesModel.GetCandidatesScorer(searcherCollection),
+                new AlignmentSpotSpectraLoader(fileCollection, refLoader)).AddTo(Disposables);
 
             var classBrush = new KeyBrushMapper<BarItem, string>(classToColor, item => item.Class, Colors.Blue);
             var fileIdToClassNameAsObservable = projectBaseParameter.ObserveProperty(p => p.FileIdToClassName).ToReadOnlyReactivePropertySlim().AddTo(Disposables);

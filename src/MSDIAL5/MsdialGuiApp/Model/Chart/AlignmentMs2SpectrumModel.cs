@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
@@ -30,7 +31,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public AlignmentMs2SpectrumModel(
             IReadOnlyReactiveProperty<AlignmentSpotPropertyModel> target,
-            IObservable<List<SpectrumPeak>> referenceSpectrum,
+            IObservable<MsScanMatchResult> matchResult,
             AnalysisFileBeanModelCollection files,
             PropertySelector<SpectrumPeak, double> horizontalPropertySelector,
             PropertySelector<SpectrumPeak, double> verticalPropertySelector,
@@ -40,10 +41,11 @@ namespace CompMs.App.Msdial.Model.Chart
             IObservable<ISpectraExporter> upperSpectraExporter,
             IObservable<ISpectraExporter> lowerSpectraExporter,
             ReadOnlyReactivePropertySlim<bool> spectrumLoaded,
-            IObservable<Ms2ScanMatching> ms2ScanMatching) {
+            IObservable<Ms2ScanMatching> ms2ScanMatching,
+            AlignmentSpotSpectraLoader loader) {
             _files = files;
             _ms2ScanMatching = ms2ScanMatching?.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            var spectraManager = new TargetSpectraManager(target, files, referenceSpectrum).AddTo(Disposables);
+            var spectraManager = new TargetSpectraManager(target, files, matchResult, loader).AddTo(Disposables);
             _spectraManager = spectraManager;
 
             var horizontalAxis = spectraManager.GetHorizontalAxis(horizontalPropertySelector);
@@ -172,14 +174,13 @@ namespace CompMs.App.Msdial.Model.Chart
             private readonly SpectraLoader _spectraLoader;
             private CompositeDisposable _disposables = new CompositeDisposable();
 
-            public TargetSpectraManager(IReadOnlyReactiveProperty<AlignmentSpotPropertyModel> target, AnalysisFileBeanModelCollection files, IObservable<List<SpectrumPeak>> referenceSpectrum) {
+            public TargetSpectraManager(IReadOnlyReactiveProperty<AlignmentSpotPropertyModel> target, AnalysisFileBeanModelCollection files, IObservable<MsScanMatchResult> matchResult, AlignmentSpotSpectraLoader loader) {
                 _target = target ?? throw new ArgumentNullException(nameof(target));
                 _files = files ?? throw new ArgumentNullException(nameof(files));
 
                 SelectedFile = target.Select(t => t != null && files.GetById(t.RepresentativeFileID) is AnalysisFileBeanModel repFile ? repFile : files.AnalysisFiles[0]).ToReactiveProperty().AddTo(_disposables);
-                ReferenceSpectrum = referenceSpectrum.Select(spec => new MsSpectrum(spec)).ToReadOnlyReactivePropertySlim(new MsSpectrum(new List<SpectrumPeak>(0))).AddTo(_disposables);
-
-                var spectraLoader = new SpectraLoader(target, files).AddTo(_disposables);
+                ReferenceSpectrum = matchResult.DefaultIfNull(loader.LoadReferenceSpectrumAsObservable, Observable.Return(new MsSpectrum(new List<SpectrumPeak>(0)))).Switch().ToReadOnlyReactivePropertySlim(new MsSpectrum(new List<SpectrumPeak>(0))).AddTo(_disposables);
+                var spectraLoader = new SpectraLoader(target, files, loader).AddTo(_disposables);
                 _spectraLoader = spectraLoader;
                 CurrentSpectrum = SelectedFile.Select(spectraLoader.GetObservableSpectrum).Switch().Select(spec => new MsSpectrum(spec)).ToReadOnlyReactivePropertySlim(new MsSpectrum(new List<SpectrumPeak>(0))).AddTo(_disposables);
 
@@ -219,12 +220,10 @@ namespace CompMs.App.Msdial.Model.Chart
             private readonly Dictionary<AnalysisFileBeanModel, ReadOnlyReactivePropertySlim<List<SpectrumPeak>>> _spectra;
             private CompositeDisposable _disposables = new CompositeDisposable();
 
-            public SpectraLoader(IObservable<AlignmentSpotPropertyModel> target, AnalysisFileBeanModelCollection files) {
-                var dictionary = files.AnalysisFiles.Select(file => (file, loader: (IMsSpectrumLoader<AlignmentSpotPropertyModel>)new MsDecSpectrumFromFileLoader(file))).ToDictionary(
-                    pair => pair.file,
-                    pair => target.DefaultIfNull(pair.loader.LoadSpectrumAsObservable, Observable.Return(new List<SpectrumPeak>(0))).Switch().ToReadOnlyReactivePropertySlim());
+            public SpectraLoader(IObservable<AlignmentSpotPropertyModel> target, AnalysisFileBeanModelCollection files, AlignmentSpotSpectraLoader loader) {
+                var dictionary = loader.LoadSpectraAsObservable(files, target);
                 _spectra = dictionary;
-                foreach (var rp in _spectra.Values) {
+                foreach (var rp in dictionary.Values) {
                     _disposables.Add(rp);
                 }
             }
@@ -241,6 +240,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 _disposables?.Dispose();
                 _disposables?.Clear();
                 _disposables = null;
+                _spectra.Clear();
             }
         }
     }

@@ -13,8 +13,6 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Proteomics.DataObj;
-using CompMs.Graphics.AxisManager.Generic;
-using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -101,7 +99,7 @@ namespace CompMs.App.Msdial.Model.Imms
             var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             var spectraExporter = new NistSpectraExporter<AlignmentSpotProperty>(Target.Select(t => t?.innerModel), mapper, parameter).AddTo(Disposables);
             Ms2SpectrumModel = new AlignmentMs2SpectrumModel(
-                Target, MatchResultCandidatesModel.SelectedCandidate.DefaultIfNull(refLoader.LoadSpectrumAsObservable, Observable.Return(new List<SpectrumPeak>(0))).Switch(), fileCollection,
+                Target, MatchResultCandidatesModel.SelectedCandidate, fileCollection,
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Mass), spot => spot.Mass),
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Intensity), spot => spot.Intensity),
                 new ChartHueItem(projectBaseParameter, Colors.Blue),
@@ -115,7 +113,8 @@ namespace CompMs.App.Msdial.Model.Imms
                 Observable.Return(spectraExporter),
                 Observable.Return(referenceExporter),
                 null,
-                MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers)).AddTo(Disposables);
+                MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers),
+                new AlignmentSpotSpectraLoader(fileCollection, refLoader)).AddTo(Disposables);
 
             var classBrush = new KeyBrushMapper<BarItem, string>(
                 _parameter.ProjectParam.ClassnameToColorBytes
