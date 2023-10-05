@@ -28,11 +28,11 @@ namespace CompMs.App.Msdial.Model.Loader
             }
             return props.Select(props_ => {
                 var prop = props_.FirstOrDefault(p => p.FileID == _file.AnalysisFileId);
-                if (prop is null || prop.MasterPeakID < 0) {
+                if (prop is null || prop.MSDecResultID < 0) {
                     return new List<SpectrumPeak>(0);
                 }
 
-                return _file.MSDecLoader.LoadMSDecResult(prop.MasterPeakID).Spectrum;
+                return _file.MSDecLoader.LoadMSDecResult(prop.MSDecResultID).Spectrum;
             });
         }
     }
