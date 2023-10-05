@@ -284,8 +284,10 @@ namespace CompMs.App.Msdial.Model.Lcms
         public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;
 
         public async Task SaveRawSpectra(string filename) {
+            if (!(Target.Value is ChromatogramPeakFeatureModel target)) {
+                return;
+            }
             using (var file = File.Open(filename, FileMode.Create)) {
-                var target = Target.Value;
                 var spectrum = await _rawSpectrumLoader.LoadSpectrumAsObservable(target).FirstAsync();
                 SpectraExport.SaveSpectraTable(
                     (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
