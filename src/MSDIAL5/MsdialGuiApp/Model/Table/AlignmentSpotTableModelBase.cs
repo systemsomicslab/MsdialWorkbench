@@ -2,7 +2,6 @@
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
-using CompMs.Common.DataObj.Property;
 using CompMs.Graphics.Base;
 using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
@@ -21,9 +20,8 @@ namespace CompMs.App.Msdial.Model.Table
             IObservable<IBrushMapper<BarItem>> classBrush,
             FileClassPropertiesModel classProperties,
             IObservable<IBarItemsLoader> barItemsLoader,
-            PeakSpotNavigatorModel peakSpotNavigatorModel,
-            IReadOnlyList<AdductIon> adductIons)
-            : base(spots, target, peakSpotNavigatorModel, adductIons) {
+            PeakSpotNavigatorModel peakSpotNavigatorModel)
+            : base(spots, target, peakSpotNavigatorModel) {
             _target = target;
             ClassBrush = classBrush;
             BarItemsLoader = barItemsLoader;
