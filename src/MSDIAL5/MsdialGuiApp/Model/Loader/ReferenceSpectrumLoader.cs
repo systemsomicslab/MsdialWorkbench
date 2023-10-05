@@ -21,6 +21,9 @@ namespace CompMs.App.Msdial.Model.Loader
         }
 
         private List<SpectrumPeak> LoadSpectrumCore(MsScanMatchResult target) {
+            if (target is null) {
+                throw new ArgumentNullException(nameof(target));
+            }
             var reference = _refer.Refer(target);
             if (reference != null) {
                 return reference.Spectrum;

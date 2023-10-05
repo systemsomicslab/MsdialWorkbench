@@ -19,7 +19,7 @@ namespace CompMs.App.Msdial.Model.Loader
 
         IObservable<List<SpectrumPeak>> IMsSpectrumLoader<AlignmentSpotPropertyModel>.LoadSpectrumAsObservable(AlignmentSpotPropertyModel target) {
             if (target is null) {
-                return Observable.Return(new List<SpectrumPeak>(0));
+                throw new ArgumentNullException(nameof(target));
             }
             IObservable<ReadOnlyCollection<AlignmentChromPeakFeatureModel>> props = target.AlignedPeakPropertiesModelProperty;
             var task = target.AlignedPeakPropertiesModelProperty.ToTask();

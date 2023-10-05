@@ -141,7 +141,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             var spectraExporter = new NistSpectraExporter<AlignmentSpotProperty>(Target.Select(t => t?.innerModel), mapper, parameter).AddTo(Disposables);
             Ms2SpectrumModel = new AlignmentMs2SpectrumModel(
-                Target, MatchResultCandidatesModel.SelectedCandidate.Select(refLoader.LoadSpectrumAsObservable).Switch(), fileCollection,
+                Target, MatchResultCandidatesModel.SelectedCandidate.DefaultIfNull(refLoader.LoadSpectrumAsObservable, Observable.Return(new List<SpectrumPeak>(0))).Switch(), fileCollection,
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Mass), peak => peak.Mass),
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Intensity), peak => peak.Intensity),
                 new ChartHueItem(projectBaseParameter, Colors.Blue),

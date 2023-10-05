@@ -58,9 +58,10 @@ namespace CompMs.App.Msdial.Model.Loader
         }
 
         public IObservable<List<SpectrumPeak>> LoadSpectrumAsObservable(ChromatogramPeakFeatureModel target) {
-            return target is null
-                ? Observable.Return(new List<SpectrumPeak>(0))
-                : LoadSpectrumAsObservableCore(target);
+            if (target is null) {
+                throw new ArgumentNullException(nameof(target));
+            }
+            return LoadSpectrumAsObservableCore(target);
         }
     }
 }

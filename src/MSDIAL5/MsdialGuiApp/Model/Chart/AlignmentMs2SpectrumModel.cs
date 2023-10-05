@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
@@ -221,7 +222,7 @@ namespace CompMs.App.Msdial.Model.Chart
             public SpectraLoader(IObservable<AlignmentSpotPropertyModel> target, AnalysisFileBeanModelCollection files) {
                 var dictionary = files.AnalysisFiles.Select(file => (file, loader: (IMsSpectrumLoader<AlignmentSpotPropertyModel>)new MsDecSpectrumFromFileLoader(file))).ToDictionary(
                     pair => pair.file,
-                    pair => target.Select(pair.loader.LoadSpectrumAsObservable).Switch().ToReadOnlyReactivePropertySlim());
+                    pair => target.DefaultIfNull(pair.loader.LoadSpectrumAsObservable, Observable.Return(new List<SpectrumPeak>(0))).Switch().ToReadOnlyReactivePropertySlim());
                 _spectra = dictionary;
                 foreach (var rp in _spectra.Values) {
                     _disposables.Add(rp);

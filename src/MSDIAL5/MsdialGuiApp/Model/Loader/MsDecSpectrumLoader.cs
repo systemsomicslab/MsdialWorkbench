@@ -26,10 +26,10 @@ namespace CompMs.App.Msdial.Model.Loader
         private readonly IReadOnlyList<object> ms1Peaks;
 
         public async Task<List<SpectrumPeak>> LoadSpectrumAsync(object target, CancellationToken token) {
-            var ms2DecSpectrum = new List<SpectrumPeak>();
-            if (target != null) {
-                ms2DecSpectrum = await Task.Run(() => LoadSpectrumCore(target), token).ConfigureAwait(false);
+            if (target is null) {
+                throw new ArgumentNullException(nameof(target));
             }
+            var ms2DecSpectrum = await Task.Run(() => LoadSpectrumCore(target), token).ConfigureAwait(false);
             token.ThrowIfCancellationRequested();
             return ms2DecSpectrum;
         }
