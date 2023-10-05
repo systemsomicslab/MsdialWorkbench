@@ -154,6 +154,26 @@ namespace CompMs.App.Msdial.Utility.Tests
             ox.OnNext(6);
             Assert.AreEqual(6, property.Value);
         }
+
+        [TestMethod]
+        public void DefaultIfNullTest() {
+            var ox = new Subject<TestValue>();
+            var property = ox.DefaultIfNull(v => v.Value, -1).ToReadOnlyReactivePropertySlim(0);
+
+            Assert.AreEqual(0, property.Value);
+
+            ox.OnNext(null);
+            Assert.AreEqual(-1, property.Value);
+
+            ox.OnNext(new TestValue { Value = 2, });
+            Assert.AreEqual(2, property.Value);
+
+            ox.OnNext(null);
+            Assert.AreEqual(-1, property.Value);
+
+            ox.OnNext(new TestValue { Value = 3, });
+            Assert.AreEqual(3, property.Value);
+        }
     }
 
     class TestValue : BindableBase
