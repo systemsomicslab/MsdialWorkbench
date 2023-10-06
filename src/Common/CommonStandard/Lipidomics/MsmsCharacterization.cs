@@ -4644,7 +4644,10 @@ namespace CompMs.Common.Lipidomics
                     //
                     if (isClassIon1Found || isClassIon2Found)
                     {
-                        EtherFrag = "p";
+                        if (totalDoubleBond > 0)
+                        {
+                            EtherFrag = "p";
+                        }
                     }
 
                     var candidates = new List<LipidMolecule>();
