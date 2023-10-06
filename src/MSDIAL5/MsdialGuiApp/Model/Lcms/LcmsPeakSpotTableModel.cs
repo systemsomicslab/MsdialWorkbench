@@ -25,12 +25,13 @@ namespace CompMs.App.Msdial.Model.Lcms
         public LcmsAlignmentSpotTableModel(
             IReadOnlyList<AlignmentSpotPropertyModel> peakSpots,
             IReactiveProperty<AlignmentSpotPropertyModel> target,
-            PeakSpotNavigatorModel peakSpotNavigatorModel,
             IObservable<IBrushMapper<BarItem>> classBrush,
             FileClassPropertiesModel classProperties,
             IObservable<IBarItemsLoader> barItemsLoader,
-            TargetOmics omics)
-            : base(peakSpots, target, classBrush, classProperties, barItemsLoader, peakSpotNavigatorModel) {
+            TargetOmics omics,
+            PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter peakSpotFilter,
+            AlignmentSpotSpectraLoader spectraLoader)
+            : base(peakSpots, target, classBrush, classProperties, barItemsLoader, peakSpotFilter, spectraLoader) {
             MassMin = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Min();
             MassMax = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Max();
             RtMin = peakSpots.Select(s => s.RT).DefaultIfEmpty().Min();

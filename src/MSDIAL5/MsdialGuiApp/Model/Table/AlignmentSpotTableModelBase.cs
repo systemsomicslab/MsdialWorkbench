@@ -7,12 +7,16 @@ using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Table
 {
     internal abstract class AlignmentSpotTableModelBase : PeakSpotTableModelBase<AlignmentSpotPropertyModel>
     {
         private readonly IReactiveProperty<AlignmentSpotPropertyModel> _target;
+        private readonly PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter _peakSpotFilter;
+        private readonly AlignmentSpotSpectraLoader _spectraLoader;
 
         public AlignmentSpotTableModelBase(
             IReadOnlyList<AlignmentSpotPropertyModel> spots,
@@ -20,11 +24,14 @@ namespace CompMs.App.Msdial.Model.Table
             IObservable<IBrushMapper<BarItem>> classBrush,
             FileClassPropertiesModel classProperties,
             IObservable<IBarItemsLoader> barItemsLoader,
-            PeakSpotNavigatorModel peakSpotNavigatorModel)
-            : base(spots, target, peakSpotNavigatorModel) {
+            PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter peakSpotFilter,
+            AlignmentSpotSpectraLoader spectraLoader)
+            : base(spots, target) {
             _target = target;
             ClassBrush = classBrush;
             BarItemsLoader = barItemsLoader;
+            _peakSpotFilter = peakSpotFilter;
+            _spectraLoader = spectraLoader;
             FileClassProperties = classProperties;
         }
 

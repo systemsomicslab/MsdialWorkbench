@@ -11,7 +11,7 @@ namespace CompMs.App.Msdial.Model.Table
         private readonly IReactiveProperty<ChromatogramPeakFeatureModel> _target;
 
         protected AnalysisPeakSpotTableModelBase(IReadOnlyList<ChromatogramPeakFeatureModel> peakSpots, IReactiveProperty<ChromatogramPeakFeatureModel> target, PeakSpotNavigatorModel peakSpotNavigatorModel)
-            : base(peakSpots, target, peakSpotNavigatorModel) {
+            : base(peakSpots, target) {
             _target = target;
         }
 

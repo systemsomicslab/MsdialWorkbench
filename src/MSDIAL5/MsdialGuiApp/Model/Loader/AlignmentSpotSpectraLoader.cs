@@ -1,6 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
-using CompMs.Common.Algorithm.Scoring;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using Reactive.Bindings;
@@ -17,9 +17,10 @@ namespace CompMs.App.Msdial.Model.Loader
     {
         private readonly AlignmentPeaksSpectraLoader _loaders;
         private readonly IMsSpectrumLoader<MsScanMatchResult> _referenceLoader;
+        private readonly CompoundSearcherCollection _compoundSearchers;
+        private readonly AnalysisFileBeanModelCollection _analysisFiles;
 
-        public AlignmentSpotSpectraLoader(AnalysisFileBeanModelCollection files, IMsSpectrumLoader<MsScanMatchResult> referenceLoader)
-        {
+        public AlignmentSpotSpectraLoader(AnalysisFileBeanModelCollection files, IMsSpectrumLoader<MsScanMatchResult> referenceLoader, CompoundSearcherCollection compoundSearchers, AnalysisFileBeanModelCollection analysisFiles) {
             if (files is null) {
                 throw new ArgumentNullException(nameof(files));
             }
