@@ -1,7 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Utility;
-using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
@@ -22,12 +21,13 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class AlignmentMs2SpectrumModel : DisposableModelBase
     {
-        private readonly ReadOnlyReactivePropertySlim<Ms2ScanMatching> _ms2ScanMatching;
         private readonly TargetSpectraManager _spectraManager;
         private readonly SingleSpectrumModel _upperSpectrumModel;
         private readonly SingleSpectrumModel _upperDifferenceModel;
         private readonly SingleSpectrumModel _upperProductModel;
-        private readonly AnalysisFileBeanModelCollection _files;
+        private readonly ReadOnlyReactivePropertySlim<MsScanMatchResult> _matchResult;
+        private readonly IReadOnlyReactiveProperty<AlignmentSpotPropertyModel> _target;
+        private readonly AlignmentSpotSpectraLoader _loader;
 
         public AlignmentMs2SpectrumModel(
             IReadOnlyReactiveProperty<AlignmentSpotPropertyModel> target,
@@ -41,10 +41,10 @@ namespace CompMs.App.Msdial.Model.Chart
             IObservable<ISpectraExporter> upperSpectraExporter,
             IObservable<ISpectraExporter> lowerSpectraExporter,
             ReadOnlyReactivePropertySlim<bool> spectrumLoaded,
-            IObservable<Ms2ScanMatching> ms2ScanMatching,
             AlignmentSpotSpectraLoader loader) {
-            _files = files;
-            _ms2ScanMatching = ms2ScanMatching?.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            _target = target;
+            _matchResult = matchResult.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            _loader = loader;
             var spectraManager = new TargetSpectraManager(target, files, matchResult, loader).AddTo(Disposables);
             _spectraManager = spectraManager;
 
@@ -55,7 +55,6 @@ namespace CompMs.App.Msdial.Model.Chart
             horizontalAxisSelectors.Register(horizontalPropertySelector);
 
             var canSaveMatchedSpectrum = new[]{
-                ms2ScanMatching?.Select(s => s is null) ?? Observable.Return(true),
                 spectraManager.CurrentSpectrum.Select(s => s is null),
                 spectraManager.ReferenceSpectrum.Select(s => s is null),
             }.CombineLatestValuesAreAllFalse().Publish();
@@ -131,15 +130,8 @@ namespace CompMs.App.Msdial.Model.Chart
         public IObservable<bool> CanSaveMatchedSpectra { get; }
 
         public void SaveMatchedSpectra(Stream stream) {
-            if (_ms2ScanMatching?.Value is Ms2ScanMatching scorer) {
-                var (reference, matrix) = _spectraManager.GetMatchedSpectrumMatrix(scorer, _files.AnalysisFiles);
-                using (var sw = new StreamWriter(stream, new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: false), bufferSize: 1024, leaveOpen: true)) {
-                    sw.WriteLine($"m/z\tReference intensity\tSpectrum\tComment\t{string.Join("\t", _files.AnalysisFiles.Select(f => f.AnalysisFileName))}");
-                    for (int i = 0; i < matrix.GetLength(0); i++) {
-                        sw.WriteLine($"{reference[i].Mass}\t{reference[i].Intensity}\t{reference[i].SpectrumComment}\t{reference[i].Comment}\t{string.Join("\t", Enumerable.Range(0, matrix.GetLength(1)).Select(j => matrix[i, j]))}");
-                    }
-                }
-            }
+            var spectra =_loader.GetMatchedSpectraMatrixsAsync(_target.Value, _matchResult.Value).Result;
+            spectra.Export(stream);
         }
 
         public IObservable<bool> CanSaveUpperSpectrum => _upperSpectrumModel.CanSave;
@@ -169,20 +161,20 @@ namespace CompMs.App.Msdial.Model.Chart
         private sealed class TargetSpectraManager : IDisposable {
             private readonly double _ms2Tolerance = .05d;
 
-            private readonly IReadOnlyReactiveProperty<AlignmentSpotPropertyModel> _target;
             private readonly AnalysisFileBeanModelCollection _files;
-            private readonly SpectraLoader _spectraLoader;
             private CompositeDisposable _disposables = new CompositeDisposable();
 
             public TargetSpectraManager(IReadOnlyReactiveProperty<AlignmentSpotPropertyModel> target, AnalysisFileBeanModelCollection files, IObservable<MsScanMatchResult> matchResult, AlignmentSpotSpectraLoader loader) {
-                _target = target ?? throw new ArgumentNullException(nameof(target));
                 _files = files ?? throw new ArgumentNullException(nameof(files));
 
                 SelectedFile = target.Select(t => t != null && files.GetById(t.RepresentativeFileID) is AnalysisFileBeanModel repFile ? repFile : files.AnalysisFiles[0]).ToReactiveProperty().AddTo(_disposables);
-                ReferenceSpectrum = matchResult.DefaultIfNull(loader.LoadReferenceSpectrumAsObservable, Observable.Return(new MsSpectrum(new List<SpectrumPeak>(0)))).Switch().ToReadOnlyReactivePropertySlim(new MsSpectrum(new List<SpectrumPeak>(0))).AddTo(_disposables);
-                var spectraLoader = new SpectraLoader(target, files, loader).AddTo(_disposables);
-                _spectraLoader = spectraLoader;
-                CurrentSpectrum = SelectedFile.Select(spectraLoader.GetObservableSpectrum).Switch().Select(spec => new MsSpectrum(spec)).ToReadOnlyReactivePropertySlim(new MsSpectrum(new List<SpectrumPeak>(0))).AddTo(_disposables);
+                MsSpectrum emptySpectrum = new MsSpectrum(new List<SpectrumPeak>(0));
+                ReferenceSpectrum = matchResult.DefaultIfNull(loader.LoadReferenceSpectrumAsObservable, Observable.Return(emptySpectrum)).Switch().ToReadOnlyReactivePropertySlim(emptySpectrum).AddTo(_disposables);
+                var dictionary = loader.LoadSpectraAsObservable(files, target);
+                foreach (var rp in dictionary.Values) {
+                    _disposables.Add(rp);
+                }
+                CurrentSpectrum = SelectedFile.Select(file => dictionary[file]).Switch().ToReadOnlyReactivePropertySlim(emptySpectrum).AddTo(_disposables);
 
                 DifferenceSpectrum = ReferenceSpectrum.CombineLatest(CurrentSpectrum, (r, c) => c.Difference(r, _ms2Tolerance)).ToReadOnlyReactivePropertySlim().AddTo(_disposables);
                 ProductSpectrum = ReferenceSpectrum.CombineLatest(CurrentSpectrum, (r, c) => c.Product(r, _ms2Tolerance)).ToReadOnlyReactivePropertySlim().AddTo(_disposables);
@@ -205,42 +197,10 @@ namespace CompMs.App.Msdial.Model.Chart
                 return horizontalAxis;
             }
 
-            public (List<SpectrumPeak> reference, double[,] inteisities) GetMatchedSpectrumMatrix(Ms2ScanMatching scorer, IEnumerable<AnalysisFileBeanModel> files) {
-                return scorer.GetMatchedSpectraMatrix(ReferenceSpectrum.Value.Spectrum, _spectraLoader.GetCurrentSpectra(files));
-            }
-
             public void Dispose() {
                 _disposables?.Dispose();
                 _disposables?.Clear();
                 _disposables = null;
-            }
-        }
-
-        private sealed class SpectraLoader : IDisposable {
-            private readonly Dictionary<AnalysisFileBeanModel, ReadOnlyReactivePropertySlim<List<SpectrumPeak>>> _spectra;
-            private CompositeDisposable _disposables = new CompositeDisposable();
-
-            public SpectraLoader(IObservable<AlignmentSpotPropertyModel> target, AnalysisFileBeanModelCollection files, AlignmentSpotSpectraLoader loader) {
-                var dictionary = loader.LoadSpectraAsObservable(files, target);
-                _spectra = dictionary;
-                foreach (var rp in dictionary.Values) {
-                    _disposables.Add(rp);
-                }
-            }
-
-            public IObservable<List<SpectrumPeak>> GetObservableSpectrum(AnalysisFileBeanModel file) {
-                return _spectra[file];
-            }
-
-            public List<List<SpectrumPeak>> GetCurrentSpectra(IEnumerable<AnalysisFileBeanModel> files) {
-                return files.Select(f => _spectra[f].Value).ToList();
-            }
-
-            void IDisposable.Dispose() {
-                _disposables?.Dispose();
-                _disposables?.Clear();
-                _disposables = null;
-                _spectra.Clear();
             }
         }
     }

@@ -148,7 +148,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Observable.Return(spectraExporter),
                 Observable.Return(referenceExporter),
                 null,
-                MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers),
                 spectraLoader).AddTo(Disposables);
 
             // Class intensity bar chart
