@@ -12,7 +12,7 @@ namespace CompMs.Common.Components {
             ChromXs = new ChromXs();
             Spectrum = new List<SpectrumPeak>();
             Formula = new Formula();
-            AdductType = new AdductIon();
+            AdductType = AdductIon.Default;
         }
 
         [SerializationConstructor]

@@ -1,18 +1,11 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data.SqlTypes;
-using System.Diagnostics;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CompMs.Common.Lipidomics
 {
@@ -495,6 +488,45 @@ namespace CompMs.Common.Lipidomics
             var totalString = totalCarbon + ":" + totalDB;
 
             var totalName = lipidClass + " " + totalString + chainSuffix;
+
+            var lipidName = totalName;
+
+            return new LipidMolecule()
+            {
+                LipidClass = lbmClass,
+                AnnotationLevel = 2,
+                SublevelLipidName = totalName,
+                LipidName = lipidName,
+                TotalCarbonCount = totalCarbon,
+                TotalDoubleBondCount = totalDB,
+                TotalChainString = totalString,
+                Score = score,
+                Sn1CarbonCount = sn1Carbon,
+                Sn1DoubleBondCount = sn1Double,
+                Sn1AcylChainString = totalString
+            };
+        }
+        public static LipidMolecule getEtherLysoGpChainMoleculeObjAsLevel2(
+            string lipidClass, LbmClass lbmClass,
+            int sn1Carbon, int sn1Double, double score, string EtherFrag)
+        {
+            var chainPrefix = "";
+            switch (EtherFrag)
+            {
+                case "e":
+                    chainPrefix = "O-";
+                    break;
+                case "p":
+                    chainPrefix = "P-";
+                    sn1Double = sn1Double - 1;
+                    break;
+            }
+
+            var totalCarbon = sn1Carbon;
+            var totalDB = sn1Double;
+            var totalString = totalCarbon + ":" + totalDB;
+
+            var totalName = lipidClass + " " + chainPrefix + totalString;
 
             var lipidName = totalName;
 
@@ -4534,17 +4566,14 @@ namespace CompMs.Common.Lipidomics
                     var diagnosticMz2 = 104.106990;
                     var diagnosticMz3 = 124.99982;
 
-                    var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
+                    var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     if (!isClassIon1Found) return null;
-                    //var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
-                    //var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold);
-                    //if (isClassIon2Found != true || isClassIon3Found != true) return null;
-                    //
+
+                    threshold = 1.0;
+                    var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
+                    var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold);
+                    if (isClassIon2Found != true && isClassIon3Found != true) return null;
                     var candidates = new List<LipidMolecule>();
-                    //var averageIntensity = 0.0;
-                    //var molecule = LipidMsmsCharacterizationUtility.getSingleacylchainwithsuffixMoleculeObjAsLevel2("LPC", LbmClass.EtherLPC, totalCarbon,
-                    //                totalDoubleBond, averageIntensity, "e");
-                    //candidates.Add(molecule);
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("LPC", LbmClass.EtherLPC, "e", theoreticalMz, adduct,
                        totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
@@ -4563,12 +4592,7 @@ namespace CompMs.Common.Lipidomics
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     if (isClassIon1Found != true || isClassIon2Found != true) return null;
 
-                    //
                     var candidates = new List<LipidMolecule>();
-                    //var averageIntensity = 0.0;
-                    //var molecule = LipidMsmsCharacterizationUtility.getSingleacylchainwithsuffixMoleculeObjAsLevel2("LPC", LbmClass.EtherLPC, totalCarbon,
-                    //                totalDoubleBond, averageIntensity, "e");
-                    //candidates.Add(molecule);
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("LPC", LbmClass.EtherLPC, "e", theoreticalMz, adduct,
                        totalCarbon, totalDoubleBond, 0, candidates, 1);
 
@@ -4619,14 +4643,17 @@ namespace CompMs.Common.Lipidomics
                     //
                     if (isClassIon1Found || isClassIon2Found)
                     {
-                        EtherFrag = "p";
+                        if (totalDoubleBond > 0)
+                        {
+                            EtherFrag = "p";
+                        }
                     }
 
                     var candidates = new List<LipidMolecule>();
-                    //var averageIntensity = 0.0;
-                    //var molecule = LipidMsmsCharacterizationUtility.getSingleacylchainwithsuffixMoleculeObjAsLevel2("LPE", LbmClass.EtherLPE, totalCarbon,
-                    //                totalDoubleBond, averageIntensity, "e");
-                    //candidates.Add(molecule);
+                    var averageIntensity = 0.0;
+                    var molecule = LipidMsmsCharacterizationUtility.getEtherLysoGpChainMoleculeObjAsLevel2("LPE", LbmClass.EtherLPE, totalCarbon,
+                                    totalDoubleBond, averageIntensity, EtherFrag);
+                    candidates.Add(molecule);
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("LPE", LbmClass.EtherLPE, EtherFrag, theoreticalMz, adduct,
                        totalCarbon, totalDoubleBond, 0, candidates, 1);
 
@@ -11811,7 +11838,7 @@ AdductIon adduct)
                                                                                                                                                                                                 //Console.WriteLine("ASM {0} Unique mass {1}", "d" + sphCarbon + acylCarbon + ":" + sphDouble + acylDouble + "-O-" + extCarbon + ":" + extDouble, extAcylloss);
 
                                     var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = extAcylloss, Intensity = 0.01 },
+                                        new SpectrumPeak() { Mass = extAcylloss, Intensity = 1 },
                                     };
 
                                     var foundCount = 0;

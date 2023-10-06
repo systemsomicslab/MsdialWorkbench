@@ -112,6 +112,20 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             _peakSpotTableService.Show(PeakTableViewModel);
         }
 
+        public DelegateCommand SearchAnalysisSpectrumByMoleculerNetworkingCommand => _searchAnalysisSpectrumByMoleculerNetworkingCommand ?? (_searchAnalysisSpectrumByMoleculerNetworkingCommand = new DelegateCommand(SearchAnalysisSpectrumByMoleculerNetworkingMethod));
+        private DelegateCommand _searchAnalysisSpectrumByMoleculerNetworkingCommand;
+
+        private void SearchAnalysisSpectrumByMoleculerNetworkingMethod() {
+            _model.InvokeMoleculerNetworkingForTargetSpot();
+        }
+
+        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ?? (_goToMsfinderCommand = new DelegateCommand(GoToMsfinderMethod));
+        private DelegateCommand _goToMsfinderCommand;
+
+        private void GoToMsfinderMethod() {
+            _model.InvokeMsfinder();
+        }
+
         public DelegateCommand SaveMs2SpectrumCommand => _saveMs2SpectrumCommand ?? (_saveMs2SpectrumCommand = new DelegateCommand(SaveSpectra, CanSaveSpectra));
         private DelegateCommand _saveMs2SpectrumCommand;
 

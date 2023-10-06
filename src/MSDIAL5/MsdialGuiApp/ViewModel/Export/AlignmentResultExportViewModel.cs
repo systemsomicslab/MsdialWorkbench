@@ -24,9 +24,9 @@ namespace CompMs.App.Msdial.ViewModel.Export
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _broker = broker ?? MessageBroker.Default;
 
-            AlignmentFiles = CollectionViewSource.GetDefaultView(model.AlignmentFiles);
-            if (model.AlignmentFile != null) {
-                AlignmentFiles.MoveCurrentTo(model.AlignmentFile);
+            AlignmentFiles = CollectionViewSource.GetDefaultView(model.AlignmentFilesForExport.Files);
+            if (model.AlignmentFilesForExport.SelectedFile != null) {
+                AlignmentFiles.MoveCurrentTo(model.AlignmentFilesForExport.SelectedFile);
             }
 
             Groups = model.Groups.ToReadOnlyReactiveCollection(MapToViewModel).AddTo(Disposables);
@@ -41,7 +41,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
             .WithSubscribe(ExportAlignmentResultAsync)
             .AddTo(Disposables);
 
-            AlignmentFile = model.AlignmentFile;
+            AlignmentFile = model.AlignmentFilesForExport.SelectedFile;
             ExportDirectory = model.ExportDirectory;
         }
 
@@ -65,7 +65,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
             set {
                 if (SetProperty(ref _alignmentFile, value)) {
                     if (!ContainsError(nameof(AlignmentFile))) {
-                        _model.AlignmentFile = _alignmentFile;
+                        _model.AlignmentFilesForExport.SelectedFile = _alignmentFile;
                     }
                 }
             }
@@ -114,6 +114,8 @@ namespace CompMs.App.Msdial.ViewModel.Export
                     return new AlignmentSpectraExportGroupViewModel(m);
                 case AlignmentMatchedSpectraExportModel m:
                     return new AlignmentMatchedSpectraExportViewModel(m);
+                case AlignmentResultMassBankRecordExportModel m:
+                    return new AlignmentResultMassBankRecordExportViewModel(m);
                 default:
                     throw new NotSupportedException(model.GetType().FullName);
             }

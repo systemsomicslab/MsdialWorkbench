@@ -46,7 +46,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         private readonly AlignmentFileBeanModel _alignmentFileBean;
         private readonly DataBaseMapper _dataBaseMapper;
-        private readonly MsdialLcImMsParameter _parameter;
+        private readonly  MsdialLcImMsParameter _parameter;
         private readonly List<AnalysisFileBean> _files;
         private readonly IMessageBroker _broker;
         private readonly UndoManager _undoManager;
@@ -60,10 +60,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
             ProjectBaseParameterModel projectBaseParameter,
             MsdialLcImMsParameter parameter,
             List<AnalysisFileBean> files,
+            PeakSpotFiltering<AlignmentSpotPropertyModel> peakSpotFiltering,
             PeakFilterModel peakFilterModel,
             PeakFilterModel accumulatedPeakFilterModel,
             IMessageBroker broker)
-            : base(alignmentFileBean) {
+            : base(alignmentFileBean, broker) {
             if (evaluator is null) {
                 throw new ArgumentNullException(nameof(evaluator));
             }
@@ -110,6 +111,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 .ToReactiveProperty()
                 .AddTo(Disposables);
             Target = target;
+            CurrentRepresentativeFile = Target.Select(t => t is null ? null : fileCollection.GetById(t.RepresentativeFileID)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             var accumulatedPropModels = new ObservableCollection<AlignmentSpotPropertyModel>(orderedProps);
             var propModels = new ReactiveCollection<AlignmentSpotPropertyModel>(UIDispatcherScheduler.Default).AddTo(Disposables);
@@ -128,11 +130,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }).AddTo(Disposables);
             Ms1Spots = propModels;
 
-            var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Protein;
-            if (parameter.TargetOmics == TargetOmics.Proteomics) {
-                filterEnabled |= FilterEnableStatus.Protein;
-            }
-            var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(driftProps, filterEnabled).AddTo(Disposables);
+            var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(driftProps, peakSpotFiltering).AddTo(Disposables);
             var filterableEvaluator = evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e));
             filterRegistrationManager.AttachFilter(driftProps, peakFilterModel, filterableEvaluator, status: FilterEnableStatus.All);
             filterRegistrationManager.AttachFilter(propModels, peakFilterModel, evaluator: filterableEvaluator, status: FilterEnableStatus.All);
@@ -262,20 +260,19 @@ namespace CompMs.App.Msdial.Model.Lcimms
             IMsSpectrumLoader<AlignmentSpotPropertyModel> decLoader = new AlignmentMSDecSpectrumLoader(_alignmentFileBean);
             var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             var spectraExporter = new NistSpectraExporter<AlignmentSpotProperty>(Target.Select(t => t?.innerModel), mapper, parameter).AddTo(Disposables);
-            Ms2SpectrumModel = new MsSpectrumModel(
-                Target.SelectSwitch(decLoader.LoadSpectrumAsObservable),
-                refSpectrum,
+            Ms2SpectrumModel = new AlignmentMs2SpectrumModel(
+                Target, refSpectrum, fileCollection,
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Mass), spot => spot.Mass),
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Intensity), spot => spot.Intensity),
+                Observable.Return(upperSpecBrush),
+                Observable.Return(lowerSpecBrush),
+                nameof(SpectrumPeak.SpectrumComment),
                 new GraphLabels(
                     "Representation vs. Reference",
                     "m/z",
                     "Relative abundance",
                     nameof(SpectrumPeak.Mass),
                     nameof(SpectrumPeak.Intensity)),
-                nameof(SpectrumPeak.SpectrumComment),
-                Observable.Return(upperSpecBrush),
-                Observable.Return(lowerSpecBrush),
                 Observable.Return(spectraExporter),
                 Observable.Return(referenceExporter),
                 null,
@@ -283,7 +280,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             var classBrush = new KeyBrushMapper<BarItem, string>(classToColor, item => item.Class, Colors.Blue);
             var fileIdToClassNameAsObservable = projectBaseParameter.ObserveProperty(p => p.FileIdToClassName).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            var peakSpotAxisLabelAsObservable = target.OfType<AlignmentSpotPropertyModel>().SelectSwitch(t => t.ObserveProperty(t_ => t_.IonAbundanceUnit).Select(t_ => t_.ToLabel())).Publish();
+            var peakSpotAxisLabelAsObservable = target.OfType<AlignmentSpotPropertyModel>().SelectSwitch(t => t.ObserveProperty(t_ => t_.IonAbundanceUnit).Select(t_ => t_.ToLabel())).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             var normalizedAreaZeroLoader = new BarItemsLoaderData("Normalized peak area above zero", peakSpotAxisLabelAsObservable, new NormalizedAreaAboveZeroBarItemsLoader(fileIdToClassNameAsObservable, fileCollection), NormalizationSetModel.IsNormalized);
             var normalizedAreaBaselineLoader = new BarItemsLoaderData("Normalized peak area above base line", peakSpotAxisLabelAsObservable, new NormalizedAreaAboveBaseLineBarItemsLoader(fileIdToClassNameAsObservable, fileCollection), NormalizationSetModel.IsNormalized);
             var normalizedHeightLoader = new BarItemsLoaderData("Normalized peak height", peakSpotAxisLabelAsObservable, new NormalizedHeightBarItemsLoader(fileIdToClassNameAsObservable, fileCollection), NormalizationSetModel.IsNormalized);
@@ -296,12 +293,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 normalizedHeightLoader, normalizedAreaBaselineLoader, normalizedAreaZeroLoader,
             };
             var barItemsLoaderDataProperty = NormalizationSetModel.Normalized.ToConstant(normalizedHeightLoader).ToReactiveProperty(NormalizationSetModel.IsNormalized.Value ? normalizedHeightLoader : heightLoader).AddTo(Disposables);
-            Disposables.Add(peakSpotAxisLabelAsObservable.Connect());
-            RtBarChartModel = new BarChartModel(accumulatedTarget, barItemsLoaderDataProperty, barItemLoaderDatas, Observable.Return(classBrush), projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
-            DtBarChartModel = new BarChartModel(target, barItemsLoaderDataProperty, barItemLoaderDatas, Observable.Return(classBrush), projectBaseParameter, projectBaseParameter.ClassProperties).AddTo(Disposables);
+            RtBarChartModel = new BarChartModel(accumulatedTarget, barItemsLoaderDataProperty, barItemLoaderDatas, Observable.Return(classBrush), projectBaseParameter, fileCollection, projectBaseParameter.ClassProperties).AddTo(Disposables);
+            DtBarChartModel = new BarChartModel(target, barItemsLoaderDataProperty, barItemLoaderDatas, Observable.Return(classBrush), projectBaseParameter, fileCollection, projectBaseParameter.ClassProperties).AddTo(Disposables);
 
             var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
-            AlignmentSpotTableModel = new LcimmsAlignmentSpotTableModel(driftProps, target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderProperty, PeakSpotNavigatorModel).AddTo(Disposables);
+            AlignmentSpotTableModel = new LcimmsAlignmentSpotTableModel(driftProps, target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderProperty, PeakSpotNavigatorModel, parameter.ReferenceFileParam.SearchedAdductIons).AddTo(Disposables);
 
             MsdecResult = target.SkipNull()
                 .Select(t => _alignmentFileBean.LoadMSDecResultByIndexAsync(t.MasterAlignmentID))
@@ -353,6 +349,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public UndoManager UndoManager => _undoManager;
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
         public ReactiveProperty<AlignmentSpotPropertyModel> Target { get; }
+        public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel> CurrentRepresentativeFile { get; }
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
@@ -361,7 +358,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public AlignmentPeakPlotModel RtMzPlotModel { get; }
         public AlignmentPeakPlotModel DtMzPlotModel { get; }
 
-        public MsSpectrumModel Ms2SpectrumModel { get; }
+        public AlignmentMs2SpectrumModel Ms2SpectrumModel { get; }
 
         public BarChartModel RtBarChartModel { get; }
         public BarChartModel DtBarChartModel { get; }
@@ -413,7 +410,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 _dataBaseMapper,
                 _parameter);
         }
-
+        public override void InvokeMoleculerNetworkingForTargetSpot() {
+            throw new NotImplementedException();
+        }
         public void SaveProject() {
             _alignmentFileBean.SaveAlignmentResultAsync(Container).Wait();
         }

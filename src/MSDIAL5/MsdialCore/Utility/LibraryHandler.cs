@@ -1,25 +1,36 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using CompMs.Common.Parameter;
 using CompMs.Common.Parser;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.Common.Proteomics.Function;
 using CompMs.Common.Query;
-using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.Parameter;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Utility {
-    public sealed class LibraryHandler {
-        private LibraryHandler() { }
+    public static class LibraryHandler {
+        public static List<MoleculeMsReference> ReadMsLibrary(string filepath, ParameterBase param, out string error) {
+            var extension = Path.GetExtension(filepath).ToLower();
+            error = string.Empty;
+            switch (extension) {
+                case ".msp":
+                    return MspFileParser.MspFileReader(filepath);
+                case ".lbm":
+                case ".lbm2":
+                    return ReadLipidMsLibrary(filepath, param);
+                case ".text":
+                    return TextLibraryParser.TextLibraryReader(filepath, out error);
+                //case ".fasta":
+                default:
+                    error = "The file extension is not supported.";
+                    return null;
+            }
+        }
 
         public static List<MoleculeMsReference> ReadLipidMsLibrary(string filepath, ParameterBase param) {
             return ReadLipidMsLibrary(filepath, param.LipidQueryContainer, param.IonMode);
@@ -68,7 +79,7 @@ namespace CompMs.MsdialCore.Utility {
                 List<string> cleavageSites, ModificationContainer modContainer, ProteomicsParameter parameter) {
             var maxMissedCleavage = parameter.MaxMissedCleavage;
             var maxNumberOfModificationsPerPeptide = parameter.MaxNumberOfModificationsPerPeptide;
-            var adduct = AdductIonParser.GetAdductIonBean("[M+H]+");
+            var adduct = AdductIon.GetAdductIon("[M+H]+");
             var minimumPeptideLength = parameter.MinimumPeptideLength;
             if (minimumPeptideLength <= 1) minimumPeptideLength = 2;
             var maxPeptideMass = parameter.MaxPeptideMass;
@@ -116,7 +127,7 @@ namespace CompMs.MsdialCore.Utility {
                List<string> cleavageSites, ModificationContainer modContainer, ProteomicsParameter parameter) {
             var maxMissedCleavage = parameter.MaxMissedCleavage;
             var maxNumberOfModificationsPerPeptide = parameter.MaxNumberOfModificationsPerPeptide;
-            var adduct = AdductIonParser.GetAdductIonBean("[M+H]+");
+            var adduct = AdductIon.GetAdductIon("[M+H]+");
             var minimumPeptideLength = parameter.MinimumPeptideLength;
             var maxPeptideMass = parameter.MaxPeptideMass;
             var char2AA = PeptideCalc.GetSimpleChar2AminoAcidDictionary();

@@ -1,10 +1,9 @@
-﻿using System;
+﻿using MessagePack;
+using Rfx.Riken.OsakaUniv;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
-using System.Threading.Tasks;
-using MessagePack;
-using Rfx.Riken.OsakaUniv;
 
 namespace CompMs.Common.MessagePack {
     public static class MessagePackDefaultHandler {
@@ -66,6 +65,10 @@ namespace CompMs.Common.MessagePack {
 
         public static IEnumerable<List<T>> LoadIncrementalLargerListFromStream<T>(Stream s) {
             return LargeListMessagePack.DeserializeIncremental<T>(s);
+        }
+
+        public static T LoadLargerListAtFromStream<T>(Stream s, int index) {
+            return LargeListMessagePack.DeserializeAt<T>(s, index);
         }
     }
 

@@ -143,5 +143,30 @@ namespace CompMs.MsdialCore.DataObj
                 new List<DataBaseItem<ShotgunProteomicsDB>>(),
                 new List<DataBaseItem<EadLipidDatabase>>());
         }
+
+        public string ParameterAsSimpleText() {
+            var sb = new System.Text.StringBuilder();
+            foreach (var dbPair in MetabolomicsDataBases) {
+                SetDataBaseParameterAsSimpleText(sb, dbPair);
+            }
+            foreach (var dbPair in ProteomicsDataBases) {
+                SetDataBaseParameterAsSimpleText(sb, dbPair);
+            }  
+            foreach (var dbPair in EadLipidomicsDatabases) {
+                SetDataBaseParameterAsSimpleText(sb, dbPair);
+            }  
+            return sb.ToString();
+        }
+
+        private void SetDataBaseParameterAsSimpleText<T>(System.Text.StringBuilder sb, DataBaseItem<T> dbPair) where T: IReferenceDataBase {
+            sb.AppendLine($"DataBaseID: {dbPair.DataBaseID}");
+            foreach (var annotatorPair in dbPair.Pairs) {
+                sb.AppendLine($"AnnotationMethod: {annotatorPair.AnnotatorID}");
+                var factory = annotatorPair.AnnotationQueryFactory;
+                var parameter = factory.PrepareParameter();
+                sb.Append(parameter.ParameterAsString());
+            }
+            sb.AppendLine();
+        }
     }
 }

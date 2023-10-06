@@ -70,5 +70,10 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             result.Select();
             return result;
         }
+        public Task SaveAsync()
+        {
+            return _analysisModel.SaveAsync(default);
+        }
+
     }
 }

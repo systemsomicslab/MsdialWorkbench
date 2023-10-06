@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompMs.App.MsdialConsole.Process.MoleculerNetworking;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -17,21 +18,21 @@ namespace CompMs.App.MsdialConsole.Process {
             var isProjectStore = false;
             var isAif = false;
             var targetMz = -1.0f;
+            var ionmode = "Positive";
 
             for (int i = 1; i < args.Length; i++) {
                 if (args[i] == "-i" && i + 1 < args.Length) inputFolder = args[i + 1];
                 else if (args[i] == "-m" && i + 1 < args.Length) methodFile = args[i + 1];
                 else if (args[i] == "-o" && i + 1 < args.Length) outputFolder = args[i + 1];
                 else if (args[i] == "-p") isProjectStore = true;
-                else if (args[i] == "-mCE") isAif = true;
                 else if (args[i] == "-target" && i + 1 < args.Length) {
                     if (!float.TryParse(args[i + 1], out targetMz)) {
                         return argsError2();
                     }
                 }
+                else if (args[i] == "-ionmode" && i + 1 < args.Length) ionmode = args[i + 1];
             }
             if (inputFolder == string.Empty || methodFile == string.Empty || outputFolder == string.Empty) return argsError();
-
             var analysisType = args[0];
             try {
                 switch (analysisType) {
@@ -45,6 +46,8 @@ namespace CompMs.App.MsdialConsole.Process {
                         return new DimsProcess().Run(inputFolder, outputFolder, methodFile, isProjectStore, targetMz);
                     case "imms":
                         return new ImmsProcess().Run(inputFolder, outputFolder, methodFile, isProjectStore, targetMz);
+                    case "msn":
+                        return new MoleculerNetworkProcess().Run(inputFolder, outputFolder, methodFile, ionmode);
                     default:
                         Console.WriteLine("Invalid analysis type. Valid options are: 'gcms', 'lcmsdda', 'lcmsdia', 'dims', 'imms'");
                         return -1;
@@ -53,7 +56,7 @@ namespace CompMs.App.MsdialConsole.Process {
             catch (Exception ex) {
                 var msg = String.Format("{0} -- {1} -- {2}", ex.InnerException, ex.Message, ex.StackTrace);
                 Console.WriteLine(msg);
-                return ex.GetHashCode(); ;
+                return ex.GetHashCode(); 
             }
         }
 
@@ -68,8 +71,7 @@ namespace CompMs.App.MsdialConsole.Process {
 							   <input folder>	is the folder containing the files to be processed	(required)
 							   <output folder>	is the folder to save results	(required)
 							   <method file>	is a file holding processing properties	(required)
-                               <option -p>           is an option to generate MTB file to be loaded in MSDIAL GUI application.
-                               <option -mCE>    is an option to select multi collision energies mode";
+                               <option -p>           is an option to generate MTB file to be loaded in MSDIAL GUI application.";
 
             Console.Error.WriteLine(error);
 
@@ -83,7 +85,6 @@ namespace CompMs.App.MsdialConsole.Process {
 							   <output folder>	is the folder to save results	(required)
 							   <method file>	is a file holding processing properties	(required)
                                <option -p>           is an option to generate MTB file to be loaded in MSDIAL GUI application.
-                               <option -mCE>    is an option to select multi collision energies mode
                                <option -target> is an option to run as target mode. please set m/z";
 
             Console.Error.WriteLine(error);

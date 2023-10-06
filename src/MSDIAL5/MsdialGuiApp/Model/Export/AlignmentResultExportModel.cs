@@ -1,33 +1,28 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.ViewModel.Service;
+﻿using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
-using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using Reactive.Bindings;
-using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Export
 {
-    internal sealed class AlignmentResultExportModel : DisposableModelBase
+    internal sealed class AlignmentResultExportModel : BindableBase
     {
         private readonly DataExportBaseParameter _dataExportParameter;
 
-        public AlignmentResultExportModel(IEnumerable<IAlignmentResultExportModel> exportGroups, IObservable<AlignmentFileBeanModel> alignmentFileAsObservable, IReadOnlyList<AlignmentFileBeanModel> alignmentFiles, AlignmentPeakSpotSupplyer peakSpotSupplyer, DataExportBaseParameter dataExportParameter) {
-            AlignmentFiles = alignmentFiles;
-            CurrentAlignmentFile = alignmentFileAsObservable.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+        public AlignmentResultExportModel(IEnumerable<IAlignmentResultExportModel> exportGroups, AlignmentFilesForExport alignmentFilesForExport, AlignmentPeakSpotSupplyer peakSpotSupplyer, DataExportBaseParameter dataExportParameter) {
+            AlignmentFilesForExport = alignmentFilesForExport;
             PeakSpotSupplyer = peakSpotSupplyer ?? throw new ArgumentNullException(nameof(peakSpotSupplyer));
             _dataExportParameter = dataExportParameter;
             var groups = new ObservableCollection<IAlignmentResultExportModel>(exportGroups);
             Groups = new ReadOnlyObservableCollection<IAlignmentResultExportModel>(groups);
             ExportDirectory = dataExportParameter.ExportFolderPath;
-            Disposables.Add(CurrentAlignmentFile.Subscribe(f => AlignmentFile = f));
         }
 
         public string ExportDirectory {
@@ -36,30 +31,23 @@ namespace CompMs.App.Msdial.Model.Export
         }
         private string _exportDirectory;
 
-        public ReadOnlyReactivePropertySlim<AlignmentFileBeanModel> CurrentAlignmentFile { get; }
+        public AlignmentFilesForExport AlignmentFilesForExport { get; }
 
-        public AlignmentFileBeanModel AlignmentFile {
-            get => _alignmentFile;
-            set => SetProperty(ref _alignmentFile, value);
-        }
-        private AlignmentFileBeanModel _alignmentFile;
-
-        public IReadOnlyList<AlignmentFileBeanModel> AlignmentFiles { get; }
         public AlignmentPeakSpotSupplyer PeakSpotSupplyer { get; }
         public ReadOnlyObservableCollection<IAlignmentResultExportModel> Groups { get; }
 
         public Task ExportAlignmentResultAsync(IMessageBroker broker) {
             return Task.Run(() => {
-                var task = TaskNotification.Start($"Exporting {((IFileBean)AlignmentFile).FileName}");
+                var task = TaskNotification.Start($"Exporting {AlignmentFilesForExport.SelectedFile.FileName}");
                 broker.Publish(task);
 
-                var numExportFile = (double)Groups.Sum(group => group.CountExportFiles());
+                var numExportFile = (double)Groups.Sum(group => group.CountExportFiles(AlignmentFilesForExport.SelectedFile));
                 var count = 0;
                 void notify(string file) {
                     broker.Publish(task.Progress(Interlocked.Increment(ref count) / numExportFile, file));
                 }
                 foreach (var group in Groups) {
-                    group.Export(AlignmentFile, ExportDirectory, notify);
+                    group.Export(AlignmentFilesForExport.SelectedFile, ExportDirectory, notify);
                 }
                 _dataExportParameter.ExportFolderPath = ExportDirectory;
 

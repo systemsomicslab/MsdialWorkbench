@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using CompMs.Common.Components;
+using CompMs.Common.MessagePack;
 
 namespace CompMs.App.MsdialConsole.MspCuration {
 
@@ -106,6 +107,105 @@ namespace CompMs.App.MsdialConsole.MspCuration {
                 foreach (var query in mspRecords) {
                     sw.WriteLine(query.ChromXs.RT.Value + "\t" + query.PrecursorMz + "\t" + query.InChIKey);
                 }
+            }
+        }
+
+        public static void ExtractCCSValues(string input, string output) {
+            var queries = MoleculeMsRefMethods.LoadMspFromFile(input);
+            using (var sw = new StreamWriter(output)) {
+                sw.WriteLine("Name\tInChIKey\tShortInCHIKey\tAdduct\tCCS");
+                foreach (var query in queries) {
+                    var line = new List<string>() { query.Name, query.InChIKey, query.InChIKey.Split('-')[0], query.AdductType.ToString(), query.CollisionCrossSection.ToString() };
+                    sw.WriteLine(String.Join("\t", line));
+                }
+            }
+        }
+
+        public static void MatchInChIKeyAndAdductToExtractCCS(string inputExp, string inputRef, string output) {
+            var dict = new Dictionary<string, string>();    
+            using (var sr = new StreamReader(inputRef)) {
+                sr.ReadLine();
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine();
+                    var linearray = line.Split('\t');
+
+                    var adduct = linearray[3];
+                    var shortinchi = linearray[2];
+                    var inchi_adduct = shortinchi + "_" + adduct;
+                    var ccs = linearray[4];
+                    if (!dict.ContainsKey(inchi_adduct)) {
+                        dict.Add(inchi_adduct, ccs);
+                    }
+                }
+            }
+
+            var ccsvalues = new List<string>();
+            using (var sr = new StreamReader(inputExp)) {
+                sr.ReadLine();
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine();
+                    var linearray = line.Split('\t');
+
+                    var adduct = linearray[3];
+                    var shortinchi = linearray[4].Split('-')[0];
+                    var inchi_adduct = shortinchi + "_" + adduct;
+
+                    if (dict.ContainsKey(inchi_adduct)) {
+                        ccsvalues.Add(dict[inchi_adduct]);
+                    }
+                    else {
+                        ccsvalues.Add("null");
+                    }
+                }
+            }
+
+            using (var sw = new StreamWriter(output)) {
+                sw.WriteLine("ccs");
+                foreach (var ccs in ccsvalues) sw.WriteLine(ccs);
+            }
+        }
+
+        public static void MatchNameAndAdductToExtractCCS(string inputExp, string inputRef, string output) {
+            var dict = new Dictionary<string, string>();
+            using (var sr = new StreamReader(inputRef)) {
+                sr.ReadLine();
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine();
+                    var linearray = line.Split('\t');
+
+                    var adduct = linearray[3];
+                    var name = linearray[0];
+                    var name_adduct = name + "_" + adduct;
+                    var ccs = linearray[4];
+                    if (!dict.ContainsKey(name_adduct)) {
+                        dict.Add(name_adduct, ccs);
+                    }
+                }
+            }
+
+            var ccsvalues = new List<string>();
+            using (var sr = new StreamReader(inputExp)) {
+                sr.ReadLine();
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine();
+                    var linearray = line.Split('\t');
+
+                    var adduct = linearray[3];
+                    var name = linearray[0];
+                    var name_adduct = name + "_" + adduct;
+
+                    if (dict.ContainsKey(name_adduct)) {
+                        ccsvalues.Add(dict[name_adduct]);
+                    }
+                    else {
+                        ccsvalues.Add("null");
+                    }
+                }
+            }
+
+            using (var sw = new StreamWriter(output)) {
+                sw.WriteLine("ccs");
+                foreach (var ccs in ccsvalues) sw.WriteLine(ccs);
             }
         }
 

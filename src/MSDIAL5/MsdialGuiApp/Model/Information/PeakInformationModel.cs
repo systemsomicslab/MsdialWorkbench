@@ -32,7 +32,7 @@ namespace CompMs.App.Msdial.Model.Information
                     return new CompositeDisposable
                     {
                         m.ObserveProperty(m_ => m_.Name).Subscribe(m_ => Annotation = m_),
-                        m.ObserveProperty(m_ => m_.AdductIonName).Subscribe(m_ => AdductIonName = m_),
+                        m.ObserveProperty(m_ => m_.AdductType).Subscribe(m_ => AdductIonName = m_?.AdductIonName),
                         m.ObserveProperty(m_ => m_.Formula).Subscribe(m_ => Formula = m_?.FormulaString),
                         m.ObserveProperty(m_ => m_.Ontology).Subscribe(m_ => Ontology = m_),
                         m.ObserveProperty(m_ => m_.InChIKey).Subscribe(m_ => InChIKey = m_),
@@ -130,7 +130,7 @@ namespace CompMs.App.Msdial.Model.Information
                     return new CompositeDisposable
                     {
                         m.ObserveProperty(m_ => m_.Name).Subscribe(m_ => Annotation = m_),
-                        m.ObserveProperty(m_ => m_.AdductIonName).Subscribe(m_ => AdductIonName = m_),
+                        m.ObserveProperty(m_ => m_.AdductType).Subscribe(m_ => AdductIonName = m_.AdductIonName),
                         m.ObserveProperty(m_ => m_.Formula).Subscribe(m_ => Formula = m_?.FormulaString),
                         m.ObserveProperty(m_ => m_.Ontology).Subscribe(m_ => Ontology = m_),
                         m.ObserveProperty(m_ => m_.InChIKey).Subscribe(m_ => InChIKey = m_),

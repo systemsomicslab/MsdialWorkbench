@@ -1,13 +1,8 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Lcms;
+﻿using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.Model.Loader;
-using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
-using CompMs.Graphics.Base;
-using Reactive.Bindings;
-using Reactive.Bindings.Extensions;
 using System;
 using System.Windows.Input;
 
@@ -74,5 +69,31 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public double MassMax { get; }
         public double RtMin { get; }
         public double RtMax { get; }
+    }
+
+    internal static class LcmsTableViewModelHelper {
+        public static AnalysisPeakTableViewModelBase CreateViewModel(LcmsAnalysisPeakTableModel model, IObservable<EicLoader> eicLoader, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel) {
+            switch (model.Omics) {
+                case CompMs.Common.Enum.TargetOmics.Proteomics:
+                    return new LcmsProteomicsPeakTableViewModel(model, eicLoader, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel);
+                case CompMs.Common.Enum.TargetOmics.Metabolomics:
+                case CompMs.Common.Enum.TargetOmics.Lipidomics:
+                    return new LcmsAnalysisPeakTableViewModel(model, eicLoader, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel);
+                default:
+                    throw new NotSupportedException($"Unknown target({model.Omics})");
+            }
+        }
+
+        public static AlignmentSpotTableViewModelBase CreateViewModel(LcmsAlignmentSpotTableModel model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel) {
+            switch (model.Omics) {
+                case CompMs.Common.Enum.TargetOmics.Proteomics:
+                    return new LcmsProteomicsAlignmentTableViewModel(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel);
+                case CompMs.Common.Enum.TargetOmics.Metabolomics:
+                case CompMs.Common.Enum.TargetOmics.Lipidomics:
+                    return new LcmsAlignmentSpotTableViewModel(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel);
+                default:
+                    throw new NotSupportedException($"Unknown target({model.Omics})");
+            }
+        }
     }
 }

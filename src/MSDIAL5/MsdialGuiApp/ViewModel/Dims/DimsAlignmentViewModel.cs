@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
@@ -57,7 +58,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             PlotViewModel = new AlignmentPeakPlotViewModel(_model.PlotModel, focus: peakPlotViewFocusAction, isFocused: peakPlotViewFocused).AddTo(Disposables);
 
             var (msSpectrumViewFocusAction, msSpectrumViewFocused) = focusControlManager.Request();
-            Ms2SpectrumViewModel = new MsSpectrumViewModel(_model.Ms2SpectrumModel, focusAction: msSpectrumViewFocusAction, isFocused: msSpectrumViewFocused).AddTo(Disposables);
+            Ms2SpectrumViewModel = new AlignmentMs2SpectrumViewModel(_model.Ms2SpectrumModel, broker, focusAction: msSpectrumViewFocusAction, isFocused: msSpectrumViewFocused).AddTo(Disposables);
             AlignmentEicViewModel = new AlignmentEicViewModel(_model.AlignmentEicModel).AddTo(Disposables);
 
             var (barChartViewFocusAction, barChartViewFocused) = focusControlManager.Request();
@@ -85,11 +86,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => broker.Publish(TaskNotification.End(notification)));
         }
 
+        public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel> CurrentRepresentativeFile => _model.CurrentRepresentativeFile;
         public UndoManagerViewModel UndoManagerViewModel { get; }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public AlignmentPeakPlotViewModel PlotViewModel { get; }
-        public MsSpectrumViewModel Ms2SpectrumViewModel { get; }
+        public AlignmentMs2SpectrumViewModel Ms2SpectrumViewModel { get; }
         public AlignmentEicViewModel AlignmentEicViewModel { get; }
         public BarChartViewModel BarChartViewModel { get; }
         public DimsAlignmentSpotTableViewModel AlignmentSpotTableViewModel { get; }
@@ -147,6 +149,20 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             using (var vm = new NormalizationSetViewModel(model, _internalStandardSetViewModel)) {
                 _broker.Publish(vm);
             }
+        }
+
+        public DelegateCommand SearchAlignmentSpectrumByMoleculerNetworkingCommand => _searchAlignmentSpectrumByMoleculerNetworkingCommand ?? (_searchAlignmentSpectrumByMoleculerNetworkingCommand = new DelegateCommand(SearchAlignmentSpectrumByMoleculerNetworkingMethod));
+        private DelegateCommand _searchAlignmentSpectrumByMoleculerNetworkingCommand;
+
+        private void SearchAlignmentSpectrumByMoleculerNetworkingMethod() {
+            _model.InvokeMoleculerNetworkingForTargetSpot();
+        }
+
+        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ?? (_goToMsfinderCommand = new DelegateCommand(GoToMsfinderMethod));
+        private DelegateCommand _goToMsfinderCommand;
+
+        private void GoToMsfinderMethod() {
+            _model.InvokeMsfinder();
         }
 
         // IResultViewModel

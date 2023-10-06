@@ -3,18 +3,19 @@ using CompMs.App.Msdial.Model.Table;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Validator;
+using CompMs.Graphics.UI;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Table
 {
-    internal sealed class TargetCompoundLibrarySettingViewModel : ViewModelBase
+    internal sealed class TargetCompoundLibrarySettingViewModel : SettingDialogViewModel
     {
         private readonly IMessageBroker _broker;
 
@@ -44,5 +45,9 @@ namespace CompMs.App.Msdial.ViewModel.Table
             var request = new OpenFileRequest(file => TargetLibrary.Value = file);
             _broker.Publish(request);
         }
+
+        public override ICommand ApplyCommand => NeverCommand.Instance;
+        public override ICommand FinishCommand => IdentityCommand.Instance;
+        public override ICommand CancelCommand => NeverCommand.Instance;
     }
 }

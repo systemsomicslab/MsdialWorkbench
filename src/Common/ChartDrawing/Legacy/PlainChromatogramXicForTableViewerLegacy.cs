@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -14,10 +11,6 @@ namespace CompMs.Graphics.Legacy {
 
         //ViewModel
         private ChromatogramXicViewModelLegacy chromatogramXicViewModel;
-
-        //Visual property
-        private DrawingVisual drawingVisual;
-        private DrawingContext drawingContext;
 
         // Scale
         private double axisFromGraphArea = 1; // Location of Axis from Graph Area
@@ -47,11 +40,21 @@ namespace CompMs.Graphics.Legacy {
 
         public PlainChromatogramXicForTableViewerLegacy(int h, int w, int x, int y) {
             height = h; width = w; dpix = x; dpiy = y;
+            graphBorder.Freeze();
+            graphAxis.Freeze();
+        }
+
+        public Drawing GetChromatogramDrawing(ChromatogramXicViewModelLegacy chromatogramXicViewModel) {
+            this.chromatogramXicViewModel = chromatogramXicViewModel;
+            var drawingVisual = chromatogramDrawingVisual((double)width, (double)height);
+            var drawing = drawingVisual.Drawing;
+            drawing.Freeze();
+            return drawing;
         }
 
         public DrawingImage GetChromatogramDrawingImage(ChromatogramXicViewModelLegacy chromatogramXicViewModel) {
             this.chromatogramXicViewModel = chromatogramXicViewModel;
-            this.drawingVisual = chromatogramDrawingVisual((double)width, (double)height);
+            var drawingVisual = chromatogramDrawingVisual((double)width, (double)height);
             var image = new DrawingImage(drawingVisual.Drawing);
             image.Freeze();
             return image;
@@ -60,10 +63,10 @@ namespace CompMs.Graphics.Legacy {
         public BitmapSource DrawChromatogramXic2BitmapSource(ChromatogramXicViewModelLegacy chromatogramXicViewModel) {
             this.chromatogramXicViewModel = chromatogramXicViewModel;
 
-            this.drawingVisual = chromatogramDrawingVisual((double)width, (double)height);
+            var drawingVisual = chromatogramDrawingVisual((double)width, (double)height);
             var renderTargetBitmap = new RenderTargetBitmap(width * dpix / 96, height * dpiy / 96, dpix, dpiy, PixelFormats.Pbgra32);
-            renderTargetBitmap.Render(this.drawingVisual);
-
+            renderTargetBitmap.Render(drawingVisual);
+            renderTargetBitmap.Freeze();
             var encoder = new BmpBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
 
@@ -89,11 +92,11 @@ namespace CompMs.Graphics.Legacy {
         }
 
         private DrawingVisual chromatogramDrawingVisual(double drawWidth, double drawHeight) {
-            this.drawingVisual = new DrawingVisual();
+            var drawingVisual = new DrawingVisual();
 
             // Check Drawing Size
             if (drawWidth < this.leftMargin + this.rightMargin || drawHeight < this.bottomMargin + this.topMargin) return drawingVisual;
-            this.drawingContext = drawingVisual.RenderOpen();
+            var drawingContext = drawingVisual.RenderOpen();
 
             // Graph Brush and Pen
             SolidColorBrush graphBrush;
@@ -116,18 +119,17 @@ namespace CompMs.Graphics.Legacy {
 
             // 1. Draw background, graphRegion, x-axis, y-axis
             #region
-            this.drawingContext.DrawRectangle(Brushes.White, null, new Rect(0, 0, drawWidth, drawHeight));
-            this.drawingContext.DrawRectangle(this.graphBackGround, this.graphBorder, new Rect(new Point(this.leftMargin, this.topMargin), new Size(drawWidth - this.leftMargin - this.rightMargin, drawHeight - this.bottomMargin - this.topMargin)));
-            this.drawingContext.DrawLine(this.graphAxis, new Point(this.leftMargin - this.axisFromGraphArea, drawHeight - this.bottomMargin), new Point(drawWidth - this.rightMargin, drawHeight - this.bottomMargin));
-            this.drawingContext.DrawLine(this.graphAxis, new Point(this.leftMargin - this.axisFromGraphArea, drawHeight - this.bottomMargin), new Point(this.leftMargin - this.axisFromGraphArea, this.topMargin));
+            drawingContext.DrawRectangle(Brushes.White, null, new Rect(0, 0, drawWidth, drawHeight));
+            drawingContext.DrawRectangle(this.graphBackGround, this.graphBorder, new Rect(new Point(this.leftMargin, this.topMargin), new Size(drawWidth - this.leftMargin - this.rightMargin, drawHeight - this.bottomMargin - this.topMargin)));
+            drawingContext.DrawLine(this.graphAxis, new Point(this.leftMargin - this.axisFromGraphArea, drawHeight - this.bottomMargin), new Point(drawWidth - this.rightMargin, drawHeight - this.bottomMargin));
+            drawingContext.DrawLine(this.graphAxis, new Point(this.leftMargin - this.axisFromGraphArea, drawHeight - this.bottomMargin), new Point(this.leftMargin - this.axisFromGraphArea, this.topMargin));
             #endregion
 
             // 2. Check null of chromatogramMrmBean
             #region
             if (this.chromatogramXicViewModel == null) {
                 // Close DrawingContext
-                this.drawingContext.Close();
-
+                drawingContext.Close();
                 return drawingVisual;
             }
             #endregion
@@ -138,9 +140,9 @@ namespace CompMs.Graphics.Legacy {
             this.yPacket = (drawHeight - this.topMargin - this.bottomMargin - this.topMarginForLabel) / (double)(this.chromatogramXicViewModel.DisplayRangeIntensityMax - this.chromatogramXicViewModel.DisplayRangeIntensityMin);
             #endregion
 
-            this.drawingContext.PushTransform(new TranslateTransform(0, drawHeight));
-            this.drawingContext.PushTransform(new ScaleTransform(1, -1));
-            this.drawingContext.PushClip(new RectangleGeometry(new Rect(this.leftMargin, this.bottomMargin, drawWidth - this.leftMargin - this.rightMargin, drawHeight - this.bottomMargin - this.topMargin)));
+            drawingContext.PushTransform(new TranslateTransform(0, drawHeight));
+            drawingContext.PushTransform(new ScaleTransform(1, -1));
+            drawingContext.PushClip(new RectangleGeometry(new Rect(this.leftMargin, this.bottomMargin, drawWidth - this.leftMargin - this.rightMargin, drawHeight - this.bottomMargin - this.topMargin)));
 
             // 5. Reference chromatogram
             #region
@@ -163,6 +165,8 @@ namespace CompMs.Graphics.Legacy {
             #endregion
 
             // 5-2. Draw datapoints
+            var pathPoints = new List<Point>();
+            var areaPathPoints = new List<Point>();
             #region
             if (this.chromatogramXicViewModel.FillPeakArea && this.chromatogramXicViewModel.TargetRightRt - this.chromatogramXicViewModel.TargetLeftRt > 0.0001) {
                 for (int i = 0; i < chromatogramBean.ChromatogramDataPointCollection.Count; i++) {
@@ -176,18 +180,18 @@ namespace CompMs.Graphics.Legacy {
                     this.ys = this.bottomMargin + (intensity - (float)this.chromatogramXicViewModel.DisplayRangeIntensityMin) * this.yPacket;// Calculate y Plot Coordinate
 
                     if (this.xs < double.MinValue || this.xs > double.MaxValue || this.ys < double.MinValue || this.ys > double.MaxValue) continue;// Avoid Calculation Error
-                    pathFigure.Segments.Add(new LineSegment() { Point = new Point(this.xs, this.ys) });
+                    pathPoints.Add(new Point(this.xs, this.ys));
 
                     if (flagFill) {
-                        areaPathFigure.Segments.Add(new LineSegment() { Point = new Point(this.xs, this.ys) });
+                        areaPathPoints.Add(new Point(this.xs, this.ys));
                     }
                     if (flagLeft && retentionTime >= this.chromatogramXicViewModel.TargetLeftRt) {
                         areaPathFigure.StartPoint = new Point(this.xs, this.bottomMargin + (0 - (float)this.chromatogramXicViewModel.DisplayRangeIntensityMin) * this.yPacket); // PathFigure for GraphLine
-                        areaPathFigure.Segments.Add(new LineSegment() { Point = new Point(this.xs, this.ys) });
+                        areaPathPoints.Add(new Point(this.xs, this.ys));
                         flagFill = true; flagLeft = false;
                     }
                     else if (flagRight && retentionTime > this.chromatogramXicViewModel.TargetRightRt) {
-                        areaPathFigure.Segments.Add(new LineSegment() { Point = new Point(this.xs, this.bottomMargin + (0 - (float)this.chromatogramXicViewModel.DisplayRangeIntensityMin) * this.yPacket) }); // PathFigure for GraphLine
+                        areaPathPoints.Add(new Point(this.xs, this.bottomMargin + (0 - (float)this.chromatogramXicViewModel.DisplayRangeIntensityMin) * this.yPacket));
                         flagFill = false; flagRight = false;
                     }
 
@@ -196,12 +200,13 @@ namespace CompMs.Graphics.Legacy {
                     //        new Point(this.xs, this.bottomMargin + (0 - (float)this.chromatogramXicViewModel.DisplayRangeIntensityMin) * this.yPacket));
                     if (i == -1 + chromatogramBean.ChromatogramDataPointCollection.Count || retentionTime > this.chromatogramXicViewModel.DisplayRangeRtMax + 5) break;// Use Data till +5 second beyond
                 }
-                areaPathFigure.Segments.Add(new LineSegment() { Point = new Point(this.xs, 0) }); // PathFigure for GraphLine
+                areaPathPoints.Add(new Point(this.xs, 0));
+                areaPathFigure.Segments.Add(new PolyLineSegment(areaPathPoints, isStroked: false));
                 areaPathFigure.Freeze();
                 areaPathGeometry = new PathGeometry(new PathFigure[] { areaPathFigure });
                 areaPathGeometry.Freeze();
 
-                this.drawingContext.DrawGeometry(graphBrush, graphPenPeakEdge, areaPathGeometry);
+                drawingContext.DrawGeometry(graphBrush, graphPenPeakEdge, areaPathGeometry);
             }
             else {
                 for (int i = 0; i < chromatogramBean.ChromatogramDataPointCollection.Count; i++) {
@@ -215,9 +220,9 @@ namespace CompMs.Graphics.Legacy {
                     this.ys = this.bottomMargin + (intensity - (float)this.chromatogramXicViewModel.DisplayRangeIntensityMin) * this.yPacket;// Calculate y Plot Coordinate
 
                     if (this.xs < double.MinValue || this.xs > double.MaxValue || this.ys < double.MinValue || this.ys > double.MaxValue) continue;// Avoid Calculation Error
-                    pathFigure.Segments.Add(new LineSegment() { Point = new Point(this.xs, this.ys) });
+                    pathPoints.Add(new Point(this.xs, this.ys));
 
-                    if (Math.Abs(retentionTime - this.chromatogramXicViewModel.TargetRt) < 0.0001) this.drawingContext.DrawLine(new Pen(Brushes.Red, 1.0), new Point(this.xs, this.ys), new Point(this.xs, this.bottomMargin + (0 - (float)this.chromatogramXicViewModel.DisplayRangeIntensityMin) * this.yPacket));
+                    if (Math.Abs(retentionTime - this.chromatogramXicViewModel.TargetRt) < 0.0001) drawingContext.DrawLine(new Pen(Brushes.Red, 1.0), new Point(this.xs, this.ys), new Point(this.xs, this.bottomMargin + (0 - (float)this.chromatogramXicViewModel.DisplayRangeIntensityMin) * this.yPacket));
                     if (i == -1 + chromatogramBean.ChromatogramDataPointCollection.Count || retentionTime > this.chromatogramXicViewModel.DisplayRangeRtMax + 5) break;// Use Data till +5 second beyond
                 }
             }
@@ -225,21 +230,22 @@ namespace CompMs.Graphics.Legacy {
 
             // 5-3. Close Graph Path (When Loop Finish or Display range exceeded)
             #region
-            pathFigure.Segments.Add(new LineSegment() { Point = new Point(drawWidth, 0.0) });
+            pathPoints.Add(new Point(drawWidth, 0.0));
+            pathFigure.Segments.Add(new PolyLineSegment(pathPoints, isStroked: true));
             pathFigure.Freeze();
             pathGeometry = new PathGeometry(new PathFigure[] { pathFigure });
             pathGeometry.Freeze();
             #endregion
 
-            this.drawingContext.DrawGeometry(null, graphPen, pathGeometry); // Draw Chromatogram Graph Line
+            drawingContext.DrawGeometry(null, graphPen, pathGeometry); // Draw Chromatogram Graph Line
             #endregion
 
-            this.drawingContext.Pop();// Reset Drawing Region
-            this.drawingContext.Pop();// Reset Drawing Region
-            this.drawingContext.Pop();// Reset Drawing Region
-            this.drawingContext.Close();// Close DrawingContext
+            drawingContext.Pop();// Reset Drawing Region
+            drawingContext.Pop();// Reset Drawing Region
+            drawingContext.Pop();// Reset Drawing Region
+            drawingContext.Close();// Close DrawingContext
 
-            return this.drawingVisual;
+            return drawingVisual;
         }
 
         protected static SolidColorBrush combineAlphaAndColor(double opacity, SolidColorBrush baseBrush) {

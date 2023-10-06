@@ -211,7 +211,7 @@ namespace CompMs.App.Msdial.Model.Setting
             storage.DataBases = DataBaseStorage.CreateEmpty();
             storage.DataBaseMapper = new DataBaseMapper();
 
-            var dataset = new DatasetModel(storage, _broker);
+            var dataset = new DatasetModel(storage, fileSettingModel.FileModels, _broker);
             next?.Invoke(dataset);
         }
 

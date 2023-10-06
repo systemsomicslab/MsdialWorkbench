@@ -1,7 +1,5 @@
-﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj.Property;
+﻿using CompMs.Common.DataObj.Property;
 using CompMs.Common.Extension;
-using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.FormulaGenerator.Parser;
 using CompMs.Common.Mathematics.Basic;
 using CompMs.Common.Parser;
@@ -12,7 +10,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace StructureFinderConsoleApp {
     public sealed class Code4NPR2020 {
@@ -37,7 +34,7 @@ namespace StructureFinderConsoleApp {
                     var formulaObj = FormulaStringParcer.Convert2FormulaObjV2(formulaString);
                     var mass = formulaObj.Mass;
 
-                    var adductproton = AdductIonParser.GetAdductIonBean("[M+H]+");
+                    var adductproton = AdductIon.GetAdductIon("[M+H]+");
                     var mass_proton = adductproton.ConvertToMz(mass);
 
                     sw.WriteLine(formulaObj.FormulaString + "\t" + mass + "\t" + mass_proton);
@@ -65,10 +62,10 @@ namespace StructureFinderConsoleApp {
 
             using (var sw = new StreamWriter(output, false, Encoding.ASCII)) {
                 sw.WriteLine("[M+H]+\t[M+Na]+\t[M+K]+\t[M-H]-");
-                var adductproton = AdductIonParser.GetAdductIonBean("[M+H]+");
-                var adductNa = AdductIonParser.GetAdductIonBean("[M+Na]+");
-                var adductK = AdductIonParser.GetAdductIonBean("[M+K]+");
-                var adductProtonLoss = AdductIonParser.GetAdductIonBean("[M-H]-");
+                var adductproton = AdductIon.GetAdductIon("[M+H]+");
+                var adductNa = AdductIon.GetAdductIon("[M+Na]+");
+                var adductK = AdductIon.GetAdductIon("[M+K]+");
+                var adductProtonLoss = AdductIon.GetAdductIon("[M-H]-");
                 for (int i = 0; i < smilescodes.Count; i++) {
                     var structure = MoleculeConverter.SmilesToStructure(smilescodes[i], out string error);
                     var precursorMzProton = adductproton.ConvertToMz(structure.ExactMass);

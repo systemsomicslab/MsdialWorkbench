@@ -4,6 +4,7 @@ using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.Reactive.Linq;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Statistics
 {
@@ -21,6 +22,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             IsNormalizeSplash = model.ToReactivePropertySlimAsSynchronized(m => m.IsNormalizeSplash).AddTo(Disposables);
             IsNormalizeTic = model.ToReactivePropertySlimAsSynchronized(m => m.IsNormalizeTic).AddTo(Disposables);
             IsNormalizeMTic = model.ToReactivePropertySlimAsSynchronized(m => m.IsNormalizeMTic).AddTo(Disposables);
+            ApplyDilutionFactor = model.ToReactivePropertySlimAsSynchronized(m => m.ApplyDilutionFactor).AddTo(Disposables);
 
             SplashViewModel = new SplashSetViewModel(_model.SplashSetModel).AddTo(Disposables);
             IsSetViewModel = isSetViewModel;
@@ -43,17 +45,18 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public ReactivePropertySlim<bool> IsNormalizeSplash { get; }
         public ReactivePropertySlim<bool> IsNormalizeTic { get; }
         public ReactivePropertySlim<bool> IsNormalizeMTic { get; }
+        public ReactivePropertySlim<bool> ApplyDilutionFactor { get; }
 
         public SplashSetViewModel SplashViewModel { get; }
         public InternalStandardSetViewModel IsSetViewModel { get; }
         public ReadOnlyReactivePropertySlim<bool> IsSetViewModelVisible { get; }
 
         public ReactiveCommand NormalizeCommand { get; }
-        public ReactiveCommand CancelCommand { get; }
+        public ICommand CancelCommand { get; }
 
         private void Normalize() {
             if (IsSetViewModelVisible.Value) {
-                IsSetViewModel.ApplyCommand.Execute();
+                IsSetViewModel.ApplyChangeCommand.Execute();
             }
             _model.Normalize();
         }

@@ -12,13 +12,13 @@ namespace CompMs.Common.Lipidomics.Tests
             ITotalChain totalChain = new TotalChain(34, 2, 0, 2, 0, 0);
 
             var tmp = totalChain.GetCandidateSets(generator).ToArray();
-            var actual = totalChain.GetCandidateSets(generator).Cast<MolecularSpeciesLevelChains>().ToArray();
-            Assert.IsTrue(actual.All(set => set.Chains.Count == 2));
+            var actual = totalChain.GetCandidateSets(generator).Cast<MolecularSpeciesLevelChains>().Select(act => act.GetDeterminedChains()).ToArray();
+            Assert.IsTrue(actual.All(set => set.Length == 2));
             foreach (var a in actual) {
-                Assert.IsInstanceOfType(a.Chains[0], typeof(AcylChain));
-                Assert.IsInstanceOfType(a.Chains[1], typeof(AcylChain));
+                Assert.IsInstanceOfType(a[0], typeof(AcylChain));
+                Assert.IsInstanceOfType(a[1], typeof(AcylChain));
             }
-            var tuples = actual.Select(act => act.Chains).Select(set => (set[0].CarbonCount, set[0].DoubleBondCount, set[0].OxidizedCount, set[1].CarbonCount, set[1].DoubleBondCount, set[1].OxidizedCount)).ToArray();
+            var tuples = actual.Select(set => (set[0].CarbonCount, set[0].DoubleBondCount, set[0].OxidizedCount, set[1].CarbonCount, set[1].DoubleBondCount, set[1].OxidizedCount)).ToArray();
             foreach (var tuple in tuples) {
                 System.Console.WriteLine(tuple);
             }
@@ -40,13 +40,13 @@ namespace CompMs.Common.Lipidomics.Tests
             CollectionAssert.AreEquivalent(expects, tuples);
 
             totalChain = new TotalChain(34, 2, 0, 1, 1, 0);
-            actual = totalChain.GetCandidateSets(generator).Cast<MolecularSpeciesLevelChains>().ToArray();
-            Assert.IsTrue(actual.All(set => set.Chains.Count == 2));
+            actual = totalChain.GetCandidateSets(generator).Select(act => act.GetDeterminedChains()).ToArray();
+            Assert.IsTrue(actual.All(set => set.Length == 2));
             foreach (var a in actual) {
-                Assert.IsInstanceOfType(a.Chains[0], typeof(AlkylChain));
-                Assert.IsInstanceOfType(a.Chains[1], typeof(AcylChain));
+                Assert.IsInstanceOfType(a[0], typeof(AlkylChain));
+                Assert.IsInstanceOfType(a[1], typeof(AcylChain));
             }
-            tuples = actual.Select(act => act.Chains).Select(set => (set[0].CarbonCount, set[0].DoubleBondCount, set[0].OxidizedCount, set[1].CarbonCount, set[1].DoubleBondCount, set[1].OxidizedCount)).ToArray();
+            tuples = actual.Select(set => (set[0].CarbonCount, set[0].DoubleBondCount, set[0].OxidizedCount, set[1].CarbonCount, set[1].DoubleBondCount, set[1].OxidizedCount)).ToArray();
             foreach (var tuple in tuples) {
                 System.Console.WriteLine(tuple);
             }
@@ -94,13 +94,13 @@ namespace CompMs.Common.Lipidomics.Tests
             ITotalChain totalChain = new TotalChain(34, 1, 2, 1, 0, 1);
 
             var tmp = totalChain.GetCandidateSets(generator).ToArray();
-            var actual = totalChain.GetCandidateSets(generator).Cast<PositionLevelChains>().ToArray();
-            Assert.IsTrue(actual.All(set => set.Chains.Count == 2));
+            var actual = totalChain.GetCandidateSets(generator).Cast<PositionLevelChains>().Select(act => act.GetDeterminedChains()).ToArray();
+            Assert.IsTrue(actual.All(set => set.Length == 2));
             foreach (var a in actual) {
-                Assert.IsInstanceOfType(a.Chains[0], typeof(SphingoChain));
-                Assert.IsInstanceOfType(a.Chains[1], typeof(AcylChain));
+                Assert.IsInstanceOfType(a[0], typeof(SphingoChain));
+                Assert.IsInstanceOfType(a[1], typeof(AcylChain));
             }
-            var tuples = actual.Select(act => act.Chains).Select(set => (set[0].CarbonCount, set[0].DoubleBondCount, set[0].OxidizedCount, set[1].CarbonCount, set[1].DoubleBondCount, set[1].OxidizedCount)).ToArray();
+            var tuples = actual.Select(set => (set[0].CarbonCount, set[0].DoubleBondCount, set[0].OxidizedCount, set[1].CarbonCount, set[1].DoubleBondCount, set[1].OxidizedCount)).ToArray();
             foreach (var tuple in tuples) {
                 System.Console.WriteLine(tuple);
             }

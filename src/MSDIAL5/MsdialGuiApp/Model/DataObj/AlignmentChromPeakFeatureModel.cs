@@ -16,6 +16,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public string Name => _innerModel.Name;
         public int FileID => _innerModel.FileID;
         public string FileName => _innerModel.FileName;
+        public int MasterPeakID => _innerModel.MasterPeakID;
         public int PeakID => _innerModel.PeakID;
         public double TotalScore => _innerModel.MatchResults.Representative.TotalScore;
         public AdductIon Adduct => _innerModel.PeakCharacter.AdductType;
@@ -220,6 +221,8 @@ namespace CompMs.App.Msdial.Model.DataObj
                 }
             }
         }
+
+        public bool IsMsmsAssigned => _innerModel.IsMsmsAssigned;
 
         // IAnnotatedObject interface
         MsScanMatchResultContainer IAnnotatedObject.MatchResults => _innerModel.MatchResults;

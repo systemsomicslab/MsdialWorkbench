@@ -39,18 +39,18 @@ namespace CompMs.App.Msdial.Model.Export
         private readonly ObservableCollection<ExportspectraType> _spectraTypes;
         private readonly AlignmentPeakSpotSupplyer _peakSpotSupplyer;
 
-        public int CountExportFiles() {
+        public int CountExportFiles(AlignmentFileBeanModel alignmentFile) {
             if (ExportMethod.IsLongFormat) {
                 return 2;
             }
-            return Types.Count(type => type.IsSelected);
+            return Types.Count(type => type.ShouldExport);
         }
 
         public void Export(AlignmentFileBeanModel alignmentFile, string exportDirectory, Action<string> notification) {
             var outNameTemplate = $"{{0}}_{((IFileBean)alignmentFile).FileID}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}";
             var msdecResults = alignmentFile.LoadMSDecResults();
             var lazyPeakSpot = new Lazy<IReadOnlyList<AlignmentSpotProperty>>(() => _peakSpotSupplyer.Supply(alignmentFile, default));
-            ExportMethod.Export(outNameTemplate, exportDirectory, lazyPeakSpot, msdecResults, notification, Types.Where(type => type.IsSelected));
+            ExportMethod.Export(outNameTemplate, exportDirectory, lazyPeakSpot, msdecResults, notification, Types.Where(type => type.ShouldExport));
         }
     }
 }

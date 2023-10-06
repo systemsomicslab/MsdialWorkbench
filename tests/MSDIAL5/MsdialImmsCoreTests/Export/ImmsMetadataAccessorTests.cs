@@ -1,7 +1,7 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
-using CompMs.Common.Parser;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
@@ -46,7 +46,7 @@ namespace CompMs.MsdialImmsCore.Export.Tests
                 // to avoid errors
                 MasterAlignmentID = 100,
                 Name = "AAA",
-                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
+                AdductType = AdductIon.GetAdductIon("[M+H]+"),
                 FillParcentage = 0.67f,
                 RepresentativeFileID = 1,
                 AlignedPeakProperties = new List<AlignmentChromPeakFeature>

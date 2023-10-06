@@ -8,7 +8,6 @@ using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 
@@ -17,32 +16,30 @@ namespace CompMs.App.Msdial.Model.Setting
     public class DatasetFileSettingModel : BindableBase
     {
         private readonly DateTime _dateTime;
-        private readonly ObservableCollection<AnalysisFileBeanModel> _fileModels;
 
         public DatasetFileSettingModel(DateTime dateTime) {
-            _fileModels = new ObservableCollection<AnalysisFileBeanModel>();
-            FileModels = new ReadOnlyObservableCollection<AnalysisFileBeanModel>(_fileModels);
+            FileModels = new AnalysisFileBeanModelCollection();
             _dateTime = dateTime;
             IsReadOnly = false;
         }
 
-        public DatasetFileSettingModel(IEnumerable<AnalysisFileBean> analysisFiles) {
-            _fileModels = new ObservableCollection<AnalysisFileBeanModel>(analysisFiles.Select(f => new AnalysisFileBeanModel(f)));
-            FileModels = new ReadOnlyObservableCollection<AnalysisFileBeanModel>(_fileModels);
+        public DatasetFileSettingModel(AnalysisFileBeanModelCollection analysisFiles) {
+            FileModels = analysisFiles;
             IsReadOnly = true;
-            ProjectFolderPath = _fileModels.Select(f => Path.GetDirectoryName(f.AnalysisFilePath)).Distinct().SingleOrDefault() ?? string.Empty;
+            ProjectFolderPath = analysisFiles.AnalysisFiles.Select(f => Path.GetDirectoryName(f.AnalysisFilePath)).Distinct().SingleOrDefault() ?? string.Empty;
         }
 
-        public ReadOnlyObservableCollection<AnalysisFileBeanModel> FileModels { get; }
-        public IEnumerable<AnalysisFileBeanModel> IncludedFileModels => _fileModels.Where(f => f.AnalysisFileIncluded);
+        public AnalysisFileBeanModelCollection FileModels { get; }
+
+        public IEnumerable<AnalysisFileBeanModel> IncludedFileModels => FileModels.IncludedAnalysisFiles;
 
         public bool IsReadOnly { get; }
 
         public string ProjectFolderPath {
-            get => projectFolderPath;
-            private set => SetProperty(ref projectFolderPath, value);
+            get => _projectFolderPath;
+            private set => SetProperty(ref _projectFolderPath, value);
         }
-        private string projectFolderPath = string.Empty;
+        private string _projectFolderPath = string.Empty;
 
         public AcquisitionType SelectedAcquisitionType {
             get => _selectedAcquisiolationType;
@@ -55,7 +52,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 return;
             }
 
-            _fileModels.Clear();
+            FileModels.Clear();
             foreach ((var file, var i) in files.OrderBy(file => file).WithIndex()) {
                 var folder = Path.GetDirectoryName(file);
                 var name = Path.GetFileNameWithoutExtension(file);
@@ -76,17 +73,17 @@ namespace CompMs.App.Msdial.Model.Setting
                     ProteinAssembledResultFilePath = Path.Combine(folder, $"{name}_{_dateTime:yyyyMMddHHmm}.{MsdialDataStorageFormat.prf}"),
                     AcquisitionType = AcquisitionType.DDA,
                 };
-                _fileModels.Add(new AnalysisFileBeanModel(bean));
+                FileModels.AddAnalysisFile(bean);
             }
 
-            ProjectFolderPath = _fileModels.Select(f => Path.GetDirectoryName(f.AnalysisFilePath)).Distinct().SingleOrDefault() ?? string.Empty;
+            ProjectFolderPath = FileModels.AnalysisFiles.Select(f => Path.GetDirectoryName(f.AnalysisFilePath)).Distinct().SingleOrDefault() ?? string.Empty;
         }
 
         public void SetSelectedAquisitionTypeToAll() {
             if (IsReadOnly) {
                 return;
             }
-            foreach (var file in FileModels) {
+            foreach (var file in FileModels.AnalysisFiles) {
                 file.AcquisitionType = SelectedAcquisitionType;
             }
         }

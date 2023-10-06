@@ -3,6 +3,8 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Table;
+using CompMs.Common.DataObj.Property;
+using CompMs.Common.Enum;
 using CompMs.Graphics.Base;
 using Reactive.Bindings;
 using System;
@@ -27,33 +29,39 @@ namespace CompMs.App.Msdial.Model.Lcms
             PeakSpotNavigatorModel peakSpotNavigatorModel,
             IObservable<IBrushMapper<BarItem>> classBrush,
             FileClassPropertiesModel classProperties,
-            IObservable<IBarItemsLoader> barItemsLoader)
-            : base(peakSpots, target, classBrush, classProperties, barItemsLoader, peakSpotNavigatorModel) {
+            IObservable<IBarItemsLoader> barItemsLoader,
+            IReadOnlyList<AdductIon> adductIons,
+            TargetOmics omics)
+            : base(peakSpots, target, classBrush, classProperties, barItemsLoader, peakSpotNavigatorModel, adductIons) {
             MassMin = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Min();
             MassMax = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Max();
             RtMin = peakSpots.Select(s => s.RT).DefaultIfEmpty().Min();
             RtMax = peakSpots.Select(s => s.RT).DefaultIfEmpty().Max();
+            Omics = omics;
         }
 
         public double MassMin { get; }
         public double MassMax { get; }
         public double RtMin { get; }
         public double RtMax { get; }
+        public TargetOmics Omics { get; }
     }
 
     internal sealed class LcmsAnalysisPeakTableModel : AnalysisPeakSpotTableModelBase, ILcmsPeakSpotTableModel
     {
-        public LcmsAnalysisPeakTableModel(IReadOnlyList<ChromatogramPeakFeatureModel> peakSpots, IReactiveProperty<ChromatogramPeakFeatureModel> target, PeakSpotNavigatorModel peakSpotNavigatorModel)
-            : base(peakSpots, target, peakSpotNavigatorModel) {
+        public LcmsAnalysisPeakTableModel(IReadOnlyList<ChromatogramPeakFeatureModel> peakSpots, IReactiveProperty<ChromatogramPeakFeatureModel> target, PeakSpotNavigatorModel peakSpotNavigatorModel, IReadOnlyList<AdductIon> adductIons, TargetOmics omics)
+            : base(peakSpots, target, peakSpotNavigatorModel, adductIons) {
             MassMin = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Min();
             MassMax = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Max();
             RtMin = peakSpots.Select(s => s.RT.Value).DefaultIfEmpty().Min();
             RtMax = peakSpots.Select(s => s.RT.Value).DefaultIfEmpty().Max();
+            Omics = omics;
         }
 
         public double MassMin { get; }
         public double MassMax { get; }
         public double RtMin { get; }
         public double RtMax { get; }
+        public TargetOmics Omics { get; }
     }
 }

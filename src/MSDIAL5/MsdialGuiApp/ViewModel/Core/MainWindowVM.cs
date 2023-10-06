@@ -26,9 +26,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public MainWindowVM(
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<AnalysisFilePropertyResetViewModel> analysisFilePropertyResetService,
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
-            IWindowService<ProcessSettingViewModel> processSettingSerivce) {
+            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService) {
 
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
@@ -38,21 +36,16 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
 
-            if (analysisFilePropertyResetService is null) {
-                throw new ArgumentNullException(nameof(analysisFilePropertyResetService));
-            }
-
             if (proteomicsTableService is null) {
                 throw new ArgumentNullException(nameof(proteomicsTableService));
             }
 
             _broker = MessageBroker.Default;
 
-            _processSettingService = processSettingSerivce ?? throw new ArgumentNullException(nameof(processSettingSerivce));
             Model = new MainWindowModel(_broker);
 
             var projectViewModel = Model.ObserveProperty(m => m.CurrentProject)
-                .Select(m => m is null ? null : new ProjectViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService, analysisFilePropertyResetService, _broker))
+                .Select(m => m is null ? null : new ProjectViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService, _broker))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -107,7 +100,6 @@ namespace CompMs.App.Msdial.ViewModel.Core
         }
 
         private readonly IMessageBroker _broker;
-        private readonly IWindowService<ProcessSettingViewModel> _processSettingService;
 
         public MainWindowModel Model { get; }
 
@@ -139,7 +131,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
         }
 
         private async Task RunProcess(ProcessSettingViewModel viewmodel) {
-            _processSettingService.ShowDialog(viewmodel);
+            _broker.Publish(viewmodel);
             if (viewmodel.DialogResult.Value) {
                 await viewmodel.Model.RunProcessAsync().ConfigureAwait(false);
                 await Model.SaveAsync().ConfigureAwait(false);
