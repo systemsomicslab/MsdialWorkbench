@@ -22,6 +22,7 @@ using CompMs.Graphics.Behavior;
 using CompMs.Graphics.UI;
 using CompMs.Graphics.UI.Message;
 using CompMs.Graphics.UI.ProgressBar;
+using CompMs.Graphics.Window;
 using Microsoft.Win32;
 using Reactive.Bindings.Notifiers;
 using System;
@@ -63,6 +64,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildSettingDialog<FileClassSetView>("Class property setting", height: 450, width: 400));
             broker.ToObservable<SaveFileNameRequest>()
                 .Subscribe(GetSaveFilePath);
+            broker.ToObservable<SelectFolderRequest>()
+                .Subscribe(SelectFolderPath);
             broker.ToObservable<OpenFileRequest>()
                 .Subscribe(OpenFileDialog);
             broker.ToObservable<ErrorMessageBoxRequest>()
@@ -284,6 +287,18 @@ namespace CompMs.App.Msdial.View.Core
 
             if (ofd.ShowDialog(this) == true) {
                 request.Run(ofd.FileName);
+            }
+        }
+
+        private void SelectFolderPath(SelectFolderRequest request) {
+            var sfd = new SelectFolderDialog
+            {
+                Title = request.Title,
+                SelectedPath = request.SelectedPath,
+            };
+
+            if (sfd.ShowDialog(this) == Graphics.Window.DialogResult.OK) {
+                request.Run(sfd.SelectedPath);
             }
         }
 
