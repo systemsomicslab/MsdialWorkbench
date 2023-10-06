@@ -1,13 +1,9 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Imms;
+﻿using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Loader;
-using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
-using CompMs.Graphics.Base;
-using Reactive.Bindings;
-using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Windows.Input;
 
@@ -32,8 +28,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
     internal sealed class ImmsAlignmentSpotTableViewModel : AlignmentSpotTableViewModelBase
     {
-        public ImmsAlignmentSpotTableViewModel(ImmsAlignmentSpotTableModel model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
-            : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel) {
+        public ImmsAlignmentSpotTableViewModel(ImmsAlignmentSpotTableModel model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel, IMessageBroker broker)
+            : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel, broker) {
             MassMin = model.MassMin;
             MassMax = model.MassMax;
             DriftMin = model.DriftMin;

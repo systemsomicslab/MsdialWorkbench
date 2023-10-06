@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Windows.Input;
 
@@ -30,8 +31,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
     internal sealed class LcimmsAlignmentSpotTableViewModel : AlignmentSpotTableViewModelBase
     {
-        public LcimmsAlignmentSpotTableViewModel(LcimmsAlignmentSpotTableModel model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
-            : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel) {
+        public LcimmsAlignmentSpotTableViewModel(LcimmsAlignmentSpotTableModel model, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel, IMessageBroker broker)
+            : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel, broker) {
             MassMin = model.MassMin;
             MassMax = model.MassMax;
             RtMin = model.RtMin;

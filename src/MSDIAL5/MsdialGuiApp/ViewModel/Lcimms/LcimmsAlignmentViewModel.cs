@@ -82,7 +82,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 model.AlignmentSpotTableModel,
                 PeakSpotNavigatorViewModel,
                 SetUnknownCommand,
-                UndoManagerViewModel)
+                UndoManagerViewModel, broker)
                 .AddTo(Disposables);
 
             SearchCompoundCommand = new[]{

@@ -25,13 +25,13 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private readonly ImmsAlignmentModel _model;
         private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
-        private readonly IMessageBroker _messageBroker;
+        private readonly IMessageBroker _broker;
 
         public ImmsAlignmentViewModel(
             ImmsAlignmentModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IMessageBroker messageBroker,
+            IMessageBroker broker,
             FocusControlManager focusControlManager) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
@@ -47,7 +47,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             _model = model;
             _compoundSearchService = compoundSearchService;
             _peakSpotTableService = peakSpotTableService;
-            _messageBroker = messageBroker;
+            _broker = broker;
             UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
             Target = model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
@@ -61,12 +61,12 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             PlotViewModel = new AlignmentPeakPlotViewModel(model.PlotModel, focusAction, focused).AddTo(Disposables);
 
             var (msSpectrumViewFocusAction, msSpectrumViewFocused) = focusControlManager.Request();
-            Ms2SpectrumViewModel = new AlignmentMs2SpectrumViewModel(model.Ms2SpectrumModel, messageBroker, focusAction: msSpectrumViewFocusAction, isFocused: msSpectrumViewFocused).AddTo(Disposables);
+            Ms2SpectrumViewModel = new AlignmentMs2SpectrumViewModel(model.Ms2SpectrumModel, broker, focusAction: msSpectrumViewFocusAction, isFocused: msSpectrumViewFocused).AddTo(Disposables);
 
             var (barChartViewFocusAction, barChartViewFocused) = focusControlManager.Request();
             BarChartViewModel = new BarChartViewModel(model.BarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
             AlignmentEicViewModel = new AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
-            AlignmentSpotTableViewModel = new ImmsAlignmentSpotTableViewModel(model.AlignmentSpotTableModel, PeakSpotNavigatorViewModel, SetUnknownCommand, UndoManagerViewModel).AddTo(Disposables);
+            AlignmentSpotTableViewModel = new ImmsAlignmentSpotTableViewModel(model.AlignmentSpotTableModel, PeakSpotNavigatorViewModel, SetUnknownCommand, UndoManagerViewModel, broker).AddTo(Disposables);
 
             SearchCompoundCommand = model.CanSearchCompound
                 .ToReactiveCommand()
@@ -80,15 +80,15 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel, matchResultCandidatesViewModel, };
 
             var internalStandardSetViewModel = new InternalStandardSetViewModel(model.InternalStandardSetModel).AddTo(Disposables);
-            InternalStandardSetCommand = new ReactiveCommand().WithSubscribe(_ => messageBroker.Publish(internalStandardSetViewModel)).AddTo(Disposables);
+            InternalStandardSetCommand = new ReactiveCommand().WithSubscribe(_ => broker.Publish(internalStandardSetViewModel)).AddTo(Disposables);
 
             var notification = TaskNotification.Start("Loading alignment results...");
-            messageBroker.Publish(notification);
-            model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => messageBroker.Publish(TaskNotification.End(notification)));
+            broker.Publish(notification);
+            model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => broker.Publish(TaskNotification.End(notification)));
 
             NormalizationSetViewModel = new NormalizationSetViewModel(model.NormalizationSetModel, internalStandardSetViewModel).AddTo(Disposables);
             ShowNormalizationSettingCommand = new ReactiveCommand()
-                .WithSubscribe(() => messageBroker.Publish(NormalizationSetViewModel))
+                .WithSubscribe(() => broker.Publish(NormalizationSetViewModel))
                 .AddTo(Disposables);
         }
 
@@ -165,7 +165,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 RestoreDirectory = true,
                 AddExtension = true,
             };
-            _messageBroker.Publish(request);
+            _broker.Publish(request);
         }
 
         private bool CanSaveSpectra() {

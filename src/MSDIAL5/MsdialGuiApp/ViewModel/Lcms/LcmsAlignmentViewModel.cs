@@ -60,12 +60,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
             
-            AlignmentSpotTableViewModel = LcmsTableViewModelHelper.CreateViewModel(
-                _model.AlignmentSpotTableModel,
-                PeakSpotNavigatorViewModel,
-                SetUnknownCommand,
-                UndoManagerViewModel)
-                .AddTo(Disposables);
+            AlignmentSpotTableViewModel = LcmsTableViewModelHelper.CreateViewModel(_model.AlignmentSpotTableModel, PeakSpotNavigatorViewModel, SetUnknownCommand, UndoManagerViewModel, broker).AddTo(Disposables);
 
             SearchCompoundCommand = _model.CanSearchCompound
                 .ToReactiveCommand()
