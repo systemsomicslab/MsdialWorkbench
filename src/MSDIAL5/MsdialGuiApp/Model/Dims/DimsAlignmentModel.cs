@@ -245,7 +245,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 Target,
                 id => Ms1Spots.Argmin(spot => Math.Abs(spot.MasterAlignmentID - id)),
                 Target.Select(t => t?.MasterAlignmentID ?? 0d),
-                "Region focus by ID",
+                "ID",
                 (mzSpotFocus, spot => spot.MassCenter)).AddTo(Disposables);
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, mzSpotFocus);
 

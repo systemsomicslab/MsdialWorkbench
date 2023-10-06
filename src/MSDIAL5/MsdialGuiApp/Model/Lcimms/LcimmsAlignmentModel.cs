@@ -312,7 +312,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 target,
                 id => Ms1Spots.Argmin(spot => Math.Abs(spot.MasterAlignmentID - id)),
                 target.Select(t => t?.MasterAlignmentID ?? 0d),
-                "Region focus by ID",
+                "ID",
                 (mzSpotFocus, spot => spot.MassCenter),
                 (rtSpotFocus, spot => spot.innerModel.TimesCenter.RT.Value),
                 (dtSpotFocus, spot => spot.innerModel.TimesCenter.Drift.Value)).AddTo(Disposables);

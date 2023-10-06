@@ -1,0 +1,38 @@
+﻿<RibbonTab x:Class="CompMs.App.Msdial.View.RibbonControl.MsdialExportTab"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+           xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Core"
+           xmlns:common="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
+           mc:Ignorable="d" 
+           Header="Export"
+           KeyTip="E"
+           d:DataContext="{d:DesignInstance Type={x:Type vm:MethodViewModel}}">
+    <RibbonTab.Resources>
+        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+    </RibbonTab.Resources>
+    <RibbonGroup>
+        <RibbonButton Label="Peak list result" LargeImageSource="{StaticResource Peak_list_export_is}"
+                      Command="{Binding ExportAnalysisResultCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      KeyTip="P"/>
+        <RibbonButton Label="Alignment result" LargeImageSource="{StaticResource Alignment_result_export_is}"
+                      Command="{Binding ExportAlignmentResultCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      KeyTip="L"/>
+        <RibbonButton Label="Export normalization result" LargeImageSource="{StaticResource RawNormalized_comparison_result_is}"
+                      IsEnabled="False"
+                      KeyTip="N"/>
+        <RibbonButton Label="Molecular spectrum networking export" LargeImageSource="{StaticResource Molecular_network_result_export_is}"
+                      Command="{Binding ShowMolecularNetworkingExportSettingCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      KeyTip="M"/>
+        <RibbonButton Label="Parameter export (Tab-delimited text)" LargeImageSource="{StaticResource Parameter_file_export_is}"
+                      Command="{Binding ExportParameterCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      KeyTip="T"/>
+        <RibbonButton Label="Export as lipoquality database format"
+                      IsEnabled="False"
+                      KeyTip="D"/>
+        <RibbonButton Label="Copy screenshot to clipboard (emf)"
+                      IsEnabled="False"
+                      KeyTip="C"/>
+    </RibbonGroup>
+</RibbonTab>

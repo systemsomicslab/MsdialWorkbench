@@ -1,0 +1,15 @@
+﻿<RibbonQuickAccessToolBar x:Class="CompMs.App.Msdial.View.RibbonControl.MsdialQuickAccessToolBar"
+                          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                          xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Core"
+                          mc:Ignorable="d"
+                          d:DataContext="{d:DesignInstance Type={x:Type vm:MainWindowVM}}">
+    <RibbonQuickAccessToolBar.Resources>
+        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+    </RibbonQuickAccessToolBar.Resources>
+    <RibbonButton Command="{Binding CreateNewProjectCommand}" SmallImageSource="{StaticResource New_project_is}"/>
+    <RibbonButton Command="{Binding OpenProjectCommand}" SmallImageSource="{StaticResource Open_is}"/>
+    <RibbonButton Command="{Binding SaveProjectCommand}" SmallImageSource="{StaticResource Save_is}"/>
+</RibbonQuickAccessToolBar>

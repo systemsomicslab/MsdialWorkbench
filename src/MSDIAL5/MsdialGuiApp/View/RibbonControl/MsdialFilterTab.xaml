@@ -1,0 +1,61 @@
+﻿<RibbonTab x:Class="CompMs.App.Msdial.View.RibbonControl.MsdialFilterTab"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+           xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Core"
+           xmlns:searchvm="clr-namespace:CompMs.App.Msdial.ViewModel.Search"
+           xmlns:common="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
+           mc:Ignorable="d" 
+           d:DataContext="{d:DesignInstance Type={x:Type vm:MethodViewModel}}"
+           Header="Filter"
+           KeyTip="/">
+    <RibbonGroup Header="Peak spot filter" DataContext="{Binding SelectedViewModel.Value.PeakSpotNavigatorViewModel}"
+                 AlternationCount="10">
+        <RibbonCheckBox Label="Ref. matched" IsChecked="{Binding PeakFilterViewModel.RefMatched}" IsEnabled="{Binding PeakFilterViewModel.EnableRefMatched}" KeyTip="F0"/>
+        <RibbonCheckBox Label="Suggested" IsChecked="{Binding PeakFilterViewModel.Suggested}" IsEnabled="{Binding PeakFilterViewModel.EnableSuggested}" KeyTip="F1"/>
+        <RibbonCheckBox Label="Unknown" IsChecked="{Binding PeakFilterViewModel.Unknown}" IsEnabled="{Binding PeakFilterViewModel.EnableUnknown}" KeyTip="F2"/>
+        <RibbonCheckBox Label="CCS matched" IsChecked="{Binding PeakFilterViewModel.CcsMatched}" IsEnabled="{Binding PeakFilterViewModel.EnableCcsMatched}" KeyTip="F3"/>
+        <RibbonCheckBox Label="MS2 acquired" IsChecked="{Binding PeakFilterViewModel.Ms2Acquired}" IsEnabled="{Binding PeakFilterViewModel.EnableMs2Acquired}" KeyTip="F4"/>
+        <RibbonCheckBox Label="Molecular ion" IsChecked="{Binding PeakFilterViewModel.MolecularIon}" IsEnabled="{Binding PeakFilterViewModel.EnableMolecularIon}" KeyTip="F5"/>
+        <RibbonCheckBox Label="Blank filter" IsChecked="{Binding PeakFilterViewModel.Blank}" IsEnabled="{Binding PeakFilterViewModel.EnableBlank}" KeyTip="F6"/>
+        <RibbonCheckBox Label="Unique ions" IsChecked="{Binding PeakFilterViewModel.UniqueIons}" IsEnabled="{Binding PeakFilterViewModel.EnableUniqueIons}" KeyTip="F7"/>
+        <RibbonCheckBox Label="Manually modified" IsChecked="{Binding PeakFilterViewModel.ManuallyModified}" IsEnabled="{Binding PeakFilterViewModel.EnableManuallyModified}" KeyTip="F8"/>
+    </RibbonGroup>
+    <RibbonGroup Header="Jump peak spot"
+                 DataContext="{Binding SelectedViewModel.Value.FocusNavigatorViewModel}"
+                 ItemsSource="{Binding SpotFocuses}"
+                 AlternationCount="10">
+        <RibbonGroup.ItemsPanel>
+            <ItemsPanelTemplate>
+                <UniformGrid Rows="3"/>
+            </ItemsPanelTemplate>
+        </RibbonGroup.ItemsPanel>
+        <RibbonGroup.ItemTemplate>
+            <DataTemplate DataType="{x:Type searchvm:SpotFocusViewModel}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Label, StringFormat={}{0}:}" Width="48">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsItalic}" Value="True">
+                                        <Setter Property="FontStyle" Value="Italic"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <RibbonTextBox Text="{Binding Value.Value, UpdateSourceTrigger=PropertyChanged}"
+                                   Command="{Binding FocusCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                                   ToolTip="Enter key is available for going to the target spot"
+                                   KeyTip="{Binding StringFormat=J{0}, Path=(ItemsControl.AlternationIndex), RelativeSource={RelativeSource AncestorType=RibbonControl}}">
+                        <RibbonTextBox.InputBindings>
+                            <KeyBinding Gesture="Enter"
+                                        Command="{Binding FocusCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
+                        </RibbonTextBox.InputBindings>
+                    </RibbonTextBox>
+                </StackPanel>
+            </DataTemplate>
+        </RibbonGroup.ItemTemplate>
+    </RibbonGroup>
+</RibbonTab>
