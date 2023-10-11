@@ -34,7 +34,7 @@
             <DataGridTemplateColumn Header="Color" Width="*">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate DataType="{x:Type vm:FileClassPropertyViewModel}">
-                        <ui:ColorPicker SelectedColor="{Binding Color.Value, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                        <ui:ListColorPicker SelectedColor="{Binding Color.Value, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>

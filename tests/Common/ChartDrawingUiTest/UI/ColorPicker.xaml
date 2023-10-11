@@ -11,8 +11,8 @@
     <StackPanel Orientation="Horizontal"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center">
-        <ui:ColorPicker x:Name="ColorPickerControl"
-                        Width="100"/>
+        <ui:ListColorPicker x:Name="ColorPickerControl"
+                            Width="100"/>
         <TextBlock Text="{Binding SelectedColor, ElementName=ColorPickerControl}"
                    Background="Gray">
             <TextBlock.Foreground>
