@@ -1,6 +1,4 @@
-﻿using CompMs.CommonMVVM;
-using CompMs.Graphics.Helper;
-using System;
+﻿using CompMs.Graphics.Helper;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
@@ -130,33 +128,5 @@ namespace CompMs.Graphics.UI
                 d.SetValue(SelectedColorProperty, item.Color);
             }
         }
-    }
-
-    public interface IColorPickerItem {
-        Color Color { get; }
-        string Category { get; }
-    }
-
-    public sealed class ColorPickerItem : ViewModelBase, IColorPickerItem {
-        public ColorPickerItem(Color color, string category) {
-            Color = color;
-            Category = category;
-        }
-
-        public Color Color { get; }
-        public string Category { get; }
-    }
-
-    public sealed class CustomColorPickerItem : ViewModelBase, IColorPickerItem {
-        public CustomColorPickerItem(string category) {
-            Category = category;
-        }
-
-        public Color Color {
-            get => _color;
-            set => SetProperty(ref _color, value);
-        }
-        private Color _color = Colors.White;
-        public string Category { get; }
     }
 }
