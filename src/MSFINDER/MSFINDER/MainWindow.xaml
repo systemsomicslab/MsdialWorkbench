@@ -126,6 +126,7 @@
             <MenuItem Name="MenuItem_Export" Header="_Export">
                 <MenuItem Name="MenuItem_BatchResultExport" Header="Export batch results" Click="menuItem_BatchResultExport_Click" IsEnabled="True" />
                 <MenuItem Name="MenuItem_PeakAnnotationResultExportAsMsp" Header="Export peak annotation result as MSP format" Click="menuItem_PeakAnnotationResultExportAsMsp_Click" IsEnabled="True" />
+                <MenuItem Name="MenuItem_PeakAnnotationResultExportAsMassBankRecord" Header="Export peak annotation result as MassBank record format" Click="menuItem_PeakAnnotationResultExportAsMassBankRecord_Click" IsEnabled="True" />
                 <MenuItem Name="MenuItem_MolecularNetworkExport" Header="Export nodes and edges for molecular spectrum network" Click="menuItem_MolecularNetworkExport_Click" IsEnabled="True" />
                 <MenuItem Name="MenuItem_CopyScreenshotToClipBoard" Header="Copy screenshot to clipboard" Click="menuItem_CopyScreenshotToClipboard_Click" IsEnabled="True" />
             </MenuItem>
