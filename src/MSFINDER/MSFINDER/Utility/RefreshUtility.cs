@@ -31,7 +31,9 @@ namespace Rfx.Riken.OsakaUniv
             var filePath = mainWindowVM.DataStorageBean.QueryFiles[fileID].RawDataFilePath;
             var param = mainWindowVM.DataStorageBean.AnalysisParameter;
 
-            mainWindowVM.DataStorageBean.RawData = RawDataParcer.RawDataFileReader(filePath, param);
+            mainWindowVM.DataStorageBean.RawData = filePath.EndsWith(".txt")
+                ? RawDataParcer.ReadMassBankRecord(filePath, param)
+                : RawDataParcer.RawDataFileReader(filePath, param);
             mainWindowVM.RawDataVM = new RawDataVM(mainWindowVM.DataStorageBean.RawData, mainWindowVM.AdductPositiveResources, mainWindowVM.AdductNegativeResources);
             if (mainWindowVM.DataStorageBean.RawData == null || mainWindowVM.DataStorageBean.RawData.Name == null) {
                 MessageBox.Show("Error in parsing your msp/mat file, and please check the format.", "Error", MessageBoxButton.OK);

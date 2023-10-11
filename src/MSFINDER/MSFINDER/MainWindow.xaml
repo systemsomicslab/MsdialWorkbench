@@ -64,7 +64,7 @@
             <MenuItem Header="_File">
                 <MenuItem Name="MenuItem_Import" Header="_Import..." Click="menuItem_Import_Click">
                     <ToolTipService.ToolTip>
-                        <ToolTip Content="Select a folder including MAT or MSP files." />
+                        <ToolTip Content="Select a folder including MAT, MSP or MassBank record files." />
                     </ToolTipService.ToolTip>
                 </MenuItem>
 
