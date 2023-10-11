@@ -156,6 +156,16 @@ namespace CompMs.Graphics.AxisManager.Generic
             return new ReactiveAxisManager<double>(new SqrtAxisManager(new Range(0, 1), margin, lowBound, highBound) { LabelType = labelType, }, self);
         }
 
+        public static ReactiveAxisManager<T> ToReactiveContinuousAxisManager<T> (this IObservable<(T, T)> self, T lowBound, T highBound, LabelType labelType = LabelType.Standard)
+            where T : IConvertible {
+            return new ReactiveAxisManager<T>(new ContinuousAxisManager<T>(new Range(0, 1), lowBound, highBound) { LabelType = labelType, }, self);
+        }
+
+        public static ReactiveAxisManager<T> ToReactiveContinuousAxisManager<T>(this IObservable<(T, T)> self, IChartMargin margin, T lowBound, T highBound, LabelType labelType = LabelType.Standard)
+            where T : IConvertible {
+            return new ReactiveAxisManager<T>(new ContinuousAxisManager<T>(new Range(0, 1), margin, lowBound, highBound) { LabelType = labelType, }, self);
+        }
+
         public static ReactiveAxisManager<T> ToReactiveContinuousAxisManager<T> (this IObservable<Range> self, Range bounds = null, LabelType labelType = LabelType.Standard)
             where T : IConvertible {
             return new ReactiveAxisManager<T>(new ContinuousAxisManager<T>(new Range(0, 1), bounds) { LabelType = labelType, }, self);

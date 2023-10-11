@@ -1,9 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
-using CompMs.App.Msdial.Utility;
 using CompMs.Common.Algorithm.Scoring;
-using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
@@ -29,10 +26,6 @@ namespace CompMs.App.Msdial.Model.Information
         public ReadOnlyReactivePropertySlim<MsScanMatchResult> Representative { get; }
         public ReactiveProperty<MsScanMatchResult> SelectedCandidate { get; }
         public ReadOnlyReactivePropertySlim<IList<MsScanMatchResult>> Candidates { get; }
-
-        public IObservable<List<SpectrumPeak>> LoadSpectrumObservable(IMsSpectrumLoader<MsScanMatchResult> loader) {
-            return SelectedCandidate.SelectSwitch(loader.LoadSpectrumAsObservable);
-        }
 
         public IObservable<Ms2ScanMatching> GetCandidatesScorer(CompoundSearcherCollection compoundSearcherCollection) {
             return SelectedCandidate.Select(candidate => compoundSearcherCollection.GetMs2ScanMatching(candidate));
