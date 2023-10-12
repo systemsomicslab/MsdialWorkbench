@@ -78,6 +78,9 @@ namespace CompMs.Graphics.Design
                 var brush = Mapper.Map(o);
                 var pen = new Pen(brush, Thickness);
                 pen.Freeze();
+                if (cache.Count > 1_000_000) {
+                    cache.Clear();
+                }
                 return cache[o] = pen;
             }
         }
