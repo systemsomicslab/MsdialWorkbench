@@ -8,16 +8,22 @@
       d:Background="White"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ColorPicker">
-    <StackPanel Orientation="Horizontal"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center">
-        <ui:ListColorPicker x:Name="ColorPickerControl"
-                            Width="100"/>
-        <TextBlock Text="{Binding SelectedColor, ElementName=ColorPickerControl}"
-                   Background="Gray">
-            <TextBlock.Foreground>
-                <SolidColorBrush Color="{Binding SelectedColor, ElementName=ColorPickerControl, FallbackValue=White}"/>
-            </TextBlock.Foreground>   
-        </TextBlock>
+    <StackPanel VerticalAlignment="Center">
+        <ui:HsvColorPicker x:Name="HsvColorPicker"
+                           Width="200" Height="200"
+                           Background="Gray"/>
+        <StackPanel Orientation="Horizontal"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center">
+            <ui:ListColorPicker x:Name="ColorPickerControl"
+                                SelectedColor="{Binding SelectedColor, ElementName=HsvColorPicker}"
+                                Width="100"/>
+            <TextBlock Text="{Binding SelectedColor, ElementName=ColorPickerControl}"
+                       Background="Gray">
+                <TextBlock.Foreground>
+                    <SolidColorBrush Color="{Binding SelectedColor, ElementName=ColorPickerControl, FallbackValue=White}"/>
+                </TextBlock.Foreground>   
+            </TextBlock>
+        </StackPanel>
     </StackPanel>
 </Page>
