@@ -61,7 +61,7 @@ namespace CompMs.Common.Parser
 
         public string GetAccession(IChromatogramPeak peak) => $"{Identifier}-{ContributorIdentifier}-{peak.ID:D8}";
 
-        public void WriteRecord(Stream stream, IChromatogramPeak peak, IMoleculeProperty molecule, IMSScanProperty scan) {
+        public void WriteRecord(Stream stream, IChromatogramPeak peak, IMoleculeProperty molecule, IMSScanProperty scan, IIonProperty ionProperty) {
             using (var writer = new StreamWriter(stream, new UTF8Encoding(false), bufferSize: 4096, leaveOpen: true)) {
                 // accession
                 writer.WriteLine($"ACCESSION: {Identifier}-{ContributorIdentifier}-{peak.ID:D8}");
@@ -82,7 +82,9 @@ namespace CompMs.Common.Parser
                 // copyright
                 // publication
                 // project
+
                 // comment
+                //WriteLineIfNotEmpty(writer, "COMMENT: {0}", peak.Comment);
                 
                 // ch$name
                 writer.WriteLine($"CH$NAME: {molecule.Name}");
@@ -91,10 +93,10 @@ namespace CompMs.Common.Parser
                 writer.WriteLine($"CH$COMPOUND_CLASS: {molecule.Ontology}");
 
                 // ch$formula
-                writer.WriteLine($"CH$Formula: {molecule.Formula}");
+                writer.WriteLine($"CH$FORMULA: {molecule.Formula}");
 
                 // ch$exact_mass
-                writer.WriteLine($"CH$EXACT_MASS: {(double)peak.Mass:F5}");
+                writer.WriteLine($"CH$EXACT_MASS: {ionProperty.AdductType.ConvertToExactMass(peak.Mass):F5}");
 
                 // ch$smiles
                 writer.WriteLine($"CH$SMILES: {molecule.SMILES}");
@@ -109,7 +111,9 @@ namespace CompMs.Common.Parser
                 }
 
                 // ch$cdkdepict
+
                 // ch$link
+                WriteLineIfNotEmpty(writer, "CH$LINK: INCHIKEY: {0}", molecule.InChIKey);
 
                 // sp$scientific_name
                 // sp$lineage
@@ -129,12 +133,21 @@ namespace CompMs.Common.Parser
                 writer.WriteLine($"AC$MASS_SPECTROMETRY: MS_TYPE {MSType}");
 
                 // ac$mass_spectrometry: subtag
+                //WriteLineIfPositive(writer, "AC$MASS_SPECTROMETRY: COLLISION_ENERGY {0}", scan.CollisionEnergy);
+
                 // ac$chromatography: subtag
+                WriteLineIfPositive(writer, "AC$CHROMATOGRAPHY: CCS {0}", ionProperty.CollisionCrossSection);
+                WriteLineIfPositive(writer, "AC$CHROMATOGRAPHY: KOVATS_RTI {0}", peak.ChromXs.RI.Value);
+                WriteLineIfPositive(writer, "AC$CHROMATOGRAPHY: RETENTION_TIME {0}", peak.ChromXs.RT.Value);
+
                 // ac$general: subtag
                 // ac$ion_mobility: subtag
 
                 // ms$focused_ion: base_peak
                 // ms$focused_ion: subtag
+                writer.WriteLine($"MS$FOCUSED_ION: PRECURSOR_M/Z {peak.Mass:F5}");
+                writer.WriteLine($"MS$FOCUSED_ION: PRECURSOR_TYPE {ionProperty.AdductType.AdductIonName}");
+
                 // ms$data_processing: subtag
 
                 // pk$splash
@@ -142,6 +155,10 @@ namespace CompMs.Common.Parser
                 writer.WriteLine($"PK$SPLASH: {splash}");
 
                 // pk$annotation
+                writer.WriteLine("PK$ANNOTATION: m/z type comment");
+                foreach (var p in scan.Spectrum) {
+                    writer.WriteLine($"  {p.Mass} {p.SpectrumComment} {p.Comment}");
+                }
 
                 // pk$num_peak
                 writer.WriteLine($"PK$NUM_PEAK: {scan.Spectrum.Count}");
@@ -156,6 +173,18 @@ namespace CompMs.Common.Parser
                 }
 
                 writer.WriteLine("//");
+            }
+        }
+
+        private static void WriteLineIfNotEmpty(StreamWriter writer, string format, string arg0) {
+            if (!string.IsNullOrEmpty(arg0)) {
+                writer.WriteLine(format, arg0);
+            }
+        }
+
+        private static void WriteLineIfPositive(StreamWriter writer, string format, double arg0) {
+            if (arg0 > 0) {
+                writer.WriteLine(format, arg0);
             }
         }
     }

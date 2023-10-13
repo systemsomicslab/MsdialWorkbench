@@ -64,7 +64,7 @@ namespace CompMs.App.Msdial.Model.Export
                 string accession = handler.GetAccession(peak);
                 using (var stream = File.Open(Path.Combine(exportDirectory, accession + ".txt"), FileMode.Create)) {
                     notification.Invoke($"Exporting {accession}");
-                    handler.WriteRecord(stream, peak, reference, alignmentFile.LoadMSDecResultByIndexAsync(peak.MasterAlignmentID).Result);
+                    handler.WriteRecord(stream, peak, reference, alignmentFile.LoadMSDecResultByIndexAsync(peak.MasterAlignmentID).Result, peak);
                 }
             }
         }
