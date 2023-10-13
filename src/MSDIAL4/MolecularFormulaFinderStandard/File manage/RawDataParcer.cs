@@ -17,6 +17,9 @@ namespace Rfx.Riken.OsakaUniv
         /// <returns></returns>
         public static RawData RawDataFileReader(string filePath, AnalysisParamOfMsfinder param)
         {
+            if (filePath.EndsWith(".txt")) {
+                return ReadMassBankRecord(filePath, param);
+            }
             RawData rawData = new RawData() { RawdataFilePath = filePath };
 
             string wkstr;
