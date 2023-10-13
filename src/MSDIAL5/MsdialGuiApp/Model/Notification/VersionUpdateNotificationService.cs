@@ -3,7 +3,6 @@ using CompMs.App.Msdial.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Runtime.Serialization;
@@ -28,7 +27,7 @@ namespace CompMs.App.Msdial.Model.Notification
             try {
                 var releaseInfoDataTransferObjects = (List<ReleaseInfoDataTransferObject>)serializer.ReadObject(jsonStream);
                 foreach (var dto in releaseInfoDataTransferObjects) {
-                    if (dto.TagName.StartsWith("MSDIAL-v5")) {
+                    if (!dto.IsPrerelease && dto.TagName.StartsWith("MSDIAL-v5")) {
                         var vdd = dto.ToVersionDescriptionDocument();
                         callback?.Invoke(vdd);
                         break;
@@ -111,6 +110,9 @@ namespace CompMs.App.Msdial.Model.Notification
 
             [DataMember(Name = "assets")]
             public List<AssetsDataTransferObject> Assets { get; set; }
+
+            [DataMember(Name = "prerelease")]
+            public bool IsPrerelease { get; set; }
 
             public VersionDescriptionDocument ToVersionDescriptionDocument() {
                 return new VersionDescriptionDocument
