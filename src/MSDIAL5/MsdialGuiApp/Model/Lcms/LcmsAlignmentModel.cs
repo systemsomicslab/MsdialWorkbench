@@ -16,9 +16,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Proteomics.DataObj;
-using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Base;
-using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -84,7 +82,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                 throw new ArgumentNullException(nameof(projectBaseParameter));
             }
 
-
             _alignmentFile = alignmentFileBean;
             _parameter = parameter;
             _projectBaseParameter = projectBaseParameter;
@@ -140,8 +137,9 @@ namespace CompMs.App.Msdial.Model.Lcms
             IMsSpectrumLoader<AlignmentSpotPropertyModel> msDecSpectrumLoader = new AlignmentMSDecSpectrumLoader(_alignmentFile);
             var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             var spectraExporter = new NistSpectraExporter<AlignmentSpotProperty>(Target.Select(t => t?.innerModel), mapper, parameter).AddTo(Disposables);
+            AlignmentSpotSpectraLoader spectraLoader = new AlignmentSpotSpectraLoader(fileCollection, refLoader, _compoundSearchers, fileCollection);
             Ms2SpectrumModel = new AlignmentMs2SpectrumModel(
-                Target, MatchResultCandidatesModel.SelectedCandidate.Select(refLoader.LoadSpectrumAsObservable).Switch(), fileCollection,
+                Target, MatchResultCandidatesModel.SelectedCandidate, fileCollection,
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Mass), peak => peak.Mass),
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Intensity), peak => peak.Intensity),
                 new ChartHueItem(projectBaseParameter, Colors.Blue),
@@ -150,7 +148,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Observable.Return(spectraExporter),
                 Observable.Return(referenceExporter),
                 null,
-                MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers)).AddTo(Disposables);
+                spectraLoader).AddTo(Disposables);
 
             // Class intensity bar chart
             var classBrush = projectBaseParameter.ClassProperties
@@ -193,7 +191,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
             var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
-            AlignmentSpotTableModel = new LcmsAlignmentSpotTableModel(Ms1Spots, Target, PeakSpotNavigatorModel, barBrush, projectBaseParameter.ClassProperties, barItemsLoaderProperty, parameter.ReferenceFileParam.SearchedAdductIons, parameter.ProjectParam.TargetOmics).AddTo(Disposables);
+            var filter = peakSpotFiltering.CreateFilter(peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), FilterEnableStatus.All);
+            AlignmentSpotTableModel = new LcmsAlignmentSpotTableModel(Ms1Spots, Target, barBrush, projectBaseParameter.ClassProperties, barItemsLoaderProperty, parameter.ProjectParam.TargetOmics, filter, spectraLoader).AddTo(Disposables);
 
             CanSearchCompound = new[]
             {

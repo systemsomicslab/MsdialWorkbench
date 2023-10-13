@@ -3,7 +3,6 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Table;
-using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Graphics.Base;
 using Reactive.Bindings;
@@ -26,13 +25,13 @@ namespace CompMs.App.Msdial.Model.Lcms
         public LcmsAlignmentSpotTableModel(
             IReadOnlyList<AlignmentSpotPropertyModel> peakSpots,
             IReactiveProperty<AlignmentSpotPropertyModel> target,
-            PeakSpotNavigatorModel peakSpotNavigatorModel,
             IObservable<IBrushMapper<BarItem>> classBrush,
             FileClassPropertiesModel classProperties,
             IObservable<IBarItemsLoader> barItemsLoader,
-            IReadOnlyList<AdductIon> adductIons,
-            TargetOmics omics)
-            : base(peakSpots, target, classBrush, classProperties, barItemsLoader, peakSpotNavigatorModel, adductIons) {
+            TargetOmics omics,
+            PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter peakSpotFilter,
+            AlignmentSpotSpectraLoader spectraLoader)
+            : base(peakSpots, target, classBrush, classProperties, barItemsLoader, peakSpotFilter, spectraLoader) {
             MassMin = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Min();
             MassMax = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Max();
             RtMin = peakSpots.Select(s => s.RT).DefaultIfEmpty().Min();
@@ -49,8 +48,8 @@ namespace CompMs.App.Msdial.Model.Lcms
 
     internal sealed class LcmsAnalysisPeakTableModel : AnalysisPeakSpotTableModelBase, ILcmsPeakSpotTableModel
     {
-        public LcmsAnalysisPeakTableModel(IReadOnlyList<ChromatogramPeakFeatureModel> peakSpots, IReactiveProperty<ChromatogramPeakFeatureModel> target, PeakSpotNavigatorModel peakSpotNavigatorModel, IReadOnlyList<AdductIon> adductIons, TargetOmics omics)
-            : base(peakSpots, target, peakSpotNavigatorModel, adductIons) {
+        public LcmsAnalysisPeakTableModel(IReadOnlyList<ChromatogramPeakFeatureModel> peakSpots, IReactiveProperty<ChromatogramPeakFeatureModel> target, PeakSpotNavigatorModel peakSpotNavigatorModel, TargetOmics omics)
+            : base(peakSpots, target, peakSpotNavigatorModel) {
             MassMin = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Min();
             MassMax = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Max();
             RtMin = peakSpots.Select(s => s.RT.Value).DefaultIfEmpty().Min();

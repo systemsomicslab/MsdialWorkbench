@@ -136,6 +136,11 @@
                   behavior:DataGridScrollToSelectionBehavior.Enable="True"
                   behavior:DataGridIsEdittingBehavior.IsEditting="{Binding PeakSpotNavigatorViewModel.IsEditting.Value, Mode=OneWayToSource}"
                   Grid.Row="1">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Save matched spectra at each current peak spot" Command="{Binding ExportMatchedSpectraCommand, Mode=OneTime}"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
             <DataGrid.Resources>
                 <commonmvvm:BindingProxy x:Key="TableVM" Data="{Binding Mode=OneTime}"/>
             </DataGrid.Resources>

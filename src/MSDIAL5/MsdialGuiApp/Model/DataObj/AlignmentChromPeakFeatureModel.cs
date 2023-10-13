@@ -18,6 +18,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public string FileName => _innerModel.FileName;
         public int MasterPeakID => _innerModel.MasterPeakID;
         public int PeakID => _innerModel.PeakID;
+        public int MSDecResultID => _innerModel.GetMSDecResultID();
         public double TotalScore => _innerModel.MatchResults.Representative.TotalScore;
         public AdductIon Adduct => _innerModel.PeakCharacter.AdductType;
         public double Mass => _innerModel.Mass;

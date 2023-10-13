@@ -10,6 +10,11 @@ namespace CompMs.App.Msdial.Model.Loader
 {
     public interface IMsSpectrumLoader<in T>
     {
+        /// <summary>
+        /// </summary>
+        /// <param name="target"></param>
+        /// <exception cref="ArgumentNullException"><paramref name="target"/> is null.</exception>
+        /// <returns></returns>
         IObservable<List<SpectrumPeak>> LoadSpectrumAsObservable(T target);
     }
 

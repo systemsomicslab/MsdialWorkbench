@@ -1,11 +1,9 @@
 ﻿using CompMs.App.Msdial.Model.Table;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
-using CompMs.Common.DataObj.Property;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -27,7 +25,6 @@ namespace CompMs.App.Msdial.ViewModel.Table
         public ICollectionView PeakSpotsView { get; }
         public IReactiveProperty Target => _model.Target;
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
-        public IReadOnlyList<AdductIon> AdductIons => _model.AdductIons;
 
         public ICommand SetUnknownCommand { get; }
         public UndoManagerViewModel UndoManagerViewModel { get; }

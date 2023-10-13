@@ -23,9 +23,10 @@ namespace CompMs.App.Msdial.Model.Loader
         private readonly ParameterBase parameter;
 
         public Task<List<SpectrumPeak>> LoadSpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
-            return target is null
-                ? Task.FromResult(new List<SpectrumPeak>())
-                : LoadSpectrumCoreAsync(target, token);
+            if (target is null) {
+                throw new ArgumentNullException(nameof(target));
+            }
+            return LoadSpectrumCoreAsync(target, token);
         }
 
         private async Task<List<SpectrumPeak>> LoadSpectrumCoreAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {

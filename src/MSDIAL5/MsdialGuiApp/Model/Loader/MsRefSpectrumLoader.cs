@@ -28,12 +28,11 @@ namespace CompMs.App.Msdial.Model.Loader
         private readonly DataBaseMapper mapper;
 
         public async Task<List<SpectrumPeak>> LoadSpectrumAsync(IAnnotatedObject target, CancellationToken token) {
-            var ms2ReferenceSpectrum = new List<SpectrumPeak>();
-
-            if (target != null) {
-                ms2ReferenceSpectrum = await Task.Run(() => LoadSpectrumCore(target), token).ConfigureAwait(false);
+            if (target is null) {
+                throw new ArgumentNullException(nameof(target));
             }
 
+            var ms2ReferenceSpectrum = await Task.Run(() => LoadSpectrumCore(target), token).ConfigureAwait(false);
             token.ThrowIfCancellationRequested();
             return ms2ReferenceSpectrum;
         }
