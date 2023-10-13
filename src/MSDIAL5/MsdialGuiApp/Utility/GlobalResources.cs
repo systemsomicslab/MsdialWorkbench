@@ -48,8 +48,6 @@ namespace CompMs.App.Msdial.Utility
             get {
                 var version = Version;
                 return version.EndsWith("-tada")
-                    || version.EndsWith("-alpha")
-                    || version.EndsWith("-beta")
                     || version.EndsWith("-dev");
             }
         }
