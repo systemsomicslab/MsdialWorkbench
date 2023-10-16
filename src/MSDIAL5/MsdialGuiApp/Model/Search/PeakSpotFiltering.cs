@@ -48,7 +48,7 @@ namespace CompMs.App.Msdial.Model.Search
             }
             if ((status & FilterEnableStatus.Adduct) != FilterEnableStatus.None) {
                 var AdductFilterModel = new KeywordFilterModel("Adduct filter", KeywordFilteringType.KeepIfWordIsNull);
-                keywordFilterManagers.Add(new KeywordFilterManager<T>(AdductFilterModel, FilterEnableStatus.Adduct, obj => ((IFilterable)obj).AdductIonName));
+                keywordFilterManagers.Add(new KeywordFilterManager<T>(AdductFilterModel, FilterEnableStatus.Adduct, obj => ((IFilterable)obj).AdductType.AdductIonName));
             }
             if ((status & FilterEnableStatus.Comment) != FilterEnableStatus.None) {
                 var CommentFilterModel = new KeywordFilterModel("Comment filter");
@@ -251,6 +251,10 @@ namespace CompMs.App.Msdial.Model.Search
                     peaks = keywordFilterManager.Apply(peaks, _status);
                 }
                 return peaks;
+            }
+
+            public IEnumerable<T> FilterAnnotatedPeaks(IEnumerable<T> peaks) {
+                return peaks.Where(p => _evaluator.IsReferenceMatched(p) || _evaluator.IsAnnotationSuggested(p));
             }
         } 
     }

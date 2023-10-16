@@ -1,8 +1,8 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Parameter;
-using CompMs.Common.Parser;
 using CompMs.MsdialCore.DataObj;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -231,7 +231,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 CompoundClass = "PC",
                 PrecursorMz = 810.601,
                 ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min),
-                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
+                AdductType = AdductIon.GetAdductIon("[M+H]+"),
                 Spectrum = new List<SpectrumPeak>
                 {
                     new SpectrumPeak { Mass = 184.073, Intensity = 100 },
@@ -292,7 +292,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 CompoundClass = "PC",
                 PrecursorMz = 810.601,
                 CollisionCrossSection = 10d,
-                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
+                AdductType = AdductIon.GetAdductIon("[M+H]+"),
                 Spectrum = new List<SpectrumPeak>
                 {
                     new SpectrumPeak { Mass = 184.073, Intensity = 100 },
@@ -353,7 +353,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 CompoundClass = "PC",
                 PrecursorMz = 810.601,
                 ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min),
-                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
+                AdductType = AdductIon.GetAdductIon("[M+H]+"),
                 Spectrum = new List<SpectrumPeak>
                 {
                     new SpectrumPeak { Mass = 184.073, Intensity = 100 },
@@ -414,7 +414,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 CompoundClass = "PC",
                 PrecursorMz = 810.601,
                 ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min),
-                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
+                AdductType = AdductIon.GetAdductIon("[M+H]+"),
                 Spectrum = new List<SpectrumPeak>
                 {
                     new SpectrumPeak { Mass = 184.073, Intensity = 100, SpectrumComment = SpectrumComment.metaboliteclass, },

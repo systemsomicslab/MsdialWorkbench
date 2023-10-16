@@ -39,8 +39,9 @@ namespace CompMs.Graphics.Behavior
         private static void Datagrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (sender is DataGrid grid) {
-                if (!(grid.SelectedItem is null)) {
-                    grid.ScrollIntoView(grid.SelectedItem);
+                var addedItems = e.AddedItems;
+                if (addedItems.Count > 0 && addedItems[0] != null) {
+                    grid.ScrollIntoView(addedItems[0]);
                 }
             }
 

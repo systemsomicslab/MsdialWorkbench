@@ -28,8 +28,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
             IObservable<IBrushMapper<BarItem>> classBrush,
             FileClassPropertiesModel classProperties,
             IObservable<IBarItemsLoader> barItemsLoader,
-            PeakSpotNavigatorModel peakSpotNavigatorModel)
-            : base(peakSpots, target, classBrush, classProperties, barItemsLoader, peakSpotNavigatorModel) {
+            PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter peakSpotFilter,
+            AlignmentSpotSpectraLoader spectraLoader)
+            : base(peakSpots, target, classBrush, classProperties, barItemsLoader, peakSpotFilter, spectraLoader) {
             MassMin = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Min();
             MassMax = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Max();
             RtMin = peakSpots.Select(s => s.RT).DefaultIfEmpty().Min();

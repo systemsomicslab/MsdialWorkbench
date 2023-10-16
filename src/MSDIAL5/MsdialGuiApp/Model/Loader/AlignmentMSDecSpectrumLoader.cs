@@ -18,7 +18,7 @@ namespace CompMs.App.Msdial.Model.Loader
 
         private Task<MSDecResult> LoadMSDecResultAsync(AlignmentSpotPropertyModel target) {
             if (target is null) {
-                return Task.FromResult(new MSDecResult());
+                throw new ArgumentNullException(nameof(target));
             }
             return _alignmentFile.LoadMSDecResultByIndexAsync(target.MasterAlignmentID);
         }

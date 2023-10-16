@@ -193,7 +193,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             }.AddTo(Disposables);
 
             var spectraExporter = new NistSpectraExporter<ChromatogramPeakFeature>(target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
-            var decLoader = new MSDecLoader(analysisFileModel.DeconvolutionFilePath).AddTo(Disposables);
+            var decLoader = analysisFileModel.MSDecLoader;
             _decLoader = decLoader;
             var msdecResult = target.SkipNull()
                 .Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation))
@@ -367,5 +367,17 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public void Undo() => _undoManager.Undo();
         public void Redo() => _undoManager.Redo();
+
+        void IResultModel.ExportMoleculerNetworkingData(MsdialCore.Parameter.MolecularSpectrumNetworkingBaseParameter parameter) {
+            throw new NotImplementedException();
+        }
+
+        void IResultModel.InvokeMoleculerNetworking(MsdialCore.Parameter.MolecularSpectrumNetworkingBaseParameter parameter) {
+            throw new NotImplementedException();
+        }
+
+        public void InvokeMoleculerNetworkingForTargetSpot() {
+            throw new NotImplementedException();
+        }
     }
 }

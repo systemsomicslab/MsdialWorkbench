@@ -14,20 +14,20 @@
     </RibbonTab.Resources>
     <RibbonGroup>
         <RibbonButton Label="MS/MS fragment searcher" LargeImageSource="{StaticResource Fragment_search_is}"
-                      Command="{Binding ShowFragmentSearchSettingCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      Command="{Binding ShowFragmentSearchSettingCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       KeyTip="F"
                       ToolTip="The unique product ion or neutral loss can be examined."/>
         <RibbonButton Label="Spectral search" LargeImageSource="{StaticResource Spectral_library_search_is}"
                       IsEnabled="False"
                       KeyTip="S"/>
         <RibbonButton Label="Msfinder search" LargeImageSource="{StaticResource Msfinder_is}"
-                      Command="{Binding GoToMsfinderCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      Command="{Binding GoToMsfinderCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       KeyTip="M"/>
         <RibbonButton Label="MassQL search" LargeImageSource="{StaticResource MassQL_icon_is}"
-                      Command="{Binding ShowMassqlSearchSettingCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      Command="{Binding ShowMassqlSearchSettingCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       KeyTip="T"/>
         <RibbonButton Label="Find target compounds"
-                      Command="{Binding AlignmentViewModel.Value.ShowFindCompoundSpotViewCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      Command="{Binding AlignmentViewModel.Value.ShowFindCompoundSpotViewCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       KeyTip="C"/>
     </RibbonGroup>
 </RibbonTab>

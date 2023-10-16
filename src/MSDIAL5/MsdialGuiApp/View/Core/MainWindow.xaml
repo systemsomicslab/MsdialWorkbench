@@ -245,7 +245,7 @@
                 <DataTemplate DataType="{x:Type progressbar:ProgressBarVM}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{Binding Label}"/>
-                        <ProgressBar IsIndeterminate="{Binding IsIndeterminate}" Width="40" Margin="8,0,0,0"/>
+                        <ProgressBar Value="{Binding CurrentValue, Mode=OneWay}" IsIndeterminate="{Binding IsIndeterminate, Mode=OneWay}" Width="40" Margin="8,0,0,0"/>
                     </StackPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

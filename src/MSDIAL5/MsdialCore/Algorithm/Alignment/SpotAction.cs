@@ -1,9 +1,8 @@
-﻿using CompMs.MsdialCore.DataObj;
+﻿using CompMs.Common.DataObj.Property;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CompMs.MsdialCore.Algorithm.Alignment
 {
@@ -52,7 +51,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
             // if spot.Name is based on msp match result.
             if (spot.Name == mspdb.Name && spot.Name != textdb.Name) {
-                spot.AdductType.Unset();
+                spot.AdductType = AdductIon.Default;
                 spot.PeakCharacter.Charge = 1;
                 spot.Name = string.Empty;
             }
@@ -95,7 +94,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
             // if spot.Name is based on text db match result.
             if (spot.Name == textdb.Name && spot.Name != mspdb.Name) {
-                spot.AdductType.Unset();
+                spot.AdductType = AdductIon.Default;
                 spot.PeakCharacter.Charge = 1;
                 spot.Name = string.Empty;
             }

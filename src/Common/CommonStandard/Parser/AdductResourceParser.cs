@@ -1,12 +1,8 @@
 ﻿using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CompMs.Common.Parser {
     public sealed class AdductResourceParser {
@@ -36,7 +32,7 @@ namespace CompMs.Common.Parser {
                 if (line == "") break;
                 var lineArray = line.Split('\t');
 
-                var adductIon = AdductIonParser.GetAdductIonBean(lineArray[0]);
+                var adductIon = AdductIon.GetAdductIon(lineArray[0]);
                 adductIons.Add(adductIon);
             }
 

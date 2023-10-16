@@ -13,7 +13,6 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -27,19 +26,22 @@ namespace CompMs.App.Msdial.Model.Core
         private readonly IMessageBroker _broker;
         private readonly ProjectBaseParameterModel _projectBaseParameter;
 
-        public DatasetModel(IMsdialDataStorage<ParameterBase> storage, IMessageBroker broker) {
+        public DatasetModel(IMsdialDataStorage<ParameterBase> storage, IMessageBroker broker) : this(storage, new AnalysisFileBeanModelCollection(storage.AnalysisFiles), broker) {
+
+        }
+
+        public DatasetModel(IMsdialDataStorage<ParameterBase> storage, AnalysisFileBeanModelCollection files, IMessageBroker broker) {
             Storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _broker = broker;
-            _projectBaseParameter = new ProjectBaseParameterModel(Storage.Parameter.ProjectParam).AddTo(Disposables);
-            var files = new AnalysisFileBeanModelCollection(Storage.AnalysisFiles.Select(file => new AnalysisFileBeanModel(file)));
-            _analysisFileBeanModelCollection = files;
-            _alignmentFileBeanModelCollection = new AlignmentFileBeanModelCollection(Storage.AlignmentFiles, Storage.AnalysisFiles).AddTo(Disposables);
+            _projectBaseParameter = new ProjectBaseParameterModel(storage.Parameter.ProjectParam).AddTo(Disposables);
+            _analysisFileBeanModelCollection = files.AddTo(Disposables);
+            _alignmentFileBeanModelCollection = new AlignmentFileBeanModelCollection(storage.AlignmentFiles, storage.AnalysisFiles).AddTo(Disposables);
             AnalysisFilePropertyResetModel = new AnalysisFilePropertyResetModel(files, _projectBaseParameter);
             FileClassSetModel = new FileClassSetModel(_projectBaseParameter);
 
-            AllProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, files, _alignmentFileBeanModelCollection, Storage, HandlerAsync, _projectBaseParameter, broker);
-            IdentificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, files, _alignmentFileBeanModelCollection, Storage, HandlerAsync, _projectBaseParameter, broker);
-            AlignmentProcessMethodSettingModel = new MethodSettingModel(ProcessOption.Alignment, files, _alignmentFileBeanModelCollection, Storage, HandlerAsync, _projectBaseParameter, broker);
+            AllProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, files, _alignmentFileBeanModelCollection, storage, HandlerAsync, _projectBaseParameter, broker);
+            IdentificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, files, _alignmentFileBeanModelCollection, storage, HandlerAsync, _projectBaseParameter, broker);
+            AlignmentProcessMethodSettingModel = new MethodSettingModel(ProcessOption.Alignment, files, _alignmentFileBeanModelCollection, storage, HandlerAsync, _projectBaseParameter, broker);
         }
 
         public IMethodModel Method {
@@ -78,6 +80,7 @@ namespace CompMs.App.Msdial.Model.Core
             AllProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, _analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, Storage, HandlerAsync, _projectBaseParameter, _broker);
             IdentificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, _analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, Storage, HandlerAsync, _projectBaseParameter, _broker);
             AlignmentProcessMethodSettingModel = new MethodSettingModel(ProcessOption.Alignment, _analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, Storage, HandlerAsync, _projectBaseParameter, _broker);
+            _analysisFileBeanModelCollection.ReleaseMSDecLoaders();
             return Method.RunAsync(setting.Option, token);
         }
 
@@ -186,5 +189,7 @@ namespace CompMs.App.Msdial.Model.Core
                 return storage;
             }
         }
+
+        AnalysisFileBeanModelCollection IDatasetModel.AnalysisFiles => _analysisFileBeanModelCollection;
     }
 }

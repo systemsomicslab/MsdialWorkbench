@@ -18,6 +18,12 @@ namespace CompMs.App.Msdial.Utility
             return source.CombineLatestValuesAreAllFalse().Inverse();
         }
 
+        public static IObservable<U> DefaultIfNull<T, U>(this IObservable<T> source, Func<T, U> ifNotNull, U ifNull = default) where T: class {
+            var x = source.Where(v => v is null).ToConstant(ifNull);
+            var y = source.Where(v => !(v is null)).Select(ifNotNull);
+            return Observable.Merge(x, y);
+        }
+
         public static IObservable<T> Gate<T>(this IObservable<T> source, IObservable<bool> condition, bool observeWhenEnabled = false) {
             if (observeWhenEnabled) {
                 return source.CombineLatest(condition).Where(p => p.Second).Select(p => p.First);

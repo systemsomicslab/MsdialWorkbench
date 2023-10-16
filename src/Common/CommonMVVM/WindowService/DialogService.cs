@@ -24,7 +24,12 @@ namespace CompMs.CommonMVVM.WindowService
                 DataContext = viewmodel,
             };
 
-            dialog.Show();
+            try {
+                dialog.Show();
+            }
+            catch (InvalidOperationException e) {
+                MessageBox.Show(Owner, e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public bool? ShowDialog(TViewModel viewmodel) {
@@ -35,7 +40,13 @@ namespace CompMs.CommonMVVM.WindowService
                 DataContext = viewmodel,
             };
 
-            return dialog.ShowDialog();
+            try {
+                return dialog.ShowDialog();
+            }
+            catch (InvalidOperationException e) {
+                MessageBox.Show(Owner, e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
         }
     }
 }

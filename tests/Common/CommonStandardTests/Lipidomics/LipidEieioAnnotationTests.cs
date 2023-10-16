@@ -1,13 +1,8 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
-using CompMs.Common.DataObj.Result;
-using CompMs.Common.Enum;
-using CompMs.Common.Parameter;
-using CompMs.Common.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace CompMs.Common.Lipidomics.Tests
 {
@@ -18,6 +13,7 @@ namespace CompMs.Common.Lipidomics.Tests
         [TestMethod()]
         public void MGEieioCharacterizationTest()
         {
+            string expected = "MG 16:1";
             var target = new MSScanProperty
             {
                 PrecursorMz = 346.29431,
@@ -294,9 +290,9 @@ namespace CompMs.Common.Lipidomics.Tests
                 }
             };
             var parser = FacadeLipidParser.Default;
-            ILipid lipid = parser.Parse("MG 16:1");
+            ILipid lipid = parser.Parse(expected);
             var generator = new MGSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+NH4]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+NH4]+"));
             var reference = new MoleculeMsReference()
             {
                 AdductType = AdductIon.GetAdductIon("[M+NH4]+"),
@@ -305,11 +301,13 @@ namespace CompMs.Common.Lipidomics.Tests
                 Spectrum = scan.Spectrum,
             };
             var result = MGEadMsCharacterization.Characterize(target, (Lipid)lipid, reference, 0.025f, 0, 2000);
-            Console.WriteLine($"{result}");
+            Console.WriteLine($"{result.Item1.Name}\t{result.Item2[0]}\t{result.Item2[1]}");
+            Assert.AreEqual(expected, result.Item1.Name);
         }
         [TestMethod()]
         public void LPId5EieioCharacterizationTest()
         {
+            string expected = "LPI_d5 15:0/0:0";
             var target = new MSScanProperty
             {
                 PrecursorMz = 564.31732,
@@ -466,9 +464,9 @@ namespace CompMs.Common.Lipidomics.Tests
                 }
             };
             var parser = FacadeLipidParser.Default;
-            ILipid lipid = parser.Parse("LPI_d5 15:0/0:0");
+            ILipid lipid = parser.Parse(expected);
             var generator = new LPId5SpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
             var reference = new MoleculeMsReference()
             {
                 AdductType = AdductIon.GetAdductIon("[M+H]+"),
@@ -477,11 +475,13 @@ namespace CompMs.Common.Lipidomics.Tests
                 Spectrum = scan.Spectrum,
             };
             var result = LPIEadMsCharacterization.Characterize(target, (Lipid)lipid, reference, 0.025f, 0, 2000);
-            Console.WriteLine($"{result}");
+            Console.WriteLine($"{result.Item1.Name}\t{result.Item2[0]}\t{result.Item2[1]}");
+            Assert.AreEqual(expected, result.Item1.Name);
         }
         [TestMethod()]
         public void LPGEieioCharacterizationTest()
         {
+            string expected = "LPG 18:1/0:0";
             var target = new MSScanProperty
             {
                 PrecursorMz = 511.30169,
@@ -778,9 +778,9 @@ namespace CompMs.Common.Lipidomics.Tests
                 }
             };
             var parser = FacadeLipidParser.Default;
-            ILipid lipid = parser.Parse("LPG 18:1/0:0");
+            ILipid lipid = parser.Parse(expected);
             var generator = new LPGSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
             var reference = new MoleculeMsReference()
             {
                 AdductType = AdductIon.GetAdductIon("[M+H]+"),
@@ -790,10 +790,14 @@ namespace CompMs.Common.Lipidomics.Tests
             };
             var result = LPGEadMsCharacterization.Characterize(target, (Lipid)lipid, reference, 0.025f, 0, 2000);
             Console.WriteLine($"{result.Item1.Name}\t{result.Item2[0]}\t{result.Item2[1]}");
+            Assert.AreEqual(expected, result.Item1.Name);
+
         }
         [TestMethod()]
         public void EtherPCPEieioCharacterizationTest()
         {
+            string expected = "PC P-18:0/18:1";
+            string notMatch = "PC O-18:1(9)/18:1(9)";
             var target = new MSScanProperty
             {
                 PrecursorMz = 772.61834,
@@ -2210,11 +2214,11 @@ namespace CompMs.Common.Lipidomics.Tests
                 }
             };
             var parser = FacadeLipidParser.Default;
-            ILipid lipid = parser.Parse("PC P-18:0/18:1(9)");
-            ILipid lipid2 = parser.Parse("PC O-18:1(9)/18:1(9)");
+            ILipid lipid = parser.Parse(expected); //true "PC P-18:0/18:1(9)"
+            ILipid lipid2 = parser.Parse(notMatch);
             var generator = new EtherPCSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
-            var scan2 = lipid2.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
+            var scan2 = lipid2.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
             var reference = new MoleculeMsReference()
             {
                 AdductType = AdductIon.GetAdductIon("[M+H]+"),
@@ -2231,8 +2235,9 @@ namespace CompMs.Common.Lipidomics.Tests
             };
             var result = EtherPCEadMsCharacterization.Characterize(target, (Lipid)lipid, reference, 0.025f, 0, 2000);
             var result2 = EtherPCEadMsCharacterization.Characterize(target, (Lipid)lipid2, reference2, 0.025f, 0, 2000);
-            Console.WriteLine($"{result.Item1.Name}\t{result.Item2[0]}\t{result.Item2[1]}");
-            Console.WriteLine($"{result2.Item1.Name}\t{result2.Item2[0]}\t{result2.Item2[1]}");
+            Console.WriteLine($"expected: {result.Item1.Name}\t{result.Item2[0]}\t{result.Item2[1]}");
+            Console.WriteLine($"(comparison): {result2.Item1.Name}\t{result2.Item2[0]}\t{result2.Item2[1]}");
+            Assert.AreEqual(expected, result.Item1.Name);
         }
 
     }

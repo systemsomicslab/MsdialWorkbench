@@ -429,7 +429,7 @@
                                     <DataTemplate DataType="{x:Type vmchart:RawPurifiedSpectrumsViewModel}">
                                         <TextBlock Text="Raw vs. Purified" VerticalAlignment="Stretch"/>
                                     </DataTemplate>
-                                    <DataTemplate DataType="{x:Type vmchart:MsSpectrumViewModel}">
+                                    <DataTemplate DataType="{x:Type vmchart:AlignmentMs2SpectrumViewModel}">
                                         <TextBlock Text="Rep. vs. Ref." VerticalAlignment="Stretch"/>
                                     </DataTemplate>
                                 </DataTemplate.Resources>
@@ -473,7 +473,7 @@
                                     <DataTemplate DataType="{x:Type vmchart:RawPurifiedSpectrumsViewModel}">
                                         <chart:RawPurifiedView/>
                                     </DataTemplate>
-                                    <DataTemplate DataType="{x:Type vmchart:MsSpectrumViewModel}">
+                                    <DataTemplate DataType="{x:Type vmchart:AlignmentMs2SpectrumViewModel}">
                                         <chart:RepRefView DataContext="{Binding DataContext.AlignmentViewModel.Value, ElementName=TabControl_MS2Viewer}"
                                                           behavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Ms2SpectrumViewModel.FocusAction, Mode=OneWay}">
                                             <chart:RepRefView.ContextMenu>

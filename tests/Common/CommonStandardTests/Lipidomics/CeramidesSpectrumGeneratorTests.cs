@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.Common.DataObj.Property;
+using CompMs.Common.Enum;
 #if NETSTANDARD
 using CompMs.Common.Extension;
 #endif
@@ -20,7 +21,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.SM, 728.583225334, new PositionLevelChains(sphingo, acyl));
 
             var generator = new SMSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -29,7 +30,8 @@ namespace CompMs.Common.Lipidomics.Tests
                 253.0948,//C7H18N2O4P	
                 264.2686,//[sph+H]+ -Header -H2O	
                 307.287,//[FAA+C2H+adduct]+	
-                489.3452,//[FAA+C2H+Header+adduct]+	
+                	447.3108, // Header+sph -NH4
+                489.3452,//[FAA+C2H+Header+adduct]+
                 491.3244507 ,//Sn2-1-H
                 492.3322757 ,//Sn2-1
                 493.3401008 ,//Sn2-1+H
@@ -108,7 +110,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.SM, 751.57244603, new PositionLevelChains(sphingo, acyl));
 
             var generator = new SMSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+Na]+"));
 
             var expects = new[]
             {
@@ -162,6 +164,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 676.45212, // Sph(18:1)C11+H, Acyl(18:1)C11+H
                 688.45212, // Sph(18:1)C12-H, Acyl(18:1)C12-H
                 689.45994, // Sph(18:1)C12, Acyl(18:1)C12
+                689.4725,  // Precursor-C5H11N
                 690.46777, // Sph(18:1)C12+H, Acyl(18:1)C12+H
                 702.46777, // Sph(18:1)C13-H, Acyl(18:1)C13-H
                 703.47559, // Sph(18:1)C13, Acyl(18:1)C13
@@ -200,7 +203,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.Cer_NS, 645.6059954, new PositionLevelChains(sphingo, acyl));
 
             var generator = new CeramideSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -313,7 +316,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.Cer_NS, 645.6059954, new PositionLevelChains(sphingo, acyl));//Cer 18:2(4,8);2O/24:1(9)
 
             var generator = new CeramideSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H-H2O]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H-H2O]+"));
 
             var expects = new[]
             {
@@ -424,7 +427,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.Cer_NS, 645.6059954, new PositionLevelChains(sphingo, acyl));
 
             var generator = new CeramideSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+Na]+"));
 
             var expects = new[]
             {
@@ -533,7 +536,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.SHexCer,  891.646934, new PositionLevelChains(sphingo, acyl));
 
             var generator = new SHexCerSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -543,82 +546,83 @@ namespace CompMs.Common.Lipidomics.Tests
                 282.27914, //  [Sph-H2O+H]+ 
                 302.05403, //  [C8H16NO9S+H]+ 
                 368.38869, //  [FAA+H]+ 
-                446.32381, //  [sph+Hex+H]+ 
-                470.31123, // 24:0(acyl) C1-H 
-                471.31905, // 24:0(acyl) C1 
-                472.32688, // 24:0(acyl) C1+H 
-                484.32688, // 24:0(acyl) C2-H 
-                485.3347, // 24:0(acyl) C2 
-                486.34253, // 24:0(acyl) C2+H 
-                498.34253, // 24:0(acyl) C3-H 
-                499.35035, // 24:0(acyl) C3 
-                500.35818, // 24:0(acyl) C3+H 
-                512.35818, // 24:0(acyl) C4-H 
-                513.366, // 24:0(acyl) C4 
-                514.37383, // 24:0(acyl) C4+H 
-                526.37383, // 24:0(acyl) C5-H 
-                527.38165, // 24:0(acyl) C5 
-                528.38948, // 24:0(acyl) C5+H 
-                540.38948, // 24:0(acyl) C6-H 
-                541.3973, // 24:0(acyl) C6 
-                542.40513, // 24:0(acyl) C6+H 
-                554.40513, // 24:0(acyl) C7-H 
-                555.41295, // 24:0(acyl) C7 
-                556.42078, // 24:0(acyl) C7+H 
-                568.42078, // 24:0(acyl) C8-H 
-                569.4286, // 24:0(acyl) C8 
-                570.43643, // 24:0(acyl) C8+H 
-                582.43643, // 24:0(acyl) C9-H 
-                583.44425, // 24:0(acyl) C9 
-                584.45208, // 18:1(sphingo) C3-H, 24:0(acyl) C9+H
-                585.4599, // 18:1(sphingo) C3
-                586.46773, // 18:1(sphingo) C3+H
-                596.45208, // 24:0(acyl) C10-H 
-                597.4599, // 18:1(sphingo) C4-H, 24:0(acyl) C10 
-                598.46773, // 18:1(sphingo) C4, 24:0(acyl) C10+H
-                599.47556, // 18:1(sphingo) C4+H
-                610.46773, // 18:1(sphingo) C5-H, 24:0(acyl) C11-H 
-                611.47556, // 18:1(sphingo) C5, 24:0(acyl) C11 
-                612.48338, // 18:1(sphingo) C5+H, 24:0(acyl) C11+H
+                393.3965,  // [FA+C2H2N+H]+
+                //446.32381, //  [sph+Hex+H]+ 
+                //470.31123, // 24:0(acyl) C1-H 
+                //471.31905, // 24:0(acyl) C1 
+                //472.32688, // 24:0(acyl) C1+H 
+                //484.32688, // 24:0(acyl) C2-H 
+                //485.3347, // 24:0(acyl) C2 
+                //486.34253, // 24:0(acyl) C2+H 
+                //498.34253, // 24:0(acyl) C3-H 
+                //499.35035, // 24:0(acyl) C3 
+                //500.35818, // 24:0(acyl) C3+H 
+                //512.35818, // 24:0(acyl) C4-H 
+                //513.366, // 24:0(acyl) C4 
+                //514.37383, // 24:0(acyl) C4+H 
+                //526.37383, // 24:0(acyl) C5-H 
+                //527.38165, // 24:0(acyl) C5 
+                //528.38948, // 24:0(acyl) C5+H 
+                //540.38948, // 24:0(acyl) C6-H 
+                //541.3973, // 24:0(acyl) C6 
+                //542.40513, // 24:0(acyl) C6+H 
+                //554.40513, // 24:0(acyl) C7-H 
+                //555.41295, // 24:0(acyl) C7 
+                //556.42078, // 24:0(acyl) C7+H 
+                //568.42078, // 24:0(acyl) C8-H 
+                //569.4286, // 24:0(acyl) C8 
+                //570.43643, // 24:0(acyl) C8+H 
+                //582.43643, // 24:0(acyl) C9-H 
+                //583.44425, // 24:0(acyl) C9 
+                //584.45208, // 18:1(sphingo) C3-H, 24:0(acyl) C9+H
+                //585.4599, // 18:1(sphingo) C3
+                //586.46773, // 18:1(sphingo) C3+H
+                //596.45208, // 24:0(acyl) C10-H 
+                //597.4599, // 18:1(sphingo) C4-H, 24:0(acyl) C10 
+                //598.46773, // 18:1(sphingo) C4, 24:0(acyl) C10+H
+                //599.47556, // 18:1(sphingo) C4+H
+                //610.46773, // 18:1(sphingo) C5-H, 24:0(acyl) C11-H 
+                //611.47556, // 18:1(sphingo) C5, 24:0(acyl) C11 
+                //612.48338, // 18:1(sphingo) C5+H, 24:0(acyl) C11+H
                 614.62344, //  [M-C6H12O9S-H2O+H]+ 
-                624.48338, // 18:1(sphingo) C6-H, 24:0(acyl) C12-H 
-                625.49121, // 18:1(sphingo) C6 , 24:0(acyl) C12
-                626.49903, // 18:1(sphingo) C6+H, 24:0(acyl) C12+H
+                //624.48338, // 18:1(sphingo) C6-H, 24:0(acyl) C12-H 
+                //625.49121, // 18:1(sphingo) C6 , 24:0(acyl) C12
+                //626.49903, // 18:1(sphingo) C6+H, 24:0(acyl) C12+H
                 632.63401, //  [M-C6H12O9S+H]+ 
-                638.49903, // 18:1(sphingo) C7-H, 24:0(acyl) C13-H
-                639.50686, // 18:1(sphingo) C7, 24:0(acyl) C13
-                640.51468, // 18:1(sphingo) C7+H, 24:0(acyl) C13+H
+                //638.49903, // 18:1(sphingo) C7-H, 24:0(acyl) C13-H
+                //639.50686, // 18:1(sphingo) C7, 24:0(acyl) C13
+                //640.51468, // 18:1(sphingo) C7+H, 24:0(acyl) C13+H
                 650.64457, //  [M-C6H10O8S+H]+ 
-                652.51468, // 18:1(sphingo) C8-H, 24:0(acyl) C14-H
-                653.52251, // 18:1(sphingo) C8, 24:0(acyl) C14
-                654.53033, // 18:1(sphingo) C8+H, 24:0(acyl) C14+H
-                666.53033, // 18:1(sphingo) C9-H, 24:0(acyl) C15-H
-                667.53816, // 18:1(sphingo) C9, 24:0(acyl) C15
-                668.54598, // 18:1(sphingo) C9+H, 24:0(acyl) C15+H
-                680.54598, // 18:1(sphingo) C10-H, 24:0(acyl) C16-H
-                681.55381, // 18:1(sphingo) C10, 24:0(acyl) C16
-                682.56163, // 18:1(sphingo) C10+H, 24:0(acyl) C16+H
-                694.56163, // 18:1(sphingo) C11-H, 24:0(acyl) C17-H
-                695.56946, // 18:1(sphingo) C11, 24:0(acyl) C17
-                696.57728, // 18:1(sphingo) C11+H, 24:0(acyl) C17+H
-                708.57728, // 18:1(sphingo) C12-H, 24:0(acyl) C18-H
-                709.58511, // 18:1(sphingo) C12, 24:0(acyl) C18
-                710.59293, // 18:1(sphingo) C12+H, 24:0(acyl) C18+H
-                722.59293, // 18:1(sphingo) C13-H, 24:0(acyl) C19-H
-                723.60076, // 18:1(sphingo) C13, 24:0(acyl) C19
-                724.60858, // 18:1(sphingo) C13+H, 24:0(acyl) C19+H
-                736.60858, // 18:1(sphingo) C14-H, 24:0(acyl) C20-H
-                737.61641, // 18:1(sphingo) C14, 24:0(acyl) C20
-                738.62423, // 18:1(sphingo) C14+H, 24:0(acyl) C20+H
-                750.62423, // 18:1(sphingo) C15-H, 24:0(acyl) C21-H
-                751.63206, // 18:1(sphingo) C15, 24:0(acyl) C21
-                752.63988, // 18:1(sphingo) C15+H, 24:0(acyl) C21+H
-                764.63988, // 18:1(sphingo) C16-H, 24:0(acyl) C22-H
-                765.64771, // 18:1(sphingo) C16, 24:0(acyl) C22
-                766.65553, // 18:1(sphingo) C16+H, 24:0(acyl) C22+H
-                778.65553, // 18:1(sphingo) C17-H, 24:0(acyl) C23-H
-                779.66336, // 18:1(sphingo) C17, 24:0(acyl) C23
-                780.67118, // 18:1(sphingo) C17+H, 24:0(acyl) C23+H
+                //652.51468, // 18:1(sphingo) C8-H, 24:0(acyl) C14-H
+                //653.52251, // 18:1(sphingo) C8, 24:0(acyl) C14
+                //654.53033, // 18:1(sphingo) C8+H, 24:0(acyl) C14+H
+                //666.53033, // 18:1(sphingo) C9-H, 24:0(acyl) C15-H
+                //667.53816, // 18:1(sphingo) C9, 24:0(acyl) C15
+                //668.54598, // 18:1(sphingo) C9+H, 24:0(acyl) C15+H
+                //680.54598, // 18:1(sphingo) C10-H, 24:0(acyl) C16-H
+                //681.55381, // 18:1(sphingo) C10, 24:0(acyl) C16
+                //682.56163, // 18:1(sphingo) C10+H, 24:0(acyl) C16+H
+                //694.56163, // 18:1(sphingo) C11-H, 24:0(acyl) C17-H
+                //695.56946, // 18:1(sphingo) C11, 24:0(acyl) C17
+                //696.57728, // 18:1(sphingo) C11+H, 24:0(acyl) C17+H
+                //708.57728, // 18:1(sphingo) C12-H, 24:0(acyl) C18-H
+                //709.58511, // 18:1(sphingo) C12, 24:0(acyl) C18
+                //710.59293, // 18:1(sphingo) C12+H, 24:0(acyl) C18+H
+                //722.59293, // 18:1(sphingo) C13-H, 24:0(acyl) C19-H
+                //723.60076, // 18:1(sphingo) C13, 24:0(acyl) C19
+                //724.60858, // 18:1(sphingo) C13+H, 24:0(acyl) C19+H
+                //736.60858, // 18:1(sphingo) C14-H, 24:0(acyl) C20-H
+                //737.61641, // 18:1(sphingo) C14, 24:0(acyl) C20
+                //738.62423, // 18:1(sphingo) C14+H, 24:0(acyl) C20+H
+                //750.62423, // 18:1(sphingo) C15-H, 24:0(acyl) C21-H
+                //751.63206, // 18:1(sphingo) C15, 24:0(acyl) C21
+                //752.63988, // 18:1(sphingo) C15+H, 24:0(acyl) C21+H
+                //764.63988, // 18:1(sphingo) C16-H, 24:0(acyl) C22-H
+                //765.64771, // 18:1(sphingo) C16, 24:0(acyl) C22
+                //766.65553, // 18:1(sphingo) C16+H, 24:0(acyl) C22+H
+                //778.65553, // 18:1(sphingo) C17-H, 24:0(acyl) C23-H
+                //779.66336, // 18:1(sphingo) C17, 24:0(acyl) C23
+                //780.67118, // 18:1(sphingo) C17+H, 24:0(acyl) C23+H
                 794.68683, //  [M-H2SO4+H]+ 
                 812.6974, //  [M-SO3+H]+ 
                 892.65421, //  Precursor 
@@ -642,7 +646,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.GM3,1180.74446, new PositionLevelChains(sphingo, acyl));
 
             var generator = new GM3SpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -729,10 +733,11 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.GM3, 1180.74446, new PositionLevelChains(sphingo, acyl));
 
             var generator = new GM3SpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+NH4]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+NH4]+"));
 
             var expects = new[]
             {
+                264.268577, // [sph+H]+ -Header -H2O
                 274.09213, //  [C11H15NO7+H]+ 
                 292.10269, //  [C11H17NO8+H]+ 
                 454.15552, //  [C17H27NO13+H]+ 

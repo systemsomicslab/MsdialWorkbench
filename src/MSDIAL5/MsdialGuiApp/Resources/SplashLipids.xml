@@ -123,7 +123,7 @@
         <TargetClass>TG</TargetClass>
       </Lipid>
       <Lipid>
-        <StandardName>SM 18:1;2O/18:1(d9)</StandardName>
+        <StandardName>SM 18:1;O2/18:1(d9)</StandardName>
         <Concentration>33.8691</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>738.136</MolecularWeight>
@@ -131,7 +131,7 @@
         <TargetClass>SM</TargetClass>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -921,7 +921,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>SM 18:1;2O/18:1(d9)</StandardName>
+        <StandardName>SM 18:1;O2/18:1(d9)</StandardName>
         <Concentration>33.8691</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>738.136</MolecularWeight>
@@ -1164,7 +1164,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1173,7 +1173,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1182,7 +1182,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1191,7 +1191,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1200,7 +1200,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1209,7 +1209,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1218,7 +1218,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1227,7 +1227,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1236,7 +1236,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1245,7 +1245,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1254,7 +1254,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1263,7 +1263,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1272,7 +1272,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1281,7 +1281,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1290,7 +1290,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1299,7 +1299,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1308,7 +1308,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1317,7 +1317,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1326,7 +1326,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1335,7 +1335,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1344,7 +1344,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1353,7 +1353,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1362,7 +1362,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1371,7 +1371,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1380,7 +1380,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1389,7 +1389,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1398,7 +1398,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1407,7 +1407,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1416,7 +1416,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1425,7 +1425,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -1576,7 +1576,7 @@
         <TargetClass>TG</TargetClass>
       </Lipid>
       <Lipid>
-        <StandardName>SM 18:1;2O/18:1(d9)</StandardName>
+        <StandardName>SM 18:1;O2/18:1(d9)</StandardName>
         <Concentration>20.32</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>738.136</MolecularWeight>
@@ -1693,7 +1693,7 @@
         <TargetClass>TG</TargetClass>
       </Lipid>
       <Lipid>
-        <StandardName>SM 18:1;2O/18:1(d9)</StandardName>
+        <StandardName>SM 18:1;O2/18:1(d9)</StandardName>
         <Concentration>20.32</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>738.136</MolecularWeight>
@@ -1835,7 +1835,7 @@
         <TargetClass>TG</TargetClass>
       </Lipid>
       <Lipid>
-        <StandardName>SM 18:1;2O/18:1(d9)</StandardName>
+        <StandardName>SM 18:1;O2/18:1(d9)</StandardName>
         <Concentration>135.4764</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>738.136</MolecularWeight>
@@ -1843,7 +1843,7 @@
         <TargetClass>SM</TargetClass>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -2615,7 +2615,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>SM 18:1;2O/18:1(d9)</StandardName>
+        <StandardName>SM 18:1;O2/18:1(d9)</StandardName>
         <Concentration>135.4764</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>738.136</MolecularWeight>
@@ -2858,7 +2858,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -2867,7 +2867,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -2876,7 +2876,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -2885,7 +2885,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -2894,7 +2894,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -2903,7 +2903,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -2912,7 +2912,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -2921,7 +2921,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -2930,7 +2930,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -2939,7 +2939,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -2948,7 +2948,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -2957,7 +2957,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -2966,7 +2966,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -2975,7 +2975,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -2984,7 +2984,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -2993,7 +2993,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -3002,7 +3002,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -3011,7 +3011,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -3020,7 +3020,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -3029,7 +3029,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -3038,7 +3038,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -3047,7 +3047,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -3056,7 +3056,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -3065,7 +3065,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -3074,7 +3074,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -3083,7 +3083,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -3092,7 +3092,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -3101,7 +3101,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -3110,7 +3110,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -3119,7 +3119,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+        <StandardName>Cer 18:1;O2/15:0(d7)</StandardName>
         <Concentration>188.3487</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -3263,7 +3263,7 @@
         <TargetClass>TG</TargetClass>
       </Lipid>
       <Lipid>
-        <StandardName>SM 18:1;2O/17:0</StandardName>
+        <StandardName>SM 18:1;O2/17:0</StandardName>
         <Concentration>33.8691</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>738.136</MolecularWeight>
@@ -3271,7 +3271,7 @@
         <TargetClass>SM</TargetClass>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4061,7 +4061,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>SM 18:1;2O/17:0</StandardName>
+        <StandardName>SM 18:1;O2/17:0</StandardName>
         <Concentration>33.8691</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>738.136</MolecularWeight>
@@ -4304,7 +4304,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4313,7 +4313,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4322,7 +4322,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4331,7 +4331,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4340,7 +4340,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4349,7 +4349,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4358,7 +4358,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4367,7 +4367,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4376,7 +4376,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4385,7 +4385,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4394,7 +4394,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4403,7 +4403,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4412,7 +4412,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4421,7 +4421,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4430,7 +4430,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4439,7 +4439,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4448,7 +4448,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4457,7 +4457,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4466,7 +4466,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4475,7 +4475,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4484,7 +4484,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4493,7 +4493,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4502,7 +4502,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4511,7 +4511,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4520,7 +4520,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4529,7 +4529,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4538,7 +4538,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4547,7 +4547,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4556,7 +4556,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>
@@ -4565,7 +4565,7 @@
         <IsLabPrivateVersion>true</IsLabPrivateVersion>
       </Lipid>
       <Lipid>
-        <StandardName>Cer 18:1;2O/17:0</StandardName>
+        <StandardName>Cer 18:1;O2/17:0</StandardName>
         <Concentration>47.087175</Concentration>
         <DilutionRate>0.015625</DilutionRate>
         <MolecularWeight>530.93</MolecularWeight>

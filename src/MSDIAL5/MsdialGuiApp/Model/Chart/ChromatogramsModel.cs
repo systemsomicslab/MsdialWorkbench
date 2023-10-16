@@ -49,7 +49,7 @@ namespace CompMs.App.Msdial.Model.Chart
         }
 
         public async Task ExportAsync(Stream stream, string separator) {
-            using (var writer = new StreamWriter(stream, encoding: Encoding.UTF8, bufferSize: 1024, leaveOpen: true)) {
+            using (var writer = new StreamWriter(stream, encoding: new UTF8Encoding(false), bufferSize: 1024, leaveOpen: true)) {
                 await writer.WriteLineAsync(string.Format("Chromatogram{0}Time{0}Intensity", separator)).ConfigureAwait(false);
                 for (int i = 0; i < DisplayChromatograms.Count; i++) {
                     var chromatogram = DisplayChromatograms[i];

@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.Common.DataObj.Property;
+using CompMs.Common.Enum;
 #if NETSTANDARD
 using CompMs.Common.Extension;
 #endif
@@ -6,8 +7,8 @@ using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace CompMs.Common.Lipidomics.Tests
 {
@@ -21,21 +22,22 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.EtherPC, 789.5672409, new PositionLevelChains(alkyl, acyl));
 
             var generator = new EtherPCSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
                 183.065  + MassDiffDictionary.ProtonMass , // Header
                 224.105 , // Gly-C
                 226.083 , // Gly-O
+                395.28725867608495,//Precursor2+
                 487.3421121 + MassDiffDictionary.ProtonMass,// -Sn2 -O
-                //506.3605019 ,// -Sn2 acyl
+                506.3605019 ,// -Sn2 acyl
                 511.3057266 ,// -Sn1 -CH2
                 525.3213767 ,// -Sn1 Ether
                 532.3397664 ,//Sn2-1-H
                 533.3475914 ,//Sn2-1
                 534.3554165 ,//Sn2-1+H
-                //541.3162913 ,//Sn1-0
+                542.3241 ,//Sn1-0
                 546.3554165 ,//Sn2-2-H
                 547.3632415 ,//Sn2-2
                 548.3710665 ,//Sn2-2+H
@@ -144,13 +146,14 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.EtherPC, 789.5672409, new PositionLevelChains(alkyl, acyl));
 
             var generator = new EtherPCSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
                 183.065  + MassDiffDictionary.ProtonMass , // Header
                 224.105 , // Gly-C
                 226.083 , // Gly-O
+                395.28725867608495,//Precursor2+
                 487.3421121 ,// -Sn2 -O
                 506.3605019 ,// -Sn2 acyl
                 511.3057266 ,// -Sn1 -CH2
@@ -265,21 +268,22 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.EtherPC, 789.5672409, new PositionLevelChains(alkyl, acyl));
 
             var generator = new EtherPCSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+Na]+"));
 
             var expects = new[]
             {
                 206.0542207 , // Header
                 246.0869442 , // Gly-C
                 248.0649442 , // Gly-O
+                406.27823080049995,// Precursor2+
                 510.3313328 ,// -Sn2 -O
-                //528.3424461 ,// -Sn2 acyl
+                528.3424461 ,// -Sn2 acyl
                 533.2876709 ,// -Sn1 -CH2
                 547.3033209 ,// -Sn1 Ether
                 554.3217106 ,//Sn2-1-H
                 555.3295357 ,//Sn2-1
                 556.3373607 ,//Sn2-1+H
-                //563.2982356 ,//Sn1-0
+                564.30606 ,//Sn1-0
                 568.3373607 ,//Sn2-2-H
                 569.3451857 ,//Sn2-2
                 570.3530108 ,//Sn2-2+H
@@ -392,13 +396,14 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.EtherPC, 789.5672409, new PositionLevelChains(alkyl, acyl));
 
             var generator = new EtherPCSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+Na]+"));
 
             var expects = new[]
             {
                 206.0542207 , // Header
                 246.0869442 , // Gly-C
                 248.0649442 , // Gly-O
+                406.27823080049995,// Precursor2+
                 509.3240564 ,// -Sn2 -O
                 528.3424461 ,// -Sn2 acyl
                 533.2876709 ,// -Sn1 -CH2

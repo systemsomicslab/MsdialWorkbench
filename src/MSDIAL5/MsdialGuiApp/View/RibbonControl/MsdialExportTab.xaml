@@ -14,19 +14,19 @@
     </RibbonTab.Resources>
     <RibbonGroup>
         <RibbonButton Label="Peak list result" LargeImageSource="{StaticResource Peak_list_export_is}"
-                      Command="{Binding ExportAnalysisResultCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      Command="{Binding ExportAnalysisResultCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       KeyTip="P"/>
         <RibbonButton Label="Alignment result" LargeImageSource="{StaticResource Alignment_result_export_is}"
-                      Command="{Binding ExportAlignmentResultCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      Command="{Binding ExportAlignmentResultCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       KeyTip="L"/>
         <RibbonButton Label="Export normalization result" LargeImageSource="{StaticResource RawNormalized_comparison_result_is}"
                       IsEnabled="False"
                       KeyTip="N"/>
         <RibbonButton Label="Molecular spectrum networking export" LargeImageSource="{StaticResource Molecular_network_result_export_is}"
-                      IsEnabled="False"
+                      Command="{Binding ShowMolecularNetworkingExportSettingCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       KeyTip="M"/>
         <RibbonButton Label="Parameter export (Tab-delimited text)" LargeImageSource="{StaticResource Parameter_file_export_is}"
-                      IsEnabled="False"
+                      Command="{Binding ExportParameterCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       KeyTip="T"/>
         <RibbonButton Label="Export as lipoquality database format"
                       IsEnabled="False"

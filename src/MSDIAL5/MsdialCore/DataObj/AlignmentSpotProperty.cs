@@ -54,7 +54,7 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(11)]
         public IonMode IonMode { get; set; }
         [Key(54)]
-        public AdductIon AdductType { get; set; } = new AdductIon();
+        public AdductIon AdductType { get; set; } = AdductIon.Default;
 
         public void SetAdductType(AdductIon adduct) {
             AdductType = adduct;

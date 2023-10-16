@@ -386,6 +386,28 @@ namespace Rfx.Riken.OsakaUniv
             }
         }
 
+        private void menuItem_PeakAnnotationResultExportAsMassBankRecord_Click(object sender, RoutedEventArgs e)
+        {
+            if (!checkFileImport()) return;
+
+            System.Windows.Forms.FolderBrowserDialog fbd = new System.Windows.Forms.FolderBrowserDialog
+            {
+                RootFolder = Environment.SpecialFolder.Desktop,
+                Description = "Select a folder to export the MassBank records to",
+                SelectedPath = string.IsNullOrEmpty(this.mainWindowVM.DataStorageBean.ImportFolderPath)
+                    ? Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
+                    : this.mainWindowVM.DataStorageBean.ImportFolderPath
+            };
+
+            if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+                Mouse.OverrideCursor = Cursors.Wait;
+
+                ExportUtility.PeakAnnotationResultExportAsMassBankRecord(this.mainWindowVM, fbd.SelectedPath);
+
+                Mouse.OverrideCursor = null;
+            }
+        }
+
         private void menuItem_Test_Click(object sender, RoutedEventArgs e)
         {
             var sfd = new SaveFileDialog();

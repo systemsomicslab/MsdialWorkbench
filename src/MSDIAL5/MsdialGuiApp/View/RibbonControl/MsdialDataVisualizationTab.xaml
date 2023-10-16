@@ -24,23 +24,23 @@
                       Command="{Binding ShowProteinGroupTableCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       KeyTip="T"/>
         <RibbonButton Label="Principal component analysis" LargeImageSource="{StaticResource PCA_is}"
-                      Command="{Binding AlignmentViewModel.Value.ShowMultivariateAnalysisSettingCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      Command="{Binding AlignmentViewModel.Value.ShowMultivariateAnalysisSettingCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       CommandParameter="{x:Static enum:MultivariateAnalysisOption.Pca}"
                       KeyTip="P"/>
         <RibbonButton Label="Partial least squares" LargeImageSource="{StaticResource PLS_is}"
-                      Command="{Binding AlignmentViewModel.Value.ShowMultivariateAnalysisSettingCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      Command="{Binding AlignmentViewModel.Value.ShowMultivariateAnalysisSettingCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       CommandParameter="{x:Static enum:MultivariateAnalysisOption.Plsr}"
                       KeyTip="R"/>
         <RibbonButton Label="Partial least squares" LargeImageSource="{StaticResource PLS-DA_is}"
-                      Command="{Binding AlignmentViewModel.Value.ShowMultivariateAnalysisSettingCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      Command="{Binding AlignmentViewModel.Value.ShowMultivariateAnalysisSettingCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       CommandParameter="{x:Static enum:MultivariateAnalysisOption.Plsda}"
                       KeyTip="D"/>
         <RibbonButton Label="Hierarchical clustering analysis" LargeImageSource="{StaticResource HCA_is}"
-                      Command="{Binding AlignmentViewModel.Value.ShowMultivariateAnalysisSettingCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      Command="{Binding AlignmentViewModel.Value.ShowMultivariateAnalysisSettingCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       CommandParameter="{x:Static enum:MultivariateAnalysisOption.Hca}"
                       KeyTip="H"/>
         <RibbonButton Label="Molecular spectrum networking" LargeImageSource="{StaticResource Molecular_networking_is}"
-                      IsEnabled="False"
+                      Command="{Binding ShowMolecularNetworkingVisualizationSettingCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       KeyTip="M"/>
         <RibbonButton Label="Pathway" LargeImageSource="{StaticResource Pathway_is}"
                       IsEnabled="False"

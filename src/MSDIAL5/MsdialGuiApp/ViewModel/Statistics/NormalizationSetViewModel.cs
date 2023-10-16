@@ -4,6 +4,7 @@ using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.Reactive.Linq;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Statistics
 {
@@ -51,11 +52,11 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public ReadOnlyReactivePropertySlim<bool> IsSetViewModelVisible { get; }
 
         public ReactiveCommand NormalizeCommand { get; }
-        public ReactiveCommand CancelCommand { get; }
+        public ICommand CancelCommand { get; }
 
         private void Normalize() {
             if (IsSetViewModelVisible.Value) {
-                IsSetViewModel.ApplyCommand.Execute();
+                IsSetViewModel.ApplyChangeCommand.Execute();
             }
             _model.Normalize();
         }

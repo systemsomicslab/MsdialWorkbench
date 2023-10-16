@@ -23,7 +23,6 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -51,7 +50,7 @@ namespace CompMs.App.Msdial.Model.Dims
             PeakFilterModel peakFilterModel,
             ProjectBaseParameterModel projectBaseParameterModel,
             IMessageBroker broker)
-            : base(analysisFileModel) {
+            : base(analysisFileModel, parameter.MolecularSpectrumNetworkingBaseParam, broker) {
             if (evaluator is null) {
                 throw new ArgumentNullException(nameof(evaluator));
             }

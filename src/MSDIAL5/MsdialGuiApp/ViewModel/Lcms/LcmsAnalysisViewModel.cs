@@ -7,21 +7,16 @@ using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
-using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.Graphics.Design;
-using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
@@ -29,15 +24,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     {
         private readonly LcmsAnalysisModel _model;
         private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
-        private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
-        private readonly IWindowService<PeakSpotTableViewModelBase> _proteomicsTableService;
         private readonly IMessageBroker _broker;
 
         public LcmsAnalysisViewModel(
             LcmsAnalysisModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
             IMessageBroker broker,
             FocusControlManager focusControlManager) {
             if (model is null) {
@@ -48,22 +39,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
 
-            if (peakSpotTableService is null) {
-                throw new ArgumentNullException(nameof(peakSpotTableService));
-            }
-
-            if (proteomicsTableService is null) {
-                throw new ArgumentNullException(nameof(proteomicsTableService));
-            }
-
             if (focusControlManager is null) {
                 throw new ArgumentNullException(nameof(focusControlManager));
             }
 
             _model = model;
             _compoundSearchService = compoundSearchService;
-            _peakSpotTableService = peakSpotTableService;
-            _proteomicsTableService = proteomicsTableService;
             _broker = broker;
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
             UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
@@ -72,37 +53,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             PlotViewModel = new AnalysisPeakPlotViewModel(_model.PlotModel, peakPlotAction, peakPlotFocused).AddTo(Disposables);
             EicViewModel = new EicViewModel(_model.EicModel, horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
 
-            var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-                _model.Parameter.ProjectParam.SpectrumCommentToColorBytes
-                .ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-                ),
-                item => item.ToString(),
-                Colors.Blue);
-
-            var projectParameter = _model.Parameter.ProjectParam;
-            var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(
-                comment =>
-                {
-                    var commentString = comment.ToString();
-                    if (projectParameter.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
-                        return Color.FromRgb(color[0], color[1], color[2]);
-                    }
-                    else if ((comment & SpectrumComment.doublebond) == SpectrumComment.doublebond
-                        && projectParameter.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
-                        return Color.FromRgb(color[0], color[1], color[2]);
-                    }
-                    else {
-                        return Colors.Red;
-                    }
-                },
-                true);
 
             var (rawDecSpectraViewFocusAction, rawDecSpectraViewFocused) = focusControlManager.Request();
-            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this._model.Ms2SpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused).AddTo(Disposables);
+            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(model.Ms2SpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused).AddTo(Disposables);
 
-            RawPurifiedSpectrumsViewModel = new RawPurifiedSpectrumsViewModel(this._model.RawPurifiedSpectrumsModel).AddTo(Disposables);
+            RawPurifiedSpectrumsViewModel = new RawPurifiedSpectrumsViewModel(model.RawPurifiedSpectrumsModel).AddTo(Disposables);
 
             var (ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused) = focusControlManager.Request();
             Ms2ChromatogramsViewModel = new Ms2ChromatogramsViewModel(model.Ms2ChromatogramsModel, ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused).AddTo(Disposables);
@@ -111,15 +66,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
 
-            PeakTableViewModel = new LcmsAnalysisPeakTableViewModel(
-                _model.PeakTableModel,
-                Observable.Return(_model.EicLoader),
-                PeakSpotNavigatorViewModel,
-                SetUnknownCommand,
-                UndoManagerViewModel)
-            .AddTo(Disposables);
-
-            ProteomicsPeakTableViewModel = new LcmsProteomicsPeakTableViewModel(
+            PeakTableViewModel = LcmsTableViewModelHelper.CreateViewModel(
                 _model.PeakTableModel,
                 Observable.Return(_model.EicLoader),
                 PeakSpotNavigatorViewModel,
@@ -166,9 +113,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public RawPurifiedSpectrumsViewModel RawPurifiedSpectrumsViewModel { get; }
         public Ms2ChromatogramsViewModel Ms2ChromatogramsViewModel { get; }
         public SurveyScanViewModel SurveyScanViewModel { get; }
-        public LcmsAnalysisPeakTableViewModel PeakTableViewModel { get; }
-        public LcmsProteomicsPeakTableViewModel ProteomicsPeakTableViewModel { get; }
-        public List<ChromatogramPeakFeature> Peaks { get; }
+        public AnalysisPeakTableViewModelBase PeakTableViewModel { get; }
 
         public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
 
@@ -192,13 +137,23 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private DelegateCommand _showIonTableCommand;
 
         private void ShowIonTable() {
-            if (_model.Parameter.TargetOmics == CompMs.Common.Enum.TargetOmics.Proteomics) {
-                _proteomicsTableService.Show(ProteomicsPeakTableViewModel);
-            }
-            else {
-                _peakSpotTableService.Show(PeakTableViewModel);
-            }
+            _broker.Publish(PeakTableViewModel);
         }
+
+        public DelegateCommand SearchAnalysisSpectrumByMoleculerNetworkingCommand => _searchAnalysisSpectrumByMoleculerNetworkingCommand ?? (_searchAnalysisSpectrumByMoleculerNetworkingCommand = new DelegateCommand(SearchAnalysisSpectrumByMoleculerNetworkingMethod));
+        private DelegateCommand _searchAnalysisSpectrumByMoleculerNetworkingCommand;
+
+        private void SearchAnalysisSpectrumByMoleculerNetworkingMethod() {
+            _model.InvokeMoleculerNetworkingForTargetSpot();
+        }
+
+        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ?? (_goToMsfinderCommand = new DelegateCommand(GoToMsfinderMethod));
+        private DelegateCommand _goToMsfinderCommand;
+
+        private void GoToMsfinderMethod() {
+            _model.InvokeMsfinder();
+        }
+
 
         public DelegateCommand SaveMs2SpectrumCommand => _saveMs2SpectrumCommand ?? (_saveMs2SpectrumCommand = new DelegateCommand(SaveSpectra, _model.CanSaveSpectra));
         private DelegateCommand _saveMs2SpectrumCommand;

@@ -23,6 +23,7 @@ namespace CompMs.App.Msdial.Model.Chart
             VerticalPropertySelectors = verticalPropertySelectors ?? throw new ArgumentNullException(nameof(verticalPropertySelectors));
             _hueItem = hueItem;
             Labels = graphLabels;
+
             IsVisible = new ReactivePropertySlim<bool>(true).AddTo(Disposables);
             LineThickness = new ReactivePropertySlim<double>(2d).AddTo(Disposables);
         }

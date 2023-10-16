@@ -14,6 +14,60 @@ namespace CompMs.App.MsdialConsole.MolecularNetwork {
     public sealed class MoleculerSpectrumNetworkingTest {
         private MoleculerSpectrumNetworkingTest() { }
 
+        public static void MergeEdgeFiles(string inputfolder, string output) {
+            var files = Directory.GetFiles(inputfolder, "*.pairs");
+            using (var sw = new StreamWriter(output)) {
+                sw.WriteLine("Source\tTarget\tScore\tMatchCount");
+                foreach (var file in files) {
+                    using (var sr = new StreamReader(file)) {
+                        var header = sr.ReadLine().Split('\t');
+                        var sourceFileName = Path.GetFileNameWithoutExtension(header[0].Substring(10));
+                        var targetFileName = Path.GetFileNameWithoutExtension(header[1].Substring(10));
+                        while (sr.Peek() > -1) {
+                            var linearray = sr.ReadLine().Split('\t');
+                            var newarray = new List<string>() { 
+                                sourceFileName + "_" + linearray[0],
+                                targetFileName + "_" + linearray[1],
+                                linearray[2],
+                                linearray[3]
+                            };
+                            sw.WriteLine(String.Join("\t", newarray));
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void MergeNodeFiles(string inputfolder, string output) {
+            var files = Directory.GetFiles(inputfolder, "*.mdpeak");
+            var isfirstfile = true;
+            using (var sw = new StreamWriter(output)) {
+                foreach (var file in files) {
+                    var filename = Path.GetFileNameWithoutExtension(file);
+                    using (var sr = new StreamReader(file)) {
+                        var header = sr.ReadLine().Split('\t');
+                        if (isfirstfile) {
+                            var newheder = new List<string>() { "File_ID", "File" };
+                            foreach (var line in header) newheder.Add(line);
+                            sw.WriteLine(String.Join("\t", newheder));
+                        }
+                        while (sr.Peek() > -1) {
+                            var linearray = sr.ReadLine().Split('\t');
+                            if (linearray[1].Contains("w/o MS2")) {
+                                linearray[15] = "null";
+                                linearray[16] = "null";
+                                linearray[17] = "null";
+                                linearray[18] = "null";
+                            }
+                            var newarray = new List<string>() { filename + "_" + linearray[0], filename };
+                            foreach (var line in linearray) newarray.Add(line);
+                            sw.WriteLine(String.Join("\t", newarray));
+                        }
+                    }
+                }
+            }
+        }
+
         public static void Run(string input, string outputdir, string version) {
             if (!Directory.Exists(outputdir)) {
                 Directory.CreateDirectory(outputdir);

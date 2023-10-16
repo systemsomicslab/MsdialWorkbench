@@ -22,7 +22,7 @@ namespace CompMs.App.MsdialConsole.Process {
 
         public static bool SetProjectProperty(ParameterBase param, string input, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile) {
 
-            Console.WriteLine("Loading library files..");
+            Console.WriteLine("Loading analysis files..");
             analysisFiles = AnalysisFilesParser.ReadInput(input);
             alignmentFile = AlignmentResultParser.GetAlignmentFileBean(input);
             if (analysisFiles.IsEmptyOrNull()) {
@@ -54,40 +54,35 @@ namespace CompMs.App.MsdialConsole.Process {
         }
 
         public static void ParseLibraries(ParameterBase param, float targetMz,
-            out IupacDatabase iupacDB, out List<MoleculeMsReference> mspDB, out List<MoleculeMsReference> txtDB, 
-            out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode) {
-            
+            out IupacDatabase iupacDB, out List<MoleculeMsReference> mspDB, out List<MoleculeMsReference> txtDB,
+            out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode,
+            out List<MoleculeMsReference> lbmDB) {
+
             iupacDB = IupacResourceParser.GetIUPACDatabase();
             mspDB = new List<MoleculeMsReference>();
             txtDB = new List<MoleculeMsReference>();
+            lbmDB = new List<MoleculeMsReference>();
             isotopeTextDB = new List<MoleculeMsReference>();
             compoundsInTargetMode = new List<MoleculeMsReference>();
 
-            if (param.TargetOmics == TargetOmics.Lipidomics) {
-                CommonProcess.SetLipidQueries(param);
-                if (!ErrorHandler.IsFileExist(param.MspFilePath)) {
-                    Console.WriteLine(CommonProcess.NoLibraryFileError());
-                    return;
+            if (ErrorHandler.IsFileExist(param.MspFilePath)) { 
+                mspDB = LibraryHandler.ReadMsLibrary(param.MspFilePath, param, out var mspError);
+                if (mspError != string.Empty) {
+                    Console.WriteLine(mspError);
                 }
-                mspDB = LibraryHandler.ReadLipidMsLibrary(param.MspFilePath, param);
             }
-            else {
-                if (ErrorHandler.IsFileExist(param.MspFilePath)) {
-                    mspDB = LibraryHandler.ReadMspLibrary(param.MspFilePath);
-                    mspDB = mspDB.OrderBy(n => n.PrecursorMz).ToList();
-                    var counter = 0;
-                    foreach (var query in mspDB) {
-                        query.ScanID = counter; counter++;
-                    }
-                }
-                else {
-                    Console.WriteLine(CommonProcess.NoLibraryFileError());
+            if (ErrorHandler.IsFileExist(param.LbmFilePath)) {
+                lbmDB = LibraryHandler.ReadMsLibrary(param.LbmFilePath, param, out var lbmError);
+                if (lbmError != string.Empty) {
+                    Console.WriteLine(lbmError);
                 }
             }
 
             if (ErrorHandler.IsFileExist(param.TextDBFilePath)) {
-                txtDB = TextLibraryParser.TextLibraryReader(param.TextDBFilePath, out string errorInTextDB);
-                if (errorInTextDB != string.Empty) Console.WriteLine(errorInTextDB);
+                txtDB = LibraryHandler.ReadMsLibrary(param.TextDBFilePath, param, out var txtError);
+                if (txtError != string.Empty) {
+                    Console.WriteLine(txtError);
+                }
             }
 
             if (ErrorHandler.IsFileExist(param.IsotopeTextDBFilePath)) {

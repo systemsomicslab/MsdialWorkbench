@@ -10,10 +10,16 @@ namespace CompMs.App.Msdial.Model.Loader
 {
     public interface IMsSpectrumLoader<in T>
     {
+        /// <summary>
+        /// </summary>
+        /// <param name="target"></param>
+        /// <exception cref="ArgumentNullException"><paramref name="target"/> is null.</exception>
+        /// <returns></returns>
         IObservable<List<SpectrumPeak>> LoadSpectrumAsObservable(T target);
     }
 
-    public static class MsSpectrumLoaderExtension {
+    public static class MsSpectrumLoaderExtension
+    {
         public static IMsSpectrumLoader<U> Contramap<T, U>(this IMsSpectrumLoader<T> loader, Func<U, IObservable<T>> map) {
             return new ContramapImplLoader<T, U>(loader, map);
         }

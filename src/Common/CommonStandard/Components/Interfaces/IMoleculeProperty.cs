@@ -26,7 +26,7 @@ namespace CompMs.Common.Interfaces
                 throw new InvalidSmilesException("No information on SMILES.");
             }
             IAtomContainer container = SMILES_PARSER.ParseSmiles(molecule.SMILES);
-            if (!ConnectivityChecker.IsConnected(container)) {
+            if (container is null || !ConnectivityChecker.IsConnected(container)) {
                 throw new InvalidSmilesException("The connectivity is not correct.");
             }
             return container;

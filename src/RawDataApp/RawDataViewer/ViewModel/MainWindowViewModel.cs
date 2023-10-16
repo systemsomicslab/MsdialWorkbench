@@ -26,6 +26,7 @@ namespace CompMs.App.RawDataViewer.ViewModel
                     AnalysisFilePath = vm,
                     AnalysisFileId = 0,
                     AnalysisFileName = Path.GetFileName(vm),
+                    AcquisitionType = AcquisitionType.DDA,
                 },
                 ignoreValidationErrorValue: true)
                 .SetValidateAttribute(() => FilePath)

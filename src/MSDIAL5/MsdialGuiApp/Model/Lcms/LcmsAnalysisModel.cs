@@ -12,6 +12,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Proteomics.DataObj;
+using CompMs.Graphics.Base;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -35,7 +36,7 @@ namespace CompMs.App.Msdial.Model.Lcms
     internal sealed class LcmsAnalysisModel : AnalysisModelBase {
         private readonly IDataProvider _provider;
         private readonly CompoundSearcherCollection _compoundSearchers;
-
+        private readonly ParameterBase _parameter;
 
         public LcmsAnalysisModel(
             AnalysisFileBeanModel analysisFileModel,
@@ -47,7 +48,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             PeakFilterModel peakFilterModel,
             ProjectBaseParameterModel projectBaseParameterModel,
             IMessageBroker broker)
-            : base(analysisFileModel) {
+            : base(analysisFileModel, parameter.MolecularSpectrumNetworkingBaseParam, broker) {
             if (provider is null) {
                 throw new ArgumentNullException(nameof(provider));
             }
@@ -66,7 +67,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             _provider = provider;
             DataBaseMapper = mapper;
-            Parameter = parameter;
+            _parameter = parameter;
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper);
             _undoManager = new UndoManager().AddTo(Disposables);
 
@@ -102,8 +103,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 .AddTo(Disposables);
 
             // Eic chart
-            var eicLoader = EicLoader.BuildForAllRange(analysisFileModel.File, provider, Parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
-            EicLoader = EicLoader.BuildForPeakRange(analysisFileModel.File, provider, Parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
+            var eicLoader = EicLoader.BuildForAllRange(analysisFileModel.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
+            EicLoader = EicLoader.BuildForPeakRange(analysisFileModel.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
             EicModel = new EicModel(Target, eicLoader) {
                 HorizontalTitle = PlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
@@ -117,7 +118,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 .DisposePreviousValue()
                 .CombineLatest(
                     Target.SkipNull(),
-                    (model, t) => new ExperimentSpectrumModel(model, AnalysisFileModel, provider, t.InnerModel, DataBaseMapper, Parameter))
+                    (model, t) => new ExperimentSpectrumModel(model, AnalysisFileModel, provider, t.InnerModel, DataBaseMapper, parameter))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -126,7 +127,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             var decSpectrumLoader = new MsDecSpectrumLoader(decLoader, Ms1Peaks);
 
             // Ms2 spectrum
-            var spectraExporter = new NistSpectraExporter<ChromatogramPeakFeature>(Target.Select(t => t?.InnerModel), mapper, Parameter).AddTo(Disposables);
+            var spectraExporter = new NistSpectraExporter<ChromatogramPeakFeature>(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
             MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
@@ -158,11 +159,11 @@ namespace CompMs.App.Msdial.Model.Lcms
             RawPurifiedSpectrumsModel = new RawPurifiedSpectrumsModel(Ms2SpectrumModel.RawRefSpectrumModels.UpperSpectrumModel, Ms2SpectrumModel.DecRefSpectrumModels.UpperSpectrumModel).AddTo(Disposables);
 
             // Ms2 chromatogram
-            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawSpectrumLoader, provider, Parameter, analysisFileModel.AcquisitionType, broker).AddTo(Disposables);
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawSpectrumLoader, provider, parameter, analysisFileModel.AcquisitionType, broker).AddTo(Disposables);
 
             // SurveyScan
-            var msdataType = Parameter.MSDataType;
-            var surveyScanSpectrum = SurveyScanSpectrum.Create(Target, t =>
+            var msdataType = parameter.MSDataType;
+            var surveyScanSpectrum = new SurveyScanSpectrum(Target, t =>
             {
                 if (t is null) {
                     return Observable.Return(new List<SpectrumPeakWrapper>());
@@ -180,7 +181,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
 
             // Peak table
-            PeakTableModel = new LcmsAnalysisPeakTableModel(Ms1Peaks, Target, PeakSpotNavigatorModel).AddTo(Disposables);
+            PeakTableModel = new LcmsAnalysisPeakTableModel(Ms1Peaks, Target, PeakSpotNavigatorModel, parameter.ProjectParam.TargetOmics).AddTo(Disposables);
 
             var rtSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, RtTol, Target.Select(t => t?.ChromXValue ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
             var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, MzTol, Target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
@@ -226,7 +227,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         public UndoManager UndoManager => _undoManager;
 
         public DataBaseMapper DataBaseMapper { get; }
-        public ParameterBase Parameter { get; }
 
         public EicLoader EicLoader { get; }
 
@@ -260,7 +260,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
         public override void SearchFragment() {
-            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Peaks.Select(n => n.InnerModel).ToList(), decLoader, Parameter);
+            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Peaks.Select(n => n.InnerModel).ToList(), decLoader, _parameter);
         }
 
         public void SaveSpectra(string filename) {
@@ -272,15 +272,17 @@ namespace CompMs.App.Msdial.Model.Lcms
                     MsdecResult.Value,
                     _provider.LoadMs1Spectrums(),
                     DataBaseMapper,
-                    Parameter);
+                    _parameter);
             }
         }
 
         public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;
 
         public async Task SaveRawSpectra(string filename) {
+            if (!(Target.Value is ChromatogramPeakFeatureModel target)) {
+                return;
+            }
             using (var file = File.Open(filename, FileMode.Create)) {
-                var target = Target.Value;
                 var spectrum = await _rawSpectrumLoader.LoadSpectrumAsObservable(target).FirstAsync();
                 SpectraExport.SaveSpectraTable(
                     (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
@@ -289,7 +291,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     new MSScanProperty() { Spectrum = spectrum },
                     _provider.LoadMs1Spectrums(),
                     DataBaseMapper,
-                    Parameter);
+                    _parameter);
             }
         }
 
@@ -310,8 +312,10 @@ namespace CompMs.App.Msdial.Model.Lcms
                 MsdecResult.Value,
                 _provider.LoadMs1Spectrums(),
                 DataBaseMapper,
-                Parameter);
+                _parameter);
         }
+
+        
 
         public void Undo() => _undoManager.Undo();
         public void Redo() => _undoManager.Redo();

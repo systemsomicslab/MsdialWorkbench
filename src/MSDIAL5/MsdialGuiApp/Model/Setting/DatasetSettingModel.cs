@@ -21,7 +21,7 @@ namespace CompMs.App.Msdial.Model.Setting
             handler = null;
 
             Result = model;
-            DatasetFileSettingModel = new DatasetFileSettingModel(model.Storage.AnalysisFiles);
+            DatasetFileSettingModel = new DatasetFileSettingModel(model.AnalysisFiles);
             DatasetParameterSettingModel = new DatasetParameterSettingModel(model.Storage.Parameter, DatasetFileSettingModel, broker);
         }
 

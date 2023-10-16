@@ -137,8 +137,19 @@
                   VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                   Unloaded="DataGrid_Unloaded"
                   SelectionChanged="PeakSpotView_SelectionChanged"
+                  behavior:DataGridPasteBehavior.Enable="True"
+                  behavior:DataGridCommitBehavior.Enable="True"
+                  behavior:DataGridScrollToSelectionBehavior.Enable="True"
                   behavior:DataGridIsEdittingBehavior.IsEditting="{Binding PeakSpotNavigatorViewModel.IsEditting.Value, Mode=OneWayToSource}"
                   Grid.Row="1">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Save matched spectra at each current peak spot" Command="{Binding ExportMatchedSpectraCommand, Mode=OneTime}"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+            <DataGrid.Resources>
+                <commonmvvm:BindingProxy x:Key="TableVM" Data="{Binding Mode=OneTime}"/>
+            </DataGrid.Resources>
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -161,9 +172,8 @@
                                     IsReadOnly="True"
                                     Width="70" />
                 <DataGridTextColumn Header="Type"
-                                    Binding="{Binding Path=AdductIonName}"
-                                    IsReadOnly="True"
-                                    Width="1*" />
+                                    Binding="{Binding Path=AdductType, Converter={StaticResource AdductIonConverter}}"
+                                    Width="*"/>
                 <DataGridTextColumn Header="Fill %"
                                     Binding="{Binding Path=FillPercentage, StringFormat=F2}"
                                     IsReadOnly="True"
@@ -178,7 +188,9 @@
                         </Style>
                     </DataGridTextColumn.CellStyle>
                 </DataGridTextColumn>
-
+                <DataGridTextColumn Header="Ontology"
+                                    Binding="{Binding Path=Ontology}"
+                                    Width="1.5*" />
                 <DataGridTextColumn Header="Comment"
                                     Binding="{Binding Path=Comment}"
                                     IsReadOnly="False"

@@ -136,9 +136,13 @@
                   HeadersVisibility="All"
                   AutoGenerateColumns="False"
                   VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                  behavior:DataGridPasteBehavior.Enable="True"
                   behavior:DataGridCommitBehavior.Enable="True"
                   behavior:DataGridScrollToSelectionBehavior.Enable="True"
                   Grid.Row="1">
+            <DataGrid.Resources>
+                <commonmvvm:BindingProxy x:Key="TableVM" Data="{Binding Mode=OneTime}"/>
+            </DataGrid.Resources>
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -165,9 +169,8 @@
                                     IsReadOnly="True"
                                     Width="70" />
                 <DataGridTextColumn Header="Type"
-                                    Binding="{Binding Path=AdductIonName}"
-                                    IsReadOnly="True"
-                                    Width="1*" />
+                                    Binding="{Binding Path=AdductType, Converter={StaticResource AdductIonConverter}}"
+                                    Width="*"/>
                 <DataGridTextColumn Header="PG ID"
                                     Binding="{Binding Path=ProteinGroupID}"
                                     IsReadOnly="True" 

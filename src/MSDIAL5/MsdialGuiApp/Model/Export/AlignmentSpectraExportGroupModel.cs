@@ -2,7 +2,6 @@
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Parser;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -36,7 +35,7 @@ namespace CompMs.App.Msdial.Model.Export
         }
         private bool _exportIndividually = false;
 
-        public int CountExportFiles() {
+        public int CountExportFiles(AlignmentFileBeanModel alignmentFile) {
             return Formats.Count(f => f.IsSelected);
         }
 

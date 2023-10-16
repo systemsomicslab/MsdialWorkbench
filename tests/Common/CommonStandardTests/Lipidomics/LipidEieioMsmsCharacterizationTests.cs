@@ -2,6 +2,7 @@
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.Common.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,8 +15,6 @@ namespace CompMs.Common.Lipidomics.Tests
     [TestClass()]
     public class LipidEieioMsmsCharacterizationTests
     {
-        private AdductIon adduct;
-
         [TestMethod()]
         public void CarCharacterizationTest()
         {
@@ -135,7 +134,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfAcylcarnitine(target, 0.01, 426.3578f, 18, 1, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfAcylcarnitine(target, 0.01, 426.3578f, 18, 1, adduct: AdductIon.GetAdductIon("[M+H]+"));
             Console.WriteLine($"{result.LipidName}");
 
         }
@@ -372,7 +371,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfEtherpe(target, 0.01, 704.5589f, 34, 1, 16, 18, 0, 1, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfEtherpe(target, 0.01, 704.5589f, 34, 1, 16, 18, 0, 1, adduct: AdductIon.GetAdductIon("[M+H]+"));
             //var result2 = LipidEieioMsmsCharacterization.JudgeIfEtherpe(target, 0.01, 704.5589f, 34, 1, 16, 18, 1, 0, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
             Console.WriteLine($"{result.LipidName} : {result.Score}");
             //Console.WriteLine($"{result2.LipidName} : {result2.Score}");
@@ -847,7 +846,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfEtherpe(target, 0.01, 730.5745f, 36, 2, 18, 18, 1, 1, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfEtherpe(target, 0.01, 730.5745f, 36, 2, 18, 18, 1, 1, adduct: AdductIon.GetAdductIon("[M+H]+"));
             Console.WriteLine($"{result.LipidName}");
         }
 
@@ -2539,7 +2538,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfSphingomyelin(target, 0.01, 753.58807f, 36, 1, 36, 0, 1, 0, adduct = new AdductIon() { AdductIonName = "[M+Na]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfSphingomyelin(target, 0.01, 753.58807f, 36, 1, 36, 0, 1, 0, adduct: AdductIon.GetAdductIon("[M+Na]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -2688,546 +2687,23 @@ namespace CompMs.Common.Lipidomics.Tests
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfEtherpc(target, 0.01, 772.61991f, 36, 2, 18, 18, 1, 1, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfEtherpc(target, 0.01, 772.61991f, 36, 2, 18, 18, 1, 1, adduct: AdductIon.GetAdductIon("[M+H]+"));
             Console.WriteLine($"{result.LipidName}: {result.Score}");
             //var result2 = LipidEieioMsmsCharacterization.JudgeIfEtherpc(target, 0.01, 772.61991f, 36, 2, 18, 18, 2, 0, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
             //Console.WriteLine($"{result2.LipidName}: {result2.Score}");
         }
-        [TestMethod()]
-        public void EtherPC_O_CharacterizationTest()
+
+        [DataTestMethod()]
+        [DataRow(@"Resources\Lipidomics\LipidEieioMsmsCharacterizationTests\PC_O-16_0_18_1(9)_[M+H]+.msp.txt", "PC O-16:0/18:1")]
+        public void EtherPC_O_CharacterizationTest(string path, string expected)
         {
-            var target = new MSScanProperty
-            {
-                PrecursorMz = 746.60288,
-                #region
-                Spectrum = new List<SpectrumPeak>
-                {
-                    new SpectrumPeak { Mass = 110.10662, Intensity =0.0482,},
-                    new SpectrumPeak { Mass = 111.11514, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 113.13223, Intensity =0.0482,},
-                    new SpectrumPeak { Mass = 122.10605, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 123.11491, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 124.99867, Intensity =0.0771,},
-                    new SpectrumPeak { Mass = 128.50008, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 131.08274, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 134.98209, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 135.12104, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 138.13614, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 139.10735, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 140.99315, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 145.96741, Intensity =0.045,},
-                    new SpectrumPeak { Mass = 147.11633, Intensity =0.0899,},
-                    new SpectrumPeak { Mass = 149.12858, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 150.06692, Intensity =0.1188,},
-                    new SpectrumPeak { Mass = 152.04679, Intensity =0.2184,},
-                    new SpectrumPeak { Mass = 153.08093, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 153.12335, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 153.1606, Intensity =0.0417,},
-                    new SpectrumPeak { Mass = 155.01059, Intensity =0.2087,},
-                    new SpectrumPeak { Mass = 161.13174, Intensity =0.045,},
-                    new SpectrumPeak { Mass = 163.01227, Intensity =0.0546,},
-                    new SpectrumPeak { Mass = 163.14344, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 165.02829, Intensity =0.0546,},
-                    new SpectrumPeak { Mass = 165.12974, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 165.16397, Intensity =0.0578,},
-                    new SpectrumPeak { Mass = 166.06183, Intensity =0.6358,},
-                    new SpectrumPeak { Mass = 167.01087, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 167.07042, Intensity =0.2697,},
-                    new SpectrumPeak { Mass = 168.04219, Intensity =0.6358,},
-                    new SpectrumPeak { Mass = 168.07467, Intensity =0.0385,},
-                    new SpectrumPeak { Mass = 170.05798, Intensity =0.3468,},
-                    new SpectrumPeak { Mass = 173.01968, Intensity =0.1574,},
-                    new SpectrumPeak { Mass = 175.14438, Intensity =0.0482,},
-                    new SpectrumPeak { Mass = 177.16389, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 179.00809, Intensity =0.045,},
-                    new SpectrumPeak { Mass = 179.1451, Intensity =0.0546,},
-                    new SpectrumPeak { Mass = 180.17423, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 180.1876, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 181.02355, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 182.03472, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 182.05705, Intensity =0.1477,},
-                    new SpectrumPeak { Mass = 183.0667, Intensity =0.0739,},
-                    new SpectrumPeak { Mass = 183.08668, Intensity =0.1252,},
-                    new SpectrumPeak { Mass = 183.46682, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 183.48722, Intensity =0.045,},
-                    new SpectrumPeak { Mass = 184.07689, Intensity =7.0071,},
-                    new SpectrumPeak { Mass = 184.90232, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 185.07111, Intensity =0.0642,},
-                    new SpectrumPeak { Mass = 185.12486, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 185.15152, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 185.832, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 186.01902, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 187.46221, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 188.17783, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 188.56104, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 189.1628, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 191.18024, Intensity =0.0578,},
-                    new SpectrumPeak { Mass = 192.14876, Intensity =0.0546,},
-                    new SpectrumPeak { Mass = 193.16061, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 193.19208, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 194.16343, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 194.20634, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 196.06832, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 197.08084, Intensity =0.1606,},
-                    new SpectrumPeak { Mass = 198.08612, Intensity =0.0739,},
-                    new SpectrumPeak { Mass = 201.049, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 207.17079, Intensity =0.0835,},
-                    new SpectrumPeak { Mass = 208.07104, Intensity =0.061,},
-                    new SpectrumPeak { Mass = 208.10966, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 209.08128, Intensity =0.6872,},
-                    new SpectrumPeak { Mass = 210.08896, Intensity =0.7579,},
-                    new SpectrumPeak { Mass = 211.09101, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 212.0001, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 212.0679, Intensity =0.0706,},
-                    new SpectrumPeak { Mass = 215.1815, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 221.0761, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 221.19064, Intensity =0.0546,},
-                    new SpectrumPeak { Mass = 222.08744, Intensity =1.1721,},
-                    new SpectrumPeak { Mass = 222.23376, Intensity =0.1285,},
-                    new SpectrumPeak { Mass = 223.09668, Intensity =0.5267,},
-                    new SpectrumPeak { Mass = 224.06793, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 224.10632, Intensity =5.6101,},
-                    new SpectrumPeak { Mass = 225.07608, Intensity =0.0514,},
-                    new SpectrumPeak { Mass = 225.11328, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 225.24779, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 225.32793, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 226.08508, Intensity =7.8292,},
-                    new SpectrumPeak { Mass = 228.09374, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 229.17364, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 235.2045, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 236.0632, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 236.20321, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 236.23934, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 238.08406, Intensity =3.115,},
-                    new SpectrumPeak { Mass = 239.09135, Intensity =0.1702,},
-                    new SpectrumPeak { Mass = 239.23552, Intensity =0.0867,},
-                    new SpectrumPeak { Mass = 239.76388, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 240.09928, Intensity =0.8831,},
-                    new SpectrumPeak { Mass = 241.07329, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 241.10668, Intensity =0.0931,},
-                    new SpectrumPeak { Mass = 242.11617, Intensity =0.1028,},
-                    new SpectrumPeak { Mass = 244.21543, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 245.22684, Intensity =0.0931,},
-                    new SpectrumPeak { Mass = 246.23267, Intensity =0.0771,},
-                    new SpectrumPeak { Mass = 247.23922, Intensity =0.0514,},
-                    new SpectrumPeak { Mass = 249.26175, Intensity =0.0546,},
-                    new SpectrumPeak { Mass = 252.0969, Intensity =0.0642,},
-                    new SpectrumPeak { Mass = 252.13101, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 252.6739, Intensity =0.0578,},
-                    new SpectrumPeak { Mass = 253.10887, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 253.17723, Intensity =0.0385,},
-                    new SpectrumPeak { Mass = 253.68348, Intensity =0.0739,},
-                    new SpectrumPeak { Mass = 254.07623, Intensity =0.0514,},
-                    new SpectrumPeak { Mass = 254.11414, Intensity =0.0546,},
-                    new SpectrumPeak { Mass = 255.22834, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 256.09416, Intensity =0.0674,},
-                    new SpectrumPeak { Mass = 258.11011, Intensity =0.2344,},
-                    new SpectrumPeak { Mass = 263.23367, Intensity =0.1028,},
-                    new SpectrumPeak { Mass = 264.24294, Intensity =0.4753,},
-                    new SpectrumPeak { Mass = 265.25347, Intensity =0.1959,},
-                    new SpectrumPeak { Mass = 266.25227, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 267.1211, Intensity =0.0803,},
-                    new SpectrumPeak { Mass = 267.26827, Intensity =0.1734,},
-                    new SpectrumPeak { Mass = 268.12589, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 269.20338, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 277.24984, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 279.2642, Intensity =0.045,},
-                    new SpectrumPeak { Mass = 280.13484, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 280.23979, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 280.27516, Intensity =0.0578,},
-                    new SpectrumPeak { Mass = 281.13681, Intensity =0.0899,},
-                    new SpectrumPeak { Mass = 281.28173, Intensity =0.0578,},
-                    new SpectrumPeak { Mass = 282.10564, Intensity =0.045,},
-                    new SpectrumPeak { Mass = 282.19153, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 282.25303, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 283.11651, Intensity =0.0642,},
-                    new SpectrumPeak { Mass = 284.12032, Intensity =0.0546,},
-                    new SpectrumPeak { Mass = 294.10972, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 294.14881, Intensity =0.0385,},
-                    new SpectrumPeak { Mass = 294.1798, Intensity =0.0642,},
-                    new SpectrumPeak { Mass = 294.25927, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 295.15317, Intensity =0.1574,},
-                    new SpectrumPeak { Mass = 296.12476, Intensity =0.122,},
-                    new SpectrumPeak { Mass = 296.15252, Intensity =0.0642,},
-                    new SpectrumPeak { Mass = 297.13517, Intensity =0.0674,},
-                    new SpectrumPeak { Mass = 297.2667, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 298.27722, Intensity =0.0642,},
-                    new SpectrumPeak { Mass = 299.10899, Intensity =0.0321,},
-                    new SpectrumPeak { Mass = 308.15468, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 308.18392, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 309.16975, Intensity =0.0482,},
-                    new SpectrumPeak { Mass = 310.17754, Intensity =0.0835,},
-                    new SpectrumPeak { Mass = 310.20806, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 310.34956, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 311.13879, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 312.11924, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 312.14458, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 314.13555, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 316.22945, Intensity =0.0514,},
-                    new SpectrumPeak { Mass = 319.26125, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 321.2786, Intensity =0.0514,},
-                    new SpectrumPeak { Mass = 323.18303, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 323.23877, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 323.29601, Intensity =0.0514,},
-                    new SpectrumPeak { Mass = 323.35291, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 324.19378, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 325.15761, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 326.16667, Intensity =0.045,},
-                    new SpectrumPeak { Mass = 330.24568, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 330.75149, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 331.75728, Intensity =0.0642,},
-                    new SpectrumPeak { Mass = 335.18443, Intensity =0.0514,},
-                    new SpectrumPeak { Mass = 336.19725, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 337.20026, Intensity =0.1381,},
-                    new SpectrumPeak { Mass = 337.26331, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 337.76149, Intensity =0.045,},
-                    new SpectrumPeak { Mass = 338.1725, Intensity =0.0642,},
-                    new SpectrumPeak { Mass = 338.20535, Intensity =0.061,},
-                    new SpectrumPeak { Mass = 339.29221, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 340.14812, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 340.20233, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 344.26383, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 344.76321, Intensity =0.0739,},
-                    new SpectrumPeak { Mass = 349.19655, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 350.17483, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 350.2082, Intensity =0.061,},
-                    new SpectrumPeak { Mass = 350.2665, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 350.33864, Intensity =0.0578,},
-                    new SpectrumPeak { Mass = 351.21648, Intensity =0.2184,},
-                    new SpectrumPeak { Mass = 351.24891, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 351.27852, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 351.77829, Intensity =0.061,},
-                    new SpectrumPeak { Mass = 352.18841, Intensity =0.2152,},
-                    new SpectrumPeak { Mass = 352.21679, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 353.30365, Intensity =0.0867,},
-                    new SpectrumPeak { Mass = 354.20307, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 358.27705, Intensity =0.0514,},
-                    new SpectrumPeak { Mass = 358.76817, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 358.78325, Intensity =0.0417,},
-                    new SpectrumPeak { Mass = 359.28291, Intensity =0.0899,},
-                    new SpectrumPeak { Mass = 364.18652, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 364.22205, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 364.29673, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 365.23309, Intensity =0.1092,},
-                    new SpectrumPeak { Mass = 365.2994, Intensity =0.0417,},
-                    new SpectrumPeak { Mass = 366.2009, Intensity =0.0578,},
-                    new SpectrumPeak { Mass = 367.20655, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 367.32315, Intensity =0.0963,},
-                    new SpectrumPeak { Mass = 368.21537, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 368.33569, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 368.38562, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 370.18438, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 371.78956, Intensity =0.0674,},
-                    new SpectrumPeak { Mass = 372.29336, Intensity =0.1959,},
-                    new SpectrumPeak { Mass = 372.39681, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 372.7807, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 372.79917, Intensity =0.061,},
-                    new SpectrumPeak { Mass = 373.30336, Intensity =1.0373,},
-                    new SpectrumPeak { Mass = 375.1906, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 378.19295, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 378.23867, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 379.25489, Intensity =0.1509,},
-                    new SpectrumPeak { Mass = 380.21899, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 381.26847, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 382.19787, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 383.20682, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 384.24313, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 392.21607, Intensity =0.061,},
-                    new SpectrumPeak { Mass = 392.25131, Intensity =0.0546,},
-                    new SpectrumPeak { Mass = 393.22288, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 393.26259, Intensity =0.0739,},
-                    new SpectrumPeak { Mass = 393.33218, Intensity =0.045,},
-                    new SpectrumPeak { Mass = 395.24784, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 395.35302, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 396.22727, Intensity =0.0514,},
-                    new SpectrumPeak { Mass = 396.3549, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 397.26841, Intensity =0.1638,},
-                    new SpectrumPeak { Mass = 404.24619, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 406.2341, Intensity =0.0963,},
-                    new SpectrumPeak { Mass = 406.27367, Intensity =0.0546,},
-                    new SpectrumPeak { Mass = 406.30581, Intensity =0.0546,},
-                    new SpectrumPeak { Mass = 407.27356, Intensity =0.1285,},
-                    new SpectrumPeak { Mass = 407.34657, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 408.23881, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 408.28632, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 408.32256, Intensity =0.0899,},
-                    new SpectrumPeak { Mass = 409.36268, Intensity =0.0867,},
-                    new SpectrumPeak { Mass = 410.22154, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 410.26502, Intensity =0.0578,},
-                    new SpectrumPeak { Mass = 412.25703, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 412.27963, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 419.26139, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 419.31469, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 420.24967, Intensity =0.0417,},
-                    new SpectrumPeak { Mass = 420.28822, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 421.28887, Intensity =0.0706,},
-                    new SpectrumPeak { Mass = 422.26484, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 422.29873, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 423.28876, Intensity =0.0963,},
-                    new SpectrumPeak { Mass = 423.37997, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 424.24527, Intensity =0.0642,},
-                    new SpectrumPeak { Mass = 424.30704, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 426.29383, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 432.32662, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 433.32919, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 434.26685, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 434.2931, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 435.3005, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 436.28404, Intensity =0.0417,},
-                    new SpectrumPeak { Mass = 438.26187, Intensity =0.0578,},
-                    new SpectrumPeak { Mass = 438.29923, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 438.33442, Intensity =0.122,},
-                    new SpectrumPeak { Mass = 438.40677, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 440.27542, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 446.29538, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 447.31171, Intensity =0.1028,},
-                    new SpectrumPeak { Mass = 447.34913, Intensity =0.0546,},
-                    new SpectrumPeak { Mass = 447.38605, Intensity =0.061,},
-                    new SpectrumPeak { Mass = 448.31569, Intensity =0.4785,},
-                    new SpectrumPeak { Mass = 449.32482, Intensity =0.0931,},
-                    new SpectrumPeak { Mass = 449.38957, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 450.32878, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 451.25648, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 452.26431, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 452.31014, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 452.42431, Intensity =0.045,},
-                    new SpectrumPeak { Mass = 454.28917, Intensity =0.0578,},
-                    new SpectrumPeak { Mass = 459.34847, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 460.31531, Intensity =0.0803,},
-                    new SpectrumPeak { Mass = 461.28636, Intensity =0.061,},
-                    new SpectrumPeak { Mass = 461.3213, Intensity =0.1188,},
-                    new SpectrumPeak { Mass = 462.28703, Intensity =0.0546,},
-                    new SpectrumPeak { Mass = 462.33285, Intensity =0.4978,},
-                    new SpectrumPeak { Mass = 463.34354, Intensity =3.9756,},
-                    new SpectrumPeak { Mass = 464.3129, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 464.34883, Intensity =0.9794,},
-                    new SpectrumPeak { Mass = 465.35386, Intensity =0.2119,},
-                    new SpectrumPeak { Mass = 465.43242, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 466.27681, Intensity =0.0546,},
-                    new SpectrumPeak { Mass = 466.3274, Intensity =0.0578,},
-                    new SpectrumPeak { Mass = 466.44019, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 466.97236, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 467.2582, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 468.28797, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 468.30917, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 475.41274, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 476.3146, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 476.41724, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 477.42922, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 478.28285, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 478.31806, Intensity =0.1124,},
-                    new SpectrumPeak { Mass = 479.29767, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 479.33457, Intensity =0.1927,},
-                    new SpectrumPeak { Mass = 480.29896, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 480.3422, Intensity =0.3854,},
-                    new SpectrumPeak { Mass = 481.30893, Intensity =0.0482,},
-                    new SpectrumPeak { Mass = 481.35369, Intensity =0.0514,},
-                    new SpectrumPeak { Mass = 482.36171, Intensity =1.262,},
-                    new SpectrumPeak { Mass = 490.32998, Intensity =0.0963,},
-                    new SpectrumPeak { Mass = 490.4201, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 491.33448, Intensity =0.4464,},
-                    new SpectrumPeak { Mass = 492.29421, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 492.34855, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 494.306, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 494.31916, Intensity =0.0674,},
-                    new SpectrumPeak { Mass = 495.32265, Intensity =0.0706,},
-                    new SpectrumPeak { Mass = 496.33621, Intensity =0.0674,},
-                    new SpectrumPeak { Mass = 503.33696, Intensity =0.1124,},
-                    new SpectrumPeak { Mass = 503.44466, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 504.34257, Intensity =0.2312,},
-                    new SpectrumPeak { Mass = 505.35193, Intensity =2.5498,},
-                    new SpectrumPeak { Mass = 505.3965, Intensity =0.0674,},
-                    new SpectrumPeak { Mass = 506.31516, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 506.35441, Intensity =0.0803,},
-                    new SpectrumPeak { Mass = 507.36655, Intensity =0.106,},
-                    new SpectrumPeak { Mass = 508.33864, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 510.34931, Intensity =0.0385,},
-                    new SpectrumPeak { Mass = 518.3136, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 518.35375, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 519.48067, Intensity =0.061,},
-                    new SpectrumPeak { Mass = 520.33624, Intensity =0.106,},
-                    new SpectrumPeak { Mass = 520.37654, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 520.47686, Intensity =0.0385,},
-                    new SpectrumPeak { Mass = 521.34365, Intensity =0.2344,},
-                    new SpectrumPeak { Mass = 522.35418, Intensity =0.3693,},
-                    new SpectrumPeak { Mass = 523.36299, Intensity =0.1638,},
-                    new SpectrumPeak { Mass = 524.36909, Intensity =0.9249,},
-                    new SpectrumPeak { Mass = 526.25501, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 531.46162, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 532.48087, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 532.9284, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 534.35378, Intensity =0.1509,},
-                    new SpectrumPeak { Mass = 535.36324, Intensity =0.0706,},
-                    new SpectrumPeak { Mass = 536.29901, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 536.3694, Intensity =0.4271,},
-                    new SpectrumPeak { Mass = 537.34056, Intensity =0.061,},
-                    new SpectrumPeak { Mass = 538.3974, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 545.49026, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 548.36767, Intensity =0.0578,},
-                    new SpectrumPeak { Mass = 549.3747, Intensity =0.0514,},
-                    new SpectrumPeak { Mass = 549.51717, Intensity =0.0482,},
-                    new SpectrumPeak { Mass = 550.34038, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 550.38735, Intensity =0.1863,},
-                    new SpectrumPeak { Mass = 551.39349, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 555.34701, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 559.50871, Intensity =0.1092,},
-                    new SpectrumPeak { Mass = 560.51934, Intensity =0.1574,},
-                    new SpectrumPeak { Mass = 560.98874, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 561.47226, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 561.52517, Intensity =0.8478,},
-                    new SpectrumPeak { Mass = 562.37934, Intensity =0.0867,},
-                    new SpectrumPeak { Mass = 562.4134, Intensity =0.0482,},
-                    new SpectrumPeak { Mass = 562.53014, Intensity =0.3147,},
-                    new SpectrumPeak { Mass = 563.53972, Intensity =0.1798,},
-                    new SpectrumPeak { Mass = 564.39837, Intensity =0.1477,},
-                    new SpectrumPeak { Mass = 565.41058, Intensity =0.0546,},
-                    new SpectrumPeak { Mass = 566.50856, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 575.39932, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 576.40118, Intensity =0.1798,},
-                    new SpectrumPeak { Mass = 577.41072, Intensity =0.0803,},
-                    new SpectrumPeak { Mass = 577.53511, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 578.41213, Intensity =0.1798,},
-                    new SpectrumPeak { Mass = 579.42934, Intensity =0.0674,},
-                    new SpectrumPeak { Mass = 583.06458, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 588.38763, Intensity =0.0514,},
-                    new SpectrumPeak { Mass = 589.40026, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 589.52871, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 589.56677, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 590.41616, Intensity =0.1798,},
-                    new SpectrumPeak { Mass = 591.42544, Intensity =0.0996,},
-                    new SpectrumPeak { Mass = 592.43085, Intensity =0.7354,},
-                    new SpectrumPeak { Mass = 593.43992, Intensity =0.0642,},
-                    new SpectrumPeak { Mass = 594.44378, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 603.42029, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 603.51656, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 604.39534, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 604.43397, Intensity =0.0803,},
-                    new SpectrumPeak { Mass = 605.43995, Intensity =0.0803,},
-                    new SpectrumPeak { Mass = 605.5351, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 606.44543, Intensity =0.2922,},
-                    new SpectrumPeak { Mass = 607.45254, Intensity =0.106,},
-                    new SpectrumPeak { Mass = 608.4049, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 608.45806, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 616.42972, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 617.42496, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 617.45417, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 618.40537, Intensity =0.0482,},
-                    new SpectrumPeak { Mass = 618.44818, Intensity =0.2376,},
-                    new SpectrumPeak { Mass = 619.44649, Intensity =0.0706,},
-                    new SpectrumPeak { Mass = 620.46108, Intensity =0.1606,},
-                    new SpectrumPeak { Mass = 621.47077, Intensity =0.0835,},
-                    new SpectrumPeak { Mass = 623.379, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 628.13333, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 630.43941, Intensity =0.0835,},
-                    new SpectrumPeak { Mass = 631.45443, Intensity =0.061,},
-                    new SpectrumPeak { Mass = 632.46262, Intensity =0.2826,},
-                    new SpectrumPeak { Mass = 633.46841, Intensity =0.1156,},
-                    new SpectrumPeak { Mass = 634.47697, Intensity =0.2152,},
-                    new SpectrumPeak { Mass = 635.48663, Intensity =0.0963,},
-                    new SpectrumPeak { Mass = 636.49441, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 636.6044, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 642.44262, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 643.50871, Intensity =0.0642,},
-                    new SpectrumPeak { Mass = 644.46207, Intensity =0.0482,},
-                    new SpectrumPeak { Mass = 645.47404, Intensity =0.0706,},
-                    new SpectrumPeak { Mass = 646.21509, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 646.48043, Intensity =0.6615,},
-                    new SpectrumPeak { Mass = 647.48708, Intensity =0.6615,},
-                    new SpectrumPeak { Mass = 648.4957, Intensity =0.2216,},
-                    new SpectrumPeak { Mass = 648.56071, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 648.62308, Intensity =0.1541,},
-                    new SpectrumPeak { Mass = 649.50089, Intensity =0.1863,},
-                    new SpectrumPeak { Mass = 657.46811, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 658.47477, Intensity =0.0931,},
-                    new SpectrumPeak { Mass = 659.49196, Intensity =0.0771,},
-                    new SpectrumPeak { Mass = 660.49163, Intensity =0.2023,},
-                    new SpectrumPeak { Mass = 661.49922, Intensity =0.1702,},
-                    new SpectrumPeak { Mass = 661.54892, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 662.50913, Intensity =0.1798,},
-                    new SpectrumPeak { Mass = 663.50899, Intensity =0.0642,},
-                    new SpectrumPeak { Mass = 664.52059, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 666.62849, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 672.49076, Intensity =0.0514,},
-                    new SpectrumPeak { Mass = 673.50079, Intensity =0.0771,},
-                    new SpectrumPeak { Mass = 674.50614, Intensity =0.167,},
-                    new SpectrumPeak { Mass = 675.47535, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 675.51738, Intensity =0.1959,},
-                    new SpectrumPeak { Mass = 676.52251, Intensity =0.1477,},
-                    new SpectrumPeak { Mass = 678.11578, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 679.47368, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 684.49843, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 685.50082, Intensity =0.0385,},
-                    new SpectrumPeak { Mass = 686.51407, Intensity =0.0578,},
-                    new SpectrumPeak { Mass = 687.52774, Intensity =0.1285,},
-                    new SpectrumPeak { Mass = 688.52349, Intensity =0.3982,},
-                    new SpectrumPeak { Mass = 689.53071, Intensity =0.167,},
-                    new SpectrumPeak { Mass = 690.54467, Intensity =0.0578,},
-                    new SpectrumPeak { Mass = 699.54642, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 700.52607, Intensity =0.0706,},
-                    new SpectrumPeak { Mass = 701.53437, Intensity =0.0835,},
-                    new SpectrumPeak { Mass = 702.53865, Intensity =0.1959,},
-                    new SpectrumPeak { Mass = 703.54978, Intensity =0.2441,},
-                    new SpectrumPeak { Mass = 704.55184, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 714.53057, Intensity =0.0546,},
-                    new SpectrumPeak { Mass = 715.50468, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 715.54212, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 716.56327, Intensity =0.2633,},
-                    new SpectrumPeak { Mass = 717.56371, Intensity =0.3372,},
-                    new SpectrumPeak { Mass = 718.57456, Intensity =0.0835,},
-                    new SpectrumPeak { Mass = 727.55978, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 727.59413, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 728.46645, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 728.55239, Intensity =0.0642,},
-                    new SpectrumPeak { Mass = 728.57859, Intensity =0.0963,},
-                    new SpectrumPeak { Mass = 729.5372, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 729.56604, Intensity =0.0642,},
-                    new SpectrumPeak { Mass = 729.60958, Intensity =0.0642,},
-                    new SpectrumPeak { Mass = 730.578, Intensity =0.273,},
-                    new SpectrumPeak { Mass = 731.52516, Intensity =0.0385,},
-                    new SpectrumPeak { Mass = 731.57899, Intensity =0.2248,},
-                    new SpectrumPeak { Mass = 732.5813, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 741.56457, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 742.52249, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 742.57312, Intensity =0.2441,},
-                    new SpectrumPeak { Mass = 743.58301, Intensity =0.8767,},
-                    new SpectrumPeak { Mass = 743.62959, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 744.04319, Intensity =0.0514,},
-                    new SpectrumPeak { Mass = 744.08144, Intensity =0.061,},
-                    new SpectrumPeak { Mass = 744.11953, Intensity =0.106,},
-                    new SpectrumPeak { Mass = 744.17517, Intensity =0.0674,},
-                    new SpectrumPeak { Mass = 744.41523, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 744.58989, Intensity =6.9974,},
-                    new SpectrumPeak { Mass = 745.14246, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 745.2842, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 745.59876, Intensity =20.0931,},
-                    new SpectrumPeak { Mass = 746.61184, Intensity =100,},
-                    new SpectrumPeak { Mass = 747.83789, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 748.07486, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 748.14334, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 748.32683, Intensity =0.0803,},
-                    new SpectrumPeak { Mass = 748.43009, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 748.50363, Intensity =0.0706,},
-                    new SpectrumPeak { Mass = 748.58489, Intensity =0.0385,},
-                    new SpectrumPeak { Mass = 748.69628, Intensity =0.1028,},
-                    new SpectrumPeak { Mass = 748.84676, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 749.0118, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 749.17268, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 749.3929, Intensity =0.0706,},
-                    new SpectrumPeak { Mass = 749.42476, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 749.58032, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 749.72163, Intensity =0.045,},
-                    new SpectrumPeak { Mass = 749.79491, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 749.89149, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 750.55441, Intensity =0.045,},
-                    new SpectrumPeak { Mass = 750.96479, Intensity =0.0385,},
-                    new SpectrumPeak { Mass = 751.357, Intensity =0.0353,},
-                    new SpectrumPeak { Mass = 751.46442, Intensity =0.0353,},
-                }
-                #endregion
-            };
-            var result = LipidEieioMsmsCharacterization.JudgeIfEtherpc(target, 0.01, 746.6058f, 34, 1, 16, 18, 0, 1, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
+            var target = MspFileParser.MspFileReader(path)[0];
+            NormalizeSpectrum(target);
+            var result = LipidEieioMsmsCharacterization.JudgeIfEtherpc(target, 0.01, 746.6058f, 34, 1, 16, 18, 0, 1, adduct: new AdductIon() { AdductIonName = "[M+H]+" });
             Console.WriteLine($"{result.LipidName}: {result.Score}");
+            Assert.AreEqual(expected, result.LipidName);
         }
+
         [TestMethod()]
         public void PCCharacterizationTest()
         {
@@ -4125,7 +3601,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholine(target, 0.01, 786.6007f, 36, 2, 18, 18, 1, 1, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholine(target, 0.01, 786.6007f, 36, 2, 18, 18, 1, 1, adduct: AdductIon.GetAdductIon("[M+H]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -4376,7 +3852,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholine(target, 0.01, 808.5827f, 36, 2, 36, 0, 2, 0, adduct = new AdductIon() { AdductIonName = "[M+Na]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholine(target, 0.01, 808.5827f, 36, 2, 36, 0, 2, 0, adduct: AdductIon.GetAdductIon("[M+Na]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -5303,7 +4779,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylethanolamine(target, 0.02, 744.5538f, 36, 2, 18, 18, 1, 1, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylethanolamine(target, 0.02, 744.5538f, 36, 2, 18, 18, 1, 1, adduct: AdductIon.GetAdductIon("[M+H]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -6606,7 +6082,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylethanolamine(target, 0.01, 766.5357f, 36, 2, 36, 0, 2, 0, adduct = new AdductIon() { AdductIonName = "[M+Na]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylethanolamine(target, 0.01, 766.5357f, 36, 2, 36, 0, 2, 0, adduct: AdductIon.GetAdductIon("[M+Na]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -7629,7 +7105,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylglycerol(target, 0.01, 792.5749f, 36, 2, 18, 18, 1, 1, adduct = new AdductIon() { AdductIonName = "[M+NH4]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylglycerol(target, 0.01, 792.5749f, 36, 2, 18, 18, 1, 1, adduct: AdductIon.GetAdductIon("[M+NH4]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -8564,7 +8040,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylserine(target, 0.01, 788.5436f, 36, 2, 18, 18, 1, 1, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylserine(target, 0.01, 788.5436f, 36, 2, 18, 18, 1, 1, adduct: AdductIon.GetAdductIon("[M+H]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -8851,7 +8327,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylserine(target, 0.01, 810.5256f, 36, 2, 36, 0, 2, 0, adduct = new AdductIon() { AdductIonName = "[M+Na]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylserine(target, 0.01, 810.5256f, 36, 2, 36, 0, 2, 0, adduct: AdductIon.GetAdductIon("[M+Na]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -9691,7 +9167,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylinositol(target, 0.01, 880.591f, 36, 2, 36, 0, 2, 0, adduct = new AdductIon() { AdductIonName = "[M+NH4]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylinositol(target, 0.01, 880.591f, 36, 2, 36, 0, 2, 0, adduct: AdductIon.GetAdductIon("[M+NH4]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -10728,7 +10204,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylinositol(target, 0.01, 909.5464f, 38, 4, 38, 0, 4, 0, adduct = new AdductIon() { AdductIonName = "[M+Na]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylinositol(target, 0.01, 909.5464f, 38, 4, 38, 0, 4, 0, adduct: AdductIon.GetAdductIon("[M+Na]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -11696,7 +11172,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholineD5(target, 0.02, 803.6321f, 37, 3, 17, 20, 0, 3, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholineD5(target, 0.02, 803.6321f, 37, 3, 17, 20, 0, 3, adduct: AdductIon.GetAdductIon("[M+H]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -11809,7 +11285,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholineD5(target, 0.02, 745.55027f, 31, 1, 31, 0, 1, 0, adduct = new AdductIon() { AdductIonName = "[M+Na]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylcholineD5(target, 0.02, 745.55027f, 31, 1, 31, 0, 1, 0, adduct: AdductIon.GetAdductIon("[M+Na]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -12206,7 +11682,7 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylethanolamineD5(target, 0.05, 787.6008f, 39, 4, 17, 22, 0, 4, adduct = new AdductIon() { AdductIonName = "[M+H]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylethanolamineD5(target, 0.05, 787.6008f, 39, 4, 17, 22, 0, 4, adduct: AdductIon.GetAdductIon("[M+H]+"));
             Console.WriteLine($"{result.LipidName}");
         }
         [TestMethod()]
@@ -12399,9 +11875,18 @@ new SpectrumPeak { Mass = 791.54487, Intensity =0.0247,},
                 }
                 #endregion
             };
-            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylethanolamineD5(target, 0.05, 759.56428f, 35, 1, 35, 0, 1, 0, adduct = new AdductIon() { AdductIonName = "[M+Na]+" });
+            var result = LipidEieioMsmsCharacterization.JudgeIfPhosphatidylethanolamineD5(target, 0.05, 759.56428f, 35, 1, 35, 0, 1, 0, adduct: AdductIon.GetAdductIon("[M+Na]+"));
             Console.WriteLine($"{result.LipidName}");
         }
 
+        private void NormalizeSpectrum(IMSScanProperty scan) {
+            if (scan.Spectrum.Count == 0) {
+                return;
+            }
+            var maximum = scan.Spectrum.Max(s => s.Intensity);
+            foreach (var peak in scan.Spectrum) {
+                peak.Intensity *= 100d / maximum;
+            }
+        } 
     }
 }
