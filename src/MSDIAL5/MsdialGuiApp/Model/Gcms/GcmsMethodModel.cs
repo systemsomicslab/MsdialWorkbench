@@ -50,10 +50,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                     if (value != null) {
                         Disposables.Add(value);
                     }
-                    if (old != null) {
-                        if (Disposables.Contains(old)) {
-                            Disposables.Remove(old);
-                        }
+                    if (old != null && Disposables.Contains(old)) {
                         Disposables.Remove(old);
                     }
                 }
