@@ -127,7 +127,7 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly IMessageBroker _broker;
 
         public RiDictionarySettingModel(AnalysisFileBeanModelCollection files, Dictionary<int, RiDictionaryInfo> fileIdToRiInfo, RiCompoundType compountType, IMessageBroker broker) {
-            var dictionaries = fileIdToRiInfo.Select(kvp => new RiDictionaryModel(files.FindById(kvp.Key).AnalysisFilePath, kvp.Value));
+            var dictionaries = fileIdToRiInfo.Select(kvp => new RiDictionaryModel(files.FindByID(kvp.Key).AnalysisFilePath, kvp.Value));
             RetentionIndexFiles = new ObservableCollection<RiDictionaryModel>(dictionaries);
             CompoundType = compountType;
             _broker = broker;

@@ -109,7 +109,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 .ToReactiveProperty()
                 .AddTo(Disposables);
             Target = target;
-            CurrentRepresentativeFile = Target.Select(t => t is null ? null : fileCollection.GetById(t.RepresentativeFileID)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            CurrentRepresentativeFile = Target.Select(t => t is null ? null : fileCollection.FindByID(t.RepresentativeFileID)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             var accumulatedPropModels = new ObservableCollection<AlignmentSpotPropertyModel>(orderedProps);
             var propModels = new ReactiveCollection<AlignmentSpotPropertyModel>(UIDispatcherScheduler.Default).AddTo(Disposables);

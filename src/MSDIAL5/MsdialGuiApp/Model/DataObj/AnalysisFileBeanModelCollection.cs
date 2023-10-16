@@ -86,10 +86,6 @@ namespace CompMs.App.Msdial.Model.DataObj
             _observableAnalysisFiles.Clear();
         }
 
-        public AnalysisFileBeanModel GetById(int id) {
-            return AnalysisFiles.FirstOrDefault(f => f.AnalysisFileId == id);
-        }
-
         public void ReleaseMSDecLoaders() {
             foreach (var file in _observableAnalysisFiles) {
                 file.ReleaseMSDecLoader();
@@ -98,12 +94,11 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public int Count => AnalysisFiles.Count;
 
-        public AnalysisFileBeanModel FindById(int fileId) {
-            var file = AnalysisFiles.FirstOrDefault(f => f.AnalysisFileId == fileId);
-            if (file is null) {
-                throw new KeyNotFoundException($"Id {fileId} does not exist in current analysis files.");
+        public AnalysisFileBeanModel FindByID(int fileID) {
+            if (AnalysisFiles.FirstOrDefault(f => f.AnalysisFileId == fileID) is AnalysisFileBeanModel file) {
+                return file;
             }
-            return file;
+            throw new KeyNotFoundException($"ID {fileID} does not exist in current analysis files.");
         }
 
         private static bool AreAnalyticalOrdersUnique(IEnumerable<AnalysisFileBeanModel> files) {
