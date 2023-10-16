@@ -4,6 +4,7 @@ using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialGcMsApi.Parameter;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CompMs.MsdialGcMsApi.Algorithm
 {
@@ -25,6 +26,11 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             foreach (var annotatedMSDecResult in msdecResults) {
                 var quantifiedChromatogramPeak = MSDecHandler.GetChromatogramQuantInformation(rawSpectra, annotatedMSDecResult.MSDecResult, annotatedMSDecResult.QuantMass, _parameter);
                 spectrumFeatures.Add(new SpectrumFeature(annotatedMSDecResult, quantifiedChromatogramPeak));
+            }
+            var order = 0;
+            foreach (var peak in spectrumFeatures.OrderBy(s => s.QuantifiedChromatogramPeak.PeakFeature.PeakHeightTop)) {
+                peak.QuantifiedChromatogramPeak.PeakShape.AmplitudeScoreValue = order / (float)(spectrumFeatures.Count - 1);
+                peak.QuantifiedChromatogramPeak.PeakShape.AmplitudeOrderValue = order++;
             }
             return new SpectrumFeatureCollection(spectrumFeatures);
         }

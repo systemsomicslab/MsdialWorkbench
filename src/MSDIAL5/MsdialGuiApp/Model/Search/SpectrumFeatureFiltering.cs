@@ -46,7 +46,7 @@ namespace CompMs.App.Msdial.Model.Search
             var pred = CreateFilter(peakFilterModel, evaluator, TagSearchQueryBuilder);
             AttachFilterCore(pred.Invoke, view);
             if ((status & FilterEnableStatus.Amplitude) != FilterEnableStatus.None) {
-                AttachFilter(AmplitudeFilterModel, (Ms1BasedSpectrumFeature f) => f?.QuantifiedChromatogramPeak.PeakShape.AmplitudeOrderValue ?? 0d, view);
+                AttachFilter(AmplitudeFilterModel, (Ms1BasedSpectrumFeature f) => f?.QuantifiedChromatogramPeak.PeakShape.AmplitudeScoreValue ?? 0d, view);
             }
             foreach (var valueFilterManager in ValueFilterManagers) {
                 valueFilterManager.TryAttachFilter(this, view, status);
