@@ -31,8 +31,6 @@ namespace CompMs.MsdialGcMsApi.Algorithm
         /// <param name="reporter"></param>
         public AnnotatedMSDecResult[] MainProcess(IReadOnlyList<MSDecResult> ms1DecResults, Dictionary<int, float> carbon2RtDict, ReportProgress reporter) {
             Console.WriteLine("Annotation started");
-            SetRetentionIndexForMS1DecResults(ms1DecResults, carbon2RtDict);
-
             if (_parameter.IsIdentificationOnlyPerformedForAlignmentFile)
                 return Array.Empty<AnnotatedMSDecResult>();
 
@@ -109,30 +107,6 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                     new MoleculeMsReference() { ChromXs = new ChromXs(rValue + rTolerance, ChromXType.RI, ChromXUnit.None) },
                     (a, b) => a.ChromXs.RI.Value.CompareTo(b.ChromXs.RI.Value));
                 return (startID, endID);
-            }
-        }
-
-        public void SetRetentionIndexForMS1DecResults(IReadOnlyList<MSDecResult> ms1DecResults, Dictionary<int, float> carbon2RtDict) {
-            if (carbon2RtDict.IsEmptyOrNull()) {
-                return;
-            }
-
-            if (_parameter.RiCompoundType == RiCompoundType.Alkanes)
-                foreach (var result in ms1DecResults) {
-                    result.ChromXs.RI = new RetentionIndex(RetentionIndexHandler.GetRetentionIndexByAlkanes(carbon2RtDict, (float)result.ChromXs.Value));
-                }
-            else {
-                var fiehnRiDict = RetentionIndexHandler.GetFiehnFamesDictionary();
-                Execute(fiehnRiDict, carbon2RtDict, ms1DecResults);
-            }
-        }
-
-        public void Execute(Dictionary<int, float> fiehnRiDict, Dictionary<int, float> famesRtDict, IReadOnlyList<MSDecResult> ms1DecResults) {
-            var fiehnRiCoeff = RetentionIndexHandler.GetFiehnRiCoefficient(fiehnRiDict, famesRtDict);
-
-            foreach (var result in ms1DecResults) {
-                var rt = (float)result.ChromXs.RT.Value;
-                result.ChromXs.RI = new RetentionIndex((float)Math.Round(RetentionIndexHandler.CalculateFiehnRi(fiehnRiCoeff, rt), 1));
             }
         }
     }

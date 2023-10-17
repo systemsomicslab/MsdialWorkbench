@@ -184,9 +184,7 @@ namespace CompMs.MsdialCore.MSDec {
         }
     }
 
-    public sealed class MSDecHandler {
-        private MSDecHandler() { }
-
+    public static class MSDecHandler {
         #region gcms
         public static List<MSDecResult> GetMSDecResults(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, 
             ParameterBase param, Action<int> reportAction, double initialProgress = 30, double progressMax = 30) {
@@ -367,22 +365,15 @@ namespace CompMs.MsdialCore.MSDec {
                     modelChrom.ChromScanOfPeakTop = rdamToChromDict[modelChrom.RdamScanOfPeakTop];
                     modelChrom.ChromScanOfPeakLeft = modelChrom.ChromScanOfPeakTop - (peak.ChromScanIdTop - peak.ChromScanIdLeft);
                     modelChrom.ChromScanOfPeakRight = modelChrom.ChromScanOfPeakTop + (peak.ChromScanIdRight - peak.ChromScanIdTop);
-                    modelChrom.ModelMzList.Add((float)peak.Mass);
                     modelChrom.SharpnessValue = peak.PeakShape.ShapenessValue;
                     modelChrom.EstimatedNoise = peak.PeakShape.EstimatedNoise;
                     modelChrom.SignalToNoise = peak.PeakShape.SignalToNoise;
-
-                    peaklist = getTrimedAndSmoothedPeaklist(spectrumList, modelChrom.ChromScanOfPeakLeft, modelChrom.ChromScanOfPeakRight, param.SmoothingLevel, msdecBins, (float)peak.Mass, param);
-                    baselineCorrectedPeaklist = getBaselineCorrectedPeaklist(peaklist, modelChrom.ChromScanOfPeakTop - modelChrom.ChromScanOfPeakLeft);
-                    peaklists.Add(baselineCorrectedPeaklist);
                     firstFlg = true;
                 }
-                else {
-                    modelChrom.ModelMzList.Add((float)peak.Mass);
-                    peaklist = getTrimedAndSmoothedPeaklist(spectrumList, modelChrom.ChromScanOfPeakLeft, modelChrom.ChromScanOfPeakRight, param.SmoothingLevel, msdecBins, (float)peak.Mass, param);
-                    baselineCorrectedPeaklist = getBaselineCorrectedPeaklist(peaklist, modelChrom.ChromScanOfPeakTop - modelChrom.ChromScanOfPeakLeft);
-                    peaklists.Add(baselineCorrectedPeaklist);
-                }
+                modelChrom.ModelMzList.Add((float)peak.Mass);
+                peaklist = getTrimedAndSmoothedPeaklist(spectrumList, modelChrom.ChromScanOfPeakLeft, modelChrom.ChromScanOfPeakRight, param.SmoothingLevel, msdecBins, (float)peak.Mass, param);
+                baselineCorrectedPeaklist = getBaselineCorrectedPeaklist(peaklist, modelChrom.ChromScanOfPeakTop - modelChrom.ChromScanOfPeakLeft);
+                peaklists.Add(baselineCorrectedPeaklist);
             }
 
             double mzCount = modelChrom.ModelMzList.Count;
