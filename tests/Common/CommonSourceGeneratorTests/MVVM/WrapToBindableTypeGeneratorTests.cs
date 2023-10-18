@@ -7,24 +7,28 @@ namespace CompMs.CommonSourceGenerator.MVVM.Tests
         public void TestMethod1() {
             MyClass item = new();
             MyClassModel model = new(item);
-            string? changedProperty = string.Empty;
-            model.PropertyChanged += (s, e) => changedProperty = e.PropertyName;
+            List<string?> changedProperties = new();
+            model.PropertyChanged += (s, e) => changedProperties.Add(e.PropertyName);
 
             model.Foo = 100;
-            Assert.AreEqual(nameof(model.Foo), changedProperty);
+            CollectionAssert.AreEquivalent(new[] { nameof(model.Foo), nameof(model.FooBar), nameof(model.BarFoo) }, changedProperties);
             Assert.AreEqual(100, item.Foo);
+            changedProperties.Clear();
 
             model.Bar = "aaa";
-            Assert.AreEqual(nameof(model.Bar), changedProperty);
+            CollectionAssert.AreEquivalent(new[] { nameof(model.Bar), nameof(model.FooBar), nameof(model.BarFoo), nameof(model.BarBaz) }, changedProperties);
             Assert.AreEqual("aaa", item.Bar);
+            changedProperties.Clear();
 
             model.Baz = new MyValue { Value = 1000 };
-            Assert.AreEqual(nameof(model.Baz), changedProperty);
+            CollectionAssert.AreEquivalent(new[] { nameof(model.Baz), nameof(model.BarBaz) }, changedProperties);
             Assert.AreEqual(1000, item.Baz.Value);
+            changedProperties.Clear();
 
             model.Qux = new MyStruct { Value = 10000 };
-            Assert.AreEqual(nameof(model.Qux), changedProperty);
+            CollectionAssert.AreEquivalent(new[] { nameof(model.Qux) }, changedProperties);
             Assert.AreEqual(10000, item.Qux.Value);
+            changedProperties.Clear();
         }
     }
 
