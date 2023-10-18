@@ -11,17 +11,17 @@ namespace CompMs.CommonSourceGenerator.MVVM.Tests
             model.PropertyChanged += (s, e) => changedProperties.Add(e.PropertyName);
 
             model.Foo = 100;
-            CollectionAssert.AreEquivalent(new[] { nameof(model.Foo), nameof(model.FooBar), nameof(model.BarFoo) }, changedProperties);
+            CollectionAssert.AreEquivalent(new[] { nameof(model.Foo), nameof(model.FooBar), nameof(model.BarFoo), nameof(model.FooBarBaz) }, changedProperties);
             Assert.AreEqual(100, item.Foo);
             changedProperties.Clear();
 
             model.Bar = "aaa";
-            CollectionAssert.AreEquivalent(new[] { nameof(model.Bar), nameof(model.FooBar), nameof(model.BarFoo), nameof(model.BarBaz) }, changedProperties);
+            CollectionAssert.AreEquivalent(new[] { nameof(model.Bar), nameof(model.FooBar), nameof(model.BarFoo), nameof(model.BarBaz), nameof(model.FooBarBaz) }, changedProperties);
             Assert.AreEqual("aaa", item.Bar);
             changedProperties.Clear();
 
             model.Baz = new MyValue { Value = 1000 };
-            CollectionAssert.AreEquivalent(new[] { nameof(model.Baz), nameof(model.BarBaz) }, changedProperties);
+            CollectionAssert.AreEquivalent(new[] { nameof(model.Baz), nameof(model.BarBaz), nameof(model.FooBarBaz) }, changedProperties);
             Assert.AreEqual(1000, item.Baz.Value);
             changedProperties.Clear();
 
@@ -55,6 +55,8 @@ namespace CompMs.CommonSourceGenerator.MVVM.Tests
         }
 
         public string BarBaz => Bar + Baz.Value;
+
+        public string FooBarBaz => Foo + BarBaz;
     }
 
     [WrapToBindableType(typeof(MyClass))]
