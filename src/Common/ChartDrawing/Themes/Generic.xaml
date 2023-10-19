@@ -468,6 +468,7 @@
     </Style>
 
     <Style TargetType="{x:Type ui:HsvColorPicker}">
+        <Setter Property="MinHeight" Value="128"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ui:HsvColorPicker}">
@@ -610,6 +611,70 @@
                                               Grid.Row="2" Grid.Column="1"/>
                         </Grid>
                     </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type ui:CompositeColorPicker}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ui:CompositeColorPicker}">
+                    <ControlTemplate.Resources>
+                        <converter:ColorToBrushConverter x:Key="BrushConverter"/>
+                    </ControlTemplate.Resources>
+                    <ToggleButton HorizontalContentAlignment="Stretch"
+                                  VerticalContentAlignment="Center">
+                        <ToggleButton.Style>
+                            <Style TargetType="ToggleButton">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=IsOpen, ElementName=popUp}" Value="True">
+                                        <Setter Property="IsHitTestVisible" Value="False"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ToggleButton.Style>
+                        <Grid>
+                            <Popup x:Name="popUp"
+                                   IsOpen="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}}"
+                                   PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=ToggleButton}}"
+                                   Placement="Bottom"
+                                   StaysOpen="False"
+                                   PopupAnimation="Slide"
+                                   AllowsTransparency="True"
+                                   Width="{Binding ContentWidth, RelativeSource={RelativeSource TemplatedParent}}"
+                                   Height="{Binding ContentHeight, RelativeSource={RelativeSource TemplatedParent}}">
+                                <TabControl ItemsSource="{Binding Pickers, RelativeSource={RelativeSource TemplatedParent}}"
+                                            DisplayMemberPath="Label">
+                                    <TabControl.ContentTemplate>
+                                        <DataTemplate DataType="{x:Type ui:CompositeColorPickerItem}">
+                                            <ContentPresenter Content="{Binding Picker, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </TabControl.ContentTemplate>
+                                </TabControl>
+                            </Popup>
+                            <Label Padding="4,2"
+                                   HorizontalContentAlignment="Stretch">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                        <Border Margin="0" MinWidth="14" MinHeight="14" 
+                                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                                                BorderThickness="1" BorderBrush="LightGray"
+                                                DataContext="{Binding SelectedColor, RelativeSource={RelativeSource TemplatedParent}}"
+                                                Background="{Binding Converter={StaticResource BrushConverter}, FallbackValue={x:Static Colors.White}, Mode=OneWay}"
+                                                ToolTip="{Binding}"/>
+                                        <TextBlock Text="&#xE70D;"
+                                                   VerticalAlignment="Center"
+                                                   Margin="8,0,0,0"
+                                                   FontFamily="Segoe MDL2 Assets"
+                                                   Grid.Column="1"/>
+                                </Grid>
+                            </Label>
+                        </Grid>
+                    </ToggleButton>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
