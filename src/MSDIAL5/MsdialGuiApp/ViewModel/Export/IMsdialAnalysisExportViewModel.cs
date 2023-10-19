@@ -24,6 +24,8 @@ namespace CompMs.App.Msdial.ViewModel.Export
                     return new SpectraTypeSelectableMsdialAnalysisExportViewModel(exportModel);
                 case MsdialAnalysisTableExportModel tableModel:
                     return new MsdialAnalysisTableExportViewModel(tableModel);
+                case MsdialAnalysisMassBankRecordExportModel massBankExportModel:
+                    return new MsdialAnalysisMassBankRecordExportViewModel(massBankExportModel);
                 default:
                     return null;
             }
