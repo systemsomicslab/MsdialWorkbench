@@ -3,7 +3,7 @@ using CompMs.MsdialCore.DataObj;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    [WrapToBindableType(typeof(PeakFeatureSearchValue))]
+    [BufferedBindableType(typeof(PeakFeatureSearchValue))]
     internal partial class PeakFeatureSearchValueModel
     {
         public void ClearChromatogramSearchQuery() {
