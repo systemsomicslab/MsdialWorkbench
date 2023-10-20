@@ -48,13 +48,18 @@
                        VerticalAlignment="Center"/>
             <ui:ListColorPicker x:Name="ColorPickerControl"
                                 SelectedColor="{Binding SelectedColor, ElementName=CompositeColorPicker}"
-                                Width="100"/>
-            <TextBlock Text="{Binding SelectedColor, ElementName=ColorPickerControl}"
-                       Background="Gray">
-                <TextBlock.Foreground>
-                    <SolidColorBrush Color="{Binding SelectedColor, ElementName=CompositeColorPicker, FallbackValue=White}"/>
-                </TextBlock.Foreground>   
-            </TextBlock>
+                                Width="240"
+                                Grid.Row="3" Grid.Column="1"/>
         </StackPanel>
-    </StackPanel>
+
+        <TextBlock Text="{Binding SelectedColor, ElementName=ColorPickerControl}"
+                   Background="Gray"
+                   Width="100"
+                   Margin="8"
+                   Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+            <TextBlock.Foreground>
+                <SolidColorBrush Color="{Binding SelectedColor, ElementName=CompositeColorPicker, FallbackValue=White}"/>
+            </TextBlock.Foreground>   
+        </TextBlock>
+    </Grid>
 </Page>
