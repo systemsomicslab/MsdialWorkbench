@@ -49,6 +49,9 @@ namespace CompMs.App.Msdial.Model.Setting {
         }
 
         public void Search() {
+            foreach (var query in _fragmentQuerySettingValueModels) {
+                query.Commit();
+            }
             _parameter.FragmentSearchSettingValues.Clear();
             _parameter.FragmentSearchSettingValues.AddRange(_fragmentQuerySettingValues.Where(v => v.Mass > 0 && v.MassTolerance > 0 && v.RelativeIntensityCutoff > 0));
 
