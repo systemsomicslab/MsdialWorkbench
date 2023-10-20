@@ -44,11 +44,11 @@
             <RibbonButton.ToolTip>Users can define the quant masses for metabolic profiling in GC-MS project.</RibbonButton.ToolTip>
 			<Label x:Name="resultLabel" Content="Result" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,40,0,0"/>
         </RibbonButton>
-		<RibbonButton Label="Generate Graph" LargeImageSource="{StaticResource Quant_mass_manager_is}"
+		<RibbonButton Label="Generate Graph" LargeImageSource="{StaticResource Save_is}"
                       IsEnabled="True"
 					  Click="generateGraph_Click"
                       KeyTip="G">
-			<RibbonButton.ToolTip>Generate and display a graph and save as a image.</RibbonButton.ToolTip>
+			<RibbonButton.ToolTip>Generate and display a graph and save as ".png".</RibbonButton.ToolTip>
 		</RibbonButton>
 	</RibbonGroup>
 </RibbonTab>
