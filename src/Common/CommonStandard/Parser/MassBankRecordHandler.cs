@@ -157,7 +157,7 @@ namespace CompMs.Common.Parser
                 // pk$annotation
                 writer.WriteLine("PK$ANNOTATION: m/z type comment");
                 foreach (var p in scan.Spectrum) {
-                    writer.WriteLine($"  {p.Mass} {p.SpectrumComment} {p.Comment}");
+                    writer.WriteLine($"  {p.Mass:F5} {p.SpectrumComment} {p.Comment}");
                 }
 
                 // pk$num_peak
@@ -166,10 +166,10 @@ namespace CompMs.Common.Parser
                 // pk$peak
                 writer.WriteLine("PK$PEAK: m/z int. rel.int.");
                 var spec = scan.Spectrum.Select(p => new { mz = p.Mass, intensity = p.Intensity }).ToArray();
-                var maxIntensity = spec.Max(p => p.intensity);
+                var maxIntensity = spec.DefaultIfEmpty().Max(p => p?.intensity ?? 1d);
 
                 foreach (var p in spec) {
-                    writer.WriteLine($"  {p.mz} {p.intensity} {p.intensity / maxIntensity * 999:F0}");
+                    writer.WriteLine($"  {p.mz:F5} {p.intensity:F2} {p.intensity / maxIntensity * 999:F0}");
                 }
 
                 writer.WriteLine("//");
