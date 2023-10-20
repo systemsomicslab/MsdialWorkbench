@@ -131,9 +131,7 @@ namespace CompMs.App.MsdialConsole.Process
             using (var streammsp = File.Open(align_outputmspfile, FileMode.Create, FileAccess.Write)) {
                 align_exporter.Export(stream, result.AlignmentSpotProperties, align_decResults, files, align_accessor, align_quantAccessor, align_stats);
                 IAlignmentSpectraExporter align_mspexporter = new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter);
-                foreach (var spot in result.AlignmentSpotProperties) {
-                    align_mspexporter.Export(streammsp, spot, align_decResults[spot.MasterAlignmentID]);
-                }
+                align_mspexporter.BatchExport(streammsp, result.AlignmentSpotProperties, align_decResults);
             }
 
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
