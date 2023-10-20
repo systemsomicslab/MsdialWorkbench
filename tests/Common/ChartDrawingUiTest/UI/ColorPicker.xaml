@@ -19,7 +19,7 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel Margin="32" Grid.Row="2" Grid.Column="0">
+        <StackPanel Margin="32,8" Grid.Row="2" Grid.Column="1">
             <TextBlock Text="CompositeColorPicker"
                        VerticalAlignment="Center"/>
             <ui:CompositeColorPicker x:Name="CompositeColorPicker"
@@ -31,10 +31,13 @@
                 <ui:CompositeColorPickerItem Label="HSV">
                     <ui:HsvColorPicker/>
                 </ui:CompositeColorPickerItem>
+                <ui:CompositeColorPickerItem Label="RGB">
+                    <ui:RgbColorPicker/>
+                </ui:CompositeColorPickerItem>
             </ui:CompositeColorPicker>
         </StackPanel>
 
-        <StackPanel Margin="32" Grid.Row="1" Grid.Column="0">
+        <StackPanel Margin="32,8" Grid.Row="1" Grid.Column="0">
             <TextBlock Text="HsvColorPicker"
                        VerticalAlignment="Center"/>
             <ui:HsvColorPicker x:Name="HsvColorPicker"
@@ -43,7 +46,16 @@
                                Background="Gray"/>
         </StackPanel>
 
-        <StackPanel Margin="32" Grid.Row="1" Grid.Column="1">
+        <StackPanel Margin="32,8" Grid.Row="2" Grid.Column="0">
+            <TextBlock Text="RgbColorPicker"
+                       VerticalAlignment="Center"/>
+            <ui:RgbColorPicker x:Name="RgbColorPicker"
+                               SelectedColor="{Binding SelectedColor, ElementName=CompositeColorPicker}"
+                               Width="200"
+                               Background="Gray"/>
+        </StackPanel>
+
+        <StackPanel Margin="32,8" Grid.Row="1" Grid.Column="1">
             <TextBlock Text="ListColorPicker"
                        VerticalAlignment="Center"/>
             <ui:ListColorPicker x:Name="ColorPickerControl"

@@ -679,4 +679,128 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="{x:Type ui:RgbColorPicker}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ui:RgbColorPicker}">
+                    <ControlTemplate.Resources>
+                        <converter:ColorToBrushConverter x:Key="BrushConverter"/>
+                        <LinearGradientBrush x:Key="RBrush" StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#000000" Offset="0"/>
+                            <GradientStop Color="#FF0000" Offset="1"/>
+                        </LinearGradientBrush>
+                        <LinearGradientBrush x:Key="GBrush" StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#000000" Offset="0"/>
+                            <GradientStop Color="#00FF00" Offset="1"/>
+                        </LinearGradientBrush>
+                        <LinearGradientBrush x:Key="BBrush" StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#000000" Offset="0"/>
+                            <GradientStop Color="#0000FF" Offset="1"/>
+                        </LinearGradientBrush>
+                        <LinearGradientBrush x:Key="ABrush" StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#00000000" Offset="0"/>
+                            <GradientStop Color="#FF000000" Offset="1"/>
+                        </LinearGradientBrush>
+                        <Style TargetType="Thumb" x:Key="ColorSelectThumb">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Thumb">
+                                        <Grid Height="12" Width="12">
+                                            <Ellipse Stroke="Black" StrokeThickness="1" SnapsToDevicePixels="True"/>
+                                            <Ellipse Stroke="White" StrokeThickness="1" SnapsToDevicePixels="True" Margin="1"
+                                                     Fill="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                        <Style TargetType="Slider">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Slider">
+                                        <Grid>
+                                            <Rectangle Fill="{Binding Path=Background, RelativeSource={RelativeSource TemplatedParent}}"
+                                                       Height="12"/>
+                                            <Track x:Name="PART_Track">
+                                                <Track.Thumb>
+                                                    <Thumb Background="{TemplateBinding Foreground}"
+                                                           Style="{StaticResource ColorSelectThumb}"/>
+                                                </Track.Thumb>
+                                            </Track>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                        <Style TargetType="TextBox">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                        </Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                        </Style>
+                    </ControlTemplate.Resources>
+
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Row="0">
+                            <Rectangle Fill="{Binding SelectedColor, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BrushConverter}}"
+                                       Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                                       VerticalAlignment="Stretch"/>
+                            <TextBox Text="{Binding ColorText, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/>
+                        </StackPanel>
+
+                        <Grid Grid.Row="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="32"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="32"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Red" Grid.Row="0" Grid.Column="0"/>
+                            <Slider Minimum="0" Maximum="255" Value="{Binding Red, RelativeSource={RelativeSource TemplatedParent}}"
+                                    Foreground="Transparent"
+                                    Background="{StaticResource RBrush}"
+                                    IsMoveToPointEnabled="True"
+                                    Margin="0,4"
+                                    Grid.Row="0" Grid.Column="1"/>
+                            <TextBox Text="{Binding Red, RelativeSource={RelativeSource TemplatedParent}}" Grid.Row="0" Grid.Column="2"/>
+
+                            <TextBlock Text="Green" Grid.Row="1" Grid.Column="0"/>
+                            <Slider Minimum="0" Maximum="255" Value="{Binding Green, RelativeSource={RelativeSource TemplatedParent}}"
+                                    Foreground="Transparent"
+                                    Background="{StaticResource GBrush}"
+                                    IsMoveToPointEnabled="True"
+                                    Margin="0,4"
+                                    Grid.Row="1" Grid.Column="1"/>
+                            <TextBox Text="{Binding Green, RelativeSource={RelativeSource TemplatedParent}}" Grid.Row="1" Grid.Column="2"/>
+
+                            <TextBlock Text="Blue" Grid.Row="2" Grid.Column="0"/>
+                            <Slider Minimum="0" Maximum="255" Value="{Binding Blue, RelativeSource={RelativeSource TemplatedParent}}"
+                                    Foreground="Transparent"
+                                    Background="{StaticResource BBrush}"
+                                    IsMoveToPointEnabled="True"
+                                    Margin="0,4"
+                                    Grid.Row="2" Grid.Column="1"/>
+                            <TextBox Text="{Binding Blue, RelativeSource={RelativeSource TemplatedParent}}" Grid.Row="2" Grid.Column="2"/>
+
+                            <TextBlock Text="Alpha" Grid.Row="3" Grid.Column="0"/>
+                            <Slider Minimum="0" Maximum="255" Value="{Binding Alpha, RelativeSource={RelativeSource TemplatedParent}}"
+                                    Foreground="Transparent"
+                                    Background="{StaticResource ABrush}"
+                                    IsMoveToPointEnabled="True"
+                                    Margin="0,4"
+                                    Grid.Row="3" Grid.Column="1"/>
+                            <TextBox Text="{Binding Alpha, RelativeSource={RelativeSource TemplatedParent}}" Grid.Row="3" Grid.Column="2"/>
+                        </Grid>
+                    </StackPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>
