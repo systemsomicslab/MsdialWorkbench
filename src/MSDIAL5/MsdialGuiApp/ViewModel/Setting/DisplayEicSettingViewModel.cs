@@ -37,12 +37,17 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                .ToReactiveCommand()
                .WithSubscribe(Commit)
                .AddTo(Disposables);
+            ClearCommand = new ReactiveCommand()
+                .WithSubscribe(model.Clear)
+                .AddTo(Disposables);
         }
 
         public ReadOnlyReactiveCollection<PeakFeatureSearchValueViewModel> DiplayEicSettingValues { get; }
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
 
         public ReactiveCommand ApplyCommand { get; }
+        public ReactiveCommand ClearCommand { get; }
+
         public bool DialogResult { get; private set; } = false;
 
         private void Commit() {

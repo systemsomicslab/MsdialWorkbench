@@ -35,10 +35,12 @@ namespace CompMs.App.Msdial.Model.Setting
         public ReadOnlyObservableCollection<PeakFeatureSearchValueModel> DisplayEicSettingValueModels { get; }
 
         public ChromatogramsModel PrepareChromatograms() {
+            foreach (var m in DisplayEicSettingValueModels) {
+                m.Commit();
+            }
             _advanceProcessParameter.DiplayEicSettingValues.Clear();
             _advanceProcessParameter.DiplayEicSettingValues.AddRange(_displaySettingValueCandidates.Where(n => n.Mass > 0 && n.MassTolerance > 0));
             var displayEICs = _advanceProcessParameter.DiplayEicSettingValues;
-
             if (!displayEICs.IsEmptyOrNull()) {
                 var displayChroms = new List<DisplayChromatogram>();
                 var counter = 0;
@@ -54,6 +56,12 @@ namespace CompMs.App.Msdial.Model.Setting
                 return chromatogramsModel;
             }
             return null;
+        }
+
+        public void Clear() {
+            foreach (var m in _displaySettingValueModels) {
+                m.ClearChromatogramSearchQuery();
+            }
         }
     }
 }
