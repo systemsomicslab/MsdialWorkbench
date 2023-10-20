@@ -5,7 +5,6 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace CompMs.MsdialCore.Export
@@ -22,12 +21,6 @@ namespace CompMs.MsdialCore.Export
 
         void IAlignmentSpectraExporter.Export(Stream stream, AlignmentSpotProperty spot, MSDecResult msdecResult) {
             SpectraExport.SaveSpectraTableAsNistFormat(stream, spot, msdecResult.Spectrum, _refer, _parameter);
-        }
-
-        void IAlignmentSpectraExporter.Export(Stream stream, IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults) {
-            foreach (var spot in spots) {
-                SpectraExport.SaveSpectraTableAsNistFormat(stream, spot, msdecResults[spot.MasterAlignmentID].Spectrum, _refer, _parameter);
-            }
         }
     }
 }
