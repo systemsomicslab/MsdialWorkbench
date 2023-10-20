@@ -20,6 +20,10 @@ namespace CompMs.MsdialCore.Export
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
         }
 
+        void IAlignmentSpectraExporter.Export(Stream stream, AlignmentSpotProperty spot, MSDecResult msdecResult) {
+            SpectraExport.SaveSpectraTableAsNistFormat(stream, spot, msdecResult.Spectrum, _refer, _parameter);
+        }
+
         void IAlignmentSpectraExporter.Export(Stream stream, IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults) {
             foreach (var spot in spots) {
                 SpectraExport.SaveSpectraTableAsNistFormat(stream, spot, msdecResults[spot.MasterAlignmentID].Spectrum, _refer, _parameter);
