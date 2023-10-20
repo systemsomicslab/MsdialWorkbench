@@ -6,7 +6,7 @@ namespace CompMs.MsdialCore.Export
 {
     public sealed class AlignmentMgfExporter : IAlignmentSpectraExporter
     {
-        public void Export(Stream stream, AlignmentSpotProperty spot, MSDecResult msdecResult) {
+        void IAlignmentSpectraExporter.Export(Stream stream, AlignmentSpotProperty spot, MSDecResult msdecResult) {
             SpectraExport.SaveSpectraTableAsMgfFormat(stream, spot, msdecResult.Spectrum);
         }
     }
