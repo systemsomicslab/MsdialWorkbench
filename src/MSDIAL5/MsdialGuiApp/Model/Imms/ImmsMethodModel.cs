@@ -326,7 +326,7 @@ namespace CompMs.App.Msdial.Model.Imms
             if (analysisModel is null) {
                 return null;
             }
-            return new DisplayEicSettingModel(analysisModel.EicLoader, _storage.Parameter);
+            return new DisplayEicSettingModel(analysisModel.EicLoader, _storage.Parameter.AdvancedProcessOptionBaseParam);
         }
 
         public ChromatogramsModel PrepareTicBpcRepEIC() {

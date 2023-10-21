@@ -9,12 +9,12 @@ using System.Reactive.Linq;
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
     internal sealed class DisplayEicSettingViewModel : ViewModelBase {
+        private readonly DisplayEicSettingModel _model;
+
         public DisplayEicSettingViewModel(DisplayEicSettingModel model) {
-            if (model is null) {
-                throw new ArgumentNullException(nameof(model));
-            }
-            Model = model;
-            DiplayEicSettingValues = Model.DiplayEicSettingValues
+            _model = model ?? throw new ArgumentNullException(nameof(model));
+
+            DiplayEicSettingValues = model.DisplayEicSettingValueModels
                 .ToReadOnlyReactiveCollection(x => new PeakFeatureSearchValueViewModel(x))
                 .AddTo(Disposables);
 
@@ -37,13 +37,17 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                .ToReactiveCommand()
                .WithSubscribe(Commit)
                .AddTo(Disposables);
+            ClearCommand = new ReactiveCommand()
+                .WithSubscribe(model.Clear)
+                .AddTo(Disposables);
         }
 
-        public DisplayEicSettingModel Model { get; }
         public ReadOnlyReactiveCollection<PeakFeatureSearchValueViewModel> DiplayEicSettingValues { get; }
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
 
         public ReactiveCommand ApplyCommand { get; }
+        public ReactiveCommand ClearCommand { get; }
+
         public bool DialogResult { get; private set; } = false;
 
         private void Commit() {
