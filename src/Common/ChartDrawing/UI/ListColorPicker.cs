@@ -1,10 +1,7 @@
-﻿using CompMs.CommonMVVM;
-using CompMs.Graphics.Helper;
-using System;
+﻿using CompMs.Graphics.Helper;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 
@@ -36,13 +33,19 @@ namespace CompMs.Graphics.UI
     /// Step 2)
     /// Go ahead and use your control in the XAML file.
     ///
-    ///     <MyNamespace:ColorPicker/>
+    ///     <MyNamespace:ListColorPicker/>
     ///
     /// </summary>
-    public sealed class ColorPicker : Control
+    public class ListColorPicker : BaseColorPicker
     {
-        static ColorPicker() {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(ColorPicker), new FrameworkPropertyMetadata(typeof(ColorPicker)));
+        public static Color[] GrayScale { get; }
+        public static Color[] BasicColors { get; }
+        public static Color[,] ExtraColors { get; }
+        private static ColorPickerItem[] DefaultColorPickerItems { get; }
+
+        static ListColorPicker() {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(ListColorPicker), new FrameworkPropertyMetadata(typeof(ListColorPicker)));
+            SelectedColorProperty.OverrideMetadata(typeof(ListColorPicker), new FrameworkPropertyMetadata(Colors.White, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSelectedColorChanged, CoerceSelectedColor));
 
             GrayScale = Enumerable.Range(0, 12).Select(v => ColorHelper.FromNormalizedHsv(0d, 0d, v / 11d)).ToArray();
             BasicColors = Enumerable.Range(0, 12).Select(v => ColorHelper.FromNormalizedHsv(v / 12d, 1d, 1d)).ToArray();
@@ -64,44 +67,31 @@ namespace CompMs.Graphics.UI
             .ToArray();
         }
 
-        public static Color[] GrayScale { get; }
-        public static Color[] BasicColors { get; }
-        public static Color[,] ExtraColors { get; }
-        private static ColorPickerItem[] DefaultColorPickerItems { get; }
-
         private readonly CustomColorPickerItem _custom;
 
-        public ColorPicker() {
+        public ListColorPicker() {
             _custom = new CustomColorPickerItem("Custom");
             var cv = new ListCollectionView(DefaultColorPickerItems.Append<object>(_custom).ToArray());
             cv.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ColorPickerItem.Category)));
             (cv as ICollectionView).MoveCurrentTo(_custom);
             ColorPickerItems = cv;
+            SetCurrentValue(SelectedItemProperty, _custom);
         }
 
         public ICollectionView ColorPickerItems { get; }
 
-        public static readonly DependencyProperty SelectedColorProperty =
-            DependencyProperty.Register(
-                nameof(SelectedColor), typeof(Color), typeof(ColorPicker),
-                new FrameworkPropertyMetadata(
-                    Colors.White,
-                    FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
-                    OnSelectedColorChanged,
-                    CoerceSelectedColor));
-
-        public Color SelectedColor {
-            get => (Color)GetValue(SelectedColorProperty);
-            set => SetValue(SelectedColorProperty, value);
-        }
-
         private static void OnSelectedColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            var cp = (ColorPicker)d;
+            var cp = (ListColorPicker)d;
             cp.OnSelectedColorChanged((Color)e.OldValue, (Color)e.NewValue);
         }
 
         private void OnSelectedColorChanged(Color oldValue, Color newValue) {
-            _custom.Color = newValue;
+            IColorPickerItem item = DefaultColorPickerItems.FirstOrDefault(item_ => item_.Color == newValue);
+            if (item is null) {
+                _custom.Color = newValue;
+                item = _custom;
+            }
+            SetCurrentValue(SelectedItemProperty, item);
         }
 
         private static object CoerceSelectedColor(DependencyObject d, object value) {
@@ -115,10 +105,12 @@ namespace CompMs.Graphics.UI
             DependencyProperty.Register(
                 nameof(SelectedItem),
                 typeof(IColorPickerItem),
-                typeof(ColorPicker),
+                typeof(ListColorPicker),
                 new FrameworkPropertyMetadata(
                     null,
-                    OnSelectedItemChanged));
+                    FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+                    OnSelectedItemChanged,
+                    CoerceSelectedItem));
 
         internal IColorPickerItem SelectedItem {
             get => (IColorPickerItem)GetValue(SelectedItemProperty);
@@ -127,36 +119,15 @@ namespace CompMs.Graphics.UI
 
         private static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             if (e.NewValue is IColorPickerItem item) {
-                d.SetValue(SelectedColorProperty, item.Color);
+                d.SetCurrentValue(SelectedColorProperty, item.Color);
             }
         }
-    }
 
-    public interface IColorPickerItem {
-        Color Color { get; }
-        string Category { get; }
-    }
-
-    public sealed class ColorPickerItem : ViewModelBase, IColorPickerItem {
-        public ColorPickerItem(Color color, string category) {
-            Color = color;
-            Category = category;
+        private static object CoerceSelectedItem(DependencyObject d, object value) {
+            if (value is null) {
+                return ((ListColorPicker)d)._custom;
+            }
+            return value;
         }
-
-        public Color Color { get; }
-        public string Category { get; }
-    }
-
-    public sealed class CustomColorPickerItem : ViewModelBase, IColorPickerItem {
-        public CustomColorPickerItem(string category) {
-            Category = category;
-        }
-
-        public Color Color {
-            get => _color;
-            set => SetProperty(ref _color, value);
-        }
-        private Color _color = Colors.White;
-        public string Category { get; }
     }
 }
