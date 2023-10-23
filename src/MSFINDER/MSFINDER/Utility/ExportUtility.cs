@@ -67,19 +67,18 @@ namespace Rfx.Riken.OsakaUniv
             sw.WriteLine("LICENSE: " + rawData.License);
             sw.WriteLine("COMMENT: " + rawData.Comment);
 
-            var spectra = rawData.Ms2Spectrum.PeakList.OrderBy(n => n.Mz).ToList();
-            var maxIntensity = spectra.Max(n => n.Intensity);
             var spectraList = new List<string>();
             var ms2Peaklist = FragmentAssigner.GetCentroidMsMsSpectrum(rawData);
+            var maxIntensity = ms2Peaklist.Max(n => n.Intensity);
             //var commentList = FragmentAssigner.IsotopicPeakAssignmentForComment(ms2Peaklist, param.Mass2Tolerance, param.MassTolType);
-            for (int i = 0; i < rawData.Ms2PeakNumber; i++)
+            for (int i = 0; i < ms2Peaklist.Count; i++)
             {
-                var mz = spectra[i].Mz;
-                var intensity = spectra[i].Intensity;
+                var mz = ms2Peaklist[i].Mz;
+                var intensity = ms2Peaklist[i].Intensity;
                 if (intensity / maxIntensity * 100 < param.RelativeAbundanceCutOff) continue;
                 var comment = "";
 
-                var originalComment = spectra[i].Comment;
+                var originalComment = ms2Peaklist[i].Comment;
                 var additionalComment = getProductIonComment(mz, formulaResults, sfdResults, rawData.IonMode);
                 if (originalComment != "")
                     comment = originalComment + "; " + additionalComment;
@@ -241,8 +240,7 @@ namespace Rfx.Riken.OsakaUniv
                 // ms$data_processing: subtag
 
                 // pk$splash
-                var spectra = rawData.Ms2Spectrum.PeakList.OrderBy(p => p.Mz).ToList();
-                //var spectra = FragmentAssigner.GetCentroidMsMsSpectrum(rawData);
+                var spectra = FragmentAssigner.GetCentroidMsMsSpectrum(rawData);
                 var maxIntensity = spectra.Max(p => p.Intensity);
                 spectra = spectra.Where(p => p.Intensity / maxIntensity * 100 >= param.RelativeAbundanceCutOff).ToList();
                 if (spectra.Count > 0) {
