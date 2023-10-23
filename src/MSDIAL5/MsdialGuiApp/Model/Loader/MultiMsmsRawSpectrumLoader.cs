@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
+using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Parameter;
@@ -36,11 +37,11 @@ namespace CompMs.App.Msdial.Model.Loader
         public IObservable<List<MsSelectionItem>> Ms2List => _ms2List;
         private readonly Subject<List<MsSelectionItem>> _ms2List;
 
-        private IObservable<List<SpectrumPeak>> LoadSpectrumAsObservableCore(ChromatogramPeakFeatureModel target) {
+        private IObservable<IMSScanProperty> LoadScanAsObservableCore(ChromatogramPeakFeatureModel target) {
             if (target.InnerModel.MS2RawSpectrumID2CE.Count == 0) {
                 _ms2List.OnNext(new List<MsSelectionItem>(0));
                 Ms2IdSelector.Value = null;
-                return Observable.Return(new List<SpectrumPeak>(0));
+                return Observable.Return<IMSScanProperty>(null);
             }
             var items = target.InnerModel.MS2RawSpectrumID2CE.Select(pair => new MsSelectionItem(pair.Key, pair.Value)).ToList();
             _ms2List.OnNext(items);
@@ -53,7 +54,10 @@ namespace CompMs.App.Msdial.Model.Loader
                 if (_parameter.RemoveAfterPrecursor) {
                     spectra = spectra.Where(spectrum => spectrum.Mass <= target.Mass + _parameter.KeptIsotopeRange).ToList();
                 }
-                return spectra;
+                return new MSScanProperty(target.MS2RawSpectrumId, target.Mass, target.InnerModel.ChromXs.GetRepresentativeXAxis(), target.InnerModel.IonMode)
+                {
+                    Spectrum = spectra,
+                };
             });
         }
 
@@ -61,7 +65,14 @@ namespace CompMs.App.Msdial.Model.Loader
             if (target is null) {
                 throw new ArgumentNullException(nameof(target));
             }
-            return LoadSpectrumAsObservableCore(target);
+            return LoadScanAsObservable(target).Select(scan => scan?.Spectrum ?? new List<SpectrumPeak>(0));
+        }
+
+        public IObservable<IMSScanProperty> LoadScanAsObservable(ChromatogramPeakFeatureModel target) {
+            if (target is null) {
+                throw new ArgumentNullException(nameof(target));
+            }
+            return LoadScanAsObservableCore(target);
         }
     }
 }

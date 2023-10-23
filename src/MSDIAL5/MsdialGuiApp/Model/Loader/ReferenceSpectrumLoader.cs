@@ -17,18 +17,22 @@ namespace CompMs.App.Msdial.Model.Loader
         }
 
         IObservable<List<SpectrumPeak>> IMsSpectrumLoader<MsScanMatchResult>.LoadSpectrumAsObservable(MsScanMatchResult target) {
-            return Observable.Return(LoadSpectrumCore(target));
+            return Observable.Return(LoadScanCore(target)?.Spectrum ?? new List<SpectrumPeak>(0));
         }
 
-        private List<SpectrumPeak> LoadSpectrumCore(MsScanMatchResult target) {
+        IObservable<IMSScanProperty> IMsSpectrumLoader<MsScanMatchResult>.LoadScanAsObservable(MsScanMatchResult target) {
+            return Observable.Return(LoadScanCore(target));
+        }
+
+        private IMSScanProperty LoadScanCore(MsScanMatchResult target) {
             if (target is null) {
                 throw new ArgumentNullException(nameof(target));
             }
             var reference = _refer.Refer(target);
             if (reference != null) {
-                return reference.Spectrum;
+                return reference;
             }
-            return new List<SpectrumPeak>();
+            return null;
         }
     }
 }

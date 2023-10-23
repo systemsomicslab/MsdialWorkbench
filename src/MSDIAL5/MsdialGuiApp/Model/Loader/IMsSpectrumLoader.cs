@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
+using CompMs.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,8 @@ namespace CompMs.App.Msdial.Model.Loader
         /// <exception cref="ArgumentNullException"><paramref name="target"/> is null.</exception>
         /// <returns></returns>
         IObservable<List<SpectrumPeak>> LoadSpectrumAsObservable(T target);
+
+        IObservable<IMSScanProperty> LoadScanAsObservable(T target);
     }
 
     public static class MsSpectrumLoaderExtension
@@ -43,6 +46,10 @@ namespace CompMs.App.Msdial.Model.Loader
 
             public IObservable<List<SpectrumPeak>> LoadSpectrumAsObservable(U target) {
                 return _map(target).SelectSwitch(_loader.LoadSpectrumAsObservable);
+            }
+
+            public IObservable<IMSScanProperty> LoadScanAsObservable(U target) {
+                return _map(target).SelectSwitch(_loader.LoadScanAsObservable);
             }
         }
     }
