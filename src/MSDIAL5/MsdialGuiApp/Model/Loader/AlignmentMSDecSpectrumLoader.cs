@@ -23,10 +23,6 @@ namespace CompMs.App.Msdial.Model.Loader
             return _alignmentFile.LoadMSDecResultByIndexAsync(target.MasterAlignmentID);
         }
 
-        IObservable<List<SpectrumPeak>> IMsSpectrumLoader<AlignmentSpotPropertyModel>.LoadSpectrumAsObservable(AlignmentSpotPropertyModel target) {
-            return Observable.FromAsync(() => LoadMSDecResultAsync(target)).Select(r => r?.Spectrum ?? new List<SpectrumPeak>(0));
-        }
-
         IObservable<IMSScanProperty> IMsSpectrumLoader<AlignmentSpotPropertyModel>.LoadScanAsObservable(AlignmentSpotPropertyModel target) {
             return Observable.FromAsync(() => LoadMSDecResultAsync(target));
         }

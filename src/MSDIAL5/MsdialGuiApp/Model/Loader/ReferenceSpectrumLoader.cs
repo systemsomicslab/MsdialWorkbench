@@ -16,10 +16,6 @@ namespace CompMs.App.Msdial.Model.Loader
             _refer = refer ?? throw new ArgumentNullException(nameof(refer));
         }
 
-        IObservable<List<SpectrumPeak>> IMsSpectrumLoader<MsScanMatchResult>.LoadSpectrumAsObservable(MsScanMatchResult target) {
-            return Observable.Return(LoadScanCore(target)?.Spectrum ?? new List<SpectrumPeak>(0));
-        }
-
         IObservable<IMSScanProperty> IMsSpectrumLoader<MsScanMatchResult>.LoadScanAsObservable(MsScanMatchResult target) {
             return Observable.Return(LoadScanCore(target));
         }

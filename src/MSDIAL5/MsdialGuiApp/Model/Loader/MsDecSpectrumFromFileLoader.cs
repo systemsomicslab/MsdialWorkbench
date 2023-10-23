@@ -22,10 +22,6 @@ namespace CompMs.App.Msdial.Model.Loader
             return LoadCore(target);
         }
 
-        IObservable<List<SpectrumPeak>> IMsSpectrumLoader<AlignmentSpotPropertyModel>.LoadSpectrumAsObservable(AlignmentSpotPropertyModel target) {
-            return LoadCore(target).Select(scan => scan?.Spectrum ?? new List<SpectrumPeak>(0));
-        }
-
         private IObservable<IMSScanProperty> LoadCore(AlignmentSpotPropertyModel target) {
             if (target is null) {
                 throw new ArgumentNullException(nameof(target));

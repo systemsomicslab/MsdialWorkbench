@@ -50,10 +50,6 @@ namespace CompMs.App.Msdial.Model.Loader
             }
         }
 
-        public IObservable<List<SpectrumPeak>> LoadSpectrumAsObservable(object target) {
-            return Observable.FromAsync(token => LoadSpectrumAsync(target, token)).Select(scan => scan?.Spectrum ?? new List<SpectrumPeak>(0));
-        }
-
         public IObservable<IMSScanProperty> LoadScanAsObservable(object target) {
             return Observable.FromAsync(token => LoadSpectrumAsync(target, token));
         }

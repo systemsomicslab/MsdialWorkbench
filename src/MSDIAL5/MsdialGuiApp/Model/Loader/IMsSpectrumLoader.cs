@@ -16,8 +16,6 @@ namespace CompMs.App.Msdial.Model.Loader
         /// <param name="target"></param>
         /// <exception cref="ArgumentNullException"><paramref name="target"/> is null.</exception>
         /// <returns></returns>
-        IObservable<List<SpectrumPeak>> LoadSpectrumAsObservable(T target);
-
         IObservable<IMSScanProperty> LoadScanAsObservable(T target);
     }
 
@@ -31,21 +29,15 @@ namespace CompMs.App.Msdial.Model.Loader
             return new ContramapImplLoader<T, U>(loader, u => Observable.Return(map(u)));
         }
 
-        public static IObservable<MsSpectrum> LoadMsSpectrumAsObservable<T>(this IMsSpectrumLoader<T> loader, T target) {
-            return loader.LoadSpectrumAsObservable(target).Select(s => new MsSpectrum(s));
-        }
-
-        class ContramapImplLoader<T, U> : IMsSpectrumLoader<U> {
+        class ContramapImplLoader<T, U> : IMsSpectrumLoader<U>
+        {
+        {
             private readonly IMsSpectrumLoader<T> _loader;
             private readonly Func<U, IObservable<T>> _map;
 
             public ContramapImplLoader(IMsSpectrumLoader<T> loader, Func<U, IObservable<T>> map) {
                 _loader = loader;
                 _map = map;
-            }
-
-            public IObservable<List<SpectrumPeak>> LoadSpectrumAsObservable(U target) {
-                return _map(target).SelectSwitch(_loader.LoadSpectrumAsObservable);
             }
 
             public IObservable<IMSScanProperty> LoadScanAsObservable(U target) {

@@ -61,13 +61,6 @@ namespace CompMs.App.Msdial.Model.Loader
             });
         }
 
-        public IObservable<List<SpectrumPeak>> LoadSpectrumAsObservable(ChromatogramPeakFeatureModel target) {
-            if (target is null) {
-                throw new ArgumentNullException(nameof(target));
-            }
-            return LoadScanAsObservable(target).Select(scan => scan?.Spectrum ?? new List<SpectrumPeak>(0));
-        }
-
         public IObservable<IMSScanProperty> LoadScanAsObservable(ChromatogramPeakFeatureModel target) {
             if (target is null) {
                 throw new ArgumentNullException(nameof(target));
