@@ -70,6 +70,18 @@ namespace CompMs.Common.Algorithm.Function {
     //    public RootObject elements { get; set; }
     //}
 
+    public sealed class MolecularNetworkingQuery {
+        public MsmsSimilarityCalc MsmsSimilarityCalc { get; set; }
+        public double MassTolerance { get; set; }
+        public double AbsoluteAbundanceCutOff { get; set; }
+        public double RelativeAbundanceCutOff { get; set; }
+        public double SpectrumSimilarityCutOff { get; set; }
+        public double MinimumPeakMatch { get; set; }
+        public double MaxEdgeNumberPerNode { get; set; }
+        public double MaxPrecursorDifference { get; set; }
+        public double MaxPrecursorDifferenceAsPercent { get; set; }
+    }
+
     public sealed class MoleculerNetworkingBase {
         public RootObject GetMoleculerNetworkingRootObjZZZ<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans, MsmsSimilarityCalc msmsSimilarityCalc, double masstolerance, double absoluteAbsCutoff, double relativeAbsCutoff, double spectrumSimilarityCutoff, double minimumPeakMatch, double maxEdgeNumberPerNode, double maxPrecursorDifference, double maxPrecursorDifferenceAsPercent, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
             var nodes = GetSimpleNodes(spots, scans);
@@ -77,6 +89,15 @@ namespace CompMs.Common.Algorithm.Function {
                     spots, scans, msmsSimilarityCalc, masstolerance,
                     absoluteAbsCutoff, relativeAbsCutoff, spectrumSimilarityCutoff,
                     minimumPeakMatch, maxEdgeNumberPerNode, maxPrecursorDifference, maxPrecursorDifferenceAsPercent, report);
+            return new RootObject() { nodes = nodes, edges = edges };
+        }
+
+        public RootObject GetMoleculerNetworkingRootObjZZZ<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
+            var nodes = GetSimpleNodes(spots, scans);
+            var edges = GenerateEdgesBySpectralSimilarity(
+                    spots, scans, query.MsmsSimilarityCalc, query.MassTolerance,
+                    query.AbsoluteAbundanceCutOff, query.RelativeAbundanceCutOff, query.SpectrumSimilarityCutOff,
+                    query.MinimumPeakMatch, query.MaxEdgeNumberPerNode, query.MaxPrecursorDifference, query.MaxPrecursorDifferenceAsPercent, report);
             return new RootObject() { nodes = nodes, edges = edges };
         }
 

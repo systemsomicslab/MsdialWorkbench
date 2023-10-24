@@ -87,6 +87,21 @@ namespace CompMs.App.Msdial.Model.Core {
             MoleculerNetworkingBase.SendToCytoscapeJs(rootObj);
         }
 
+        private static MolecularNetworkingQuery ConvertToMolecularNetworkingQuery(MolecularSpectrumNetworkingBaseParameter parameter) {
+            return new MolecularNetworkingQuery
+            {
+                MsmsSimilarityCalc = parameter.MsmsSimilarityCalc,
+                MassTolerance = parameter.MnMassTolerance,
+                AbsoluteAbundanceCutOff = parameter.MnAbsoluteAbundanceCutOff,
+                RelativeAbundanceCutOff = parameter.MnRelativeAbundanceCutOff,
+                SpectrumSimilarityCutOff = parameter.MnSpectrumSimilarityCutOff,
+                MinimumPeakMatch = parameter.MinimumPeakMatch,
+                MaxEdgeNumberPerNode = parameter.MaxEdgeNumberPerNode,
+                MaxPrecursorDifference = parameter.MaxPrecursorDifference,
+                MaxPrecursorDifferenceAsPercent = parameter.MaxPrecursorDifferenceAsPercent,
+            };
+        }
+
         public CompMs.Common.DataObj.NodeEdge.RootObject GetMoleculerNetworkingRootObj(MolecularSpectrumNetworkingBaseParameter parameter) {
             var publisher = new TaskProgressPublisher(_broker, $"Exporting MN results in {parameter.ExportFolderPath}");
             using (publisher.Start()) {
@@ -98,10 +113,9 @@ namespace CompMs.App.Msdial.Model.Core {
                     publisher.Progress(progressRate, $"Exporting MN results in {parameter.ExportFolderPath}");
                 }
 
-                var rootObj = MoleculerNetworkingBase.GetMoleculerNetworkingRootObj(spots, peaks, parameter.MsmsSimilarityCalc, parameter.MnMassTolerance,
-                   parameter.MnAbsoluteAbundanceCutOff, parameter.MnRelativeAbundanceCutOff, parameter.MnSpectrumSimilarityCutOff,
-                   parameter.MinimumPeakMatch, parameter.MaxEdgeNumberPerNode, parameter.MaxPrecursorDifference, parameter.MaxPrecursorDifferenceAsPercent, notify);
-
+                var network = new MoleculerNetworkingBase();
+                var query = ConvertToMolecularNetworkingQuery(parameter);
+                var rootObj = network.GetMoleculerNetworkingRootObjZZZ(spots, peaks, query, notify);
                 for (int i = 0; i < rootObj.nodes.Count; i++) {
                     var node = rootObj.nodes[i];
                     node.data.BarGraph = CytoscapejsModel.GetBarGraphProperty(spots[i], AnalysisFileModel.AnalysisFileName);
