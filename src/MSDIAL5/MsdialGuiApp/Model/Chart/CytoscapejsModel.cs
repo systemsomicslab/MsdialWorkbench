@@ -2,54 +2,43 @@
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.DataObj.NodeEdge;
 using Reactive.Bindings;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    public sealed class CytoscapejsModel
+    public static class CytoscapejsModel
     {
-        private CytoscapejsModel() { }
-
-        public static CompMs.Common.DataObj.NodeEdge.Chart GetBarGraphProperty(
-            AlignmentSpotPropertyModel model,
-            IBarItemsLoader loader,
-            IReadOnlyDictionary<string, Color> ClassToColor) {
+        public static CompMs.Common.DataObj.NodeEdge.Chart GetBarGraphProperty(AlignmentSpotPropertyModel model, IBarItemsLoader loader, IReadOnlyDictionary<string, Color> ClassToColor) {
             var chart = loader.LoadBarItemsAsObservable(model);
             var items = chart.ObservableItems.ToReactiveProperty().Value;
-
-            var chartJs = new CompMs.Common.DataObj.NodeEdge.Chart() { type = "bar", data = new ChartData() };
-            chartJs.data.labels = new List<string>();
-            chartJs.data.datasets = new List<ChartElement>();
-            var chartJsElement = new ChartElement() { label = "", data = new List<double>(), backgroundColor = new List<string>() };
-
-            foreach (var chartElem in items) {
-                chartJs.data.labels.Add(chartElem.Class);
-                chartJsElement.data.Add(chartElem.Height);
-                chartJsElement.backgroundColor.Add("rgba(" + ClassToColor[chartElem.Class].R + "," + ClassToColor[chartElem.Class].G + "," + ClassToColor[chartElem.Class].B + ", 0.8)");
-            }
-            chartJs.data.datasets.Add(chartJsElement);
-
-            return chartJs;
+            return GetBarGraphPropertyCore(items.Select(item => item.Height), items.Select(item => ToCytoscapeColor(ClassToColor[item.Class])), items.Select(item => item.Class));
         }
 
         public static CompMs.Common.DataObj.NodeEdge.Chart GetBarGraphProperty(ChromatogramPeakFeatureModel model, string name) {
-            var chartJs = new CompMs.Common.DataObj.NodeEdge.Chart() { type = "bar", data = new ChartData() };
-            chartJs.data.labels = new List<string>();
-            chartJs.data.datasets = new List<ChartElement>();
-            var chartJsElement = new ChartElement() { label = "", data = new List<double>(), backgroundColor = new List<string>() };
+            return GetBarGraphPropertyCore(new[] { model.Intensity }, new[] { "rgba(0, 0, 255, 0.8)" }, new[] { name });
+        }
 
-            chartJs.data.labels.Add(name);
-            chartJsElement.data.Add(model.Intensity);
-            chartJsElement.backgroundColor.Add("rgba(0, 0, 255, 0.8)");
-
-            chartJs.data.datasets.Add(chartJsElement);
-
+        private static CompMs.Common.DataObj.NodeEdge.Chart GetBarGraphPropertyCore(IEnumerable<double> intensities, IEnumerable<string> colors, IEnumerable<string> classes) {
+            var chartJsElement = new ChartElement {
+                label = "",
+                data = intensities.ToList(),
+                backgroundColor = colors.ToList(),
+            };
+            var chartJs = new CompMs.Common.DataObj.NodeEdge.Chart {
+                type = "bar",
+                data = new ChartData
+                {
+                    labels = classes.ToList(),
+                    datasets = new List<ChartElement> { chartJsElement, },
+                }
+            };
             return chartJs;
+        }
+
+        private static string ToCytoscapeColor(Color color) {
+            return $"rgba({color.R},{color.G},{color.B}, 0.8)";
         }
     }
 }
