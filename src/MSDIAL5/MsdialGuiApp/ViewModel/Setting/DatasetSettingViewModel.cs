@@ -61,7 +61,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         IObservable<bool> ISettingViewModel.ObserveChangeAfterDecision => ObserveChangeAfterDecision;
 
-        public ISettingViewModel Next(ISettingViewModel selected) {
+        public ISettingViewModel? Next(ISettingViewModel selected) {
             var current = SettingViewModels.IndexOf(selected);
             if (current >= 0) {
                 for (int i = 0; i <= current; i++) {

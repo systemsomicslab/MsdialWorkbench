@@ -228,7 +228,7 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
             }
         }
 
-        public static DrawVisualManualPeakModification GetDrawingVisualUC(IReadOnlyList<PeakPropertyLegacy> peakProperties, PeakModType type, bool isRI = false, bool isDrift = false) {
+        public static DrawVisualManualPeakModification? GetDrawingVisualUC(IReadOnlyList<PeakPropertyLegacy> peakProperties, PeakModType type, bool isRI = false, bool isDrift = false) {
             if (peakProperties == null || peakProperties.Count == 0) return null;
             var xtitle = "Retention time (min)";
             if (isRI)

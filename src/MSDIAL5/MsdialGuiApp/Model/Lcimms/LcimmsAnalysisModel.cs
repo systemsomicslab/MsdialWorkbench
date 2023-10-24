@@ -201,7 +201,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 VerticalTitle = "Abundance",
             }.AddTo(Disposables);
 
-            var spectraExporter = new NistSpectraExporter<ChromatogramPeakFeature>(target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
+            var spectraExporter = new NistSpectraExporter<ChromatogramPeakFeature?>(target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
             var decLoader = analysisFileModel.MSDecLoader;
             _decLoader = decLoader;
             var msdecResult = target.SkipNull()
@@ -277,7 +277,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 t => new HeightAmount(t?.Intensity ?? 0d),
                 t => new AreaAmount(t?.PeakArea ?? 0d));
             PeakInformationModel = peakInformationModel;
-            var compoundDetailModel = new CompoundDetailModel(target.SkipNull().SelectSwitch(t => t?.ObserveProperty(p => p.ScanMatchResult)).Publish().RefCount(), mapper).AddTo(Disposables);
+            var compoundDetailModel = new CompoundDetailModel(target.SkipNull().SelectSwitch(t => t.ObserveProperty(p => p.ScanMatchResult)).Publish().RefCount(), mapper).AddTo(Disposables);
             compoundDetailModel.Add(
                 r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d),
                 r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d),
@@ -376,13 +376,13 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         public void InvokeMsfinder() {
-            if (Target.Value is null || (_msdecResult.Value?.Spectrum).IsEmptyOrNull()) {
+            if (Target.Value is null || _msdecResult.Value is not MSDecResult result || result.Spectrum.IsEmptyOrNull()) {
                 return;
             }
             MsDialToExternalApps.SendToMsFinderProgram(
                 _analysisFileModel,
                 Target.Value.InnerModel,
-                _msdecResult.Value,
+                result,
                 _spectrumProvider.LoadMs1Spectrums(),
                 _dataBaseMapper,
                 _parameter);

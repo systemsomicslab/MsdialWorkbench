@@ -43,7 +43,7 @@ namespace CompMs.App.Msdial.Model.Loader
 
         public double MzTolerance => _peakPickParameter.CentroidMs1Tolerance;
 
-        async Task<PeakChromatogram> IChromatogramLoader<ChromatogramPeakFeatureModel>.LoadChromatogramAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
+        async Task<PeakChromatogram> IChromatogramLoader<ChromatogramPeakFeatureModel>.LoadChromatogramAsync(ChromatogramPeakFeatureModel? target, CancellationToken token) {
 
             if (target != null) {
                 var chromatogram = await Task.Run(async () =>

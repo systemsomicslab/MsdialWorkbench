@@ -45,7 +45,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 Model.ObserveProperty(m => m.DataBaseID),
                 DataBasePath.Merge(Observable.Return(Model.DataBasePath)).Select(path => Path.GetFileNameWithoutExtension(path)),
             }.Merge()
-            .ToReactiveProperty()
+            .ToReactiveProperty(string.Empty)
             .SetValidateAttribute(() => DataBaseID)
             .AddTo(Disposables);
             DataBaseID.Where(_ => !DataBaseID.HasErrors).Subscribe(id => Model.DataBaseID = id).AddTo(Disposables);

@@ -24,7 +24,7 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         }
 
-        public ProteinResultContainerModel(ProteinResultContainer resultContainer, IReadOnlyList<AlignmentSpotPropertyModel> spots, IReactiveProperty<AlignmentSpotPropertyModel> target)
+        public ProteinResultContainerModel(ProteinResultContainer resultContainer, IReadOnlyList<AlignmentSpotPropertyModel> spots, IReactiveProperty<AlignmentSpotPropertyModel?> target)
         {
             var orderedSpots = spots.OrderBy(spot => spot.MasterAlignmentID).ToList();
             _resultContainer = resultContainer;

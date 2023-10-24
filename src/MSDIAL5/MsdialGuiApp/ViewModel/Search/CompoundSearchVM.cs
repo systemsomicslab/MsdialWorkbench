@@ -68,7 +68,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
 
         public ReactivePropertySlim<object> SearchMethod { get; }
 
-        public ReadOnlyReactivePropertySlim<MsRefSearchParameterBaseViewModel> ParameterViewModel { get; }
+        public ReadOnlyReactivePropertySlim<MsRefSearchParameterBaseViewModel?> ParameterViewModel { get; }
 
         public IFileBean File => _model.File;
 

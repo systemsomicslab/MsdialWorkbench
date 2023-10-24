@@ -33,7 +33,7 @@ namespace CompMs.App.Msdial.Model.Chart
             chromatogram_.Subscribe(chromatogram => GraphTitle = chromatogram?.Description ?? string.Empty).AddTo(Disposables);
         }
 
-        public EicModel(IObservable<ChromatogramPeakFeatureModel> targetSource, IChromatogramLoader<ChromatogramPeakFeatureModel> loader, string graphTitle, string horizontalTitle, string verticalTitle) {
+        public EicModel(IObservable<ChromatogramPeakFeatureModel?> targetSource, IChromatogramLoader<ChromatogramPeakFeatureModel> loader, string graphTitle, string horizontalTitle, string verticalTitle) {
 
             GraphTitle = graphTitle;
             HorizontalTitle = horizontalTitle;
@@ -43,8 +43,8 @@ namespace CompMs.App.Msdial.Model.Chart
             VerticalProperty = nameof(PeakItem.Intensity);
 
             var sources = targetSource.SelectSwitch(t => Observable.FromAsync(token => loader.LoadChromatogramAsync(t, token)));
-            var chromatogram_ = sources
-                .ToReactiveProperty()
+            ReactiveProperty<Chromatogram> chromatogram_ = sources
+                .ToReactiveProperty(loader.EmptyChromatogram)
                 .AddTo(Disposables);
             Chromatogram = chromatogram_;
 
@@ -57,17 +57,17 @@ namespace CompMs.App.Msdial.Model.Chart
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            ChromRangeSource = Chromatogram.Select(chromatogram => chromatogram?.GetTimeRange() ?? new Range(0d, 1d))
-                .ToReadOnlyReactivePropertySlim()
+            ChromRangeSource = Chromatogram.Select(chromatogram => chromatogram.GetTimeRange())
+                .ToReadOnlyReactivePropertySlim(new Range(0d, 1d))
                 .AddTo(Disposables);
-            AbundanceRangeSource = Chromatogram.Select(chromatogram => chromatogram?.GetAbundanceRange() ?? new Range(0d, 1d))
-                .ToReadOnlyReactivePropertySlim()
+            AbundanceRangeSource = Chromatogram.Select(chromatogram => chromatogram.GetAbundanceRange())
+                .ToReadOnlyReactivePropertySlim(new Range(0d, 1d))
                 .AddTo(Disposables);
 
             Chromatogram.Subscribe(chromatogram => GraphTitle = chromatogram?.Description ?? string.Empty).AddTo(Disposables);
         }
 
-        public EicModel(IObservable<ChromatogramPeakFeatureModel> targetSource, IChromatogramLoader<ChromatogramPeakFeatureModel> loader)
+        public EicModel(IObservable<ChromatogramPeakFeatureModel?> targetSource, IChromatogramLoader<ChromatogramPeakFeatureModel> loader)
             : this(targetSource, loader, string.Empty, string.Empty, string.Empty) {
 
         }
@@ -83,31 +83,31 @@ namespace CompMs.App.Msdial.Model.Chart
             get => horizontalTitle;
             set => SetProperty(ref horizontalTitle, value);
         }
-        private string horizontalTitle;
+        private string horizontalTitle = string.Empty;
 
         public string VerticalTitle {
             get => verticalTitle;
             set => SetProperty(ref verticalTitle, value);
         }
-        private string verticalTitle;
+        private string verticalTitle = string.Empty;
 
         public string GraphTitle {
             get => graphTitle;
             set => SetProperty(ref graphTitle, value);
         }
-        private string graphTitle;
+        private string graphTitle = string.Empty;
 
         public string HorizontalProperty {
             get => horizontalProperty;
             set => SetProperty(ref horizontalProperty, value);
         }
-        private string horizontalProperty;
+        private string horizontalProperty = string.Empty;
 
         public string VerticalProperty {
             get => verticalProperty;
             set => SetProperty(ref verticalProperty, value);
         }
-        private string verticalProperty;
+        private string verticalProperty = string.Empty;
 
         public static Builder CreateBuilder(string graphTitle, string horizontalTitle, string verticalTitle) {
             return new Builder(graphTitle, horizontalTitle, verticalTitle);

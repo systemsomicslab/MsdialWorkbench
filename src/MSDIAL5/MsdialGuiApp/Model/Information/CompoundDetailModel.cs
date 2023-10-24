@@ -15,9 +15,13 @@ namespace CompMs.App.Msdial.Model.Information
     internal sealed class CompoundDetailModel : DisposableModelBase
     {
         public CompoundDetailModel(IObservable<MsScanMatchResult> result, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            _annotation = string.Empty;
+            _compoundSimilarities = new ReadOnlyObservableCollection<ISimilarity>(new ObservableCollection<ISimilarity>());
+            _annotatorId = string.Empty;
+
             result.Subscribe(result_ => {
-                Annotation = result_?.Name;
-                AnnotatorId = result_?.AnnotatorID;
+                Annotation = result_.Name;
+                AnnotatorId = result_.AnnotatorID;
                 var reference_ = refer.Refer(result_);
                 Formula = reference_?.Formula?.FormulaString;
                 Ontology = reference_?.Ontology ?? reference_?.CompoundClass;
@@ -52,29 +56,29 @@ namespace CompMs.App.Msdial.Model.Information
             }
         }
 
-        public string Formula {
+        public string? Formula {
             get => string.IsNullOrEmpty(_formula) ? "NA" : _formula;
             private set => SetProperty(ref _formula, value);
         }
-        private string _formula;
+        private string? _formula;
 
-        public string Ontology {
+        public string? Ontology {
             get => string.IsNullOrEmpty(_ontology) ? "NA" : _ontology;
             private set => SetProperty(ref _ontology, value);
         }
-        private string _ontology;
+        private string? _ontology;
 
-        public string Smiles {
+        public string? Smiles {
             get => string.IsNullOrEmpty(_smiles) ? "NA" : _smiles;
             private set => SetProperty(ref _smiles, value);
         }
-        private string _smiles;
+        private string? _smiles;
 
-        public string InChIKey {
+        public string? InChIKey {
             get => string.IsNullOrEmpty(_inChIKey) ? "NA" : _inChIKey;
             private set => SetProperty(ref _inChIKey, value);
         }
-        private string _inChIKey;
+        private string? _inChIKey;
 
         public string AnnotatorId {
             get => string.IsNullOrEmpty(_annotatorId) ? "NA" : _annotatorId;

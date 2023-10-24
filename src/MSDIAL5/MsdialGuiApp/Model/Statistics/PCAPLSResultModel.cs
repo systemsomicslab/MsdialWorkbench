@@ -307,7 +307,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             }
         }
 
-        private ObservableCollection<SolidColorBrush> ConvertRgbaToBrush(ObservableCollection<byte[]> bytes) {
+        private ObservableCollection<SolidColorBrush>? ConvertRgbaToBrush(ObservableCollection<byte[]> bytes) {
             if (bytes == null) return null;
             var brushes = new ObservableCollection<SolidColorBrush>();
             foreach (var colorBytes in bytes) {

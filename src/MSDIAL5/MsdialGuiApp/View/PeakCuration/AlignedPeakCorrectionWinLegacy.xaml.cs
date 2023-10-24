@@ -43,7 +43,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
         public ReadOnlyReactivePropertySlim<PeakPropertiesLegacy> ObservablePeakProperties { get; }
 
         public AlignedChromatogramModificationModelLegacy(
-            IObservable<AlignmentSpotPropertyModel> model,
+            IObservable<AlignmentSpotPropertyModel?> model,
             IObservable<List<PeakChromatogram>> chromatoramSource,
             List<AnalysisFileBean> files, 
             ParameterBase parameter) {
@@ -84,7 +84,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
             var classnameToBrushes = ChartBrushes.ConvertToSolidBrushDictionary(classnameToBytes);
             return model.Select(spot =>
             {
-                var observablePeaks = spot?.AlignedPeakPropertiesModelProperty ?? Observable.Never<ReadOnlyCollection<AlignmentChromPeakFeatureModel>>();
+                var observablePeaks = spot.AlignedPeakPropertiesModelProperty;
                 return observablePeaks.CombineLatest(chromatogramSource, (peaks, chromatograms) =>
                 {
                     var chromatograms_ = chromatograms ?? Enumerable.Empty<PeakChromatogram>();

@@ -22,7 +22,7 @@ namespace CompMs.App.Msdial.Model.Chart
         private readonly Subject<Stream> _saveAsObservable;
         private readonly IObservable<ISpectraExporter> _exporter;
 
-        public ObservableMsSpectrum(IObservable<MsSpectrum> msSpectrum, ReadOnlyReactivePropertySlim<bool> loaded, IObservable<ISpectraExporter> exporter) {
+        public ObservableMsSpectrum(IObservable<MsSpectrum?> msSpectrum, ReadOnlyReactivePropertySlim<bool> loaded, IObservable<ISpectraExporter> exporter) {
             MsSpectrum = msSpectrum ?? throw new ArgumentNullException(nameof(msSpectrum));
             Loaded = loaded ?? Observable.Return(true).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             _exporter = exporter;
@@ -36,14 +36,15 @@ namespace CompMs.App.Msdial.Model.Chart
                     .AddTo(Disposables);
             }
             _saveAsObservable = save;
-            CanSave = exporter.CombineLatest(spectrum)
+            CanSave = exporter?.CombineLatest(spectrum)
                 .Select(p => p.First != null && p.Second != null)
                 .ToReadOnlyReactivePropertySlim(false)
-                .AddTo(Disposables);
+                .AddTo(Disposables)
+                ?? Observable.Return(false);
             Disposables.Add(spectrum.Connect());
         }
 
-        public IObservable<MsSpectrum> MsSpectrum { get; }
+        public IObservable<MsSpectrum?> MsSpectrum { get; }
         public ReadOnlyReactivePropertySlim<bool> Loaded { get; }
         public IObservable<bool> CanSave { get; }
 
@@ -93,9 +94,9 @@ namespace CompMs.App.Msdial.Model.Chart
             return propertySelectors;
         }
 
-        public static ObservableMsSpectrum Create<T>(IObservable<T> targetSource, IMsSpectrumLoader<T> loader, ISpectraExporter spectraExporter) where T: class {
+        public static ObservableMsSpectrum Create<T>(IObservable<T?> targetSource, IMsSpectrumLoader<T> loader, ISpectraExporter spectraExporter) where T: class {
             var disposables = new CompositeDisposable();
-            var pairs = targetSource.DefaultIfNull(t => loader.LoadMsSpectrumAsObservable(t).Select(s => (spectrum: s, loaded: true)).StartWith((null, false)), Observable.Return<(MsSpectrum spectrum, bool loaded)>((null, true))).Switch().Publish();
+            IConnectableObservable<(MsSpectrum? spectrum, bool loaded)> pairs = targetSource.DefaultIfNull(t => loader.LoadMsSpectrumAsObservable(t).Select(s => ((MsSpectrum?)s, true)).StartWith((null, false)), Observable.Return<(MsSpectrum?, bool)>((null, true))).Switch().Publish();
             var msSpectrum = pairs.Select(p => p.spectrum).ToReadOnlyReactivePropertySlim().AddTo(disposables);
             var loaded = pairs.Select(p => p.loaded).ToReadOnlyReactivePropertySlim().AddTo(disposables);
             ObservableMsSpectrum observableMsSpectrum = new ObservableMsSpectrum(msSpectrum, loaded, Observable.Return(spectraExporter));

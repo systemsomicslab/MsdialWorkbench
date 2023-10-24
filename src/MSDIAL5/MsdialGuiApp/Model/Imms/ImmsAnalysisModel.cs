@@ -101,7 +101,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 VerticalTitle = "Abundance",
             }.AddTo(Disposables);
 
-            var spectraExporter = new NistSpectraExporter<ChromatogramPeakFeature>(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
+            var spectraExporter = new NistSpectraExporter<ChromatogramPeakFeature?>(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
             var rawLoader = new MultiMsmsRawSpectrumLoader(provider, parameter).AddTo(Disposables);
             MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
@@ -215,7 +215,7 @@ namespace CompMs.App.Msdial.Model.Imms
             }, token);
         }
 
-        public CompoundSearchModel<PeakSpotModel> CreateCompoundSearchModel() {
+        public CompoundSearchModel<PeakSpotModel>? CreateCompoundSearchModel() {
             if (Target.Value?.InnerModel is null || MsdecResult.Value is null) {
                 return null;
             }
@@ -239,7 +239,7 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public override void InvokeMsfinder() {
-            if (Target.Value is null || (MsdecResult.Value?.Spectrum).IsEmptyOrNull()) {
+            if (Target.Value is null || MsdecResult.Value is null || MsdecResult.Value.Spectrum.IsEmptyOrNull()) {
                 return;
             }
             MsDialToExternalApps.SendToMsFinderProgram(
@@ -252,6 +252,9 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public void SaveSpectra(string filename) {
+            if (Target.Value is null) {
+                return;
+            }
             using (var file = File.Open(filename, FileMode.Create)) {
                 SpectraExport.SaveSpectraTable(
                     (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
@@ -264,7 +267,7 @@ namespace CompMs.App.Msdial.Model.Imms
             }
         }
 
-        public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;
+        public bool CanSaveSpectra() => Target.Value?.InnerModel != null && MsdecResult.Value != null;
 
         public void Undo() => _undoManager.Undo();
         public void Redo() => _undoManager.Redo();

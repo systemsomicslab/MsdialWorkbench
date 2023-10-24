@@ -16,7 +16,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
     }
 
     internal static class MsdialAnalysisExportViewModelFactory {
-        public static IMsdialAnalysisExportViewModel Create(IMsdialAnalysisExport model) {
+        public static IMsdialAnalysisExportViewModel? Create(IMsdialAnalysisExport model) {
             switch (model) {
                 case MsdialAnalysisExportModel exportModel:
                     return new MsdialAnalysisExportViewModel(exportModel);

@@ -26,10 +26,16 @@ namespace CompMs.MsdialCore.Export
         private T _cache;
 
         public void Save(Stream stream, IReadOnlyList<SpectrumPeak> peaks) {
+            if (_cache == null) {
+                throw new Exception("Peak spot is not selected.");
+            }
             SpectraExport.SaveSpectraTableAsNistFormat(stream, _cache, peaks, _refer, _parameter);
         }
 
         public Task SaveAsync(Stream stream, IReadOnlyList<SpectrumPeak> peaks, CancellationToken token) {
+            if (_cache == null) {
+                return Task.FromException(new Exception("Peak spot is not selected."));
+            }
             SpectraExport.SaveSpectraTableAsNistFormat(stream, _cache, peaks, _refer, _parameter);
             return Task.CompletedTask;
         }

@@ -30,7 +30,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             Model = model ?? throw new ArgumentNullException(nameof(model));
             Option = Model.ToReactivePropertySlimAsSynchronized(m => m.Option).AddTo(Disposables);
 
-            var vms = new ISettingViewModel[]
+            var vms = new ISettingViewModel?[]
             {
                 CreateDataCollectionSettingViewModel(model.DataCollectionSettingModel, isEnabled).AddTo(Disposables),
                 CreatePeakDetectionSettingViewModel(model.PeakDetectionSettingModel, isEnabled).AddTo(Disposables),
@@ -86,7 +86,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         IObservable<bool> ISettingViewModel.ObserveChangeAfterDecision => ObserveChangeAfterDecision;
 
-        public ISettingViewModel Next(ISettingViewModel selected) {
+        public ISettingViewModel? Next(ISettingViewModel selected) {
             var current = SettingViewModels.IndexOf(selected);
             if (current >= 0) {
                 selected.Next(selected);

@@ -23,8 +23,8 @@ namespace CompMs.App.Msdial.Model.Chart
             AlignmentSpotSource spotsSource,
             Func<AlignmentSpotPropertyModel, double> horizontalSelector,
             Func<AlignmentSpotPropertyModel, double> verticalSelector,
-            IReactiveProperty<AlignmentSpotPropertyModel> targetSource,
-            IObservable<string> labelSource,
+            IReactiveProperty<AlignmentSpotPropertyModel?> targetSource,
+            IObservable<string?> labelSource,
             BrushMapData<AlignmentSpotPropertyModel> selectedBrush,
             IList<BrushMapData<AlignmentSpotPropertyModel>> brushes)
             : this(spotsSource.Spots.Items, horizontalSelector, verticalSelector, targetSource, labelSource, selectedBrush, brushes) {
@@ -36,8 +36,8 @@ namespace CompMs.App.Msdial.Model.Chart
             ReadOnlyObservableCollection<AlignmentSpotPropertyModel> spots,
             Func<AlignmentSpotPropertyModel, double> horizontalSelector,
             Func<AlignmentSpotPropertyModel, double> verticalSelector,
-            IReactiveProperty<AlignmentSpotPropertyModel> targetSource,
-            IObservable<string> labelSource,
+            IReactiveProperty<AlignmentSpotPropertyModel?> targetSource,
+            IObservable<string?> labelSource,
             BrushMapData<AlignmentSpotPropertyModel> selectedBrush,
             IList<BrushMapData<AlignmentSpotPropertyModel>> brushes) {
             if (horizontalSelector is null) {
@@ -79,7 +79,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public ReadOnlyObservableCollection<AlignmentSpotPropertyModel> Spots { get; }
 
-        public IReactiveProperty<AlignmentSpotPropertyModel> TargetSource { get; }
+        public IReactiveProperty<AlignmentSpotPropertyModel?> TargetSource { get; }
 
         public IAxisManager<double> HorizontalAxis { get; }
         public IAxisManager<double> VerticalAxis { get; }
@@ -114,7 +114,7 @@ namespace CompMs.App.Msdial.Model.Chart
         }
         private string verticalProperty;
 
-        public IObservable<string> LabelSource { get; }
+        public IObservable<string?> LabelSource { get; }
 
         public BrushMapData<AlignmentSpotPropertyModel> SelectedBrush {
             get => _selectedBrush;

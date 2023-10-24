@@ -164,7 +164,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
 
     internal sealed class SampleTableViewerInAlignmentModelLegacy : BindableBase {
         public SampleTableViewerInAlignmentModelLegacy(
-            IObservable<AlignmentSpotPropertyModel> alignmentProp,
+            IObservable<AlignmentSpotPropertyModel?> alignmentProp,
             IObservable<List<PeakChromatogram>> chromatoramSource,
             List<AnalysisFileBean> files,
             ParameterBase parameter) {

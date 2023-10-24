@@ -19,7 +19,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
     internal sealed class DimsAnalysisPeakTableModel : AnalysisPeakSpotTableModelBase, IDimsPeakSpotTableModel
     {
-        public DimsAnalysisPeakTableModel(IReadOnlyList<ChromatogramPeakFeatureModel> peaks, IReactiveProperty<ChromatogramPeakFeatureModel> target, PeakSpotNavigatorModel peakSpotNavigatorModel)
+        public DimsAnalysisPeakTableModel(IReadOnlyList<ChromatogramPeakFeatureModel> peaks, IReactiveProperty<ChromatogramPeakFeatureModel?> target, PeakSpotNavigatorModel peakSpotNavigatorModel)
             : base(peaks, target, peakSpotNavigatorModel) {
             MassMin = peaks.Select(s => s.Mass).DefaultIfEmpty().Min();
             MassMax = peaks.Select(s => s.Mass).DefaultIfEmpty().Max();

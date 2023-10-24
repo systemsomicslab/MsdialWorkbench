@@ -37,12 +37,12 @@ namespace CompMs.App.Msdial.ViewModel.Table
 
         public ReadOnlyReactiveCollection<ProteinGroupViewModel> Groups { get; }
 
-        public IReactiveProperty<object> Target
+        public IReactiveProperty<object>? Target
         {
             get => _target;
             set => SetProperty(ref _target, value);
         }
-        private IReactiveProperty<object> _target;
+        private IReactiveProperty<object>? _target;
 
     }
 }

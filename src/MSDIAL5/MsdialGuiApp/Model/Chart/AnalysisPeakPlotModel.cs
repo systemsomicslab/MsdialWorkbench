@@ -24,20 +24,20 @@ namespace CompMs.App.Msdial.Model.Chart
             ObservableCollection<ChromatogramPeakFeatureModel> spots,
             Func<ChromatogramPeakFeatureModel, double> horizontalSelector,
             Func<ChromatogramPeakFeatureModel, double> verticalSelector,
-            IReactiveProperty<ChromatogramPeakFeatureModel> targetSource,
-            IObservable<string> labelSource,
+            IReactiveProperty<ChromatogramPeakFeatureModel?> targetSource,
+            IObservable<string?> labelSource,
             BrushMapData<ChromatogramPeakFeatureModel> selectedBrush,
             IList<BrushMapData<ChromatogramPeakFeatureModel>> brushes,
             PeakLinkModel peakLinkModel,
-            IAxisManager<double> horizontalAxis = null,
-            IAxisManager<double> verticalAxis = null) {
+            IAxisManager<double>? horizontalAxis = null,
+            IAxisManager<double>? verticalAxis = null) {
             if (brushes is null) {
                 throw new ArgumentNullException(nameof(brushes));
             }
 
             Spots = spots ?? throw new ArgumentNullException(nameof(spots));
             LabelSource = labelSource ?? throw new ArgumentNullException(nameof(labelSource));
-            SelectedBrush = selectedBrush ?? throw new ArgumentNullException(nameof(selectedBrush));
+            _selectedBrush = selectedBrush ?? throw new ArgumentNullException(nameof(selectedBrush));
             Brushes = new ReadOnlyCollection<BrushMapData<ChromatogramPeakFeatureModel>>(brushes);
             TargetSource = targetSource ?? throw new ArgumentNullException(nameof(targetSource));
             GraphTitle = string.Empty;
@@ -63,39 +63,39 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public IAxisManager<double> VerticalAxis { get; }
 
-        public IReactiveProperty<ChromatogramPeakFeatureModel> TargetSource { get; }
+        public IReactiveProperty<ChromatogramPeakFeatureModel?> TargetSource { get; }
 
         public string GraphTitle {
             get => _graphTitle;
             set => SetProperty(ref _graphTitle, value);
         }
-        private string _graphTitle;
+        private string _graphTitle = string.Empty;
 
         public string HorizontalTitle {
             get => _horizontalTitle;
             set => SetProperty(ref _horizontalTitle, value);
         }
-        private string _horizontalTitle;
+        private string _horizontalTitle = string.Empty;
 
         public string VerticalTitle {
             get => _verticalTitle;
             set => SetProperty(ref _verticalTitle, value);
         }
-        private string _verticalTitle;
+        private string _verticalTitle = string.Empty;
 
         public string HorizontalProperty {
             get => _horizontalProperty;
             set => SetProperty(ref _horizontalProperty, value);
         }
-        private string _horizontalProperty;
+        private string _horizontalProperty = string.Empty;
 
         public string VerticalProperty {
             get => _verticalProperty;
             set => SetProperty(ref _verticalProperty, value);
         }
-        private string _verticalProperty;
+        private string _verticalProperty = string.Empty;
 
-        public IObservable<string> LabelSource { get; }
+        public IObservable<string?> LabelSource { get; }
         public BrushMapData<ChromatogramPeakFeatureModel> SelectedBrush {
             get => _selectedBrush;
             set => SetProperty(ref _selectedBrush, value);

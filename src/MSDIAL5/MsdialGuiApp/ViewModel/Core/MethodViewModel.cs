@@ -20,7 +20,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
 {
     internal abstract class MethodViewModel : ViewModelBase
     {
-        public MethodViewModel(IMethodModel model, IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisFileViewModel, IReadOnlyReactiveProperty<IAlignmentResultViewModel> alignmentFileViewModel, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels) {
+        public MethodViewModel(IMethodModel model, IReadOnlyReactiveProperty<IAnalysisResultViewModel?> analysisFileViewModel, IReadOnlyReactiveProperty<IAlignmentResultViewModel?> alignmentFileViewModel, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels) {
             Model = model;
             var analysisFilesView = model.AnalysisFileModelCollection.AnalysisFiles.ToReadOnlyReactiveCollection(file => new AnalysisFileBeanViewModel(file));
             AnalysisFilesView = CollectionViewSource.GetDefaultView(analysisFilesView);
@@ -74,11 +74,12 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
             AnalysisViewModel = analysisFileViewModel.AddTo(Disposables);
             AlignmentViewModel = alignmentFileViewModel.AddTo(Disposables);
-            resultViewModels = new List<IReadOnlyReactiveProperty<IResultViewModel>> { AnalysisViewModel, AlignmentViewModel, };
+            resultViewModels = new List<IReadOnlyReactiveProperty<IResultViewModel?>> { AnalysisViewModel, AlignmentViewModel, };
             ResultViewModels = resultViewModels.AsReadOnly();
 
             viewModelChanged = new Subject<Unit>().AddTo(Disposables);
-            SelectedViewModel = AnalysisViewModel;
+            selectedViewModel = AnalysisViewModel;
+            viewModelChanged.OnNext(Unit.Default);
 
             ChromatogramViewModels = chromatogramViewModels.AddTo(Disposables);
             MassSpectrumViewModels = massSpectrumViewModels.AddTo(Disposables);
@@ -97,7 +98,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
                     chromatogramViewModels.SelectAlignmentFile();
                     massSpectrumViewModels.SelectAlignmentFile();
                 }).AddTo(Disposables);
-            new IObservable<IReadOnlyReactiveProperty<IResultViewModel>>[]
+            new IObservable<IReadOnlyReactiveProperty<IResultViewModel?>>[]
             {
                 SelectedAnalysisFile.SkipNull().ToConstant(AnalysisViewModel),
                 SelectedAlignmentFile.SkipNull().ToConstant(AlignmentViewModel),
@@ -150,15 +151,15 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         protected abstract Task LoadAlignmentFileCoreAsync(AlignmentFileBeanViewModel alignmentFile, CancellationToken token);
 
-        public IReadOnlyReactiveProperty<IAnalysisResultViewModel> AnalysisViewModel { get; }
+        public IReadOnlyReactiveProperty<IAnalysisResultViewModel?> AnalysisViewModel { get; }
 
-        public IReadOnlyReactiveProperty<IAlignmentResultViewModel> AlignmentViewModel { get; }
+        public IReadOnlyReactiveProperty<IAlignmentResultViewModel?> AlignmentViewModel { get; }
 
-        public ReadOnlyCollection<IReadOnlyReactiveProperty<IResultViewModel>> ResultViewModels { get; }
-        private readonly List<IReadOnlyReactiveProperty<IResultViewModel>> resultViewModels;
+        public ReadOnlyCollection<IReadOnlyReactiveProperty<IResultViewModel?>> ResultViewModels { get; }
+        private readonly List<IReadOnlyReactiveProperty<IResultViewModel?>> resultViewModels;
 
         private readonly Subject<Unit> viewModelChanged;
-        public IReadOnlyReactiveProperty<IResultViewModel> SelectedViewModel {
+        public IReadOnlyReactiveProperty<IResultViewModel?> SelectedViewModel {
             get => selectedViewModel;
             set {
                 if (SetProperty(ref selectedViewModel, value)) {
@@ -166,14 +167,14 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 }
             }
         }
-        private IReadOnlyReactiveProperty<IResultViewModel> selectedViewModel;
+        private IReadOnlyReactiveProperty<IResultViewModel?> selectedViewModel;
 
         public ViewModelSwitcher ChromatogramViewModels { get; }
         public ViewModelSwitcher MassSpectrumViewModels { get; }
 
 
-        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??  (_goToMsfinderCommand = new DelegateCommand(GoToMsfinderMethod));
-        private DelegateCommand _goToMsfinderCommand;
+        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??= new DelegateCommand(GoToMsfinderMethod);
+        private DelegateCommand? _goToMsfinderCommand;
 
         private void GoToMsfinderMethod() {
             if (SelectedViewModel.Value is IResultViewModel vm) {

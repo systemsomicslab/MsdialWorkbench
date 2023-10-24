@@ -39,7 +39,7 @@ namespace CompMs.App.Msdial.Model.Notification
             }
         }
 
-        private static Stream FetchVersionDescriptionDocument(Uri uri)
+        private static Stream? FetchVersionDescriptionDocument(Uri uri)
         {
             try {
                 using (var client = new MyWebClient()) {

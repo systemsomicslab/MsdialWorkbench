@@ -13,9 +13,9 @@ namespace CompMs.App.Msdial.Model.Setting
 {
     public sealed class DataBaseSettingModel : BindableBase
     {
-        private readonly MoleculeDataBase _metabolomicsDB = null;
-        private readonly ShotgunProteomicsDB _proteomicsDB = null;
-        private readonly EadLipidDatabase _eadLipidDatabase = null;
+        private readonly MoleculeDataBase? _metabolomicsDB;
+        private readonly ShotgunProteomicsDB? _proteomicsDB;
+        private readonly EadLipidDatabase? _eadLipidDatabase;
         private readonly ParameterBase _parameter;
 
         public DataBaseSettingModel(ParameterBase parameter) {
@@ -29,6 +29,9 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public DataBaseSettingModel(ParameterBase parameter, IReferenceDataBase database) {
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
+            LipidQueryContainer = parameter.LipidQueryContainer;
+            LipidQueryContainer.IonMode = parameter.ProjectParam.IonMode;
+            ProteomicsParameter = parameter.ProteomicsParam;
             switch (database) {
                 case MoleculeDataBase mdb:
                     _metabolomicsDB = mdb;
@@ -83,7 +86,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return $"{DataBaseID}({DBSource})";
         }
 
-        public IReferenceDataBase Create() {
+        public IReferenceDataBase? Create() {
             switch (DBSource) {
                 case DataBaseSource.Msp:
                 case DataBaseSource.Lbm:
@@ -102,7 +105,7 @@ namespace CompMs.App.Msdial.Model.Setting
             }
         }
 
-        public MoleculeDataBase CreateMoleculeDataBase() {
+        public MoleculeDataBase? CreateMoleculeDataBase() {
             switch (DBSource) {
                 case DataBaseSource.Msp:
                     return _metabolomicsDB ?? LoadMspDataBase();
@@ -115,7 +118,7 @@ namespace CompMs.App.Msdial.Model.Setting
             }
         }
 
-        public ShotgunProteomicsDB CreatePorteomicsDB() {
+        public ShotgunProteomicsDB? CreatePorteomicsDB() {
             switch (DBSource) {
                 case DataBaseSource.Fasta:
                     return _proteomicsDB ?? new ShotgunProteomicsDB(DataBasePath, DataBaseID, ProteomicsParameter, _parameter.ProjectFolderPath);
@@ -124,7 +127,7 @@ namespace CompMs.App.Msdial.Model.Setting
             }
         }
 
-        public EadLipidDatabase CreateEieioLipidDatabase() {
+        public EadLipidDatabase? CreateEieioLipidDatabase() {
             switch (DBSource) {
                 case DataBaseSource.EieioLipid:
                     return _eadLipidDatabase ?? new EadLipidDatabase(Path.GetTempFileName(), DataBaseID, LipidDatabaseFormat.Dictionary, DataBaseSource.EieioLipid);
@@ -133,7 +136,7 @@ namespace CompMs.App.Msdial.Model.Setting
             }
         }
 
-        public EadLipidDatabase CreateEidLipidDatabase() {
+        public EadLipidDatabase? CreateEidLipidDatabase() {
             switch (DBSource) {
                 case DataBaseSource.EidLipid:
                     return _eadLipidDatabase ?? new EadLipidDatabase(Path.GetTempFileName(), DataBaseID, LipidDatabaseFormat.Dictionary, DataBaseSource.EidLipid);
@@ -142,7 +145,7 @@ namespace CompMs.App.Msdial.Model.Setting
             }
         }
 
-        public EadLipidDatabase CreateOadLipidDatabase() {
+        public EadLipidDatabase? CreateOadLipidDatabase() {
             switch (DBSource) {
                 case DataBaseSource.OadLipid:
                     return _eadLipidDatabase ?? new EadLipidDatabase(Path.GetTempFileName(), DataBaseID, LipidDatabaseFormat.Dictionary, DataBaseSource.OadLipid);

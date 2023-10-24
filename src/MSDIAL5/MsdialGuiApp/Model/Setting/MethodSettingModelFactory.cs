@@ -165,7 +165,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new IsotopeTrackSettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
-        public MobilitySettingModel CreateMobilitySetting() {
+        public MobilitySettingModel? CreateMobilitySetting() {
             return null;
         }
 
@@ -260,7 +260,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new IsotopeTrackSettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
-        public MobilitySettingModel CreateMobilitySetting() {
+        public MobilitySettingModel? CreateMobilitySetting() {
             return null;
         }
 

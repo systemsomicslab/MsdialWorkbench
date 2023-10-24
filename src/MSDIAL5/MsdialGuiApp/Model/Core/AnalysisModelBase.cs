@@ -41,11 +41,11 @@ namespace CompMs.App.Msdial.Model.Core {
                 MessageBox.Show("No peak information. Check your polarity setting.");
             }
 
-            Target = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
+            Target = new ReactivePropertySlim<ChromatogramPeakFeatureModel?>().AddTo(Disposables);
 
             decLoader = analysisFileModel.MSDecLoader;
-            MsdecResult = Target.SkipNull()
-                .Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation))
+            MsdecResult = Target
+                .DefaultIfNull(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -64,9 +64,9 @@ namespace CompMs.App.Msdial.Model.Core {
 
         public ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks { get; }
 
-        public ReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
+        public ReactivePropertySlim<ChromatogramPeakFeatureModel?> Target { get; }
 
-        public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
+        public ReadOnlyReactivePropertySlim<MSDecResult?> MsdecResult { get; }
 
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
 

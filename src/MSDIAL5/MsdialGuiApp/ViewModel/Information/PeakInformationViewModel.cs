@@ -34,12 +34,12 @@ namespace CompMs.App.Msdial.ViewModel.Information
                 .AddTo(Disposables);
         }
 
-        public ReadOnlyReactivePropertySlim<string> Annotation { get; }
-        public ReadOnlyReactivePropertySlim<string> AdductIonName { get; }
-        public ReadOnlyReactivePropertySlim<string> Formula { get; }
-        public ReadOnlyReactivePropertySlim<string> Ontology { get; }
-        public ReadOnlyReactivePropertySlim<string> InChIKey { get; }
-        public ReadOnlyReactivePropertySlim<string> Comment { get; }
+        public ReadOnlyReactivePropertySlim<string?> Annotation { get; }
+        public ReadOnlyReactivePropertySlim<string?> AdductIonName { get; }
+        public ReadOnlyReactivePropertySlim<string?> Formula { get; }
+        public ReadOnlyReactivePropertySlim<string?> Ontology { get; }
+        public ReadOnlyReactivePropertySlim<string?> InChIKey { get; }
+        public ReadOnlyReactivePropertySlim<string?> Comment { get; }
         public ReadOnlyReactivePropertySlim<ReadOnlyReactiveCollection<PeakPointViewModel>> PeakPoints { get; }
         public ReadOnlyReactivePropertySlim<ReadOnlyReactiveCollection<PeakAmountViewModel>> PeakAmounts { get; }
     }
@@ -50,8 +50,8 @@ namespace CompMs.App.Msdial.ViewModel.Information
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
-            Label = model.ObserveProperty(m => m.Label).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            Point = model.ObserveProperty(m => m.Point).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            Label = model.ObserveProperty(m => m.Label).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposables);
+            Point = model.ObserveProperty(m => m.Point).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposables);
         }
 
         public ReadOnlyReactivePropertySlim<string> Label { get; }
@@ -64,7 +64,7 @@ namespace CompMs.App.Msdial.ViewModel.Information
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
-            Label = model.ObserveProperty(m => m.Label).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            Label = model.ObserveProperty(m => m.Label).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposables);
             Amount = model.ObserveProperty(m => m.Amount).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
 

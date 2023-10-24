@@ -23,7 +23,7 @@ namespace CompMs.App.Msdial.Model.Information
         }
         private MoleculeImage _current;
 
-        public void UpdateMolecule(IMoleculeProperty molecule) {
+        public void UpdateMolecule(IMoleculeProperty? molecule) {
             if (molecule is null) {
                 Current = MoleculeImage.FailedMoleculeImage;
                 return;

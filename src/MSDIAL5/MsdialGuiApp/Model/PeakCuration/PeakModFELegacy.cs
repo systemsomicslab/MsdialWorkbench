@@ -98,7 +98,7 @@ namespace CompMs.App.Msdial.Model.PeakCuration {
             Draw();
         }
 
-        public float[] getDataPositionOnMousePoint(Point mousePoint) {
+        public float[]? getDataPositionOnMousePoint(Point mousePoint) {
             if (this.drawing == null)
                 return null;
 

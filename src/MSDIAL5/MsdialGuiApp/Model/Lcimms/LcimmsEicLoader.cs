@@ -28,7 +28,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             _rawSpectra = rawSpectra ?? throw new ArgumentNullException(nameof(rawSpectra));
         }
 
-        public Task<PeakChromatogram> LoadChromatogramAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
+        public Task<PeakChromatogram> LoadChromatogramAsync(ChromatogramPeakFeatureModel? target, CancellationToken token) {
             if (target is null) {
                 return Task.FromResult(new PeakChromatogram(new List<PeakItem>(), new List<PeakItem>(), null, string.Empty, Colors.Black, ChromXType.Drift, ChromXUnit.Msec));
             }
@@ -44,5 +44,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 return new PeakChromatogram(eic, area, top, string.Empty, Colors.Black, ChromXType.Drift, ChromXUnit.Msec, $"EIC chromatogram of {target.Mass:N4} tolerance [Da]: {_parameter.CentroidMs1Tolerance:F} RT [min]: {target.InnerModel.PeakFeature.ChromXsTop.RT.Value:F2} tolerance [min]: {_parameter.AccumulatedRtRange} Max intensity: {area.Max(peak => peak.Intensity):F0}");
             });
         }
+        DataObj.Chromatogram IChromatogramLoader.EmptyChromatogram => new DataObj.Chromatogram(new List<PeakItem>(0), new List<PeakItem>(0), null, string.Empty, Colors.Black, ChromXType.Drift, ChromXUnit.Msec);
     }
 }

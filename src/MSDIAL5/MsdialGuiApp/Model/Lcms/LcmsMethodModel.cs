@@ -391,14 +391,14 @@ namespace CompMs.App.Msdial.Model.Lcms
             return new FragmentQuerySettingModel(_storage.Parameter.AdvancedProcessOptionBaseParam, AnalysisModel, AlignmentModel);
         }
 
-        public MassqlSettingModel ShowShowMassqlSearchSettingView(IResultModel model) {
+        public MassqlSettingModel? ShowShowMassqlSearchSettingView(IResultModel model) {
             if (model is null) {
                 return null;
             }
             return new MassqlSettingModel(model, _storage.Parameter.AdvancedProcessOptionBaseParam);
         }
 
-        public MscleanrSettingModel ShowShowMscleanrFilterSettingView() {
+        public MscleanrSettingModel? ShowShowMscleanrFilterSettingView() {
             if (AlignmentModel is null) {
                 return null;
             }

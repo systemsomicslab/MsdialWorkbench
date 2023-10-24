@@ -18,11 +18,11 @@ namespace CompMs.App.Msdial.Model.Chart
             _selectors[typeof(TSubject)] = selector;
         }
 
-        public T Select<TSubject>(TSubject subject) {
+        public T? Select<TSubject>(TSubject subject) {
             return _selectors.TryGetValue(typeof(TSubject), out var selector) ? selector.Select(subject) : default;
         }
 
-        public IPropertySelector<T> GetSelector(Type subjectType) {
+        public IPropertySelector<T>? GetSelector(Type subjectType) {
             return _selectors.TryGetValue(subjectType, out var selector) ? selector : null;
         }
     }

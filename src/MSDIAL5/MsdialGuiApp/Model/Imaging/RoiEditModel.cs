@@ -21,7 +21,7 @@ namespace CompMs.App.Msdial.Model.Imaging
 
         public RoiArea CurrentArea { get; }
 
-        public RoiModel CreateRoi(int id, Color color) {
+        public RoiModel? CreateRoi(int id, Color color) {
             if (CurrentArea is null) {
                 return null;
             }

@@ -106,7 +106,7 @@ namespace CompMs.App.Msdial.ViewModel.Service
                 if (_progressBarMap.ContainsKey(taskNotification.Identifier)) {
                     if (taskNotification.Status.HasFlag(TaskStatus.End)) {
                         if (_progressBarMap.TryRemove(taskNotification.Identifier, out var progressBar)) {
-                            taskNotification?.Update(progressBar);
+                            taskNotification.Update(progressBar);
                             _progressBars.RemoveOnScheduler(progressBar);
                         }
                     }

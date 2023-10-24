@@ -12,9 +12,9 @@ namespace CompMs.App.Msdial.ViewModel.Core
     public class ViewModelSwitcher : ViewModelBase
     {
         public ViewModelSwitcher(
-            IObservable<ViewModelBase> whenAnalysis,
-            IObservable<ViewModelBase> whenAlignment,
-            params IObservable<ViewModelBase>[] viewmodels) {
+            IObservable<ViewModelBase?> whenAnalysis,
+            IObservable<ViewModelBase?> whenAlignment,
+            params IObservable<ViewModelBase?>[] viewmodels) {
 
             SelectedIndex = new ReactivePropertySlim<int>().AddTo(Disposables);
 
@@ -33,9 +33,9 @@ namespace CompMs.App.Msdial.ViewModel.Core
         }
 
         public ViewModelSwitcher(
-            IObservable<ViewModelBase> whenAnalysis,
-            IObservable<ViewModelBase> whenAlignment,
-            IReadOnlyList<IObservable<ViewModelBase>> viewmodels)
+            IObservable<ViewModelBase?> whenAnalysis,
+            IObservable<ViewModelBase?> whenAlignment,
+            IReadOnlyList<IObservable<ViewModelBase?>> viewmodels)
             : this(whenAnalysis, whenAlignment, viewmodels.ToArray()) {
 
         }

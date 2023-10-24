@@ -19,7 +19,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         }
 
         public DisplayChromatogram(IEnumerable<ChromatogramPeak> peaks, Pen linePen = null, string title = "na")
-            : this(peaks?.Select(peak => new PeakItem(peak)).ToList(), linePen, title) {
+            : this(peaks.Select(peak => new PeakItem(peak)).ToList(), linePen, title) {
 
         }
 

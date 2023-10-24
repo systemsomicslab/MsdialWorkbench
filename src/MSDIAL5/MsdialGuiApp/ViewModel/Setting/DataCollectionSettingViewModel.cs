@@ -73,7 +73,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 Ms2Tolerance.ObserveHasErrors,
                 MaxChargeNumber.ObserveHasErrors,
                 NumberOfThreads.ObserveHasErrors,
-                DataCollectionRangeSettings.Select(vm => vm.ObserveHasErrors).CombineLatestValuesAreAnyTrue(),
+                DataCollectionRangeSettings.Select(vm => vm?.ObserveHasErrors ?? Observable.Return(false)).CombineLatestValuesAreAnyTrue(),
             }.CombineLatestValuesAreAnyTrue()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
@@ -85,7 +85,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 MaxChargeNumber.ToUnit(),
                 IsBrClConsideredForIsotopes.ToUnit(),
                 NumberOfThreads.ToUnit(),
-                DataCollectionRangeSettings.Select(vm => vm.PropertyChangedAsObservable().ToUnit()).Merge(),
+                DataCollectionRangeSettings.Select(vm => vm?.PropertyChangedAsObservable().ToUnit() ?? Observable.Never<Unit>()).Merge(),
                 DimsDataCollectionSettingViewModel?.PropertyChangedAsObservable().ToUnit() ?? Observable.Never<Unit>(),
                 ImmsDataCollectionSettingViewModel?.PropertyChangedAsObservable().ToUnit() ?? Observable.Never<Unit>(),
             }.Merge();
@@ -128,12 +128,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReactivePropertySlim<bool> ExcuteRtCorrection { get; }
 
-        public ReadOnlyReactiveCollection<DataCollectionRangeSettingViewModel> DataCollectionRangeSettings { get; }
+        public ReadOnlyReactiveCollection<DataCollectionRangeSettingViewModel?> DataCollectionRangeSettings { get; }
 
-        public DimsDataCollectionSettingViewModel DimsDataCollectionSettingViewModel { get; }
+        public DimsDataCollectionSettingViewModel? DimsDataCollectionSettingViewModel { get; }
         public bool CanSetDimsDataCollectionSettingViewModel { get; }
 
-        public ImmsDataCollectionSettingViewModel ImmsDataCollectionSettingViewModel { get; }
+        public ImmsDataCollectionSettingViewModel? ImmsDataCollectionSettingViewModel { get; }
         public bool CanSetImmsDataCollectionSettingViewModel { get; }
 
         public ReadOnlyReactivePropertySlim<bool> IsEnabled { get; }
@@ -147,7 +147,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReadOnlyReactivePropertySlim<bool> ObserveChangeAfterDecision { get; }
         IObservable<bool> ISettingViewModel.ObserveChangeAfterDecision => ObserveChangeAfterDecision;
 
-        public ISettingViewModel Next(ISettingViewModel selected) {
+        public ISettingViewModel? Next(ISettingViewModel selected) {
             decide.OnNext(Unit.Default);
             return null;
         }

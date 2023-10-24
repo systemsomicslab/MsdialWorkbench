@@ -22,13 +22,13 @@ namespace CompMs.App.Msdial.Model.Export
         }
 
         public IReadOnlyList<AlignmentFileBeanModel> Files { get; }
-        public ReadOnlyReactivePropertySlim<AlignmentFileBeanModel> CurrentFile { get; }
+        public ReadOnlyReactivePropertySlim<AlignmentFileBeanModel?> CurrentFile { get; }
 
-        public AlignmentFileBeanModel SelectedFile {
+        public AlignmentFileBeanModel? SelectedFile {
             get => _selectedFile;
             set => SetProperty(ref _selectedFile, value);
         }
-        private AlignmentFileBeanModel _selectedFile;
+        private AlignmentFileBeanModel? _selectedFile;
 
         public IObservable<bool> CanExportNormalizedData(IObservable<bool> normalized) {
             var pair = _selected.CombineLatest(CurrentFile);

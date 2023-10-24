@@ -112,7 +112,7 @@ namespace CompMs.App.Msdial.Model.Setting
             }
         }
 
-        public IAnnotatorSettingModel AddAnnotator(DataBaseSettingModel db) {
+        public IAnnotatorSettingModel? AddAnnotator(DataBaseSettingModel db) {
             if (!(db is null)) {
                 var annotatorModel = annotatorFactory.Create(db, $"{db.DataBaseID}_{serialNumber++}", null);
                 lock (annotatorLock) {

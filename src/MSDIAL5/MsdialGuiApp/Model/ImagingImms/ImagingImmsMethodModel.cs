@@ -84,12 +84,12 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             return Task.CompletedTask;
         }
 
-        protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
+        protected override IAnalysisModel? LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             Image = ImageModels.FirstOrDefault(image => image.File == analysisFile);
             return null;
         }
 
-        protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBeanModel alignmentFileModel) {
+        protected override IAlignmentModel? LoadAlignmentFileCore(AlignmentFileBeanModel alignmentFileModel) {
             return null;
         }
 

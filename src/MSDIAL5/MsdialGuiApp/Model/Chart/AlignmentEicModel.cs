@@ -18,7 +18,7 @@ namespace CompMs.App.Msdial.Model.Chart
     internal sealed class AlignmentEicModel : DisposableModelBase
     {
         public AlignmentEicModel(
-            IObservable<AlignmentSpotPropertyModel> model,
+            IObservable<AlignmentSpotPropertyModel?> model,
             IObservable<List<PeakChromatogram>> chromatoramSource,
             List<AnalysisFileBean> analysisFiles,
             ParameterBase parameter,
@@ -55,8 +55,8 @@ namespace CompMs.App.Msdial.Model.Chart
             var vrox = anypeak
                 .Select(peaks => new Range(peaks.Min(verticalSelector), peaks.Max(verticalSelector)));
 
-            HorizontalRange = hrox.Merge(nopeak).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            VerticalRange = vrox.Merge(nopeak).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            HorizontalRange = hrox.Merge(nopeak).ToReadOnlyReactivePropertySlim(new Range(0d, 1d)).AddTo(Disposables);
+            VerticalRange = vrox.Merge(nopeak).ToReadOnlyReactivePropertySlim(new Range(0d, 1d)).AddTo(Disposables);
 
             var isSelected = model.Select(m => m != null).ToReactiveProperty().AddTo(Disposables);
             IsSelected = isSelected;
@@ -96,7 +96,7 @@ namespace CompMs.App.Msdial.Model.Chart
         public AlignedChromatogramModificationModelLegacy AlignedChromatogramModificationModelLegacy { get; }
 
         public static AlignmentEicModel Create(
-            IObservable<AlignmentSpotPropertyModel> source,
+            IObservable<AlignmentSpotPropertyModel?> source,
             AlignmentEicLoader loader,
             List<AnalysisFileBean> AnalysisFiles,
             ParameterBase Param,
@@ -105,7 +105,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
             return new AlignmentEicModel(
                 source,
-                source.SelectSwitch(loader.LoadEicAsObservable),
+                source.DefaultIfNull(loader.LoadEicAsObservable, Observable.Never<List<Chromatogram>>()).Switch(),
                 AnalysisFiles,
                 Param,
                 horizontalSelector, verticalSelector

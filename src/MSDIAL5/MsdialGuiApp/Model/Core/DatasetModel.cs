@@ -150,8 +150,9 @@ namespace CompMs.App.Msdial.Model.Core
             message.Show();
 
             var storage = await LoadProjectFromPathAsync(datasetFile);
-            if (storage == null) {
+            if (storage is null) {
                 MessageBox.Show("Msdial cannot open the project: \n" + datasetFile, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw new Exception($"Msdial cannot open the project: {datasetFile}");
             }
             var result = new DatasetModel(storage, broker);
             var factory = new MethodSettingModelFactory(result._analysisFileBeanModelCollection, result._alignmentFileBeanModelCollection, storage, result._projectBaseParameter, result.StudyContext, ProcessOption.All, broker);
