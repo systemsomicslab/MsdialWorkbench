@@ -5,8 +5,6 @@
     <AssemblyName>Common</AssemblyName>
     <RootNamespace>CompMs.Common</RootNamespace>
     <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
-    <LangVersion>9</LangVersion>
-    <Nullable>disable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
