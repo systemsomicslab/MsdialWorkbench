@@ -103,7 +103,15 @@
 
     <ItemGroup>
         <Content Include="CytoscapeLocalBrowser\assembly\bluebird.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\Chart.bundle.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\chartjs-plugin-zoom.js" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="CytoscapeLocalBrowser\assembly\cytoscape.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\cytoscape-qtip.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\hammer.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery-1.12.4.min.map" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery-3.3.1.min.map" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\smiles-drawer.min.js.map" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\typeahead.bundle.js" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="CytoscapeLocalBrowser\assembly\workingspace.js" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="CytoscapeLocalBrowser\data\elements.js" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="CytoscapeLocalBrowser\data\style.js" CopyToOutputDirectory="PreserveNewest" />
