@@ -71,7 +71,14 @@ namespace CompMs.Common.Algorithm.Function {
     //}
 
     public sealed class MoleculerNetworkingBase {
-        private MoleculerNetworkingBase() { }
+        public RootObject GetMoleculerNetworkingRootObjZZZ<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans, MsmsSimilarityCalc msmsSimilarityCalc, double masstolerance, double absoluteAbsCutoff, double relativeAbsCutoff, double spectrumSimilarityCutoff, double minimumPeakMatch, double maxEdgeNumberPerNode, double maxPrecursorDifference, double maxPrecursorDifferenceAsPercent, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
+            var nodes = GetSimpleNodes(spots, scans);
+            var edges = GenerateEdgesBySpectralSimilarity(
+                    spots, scans, msmsSimilarityCalc, masstolerance,
+                    absoluteAbsCutoff, relativeAbsCutoff, spectrumSimilarityCutoff,
+                    minimumPeakMatch, maxEdgeNumberPerNode, maxPrecursorDifference, maxPrecursorDifferenceAsPercent, report);
+            return new RootObject() { nodes = nodes, edges = edges };
+        }
 
         public static void ExportNodesEdgesFiles(string folder, RootObject rootObj) {
 
@@ -170,12 +177,8 @@ namespace CompMs.Common.Algorithm.Function {
         public static RootObject GetMoleculerNetworkingRootObj<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans,
             MsmsSimilarityCalc msmsSimilarityCalc, double masstolerance, double absoluteAbsCutoff, double relativeAbsCutoff, double spectrumSimilarityCutoff,
             double minimumPeakMatch, double maxEdgeNumberPerNode, double maxPrecursorDifference, double maxPrecursorDifferenceAsPercent, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
-            var nodes = GetSimpleNodes(spots, scans);
-            var edges = GenerateEdgesBySpectralSimilarity(
-                    spots, scans, msmsSimilarityCalc, masstolerance,
-                    absoluteAbsCutoff, relativeAbsCutoff, spectrumSimilarityCutoff,
-                    minimumPeakMatch, maxEdgeNumberPerNode, maxPrecursorDifference, maxPrecursorDifferenceAsPercent, report);
-            return new RootObject() { nodes = nodes, edges = edges };
+            var network = new MoleculerNetworkingBase();
+            return network.GetMoleculerNetworkingRootObjZZZ(spots, scans, msmsSimilarityCalc, masstolerance, absoluteAbsCutoff, relativeAbsCutoff, spectrumSimilarityCutoff, minimumPeakMatch, maxEdgeNumberPerNode, maxPrecursorDifference, maxPrecursorDifferenceAsPercent, report);
         }
 
         public static RootObject GetMoleculerNetworkingRootObjForTargetSpot<T>(
