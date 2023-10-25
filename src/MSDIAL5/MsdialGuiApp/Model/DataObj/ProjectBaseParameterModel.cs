@@ -1,7 +1,10 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.Base;
+using CompMs.Graphics.Design;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings.Extensions;
@@ -121,6 +124,16 @@ namespace CompMs.App.Msdial.Model.DataObj
             var classNumAve = files.GroupBy(analysisfile => analysisfile.AnalysisFileType)
                                    .Average(group => group.Count());
             IsBoxPlotForAlignmentResult = classNumAve > 4;
+        }
+
+        public IBrushMapper<SpectrumComment> GetSpectrumBrush(Color defaultColor) {
+            var commentToColor = _projectParameter.SpectrumCommentToColorBytes
+                .Where(kvp => Enum.IsDefined(typeof(SpectrumComment), kvp.Key))
+                .ToDictionary(kvp => (SpectrumComment)Enum.Parse(typeof(SpectrumComment), kvp.Key), kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
+            return new KeyBrushMapper<SpectrumComment, SpectrumComment>(
+                commentToColor,
+                comment => comment.HasFlag(SpectrumComment.doublebond) ? SpectrumComment.doublebond : comment,
+                defaultColor);
         }
     }
 }

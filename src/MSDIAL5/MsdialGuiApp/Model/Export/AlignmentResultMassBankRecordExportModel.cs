@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Extension;
 using CompMs.Common.Parser;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -54,7 +55,7 @@ namespace CompMs.App.Msdial.Model.Export
                 return;
             }
             var splash = new NSSplash.Splash();
-            var handler = new MassBankRecordHandler(_parameter.IonMode, _parameter.InstrumentType, scan => splash.splashIt(new NSSplash.impl.MSSpectrum(string.Join(" ", scan.Spectrum.Select(p => $"{p.Mass}:{p.Intensity}")))));
+            var handler = new MassBankRecordHandler(_parameter.IonMode, _parameter.InstrumentType, scan => scan.Spectrum.IsEmptyOrNull() ? "NA" : splash.splashIt(new NSSplash.impl.MSSpectrum(string.Join(" ", scan.Spectrum.Select(p => $"{p.Mass}:{p.Intensity}")))));
             var peaks = _supplyer.Supply(alignmentFile, default);
             foreach (var peak in peaks) {
                 if (!peak.IsReferenceMatched(_evaluator) || !(_refer.Refer(peak.MatchResults.Representative) is MoleculeMsReference reference)) {
@@ -64,7 +65,7 @@ namespace CompMs.App.Msdial.Model.Export
                 string accession = handler.GetAccession(peak);
                 using (var stream = File.Open(Path.Combine(exportDirectory, accession + ".txt"), FileMode.Create)) {
                     notification.Invoke($"Exporting {accession}");
-                    handler.WriteRecord(stream, peak, reference, alignmentFile.LoadMSDecResultByIndexAsync(peak.MasterAlignmentID).Result);
+                    handler.WriteRecord(stream, peak, reference, alignmentFile.LoadMSDecResultByIndexAsync(peak.MasterAlignmentID).Result, peak);
                 }
             }
         }

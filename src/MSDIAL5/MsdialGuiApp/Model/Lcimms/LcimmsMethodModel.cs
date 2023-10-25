@@ -155,6 +155,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 Storage.Parameter,
                 PeakFilterModel,
                 AccumulatedPeakFilterModel,
+                _projectBaseParameter,
                 _broker)
             .AddTo(Disposables);
         }
@@ -287,7 +288,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             if (analysisModel is null) {
                 return null;
             }
-            return new DisplayEicSettingModel(analysisModel.EicLoader, Storage.Parameter);
+            return new DisplayEicSettingModel(analysisModel.EicLoader, Storage.Parameter.AdvancedProcessOptionBaseParam);
         }
 
         public ChromatogramsModel PrepareTicBpcRepEIC() {

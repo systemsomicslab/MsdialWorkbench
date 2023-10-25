@@ -158,6 +158,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 _matchResultEvaluator,
                 _storage.Parameter,
                 PeakFilterModel,
+                _projectBaseParameter,
                 _broker)
             .AddTo(Disposables);
         }
@@ -360,6 +361,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     FileSuffix = "msp",
                     Label = "Nist format (*.msp)"
                 },
+                new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam),
             };
             return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, models);
         }
@@ -389,7 +391,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (AnalysisModel is null) {
                 return null;
             }
-            return new DisplayEicSettingModel(AnalysisModel.EicLoader, _storage.Parameter);
+            return new DisplayEicSettingModel(AnalysisModel.EicLoader, _storage.Parameter.AdvancedProcessOptionBaseParam);
         }
 
         public ChromatogramsModel ShowTicBpcRepEIC() {

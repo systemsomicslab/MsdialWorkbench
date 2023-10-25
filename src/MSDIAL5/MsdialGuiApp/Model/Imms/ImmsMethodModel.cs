@@ -235,6 +235,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 _storage.DataBaseMapper,
                 _storage.Parameter,
                 PeakFilterModel,
+                _projectBaseParameter,
                 _broker)
             .AddTo(Disposables);
             return AnalysisModel;
@@ -291,6 +292,7 @@ namespace CompMs.App.Msdial.Model.Imms
                     FileSuffix = "msp",
                     Label = "Nist format (*.msp)"
                 },
+                new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam),
             };
             return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, models);
         }
@@ -324,7 +326,7 @@ namespace CompMs.App.Msdial.Model.Imms
             if (analysisModel is null) {
                 return null;
             }
-            return new DisplayEicSettingModel(analysisModel.EicLoader, _storage.Parameter);
+            return new DisplayEicSettingModel(analysisModel.EicLoader, _storage.Parameter.AdvancedProcessOptionBaseParam);
         }
 
         public ChromatogramsModel PrepareTicBpcRepEIC() {

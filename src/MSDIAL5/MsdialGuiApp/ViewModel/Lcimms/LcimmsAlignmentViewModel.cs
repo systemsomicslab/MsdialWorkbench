@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Core;
+﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Lcimms;
 using CompMs.App.Msdial.ViewModel.Chart;
@@ -81,7 +82,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 model.AlignmentSpotTableModel,
                 PeakSpotNavigatorViewModel,
                 SetUnknownCommand,
-                UndoManagerViewModel)
+                UndoManagerViewModel, broker)
                 .AddTo(Disposables);
 
             SearchCompoundCommand = new[]{

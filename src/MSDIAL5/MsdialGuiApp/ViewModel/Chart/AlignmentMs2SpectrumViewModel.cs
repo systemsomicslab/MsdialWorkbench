@@ -34,10 +34,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             HorizontalAxis = model.HorizontalAxis.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             LowerVerticalAxis = model.LowerVerticalAxisItem.SkipNull().Select(item => item.AxisManager).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            LowerVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel>(model.LowerVerticalAxisItemCollection);
+            LowerVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel<double>>(model.LowerVerticalAxisItemCollection);
 
             UpperVerticalAxis = model.UpperVerticalAxisItem.SkipNull().Select(item => item.AxisManager).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            UpperVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel>(model.UpperVerticalAxisItemCollection);
+            UpperVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel<double>>(model.UpperVerticalAxisItemCollection);
 
             GraphTitle = Observable.Return(model.GraphLabels.GraphTitle)
                 .ToReadOnlyReactivePropertySlim()
@@ -51,22 +51,6 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            HorizontalProperty = Observable.Return(model.HorizontalPropertySelector.Property)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
-            VerticalProperty = Observable.Return(model.VerticalPropertySelector.Property)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
-            LabelProperty = Observable.Return(model.GraphLabels.AnnotationLabelProperty)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
-            OrderingProperty = Observable.Return(model.GraphLabels.AnnotationOrderProperty)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-           
             SaveMatchedSpectraCommand = model.CanSaveMatchedSpectra.ToReactiveCommand()
                 .WithSubscribe(SaveSpectrum(model.SaveMatchedSpectra,  filter: "tab separated values(*.txt)|*.txt"))
                 .AddTo(Disposables);
@@ -98,11 +82,11 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<bool> ReferenceHasSpectrumInformation { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> HorizontalAxis { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> UpperVerticalAxis { get; }
-        public ReactivePropertySlim<AxisItemModel> UpperVerticalAxisItem => _model.UpperVerticalAxisItem;
-        public ReadOnlyObservableCollection<AxisItemModel> UpperVerticalAxisItemCollection { get; }
+        public ReactivePropertySlim<AxisItemModel<double>> UpperVerticalAxisItem => _model.UpperVerticalAxisItem;
+        public ReadOnlyObservableCollection<AxisItemModel<double>> UpperVerticalAxisItemCollection { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> LowerVerticalAxis { get; }
-        public ReactivePropertySlim<AxisItemModel> LowerVerticalAxisItem => _model.LowerVerticalAxisItem;
-        public ReadOnlyObservableCollection<AxisItemModel> LowerVerticalAxisItemCollection { get; }
+        public ReactivePropertySlim<AxisItemModel<double>> LowerVerticalAxisItem => _model.LowerVerticalAxisItem;
+        public ReadOnlyObservableCollection<AxisItemModel<double>> LowerVerticalAxisItemCollection { get; }
 
         public ReadOnlyObservableCollection<AnalysisFileBeanModel> Files => _model.Files;
         public ReactiveProperty<AnalysisFileBeanModel> SelectedFile => _model.SelectedFile;
@@ -112,14 +96,6 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<string> HorizontalTitle { get; }
 
         public ReadOnlyReactivePropertySlim<string> VerticalTitle { get; }
-
-        public ReadOnlyReactivePropertySlim<string> HorizontalProperty { get; }
-
-        public ReadOnlyReactivePropertySlim<string> VerticalProperty { get; }
-
-        public ReadOnlyReactivePropertySlim<string> LabelProperty { get; }
-
-        public ReadOnlyReactivePropertySlim<string> OrderingProperty { get; }
 
         public ReactiveCommand SwitchAllSpectrumCommand { get; }
 

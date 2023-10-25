@@ -10,12 +10,13 @@
              mc:Ignorable="d" 
              xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
-             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:behavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
+             xmlns:chartBehavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
              xmlns:info="clr-namespace:CompMs.App.Msdial.ViewModel.Information"
              xmlns:infoview="clr-namespace:CompMs.App.Msdial.View.Information"
-             behavior:SuppressContextMenuBehavior.IsEnabled="True"
+             chartBehavior:SuppressContextMenuBehavior.IsEnabled="True"
              d:DataContext="{d:DesignInstance Type=vm:ImmsMethodViewModel}"
              Name="MainControl"
              d:DesignHeight="775" d:DesignWidth="1280">
@@ -249,7 +250,8 @@
                                         </chart:PeakView>
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type vm:ImmsAlignmentViewModel}">
-                                        <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}">
+                                        <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}"
+                                                                     behavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Focus, Mode=OneWay}">
                                             <chart:AlignmentPeakPlotView.LabelTemplate>
                                                 <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
                                                     <StackPanel Orientation="Horizontal">
@@ -469,11 +471,10 @@
                                         <chart:Ms2ChromatogramsView/>
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type vmchart:RawPurifiedSpectrumsViewModel}">
-                                        <chart:RawPurifiedView DataContext="{Binding DataContext.AnalysisViewModel.Value, ElementName=TabControl_MS2Viewer}"/>
+                                        <chart:RawPurifiedView/>
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type vmchart:AlignmentMs2SpectrumViewModel}">
                                         <chart:RepRefView DataContext="{Binding DataContext.AlignmentViewModel.Value, ElementName=TabControl_MS2Viewer}"
-                                                          xmlns:behavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
                                                           behavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Ms2SpectrumViewModel.FocusAction, Mode=OneWay}">
                                             <chart:RepRefView.ContextMenu>
                                                 <ContextMenu>
