@@ -115,7 +115,7 @@ namespace CompMs.App.Msdial.Model.Core {
 
                 var network = new MoleculerNetworkingBase();
                 var query = ConvertToMolecularNetworkingQuery(parameter);
-                var rootObj = network.GetMoleculerNetworkingRootObjZZZ(spots, peaks, query, notify);
+                var rootObj = network.GetMoleculerNetworkingRootObj(spots, peaks, query, notify);
                 for (int i = 0; i < rootObj.nodes.Count; i++) {
                     var node = rootObj.nodes[i];
                     node.data.BarGraph = CytoscapejsModel.GetBarGraphProperty(spots[i], AnalysisFileModel.AnalysisFileName);
