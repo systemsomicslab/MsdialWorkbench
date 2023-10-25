@@ -102,7 +102,7 @@ namespace CompMs.App.Msdial.Model.Core {
             };
         }
 
-        public CompMs.Common.DataObj.NodeEdge.RootObject GetMoleculerNetworkingRootObj(MolecularSpectrumNetworkingBaseParameter parameter) {
+        private CompMs.Common.DataObj.NodeEdge.RootObject GetMoleculerNetworkingRootObj(MolecularSpectrumNetworkingBaseParameter parameter) {
             var publisher = new TaskProgressPublisher(_broker, $"Exporting MN results in {parameter.ExportFolderPath}");
             using (publisher.Start()) {
                 var spots = Ms1Peaks;

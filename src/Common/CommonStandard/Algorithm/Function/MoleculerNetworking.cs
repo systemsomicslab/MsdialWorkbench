@@ -83,24 +83,6 @@ namespace CompMs.Common.Algorithm.Function {
     }
 
     public sealed class MoleculerNetworkingBase {
-        public RootObject GetMoleculerNetworkingRootObjZZZ<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans, MsmsSimilarityCalc msmsSimilarityCalc, double masstolerance, double absoluteAbsCutoff, double relativeAbsCutoff, double spectrumSimilarityCutoff, double minimumPeakMatch, double maxEdgeNumberPerNode, double maxPrecursorDifference, double maxPrecursorDifferenceAsPercent, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
-            var nodes = GetSimpleNodes(spots, scans);
-            var edges = GenerateEdgesBySpectralSimilarity(
-                    spots, scans, msmsSimilarityCalc, masstolerance,
-                    absoluteAbsCutoff, relativeAbsCutoff, spectrumSimilarityCutoff,
-                    minimumPeakMatch, maxEdgeNumberPerNode, maxPrecursorDifference, maxPrecursorDifferenceAsPercent, report);
-            return new RootObject() { nodes = nodes, edges = edges };
-        }
-
-        public RootObject GetMoleculerNetworkingRootObjZZZ<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
-            var nodes = GetSimpleNodes(spots, scans);
-            var edges = GenerateEdgesBySpectralSimilarity(
-                    spots, scans, query.MsmsSimilarityCalc, query.MassTolerance,
-                    query.AbsoluteAbundanceCutOff, query.RelativeAbundanceCutOff, query.SpectrumSimilarityCutOff,
-                    query.MinimumPeakMatch, query.MaxEdgeNumberPerNode, query.MaxPrecursorDifference, query.MaxPrecursorDifferenceAsPercent, report);
-            return new RootObject() { nodes = nodes, edges = edges };
-        }
-
         public static void ExportNodesEdgesFiles(string folder, RootObject rootObj) {
 
             var nodes = rootObj.nodes;
@@ -195,6 +177,24 @@ namespace CompMs.Common.Algorithm.Function {
             return specString;
         }
 
+        public RootObject GetMoleculerNetworkingRootObjZZZ<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans, MsmsSimilarityCalc msmsSimilarityCalc, double masstolerance, double absoluteAbsCutoff, double relativeAbsCutoff, double spectrumSimilarityCutoff, double minimumPeakMatch, double maxEdgeNumberPerNode, double maxPrecursorDifference, double maxPrecursorDifferenceAsPercent, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
+            var nodes = GetSimpleNodes(spots, scans);
+            var edges = GenerateEdgesBySpectralSimilarity(
+                    spots, scans, msmsSimilarityCalc, masstolerance,
+                    absoluteAbsCutoff, relativeAbsCutoff, spectrumSimilarityCutoff,
+                    minimumPeakMatch, maxEdgeNumberPerNode, maxPrecursorDifference, maxPrecursorDifferenceAsPercent, report);
+            return new RootObject() { nodes = nodes, edges = edges };
+        }
+
+        public RootObject GetMoleculerNetworkingRootObjZZZ<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
+            var nodes = GetSimpleNodes(spots, scans);
+            var edges = GenerateEdgesBySpectralSimilarity(
+                    spots, scans, query.MsmsSimilarityCalc, query.MassTolerance,
+                    query.AbsoluteAbundanceCutOff, query.RelativeAbundanceCutOff, query.SpectrumSimilarityCutOff,
+                    query.MinimumPeakMatch, query.MaxEdgeNumberPerNode, query.MaxPrecursorDifference, query.MaxPrecursorDifferenceAsPercent, report);
+            return new RootObject() { nodes = nodes, edges = edges };
+        }
+
         public static RootObject GetMoleculerNetworkingRootObj<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans,
             MsmsSimilarityCalc msmsSimilarityCalc, double masstolerance, double absoluteAbsCutoff, double relativeAbsCutoff, double spectrumSimilarityCutoff,
             double minimumPeakMatch, double maxEdgeNumberPerNode, double maxPrecursorDifference, double maxPrecursorDifferenceAsPercent, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
@@ -234,7 +234,7 @@ namespace CompMs.Common.Algorithm.Function {
             return new RootObject() { nodes = nodes, edges = edges };
         }
 
-        public static List<Node> GetSimpleNodes<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans) where T : IMoleculeProperty, IChromatogramPeak {
+        private static List<Node> GetSimpleNodes<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans) where T : IMoleculeProperty, IChromatogramPeak {
             var nodes = new List<Node>();
             if (spots.IsEmptyOrNull()) return nodes;
             var minValue = Math.Log10(spots.Min(n => n.Intensity));
@@ -279,7 +279,7 @@ namespace CompMs.Common.Algorithm.Function {
             return nodes;
         }
 
-        public static List<Edge> GenerateEdgesBySpectralSimilarity<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans,
+        private static List<Edge> GenerateEdgesBySpectralSimilarity<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans,
             MsmsSimilarityCalc msmsSimilarityCalc, double masstolerance, double absoluteAbsCutoff, double relativeAbsCutoff, double spectrumSimilarityCutoff,
             double minimumPeakMatch, double maxEdgeNumberPerNode, double maxPrecursorDifference, double maxPrecursorDifferenceAsPercent, Action<double> report) where T:IMoleculeProperty, IChromatogramPeak {
             foreach (var scan in scans) {
@@ -292,7 +292,7 @@ namespace CompMs.Common.Algorithm.Function {
             return edges.Select(n => new Edge() { data = n, classes = "ms_similarity" }).ToList();
         }
 
-        public static List<Edge> GenerateEdgesBySpectralSimilarity<T>(
+        private static List<Edge> GenerateEdgesBySpectralSimilarity<T>(
             T targetSpot, IMSScanProperty targetScan, IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans,
             MsmsSimilarityCalc msmsSimilarityCalc, double masstolerance, double absoluteAbsCutoff, double relativeAbsCutoff, double spectrumSimilarityCutoff,
             double minimumPeakMatch, double maxEdgeNumberPerNode, double maxPrecursorDifference, double maxPrecursorDifferenceAsPercent, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
@@ -352,7 +352,7 @@ namespace CompMs.Common.Algorithm.Function {
             return edges;
         }
 
-        public static List<EdgeData> GenerateEdges<T>(
+        private static List<EdgeData> GenerateEdges<T>(
             IReadOnlyList<T> spots,
             IReadOnlyList<IMSScanProperty> peaks, 
             double massTolerance,
