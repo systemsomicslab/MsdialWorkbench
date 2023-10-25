@@ -19,57 +19,6 @@ namespace CompMs.Common.Algorithm.Function {
         public int Index { get; set; }
     }
 
-    //public class CyNode
-    //{
-    //    public CyNodeData data { get; set; }
-    //    public string selected { get; set; }
-
-    //    public CyNode() {
-    //        data = new CyNodeData();
-    //        selected = "false";
-    //    }
-    //}
-
-    //public class CyNodeData {
-    //    public string id { get; set; }
-    //    public string Name { get; set; }
-    //    public string Rt { get; set; }
-    //    public string Mz { get; set; }
-    //    public string Formula { get; set; }
-    //    public string Ontology { get; set; }
-    //    public string InChiKey { get; set; }
-    //    public string Smiles { get; set; }
-    //    public int Size { get; set; }
-    //    public string bordercolor { get; set; }
-    //    public string backgroundcolor { get; set; }
-    //}
-
-    //public class CyEdgeData {
-    //    public string source { get; set; }
-    //    public string target { get; set; }
-    //    public double score { get; set; }
-    //    public string type { get; set; }
-    //}
-
-    //public class CyEdge {
-    //    public CyEdgeData data { get; set; }
-    //    public string selected { get; set; }
-    //    public CyEdge() {
-    //        data = new CyEdgeData();
-    //        selected = "false";
-    //    }
-    //}
-
-    //public class RootObject {
-    //    public List<CyNode> nodes { get; set; }
-    //    public List<CyEdge> edges { get; set; }
-    //}
-
-    //internal class RootObject2
-    //{
-    //    public RootObject elements { get; set; }
-    //}
-
     public sealed class MolecularNetworkingQuery {
         public MsmsSimilarityCalc MsmsSimilarityCalc { get; set; }
         public double MassTolerance { get; set; }
@@ -102,7 +51,7 @@ namespace CompMs.Common.Algorithm.Function {
                     sw.Write(node.id + "\t" + node.Name + "\t" + node.Rt + "\t" + node.Mz + "\t" + node.Formula + "\t" + node.Ontology + "\t" +
                        node.InChiKey + "\t" + node.Smiles + "\t" + node.Size + "\t" + node.bordercolor + "\t" + node.backgroundcolor + "\t");
 
-                    var ms2String = getMsString(node.MSMS);
+                    var ms2String = GetMsString(node.MSMS);
                     sw.WriteLine(ms2String);
                 }
             }
@@ -159,22 +108,11 @@ namespace CompMs.Common.Algorithm.Function {
             System.Diagnostics.Process.Start(url);
         }
 
-        private static string getMsString(List<List<double>> msList) {
-            if (msList == null || msList.Count == 0) return string.Empty;
-
-            var specString = string.Empty;
-
-            for (int i = 0; i < msList.Count; i++) {
-                var mz = msList[i][0];
-                var intensity = msList[i][1];
-
-                if (i == msList.Count - 1)
-                    specString += Math.Round(mz, 5).ToString() + ":" + Math.Round(intensity, 0).ToString();
-                else
-                    specString += Math.Round(mz, 5).ToString() + ":" + Math.Round(intensity, 0).ToString() + " ";
+        private static string GetMsString(List<List<double>> msList) {
+            if (msList == null || msList.Count == 0) {
+                return string.Empty;
             }
-
-            return specString;
+            return string.Join(" ", msList.Select(ms => $"{Math.Round(ms[0], 5)}:{Math.Round(ms[1], 0)}"));
         }
 
         public RootObject GetMoleculerNetworkingRootObjZZZ<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans, MsmsSimilarityCalc msmsSimilarityCalc, double masstolerance, double absoluteAbsCutoff, double relativeAbsCutoff, double spectrumSimilarityCutoff, double minimumPeakMatch, double maxEdgeNumberPerNode, double maxPrecursorDifference, double maxPrecursorDifferenceAsPercent, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
