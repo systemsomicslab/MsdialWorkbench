@@ -378,6 +378,28 @@ namespace CompMs.Common.Mathematics.Basic {
                 return (double)(covariance / Math.Sqrt(sqrt1 * sqrt2));
         }
 
+        public static double CalculateSpearmanCorrelation(double[] x, double[] y) {
+            int[] rankX = x.Select((value, index) => new { Value = value, Index = index })
+                           .OrderBy(item => item.Value)
+                           .Select((item, index) => new { item.Index, Rank = index + 1 })
+                           .OrderBy(item => item.Index)
+                           .Select(item => item.Rank)
+                           .ToArray();
+            int[] rankY = y.Select((value, index) => new { Value = value, Index = index })
+                           .OrderBy(item => item.Value)
+                           .Select((item, index) => new { item.Index, Rank = index + 1 })
+                           .OrderBy(item => item.Index)
+                           .Select(item => item.Rank)
+                           .ToArray();
+            int n = x.Length;
+            double d2 = 0;
+            for (int i = 0; i < n; i++) {
+                d2 += Math.Pow(rankX[i] - rankY[i], 2);
+            }
+            double spearmanCorrelation = 1 - (6 * d2) / (n * (n * n - 1));
+            return spearmanCorrelation;
+        }
+
         public static float Coefficient(float[] array1, float[] array2) {
             double sum1 = 0, sum2 = 0, mean1 = 0, mean2 = 0, covariance = 0, sqrt1 = 0, sqrt2 = 0;
             for (int i = 0; i < array1.Length; i++) {
