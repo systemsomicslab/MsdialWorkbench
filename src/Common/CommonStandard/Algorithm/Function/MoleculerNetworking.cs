@@ -247,17 +247,22 @@ namespace CompMs.Common.Algorithm.Function {
                     node2links[i].Add(new LinkNode() { Score = scoreitem, Node = peakScans[j].Scan, Index = j });
                 }
             }
-
-            var edges = node2links.Where(item => !item.Value.IsEmptyOrNull())
-                .SelectMany(
-                    item => item.Value.OrderByDescending(n => n.Score[0]).Take((int)query.MaxEdgeNumberPerNode).ToList(),
-                    (item, link) => new EdgeData
+            var link2src = node2links.SelectMany(item => item.Value, (item, link) => (link, src: item.Key)).ToDictionary(pair => pair.link, pair => pair.src);
+            var counts = new int[peakScans.Count];
+            var edges = new List<EdgeData>();
+            foreach (var pair in link2src.OrderByDescending(pair => pair.Key.Score[0])) {
+                if (counts[pair.Value] < query.MaxEdgeNumberPerNode && counts[pair.Key.Index] < query.MaxEdgeNumberPerNode) {
+                    ++counts[pair.Value];
+                    ++counts[pair.Key.Index];
+                    edges.Add(new EdgeData
                     {
-                        score = link.Score[0],
-                        matchpeakcount = link.Score[1],
-                        source = peakScans[item.Key].Peak.ID,
-                        target = peakScans[link.Index].Peak.ID
-                    }).ToList();
+                        score = pair.Key.Score[0],
+                        matchpeakcount = pair.Key.Score[1],
+                        source = peakScans[pair.Value].Peak.ID,
+                        target = peakScans[pair.Key.Index].Peak.ID
+                    });
+                }
+            }
             return edges;
         }
 
