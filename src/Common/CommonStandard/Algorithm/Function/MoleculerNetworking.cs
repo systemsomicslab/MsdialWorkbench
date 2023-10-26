@@ -118,53 +118,23 @@ namespace CompMs.Common.Algorithm.Function {
         public RootObject GetMoleculerNetworkingRootObj<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
             List<PeakScanPair<T>> peakScans = spots.Zip(scans, (spot, scan) => new PeakScanPair<T>(spot, scan)).ToList();
             var nodes = GetSimpleNodes(peakScans);
+            RefineScans(scans, query);
             var edges = GenerateEdgesBySpectralSimilarity(peakScans, query, report);
-            return new RootObject() { nodes = nodes, edges = edges };
+            return new RootObject { nodes = nodes, edges = edges };
         }
 
-        public static RootObject GetMoleculerNetworkingRootObj<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans,
-            MsmsSimilarityCalc msmsSimilarityCalc, double masstolerance, double absoluteAbsCutoff, double relativeAbsCutoff, double spectrumSimilarityCutoff,
-            double minimumPeakMatch, double maxEdgeNumberPerNode, double maxPrecursorDifference, double maxPrecursorDifferenceAsPercent, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
-            var network = new MoleculerNetworkingBase();
-            var query = new MolecularNetworkingQuery
-            {
-                MsmsSimilarityCalc = msmsSimilarityCalc,
-                MassTolerance = masstolerance,
-                AbsoluteAbundanceCutOff = absoluteAbsCutoff,
-                RelativeAbundanceCutOff = relativeAbsCutoff,
-                SpectrumSimilarityCutOff = spectrumSimilarityCutoff,
-                MinimumPeakMatch = minimumPeakMatch,
-                MaxEdgeNumberPerNode = maxEdgeNumberPerNode,
-                MaxPrecursorDifference = maxPrecursorDifference,
-                MaxPrecursorDifferenceAsPercent = maxPrecursorDifferenceAsPercent,
-            };
-            return network.GetMoleculerNetworkingRootObj(spots, scans, query, report);
-        }
-
-        public static RootObject GetMoleculerNetworkingRootObjForTargetSpot<T>(
-            T targetSpot, IMSScanProperty targetScan, IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans,
-            MsmsSimilarityCalc msmsSimilarityCalc, double masstolerance, double absoluteAbsCutoff, double relativeAbsCutoff, double spectrumSimilarityCutoff,
-            double minimumPeakMatch, double maxEdgeNumberPerNode, double maxPrecursorDifference, double maxPrecursorDifferenceAsPercent, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
-
-            var query = new MolecularNetworkingQuery
-            {
-                MsmsSimilarityCalc = msmsSimilarityCalc,
-                MassTolerance = masstolerance,
-                AbsoluteAbundanceCutOff = absoluteAbsCutoff,
-                RelativeAbundanceCutOff = relativeAbsCutoff,
-                SpectrumSimilarityCutOff = spectrumSimilarityCutoff,
-                MinimumPeakMatch = minimumPeakMatch,
-                MaxEdgeNumberPerNode = maxEdgeNumberPerNode,
-                MaxPrecursorDifference = maxPrecursorDifference,
-                MaxPrecursorDifferenceAsPercent = maxPrecursorDifferenceAsPercent,
-            };
+        public RootObject GetMoleculerNetworkingRootObjForTargetSpot<T>(T targetSpot, IMSScanProperty targetScan, IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
             List<PeakScanPair<T>> peakScans = spots.Zip(scans, (spot, scan) => new PeakScanPair<T>(spot, scan)).ToList();
-            var edges = GenerateEdgesBySpectralSimilarity(new PeakScanPair<T>(targetSpot, targetScan), spots, scans, query, report);
-
+            var nodes = GetSimpleNodes(peakScans);
+            RefineScans(new[] { targetScan }, query);
+            if (targetScan.Spectrum.IsEmptyOrNull()) {
+                return new RootObject { nodes = new List<Node>(0), edges = new List<Edge>(0), };
+            }
+            RefineScans(scans, query);
+            var edges = GenerateEdgesBySpectralSimilarity(new PeakScanPair<T>(targetSpot, targetScan), peakScans, query, report);
             var idlist = new HashSet<int>(edges.SelectMany(edge => new[] { edge.data.source, edge.data.target }));
-            var filteredPeakScans = peakScans.Where(pair => idlist.Contains(pair.Peak.ID)).ToList();
-            var nodes = GetSimpleNodes(filteredPeakScans);
-            return new RootObject() { nodes = nodes, edges = edges };
+            var filteredNodes = nodes.Where(node => idlist.Contains(node.data.id)).ToList();
+            return new RootObject { nodes = filteredNodes, edges = edges };
         }
 
         private static List<Node> GetSimpleNodes<T>(List<PeakScanPair<T>> peakScans) where T : IMoleculeProperty, IChromatogramPeak {
@@ -211,75 +181,58 @@ namespace CompMs.Common.Algorithm.Function {
             return "rgb(0,0,0)";
         }
 
-        private static List<Edge> GenerateEdgesBySpectralSimilarity<T>(List<PeakScanPair<T>> peakScans, MolecularNetworkingQuery query, Action<double> report) where T:IMoleculeProperty, IChromatogramPeak {
-            foreach (var peakScan in peakScans) {
-                var scan = peakScan.Scan;
-                if (scan.Spectrum.Count > 0) {
-                    scan.Spectrum = MsScanMatching.GetProcessedSpectrum(scan.Spectrum, scan.PrecursorMz, absoluteAbundanceCutOff: query.AbsoluteAbundanceCutOff, relativeAbundanceCutOff: query.RelativeAbundanceCutOff);
-                }
-            }
-            var edges = GenerateEdges(peakScans, query, report);
-
-            return edges.Select(edge => new Edge { data = edge, classes = "ms_similarity" }).ToList();
-        }
-
-        private static List<Edge> GenerateEdgesBySpectralSimilarity<T>(PeakScanPair<T> targetPeakScan, IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
-            var targetScan = targetPeakScan.Scan;
-            var targetSpot = targetPeakScan.Peak;
-            if (targetScan.Spectrum.IsEmptyOrNull()) {
-                return new List<Edge>();
-            }
-            targetScan.Spectrum = MsScanMatching.GetProcessedSpectrum(targetScan.Spectrum, targetScan.PrecursorMz, absoluteAbundanceCutOff: query.AbsoluteAbundanceCutOff, relativeAbundanceCutOff: query.RelativeAbundanceCutOff);
-            if (targetScan.Spectrum.IsEmptyOrNull()) {
-                return new List<Edge>();
-            }
-
+        private static void RefineScans(IEnumerable<IMSScanProperty> scans, MolecularNetworkingQuery query) {
             foreach (var scan in scans) {
                 if (scan.Spectrum.Count > 0) {
                     scan.Spectrum = MsScanMatching.GetProcessedSpectrum(scan.Spectrum, scan.PrecursorMz, absoluteAbundanceCutOff: query.AbsoluteAbundanceCutOff, relativeAbundanceCutOff: query.RelativeAbundanceCutOff);
                 }
             }
-
-            var edges = GenerateEdges(targetPeakScan, spots, scans, query, report);
-            return edges.Select(n => new Edge() { data = n, classes = "ms_similarity" }).ToList();
         }
 
-        private static List<EdgeData> GenerateEdges<T>(PeakScanPair<T> targetPeakScan, IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> peaks, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
-            var edges = new List<EdgeData>();
+        private static List<Edge> GenerateEdgesBySpectralSimilarity<T>(List<PeakScanPair<T>> peakScans, MolecularNetworkingQuery query, Action<double> report) where T:IMoleculeProperty, IChromatogramPeak {
+            var edges = GenerateEdges(peakScans, query, report);
+            return edges.Select(edge => new Edge { data = edge, classes = "ms_similarity" }).ToList();
+        }
+
+        private static List<Edge> GenerateEdgesBySpectralSimilarity<T>(PeakScanPair<T> targetPeakScan, List<PeakScanPair<T>> peakScans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
+            if (targetPeakScan.Scan.Spectrum.IsEmptyOrNull()) {
+                return new List<Edge>();
+            }
+            var edges = GenerateEdges(targetPeakScan, peakScans, query, report);
+            return edges.Select(edge => new Edge() { data = edge, classes = "ms_similarity" }).ToList();
+        }
+
+        private static List<EdgeData> GenerateEdges<T>(PeakScanPair<T> targetPeakScan, List<PeakScanPair<T>> peakScans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
             var counter = 0;
-            var max = peaks.Count;
+            var max = peakScans.Count;
             var links = new List<LinkNode>();
-            Debug.WriteLine(peaks.Count);
-            var targetScan = targetPeakScan.Scan;
-            for (int i = 0; i < peaks.Count; i++) {
-                if (peaks[i].Spectrum.Count <= 0) continue;
-                if (peaks[i].ScanID == targetScan.ScanID) continue;
-                counter++;
-                Debug.WriteLine("{0} / {1}", counter, max);
+            var edges = new List<EdgeData>();
+
+            for (int i = 0; i < peakScans.Count; i++) {
+                if (peakScans[i].Scan.Spectrum.Count <= 0) continue;
+                if (peakScans[i].Scan.ScanID == targetPeakScan.Scan.ScanID) continue;
+
+                Debug.WriteLine("{0} / {1}", ++counter, max);
                 report?.Invoke(counter / (double)max);
-                double[] scoreitem = GetLinkNode(targetScan, peaks[i], query);
-                if (scoreitem == null) continue;
-                links.Add(new LinkNode() { Score = scoreitem, Node = peaks[i], Index = i });
+                double[] scoreitem = GetLinkNode(targetPeakScan.Scan, peakScans[i].Scan, query);
+                if (scoreitem is null) continue;
+                LinkNode link = new LinkNode() { Score = scoreitem, Node = peakScans[i].Scan, Index = i };
+                links.Add(link);
             }
 
-            foreach (var link in links) {
-                var source_node_id = targetPeakScan.Peak.ID;
-                var target_node_id = spots[link.Index].ID;
-
-                var edge = new EdgeData() {
-                    score = link.Score[0], matchpeakcount = link.Score[1], source = source_node_id, target = target_node_id
-                };
-                edges.Add(edge);
-            }
-            return edges;
+            return links.Select(link => new EdgeData
+            {
+                score = link.Score[0],
+                matchpeakcount = link.Score[1],
+                source = targetPeakScan.Peak.ID,
+                target = peakScans[link.Index].Peak.ID
+            }).ToList();
         }
 
         private static List<EdgeData> GenerateEdges<T>(List<PeakScanPair<T>> peakScans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
-            var edges = new List<EdgeData>();
             var counter = 0;
             var max = peakScans.Count;
             var node2links = new Dictionary<int, List<LinkNode>>();
-            Debug.WriteLine(peakScans.Count);
             for (int i = 0; i < peakScans.Count; i++) {
                 if (peakScans[i].Scan.Spectrum.Count <= 0) continue;
                 counter++;
@@ -295,28 +248,16 @@ namespace CompMs.Common.Algorithm.Function {
                 }
             }
 
-            var cNode2Links = new Dictionary<int, List<LinkNode>>();
-            foreach (var item in node2links) {
-                if (item.Value.IsEmptyOrNull()) continue;
-                var nitem = item.Value.OrderByDescending(n => n.Score[0]).ToList();
-                cNode2Links[item.Key] = new List<LinkNode>();
-                for (int i = 0; i < nitem.Count; i++) {
-                    if (i > query.MaxEdgeNumberPerNode - 1) break;
-                    cNode2Links[item.Key].Add(nitem[i]);
-                }
-            }
-
-            foreach (var item in cNode2Links) {
-                foreach (var link in item.Value) {
-                    var source_node_id = peakScans[item.Key].Peak.ID;
-                    var target_node_id = peakScans[link.Index].Peak.ID;
-
-                    var edge = new EdgeData() {
-                        score = link.Score[0], matchpeakcount = link.Score[1], source = source_node_id, target = target_node_id
-                    };
-                    edges.Add(edge);
-                }
-            }
+            var edges = node2links.Where(item => !item.Value.IsEmptyOrNull())
+                .SelectMany(
+                    item => item.Value.OrderByDescending(n => n.Score[0]).Take((int)query.MaxEdgeNumberPerNode).ToList(),
+                    (item, link) => new EdgeData
+                    {
+                        score = link.Score[0],
+                        matchpeakcount = link.Score[1],
+                        source = peakScans[item.Key].Peak.ID,
+                        target = peakScans[link.Index].Peak.ID
+                    }).ToList();
             return edges;
         }
 
@@ -337,6 +278,46 @@ namespace CompMs.Common.Algorithm.Function {
             if (scoreitem[0] < query.SpectrumSimilarityCutOff * 0.01) return null;
 
             return scoreitem;
+        }
+
+        public static RootObject GetMoleculerNetworkingRootObj<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans,
+            MsmsSimilarityCalc msmsSimilarityCalc, double masstolerance, double absoluteAbsCutoff, double relativeAbsCutoff, double spectrumSimilarityCutoff,
+            double minimumPeakMatch, double maxEdgeNumberPerNode, double maxPrecursorDifference, double maxPrecursorDifferenceAsPercent, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
+            var network = new MoleculerNetworkingBase();
+            var query = new MolecularNetworkingQuery
+            {
+                MsmsSimilarityCalc = msmsSimilarityCalc,
+                MassTolerance = masstolerance,
+                AbsoluteAbundanceCutOff = absoluteAbsCutoff,
+                RelativeAbundanceCutOff = relativeAbsCutoff,
+                SpectrumSimilarityCutOff = spectrumSimilarityCutoff,
+                MinimumPeakMatch = minimumPeakMatch,
+                MaxEdgeNumberPerNode = maxEdgeNumberPerNode,
+                MaxPrecursorDifference = maxPrecursorDifference,
+                MaxPrecursorDifferenceAsPercent = maxPrecursorDifferenceAsPercent,
+            };
+            return network.GetMoleculerNetworkingRootObj(spots, scans, query, report);
+        }
+
+        public static RootObject GetMoleculerNetworkingRootObjForTargetSpot<T>(
+            T targetSpot, IMSScanProperty targetScan, IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans,
+            MsmsSimilarityCalc msmsSimilarityCalc, double masstolerance, double absoluteAbsCutoff, double relativeAbsCutoff, double spectrumSimilarityCutoff,
+            double minimumPeakMatch, double maxEdgeNumberPerNode, double maxPrecursorDifference, double maxPrecursorDifferenceAsPercent, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
+
+            var network = new MoleculerNetworkingBase();
+            var query = new MolecularNetworkingQuery
+            {
+                MsmsSimilarityCalc = msmsSimilarityCalc,
+                MassTolerance = masstolerance,
+                AbsoluteAbundanceCutOff = absoluteAbsCutoff,
+                RelativeAbundanceCutOff = relativeAbsCutoff,
+                SpectrumSimilarityCutOff = spectrumSimilarityCutoff,
+                MinimumPeakMatch = minimumPeakMatch,
+                MaxEdgeNumberPerNode = maxEdgeNumberPerNode,
+                MaxPrecursorDifference = maxPrecursorDifference,
+                MaxPrecursorDifferenceAsPercent = maxPrecursorDifferenceAsPercent,
+            };
+            return network.GetMoleculerNetworkingRootObjForTargetSpot(targetSpot, targetScan, spots, scans, query, report);
         }
 
         public static List<EdgeData> GenerateEdges(
