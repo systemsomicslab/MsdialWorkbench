@@ -80,12 +80,14 @@ namespace CompMs.App.Msdial.Model.Core {
 
         public void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
             var rootObj = GetMoleculerNetworkingRootObj(parameter);
-            MoleculerNetworkingBase.SendToCytoscapeJs(rootObj);
+            var network = new MolecularNetworkInstance(rootObj);
+            network.SendToCytoscapeJs();
         }
 
         public void InvokeMoleculerNetworkingForTargetSpot() {
             var rootObj = GetMoleculerNetworkingRootObjForTargetSpot(_molecularSpectrumNetworkingParameter);
-            MoleculerNetworkingBase.SendToCytoscapeJs(rootObj);
+            var network = new MolecularNetworkInstance(rootObj);
+            network.SendToCytoscapeJs();
         }
 
         private static MolecularNetworkingQuery ConvertToMolecularNetworkingQuery(MolecularSpectrumNetworkingBaseParameter parameter) {

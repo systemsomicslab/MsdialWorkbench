@@ -75,7 +75,8 @@ namespace CompMs.App.Msdial.Model.Core
 
         public virtual void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
             var rootObj = GetMoleculerNetworkingRootObj(parameter);
-            MoleculerNetworkingBase.SendToCytoscapeJs(rootObj);
+            var network = new MolecularNetworkInstance(rootObj);
+            network.SendToCytoscapeJs();
         }
 
         public abstract void InvokeMoleculerNetworkingForTargetSpot();

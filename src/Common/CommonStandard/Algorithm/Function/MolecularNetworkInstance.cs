@@ -56,6 +56,42 @@ namespace CompMs.Common.Algorithm.Function
             ExportCyelement(Path.Combine(folder, $"cyelements-{dt:yyMMddhhmm}.js"));
         }
 
+        public void SendToCytoscapeJs() {
+            if (Root.nodes.IsEmptyOrNull() || Root.edges.IsEmptyOrNull()) {
+                return;
+            }
+
+            var curDir = AppDomain.CurrentDomain.BaseDirectory;
+            var cytoDir = Path.Combine(curDir, "CytoscapeLocalBrowser");
+            var url = Path.Combine(cytoDir, "MsdialCytoscapeViewer.html");
+            var cyjsexportpath = Path.Combine(Path.Combine(cytoDir, "data"), "elements.js");
+
+            var counter = 0;
+            var edges = new List<Edge>();
+            var nodekeys = new HashSet<int>();
+            foreach (var edge in Root.edges.OrderByDescending(n => n.data.score)) {
+                if (counter > 3000) break;
+                edges.Add(edge);
+                nodekeys.Add(edge.data.source);
+                nodekeys.Add(edge.data.target);
+                counter++;
+            }
+
+            var nodes = new List<Node>();
+            foreach (var node in Root.nodes.Where(n => n.data.MsmsMin > 0)) {
+                if (nodekeys.Contains(node.data.id)) {
+                    nodes.Add(node);
+                }
+            }
+            var nRootObj = new RootObject { nodes = nodes, edges = edges };
+
+            var json = JsonConvert.SerializeObject(nRootObj, Formatting.Indented);
+            using (StreamWriter sw = new StreamWriter(cyjsexportpath, false, Encoding.ASCII)) {
+                sw.WriteLine("var dataElements =\r\n" + json.ToString() + "\r\n;");
+            }
+            System.Diagnostics.Process.Start(url);
+        }
+
         private static string GetMsString(List<List<double>> msList) {
             if (msList == null || msList.Count == 0) {
                 return string.Empty;

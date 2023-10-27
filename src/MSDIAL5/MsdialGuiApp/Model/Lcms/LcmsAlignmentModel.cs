@@ -372,21 +372,21 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public override void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter) {
-            //base.RunMoleculerNetworking(parameter);
             var rootObj = GetMoleculerNetworkingRootObj(parameter);
             var network = new MolecularNetworkInstance(rootObj);
             network.ExportNodeEdgeFiles(parameter.ExportFolderPath);
         }
 
         public override void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
-            //base.InvokeMoleculerNetworking(parameter);
             var rootObj = GetMoleculerNetworkingRootObj(parameter);
-            MoleculerNetworkingBase.SendToCytoscapeJs(rootObj);
+            var network = new MolecularNetworkInstance(rootObj);
+            network.SendToCytoscapeJs();
         }
 
         public override void InvokeMoleculerNetworkingForTargetSpot() {
             var rootObj = GetMoleculerNetworkingRootObjForTargetSpot(_parameter.MolecularSpectrumNetworkingBaseParam);
-            MoleculerNetworkingBase.SendToCytoscapeJs(rootObj);
+            var network = new MolecularNetworkInstance(rootObj);
+            network.SendToCytoscapeJs();
         }
     }
 }
