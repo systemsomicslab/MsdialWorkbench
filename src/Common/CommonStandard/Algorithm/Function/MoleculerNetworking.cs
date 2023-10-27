@@ -12,12 +12,6 @@ using System.Text;
 
 namespace CompMs.Common.Algorithm.Function {
 
-    public class LinkNode {
-        public double[] Score { get; set; }
-        public IMSScanProperty Node { get; set; }
-        public int Index { get; set; }
-    }
-
     public sealed class MolecularNetworkingQuery {
         public MsmsSimilarityCalc MsmsSimilarityCalc { get; set; }
         public double MassTolerance { get; set; }
@@ -393,6 +387,12 @@ namespace CompMs.Common.Algorithm.Function {
 
             public T Peak { get; }
             public IMSScanProperty Scan { get; }
+        }
+
+        class LinkNode {
+            public double[] Score { get; set; }
+            public IMSScanProperty Node { get; set; }
+            public int Index { get; set; }
         }
     }
 }
