@@ -315,10 +315,9 @@ namespace CompMs.App.Msdial.Model.Lcms
                 void notify(double progressRate) {
                     publisher.Progress(progressRate, $"Exporting MN results in {parameter.ExportFolderPath}");
                 }
-                var rootObj = MoleculerNetworkingBase.GetMoleculerNetworkingRootObj(spots, peaks, parameter.MsmsSimilarityCalc, parameter.MnMassTolerance,
-                    parameter.MnAbsoluteAbundanceCutOff, parameter.MnRelativeAbundanceCutOff, parameter.MnSpectrumSimilarityCutOff,
-                    parameter.MinimumPeakMatch, parameter.MaxEdgeNumberPerNode, parameter.MaxPrecursorDifference, parameter.MaxPrecursorDifferenceAsPercent, notify);
-
+                var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter);
+                var builder = new MoleculerNetworkingBase();
+                var rootObj = builder.GetMoleculerNetworkingRootObj(spots, peaks, query, notify);
                 for (int i = 0; i < rootObj.nodes.Count; i++) {
                     var node = rootObj.nodes[i];
                     node.data.BarGraph = CytoscapejsModel.GetBarGraphProperty(spots[i], loader, param.ClassProperties.ClassToColor);
@@ -354,9 +353,9 @@ namespace CompMs.App.Msdial.Model.Lcms
                 void notify(double progressRate) {
                     publisher.Progress(progressRate, $"Preparing MN results");
                 }
-                var rootObj = MoleculerNetworkingBase.GetMoleculerNetworkingRootObjForTargetSpot(targetSpot, targetPeak, spots, peaks, parameter.MsmsSimilarityCalc, parameter.MnMassTolerance,
-                    parameter.MnAbsoluteAbundanceCutOff, parameter.MnRelativeAbundanceCutOff, parameter.MnSpectrumSimilarityCutOff,
-                    parameter.MinimumPeakMatch, parameter.MaxEdgeNumberPerNode, parameter.MaxPrecursorDifference, parameter.MaxPrecursorDifferenceAsPercent, notify);
+                var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter);
+                var builder = new MoleculerNetworkingBase();
+                var rootObj = builder.GetMoleculerNetworkingRootObjForTargetSpot(targetSpot, targetPeak, spots, peaks, query, notify);
 
                 for (int i = 0; i < rootObj.nodes.Count; i++) {
                     var node = rootObj.nodes[i];

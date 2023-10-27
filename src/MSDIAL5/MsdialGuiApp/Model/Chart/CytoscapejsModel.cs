@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Algorithm.Function;
 using CompMs.Common.DataObj.NodeEdge;
+using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
@@ -58,6 +59,21 @@ namespace CompMs.App.Msdial.Model.Chart
             dropped.SaveCytoscapeJs(cyjsexportpath);
             var url = Path.Combine(cytoDir, "MsdialCytoscapeViewer.html");
             System.Diagnostics.Process.Start(url);
+        }
+
+        public static MolecularNetworkingQuery ConvertToMolecularNetworkingQuery(MolecularSpectrumNetworkingBaseParameter parameter) {
+            return new MolecularNetworkingQuery
+            {
+                MsmsSimilarityCalc = parameter.MsmsSimilarityCalc,
+                MassTolerance = parameter.MnMassTolerance,
+                AbsoluteAbundanceCutOff = parameter.MnAbsoluteAbundanceCutOff,
+                RelativeAbundanceCutOff = parameter.MnRelativeAbundanceCutOff,
+                SpectrumSimilarityCutOff = parameter.MnSpectrumSimilarityCutOff,
+                MinimumPeakMatch = parameter.MinimumPeakMatch,
+                MaxEdgeNumberPerNode = parameter.MaxEdgeNumberPerNode,
+                MaxPrecursorDifference = parameter.MaxPrecursorDifference,
+                MaxPrecursorDifferenceAsPercent = parameter.MaxPrecursorDifferenceAsPercent,
+            };
         }
     }
 }

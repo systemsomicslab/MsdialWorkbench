@@ -179,46 +179,6 @@ namespace CompMs.Common.Algorithm.Function
             return scoreitem;
         }
 
-        public static RootObject GetMoleculerNetworkingRootObj<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans,
-            MsmsSimilarityCalc msmsSimilarityCalc, double masstolerance, double absoluteAbsCutoff, double relativeAbsCutoff, double spectrumSimilarityCutoff,
-            double minimumPeakMatch, double maxEdgeNumberPerNode, double maxPrecursorDifference, double maxPrecursorDifferenceAsPercent, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
-            var network = new MoleculerNetworkingBase();
-            var query = new MolecularNetworkingQuery
-            {
-                MsmsSimilarityCalc = msmsSimilarityCalc,
-                MassTolerance = masstolerance,
-                AbsoluteAbundanceCutOff = absoluteAbsCutoff,
-                RelativeAbundanceCutOff = relativeAbsCutoff,
-                SpectrumSimilarityCutOff = spectrumSimilarityCutoff,
-                MinimumPeakMatch = minimumPeakMatch,
-                MaxEdgeNumberPerNode = maxEdgeNumberPerNode,
-                MaxPrecursorDifference = maxPrecursorDifference,
-                MaxPrecursorDifferenceAsPercent = maxPrecursorDifferenceAsPercent,
-            };
-            return network.GetMoleculerNetworkingRootObj(spots, scans, query, report);
-        }
-
-        public static RootObject GetMoleculerNetworkingRootObjForTargetSpot<T>(
-            T targetSpot, IMSScanProperty targetScan, IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans,
-            MsmsSimilarityCalc msmsSimilarityCalc, double masstolerance, double absoluteAbsCutoff, double relativeAbsCutoff, double spectrumSimilarityCutoff,
-            double minimumPeakMatch, double maxEdgeNumberPerNode, double maxPrecursorDifference, double maxPrecursorDifferenceAsPercent, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
-
-            var network = new MoleculerNetworkingBase();
-            var query = new MolecularNetworkingQuery
-            {
-                MsmsSimilarityCalc = msmsSimilarityCalc,
-                MassTolerance = masstolerance,
-                AbsoluteAbundanceCutOff = absoluteAbsCutoff,
-                RelativeAbundanceCutOff = relativeAbsCutoff,
-                SpectrumSimilarityCutOff = spectrumSimilarityCutoff,
-                MinimumPeakMatch = minimumPeakMatch,
-                MaxEdgeNumberPerNode = maxEdgeNumberPerNode,
-                MaxPrecursorDifference = maxPrecursorDifference,
-                MaxPrecursorDifferenceAsPercent = maxPrecursorDifferenceAsPercent,
-            };
-            return network.GetMoleculerNetworkingRootObjForTargetSpot(targetSpot, targetScan, spots, scans, query, report);
-        }
-
         public static List<EdgeData> GenerateEdges(
            IReadOnlyList<IMoleculeMsProperty> peaks1,
            IReadOnlyList<IMoleculeMsProperty> peaks2,
