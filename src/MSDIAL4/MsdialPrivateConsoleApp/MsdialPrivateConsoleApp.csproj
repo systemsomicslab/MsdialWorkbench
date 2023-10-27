@@ -63,7 +63,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="adhoc.cs" />
+    <!--<Compile Include="adhoc.cs" />-->
     <Compile Include="CcsCalculator.cs" />
     <Compile Include="CircosUtility.cs" />
     <Compile Include="CtraceCorrectCheck.cs" />
@@ -71,6 +71,7 @@
     <Compile Include="MspManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PubChemRestApp.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -99,6 +100,10 @@
     <ProjectReference Include="..\MsdialLcmsProcessStandard\MsdialLcmsProcessStandard.csproj">
       <Project>{f4b299d9-6dc4-4535-88c6-302c299a1aac}</Project>
       <Name>MsdialLcmsProcessStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PugRestApiStandard\PugRestApiStandard.csproj">
+      <Project>{8e910488-8ceb-446b-8f8b-ae04c660c6a6}</Project>
+      <Name>PugRestApiStandard</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
