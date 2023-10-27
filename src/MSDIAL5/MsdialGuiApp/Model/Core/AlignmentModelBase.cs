@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Algorithm.Function;
 using CompMs.CommonMVVM;
@@ -8,7 +9,6 @@ using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using System.Windows;
@@ -77,15 +77,7 @@ namespace CompMs.App.Msdial.Model.Core
         public virtual void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
             var rootObj = GetMoleculerNetworkingRootObj(parameter);
             var network = new MolecularNetworkInstance(rootObj);
-
-            var curDir = AppDomain.CurrentDomain.BaseDirectory;
-            var cytoDir = Path.Combine(curDir, "CytoscapeLocalBrowser");
-            var cyjsexportpath = Path.Combine(cytoDir, "data", "elements.js");
-            if (!network.SaveCytoscapeJs(cyjsexportpath)) {
-                return;
-            }
-            var url = Path.Combine(cytoDir, "MsdialCytoscapeViewer.html");
-            System.Diagnostics.Process.Start(url);
+            CytoscapejsModel.SendToCytoscapeJs(network);
         }
 
         public abstract void InvokeMoleculerNetworkingForTargetSpot();

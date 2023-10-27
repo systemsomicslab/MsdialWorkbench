@@ -14,7 +14,6 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -82,29 +81,13 @@ namespace CompMs.App.Msdial.Model.Core {
         public void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
             var rootObj = GetMoleculerNetworkingRootObj(parameter);
             var network = new MolecularNetworkInstance(rootObj);
-
-            var curDir = AppDomain.CurrentDomain.BaseDirectory;
-            var cytoDir = Path.Combine(curDir, "CytoscapeLocalBrowser");
-            var cyjsexportpath = Path.Combine(cytoDir, "data", "elements.js");
-            if (!network.SaveCytoscapeJs(cyjsexportpath)) {
-                return;
-            }
-            var url = Path.Combine(cytoDir, "MsdialCytoscapeViewer.html");
-            System.Diagnostics.Process.Start(url);
+            CytoscapejsModel.SendToCytoscapeJs(network);
         }
 
         public void InvokeMoleculerNetworkingForTargetSpot() {
             var rootObj = GetMoleculerNetworkingRootObjForTargetSpot(_molecularSpectrumNetworkingParameter);
             var network = new MolecularNetworkInstance(rootObj);
-
-            var curDir = AppDomain.CurrentDomain.BaseDirectory;
-            var cytoDir = Path.Combine(curDir, "CytoscapeLocalBrowser");
-            var cyjsexportpath = Path.Combine(cytoDir, "data", "elements.js");
-            if (!network.SaveCytoscapeJs(cyjsexportpath)) {
-                return;
-            }
-            var url = Path.Combine(cytoDir, "MsdialCytoscapeViewer.html");
-            System.Diagnostics.Process.Start(url);
+            CytoscapejsModel.SendToCytoscapeJs(network);
         }
 
         private static MolecularNetworkingQuery ConvertToMolecularNetworkingQuery(MolecularSpectrumNetworkingBaseParameter parameter) {

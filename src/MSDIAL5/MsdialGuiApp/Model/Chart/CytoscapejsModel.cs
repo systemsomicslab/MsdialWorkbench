@@ -1,8 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.Common.Algorithm.Function;
 using CompMs.Common.DataObj.NodeEdge;
 using Reactive.Bindings;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows.Media;
 
@@ -39,6 +42,17 @@ namespace CompMs.App.Msdial.Model.Chart
 
         private static string ToCytoscapeColor(Color color) {
             return $"rgba({color.R},{color.G},{color.B}, 0.8)";
+        }
+
+        public static void SendToCytoscapeJs(MolecularNetworkInstance network) {
+            var curDir = AppDomain.CurrentDomain.BaseDirectory;
+            var cytoDir = Path.Combine(curDir, "CytoscapeLocalBrowser");
+            var cyjsexportpath = Path.Combine(cytoDir, "data", "elements.js");
+            if (!network.SaveCytoscapeJs(cyjsexportpath)) {
+                return;
+            }
+            var url = Path.Combine(cytoDir, "MsdialCytoscapeViewer.html");
+            System.Diagnostics.Process.Start(url);
         }
     }
 }

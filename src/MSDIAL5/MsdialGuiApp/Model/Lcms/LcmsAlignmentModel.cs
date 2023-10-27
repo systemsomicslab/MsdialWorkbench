@@ -380,29 +380,13 @@ namespace CompMs.App.Msdial.Model.Lcms
         public override void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
             var rootObj = GetMoleculerNetworkingRootObj(parameter);
             var network = new MolecularNetworkInstance(rootObj);
-
-            var curDir = AppDomain.CurrentDomain.BaseDirectory;
-            var cytoDir = Path.Combine(curDir, "CytoscapeLocalBrowser");
-            var cyjsexportpath = Path.Combine(cytoDir, "data", "elements.js");
-            if (!network.SaveCytoscapeJs(cyjsexportpath)) {
-                return;
-            }
-            var url = Path.Combine(cytoDir, "MsdialCytoscapeViewer.html");
-            System.Diagnostics.Process.Start(url);
+            CytoscapejsModel.SendToCytoscapeJs(network);
         }
 
         public override void InvokeMoleculerNetworkingForTargetSpot() {
             var rootObj = GetMoleculerNetworkingRootObjForTargetSpot(_parameter.MolecularSpectrumNetworkingBaseParam);
             var network = new MolecularNetworkInstance(rootObj);
-
-            var curDir = AppDomain.CurrentDomain.BaseDirectory;
-            var cytoDir = Path.Combine(curDir, "CytoscapeLocalBrowser");
-            var cyjsexportpath = Path.Combine(cytoDir, "data", "elements.js");
-            if (!network.SaveCytoscapeJs(cyjsexportpath)) {
-                return;
-            }
-            var url = Path.Combine(cytoDir, "MsdialCytoscapeViewer.html");
-            System.Diagnostics.Process.Start(url);
+            CytoscapejsModel.SendToCytoscapeJs(network);
         }
     }
 }
