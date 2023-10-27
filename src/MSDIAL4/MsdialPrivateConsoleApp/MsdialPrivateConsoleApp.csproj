@@ -63,7 +63,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="adhoc.cs" />
     <Compile Include="CcsCalculator.cs" />
     <Compile Include="CircosUtility.cs" />
     <Compile Include="CtraceCorrectCheck.cs" />

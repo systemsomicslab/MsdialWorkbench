@@ -10,12 +10,12 @@ namespace MsdialPrivateConsoleApp {
         static void Main(string[] args) {
 
 
-            adhoc.Run_CalcLipidomeRnaCorrelation_20231016(
-                @"E:\6_Projects\PROJECT_500cells\20230901_250cells\correlation_rna_lipidome\metafile.txt",
-                @"E:\6_Projects\PROJECT_500cells\20230901_250cells\correlation_rna_lipidome\lipidfile.txt",
-                @"E:\6_Projects\PROJECT_500cells\20230901_250cells\correlation_rna_lipidome\rnafile.txt",
-                @"E:\6_Projects\PROJECT_500cells\20230901_250cells\correlation_rna_lipidome\resultfile.txt"
-                );
+            //adhoc.Run_CalcLipidomeRnaCorrelation_20231016(
+            //    @"E:\6_Projects\PROJECT_500cells\20230901_250cells\correlation_rna_lipidome\metafile.txt",
+            //    @"E:\6_Projects\PROJECT_500cells\20230901_250cells\correlation_rna_lipidome\lipidfile.txt",
+            //    @"E:\6_Projects\PROJECT_500cells\20230901_250cells\correlation_rna_lipidome\rnafile.txt",
+            //    @"E:\6_Projects\PROJECT_500cells\20230901_250cells\correlation_rna_lipidome\resultfile.txt"
+            //    );
 
 
             //LipidomicsResultCuration.Name2Smiles(@"E:\6_Projects\Collaboration\NCC\20210406\temp.txt", @"E:\6_Projects\Collaboration\NCC\20210406\temp_result.txt");
