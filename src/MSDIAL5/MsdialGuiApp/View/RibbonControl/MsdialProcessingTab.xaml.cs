@@ -2,9 +2,10 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls.Ribbon;
-using System.Windows.Media.Imaging;
 using RDotNet;
+using System.Windows.Media.Imaging;
 using System.Drawing;
+using CompMs.App.Msdial.ViewModel.Core;
 
 namespace CompMs.App.Msdial.View.RibbonControl
 {
@@ -17,6 +18,8 @@ namespace CompMs.App.Msdial.View.RibbonControl
         public MsdialProcessingTab()
         {
             InitializeComponent();
+            MainWindowVM viewModel = new MainWindowVM();
+            DataContext = viewModel;
         }
     }
 }

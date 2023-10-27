@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.ViewModel.Chart;
@@ -24,6 +25,17 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
+    public class NotameVM : Notame
+    {
+        public DelegateCommand GenerateGraph_ClickCommand => _generateGraph_ClickCommand ?? (_generateGraph_ClickCommand = new DelegateCommand(GenerateGraph_Click));
+        private DelegateCommand _generateGraph_ClickCommand;
+
+        private void GenerateGraph_Click()
+        {
+            Notame notame = new Notame();
+            notame.generateGraph_Click();
+        }
+    }
     internal sealed class LcmsMethodViewModel : MethodViewModel {
         private readonly LcmsMethodModel _model;
         private readonly IMessageBroker _broker;

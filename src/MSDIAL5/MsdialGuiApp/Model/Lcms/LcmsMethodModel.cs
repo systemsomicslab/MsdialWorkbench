@@ -4,9 +4,11 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.ViewModel.Lcms;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -29,6 +31,11 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
+    public class NotameModel : NotameVM
+    {
+        public DelegateCommand _generateGraph_ClickCommand { get; }
+    }
+    
     internal sealed class LcmsMethodModel : MethodModelBase
     {
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> CHROMATOGRAM_SPOT_SERIALIZER;
@@ -393,10 +400,12 @@ namespace CompMs.App.Msdial.Model.Lcms
             return new DisplayEicSettingModel(AnalysisModel.EicLoader, _storage.Parameter);
         }
 
-        public ChromatogramsModel ShowTicBpcRepEIC() {
+        public ChromatogramsModel ShowTicBpcRepEIC()
+        {
             var container = _storage;
             var analysisModel = AnalysisModel;
-            if (analysisModel is null) {
+            if (analysisModel is null)
+            {
                 return null;
             }
 
@@ -413,7 +422,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             };
 
             return new ChromatogramsModel("TIC, BPC, and highest peak m/z's EIC", displayChroms, "TIC, BPC, and highest peak m/z's EIC", "Retention time [min]", "Absolute ion abundance");
-        }
+        } 
 
         public FragmentQuerySettingModel ShowShowFragmentSearchSettingView() {
             return new FragmentQuerySettingModel(_storage.Parameter.AdvancedProcessOptionBaseParam, AnalysisModel, AlignmentModel);

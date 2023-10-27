@@ -3,7 +3,7 @@
            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-           xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Core"
+           xmlns:vm="clr-namespace : CompMs.App.Msdial.ViewModel.Core"
            mc:Ignorable="d" 
            Header="Processing" KeyTip="P"
            d:DataContext="{d:DesignInstance Type={x:Type vm:MainWindowVM}}" >
@@ -42,13 +42,13 @@
                       IsEnabled="False"
                       KeyTip="Q">
             <RibbonButton.ToolTip>Users can define the quant masses for metabolic profiling in GC-MS project.</RibbonButton.ToolTip>
-			<Label x:Name="resultLabel" Content="Result" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,40,0,0"/>
+            <Label x:Name="resultLabel" Content="Result" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,40,0,0"/>
         </RibbonButton>
-		<RibbonButton Label="Generate Graph" LargeImageSource="{StaticResource Save_is}"
+        <RibbonButton Label="Generate Graph" LargeImageSource="{StaticResource Save_is}"
                       IsEnabled="True"
-					  Click="generateGraph_Click"
+                      Command="{Binding GenerateGraph_ClickCommand}"
                       KeyTip="G">
-			<RibbonButton.ToolTip>Generate and display a graph and save as ".png".</RibbonButton.ToolTip>
-		</RibbonButton>
-	</RibbonGroup>
+            <RibbonButton.ToolTip>Generate and display a graph and save as ".png".</RibbonButton.ToolTip>
+        </RibbonButton>
+    </RibbonGroup>
 </RibbonTab>

@@ -5,6 +5,7 @@ using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
+using CompMs.App.Msdial.Model.Lcms;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.UI.ProgressBar;
@@ -20,13 +21,22 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.ViewModel.Core
-{
+{   
     internal sealed class MainWindowVM : ViewModelBase
     {
+        public NotameModel GenerateGraph_ClickCommand { get; }
+
+        public MainWindowVM(NotameModel _generateGraph_ClickCommand)
+        {
+            GenerateGraph_ClickCommand = _generateGraph_ClickCommand;
+        }
+
         public MainWindowVM(
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService) {
+
+            
 
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
