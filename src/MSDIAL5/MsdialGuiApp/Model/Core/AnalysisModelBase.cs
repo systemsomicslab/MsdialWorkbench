@@ -74,7 +74,8 @@ namespace CompMs.App.Msdial.Model.Core {
         public abstract void InvokeMsfinder();
         public void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter) {
             var rootObj = GetMoleculerNetworkingRootObj(parameter);
-            MoleculerNetworkingBase.ExportNodesEdgesFiles(parameter.ExportFolderPath, rootObj);
+            var network = new MolecularNetworkInstance(rootObj);
+            network.ExportNodeEdgeFiles(parameter.ExportFolderPath);
         }
 
         public void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {

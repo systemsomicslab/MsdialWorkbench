@@ -374,7 +374,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         public override void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter) {
             //base.RunMoleculerNetworking(parameter);
             var rootObj = GetMoleculerNetworkingRootObj(parameter);
-            MoleculerNetworkingBase.ExportNodesEdgesFiles(parameter.ExportFolderPath, rootObj);
+            var network = new MolecularNetworkInstance(rootObj);
+            network.ExportNodeEdgeFiles(parameter.ExportFolderPath);
         }
 
         public override void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {

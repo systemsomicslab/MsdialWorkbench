@@ -25,46 +25,6 @@ namespace CompMs.Common.Algorithm.Function {
     }
 
     public sealed class MoleculerNetworkingBase {
-        public static void ExportNodesEdgesFiles(string folder, RootObject rootObj) {
-
-            var nodes = rootObj.nodes;
-            var edges = rootObj.edges;
-
-            var dt = DateTime.Now;
-            var nodepath = Path.Combine(folder, $"node-{dt:yyMMddhhmm}.txt");
-            var edgepath = Path.Combine(folder, $"edge-{dt:yyMMddhhmm}.txt");
-            var cypath = Path.Combine(folder, $"cyelements-{dt:yyMMddhhmm}.js");
-        
-
-            using (StreamWriter sw = new StreamWriter(nodepath, false, Encoding.ASCII)) {
-
-                sw.WriteLine("ID\tMetaboliteName\tRt\tMz\tFormula\tOntology\tInChIKey\tSMILES\tSize\tBorderColor\tBackgroundColor\tMs2");
-                foreach (var nodeObj in nodes) {
-                    var node = nodeObj.data;
-                    sw.Write(node.id + "\t" + node.Name + "\t" + node.Rt + "\t" + node.Mz + "\t" + node.Formula + "\t" + node.Ontology + "\t" +
-                       node.InChiKey + "\t" + node.Smiles + "\t" + node.Size + "\t" + node.bordercolor + "\t" + node.backgroundcolor + "\t");
-
-                    var ms2String = GetMsString(node.MSMS);
-                    sw.WriteLine(ms2String);
-                }
-            }
-            
-            using (StreamWriter sw = new StreamWriter(edgepath, false, Encoding.ASCII)) {
-
-                sw.WriteLine("SourceID\tTargetID\tScore\tType");
-                foreach (var edgeObj in edges) {
-                    var edge = edgeObj.data;
-                    sw.WriteLine(edge.source + "\t" + edge.target + "\t" + edge.score + "\t" + edgeObj.classes);
-                }
-            }
-
-            var rootCy = new RootObj4Cytoscape() { elements = rootObj };
-            using (StreamWriter sw = new StreamWriter(cypath, false, Encoding.ASCII)) {
-                var json = JsonConvert.SerializeObject(rootCy, Formatting.Indented);
-                sw.WriteLine(json.ToString());
-            }
-        }
-
         public static void SendToCytoscapeJs(RootObject rootObj) {
             if (rootObj.nodes.IsEmptyOrNull() || rootObj.edges.IsEmptyOrNull()) return;
             var curDir = System.AppDomain.CurrentDomain.BaseDirectory;
