@@ -72,7 +72,7 @@ namespace CompMs.Common.Algorithm.Function
 
         public void ExportCyelement(string cyelementFile) {
             using (StreamWriter sw = new StreamWriter(cyelementFile, false, Encoding.ASCII)) {
-                var rootCy = new RootObj4Cytoscape { elements = Root };
+                var rootCy = new { elements = Root };
                 var json = JsonConvert.SerializeObject(rootCy, Formatting.Indented);
                 sw.WriteLine(json.ToString());
             }
