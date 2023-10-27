@@ -302,7 +302,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 _parameter);
         }
 
-        public CompMs.Common.DataObj.NodeEdge.RootObject GetMoleculerNetworkingRootObj(MolecularSpectrumNetworkingBaseParameter parameter) {
+        private MolecularNetworkInstance GetMolecularNetworkInstance(MolecularSpectrumNetworkingBaseParameter parameter) {
             var param = _projectBaseParameter;
             var loaderProperty = _barItemsLoaderDataProperty.Value;
             var loader = loaderProperty.ObservableLoader.ToReactiveProperty().Value;
@@ -317,7 +317,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 }
                 var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter);
                 var builder = new MoleculerNetworkingBase();
-                var rootObj = builder.GetMoleculerNetworkingRootObj(spots, peaks, query, notify);
+                var network = builder.GetMolecularNetworkInstance(spots, peaks, query, notify);
+                var rootObj = network.Root;
                 for (int i = 0; i < rootObj.nodes.Count; i++) {
                     var node = rootObj.nodes[i];
                     node.data.BarGraph = CytoscapejsModel.GetBarGraphProperty(spots[i], loader, param.ClassProperties.ClassToColor);
@@ -327,11 +328,12 @@ namespace CompMs.App.Msdial.Model.Lcms
                     var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots.Select(n => n.innerModel).ToList(), parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode);
                     rootObj.edges.AddRange(ion_edges);
                 }
-                return rootObj;
+
+                return network;
             }
         }
 
-        public CompMs.Common.DataObj.NodeEdge.RootObject GetMoleculerNetworkingRootObjForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter) {
+        private MolecularNetworkInstance GetMolecularNetworkInstanceForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter) {
             if (parameter.MaxEdgeNumberPerNode == 0) {
                 parameter.MinimumPeakMatch = 3;
                 parameter.MaxEdgeNumberPerNode = 6;
@@ -355,7 +357,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 }
                 var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter);
                 var builder = new MoleculerNetworkingBase();
-                var rootObj = builder.GetMoleculerNetworkingRootObjForTargetSpot(targetSpot, targetPeak, spots, peaks, query, notify);
+                var network = builder.GetMoleculerNetworkInstanceForTargetSpot(targetSpot, targetPeak, spots, peaks, query, notify);
+                var rootObj = network.Root;
 
                 for (int i = 0; i < rootObj.nodes.Count; i++) {
                     var node = rootObj.nodes[i];
@@ -366,25 +369,23 @@ namespace CompMs.App.Msdial.Model.Lcms
                     var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots.Select(n => n.innerModel).ToList(), parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode);
                     rootObj.edges.AddRange(ion_edges);
                 }
-                return rootObj;
+
+                return network;
             }
         }
 
         public override void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter) {
-            var rootObj = GetMoleculerNetworkingRootObj(parameter);
-            var network = new MolecularNetworkInstance(rootObj);
+            var network = GetMolecularNetworkInstance(parameter);
             network.ExportNodeEdgeFiles(parameter.ExportFolderPath);
         }
 
         public override void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
-            var rootObj = GetMoleculerNetworkingRootObj(parameter);
-            var network = new MolecularNetworkInstance(rootObj);
+            var network = GetMolecularNetworkInstance(parameter);
             CytoscapejsModel.SendToCytoscapeJs(network);
         }
 
         public override void InvokeMoleculerNetworkingForTargetSpot() {
-            var rootObj = GetMoleculerNetworkingRootObjForTargetSpot(_parameter.MolecularSpectrumNetworkingBaseParam);
-            var network = new MolecularNetworkInstance(rootObj);
+            var network = GetMolecularNetworkInstanceForTargetSpot(_parameter.MolecularSpectrumNetworkingBaseParam);
             CytoscapejsModel.SendToCytoscapeJs(network);
         }
     }

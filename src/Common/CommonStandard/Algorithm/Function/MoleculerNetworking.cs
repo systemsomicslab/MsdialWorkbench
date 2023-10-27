@@ -23,26 +23,26 @@ namespace CompMs.Common.Algorithm.Function
     }
 
     public sealed class MoleculerNetworkingBase {
-        public RootObject GetMoleculerNetworkingRootObj<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
+        public MolecularNetworkInstance GetMolecularNetworkInstance<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
             List<PeakScanPair<T>> peakScans = spots.Zip(scans, (spot, scan) => new PeakScanPair<T>(spot, scan)).ToList();
             var nodes = GetSimpleNodes(peakScans);
             RefineScans(scans, query);
             var edges = GenerateEdgesBySpectralSimilarity(peakScans, query, report);
-            return new RootObject { nodes = nodes, edges = edges };
+            return new MolecularNetworkInstance(new RootObject { nodes = nodes, edges = edges });
         }
 
-        public RootObject GetMoleculerNetworkingRootObjForTargetSpot<T>(T targetSpot, IMSScanProperty targetScan, IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
+        public MolecularNetworkInstance GetMoleculerNetworkInstanceForTargetSpot<T>(T targetSpot, IMSScanProperty targetScan, IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
             List<PeakScanPair<T>> peakScans = spots.Zip(scans, (spot, scan) => new PeakScanPair<T>(spot, scan)).ToList();
             var nodes = GetSimpleNodes(peakScans);
             RefineScans(new[] { targetScan }, query);
             if (targetScan.Spectrum.IsEmptyOrNull()) {
-                return new RootObject { nodes = new List<Node>(0), edges = new List<Edge>(0), };
+                return new MolecularNetworkInstance(new RootObject { nodes = new List<Node>(0), edges = new List<Edge>(0), });
             }
             RefineScans(scans, query);
             var edges = GenerateEdgesBySpectralSimilarity(new PeakScanPair<T>(targetSpot, targetScan), peakScans, query, report);
             var idlist = new HashSet<int>(edges.SelectMany(edge => new[] { edge.data.source, edge.data.target }));
             var filteredNodes = nodes.Where(node => idlist.Contains(node.data.id)).ToList();
-            return new RootObject { nodes = filteredNodes, edges = edges };
+            return new MolecularNetworkInstance(new RootObject { nodes = filteredNodes, edges = edges });
         }
 
         private static List<Node> GetSimpleNodes<T>(List<PeakScanPair<T>> peakScans) where T : IMoleculeProperty, IChromatogramPeak {

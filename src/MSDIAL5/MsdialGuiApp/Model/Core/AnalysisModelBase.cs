@@ -73,24 +73,21 @@ namespace CompMs.App.Msdial.Model.Core {
         public abstract void SearchFragment();
         public abstract void InvokeMsfinder();
         public void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter) {
-            var rootObj = GetMoleculerNetworkingRootObj(parameter);
-            var network = new MolecularNetworkInstance(rootObj);
+            var network = GetMolecularNetworkInstance(parameter);
             network.ExportNodeEdgeFiles(parameter.ExportFolderPath);
         }
 
         public void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
-            var rootObj = GetMoleculerNetworkingRootObj(parameter);
-            var network = new MolecularNetworkInstance(rootObj);
+            var network = GetMolecularNetworkInstance(parameter);
             CytoscapejsModel.SendToCytoscapeJs(network);
         }
 
         public void InvokeMoleculerNetworkingForTargetSpot() {
-            var rootObj = GetMoleculerNetworkingRootObjForTargetSpot(_molecularSpectrumNetworkingParameter);
-            var network = new MolecularNetworkInstance(rootObj);
+            var network = GetMolecularNetworkingInstanceForTargetSpot(_molecularSpectrumNetworkingParameter);
             CytoscapejsModel.SendToCytoscapeJs(network);
         }
 
-        private CompMs.Common.DataObj.NodeEdge.RootObject GetMoleculerNetworkingRootObj(MolecularSpectrumNetworkingBaseParameter parameter) {
+        private MolecularNetworkInstance GetMolecularNetworkInstance(MolecularSpectrumNetworkingBaseParameter parameter) {
             var publisher = new TaskProgressPublisher(_broker, $"Exporting MN results in {parameter.ExportFolderPath}");
             using (publisher.Start()) {
                 var spots = Ms1Peaks;
@@ -103,16 +100,18 @@ namespace CompMs.App.Msdial.Model.Core {
 
                 var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter);
                 var builder = new MoleculerNetworkingBase();
-                var rootObj = builder.GetMoleculerNetworkingRootObj(spots, peaks, query, notify);
+                var network = builder.GetMolecularNetworkInstance(spots, peaks, query, notify);
+                var rootObj = network.Root;
                 for (int i = 0; i < rootObj.nodes.Count; i++) {
                     var node = rootObj.nodes[i];
                     node.data.BarGraph = CytoscapejsModel.GetBarGraphProperty(spots[i], AnalysisFileModel.AnalysisFileName);
                 }
-                return rootObj;
+
+                return network;
             }
         }
 
-        public CompMs.Common.DataObj.NodeEdge.RootObject GetMoleculerNetworkingRootObjForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter) {
+        private MolecularNetworkInstance GetMolecularNetworkingInstanceForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter) {
             if (parameter.MaxEdgeNumberPerNode == 0) {
                 parameter.MinimumPeakMatch = 3;
                 parameter.MaxEdgeNumberPerNode = 6;
@@ -121,7 +120,7 @@ namespace CompMs.App.Msdial.Model.Core {
             var publisher = new TaskProgressPublisher(_broker, $"Preparing MN results");
             using (publisher.Start()) {
                 var spots = Ms1Peaks;
-                var peaks = MsdecResultsReader.ReadMSDecResults(AnalysisFileModel.DeconvolutionFilePath, out _, out _);
+                var peaks = AnalysisFileModel.MSDecLoader.LoadMSDecResults();
 
                 var targetSpot = Target.Value;
                 var targetPeak = peaks[targetSpot.MasterPeakID];
@@ -131,13 +130,15 @@ namespace CompMs.App.Msdial.Model.Core {
                 }
                 var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter);
                 var builder = new MoleculerNetworkingBase();
-                var rootObj = builder.GetMoleculerNetworkingRootObjForTargetSpot(targetSpot, targetPeak, spots, peaks, query, notify);
+                var network = builder.GetMoleculerNetworkInstanceForTargetSpot(targetSpot, targetPeak, spots, peaks, query, notify);
+                var rootObj = network.Root;
 
                 for (int i = 0; i < rootObj.nodes.Count; i++) {
                     var node = rootObj.nodes[i];
                     node.data.BarGraph = CytoscapejsModel.GetBarGraphProperty(spots[node.data.id], AnalysisFileModel.AnalysisFileName);
                 }
-                return rootObj;
+
+                return network;
             }
         }
 
