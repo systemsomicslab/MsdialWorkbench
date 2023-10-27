@@ -45,12 +45,17 @@ namespace CompMs.App.Msdial.Model.Chart
         }
 
         public static void SendToCytoscapeJs(MolecularNetworkInstance network) {
+            var valids = network.DropInvalidMsmsNodes();
+            var pruned = valids.PruneEdgeByScore(3000);
+            var dropped = pruned.DropIsolatedNodes();
+
             var curDir = AppDomain.CurrentDomain.BaseDirectory;
             var cytoDir = Path.Combine(curDir, "CytoscapeLocalBrowser");
             var cyjsexportpath = Path.Combine(cytoDir, "data", "elements.js");
-            if (!network.SaveCytoscapeJs(cyjsexportpath)) {
+            if (dropped.IsEdgeEmpty || dropped.IsNodeEmpty) {
                 return;
             }
+            dropped.SaveCytoscapeJs(cyjsexportpath);
             var url = Path.Combine(cytoDir, "MsdialCytoscapeViewer.html");
             System.Diagnostics.Process.Start(url);
         }

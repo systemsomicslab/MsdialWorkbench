@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.DataObj.NodeEdge;
-using CompMs.Common.Extension;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -16,6 +15,36 @@ namespace CompMs.Common.Algorithm.Function
         }
 
         public RootObject Root { get; }
+
+        public bool IsNodeEmpty => Root.nodes.Count == 0;
+        public bool IsEdgeEmpty => Root.edges.Count == 0;
+
+        public MolecularNetworkInstance PruneEdgeByScore(int maxNumberOfEdge) {
+            if (Root.edges.Count <= maxNumberOfEdge) {
+                return this;
+            }
+            return new MolecularNetworkInstance(
+                new RootObject {
+                    nodes = Root.nodes,
+                    edges = Root.edges.OrderByDescending(edge => edge.data.score).Take(maxNumberOfEdge).ToList()
+                });
+        }
+
+        public MolecularNetworkInstance DropIsolatedNodes() {
+            var nodeIDs = new HashSet<int>(Root.edges.SelectMany(edge => new[] { edge.data.source, edge.data.target }));
+            var nodes = Root.nodes.Where(node => nodeIDs.Contains(node.data.id)).ToList();
+            return new MolecularNetworkInstance(new RootObject { nodes = nodes, edges = Root.edges, });
+        }
+
+        public MolecularNetworkInstance DropInvalidMsmsNodes() {
+            var invalidNodeIDs = new HashSet<int>(Root.nodes.Where(node => node.data.MsmsMin < 0d).Select(node => node.data.id));
+            if (invalidNodeIDs.Count == 0) {
+                return this;
+            }
+            var edges = Root.edges.Where(edge => !invalidNodeIDs.Contains(edge.data.source) && !invalidNodeIDs.Contains(edge.data.target)).ToList();
+            var nodes = Root.nodes.Where(node => !invalidNodeIDs.Contains(node.data.id)).ToList();
+            return new MolecularNetworkInstance(new RootObject { edges = edges, nodes = nodes, });
+        }
 
         public void ExportNodeTable(string nodeFile) {
             using (StreamWriter sw = new StreamWriter(nodeFile, false, Encoding.ASCII)) {
@@ -56,34 +85,12 @@ namespace CompMs.Common.Algorithm.Function
             ExportCyelement(Path.Combine(folder, $"cyelements-{dt:yyMMddhhmm}.js"));
         }
 
-        public bool SaveCytoscapeJs(string cyjsexportpath) {
-            if (Root.nodes.IsEmptyOrNull() || Root.edges.IsEmptyOrNull()) {
-                return false;
-            }
-
-            var counter = 0;
-            var edges = new List<Edge>();
-            var nodekeys = new HashSet<int>();
-            foreach (var edge in Root.edges.OrderByDescending(n => n.data.score)) {
-                if (counter > 3000) break;
-                edges.Add(edge);
-                nodekeys.Add(edge.data.source);
-                nodekeys.Add(edge.data.target);
-                counter++;
-            }
-
-            var nodes = new List<Node>();
-            foreach (var node in Root.nodes.Where(n => n.data.MsmsMin > 0)) {
-                if (nodekeys.Contains(node.data.id)) {
-                    nodes.Add(node);
-                }
-            }
-            var nRootObj = new RootObject { nodes = nodes, edges = edges };
-            var json = JsonConvert.SerializeObject(nRootObj, Formatting.Indented);
+        public void SaveCytoscapeJs(string cyjsexportpath) {
+            var root = new RootObject { nodes = Root.nodes, edges = Root.edges.OrderByDescending(edge => edge.data.score).ToList(), };
+            var json = JsonConvert.SerializeObject(root, Formatting.Indented);
             using (StreamWriter sw = new StreamWriter(cyjsexportpath, false, Encoding.ASCII)) {
                 sw.WriteLine("var dataElements =\r\n" + json.ToString() + "\r\n;");
             }
-            return true;
         }
 
         private static string GetMsString(List<List<double>> msList) {
