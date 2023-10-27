@@ -3,14 +3,12 @@ using CompMs.Common.DataObj.NodeEdge;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 
-namespace CompMs.Common.Algorithm.Function {
+namespace CompMs.Common.Algorithm.Function
+{
 
     public sealed class MolecularNetworkingQuery {
         public MsmsSimilarityCalc MsmsSimilarityCalc { get; set; }

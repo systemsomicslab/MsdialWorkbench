@@ -56,15 +56,10 @@ namespace CompMs.Common.Algorithm.Function
             ExportCyelement(Path.Combine(folder, $"cyelements-{dt:yyMMddhhmm}.js"));
         }
 
-        public void SendToCytoscapeJs() {
+        public bool SaveCytoscapeJs(string cyjsexportpath) {
             if (Root.nodes.IsEmptyOrNull() || Root.edges.IsEmptyOrNull()) {
-                return;
+                return false;
             }
-
-            var curDir = AppDomain.CurrentDomain.BaseDirectory;
-            var cytoDir = Path.Combine(curDir, "CytoscapeLocalBrowser");
-            var url = Path.Combine(cytoDir, "MsdialCytoscapeViewer.html");
-            var cyjsexportpath = Path.Combine(Path.Combine(cytoDir, "data"), "elements.js");
 
             var counter = 0;
             var edges = new List<Edge>();
@@ -84,12 +79,11 @@ namespace CompMs.Common.Algorithm.Function
                 }
             }
             var nRootObj = new RootObject { nodes = nodes, edges = edges };
-
             var json = JsonConvert.SerializeObject(nRootObj, Formatting.Indented);
             using (StreamWriter sw = new StreamWriter(cyjsexportpath, false, Encoding.ASCII)) {
                 sw.WriteLine("var dataElements =\r\n" + json.ToString() + "\r\n;");
             }
-            System.Diagnostics.Process.Start(url);
+            return true;
         }
 
         private static string GetMsString(List<List<double>> msList) {
