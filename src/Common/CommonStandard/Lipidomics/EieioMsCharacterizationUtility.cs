@@ -473,6 +473,12 @@ namespace CompMs.Common.Lipidomics
             var matchedPercent = matchedCount / (doublebondIons.Count + 1e-10);
             var matchedCoefficient = StandardMsCharacterizationUtility.GetMatchedCoefficient(doublebondIons_matched);
 
+            //var doublebondIons_matched_high_array = doublebondIons_matched.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_high)).ToList();
+            //var doublebondIons_matched_low_array = doublebondIons_matched.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_low)).ToList();
+            //var doublebondIons_matched_high = doublebondIons_matched_high_array.Count() > 0 ? doublebondIons_matched_high_array.Average(n => n.Resolution) : 0;
+            //var doublebondIons_matched_low = doublebondIons_matched_low_array.Count() > 0 ? doublebondIons_matched_low_array.Average(n => n.Resolution) : 0;
+            //var high_low_bonus = doublebondIons_matched_high > doublebondIons_matched_low * 2.0 ? 0.5 : 0;
+
             var isDoubleBondIdentified = isDoublebondAdvancedFilter && matchedPercent > doublebondIonCutoff * 0.5 ? true : false;
 
             var hGrainBonusForPufa = false;
@@ -504,6 +510,8 @@ namespace CompMs.Common.Lipidomics
             result.DoubleBondMatchedPercent = matchedPercent;
             result.IsDoubleBondIonsExisted = isDoubleBondIdentified;
             result.DoubleBondIonScore = isDoubleBondIdentified ? matchedCoefficient + matchedPercent : 0;
+            //result.DoubleBondIonScore = isDoubleBondIdentified ? matchedCoefficient + matchedPercent + high_low_bonus : 0;
+            //result.DoubleBondIonScore = isDoubleBondIdentified ? matchedCoefficient : 0;
             if (hGrainBonusForPufa) result.DoubleBondIonScore += 0.5;
 
             // total score
