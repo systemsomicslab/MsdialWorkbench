@@ -339,6 +339,9 @@ namespace CompMs.App.Msdial.Model.Lcms
                 parameter.MaxEdgeNumberPerNode = 6;
                 parameter.MaxPrecursorDifference = 400;
             }
+            if (Target.Value is null) {
+                return new MolecularNetworkInstance(new CompMs.Common.DataObj.NodeEdge.RootObject());
+            }
 
             var param = _projectBaseParameter;
             var loaderProperty = _barItemsLoaderDataProperty.Value;
