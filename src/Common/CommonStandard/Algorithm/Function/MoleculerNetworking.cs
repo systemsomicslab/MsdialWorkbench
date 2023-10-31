@@ -126,7 +126,7 @@ namespace CompMs.Common.Algorithm.Function
             var counter = 0;
             var max = srcPeakScans.Count * dstPeakScans.Count;
             var edges = new List<EdgeData>();
-            var checkedPeaks = new HashSet<(int, int)>();
+            var checkedPeaks = new HashSet<int>[new[] { srcPeakScans, dstPeakScans }.SelectMany(pss => pss, (_, ps) => ps.Peak.ID).DefaultIfEmpty().Max() + 1];
             for (int i = 0; i < srcPeakScans.Count; i++) {
                 var srcPeakScan = srcPeakScans[i];
 
@@ -135,16 +135,20 @@ namespace CompMs.Common.Algorithm.Function
                     report?.Invoke(counter / (double)max);
                     continue;
                 }
+                var srcCheckedPeaks = checkedPeaks[srcPeakScan.Peak.ID] ?? (checkedPeaks[srcPeakScan.Peak.ID] = new HashSet<int>());
 
                 for (int j = 0; j < dstPeakScans.Count; j++) {
                     PeakScanPair<T> dstPeakScan = dstPeakScans[j];
                     counter++;
                     report?.Invoke(counter / (double)max);
                     if (dstPeakScan.Scan.Spectrum.Count <= 0) continue;
-                    if (srcPeakScan.Peak.ID == dstPeakScan.Peak.ID || checkedPeaks.Contains((srcPeakScan.Peak.ID, dstPeakScan.Peak.ID)) || checkedPeaks.Contains((dstPeakScan.Peak.ID, srcPeakScan.Peak.ID))) {
+
+                    var dstCheckedPeaks = checkedPeaks[dstPeakScan.Peak.ID] ?? (checkedPeaks[dstPeakScan.Peak.ID] = new HashSet<int>());
+                    if (srcPeakScan.Peak.ID == dstPeakScan.Peak.ID || srcCheckedPeaks.Contains(dstPeakScan.Peak.ID)) {
                         continue;
                     }
-                    checkedPeaks.Add((srcPeakScan.Peak.ID, dstPeakScan.Peak.ID));
+                    srcCheckedPeaks.Add(dstPeakScan.Peak.ID);
+                    dstCheckedPeaks.Add(srcPeakScan.Peak.ID);
 
                     double[] scoreitem = CalculateEdgeScore(srcPeakScan.Scan, dstPeakScan.Scan, query);
                     if (scoreitem is null) continue;
