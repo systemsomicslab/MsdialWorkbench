@@ -117,14 +117,12 @@
                                                VerticalAlignment="Stretch"
                                                DataContextChanged="PeaksTabItem_DataContextChanged"/>
                                 </DataTemplate>
-                                <!--
                                 <DataTemplate DataType="{x:Type vm:GcmsAlignmentViewModel}">
                                     <TextBlock Name="TabItem_RtMzPairwisePlotAlignmentView"
                                                Text="Alignment spot viewer"
                                                VerticalAlignment="Stretch"
                                                DataContextChanged="PeaksTabItem_DataContextChanged"/>
                                 </DataTemplate>
-                                -->
                             </DataTemplate.Resources>
                             <ContentPresenter Content="{Binding Value}"/>
                         </DataTemplate>
@@ -135,13 +133,11 @@
                                 <DataTemplate DataType="{x:Type vm:GcmsAnalysisViewModel}">
                                     <chart:SpectrumFeaturePlotView DataContext="{Binding PeakPlotViewModel}"/>
                                 </DataTemplate>
-                                <!--
                                 <DataTemplate DataType="{x:Type vm:GcmsAlignmentViewModel}">
                                     <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}"
                                                                  Focusable="True"
-                                                                 behavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Focus, Mode=OneWay}"/
+                                                                 behavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Focus, Mode=OneWay}"/>
                                 </DataTemplate>
-                                -->
                             </DataTemplate.Resources>
                             <ContentPresenter Content="{Binding Value}"/>
                         </DataTemplate>
