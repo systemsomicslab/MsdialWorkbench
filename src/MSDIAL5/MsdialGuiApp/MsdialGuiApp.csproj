@@ -10,6 +10,7 @@
 		<PlatformTarget>AnyCPU</PlatformTarget>
 		<Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
 		<Lbm2Url>http://prime.psc.riken.jp/compms/code/Msp20230427074147_conventional_converted_dev.lbm2</Lbm2Url>
+    <LangVersion>8</LangVersion>
 	</PropertyGroup>
 	<Target Name="DownloadContentFiles" BeforeTargets="Build">
 		<ItemGroup>
@@ -141,6 +142,10 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\..\Common\ChartDrawing\ChartDrawing.csproj" />
 	  <ProjectReference Include="..\..\Common\CommonMVVM\CommonMVVM.csproj" />
+    <ProjectReference Include="..\..\Common\CommonSourceGenerator\CommonSourceGenerator.csproj">
+      <OutputItemType>Analyzer</OutputItemType>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+    </ProjectReference>
 	  <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj" />
 	  <ProjectReference Include="..\MsdialIntegrate\MsdialIntegrate.csproj" />
 	  <ProjectReference Include="..\..\Common\NCDK.Display\NCDK.Display.csproj" />

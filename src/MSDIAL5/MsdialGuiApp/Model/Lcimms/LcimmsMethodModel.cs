@@ -288,7 +288,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             if (analysisModel is null) {
                 return null;
             }
-            return new DisplayEicSettingModel(analysisModel.EicLoader, Storage.Parameter);
+            return new DisplayEicSettingModel(analysisModel.EicLoader, Storage.Parameter.AdvancedProcessOptionBaseParam);
         }
 
         public ChromatogramsModel PrepareTicBpcRepEIC() {

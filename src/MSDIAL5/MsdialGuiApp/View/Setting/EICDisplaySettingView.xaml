@@ -3,13 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:CompMs.App.Msdial.View.Setting"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-        xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
         xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
-        xmlns:common="clr-namespace:CompMs.Common.Enum;assembly=Common"
-        xmlns:reactiveProperty="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
         d:DataContext="{d:DesignInstance Type={x:Type vm:DisplayEicSettingViewModel}}"
         mc:Ignorable="d"
         Name="EicDisplaySetView"
@@ -118,6 +114,12 @@
 
             </DataGrid.Columns>
         </DataGrid>
+
+        <Button Content="Clear"
+                Command="{Binding ClearCommand, Mode=OneTime}"
+                HorizontalAlignment="Left" VerticalAlignment="Center"
+                Height="25" Width="70" Margin="20,0"
+                Grid.Row="1"/>
 
         <Button x:Name="Cancel" Content="Cancel"
                 Grid.Row="1" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,20,5">

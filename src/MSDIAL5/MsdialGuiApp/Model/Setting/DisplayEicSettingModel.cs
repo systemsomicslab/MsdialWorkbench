@@ -14,28 +14,33 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    internal class DisplayEicSettingModel : BindableBase {
+    internal sealed class DisplayEicSettingModel : BindableBase {
         private readonly EicLoader _loader;
-        private readonly ParameterBase _parameter;
+        private readonly AdvancedProcessOptionBaseParameter _advanceProcessParameter;
+        private readonly List<PeakFeatureSearchValue> _displaySettingValueCandidates;
+        private readonly ObservableCollection<PeakFeatureSearchValueModel> _displaySettingValueModels;
 
-        public DisplayEicSettingModel(EicLoader loader, ParameterBase parameter) {
+        public DisplayEicSettingModel(EicLoader loader, AdvancedProcessOptionBaseParameter advanceProcessParameter) {
             _loader = loader ?? throw new ArgumentNullException(nameof(loader));
-            _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
+            _advanceProcessParameter = advanceProcessParameter ?? throw new ArgumentNullException(nameof(advanceProcessParameter));
 
-            if (parameter.DiplayEicSettingValues is null) {
-                parameter.DiplayEicSettingValues = new List<PeakFeatureSearchValue>();
-            }
-
-            var values = parameter.DiplayEicSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0).ToList();
-            values.AddRange(Enumerable.Range(0, 100).Select(_ => new PeakFeatureSearchValue()));
-            DiplayEicSettingValues = new ObservableCollection<PeakFeatureSearchValue>(values);
+            advanceProcessParameter.DiplayEicSettingValues ??= new List<PeakFeatureSearchValue>();
+            var values = advanceProcessParameter.DiplayEicSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0).ToList();
+            values.AddRange(Enumerable.Repeat(0, 100).Select(_ => new PeakFeatureSearchValue()));
+            _displaySettingValueCandidates = values;
+            _displaySettingValueModels = new ObservableCollection<PeakFeatureSearchValueModel>(values.Select(v => new PeakFeatureSearchValueModel(v)));
+            DisplayEicSettingValueModels = new ReadOnlyObservableCollection<PeakFeatureSearchValueModel>(_displaySettingValueModels);
         }
 
-        public ObservableCollection<PeakFeatureSearchValue> DiplayEicSettingValues { get; }
+        public ReadOnlyObservableCollection<PeakFeatureSearchValueModel> DisplayEicSettingValueModels { get; }
 
         public ChromatogramsModel PrepareChromatograms() {
-            _parameter.DiplayEicSettingValues = DiplayEicSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0).ToList();
-            var displayEICs = _parameter.DiplayEicSettingValues;
+            foreach (var m in DisplayEicSettingValueModels) {
+                m.Commit();
+            }
+            _advanceProcessParameter.DiplayEicSettingValues.Clear();
+            _advanceProcessParameter.DiplayEicSettingValues.AddRange(_displaySettingValueCandidates.Where(n => n.Mass > 0 && n.MassTolerance > 0));
+            var displayEICs = _advanceProcessParameter.DiplayEicSettingValues;
             if (!displayEICs.IsEmptyOrNull()) {
                 var displayChroms = new List<DisplayChromatogram>();
                 var counter = 0;
@@ -51,6 +56,12 @@ namespace CompMs.App.Msdial.Model.Setting
                 return chromatogramsModel;
             }
             return null;
+        }
+
+        public void Clear() {
+            foreach (var m in _displaySettingValueModels) {
+                m.ClearChromatogramSearchQuery();
+            }
         }
     }
 }

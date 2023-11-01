@@ -34,7 +34,18 @@
             <DataGridTemplateColumn Header="Color" Width="*">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate DataType="{x:Type vm:FileClassPropertyViewModel}">
-                        <ui:ColorPicker SelectedColor="{Binding Color.Value, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                        <ui:CompositeColorPicker SelectedColor="{Binding Color.Value, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                                 ContentWidth="256" ContentHeight="232">
+                            <ui:CompositeColorPickerItem Label="List">
+                                <ui:ListColorPicker/>
+                            </ui:CompositeColorPickerItem>
+                            <ui:CompositeColorPickerItem Label="HSV">
+                                <ui:HsvColorPicker/>
+                            </ui:CompositeColorPickerItem>
+                            <ui:CompositeColorPickerItem Label="RGB">
+                                <ui:RgbColorPicker/>
+                            </ui:CompositeColorPickerItem>
+                        </ui:CompositeColorPicker>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
