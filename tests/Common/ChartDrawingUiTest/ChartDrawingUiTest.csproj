@@ -57,6 +57,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
@@ -98,6 +99,10 @@
       <DependentUpon>AreaSelectBehaviorTest.xaml</DependentUpon>
     </Compile>
     <Compile Include="Behavior\AreaSelectBehaviorTestViewModel.cs" />
+    <Compile Include="Behavior\DataGridPasteBehaviorTest.xaml.cs">
+      <DependentUpon>DataGridPasteBehaviorTest.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Behavior\DataGridPasteBehaviorTestViewModel.cs" />
     <Compile Include="Chart\AxisLabelTest.xaml.cs">
       <DependentUpon>AxisLabelTest.xaml</DependentUpon>
     </Compile>
@@ -234,6 +239,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Behavior\AreaSelectBehaviorTest.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Behavior\DataGridPasteBehaviorTest.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
