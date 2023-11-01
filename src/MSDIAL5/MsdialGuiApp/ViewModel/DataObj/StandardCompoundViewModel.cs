@@ -89,7 +89,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         }
         private double _dilutionRate;
 
-        [Range(0, int.MaxValue)]
+        [Range(-1, int.MaxValue)]
         public int PeakID {
             get => _peakID;
             set {
