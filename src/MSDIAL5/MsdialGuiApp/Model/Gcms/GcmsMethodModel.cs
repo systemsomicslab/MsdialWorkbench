@@ -11,6 +11,7 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialGcMsApi.Algorithm.Alignment;
 using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialGcMsApi.Process;
+using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Linq;
@@ -27,6 +28,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly IMessageBroker _broker;
         private readonly StandardDataProviderFactory _providerFactory;
         private readonly PeakFilterModel _peakFilterModel;
+        private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _peakSpotFiltering;
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> CHROMATOGRAM_SPOT_SERIALIZER;
 
         static GcmsMethodModel() {
@@ -40,6 +42,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             _broker = broker;
             _providerFactory = new StandardDataProviderFactory(retry: 5, isGuiProcess: true);
             _peakFilterModel = new PeakFilterModel(DisplayFilter.RefMatched | DisplayFilter.Unknown /*&& DisplayFilter.Blank*/); // TODO: Implement blank filtering
+            _peakSpotFiltering = new PeakSpotFiltering<AlignmentSpotPropertyModel>(FilterEnableStatus.All & ~FilterEnableStatus.Dt & ~FilterEnableStatus.Protein).AddTo(Disposables);
         }
 
         public GcmsAnalysisModel SelectedAnalysisModel {
@@ -57,6 +60,22 @@ namespace CompMs.App.Msdial.Model.Gcms
             }
         }
         private GcmsAnalysisModel _selectedAnalysisModel;
+
+        public GcmsAlignmentModel SelectedAlignmentModel {
+            get => _selectedAlignmentModel;
+            private set {
+                var old = _selectedAlignmentModel;
+                if (SetProperty(ref _selectedAlignmentModel, value)) {
+                    if (value != null) {
+                        Disposables.Add(value);
+                    }
+                    if (old != null && Disposables.Contains(old)) {
+                        Disposables.Remove(old);
+                    }
+                }
+            }
+        }
+        private GcmsAlignmentModel _selectedAlignmentModel;
 
         public override Task RunAsync(ProcessOption option, CancellationToken token) {
             if (option.HasFlag(ProcessOption.PeakSpotting | ProcessOption.Identification)) {
@@ -137,7 +156,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         }
 
         protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBeanModel alignmentFileModel) {
-            throw new NotImplementedException();
+            return SelectedAlignmentModel = new GcmsAlignmentModel(alignmentFileModel, _evaluator, _peakSpotFiltering, _peakFilterModel, _storage.Parameter, _broker);
         }
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
