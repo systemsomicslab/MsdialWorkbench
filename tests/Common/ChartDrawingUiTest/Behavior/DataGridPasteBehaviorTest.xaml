@@ -14,6 +14,16 @@
     <Grid>
         <DataGrid ItemsSource="{Binding Records}"
                   SelectionUnit="Cell"
-                  behavior:DataGridPasteBehavior.Enable="True"/>
+                  AutoGenerateColumns="False"
+                  behavior:DataGridPasteBehavior.Enable="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="X" Binding="{Binding X}"/>
+                <DataGridTextColumn Header="Y" Binding="{Binding Y}"/>
+                <DataGridTextColumn Header="Z" Binding="{Binding Z}"/>
+            </DataGrid.Columns>
+            <DataGrid.RowValidationRules>
+                <NotifyDataErrorValidationRule ValidatesOnTargetUpdated="True" ValidationStep="UpdatedValue"/>
+            </DataGrid.RowValidationRules>
+        </DataGrid>
     </Grid>
 </Page>

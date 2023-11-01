@@ -19,21 +19,21 @@ namespace ChartDrawingUiTest.Behavior
         public List<Record> Records { get; }
 
         internal sealed class Record : ViewModelBase {
-            [RegularExpression(@"\d+")]
+            [RegularExpression(@"\d+", ErrorMessage = "X error")]
             public int X {
                 get => _x;
                 set => SetProperty(ref _x, value);
             }
             private int _x;
 
-            [RegularExpression(@"\d*.?\d+")]
+            [RegularExpression(@"\d*.?\d+", ErrorMessage = "Y error")]
             public double Y {
                 get => _y;
                 set => SetProperty(ref _y, value);
             }
             private double _y;
 
-            [Required()]
+            [Required(ErrorMessage = "Z error")]
             public string Z {
                 get => _z;
                 set => SetProperty(ref _z, value);
