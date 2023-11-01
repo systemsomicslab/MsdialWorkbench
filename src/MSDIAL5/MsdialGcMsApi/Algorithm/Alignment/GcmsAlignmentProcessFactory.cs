@@ -29,7 +29,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
         }
 
         public override DataAccessor CreateDataAccessor() {
-            return new GcmsDataAccessor(GcmsParameter.AlignmentIndexType);
+            return new GcmsDataAccessor(GcmsParameter);
         }
 
         public override GapFiller CreateGapFiller() {
