@@ -1,5 +1,4 @@
-﻿using CompMs.App.Msdial.Model.Core;
-using CompMs.App.Msdial.Model.Gcms;
+﻿using CompMs.App.Msdial.Model.Gcms;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Service;
@@ -18,11 +17,11 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 {
     internal sealed class GcmsMethodViewModel : MethodViewModel
     {
-        private readonly IMethodModel _model;
+        private readonly GcmsMethodModel _model;
         private readonly IMessageBroker _broker;
         private readonly FocusControlManager _focusControl;
 
-        public GcmsMethodViewModel(GcmsMethodModel model, ReactiveProperty<GcmsAnalysisViewModel> analysisFileViewModel, ReactivePropertySlim<IAlignmentResultViewModel> alignmentFileViewModel, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels, IMessageBroker broker, FocusControlManager focusControl)
+        public GcmsMethodViewModel(GcmsMethodModel model, ReadOnlyReactivePropertySlim<GcmsAnalysisViewModel> analysisFileViewModel, ReadOnlyReactivePropertySlim<GcmsAlignmentViewModel> alignmentFileViewModel, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels, IMessageBroker broker, FocusControlManager focusControl)
             : base(model, analysisFileViewModel, alignmentFileViewModel, chromatogramViewModels, massSpectrumViewModels) {
             _model = model;
             _broker = broker;
@@ -32,7 +31,11 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         }
 
         protected override Task LoadAlignmentFileCoreAsync(AlignmentFileBeanViewModel alignmentFile, CancellationToken token) {
-            throw new NotImplementedException();
+            if (alignmentFile?.File is null || alignmentFile.File == _model.AlignmentFile) {
+                return Task.CompletedTask;
+            }
+
+            return _model.LoadAlignmentFileAsync(alignmentFile.File, token);
         }
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
@@ -49,8 +52,13 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
                 return model.ObserveProperty(m => m.SelectedAnalysisModel, isPushCurrentValueAtFirst: false).Subscribe(observer);
             }).Where(m => m != null)
             .Select(m => new GcmsAnalysisViewModel(m, peakSpotTableService, focusControlManager))
-            .ToReactiveProperty();
-            var alignmentAsObservable = new ReactivePropertySlim<IAlignmentResultViewModel>();
+            .ToReadOnlyReactivePropertySlim();
+            var alignmentAsObservable = Observable.Create<GcmsAlignmentModel>(observer => {
+                observer.OnNext(model.SelectedAlignmentModel);
+                return model.ObserveProperty(m => m.SelectedAlignmentModel, isPushCurrentValueAtFirst: false).Subscribe(observer);
+            }).Where(m => m != null)
+            .Select(m => new GcmsAlignmentViewModel(m, focusControlManager, broker))
+            .ToReadOnlyReactivePropertySlim();
 
             var eic = analysisAsObservable.Select(vm => vm?.EicViewModel);
             var bar = Observable.Return<ViewModelBase>(null);
