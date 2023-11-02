@@ -118,6 +118,10 @@ namespace CompMs.App.Msdial.Model.Gcms
                 r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d),
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
+
+            var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
+            MoleculeStructureModel = moleculeStructureModel;
+            target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
         }
 
         public AlignmentPeakPlotModel PlotModel { get; }
@@ -126,6 +130,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         public NormalizationSetModel NormalizationSetModel { get; }
         public PeakInformationAlignmentModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
+        public MoleculeStructureModel MoleculeStructureModel { get; }
 
         public override void InvokeMoleculerNetworkingForTargetSpot() {
             throw new NotImplementedException();
