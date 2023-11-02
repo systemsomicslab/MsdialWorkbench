@@ -27,6 +27,9 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
             PlotViewModel = new AlignmentPeakPlotViewModel(model.PlotModel, peakPlotAction, peakPlotFocused).AddTo(Disposables);
 
+            var (msSpectrumViewFocusAction, msSpectrumViewFocused) = focusControlManager.Request();
+            Ms2SpectrumViewModel = new AlignmentMs2SpectrumViewModel(model.MsSpectrumModel, broker, focusAction: msSpectrumViewFocusAction, isFocused: msSpectrumViewFocused).AddTo(Disposables);
+
             var (barChartAction, barChartFocused) = focusControlManager.Request();
             BarChartViewModel = new BarChartViewModel(model.BarChartModel, barChartAction, barChartFocused).AddTo(Disposables);
 
@@ -56,5 +59,6 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         public UndoManagerViewModel UndoManagerViewModel => throw new NotImplementedException();
 
         public AlignmentPeakPlotViewModel PlotViewModel { get; }
+        public AlignmentMs2SpectrumViewModel Ms2SpectrumViewModel { get; }
     }
 }

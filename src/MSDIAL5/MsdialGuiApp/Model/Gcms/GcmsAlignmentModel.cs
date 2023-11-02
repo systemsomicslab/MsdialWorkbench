@@ -14,6 +14,7 @@ using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialGcMsApi.Parameter;
 using Reactive.Bindings;
@@ -24,6 +25,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Gcms
 {
@@ -32,11 +34,13 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly AlignmentFileBeanModel _alignmentFileBean;
         private readonly IMessageBroker _broker;
         private readonly UndoManager _undoManager;
+        private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly ReactiveProperty<BarItemsLoaderData> _barItemsLoaderDataProperty;
 
         public GcmsAlignmentModel(
             AlignmentFileBeanModel alignmentFileBean,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            DataBaseStorage databases,
             PeakSpotFiltering<AlignmentSpotPropertyModel> peakSpotFiltering,
             PeakFilterModel peakFilterModel,
             DataBaseMapper mapper,
@@ -50,6 +54,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             _alignmentFileBean = alignmentFileBean;
             _broker = broker;
             _undoManager = new UndoManager().AddTo(Disposables);
+            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper);
 
             var chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT); // TODO: RI
             var target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
@@ -79,6 +84,27 @@ namespace CompMs.App.Msdial.Model.Gcms
             }.AddTo(Disposables);
 
             MatchResultCandidatesModel = new MatchResultCandidatesModel(target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
+
+            // MS spectrum
+            var refLoader = new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
+            IMsSpectrumLoader<AlignmentSpotPropertyModel> msDecSpectrumLoader = new AlignmentMSDecSpectrumLoader(alignmentFileBean);
+            var spectraExporter = new NistSpectraExporter<AlignmentSpotProperty>(target.Select(t => t?.innerModel), mapper, parameter).AddTo(Disposables);
+            GraphLabels msGraphLabels = new GraphLabels("Representative vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
+            ChartHueItem deconvolutedSpectrumHueItem = new ChartHueItem(projectBaseParameter, Colors.Blue);
+            ObservableMsSpectrum deconvolutedObservableMsSpectrum = ObservableMsSpectrum.Create(target, msDecSpectrumLoader, spectraExporter).AddTo(Disposables);
+            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
+            AlignmentSpotSpectraLoader spectraLoader = new AlignmentSpotSpectraLoader(fileCollection, refLoader, _compoundSearchers, fileCollection);
+            MsSpectrumModel = new AlignmentMs2SpectrumModel(
+                target, MatchResultCandidatesModel.SelectedCandidate, fileCollection,
+                new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Mass), peak => peak.Mass),
+                new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Intensity), peak => peak.Intensity),
+                new ChartHueItem(projectBaseParameter, Colors.Blue),
+                new ChartHueItem(projectBaseParameter, Colors.Red),
+                new GraphLabels("Representative vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity)),
+                Observable.Return(spectraExporter),
+                Observable.Return(referenceExporter),
+                null,
+                spectraLoader).AddTo(Disposables);
 
             // Class intensity bar chart
             var classBrush = projectBaseParameter.ClassProperties
@@ -149,6 +175,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         public MoleculeStructureModel MoleculeStructureModel { get; }
         public AlignmentEicModel AlignmentEicModel { get; }
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
+        public AlignmentMs2SpectrumModel MsSpectrumModel { get; }
 
         public override void InvokeMoleculerNetworkingForTargetSpot() {
             throw new NotImplementedException();
