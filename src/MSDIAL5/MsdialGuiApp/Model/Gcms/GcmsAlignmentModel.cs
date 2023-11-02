@@ -111,6 +111,13 @@ namespace CompMs.App.Msdial.Model.Gcms
                 t => new MzPoint(t?.MassCenter ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.PrecursorMz));
             peakInformationModel.Add(t => new HeightAmount(t?.HeightAverage ?? 0d));
             PeakInformationModel = peakInformationModel;
+
+            var compoundDetailModel = new CompoundDetailModel(target.DefaultIfNull(t => t.ObserveProperty(p => p.ScanMatchResult), Observable.Return<MsScanMatchResult>(null)).Switch(), mapper).AddTo(Disposables);
+            compoundDetailModel.Add(
+                r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d),
+                r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d),
+                r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
+            CompoundDetailModel = compoundDetailModel;
         }
 
         public AlignmentPeakPlotModel PlotModel { get; }
@@ -118,6 +125,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         public InternalStandardSetModel InternalStandardSetModel { get; }
         public NormalizationSetModel NormalizationSetModel { get; }
         public PeakInformationAlignmentModel PeakInformationModel { get; }
+        public CompoundDetailModel CompoundDetailModel { get; }
 
         public override void InvokeMoleculerNetworkingForTargetSpot() {
             throw new NotImplementedException();
