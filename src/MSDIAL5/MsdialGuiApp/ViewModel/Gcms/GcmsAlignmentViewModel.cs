@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Gcms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
+using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using Reactive.Bindings.Extensions;
@@ -25,15 +26,19 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 
             var (barChartAction, barChartFocused) = focusControlManager.Request();
             BarChartViewModel = new BarChartViewModel(model.BarChartModel, barChartAction, barChartFocused).AddTo(Disposables);
+
+            PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
+            PeakDetailViewModels = new[] { PeakInformationViewModel, };
         }
 
         public BarChartViewModel BarChartViewModel { get; }
+        public PeakInformationViewModel PeakInformationViewModel { get; }
 
         public ICommand InternalStandardSetCommand => throw new NotImplementedException();
 
         public IResultModel Model { get; }
 
-        public ViewModelBase[] PeakDetailViewModels => throw new NotImplementedException();
+        public ViewModelBase[] PeakDetailViewModels { get; }
 
         public ICommand ShowIonTableCommand => throw new NotImplementedException();
 
