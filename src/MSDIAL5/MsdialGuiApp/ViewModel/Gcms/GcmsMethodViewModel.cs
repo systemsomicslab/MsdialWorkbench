@@ -62,7 +62,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 
             var eic = analysisAsObservable.Select(vm => vm?.EicViewModel);
             var bar = alignmentAsObservable.Select(vm => vm?.BarChartViewModel);
-            var alignmentEic = Observable.Return<ViewModelBase>(null);
+            var alignmentEic = alignmentAsObservable.Select(vm => vm?.AlignmentEicViewModel);
             var chromatogramSwitcher = new ViewModelSwitcher(eic, bar, new IObservable<ViewModelBase>[] { eic, bar, alignmentEic});
             var massSpectrumSwitcher = new ViewModelSwitcher(Observable.Return<ViewModelBase>(null), Observable.Return<ViewModelBase>(null), analysisAsObservable.Select(m => m?.RawDecSpectrumsViewModel), analysisAsObservable.Select(m => m?.EiChromatogramsViewModel), analysisAsObservable.Select(m => m?.RawPurifiedSpectrumsViewModel));
             return new GcmsMethodViewModel(model, analysisAsObservable, alignmentAsObservable, chromatogramSwitcher, massSpectrumSwitcher, broker, focusControlManager);

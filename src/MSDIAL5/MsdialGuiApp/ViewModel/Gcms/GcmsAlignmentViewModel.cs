@@ -27,6 +27,8 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             var (barChartAction, barChartFocused) = focusControlManager.Request();
             BarChartViewModel = new BarChartViewModel(model.BarChartModel, barChartAction, barChartFocused).AddTo(Disposables);
 
+            AlignmentEicViewModel = new AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
+
             var peakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             var compoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
             var moleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
@@ -35,6 +37,9 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         }
 
         public BarChartViewModel BarChartViewModel { get; }
+
+        public AlignmentEicViewModel AlignmentEicViewModel { get; }
+
         public ICommand InternalStandardSetCommand => throw new NotImplementedException();
 
         public IResultModel Model { get; }
