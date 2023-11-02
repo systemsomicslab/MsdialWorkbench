@@ -27,16 +27,14 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             var (barChartAction, barChartFocused) = focusControlManager.Request();
             BarChartViewModel = new BarChartViewModel(model.BarChartModel, barChartAction, barChartFocused).AddTo(Disposables);
 
-            PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
-            CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
+            var peakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
+            var compoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
+            var moleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
 
-            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
+            PeakDetailViewModels = new ViewModelBase[] { peakInformationViewModel, compoundDetailViewModel, moleculeStructureViewModel, };
         }
 
         public BarChartViewModel BarChartViewModel { get; }
-        public PeakInformationViewModel PeakInformationViewModel { get; }
-        public CompoundDetailViewModel CompoundDetailViewModel { get; }
-
         public ICommand InternalStandardSetCommand => throw new NotImplementedException();
 
         public IResultModel Model { get; }
