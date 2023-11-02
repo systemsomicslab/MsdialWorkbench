@@ -106,6 +106,20 @@ namespace CompMs.App.Msdial.Model.Gcms
             _barItemsLoaderDataProperty = barItemsLoaderDataProperty;
             BarChartModel = new BarChartModel(target, barItemsLoaderDataProperty, barItemLoaderDatas, barBrush, projectBaseParameter, fileCollection, projectBaseParameter.ClassProperties).AddTo(Disposables);
 
+            // Class eic
+            var fileIdToFileName = files.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileName);
+            AlignmentEicModel = AlignmentEicModel.Create(
+                target,
+                alignmentFileBean.CreateEicLoader(chromatogramSpotSerializer, fileCollection, projectBaseParameter).AddTo(Disposables),
+                files, parameter,
+                peak => peak.Time,
+                peak => peak.Intensity).AddTo(Disposables);
+            AlignmentEicModel.Elements.GraphTitle = "EIC";
+            AlignmentEicModel.Elements.HorizontalTitle = "Retention time [min]"; // TODO: RI support
+            AlignmentEicModel.Elements.VerticalTitle = "Abundance";
+            AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
+            AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
+
             var peakInformationModel = new PeakInformationAlignmentModel(target).AddTo(Disposables);
             peakInformationModel.Add(
                 t => new RtPoint(t?.innerModel.TimesCenter.RT.Value ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.ChromXs.RT.Value), // TODO: RI supoprt
@@ -133,6 +147,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         public PeakInformationAlignmentModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
         public MoleculeStructureModel MoleculeStructureModel { get; }
+        public AlignmentEicModel AlignmentEicModel { get; }
 
         public override void InvokeMoleculerNetworkingForTargetSpot() {
             throw new NotImplementedException();
