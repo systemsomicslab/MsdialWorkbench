@@ -28,11 +28,14 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             BarChartViewModel = new BarChartViewModel(model.BarChartModel, barChartAction, barChartFocused).AddTo(Disposables);
 
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
-            PeakDetailViewModels = new[] { PeakInformationViewModel, };
+            CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
+
+            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
         }
 
         public BarChartViewModel BarChartViewModel { get; }
         public PeakInformationViewModel PeakInformationViewModel { get; }
+        public CompoundDetailViewModel CompoundDetailViewModel { get; }
 
         public ICommand InternalStandardSetCommand => throw new NotImplementedException();
 
