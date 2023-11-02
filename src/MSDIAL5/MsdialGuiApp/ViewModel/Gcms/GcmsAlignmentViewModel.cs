@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Gcms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using Reactive.Bindings.Extensions;
@@ -20,6 +21,8 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             }
 
             Model = model;
+
+            PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
 
             var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
             PlotViewModel = new AlignmentPeakPlotViewModel(model.PlotModel, peakPlotAction, peakPlotFocused).AddTo(Disposables);
@@ -43,7 +46,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         public ICommand InternalStandardSetCommand => throw new NotImplementedException();
 
         public IResultModel Model { get; }
-
+        public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
 
         public ICommand ShowIonTableCommand => throw new NotImplementedException();
