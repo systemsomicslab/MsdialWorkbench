@@ -61,7 +61,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             NormalizationSetModel = new NormalizationSetModel(Container, files, fileCollection, mapper, evaluator, InternalStandardSetModel, parameter, broker).AddTo(Disposables);
 
             var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(ms1Spots, peakSpotFiltering).AddTo(Disposables);
-            var PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
+            PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
             filterRegistrationManager.AttachFilter(ms1Spots, peakFilterModel, evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: FilterEnableStatus.All & ~FilterEnableStatus.Dt);
 
             // Peak scatter plot
@@ -148,6 +148,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         public CompoundDetailModel CompoundDetailModel { get; }
         public MoleculeStructureModel MoleculeStructureModel { get; }
         public AlignmentEicModel AlignmentEicModel { get; }
+        public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
 
         public override void InvokeMoleculerNetworkingForTargetSpot() {
             throw new NotImplementedException();
