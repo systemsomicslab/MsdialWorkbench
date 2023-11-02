@@ -78,6 +78,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 VerticalTitle = "m/z",
             }.AddTo(Disposables);
 
+            MatchResultCandidatesModel = new MatchResultCandidatesModel(target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
 
             // Class intensity bar chart
             var classBrush = projectBaseParameter.ClassProperties
@@ -125,6 +126,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         }
 
         public AlignmentPeakPlotModel PlotModel { get; }
+        public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
         public BarChartModel BarChartModel { get; }
         public InternalStandardSetModel InternalStandardSetModel { get; }
         public NormalizationSetModel NormalizationSetModel { get; }
