@@ -22,9 +22,12 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 
             var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
             PlotViewModel = new AlignmentPeakPlotViewModel(model.PlotModel, peakPlotAction, peakPlotFocused).AddTo(Disposables);
+
+            var (barChartAction, barChartFocused) = focusControlManager.Request();
+            BarChartViewModel = new BarChartViewModel(model.BarChartModel, barChartAction, barChartFocused).AddTo(Disposables);
         }
 
-        public BarChartViewModel BarChartViewModel => throw new NotImplementedException();
+        public BarChartViewModel BarChartViewModel { get; }
 
         public ICommand InternalStandardSetCommand => throw new NotImplementedException();
 
