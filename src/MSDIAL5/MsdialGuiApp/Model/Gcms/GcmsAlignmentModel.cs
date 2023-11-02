@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
@@ -103,12 +104,20 @@ namespace CompMs.App.Msdial.Model.Gcms
             var barItemsLoaderDataProperty = NormalizationSetModel.Normalized.ToConstant(normalizedHeightLoader).ToReactiveProperty(NormalizationSetModel.IsNormalized.Value ? normalizedHeightLoader : heightLoader).AddTo(Disposables);
             _barItemsLoaderDataProperty = barItemsLoaderDataProperty;
             BarChartModel = new BarChartModel(target, barItemsLoaderDataProperty, barItemLoaderDatas, barBrush, projectBaseParameter, fileCollection, projectBaseParameter.ClassProperties).AddTo(Disposables);
+
+            var peakInformationModel = new PeakInformationAlignmentModel(target).AddTo(Disposables);
+            peakInformationModel.Add(
+                t => new RtPoint(t?.innerModel.TimesCenter.RT.Value ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.ChromXs.RT.Value), // TODO: RI supoprt
+                t => new MzPoint(t?.MassCenter ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.PrecursorMz));
+            peakInformationModel.Add(t => new HeightAmount(t?.HeightAverage ?? 0d));
+            PeakInformationModel = peakInformationModel;
         }
 
         public AlignmentPeakPlotModel PlotModel { get; }
         public BarChartModel BarChartModel { get; }
         public InternalStandardSetModel InternalStandardSetModel { get; }
         public NormalizationSetModel NormalizationSetModel { get; }
+        public PeakInformationAlignmentModel PeakInformationModel { get; }
 
         public override void InvokeMoleculerNetworkingForTargetSpot() {
             throw new NotImplementedException();
