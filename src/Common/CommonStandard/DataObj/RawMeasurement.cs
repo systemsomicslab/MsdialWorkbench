@@ -97,6 +97,8 @@ namespace CompMs.Common.DataObj {
     {
         public string Id { get; set; }
         public string Name { get; set; }
+        public string IonAnalyzerType { get; set; } // TOF, IT, Orbitrap
+        public string InstrumentType { get; set; } // QTOF, QE, FT-ICR
     }
 
     public class RawCalibrationInfo {
