@@ -31,10 +31,6 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
-    public class NotameModel : NotameVM
-    {
-        public DelegateCommand _generateGraph_ClickCommand { get; }
-    }
     
     internal sealed class LcmsMethodModel : MethodModelBase
     {

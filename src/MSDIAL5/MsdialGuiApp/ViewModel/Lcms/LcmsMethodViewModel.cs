@@ -25,17 +25,18 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    public class NotameVM : Notame
+    public class NotameVM
     {
         public DelegateCommand GenerateGraph_ClickCommand => _generateGraph_ClickCommand ?? (_generateGraph_ClickCommand = new DelegateCommand(GenerateGraph_Click));
         private DelegateCommand _generateGraph_ClickCommand;
 
-        private void GenerateGraph_Click()
+        public void GenerateGraph_Click()
         {
             Notame notame = new Notame();
             notame.generateGraph_Click();
         }
     }
+
     internal sealed class LcmsMethodViewModel : MethodViewModel {
         private readonly LcmsMethodModel _model;
         private readonly IMessageBroker _broker;

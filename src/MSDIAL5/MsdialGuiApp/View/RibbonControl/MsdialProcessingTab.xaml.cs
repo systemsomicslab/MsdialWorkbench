@@ -18,8 +18,6 @@ namespace CompMs.App.Msdial.View.RibbonControl
         public MsdialProcessingTab()
         {
             InitializeComponent();
-            MainWindowVM viewModel = new MainWindowVM();
-            DataContext = viewModel;
         }
     }
 }
