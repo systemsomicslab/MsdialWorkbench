@@ -33,6 +33,8 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             var (eiChromatogramsViewFocusAction, eiChromatogramsViewFocused) = focusControlManager.Request();
             EiChromatogramsViewModel = new EiChromatogramsViewModel(model.EiChromatogramsModel, model.NumberOfEIChromatograms, null, eiChromatogramsViewFocusAction, eiChromatogramsViewFocused).AddTo(Disposables);
             SurveyScanViewModel = new SurveyScanViewModel(model.SurveyScanModel, horizontalAxis: PeakPlotViewModel.VerticalAxis as IAxisManager<double>).AddTo(Disposables);
+
+            FocusNavigatorViewModel = new FocusNavigatorViewModel(model.FocusNavigatorModel).AddTo(Disposables);
             
             var peakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             var compoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
@@ -58,7 +60,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 
         public EiChromatogramsViewModel EiChromatogramsViewModel { get; }
         public SurveyScanViewModel SurveyScanViewModel { get; }
-
+        public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
 
         public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));

@@ -9,6 +9,7 @@ using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -33,6 +34,8 @@ namespace CompMs.App.Msdial.Model.Gcms
 {
     internal sealed class GcmsAnalysisModel : BindableBase, IAnalysisModel, IDisposable
     {
+        private static readonly double RT_TOL = .5, MZ_TOL = 20d;
+
         private bool _disposedValue;
         private CompositeDisposable _disposables;
         private readonly Ms1BasedSpectrumFeatureCollection _spectrumFeatures;
@@ -163,6 +166,17 @@ namespace CompMs.App.Msdial.Model.Gcms
             selectedSpectrum.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.GetCurrentSpectrumFeature().AnnotatedMSDecResult.Molecule)).AddTo(_disposables);
 
             PeakTableModel = new GcmsAnalysisPeakTableModel(PeakPlotModel.Spectra, selectedSpectrum, PeakSpotNavigatorModel);
+
+            var rtSpotFocus = new ChromSpotFocus(PeakPlotModel.HorizontalAxis, RT_TOL, selectedSpectrum.Select(s => s?.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(_disposables);
+            var mzSpotFocus = new ChromSpotFocus(PeakPlotModel.VerticalAxis, MZ_TOL, selectedSpectrum.Select(s => s?.QuantifiedChromatogramPeak.PeakFeature.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(_disposables);
+            var idSpotFocus = new IdSpotFocus<Ms1BasedSpectrumFeature>(
+                selectedSpectrum,
+                id => _spectrumFeatures.Items.Argmin(s => s.Scan.ScanID - id),
+                selectedSpectrum.Select(s => s?.Scan.ScanID ?? 0d),
+                "ID",
+                (rtSpotFocus, s => s.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value),
+                (mzSpotFocus, s => s.QuantifiedChromatogramPeak.PeakFeature.Mass)).AddTo(_disposables);
+            FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, rtSpotFocus, mzSpotFocus);
         }
 
         public SpectrumFeaturePlotModel PeakPlotModel { get; }
@@ -183,6 +197,9 @@ namespace CompMs.App.Msdial.Model.Gcms
         public UndoManager UndoManager { get; }
 
         public IObservable<bool> CanSetUnknown => PeakPlotModel.SelectedSpectrum.Select(t => !(t is null));
+
+        public FocusNavigatorModel FocusNavigatorModel { get; }
+
         public void SetUnknown() => PeakPlotModel.SelectedSpectrum.Value?.SetUnknown(UndoManager);
 
         // IAnalysisModel interface
