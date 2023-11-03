@@ -49,6 +49,7 @@ namespace ChartDrawingUiTest
                 // typeof(Chromatogram1),
                 typeof(FileOpenControl1),
                 typeof(DataGrid1),
+                typeof(DataGridPasteBehaviorTest),
                 typeof(RangeSlider),
                 typeof(ChartUpdate),
                 typeof(TestPage),
