@@ -31,8 +31,9 @@ namespace CompMs.MsdialGcMsApi.Algorithm
         /// <param name="reporter"></param>
         public AnnotatedMSDecResult[] MainProcess(IReadOnlyList<MSDecResult> ms1DecResults, Dictionary<int, float> carbon2RtDict, ReportProgress reporter) {
             Console.WriteLine("Annotation started");
-            if (_parameter.IsIdentificationOnlyPerformedForAlignmentFile)
-                return Array.Empty<AnnotatedMSDecResult>();
+            if (_parameter.IsIdentificationOnlyPerformedForAlignmentFile) {
+                return ms1DecResults.Select(r => new AnnotatedMSDecResult(r, new MsScanMatchResultContainer())).ToArray();
+            }
 
             if (_mspDB != null && _mspDB.Count > 0) {
                 var features = new AnnotatedMSDecResult[ms1DecResults.Count];
@@ -51,7 +52,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                 return features;
             }
 
-            return Array.Empty<AnnotatedMSDecResult>();
+            return ms1DecResults.Select(r => new AnnotatedMSDecResult(r, new MsScanMatchResultContainer())).ToArray();
         }
 
         public List<MsScanMatchResult> MspBasedProccess(MSDecResult msdecResult) {
