@@ -37,7 +37,7 @@ namespace CompMs.MsdialCore.Algorithm {
                     var target_node_id = link.Peak.MasterAlignmentID;
 
                     var edge = new EdgeData() {
-                        score = System.Math.Round(link.Score, 3), source = source_node_id, target = target_node_id
+                        score = System.Math.Round(link.Score, 3), source = source_node_id, target = target_node_id, linecolor = "white"
                     };
                     edges.Add(edge);
                 }
