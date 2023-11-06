@@ -26,7 +26,9 @@ namespace CompMs.Common.Algorithm.Function
             return new MolecularNetworkInstance(
                 new RootObject {
                     nodes = Root.nodes,
-                    edges = Root.edges.OrderByDescending(edge => edge.data.score).Take(maxNumberOfEdge).ToList()
+                    edges = Root.edges.GroupBy(e => e.classes)
+                        .SelectMany(group => group.OrderByDescending(edge => edge.data.score).Take(maxNumberOfEdge))
+                        .ToList()
                 });
         }
 
