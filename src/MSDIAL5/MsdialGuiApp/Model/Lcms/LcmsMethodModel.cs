@@ -4,6 +4,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.ViewModel.Lcms;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
@@ -419,6 +420,12 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             return new ChromatogramsModel("TIC, BPC, and highest peak m/z's EIC", displayChroms, "TIC, BPC, and highest peak m/z's EIC", "Retention time [min]", "Absolute ion abundance");
         } 
+
+        public Notame notame {  get; set; }
+        public void GenerateGraph()
+        {
+            notame.GenerateGraph();
+        }
 
         public FragmentQuerySettingModel ShowShowFragmentSearchSettingView() {
             return new FragmentQuerySettingModel(_storage.Parameter.AdvancedProcessOptionBaseParam, AnalysisModel, AlignmentModel);

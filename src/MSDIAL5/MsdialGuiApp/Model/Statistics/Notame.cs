@@ -10,7 +10,7 @@ namespace CompMs.App.Msdial.Model.Statistics
 {
     public class Notame
     {
-        public void generateGraph_Click()
+        public void GenerateGraph()
         {
             REngine.SetEnvironmentVariables();
             var engine = REngine.GetInstance();
@@ -25,13 +25,18 @@ namespace CompMs.App.Msdial.Model.Statistics
             MessageBox.Show("Graph generated and saved as 'graph.png'");
         }
 
-        private void buttonExit_Click(object sender, RoutedEventArgs e)
+        private void ButtonExit(object sender, RoutedEventArgs e)
         {
             REngine.SetEnvironmentVariables();
             var engine = REngine.GetInstance();
             engine.Initialize();
             engine.Dispose();
             Application.Current.Shutdown();
+        }
+
+        public interface IGenerateGraph
+        {
+            void GenerateGraph();
         }
     }
 }

@@ -46,7 +46,7 @@
         </RibbonButton>
         <RibbonButton Label="Generate Graph" LargeImageSource="{StaticResource Save_is}"
                       IsEnabled="True"
-                      Command="{Binding GenerateGraph_ClickCommand}"
+                      Command="{Binding GenerateGraphCommand}"
                       KeyTip="G">
             <RibbonButton.ToolTip>Generate and display a graph and save as ".png".</RibbonButton.ToolTip>
         </RibbonButton>

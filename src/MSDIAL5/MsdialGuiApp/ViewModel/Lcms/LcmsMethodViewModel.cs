@@ -25,18 +25,6 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    public class NotameVM
-    {
-        public DelegateCommand GenerateGraph_ClickCommand => _generateGraph_ClickCommand ?? (_generateGraph_ClickCommand = new DelegateCommand(GenerateGraph_Click));
-        private DelegateCommand _generateGraph_ClickCommand;
-
-        public void GenerateGraph_Click()
-        {
-            Notame notame = new Notame();
-            notame.generateGraph_Click();
-        }
-    }
-
     internal sealed class LcmsMethodViewModel : MethodViewModel {
         private readonly LcmsMethodModel _model;
         private readonly IMessageBroker _broker;
@@ -48,6 +36,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IReadOnlyReactiveProperty<LcmsAnalysisViewModel> analysisAsObservable,
             IReadOnlyReactiveProperty<LcmsAlignmentViewModel> alignmentAsObservable,
             IMessageBroker broker,
+
             FocusControlManager focusControlManager)
             : base(
                   model, analysisAsObservable, alignmentAsObservable,
@@ -172,6 +161,25 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
             var vm = new ChromatogramsViewModel(m, _broker);
             _broker.Publish(vm);
+        }
+
+        public class NotameVM {
+            public DelegateCommand GenerateGraphCommand { get; set; }
+            public NotameVM()
+            {
+                GenerateGraphCommand = new DelegateCommand(Click_GenerateGraph);
+            }
+
+            private void Click_GenerateGraph() {
+                var notame = new Notame();
+                notame.GenerateGraph();
+            }
+        }
+
+        public NotameVM notameVM { get; set; }
+        public void GenerateGraph(Notame notame)
+        {
+            notameVM.GenerateGraphCommand.Execute(notame);
         }
 
         public ReactiveCommand ShowProteinGroupTableCommand { get; }
