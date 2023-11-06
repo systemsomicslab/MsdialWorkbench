@@ -1,11 +1,12 @@
 ﻿using CompMs.App.Msdial.Dto;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Utility;
+using CompMs.App.Msdial.Model.Lcms;
+using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
-using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.Lcms;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -92,7 +93,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
             OpenPreviousProjectCommand = new AsyncReactiveCommand<ProjectCrumb>()
                 .WithSubscribe(Model.LoadProjectAsync)
                 .AddTo(Disposables);
-            GenerateGraph_ClickCommand = new NotameVM();
+            GenerateGraphClickCommand = new LcmsMethodViewModel.NotameVM();
 
             _taskProgressCollection = new TaskProgressCollection();
             _taskProgressCollection.ShowWhileSwitchOn(Model.NowSaving, "Saving...").AddTo(Disposables);
@@ -102,8 +103,8 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 .AddTo(Disposables);
         }
 
-        public NotameVM GenerateGraph_ClickCommand { get; }
-        
+        public LcmsMethodViewModel.NotameVM GenerateGraphClickCommand { get; }
+
         private readonly IMessageBroker _broker;
 
         public MainWindowModel Model { get; }
