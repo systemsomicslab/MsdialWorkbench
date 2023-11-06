@@ -40,9 +40,7 @@ namespace CompMs.Common.Algorithm.Function
             }
             RefineScans(scans, query);
             var edges = GenerateEdgesBySpectralSimilarity(new PeakScanPair<T>(targetSpot, targetScan), peakScans, query, report);
-            var idlist = new HashSet<int>(edges.SelectMany(edge => new[] { edge.data.source, edge.data.target }));
-            var filteredNodes = nodes.Where(node => idlist.Contains(node.data.id)).ToList();
-            return new MolecularNetworkInstance(new RootObject { nodes = filteredNodes, edges = edges });
+            return new MolecularNetworkInstance(new RootObject { nodes = nodes, edges = edges });
         }
 
         private static List<Node> GetSimpleNodes<T>(List<PeakScanPair<T>> peakScans) where T : IMoleculeProperty, IChromatogramPeak {

@@ -370,7 +370,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
                 if (parameter.MnIsExportIonCorrelation && _alignmentFileModel.CountRawFiles >= 6) {
                     var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots.Select(n => n.innerModel).ToList(), parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode);
-                    rootObj.edges.AddRange(ion_edges);
+                    rootObj.edges.AddRange(ion_edges.Where(e => e.data.source == targetSpot.MasterAlignmentID || e.data.target == targetSpot.MasterAlignmentID));
                 }
 
                 return network;
