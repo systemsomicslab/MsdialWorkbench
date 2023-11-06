@@ -8,7 +8,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
     public static class MolecularNetworking {
         public static List<Edge> GenerateEdgesByIonValues(IReadOnlyList<AlignmentSpotProperty> spots, double cutoff, double maxEdgeNumPerNode) {
-            var node2links = new Dictionary<int, List<NodeTemp>>();
+            var links = new List<LinkTemp>();
             for (int i = 0; i < spots.Count; i++) {
                 var aSpot = spots[i];
                 var aArray = aSpot.AlignedPeakProperties.Select(n => n.PeakHeightTop).ToArray();
@@ -17,38 +17,40 @@ namespace CompMs.MsdialCore.Algorithm {
                     var bArray = bSpot.AlignedPeakProperties.Select(n => n.PeakHeightTop).ToArray();
                     var score = BasicMathematics.Coefficient(aArray, bArray);
                     if (score > cutoff * 0.01) {
-                        if (node2links.ContainsKey(i)) {
-                            node2links[i].Add(new NodeTemp() { Score = score, Peak = bSpot });
-                        }
-                        else {
-                            node2links[i] = new List<NodeTemp>() { new NodeTemp() { Score = score, Peak = bSpot } };
-                        }
+                        links.Add(new LinkTemp() { Score = score, Source = aSpot.MasterAlignmentID, Target = bSpot.MasterAlignmentID, });
                     }
                 }
             }
 
-            var cNode2Links = node2links.ToDictionary(
-                kvp => kvp.Key,
-                kvp => kvp.Value.OrderByDescending(n => n.Score).Take((int)maxEdgeNumPerNode).ToList());
-            var edges = new List<EdgeData>();
-            foreach (var item in cNode2Links) {
-                foreach (var link in item.Value) {
-                    var source_node_id = spots[item.Key].MasterAlignmentID;
-                    var target_node_id = link.Peak.MasterAlignmentID;
+            var sets = new Dictionary<int, int>();
+            foreach (var link in links) {
+                sets[link.Source] = sets[link.Target] = 0;
+            }
+            var edges = new List<Edge>();
+            foreach (var link in links.OrderByDescending(e => e.Score)) {
+                if (sets[link.Source] < maxEdgeNumPerNode && sets[link.Target] < maxEdgeNumPerNode) {
+                    ++sets[link.Source];
+                    ++sets[link.Target];
 
-                    var edge = new EdgeData() {
-                        score = System.Math.Round(link.Score, 3), source = source_node_id, target = target_node_id, linecolor = "white"
+                    var edge = new Edge {
+                        data = new EdgeData {
+                            score = System.Math.Round(link.Score, 3),
+                            source = link.Source,
+                            target = link.Target,
+                            linecolor = "white"
+                        },
+                        classes = "ioncorr_similarity",
                     };
                     edges.Add(edge);
                 }
             }
-
-            return edges.Select(n => new Edge() { data = n, classes = "ioncorr_similarity" }).ToList();
+            return edges;
         }
 
-        class NodeTemp {
+        class LinkTemp {
             public double Score { get; set; }
-            public AlignmentSpotProperty Peak { get; set; }
+            public int Source { get; set; }
+            public int Target { get; set; }
         }
     }
 }
