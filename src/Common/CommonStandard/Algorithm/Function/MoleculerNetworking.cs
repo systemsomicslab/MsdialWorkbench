@@ -154,7 +154,7 @@ namespace CompMs.Common.Algorithm.Function
                     if (scoreitem is null) continue;
                     edges.Add(new EdgeData
                     {
-                        score = scoreitem[0],
+                        score = Math.Round(scoreitem[0], 3),
                         matchpeakcount = scoreitem[1],
                         source = srcPeakScan.Peak.ID,
                         target = dstPeakScan.Peak.ID
