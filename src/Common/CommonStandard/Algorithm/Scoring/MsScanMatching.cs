@@ -473,6 +473,9 @@ namespace CompMs.Common.Algorithm.Scoring {
             else {
                 result.TotalScore = (float)GetTotalSimilarity(result.RtSimilarity, msMatchedScore, param.IsUseTimeForAnnotationScoring);
             }
+            result.IsReferenceMatched = result.IsSpectrumMatch
+                && result.TotalScore > param.TotalScoreCutoff
+                && (!param.IsUseTimeForAnnotationScoring || (isUseRetentionIndex && result.IsRiMatch) || (!isUseRetentionIndex && result.IsRtMatch));
             return result;
         }
 
