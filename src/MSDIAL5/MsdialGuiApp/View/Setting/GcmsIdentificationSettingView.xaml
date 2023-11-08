@@ -93,11 +93,23 @@
                     <ui:LabeledContent PrependLabel="Retention time tolerance:">
                         <TextBox Text="{Binding SearchParameter.RtTolerance.Value}" IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
                     </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="m/z range begin:">
+                        <TextBox Text="{Binding SearchParameter.MassRangeBegin.Value}" IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="m/z range end:">
+                        <TextBox Text="{Binding SearchParameter.MassRangeEnd.Value}" IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                    </ui:LabeledContent>
                     <ui:LabeledContent PrependLabel="m/z tolerance:">
                         <TextBox Text="{Binding SearchParameter.Ms1Tolerance.Value}" IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
                     </ui:LabeledContent>
                     <ui:LabeledContent PrependLabel="EI similarity cut off:">
                         <TextBox Text="{Binding SearchParameter.WeightedDotProductCutOff.Value}" IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Dot product score cut off:">
+                        <TextBox Text="{Binding SearchParameter.SimpleDotProductCutOff.Value}" IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Reverse dot product score cut off:">
+                        <TextBox Text="{Binding SearchParameter.ReverseDotProductCutOff.Value}" IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
                     </ui:LabeledContent>
                     <ui:LabeledContent PrependLabel="Identification score cut off:">
                         <TextBox Text="{Binding SearchParameter.TotalScoreCutoff.Value}" IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
