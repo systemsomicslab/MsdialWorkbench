@@ -22,7 +22,15 @@ namespace CompMs.MsdialCore.Algorithm
                 throw new ArgumentNullException(nameof(spectrums));
             }
 
-            _spectraTask = Task.FromResult((spectrums as IList<RawSpectrum>) ?? spectrums.ToList());
+            _spectraTask = Task.Run(() => {
+                var result = (spectrums as IList<RawSpectrum>) ?? spectrums.ToList();
+                foreach (var s in result) {
+                    if (s.MsLevel == 0) {
+                        s.MsLevel = 1;
+                    }
+                }
+                return result;
+            });
         }
 
         protected BaseDataProvider(Task<RawMeasurement> measurementTask) {
@@ -33,6 +41,11 @@ namespace CompMs.MsdialCore.Algorithm
             _spectraTask = Task.Run<IList<RawSpectrum>>(async () =>
             {
                 var measurement = await measurementTask.ConfigureAwait(false);
+                foreach (var s in measurement.SpectrumList) {
+                    if (s.MsLevel == 0) {
+                        s.MsLevel = 1;
+                    }
+                }
                 return measurement.SpectrumList;
             });
         }
