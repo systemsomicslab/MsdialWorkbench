@@ -40,6 +40,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         private CompositeDisposable _disposables;
         private readonly Ms1BasedSpectrumFeatureCollection _spectrumFeatures;
         private readonly ObservableCollection<ChromatogramPeakFeatureModel> _peaks;
+        private readonly AnalysisFileBeanModel _file;
 
         public GcmsAnalysisModel(AnalysisFileBeanModel file, IDataProviderFactory<AnalysisFileBeanModel> providerFactory, ProjectBaseParameter projectParameter, PeakPickBaseParameter peakPickParameter, ChromDecBaseParameter chromDecParameter, DataBaseMapper dbMapper, DataBaseStorage dbStorage, ProjectBaseParameterModel projectBaseParameterModel, PeakFilterModel peakFilterModel, IMessageBroker broker) {
             _disposables = new CompositeDisposable();
@@ -177,6 +178,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 (rtSpotFocus, s => s.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value),
                 (mzSpotFocus, s => s.QuantifiedChromatogramPeak.PeakFeature.Mass)).AddTo(_disposables);
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, rtSpotFocus, mzSpotFocus);
+            _file = file;
         }
 
         public SpectrumFeaturePlotModel PeakPlotModel { get; }
@@ -204,7 +206,7 @@ namespace CompMs.App.Msdial.Model.Gcms
 
         // IAnalysisModel interface
         Task IAnalysisModel.SaveAsync(CancellationToken token) {
-            throw new NotImplementedException();
+            return _spectrumFeatures.SaveAsync(_file);
         }
 
         // IResultModel interface
