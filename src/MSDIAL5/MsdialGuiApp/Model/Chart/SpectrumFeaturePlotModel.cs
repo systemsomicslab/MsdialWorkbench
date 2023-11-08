@@ -4,8 +4,10 @@ using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Chart
@@ -20,10 +22,10 @@ namespace CompMs.App.Msdial.Model.Chart
             SelectedChromatogramPeak = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
 
 
-            HorizontalLabel = new ReactivePropertySlim<string>("Retention time [min]").AddTo(Disposables);
+            HorizontalLabel = new ReactivePropertySlim<string>("Retention time [min]").AddTo(Disposables); // TODO: RI support
             VerticalLabel = new ReactivePropertySlim<string>("m/z").AddTo(Disposables);
 
-            Title = new[]
+            Title = new[] // TODO: RI support
             {
                 SelectedSpectrum.Where(s => s != null)
                     .Select(s => $"Scan: {s.Scan.ScanID} RT: {s.Scan.ChromXs.RT.Value} min Quant mass: m/z {s.QuantifiedChromatogramPeak.PeakFeature.Mass}"),
@@ -33,8 +35,14 @@ namespace CompMs.App.Msdial.Model.Chart
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
-            VerticalAxis = ContinuousAxisManager<double>.Build(peaks, p => p.Mass).AddTo(Disposables);
-            HorizontalAxis = ContinuousAxisManager<double>.Build(peaks, p => p.RT.Value).AddTo(Disposables);
+            HorizontalAxis = peaks.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default).Throttle(TimeSpan.FromSeconds(.01d))
+                .Select(_ => peaks.Any() ? new Range(peaks.Min(p => p.RT.Value), peaks.Max(p => p.RT.Value)) : new Range(0, 1)) // TODO: RI support
+                .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
+                .AddTo(Disposables);
+            VerticalAxis = peaks.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default).Throttle(TimeSpan.FromSeconds(.01d))
+                .Select(_ => peaks.Any() ? new Range(peaks.Min(p => p.Mass), peaks.Max(p => p.Mass)) : new Range(0, 1))
+                .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
+                .AddTo(Disposables);
             BrushMapDataSelector = brushMapDataSelector;
         }
 
