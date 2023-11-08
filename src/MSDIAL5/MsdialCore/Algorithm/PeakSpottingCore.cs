@@ -72,7 +72,12 @@ namespace CompMs.MsdialCore.Algorithm {
             if (startMass < _parameter.MassRangeBegin) startMass = _parameter.MassRangeBegin;
             if (endMass > _parameter.MassRangeEnd) endMass = _parameter.MassRangeEnd;
             float focusedMass = startMass, massStep = _parameter.MassSliceWidth;
-            if (_parameter.AccuracyType == AccuracyType.IsNominal) { massStep = 1.0F; }
+            if (_parameter.AccuracyType == AccuracyType.IsNominal) {
+                massStep = 1.0F;
+                _parameter.MassSliceWidth = .5f;
+                startMass = (float)Math.Floor(startMass);
+                endMass = (float)Math.Ceiling(endMass);
+            }
             var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, file.AcquisitionType);
             var detector = new PeakDetection(_parameter.MinimumDatapoints, _parameter.MinimumAmplitude);
             while (focusedMass < endMass) {
@@ -104,11 +109,15 @@ namespace CompMs.MsdialCore.Algorithm {
 
         private List<ChromatogramPeakFeature> Execute3DFeatureDetectionNormalModeByMultiThread(AnalysisFileBean file, IDataProvider provider, int numThreads, CancellationToken token, ReportProgress reporter, ChromatogramRange chromatogramRange) {
             var mzRange = provider.GetMs1Range(_parameter.IonMode);
-            float startMass = mzRange.Min; if (startMass < _parameter.MassRangeBegin) startMass = _parameter.MassRangeBegin;
-            float endMass = mzRange.Max; if (endMass > _parameter.MassRangeEnd) endMass = _parameter.MassRangeEnd;
+            float startMass = Math.Max(mzRange.Min, _parameter.MassRangeBegin);
+            float endMass = Math.Min(mzRange.Max, _parameter.MassRangeEnd);
             float massStep = _parameter.MassSliceWidth;
+            if (_parameter.AccuracyType == AccuracyType.IsNominal) {
+                massStep = 1.0F;
+                _parameter.MassSliceWidth = .5f;
+                mzRange = ((float)Math.Floor(mzRange.Min), (float)Math.Ceiling(mzRange.Max));
+            }
 
-            if (_parameter.AccuracyType == AccuracyType.IsNominal) { massStep = 1.0F; }
             var targetMasses = GetFocusedMassList(startMass, endMass, massStep, _parameter.MassRangeBegin, _parameter.MassRangeEnd);
             var chromPeakFeaturesArray = new List<ChromatogramPeakFeature>[targetMasses.Count];
 
