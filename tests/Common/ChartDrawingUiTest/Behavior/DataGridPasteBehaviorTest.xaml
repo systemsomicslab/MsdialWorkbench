@@ -1,0 +1,29 @@
+﻿<Page x:Class="ChartDrawingUiTest.Behavior.DataGridPasteBehaviorTest"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ChartDrawingUiTest.Behavior"
+      xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="DataGridPasteBehaviorTest">
+    <Page.DataContext>
+        <local:DataGridPasteBehaviorTestViewModel/>
+    </Page.DataContext>
+    <Grid>
+        <DataGrid ItemsSource="{Binding Records}"
+                  SelectionUnit="Cell"
+                  AutoGenerateColumns="False"
+                  behavior:DataGridPasteBehavior.Enable="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="X" Binding="{Binding X}"/>
+                <DataGridTextColumn Header="Y" Binding="{Binding Y}"/>
+                <DataGridTextColumn Header="Z" Binding="{Binding Z}"/>
+            </DataGrid.Columns>
+            <DataGrid.RowValidationRules>
+                <NotifyDataErrorValidationRule ValidatesOnTargetUpdated="True" ValidationStep="UpdatedValue"/>
+            </DataGrid.RowValidationRules>
+        </DataGrid>
+    </Grid>
+</Page>
