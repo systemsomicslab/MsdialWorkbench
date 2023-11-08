@@ -44,7 +44,7 @@ namespace CompMs.MsdialGcMsApi.Process
             _riDictionaryInfo = storage.Parameter.FileIdRiInfoDictionary;
             _peakSpotting = new PeakSpotting(storage.IupacDatabase, storage.Parameter);
             _ms1Deconvolution = new Ms1Dec(storage.Parameter);
-            _annotation = new Annotation(storage.DataBases.MetabolomicsDataBases.FirstOrDefault()?.DataBase.Database, storage.Parameter);
+            _annotation = new Annotation(storage.DataBases.MetabolomicsDataBases.FirstOrDefault(), storage.Parameter);
         }
 
         public async Task RunAsync(AnalysisFileBean analysisFile, Action<int> reportAction, CancellationToken token = default) {
@@ -74,7 +74,7 @@ namespace CompMs.MsdialGcMsApi.Process
             // annotations
             Console.WriteLine("Annotation started");
             var reportAnnotation = ReportProgress.FromRange(reportAction, ANNOTATION_START, ANNOTATION_END);
-            var annotatedMSDecResults = _annotation.MainProcess(msdecResults, carbon2RtDict, reportAnnotation);
+            var annotatedMSDecResults = _annotation.MainProcess(msdecResults, reportAnnotation);
             token.ThrowIfCancellationRequested();
 
             var spectrumFeatureCollection = _ms1Deconvolution.GetSpectrumFeaturesByQuantMassInformation(analysisFile, spectra, annotatedMSDecResults);
@@ -98,8 +98,7 @@ namespace CompMs.MsdialGcMsApi.Process
             // annotations
             Console.WriteLine("Annotation started");
             var reportAnnotation = ReportProgress.FromRange(reportAction, ANNOTATION_START, ANNOTATION_END);
-            var carbon2RtDict = analysisFile.GetRiDictionary(_riDictionaryInfo);
-            var annotatedMSDecResults = _annotation.MainProcess(mSDecResults, carbon2RtDict, reportAnnotation);
+            var annotatedMSDecResults = _annotation.MainProcess(mSDecResults, reportAnnotation);
             token.ThrowIfCancellationRequested();
 
             var spectrumFeatureCollection = _ms1Deconvolution.GetSpectrumFeaturesByQuantMassInformation(analysisFile, spectra, annotatedMSDecResults);

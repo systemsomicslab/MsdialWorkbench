@@ -16,20 +16,41 @@ namespace CompMs.MsdialGcMsApi.Algorithm
 {
     public class Annotation {
         private readonly IReadOnlyList<MoleculeMsReference> _mspDB;
+        private readonly string _annotatorID;
         private readonly MsdialGcmsParameter _parameter;
+        private readonly RetentionType _rType;
+        private readonly float _rTolerance;
 
-        public Annotation(IReadOnlyList<MoleculeMsReference> mspDB, MsdialGcmsParameter parameter) {
-            _mspDB = mspDB;
+        public Annotation(DataBaseItem<MoleculeDataBase> mspDB, MsdialGcmsParameter parameter) {
             _parameter = parameter;
+            _rType = parameter.RetentionType;
+            ChromXType type;
+            float tolerance;
+            switch (_rType) {
+                case RetentionType.RI:
+                    type = ChromXType.RI;
+                    tolerance = parameter.MspSearchParam.RtTolerance;
+                    break;
+                case RetentionType.RT:
+                    type = ChromXType.RT;
+                    tolerance = parameter.MspSearchParam.RiTolerance;
+                    break;
+                default:
+                    throw new Exception($"Unknown {nameof(RetentionType)}: {_rType}");
+            }
+            _mspDB = mspDB?.DataBase.Database.OrderBy(r => r.ChromXs.GetChromByType(type).Value).ToList();
+            _annotatorID = mspDB?.Pairs.FirstOrDefault()?.AnnotatorID;
+            var factor = _parameter.MspSearchParam.IsUseTimeForAnnotationFiltering ? 1.0F : 2.0F;
+            _rTolerance = tolerance * factor;
         }
 
         /// <summary>
         /// ref must be ordered by retention time or retention index
         /// </summary>
         /// <param name="ms1DecResults"></param>
-        /// <param name="carbon2RtDict"></param>
         /// <param name="reporter"></param>
-        public AnnotatedMSDecResult[] MainProcess(IReadOnlyList<MSDecResult> ms1DecResults, Dictionary<int, float> carbon2RtDict, ReportProgress reporter) {
+        /// 
+        public AnnotatedMSDecResult[] MainProcess(IReadOnlyList<MSDecResult> ms1DecResults, ReportProgress reporter) {
             Console.WriteLine("Annotation started");
             if (_parameter.IsIdentificationOnlyPerformedForAlignmentFile) {
                 return ms1DecResults.Select(r => new AnnotatedMSDecResult(r, new MsScanMatchResultContainer())).ToArray();
@@ -55,25 +76,21 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             return ms1DecResults.Select(r => new AnnotatedMSDecResult(r, new MsScanMatchResultContainer())).ToArray();
         }
 
-        public List<MsScanMatchResult> MspBasedProccess(MSDecResult msdecResult) {
-            var rType = _parameter.RetentionType;
-            var rValue = rType == RetentionType.RT ? msdecResult.ChromXs.RT.Value : msdecResult.ChromXs.RI.Value;
-            var rTolerance = rType == RetentionType.RT ? _parameter.MspSearchParam.RtTolerance : _parameter.MspSearchParam.RiTolerance;
-            var factor = _parameter.MspSearchParam.IsUseTimeForAnnotationFiltering ? 1.0F : 2.0F;
+        private List<MsScanMatchResult> MspBasedProccess(MSDecResult msdecResult) {
+            var rValue = _rType == RetentionType.RT ? msdecResult.ChromXs.RT.Value : msdecResult.ChromXs.RI.Value;
             var normMSScanProp = DataAccess.GetNormalizedMSScanProperty(msdecResult, _parameter.MspSearchParam);
 
-            rTolerance *= factor;
-
-            var (startID, endID) = RetrieveMspBounds(rType, rValue, rTolerance);
-            //Console.WriteLine("ID {0}, Start {1}, End {2}", msdecResult.ScanID, startID, endID);
+            var (startID, endID) = RetrieveMspBounds(rValue);
             var matchedQueries = new List<MsScanMatchResult>();
             for (int i = startID; i < endID; i++) {
                 var refQuery = _mspDB[i];
-                var refRetention = rType == RetentionType.RT ? refQuery.ChromXs.RT.Value : refQuery.ChromXs.RI.Value;
-                if (Math.Abs(rValue - refRetention) < rTolerance) {
+                var refRetention = _rType == RetentionType.RT ? refQuery.ChromXs.RT.Value : refQuery.ChromXs.RI.Value;
+                System.Diagnostics.Debug.Assert(Math.Abs(rValue - refRetention) < _rTolerance);
+                if (Math.Abs(rValue - refRetention) < _rTolerance) {
                     var result = MsScanMatching.CompareEIMSScanProperties(normMSScanProp, refQuery, _parameter.MspSearchParam);
                     if (result.IsSpectrumMatch) {
                         result.LibraryIDWhenOrdered = i;
+                        result.AnnotatorID = _annotatorID;
                         matchedQueries.Add(result);
                     }
                 }
@@ -90,24 +107,20 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             return matchedQueries;
         }
 
-        private (int, int) RetrieveMspBounds(RetentionType rType, double rValue, float rTolerance) {
-            if (rType == RetentionType.RT) {
-                var startID = SearchCollection.LowerBound(_mspDB,
-                    new MoleculeMsReference() { ChromXs = new ChromXs(rValue - rTolerance, ChromXType.RT, ChromXUnit.Min) },
-                    (a, b) => a.ChromXs.RT.Value.CompareTo(b.ChromXs.RT.Value));
-                var endID = SearchCollection.UpperBound(_mspDB,
-                    new MoleculeMsReference() { ChromXs = new ChromXs(rValue + rTolerance, ChromXType.RT, ChromXUnit.Min) },
-                    (a, b) => a.ChromXs.RT.Value.CompareTo(b.ChromXs.RT.Value));
-                return (startID, endID);
-            }
-            else {
-                var startID = SearchCollection.LowerBound(_mspDB,
-                    new MoleculeMsReference() { ChromXs = new ChromXs(rValue - rTolerance, ChromXType.RI, ChromXUnit.None) },
-                    (a, b) => a.ChromXs.RI.Value.CompareTo(b.ChromXs.RI.Value));
-                var endID = SearchCollection.UpperBound(_mspDB,
-                    new MoleculeMsReference() { ChromXs = new ChromXs(rValue + rTolerance, ChromXType.RI, ChromXUnit.None) },
-                    (a, b) => a.ChromXs.RI.Value.CompareTo(b.ChromXs.RI.Value));
-                return (startID, endID);
+        private (int, int) RetrieveMspBounds(double rValue) {
+            switch (_rType) {
+                case RetentionType.RT: {
+                        var startID = SearchCollection.UpperBound(_mspDB, rValue - _rTolerance, (a, b) => a.ChromXs.RT.Value.CompareTo(b));
+                        var endID = SearchCollection.LowerBound(_mspDB, rValue + _rTolerance, (a, b) => a.ChromXs.RT.Value.CompareTo(b));
+                        return (startID, endID);
+                    }
+                case RetentionType.RI: {
+                        var startID = SearchCollection.UpperBound(_mspDB, rValue - _rTolerance, (a, b) => a.ChromXs.RI.Value.CompareTo(b));
+                        var endID = SearchCollection.LowerBound(_mspDB, rValue + _rTolerance, (a, b) => a.ChromXs.RI.Value.CompareTo(b));
+                        return (startID, endID);
+                    }
+                default:
+                    throw new Exception($"Unknown {nameof(RetentionType)}: {_rType}");
             }
         }
     }
