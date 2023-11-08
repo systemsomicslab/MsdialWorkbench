@@ -70,6 +70,12 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                     Console.WriteLine("Done {0}/{1}", index, ms1DecResults.Count);
                     reporter.Show(index, ms1DecResults.Count);
                 }
+                if (_parameter.OnlyReportTopHitInMspSearch) {
+
+                }
+                else {
+
+                }
                 return features;
             }
 
