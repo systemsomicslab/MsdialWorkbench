@@ -69,7 +69,6 @@
   <ItemGroup>
     <PackageReference Include="EnterpriseLibrary.Common" Version="5.0.505"/>
     <PackageReference Include="EnterpriseLibrary.Validation" Version="5.0.505"/>
-    <PackageReference Include="Microsoft.Bcl.Build" Version="1.0.21"/>
     <PackageReference Include="Microsoft.Net.Http" Version="2.2.29"/>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
     <PackageReference Include="Unity" Version="2.1.505.2"/>
