@@ -36,6 +36,10 @@ namespace CompMs.Common.Interfaces
             return !string.IsNullOrWhiteSpace(molecule.InChIKey) && molecule.InChIKey.Length == 27;
         }
 
+        public static IMoleculeProperty AsPutative(this IMoleculeProperty molecule) {
+            return new MoleculeProperty($"Putative: {molecule.Name}", molecule.Formula, molecule.Ontology, molecule.SMILES, molecule.InChIKey);
+        }
+
         public static readonly IMessagePackFormatter<IMoleculeProperty> Formatter = new MoleculePropertyFormatter();
 
         class MoleculePropertyFormatter : IMessagePackFormatter<IMoleculeProperty>
