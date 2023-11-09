@@ -3,6 +3,7 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Common.Interfaces;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
@@ -57,24 +58,56 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             }
 
             if (_mspDB != null && _mspDB.Count > 0) {
-                var features = new AnnotatedMSDecResult[ms1DecResults.Count];
+                var containers = new MsScanMatchResultContainer[ms1DecResults.Count];
                 foreach (var (decResult, index) in ms1DecResults.WithIndex()) {
-                    var results = new MsScanMatchResultContainer();
-                    results.AddResults(MspBasedProccess(decResult));
-                    if (results.Representative is MsScanMatchResult topHit && !topHit.IsUnknown) {
-                        features[index] = new AnnotatedMSDecResult(decResult, results, _mspDB[topHit.LibraryID]);
-                    }
-                    else {
-                        features[index] = new AnnotatedMSDecResult(decResult, results);
-                    }
+                    var results = containers[index] = new MsScanMatchResultContainer();
+                    results.AddResults(MspBasedProccess(decResult).OrderByDescending(r => r.TotalScore));
                     Console.WriteLine("Done {0}/{1}", index, ms1DecResults.Count);
                     reporter.Show(index, ms1DecResults.Count);
                 }
-                if (_parameter.OnlyReportTopHitInMspSearch) {
 
+                var features = new AnnotatedMSDecResult[ms1DecResults.Count];
+                if (_parameter.OnlyReportTopHitInMspSearch) {
+                    var used = new HashSet<MoleculeMsReference>();
+                    foreach (var (container, i) in containers.WithIndex().OrderByDescending(p => p.Item1.Representative.TotalScore)) {
+                        if (container.Representative is MsScanMatchResult topHit && !topHit.IsUnknown) {
+                            ms1DecResults[i].MspIDs.AddRange(containers[i].MatchResults.OrderByDescending(r => r.TotalScore).Select(r => r.LibraryID));
+                            var best = containers[i].Representative;
+                            ms1DecResults[i].MspBasedMatchResult = best;
+                            ms1DecResults[i].MspID = best.LibraryID;
+                            ms1DecResults[i].MspIDWhenOrdered = best.LibraryIDWhenOrdered;
+
+                            var reference = _mspDB[container.Representative.LibraryIDWhenOrdered];
+                            if (used.Contains(reference)) {
+                                features[i] = new AnnotatedMSDecResult(ms1DecResults[i], container, reference.AsPutative(), reference.QuantMass != 0 ? reference.QuantMass : ms1DecResults[i].ModelPeakMz);
+                            }
+                            else {
+                                features[i] = new AnnotatedMSDecResult(ms1DecResults[i], container, reference);
+                                used.Add(reference);
+                            }
+                        }
+                        else {
+                            features[i] = new AnnotatedMSDecResult(ms1DecResults[i], container);
+                        }
+                    }
                 }
                 else {
+                    for (int i = 0; i < ms1DecResults.Count; i++) {
+                        var results = containers[i];
+                        if (results.Representative is MsScanMatchResult topHit && !topHit.IsUnknown) {
+                            features[i] = new AnnotatedMSDecResult(ms1DecResults[i], results, _mspDB[topHit.LibraryIDWhenOrdered]);
 
+                            MsScanMatchResult[] msScanMatchResults = containers[i].MatchResults.OrderByDescending(r => r.TotalScore).ToArray();
+                            ms1DecResults[i].MspIDs.AddRange(msScanMatchResults.Select(r => r.LibraryID));
+                            var best = msScanMatchResults.First();
+                            ms1DecResults[i].MspBasedMatchResult = best;
+                            ms1DecResults[i].MspID = best.LibraryID;
+                            ms1DecResults[i].MspIDWhenOrdered = best.LibraryIDWhenOrdered;
+                        }
+                        else {
+                            features[i] = new AnnotatedMSDecResult(ms1DecResults[i], results);
+                        }
+                    }
                 }
                 return features;
             }
@@ -101,14 +134,9 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                     }
                 }
             }
-            
-            foreach (var (result, index) in matchedQueries.OrEmptyIfNull().OrderByDescending(n => n.TotalScore).WithIndex()) {
-                if (index == 0) {
-                    msdecResult.MspBasedMatchResult = result;
-                    msdecResult.MspID = result.LibraryID;
-                    msdecResult.MspIDWhenOrdered = result.LibraryIDWhenOrdered;
-                }
-                msdecResult.MspIDs.Add(result.LibraryID);
+
+            if (matchedQueries?.Any() ?? false) {
+                return matchedQueries;
             }
             return matchedQueries;
         }
