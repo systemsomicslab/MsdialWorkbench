@@ -122,17 +122,17 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         [Required(ErrorMessage = "Required field")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0d, double.MaxValue, ErrorMessage = "Similarity should be positive value.")]
+        [Range(0d, 100d, ErrorMessage = "Similarity cutoff value must fall within the range of 0 to 100.")]
         public ReactiveProperty<string> IonCorrelationSimilarityCutoff { get; }
 
         [Required(ErrorMessage = "Required field")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0d, double.MaxValue, ErrorMessage = "Similarity should be positive value.")]
+        [Range(0d, 100d, ErrorMessage = "Similarity cutoff value must fall within the range of 0 to 100.")]
         public ReactiveProperty<string> SpectrumSimilarityCutOff { get; }
 
         [Required(ErrorMessage = "Required field")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0d, double.MaxValue, ErrorMessage = "Cut-off value should be positive value.")]
+        [Range(0d, 100d, ErrorMessage = "The cutoff value must fall within the range of 0 to 100.")]
         public ReactiveProperty<string> RelativeAbundanceCutoff { get; }
 
         [Required(ErrorMessage = "Required field")]
@@ -296,17 +296,17 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         [Required(ErrorMessage = "Required field")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0d, double.MaxValue, ErrorMessage = "Similarity should be positive value.")]
+        [Range(0d, 100d, ErrorMessage = "Similarity cutoff value must fall within the range of 0 to 100.")]
         public ReactiveProperty<string> IonCorrelationSimilarityCutoff { get; }
 
         [Required(ErrorMessage = "Required field")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0d, double.MaxValue, ErrorMessage = "Similarity should be positive value.")]
+        [Range(0d, 100d, ErrorMessage = "Similarity cutoff value must fall within the range of 0 to 100.")]
         public ReactiveProperty<string> SpectrumSimilarityCutOff { get; }
 
         [Required(ErrorMessage = "Required field")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0d, double.MaxValue, ErrorMessage = "Cut-off value should be positive value.")]
+        [Range(0d, 100d, ErrorMessage = "The cutoff value must fall within the range of 0 to 100.")]
         public ReactiveProperty<string> RelativeAbundanceCutoff { get; }
 
         [Required(ErrorMessage = "Required field")]
