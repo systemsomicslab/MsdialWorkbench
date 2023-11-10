@@ -5,11 +5,9 @@ using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Statistics;
-using CompMs.App.Msdial.ViewModel.Lcms;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -32,7 +30,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
-    
+
     internal sealed class LcmsMethodModel : MethodModelBase
     {
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> CHROMATOGRAM_SPOT_SERIALIZER;
@@ -126,6 +124,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             MolecularNetworkingSettingModel = new MolecularNetworkingSettingModel(storage.Parameter.MolecularSpectrumNetworkingBaseParam, currentFileResult, currentAlignmentResult).AddTo(Disposables);
 
             ParameterExportModel = new ParameterExportModel(storage.DataBases, storage.Parameter, broker);
+
+            Notame = new Notame();
         }
 
         public PeakFilterModel PeakFilterModel { get; }
@@ -421,11 +421,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             return new ChromatogramsModel("TIC, BPC, and highest peak m/z's EIC", displayChroms, "TIC, BPC, and highest peak m/z's EIC", "Retention time [min]", "Absolute ion abundance");
         } 
 
-        public Notame notame {  get; set; }
-        public void GenerateGraph()
-        {
-            notame.Run();
-        }
+        public Notame Notame {  get; }
 
         public FragmentQuerySettingModel ShowShowFragmentSearchSettingView() {
             return new FragmentQuerySettingModel(_storage.Parameter.AdvancedProcessOptionBaseParam, AnalysisModel, AlignmentModel);
