@@ -34,9 +34,11 @@ namespace CompMs.Common.Algorithm.Function
         public MolecularNetworkInstance GetMoleculerNetworkInstanceForTargetSpot<T>(T targetSpot, IMSScanProperty targetScan, IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
             List<PeakScanPair<T>> peakScans = spots.Zip(scans, (spot, scan) => new PeakScanPair<T>(spot, scan)).ToList();
             var nodes = GetSimpleNodes(peakScans);
-            RefineScans(new[] { targetScan }, query);
-            if (targetScan.Spectrum.IsEmptyOrNull()) {
-                return new MolecularNetworkInstance(new RootObject { nodes = new List<Node>(0), edges = new List<Edge>(0), });
+            if (scans.All(s => s.ScanID != targetScan.ScanID)) {
+                RefineScans(new[] { targetScan }, query);
+                if (targetScan.Spectrum.IsEmptyOrNull()) {
+                    return new MolecularNetworkInstance(new RootObject { nodes = new List<Node>(0), edges = new List<Edge>(0), });
+                }
             }
             RefineScans(scans, query);
             var edges = GenerateEdgesBySpectralSimilarity(new PeakScanPair<T>(targetSpot, targetScan), peakScans, query, report);
