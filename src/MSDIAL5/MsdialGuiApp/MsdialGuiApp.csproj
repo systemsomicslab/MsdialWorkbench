@@ -90,6 +90,7 @@
 		<None Remove="Resources\MolecularNetworking.ico" />
 		<None Remove="Resources\msdial_icon.png" />
 		<None Remove="Resources\msfinder_icon.ico" />
+		<None Remove="Resources\notame.png" />
 		<None Remove="Resources\RawAndDeconvo.ico" />
 		<None Remove="Resources\RawChromatogram.ico" />
 		<None Remove="Resources\SplashLipids.xml" />
@@ -165,6 +166,7 @@
 	  <Resource Include="Resources\msfinder_icon.ico">
 	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </Resource>
+	  <Resource Include="Resources\notame.png" />
 	  <Resource Include="Resources\RawAndDeconvo.ico">
 	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </Resource>
