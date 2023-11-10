@@ -10,6 +10,7 @@ using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
+using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -25,6 +26,7 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
+
     internal sealed class LcmsMethodViewModel : MethodViewModel {
         private readonly LcmsMethodModel _model;
         private readonly IMessageBroker _broker;
@@ -163,23 +165,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             _broker.Publish(vm);
         }
 
-        public class NotameVM {
-            public DelegateCommand GenerateGraphCommand { get; set; }
-            public NotameVM()
-            {
-                GenerateGraphCommand = new DelegateCommand(Click_GenerateGraph);
-            }
-
-            private void Click_GenerateGraph() {
-                var notame = new Notame();
-                notame.Run();
-            }
-        }
-
-        public NotameVM notameVM { get; set; }
+        public NotameViewModel notameVM { get; set; }
         public void GenerateGraph(Notame notame)
         {
-            notameVM.GenerateGraphCommand.Execute(notame);
+            notameVM.RunNotameCommand.Execute(notame);
         }
 
         public ReactiveCommand ShowProteinGroupTableCommand { get; }
