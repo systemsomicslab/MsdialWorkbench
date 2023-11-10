@@ -1,16 +1,11 @@
-using CompMs.Common.Extension;
-using CompMs.CommonMVVM;
-using System.Windows;
-using System.Windows.Media.Imaging;
-using System.Drawing;
 using RDotNet;
-using System;
+using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Statistics
 {
-    public class Notame
+    public sealed class Notame
     {
-        public void GenerateGraph()
+        public void Run()
         {
             REngine.SetEnvironmentVariables();
             var engine = REngine.GetInstance();
@@ -23,20 +18,6 @@ namespace CompMs.App.Msdial.Model.Statistics
             engine.Evaluate("dev.off()");
 
             MessageBox.Show("Graph generated and saved as 'graph.png'");
-        }
-
-        private void ButtonExit(object sender, RoutedEventArgs e)
-        {
-            REngine.SetEnvironmentVariables();
-            var engine = REngine.GetInstance();
-            engine.Initialize();
-            engine.Dispose();
-            Application.Current.Shutdown();
-        }
-
-        public interface IGenerateGraph
-        {
-            void GenerateGraph();
         }
     }
 }

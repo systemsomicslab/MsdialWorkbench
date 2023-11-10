@@ -424,7 +424,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public Notame notame {  get; set; }
         public void GenerateGraph()
         {
-            notame.GenerateGraph();
+            notame.Run();
         }
 
         public FragmentQuerySettingModel ShowShowFragmentSearchSettingView() {

@@ -172,7 +172,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             private void Click_GenerateGraph() {
                 var notame = new Notame();
-                notame.GenerateGraph();
+                notame.Run();
             }
         }
 
