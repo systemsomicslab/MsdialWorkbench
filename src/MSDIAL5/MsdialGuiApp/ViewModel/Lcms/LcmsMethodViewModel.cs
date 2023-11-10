@@ -26,7 +26,6 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-
     internal sealed class LcmsMethodViewModel : MethodViewModel {
         private readonly LcmsMethodModel _model;
         private readonly IMessageBroker _broker;
@@ -75,6 +74,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             _molecularNetworkingExportSettingViewModel = new MolecularNetworkingExportSettingViewModel(_model.MolecularNetworkingSettingModel).AddTo(Disposables);
             _molecularNetworkingSendingToCytoscapeJsSettingViewModel = new MolecularNetworkingSendingToCytoscapeJsSettingViewModel(_model.MolecularNetworkingSettingModel).AddTo(Disposables);
             ExportParameterCommand = new AsyncReactiveCommand().WithSubscribe(model.ParameterExportModel.ExportAsync).AddTo(Disposables);
+
+            NotameViewModel = new NotameViewModel(model.Notame);
         }
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
@@ -165,11 +166,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             _broker.Publish(vm);
         }
 
-        public NotameViewModel notameVM { get; set; }
-        public void GenerateGraph(Notame notame)
-        {
-            notameVM.RunNotameCommand.Execute(notame);
-        }
+        public NotameViewModel NotameViewModel { get; set; }
 
         public ReactiveCommand ShowProteinGroupTableCommand { get; }
 
