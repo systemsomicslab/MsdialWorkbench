@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using CompMs.Common.Algorithm.Scoring;
-using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
@@ -11,7 +10,6 @@ using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 
@@ -43,33 +41,31 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
 
         public List<AlignmentSpotProperty> Join(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceId, DataAccessor accessor) {
 
-            var master = GetMasterList(analysisFiles, referenceId, accessor);
-            var spots = JoinAll(master, analysisFiles, accessor);
+            var master = GetMasterList(analysisFiles, referenceId);
+            var spots = JoinAll(master, analysisFiles);
             return spots;
         }
 
-        protected abstract List<IMSScanProperty> GetMasterList(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceId, DataAccessor accessor);
-        protected abstract List<AlignmentSpotProperty> JoinAll(List<IMSScanProperty> master, IReadOnlyList<AnalysisFileBean> analysisFiles, DataAccessor accessor);
+        protected abstract List<SpectrumFeature> GetMasterList(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceId);
+        protected abstract List<AlignmentSpotProperty> JoinAll(List<SpectrumFeature> master, IReadOnlyList<AnalysisFileBean> analysisFiles);
 
-        protected bool IsSimilarTo(IMSScanProperty x, IMSScanProperty y) {
-            var result = MsScanMatching.CompareEIMSScanProperties(x, y, this.msMatchParam, _alignmentParameter.Ms1AlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, indextype == AlignmentIndexType.RI);
+        protected bool IsSimilarTo(SpectrumFeature x, SpectrumFeature y) {
+            var result = MsScanMatching.CompareEIMSScanProperties(x.AnnotatedMSDecResult.MSDecResult, y.AnnotatedMSDecResult.MSDecResult, msMatchParam, _alignmentParameter.Ms1AlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, indextype == AlignmentIndexType.RI);
             var isRetentionMatch = indextype == AlignmentIndexType.RI ? result.IsRiMatch : result.IsRtMatch;
             return result.IsSpectrumMatch && isRetentionMatch;
         }
 
-        protected double GetSimilality(IMSScanProperty x, IMSScanProperty y) {
-            var result = MsScanMatching.CompareEIMSScanProperties(x, y, this.msMatchParam, _alignmentParameter.Ms1AlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, indextype == AlignmentIndexType.RI);
+        protected double GetSimilality(SpectrumFeature x, SpectrumFeature y) {
+            var result = MsScanMatching.CompareEIMSScanProperties(x.AnnotatedMSDecResult.MSDecResult, y.AnnotatedMSDecResult.MSDecResult, msMatchParam, _alignmentParameter.Ms1AlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, indextype == AlignmentIndexType.RI);
             return result.TotalScore;
         }
 
-        protected static List<AlignmentSpotProperty> GetSpots(IReadOnlyCollection<IMSScanProperty> masters, IEnumerable<AnalysisFileBean> analysisFiles) {
+        protected static List<AlignmentSpotProperty> GetSpots(IReadOnlyCollection<SpectrumFeature> masters, IEnumerable<AnalysisFileBean> analysisFiles) {
             var masterId = 0;
             return InitSpots(masters, analysisFiles, ref masterId);
         }
 
-        protected static List<AlignmentSpotProperty> InitSpots(IEnumerable<IMSScanProperty> scanProps,
-            IEnumerable<AnalysisFileBean> analysisFiles, ref int masterId, int parentId = -1) {
-
+        protected static List<AlignmentSpotProperty> InitSpots(IEnumerable<SpectrumFeature> scanProps, IEnumerable<AnalysisFileBean> analysisFiles, ref int masterId) {
             if (scanProps == null) return new List<AlignmentSpotProperty>();
 
             var spots = new List<AlignmentSpotProperty>();
@@ -78,12 +74,11 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
                 {
                     MasterAlignmentID = masterId++,
                     AlignmentID = localId,
-                    ParentAlignmentID = parentId,
-                    TimesCenter = scanProp.ChromXs,
-                    MassCenter = scanProp.PrecursorMz,
-                    IonMode = scanProp.IonMode,
+                    TimesCenter = scanProp.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop,
+                    MassCenter = scanProp.QuantifiedChromatogramPeak.PeakFeature.Mass,
+                    IonMode = scanProp.AnnotatedMSDecResult.MSDecResult.IonMode,
+                    InternalStandardAlignmentID = -1
                 };
-                spot.InternalStandardAlignmentID = -1;
 
                 var peaks = new List<AlignmentChromPeakFeature>();
                 foreach (var file in analysisFiles) {
@@ -93,16 +88,11 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
                         PeakID = -1,
                         FileID = file.AnalysisFileId,
                         FileName = file.AnalysisFileName,
-                        IonMode = scanProp.IonMode,
+                        IonMode = scanProp.AnnotatedMSDecResult.MSDecResult.IonMode,
                     });
                 }
                 spot.AlignedPeakProperties = peaks;
-
-                if (scanProp is ChromatogramPeakFeature chrom)
-                    spot.AlignmentDriftSpotFeatures = InitSpots(chrom.DriftChromFeatures, analysisFiles, ref masterId, spot.AlignmentID);
-                else
-                    spot.AlignmentDriftSpotFeatures = new List<AlignmentSpotProperty>();
-
+                spot.AlignmentDriftSpotFeatures = new List<AlignmentSpotProperty>();
                 spots.Add(spot);
             }
 
@@ -127,34 +117,35 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             this.rtWidth = (int)Math.Ceiling(this.rtTol / this.rtBucket);
         }
 
-        protected override List<IMSScanProperty> GetMasterList(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceId, DataAccessor accessor) {
-
-            var referenceFile = analysisFiles.FirstOrDefault(file => file.AnalysisFileId == referenceId);
-            if (referenceFile == null) return new List<IMSScanProperty>();
-
-            var master = accessor.GetMSScanProperties(referenceFile)
-                                 .GroupBy(prop => ((int)Math.Ceiling(prop.ChromXs.RT.Value / rtBucket), (int)Math.Ceiling(prop.PrecursorMz / mzBucket)))
-                                 .ToDictionary(group => group.Key, group => group.ToList());
+        protected override List<SpectrumFeature> GetMasterList(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceID) {
+            var referenceFile = analysisFiles.FirstOrDefault(file => file.AnalysisFileId == referenceID);
+            if (referenceFile is null) {
+                return new List<SpectrumFeature>(0);
+            }
+            var spectrumFeatures = referenceFile.LoadSpectrumFeatures();
+            var master = spectrumFeatures.Items
+                .GroupBy(prop => ((int)Math.Ceiling(prop.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value / rtBucket), (int)Math.Ceiling(prop.QuantifiedChromatogramPeak.PeakFeature.Mass / mzBucket)))
+                .ToDictionary(group => group.Key, group => group.ToList());
 
             foreach (var analysisFile in analysisFiles) {
-                if (analysisFile.AnalysisFileId == referenceFile.AnalysisFileId)
+                if (analysisFile.AnalysisFileId == referenceID) {
                     continue;
-                var target = accessor.GetMSScanProperties(analysisFile);
-                MergeChromatogramPeaks(master, target);
+                }
+                var target = analysisFile.LoadSpectrumFeatures();
+                MergeSpectrumFeatures(master, target);
             }
-
-            return master.Values.SelectMany(props => props).ToList();
+            return master.Values.SelectMany(props => props).OrderBy(prop => (prop.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value, prop.QuantifiedChromatogramPeak.PeakFeature.Mass)).ToList();
         }
 
-        private void MergeChromatogramPeaks(IDictionary<(int, int), List<IMSScanProperty>> master, IEnumerable<IMSScanProperty> targets) {
-            foreach (var target in targets) {
+        private void MergeSpectrumFeatures(IDictionary<(int, int), List<SpectrumFeature>> master, SpectrumFeatureCollection targets) {
+            foreach (var target in targets.Items) {
                 SetToMaster(master, target);
             }
         }
 
-        private bool SetToMaster(IDictionary<(int, int), List<IMSScanProperty>> master, IMSScanProperty target) {
-            var mzTarget = (int)Math.Ceiling(target.PrecursorMz / mzBucket);
-            var rtTarget = (int)Math.Ceiling(target.ChromXs.RT.Value / rtBucket);
+        private bool SetToMaster(IDictionary<(int, int), List<SpectrumFeature>> master, SpectrumFeature target) {
+            var mzTarget = (int)Math.Ceiling(target.QuantifiedChromatogramPeak.PeakFeature.Mass / mzBucket);
+            var rtTarget = (int)Math.Ceiling(target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value / rtBucket);
             for(int rtIdc = rtTarget - rtWidth; rtIdc <= rtTarget + rtWidth; rtIdc++) { // in many case, rtIdc is from rtTarget - 1 to rtTarget + 1
                 for(int mzIdc = mzTarget - mzWidth; mzIdc <= mzTarget + mzWidth; mzIdc++) { // in many case, mzIdc is from mzTarget - 1 to mzTarget + 1
                     if (master.ContainsKey((rtIdc, mzIdc))) {
@@ -166,47 +157,46 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
                     }
                 }
             }
-            if (!master.ContainsKey((rtTarget, mzTarget)))
-                master[(rtTarget, mzTarget)] = new List<IMSScanProperty>();
+            if (!master.ContainsKey((rtTarget, mzTarget))) {
+                master[(rtTarget, mzTarget)] = new List<SpectrumFeature>();
+            }
             master[(rtTarget, mzTarget)].Add(target);
             return true;
         }
 
-        protected override List<AlignmentSpotProperty> JoinAll(List<IMSScanProperty> master, IReadOnlyList<AnalysisFileBean> analysisFiles, DataAccessor accessor) {
+        protected override List<AlignmentSpotProperty> JoinAll(List<SpectrumFeature> master, IReadOnlyList<AnalysisFileBean> analysisFiles) {
             var result = GetSpots(master, analysisFiles);
-            
             foreach (var analysisFile in analysisFiles) {
-                var chromatogram = accessor.GetMSScanProperties(analysisFile);
-                AlignPeaksToMaster(result, master, chromatogram, analysisFile.AnalysisFileId);
+                var spectrumFeatures = analysisFile.LoadSpectrumFeatures();
+                AlignPeaksToMaster(result, master, spectrumFeatures.Items, analysisFile.AnalysisFileId);
             }
-            
             return result;
         }
 
-        private void AlignPeaksToMaster(List<AlignmentSpotProperty> spots, List<IMSScanProperty> masters, List<IMSScanProperty> targets, int fileId) {
+        private void AlignPeaksToMaster(List<AlignmentSpotProperty> spots, List<SpectrumFeature> masters, IReadOnlyList<SpectrumFeature> targets, int fileId) {
             var n = masters.Count;
             var maxMatchs = new double[n];
-            var dummy = new ChromatogramPeakFeature(); // dummy instance for binary search.
 
             foreach (var target in targets) {
                 int? matchIdx = null;
                 double matchFactor = double.MinValue;
-                dummy.ChromXs = new ChromXs(target.ChromXs.RT.Value - rtTol, ChromXType.RT, ChromXUnit.Min);
-                dummy.PrecursorMz = target.PrecursorMz - mzTol;
-                var lo = SearchCollection.LowerBound(masters, dummy, comparer);
+                var lo = SearchCollection.LowerBound(masters, (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value, target.QuantifiedChromatogramPeak.PeakFeature.Mass), (s, p) => (s.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value, s.QuantifiedChromatogramPeak.PeakFeature.Mass).CompareTo(p));
                 for (var i = lo; i < n; i++) {
-                    if (target.ChromXs.RT.Value + rtTol < masters[i].ChromXs.RT.Value)
+                    if (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value + rtTol < masters[i].QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value) {
                         break;
-                    if (!IsSimilarTo(masters[i], target))
+                    }
+                    if (!IsSimilarTo(masters[i], target)) {
                         continue;
+                    }
                     var factor = GetSimilality(masters[i], target);
                     if (factor > maxMatchs[i] && factor > matchFactor) {
                         matchIdx = i;
                         maxMatchs[i] = matchFactor = factor;
                     }
                 }
-                if (matchIdx.HasValue)
-                    DataObjConverter.SetAlignmentChromPeakFeatureFromMSDecResult(spots[matchIdx.Value].AlignedPeakProperties[fileId], target as MSDecResult);
+                if (matchIdx.HasValue) {
+                    DataObjConverter.SetAlignmentChromPeakFeatureFromSpectrumFeature(spots[matchIdx.Value].AlignedPeakProperties[fileId], target);
+                }
             }
         }
     }
@@ -227,34 +217,36 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             this.riWidth = (int)Math.Ceiling(this.riTol / this.riBucket);
         }
 
-        protected override List<IMSScanProperty> GetMasterList(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceId, DataAccessor accessor) {
+        protected override List<SpectrumFeature> GetMasterList(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceId) {
 
             var referenceFile = analysisFiles.FirstOrDefault(file => file.AnalysisFileId == referenceId);
-            if (referenceFile == null) return new List<IMSScanProperty>();
+            if (referenceFile is null) {
+                return new List<SpectrumFeature>(0);
+            }
 
-            var master = accessor.GetMSScanProperties(referenceFile)
-                                 .GroupBy(prop => ((int)Math.Ceiling(prop.ChromXs.RI.Value / riBucket), (int)Math.Ceiling(prop.PrecursorMz / mzBucket)))
-                                 .ToDictionary(group => group.Key, group => group.ToList());
+            var master = referenceFile.LoadSpectrumFeatures().Items
+                .GroupBy(spectrum => ((int)Math.Ceiling(spectrum.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value / riBucket), (int)Math.Ceiling(spectrum.QuantifiedChromatogramPeak.PeakFeature.Mass / mzBucket)))
+                 .ToDictionary(group => group.Key, group => group.ToList());
 
             foreach (var analysisFile in analysisFiles) {
                 if (analysisFile.AnalysisFileId == referenceFile.AnalysisFileId)
                     continue;
-                var target = accessor.GetMSScanProperties(analysisFile);
-                MergeChromatogramPeaks(master, target);
+                var target = analysisFile.LoadSpectrumFeatures();
+                MergeChromatogramPeaks(master, target.Items);
             }
 
             return master.Values.SelectMany(props => props).ToList();
         }
 
-        private void MergeChromatogramPeaks(IDictionary<(int, int), List<IMSScanProperty>> master, IEnumerable<IMSScanProperty> targets) {
+        private void MergeChromatogramPeaks(IDictionary<(int, int), List<SpectrumFeature>> master, IEnumerable<SpectrumFeature> targets) {
             foreach (var target in targets) {
                 SetToMaster(master, target);
             }
         }
 
-        private bool SetToMaster(IDictionary<(int, int), List<IMSScanProperty>> master, IMSScanProperty target) {
-            var mzTarget = (int)Math.Ceiling(target.PrecursorMz / mzBucket);
-            var riTarget = (int)Math.Ceiling(target.ChromXs.RI.Value / riBucket);
+        private bool SetToMaster(IDictionary<(int, int), List<SpectrumFeature>> master, SpectrumFeature target) {
+            var mzTarget = (int)Math.Ceiling(target.QuantifiedChromatogramPeak.PeakFeature.Mass / mzBucket);
+            var riTarget = (int)Math.Ceiling(target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value / riBucket);
             for(int riIdc = riTarget - riWidth; riIdc <= riTarget + riWidth; riIdc++) { // in many case, riIdc is from riTarget - 1 to riTarget + 1
                 for(int mzIdc = mzTarget - mzWidth; mzIdc <= mzTarget + mzWidth; mzIdc++) { // in many case, mzIdc is from mzTarget - 1 to mzTarget + 1
                     if (master.ContainsKey((riIdc, mzIdc))) {
@@ -266,47 +258,47 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
                     }
                 }
             }
-            if (!master.ContainsKey((riTarget, mzTarget)))
-                master[(riTarget, mzTarget)] = new List<IMSScanProperty>();
+            if (!master.ContainsKey((riTarget, mzTarget))) {
+                master[(riTarget, mzTarget)] = new List<SpectrumFeature>();
+            }
             master[(riTarget, mzTarget)].Add(target);
             return true;
         }
 
-        protected override List<AlignmentSpotProperty> JoinAll(List<IMSScanProperty> master, IReadOnlyList<AnalysisFileBean> analysisFiles, DataAccessor accessor) {
+        protected override List<AlignmentSpotProperty> JoinAll(List<SpectrumFeature> master, IReadOnlyList<AnalysisFileBean> analysisFiles) {
             var result = GetSpots(master, analysisFiles);
             
             foreach (var analysisFile in analysisFiles) {
-                var chromatogram = accessor.GetMSScanProperties(analysisFile);
-                AlignPeaksToMaster(result, master, chromatogram, analysisFile.AnalysisFileId);
+                var spectrums = analysisFile.LoadSpectrumFeatures();
+                AlignPeaksToMaster(result, master, spectrums.Items, analysisFile.AnalysisFileId);
             }
             
             return result;
         }
 
-        private void AlignPeaksToMaster(List<AlignmentSpotProperty> spots, List<IMSScanProperty> masters, List<IMSScanProperty> targets, int fileId) {
+        private void AlignPeaksToMaster(List<AlignmentSpotProperty> spots, List<SpectrumFeature> masters, IReadOnlyList<SpectrumFeature> targets, int fileId) {
             var n = masters.Count;
             var maxMatchs = new double[n];
-            var dummy = new ChromatogramPeakFeature(); // dummy instance for binary search.
-
             foreach (var target in targets) {
                 int? matchIdx = null;
                 double matchFactor = double.MinValue;
-                dummy.ChromXs = new ChromXs(target.ChromXs.RI.Value - riTol, ChromXType.RI, ChromXUnit.None);
-                dummy.PrecursorMz = target.PrecursorMz - mzTol;
-                var lo = SearchCollection.LowerBound(masters, dummy, comparer);
+                var lo = SearchCollection.LowerBound(masters, (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value, target.QuantifiedChromatogramPeak.PeakFeature.Mass), (s, p) => (s.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value, s.QuantifiedChromatogramPeak.PeakFeature.Mass).CompareTo(p));
                 for (var i = lo; i < n; i++) {
-                    if (target.ChromXs.RI.Value + riTol < masters[i].ChromXs.RI.Value)
+                    if (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value + riTol < masters[i].QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value) {
                         break;
-                    if (!IsSimilarTo(masters[i], target))
+                    }
+                    if (!IsSimilarTo(masters[i], target)) {
                         continue;
+                    }
                     var factor = GetSimilality(masters[i], target);
                     if (factor > maxMatchs[i] && factor > matchFactor) {
                         matchIdx = i;
                         matchFactor = factor;
                     }
                 }
-                if (matchIdx.HasValue)
-                    DataObjConverter.SetAlignmentChromPeakFeatureFromMSDecResult(spots[matchIdx.Value].AlignedPeakProperties[fileId], target as MSDecResult);
+                if (matchIdx.HasValue) {
+                    DataObjConverter.SetAlignmentChromPeakFeatureFromSpectrumFeature(spots[matchIdx.Value].AlignedPeakProperties[fileId], target);
+                }
             }
         }
     }
