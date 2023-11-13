@@ -23,67 +23,7 @@
 		<SignAssembly>False</SignAssembly>
 	</PropertyGroup>
 	<ItemGroup>
-		<Resource Include="CytoscapeLocalBrowser\assembly\images\iconHelp.png" />
-		<Resource Include="CytoscapeLocalBrowser\assembly\images\iconLink.png" />
-		<Resource Include="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_75_d0e5f5_1x400.png" />
-		<Resource Include="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_85_dfeffc_1x400.png" />
-		<Resource Include="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_95_fef1ec_1x400.png" />
-		<Resource Include="CytoscapeLocalBrowser\assembly\images\ui-bg_gloss-wave_55_5c9ccc_500x100.png" />
-		<Resource Include="CytoscapeLocalBrowser\assembly\images\ui-bg_inset-hard_100_f5f8f9_1x100.png" />
-		<Resource Include="CytoscapeLocalBrowser\assembly\images\ui-bg_inset-hard_100_fcfdfd_1x100.png" />
-		<Resource Include="CytoscapeLocalBrowser\assembly\images\ui-icons_217bc0_256x240.png" />
-		<Resource Include="CytoscapeLocalBrowser\assembly\images\ui-icons_2e83ff_256x240.png" />
-		<Resource Include="CytoscapeLocalBrowser\assembly\images\ui-icons_469bdd_256x240.png" />
-		<Resource Include="CytoscapeLocalBrowser\assembly\images\ui-icons_6da8d5_256x240.png" />
-		<Resource Include="CytoscapeLocalBrowser\assembly\images\ui-icons_cd0a0a_256x240.png" />
-		<Resource Include="CytoscapeLocalBrowser\assembly\images\ui-icons_d8e7f3_256x240.png" />
-		<Resource Include="CytoscapeLocalBrowser\assembly\images\ui-icons_f9bd01_256x240.png" />
-		<Resource Include="Resources\msdial_icon.ico" />
-	</ItemGroup>
-	<ItemGroup>
 		<None Remove="App.xaml" />
-		<None Remove="CytoscapeLocalBrowser\assembly\Chart.js" />
-		<None Remove="CytoscapeLocalBrowser\assembly\contextmenu.js" />
-		<None Remove="CytoscapeLocalBrowser\assembly\cytoscape.js" />
-		<None Remove="CytoscapeLocalBrowser\assembly\fakeLoader.css" />
-		<None Remove="CytoscapeLocalBrowser\assembly\fakeLoader.min.js" />
-		<None Remove="CytoscapeLocalBrowser\assembly\images\iconHelp.png" />
-		<None Remove="CytoscapeLocalBrowser\assembly\images\iconLink.png" />
-		<None Remove="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_75_d0e5f5_1x400.png" />
-		<None Remove="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_85_dfeffc_1x400.png" />
-		<None Remove="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_95_fef1ec_1x400.png" />
-		<None Remove="CytoscapeLocalBrowser\assembly\images\ui-bg_gloss-wave_55_5c9ccc_500x100.png" />
-		<None Remove="CytoscapeLocalBrowser\assembly\images\ui-bg_inset-hard_100_f5f8f9_1x100.png" />
-		<None Remove="CytoscapeLocalBrowser\assembly\images\ui-bg_inset-hard_100_fcfdfd_1x100.png" />
-		<None Remove="CytoscapeLocalBrowser\assembly\images\ui-icons_217bc0_256x240.png" />
-		<None Remove="CytoscapeLocalBrowser\assembly\images\ui-icons_2e83ff_256x240.png" />
-		<None Remove="CytoscapeLocalBrowser\assembly\images\ui-icons_469bdd_256x240.png" />
-		<None Remove="CytoscapeLocalBrowser\assembly\images\ui-icons_6da8d5_256x240.png" />
-		<None Remove="CytoscapeLocalBrowser\assembly\images\ui-icons_cd0a0a_256x240.png" />
-		<None Remove="CytoscapeLocalBrowser\assembly\images\ui-icons_d8e7f3_256x240.png" />
-		<None Remove="CytoscapeLocalBrowser\assembly\images\ui-icons_f9bd01_256x240.png" />
-		<None Remove="CytoscapeLocalBrowser\assembly\jquery-1.12.4.min.js" />
-		<None Remove="CytoscapeLocalBrowser\assembly\jquery-3.3.1.min.js" />
-		<None Remove="CytoscapeLocalBrowser\assembly\jquery-3.4.1.min.js" />
-		<None Remove="CytoscapeLocalBrowser\assembly\jquery-ui.min.css" />
-		<None Remove="CytoscapeLocalBrowser\assembly\jquery-ui.min.js" />
-		<None Remove="CytoscapeLocalBrowser\assembly\jquery-ui.structure.min.css" />
-		<None Remove="CytoscapeLocalBrowser\assembly\jquery-ui.theme.css" />
-		<None Remove="CytoscapeLocalBrowser\assembly\jquery-ui.theme.min.css" />
-		<None Remove="CytoscapeLocalBrowser\assembly\jquery.jqplot.css" />
-		<None Remove="CytoscapeLocalBrowser\assembly\jquery.jqplot.min.js" />
-		<None Remove="CytoscapeLocalBrowser\assembly\pathwaycode.js" />
-		<None Remove="CytoscapeLocalBrowser\assembly\plugins\jqplot.barRenderer.min.js" />
-		<None Remove="CytoscapeLocalBrowser\assembly\plugins\jqplot.canvasAxisLabelRenderer.min.js" />
-		<None Remove="CytoscapeLocalBrowser\assembly\plugins\jqplot.canvasTextRenderer.min.js" />
-		<None Remove="CytoscapeLocalBrowser\assembly\plugins\jqplot.cursor.min.js" />
-		<None Remove="CytoscapeLocalBrowser\assembly\plugins\jqplot.enhancedLegendRenderer.min.js" />
-		<None Remove="CytoscapeLocalBrowser\assembly\plugins\jqplot.highlighter.min.js" />
-		<None Remove="CytoscapeLocalBrowser\assembly\plugins\jqplot.pointLabels.min.js" />
-		<None Remove="CytoscapeLocalBrowser\assembly\smiles-drawer.min.js" />
-		<None Remove="CytoscapeLocalBrowser\assembly\style.css" />
-		<None Remove="CytoscapeLocalBrowser\assembly\view.core.js" />
-		<None Remove="CytoscapeLocalBrowser\data\style.js" />
 		<None Remove="Resources\BinVestigate.ico" />
 		<None Remove="Resources\CompoundSearchIcon.ico" />
 		<None Remove="Resources\Deconvoluted.ico" />
@@ -95,37 +35,7 @@
 		<None Remove="Resources\RawChromatogram.ico" />
 		<None Remove="Resources\SplashLipids.xml" />
 		<None Remove="Resources\Table.png" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Content Include="CytoscapeLocalBrowser\assembly\Chart.js" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\contextmenu.js" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\cytoscape.js" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\fakeLoader.css" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\fakeLoader.min.js" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\jquery-1.12.4.min.js" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\jquery-3.3.1.min.js" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\jquery-3.4.1.min.js" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.min.css" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.min.js" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.structure.min.css" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.theme.css" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.theme.min.css" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\jquery.jqplot.css" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\jquery.jqplot.min.js" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\pathwaycode.js" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.barRenderer.min.js" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.canvasAxisLabelRenderer.min.js" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.canvasTextRenderer.min.js" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.cursor.min.js" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.enhancedLegendRenderer.min.js" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.highlighter.min.js" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.pointLabels.min.js" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\smiles-drawer.min.js" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\style.css" />
-	  <Content Include="CytoscapeLocalBrowser\assembly\view.core.js" />
-	  <Content Include="CytoscapeLocalBrowser\data\style.js">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
+		<Resource Include="Resources\msdial_icon.ico" />
 	</ItemGroup>
 	<ItemGroup>
 	  <EmbeddedResource Include="Resources\SplashLipids.xml" />
@@ -185,33 +95,110 @@
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>Settings.settings</DependentUpon>
 	  </Compile>
-	</ItemGroup>
-	<ItemGroup>
-
-	  <None Update="CytoscapeLocalBrowser\assembly\bluebird.min.js">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-
-	  <None Update="CytoscapeLocalBrowser\assembly\cytoscape.min.js">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-
-	  <None Update="CytoscapeLocalBrowser\assembly\workingspace.js">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	  <None Update="CytoscapeLocalBrowser\data\elements.js">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	  <None Update="CytoscapeLocalBrowser\data\style.js">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	  <None Update="CytoscapeLocalBrowser\MsdialCytoscapeViewer.html">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-
 	  <None Update="Properties\Settings.settings">
 	    <Generator>SettingsSingleFileGenerator</Generator>
 	    <LastGenOutput>Settings.Designer.cs</LastGenOutput>
 	  </None>
 	</ItemGroup>
+
+    <ItemGroup>
+        <Content Include="CytoscapeLocalBrowser\assembly\bluebird.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\Chart.bundle.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\chartjs-plugin-zoom.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\cytoscape.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\cytoscape-qtip.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\hammer.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery-1.12.4.min.map" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery-3.3.1.min.map" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\smiles-drawer.min.js.map" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\typeahead.bundle.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\workingspace.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\data\elements.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\data\style.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\MsdialCytoscapeViewer.html" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\iconHelp.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\iconLink.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_75_d0e5f5_1x400.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_85_dfeffc_1x400.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_95_fef1ec_1x400.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_gloss-wave_55_5c9ccc_500x100.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_inset-hard_100_f5f8f9_1x100.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_inset-hard_100_fcfdfd_1x100.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_217bc0_256x240.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_2e83ff_256x240.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_469bdd_256x240.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_6da8d5_256x240.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_cd0a0a_256x240.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_d8e7f3_256x240.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_f9bd01_256x240.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\Chart.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\contextmenu.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\cytoscape.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\fakeLoader.css" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\fakeLoader.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\iconHelp.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\iconLink.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_75_d0e5f5_1x400.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_85_dfeffc_1x400.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_glass_95_fef1ec_1x400.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_gloss-wave_55_5c9ccc_500x100.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_inset-hard_100_f5f8f9_1x100.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-bg_inset-hard_100_fcfdfd_1x100.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_217bc0_256x240.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_2e83ff_256x240.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_469bdd_256x240.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_6da8d5_256x240.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_cd0a0a_256x240.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_d8e7f3_256x240.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\images\ui-icons_f9bd01_256x240.png" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery-1.12.4.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery-3.3.1.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery-3.4.1.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.min.css" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.structure.min.css" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.theme.css" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.theme.min.css" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery.jqplot.css" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery.jqplot.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\pathwaycode.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.barRenderer.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.canvasAxisLabelRenderer.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.canvasTextRenderer.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.cursor.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.enhancedLegendRenderer.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.highlighter.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.pointLabels.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\smiles-drawer.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\style.css" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\view.core.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\data\style.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\Chart.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\contextmenu.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\cytoscape.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\fakeLoader.css" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\fakeLoader.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery-1.12.4.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery-3.3.1.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery-3.4.1.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.min.css" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.structure.min.css" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.theme.css" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery-ui.theme.min.css" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery.jqplot.css" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\jquery.jqplot.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\pathwaycode.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.barRenderer.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.canvasAxisLabelRenderer.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.canvasTextRenderer.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.cursor.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.enhancedLegendRenderer.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.highlighter.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\plugins\jqplot.pointLabels.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\smiles-drawer.min.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\style.css" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\assembly\view.core.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="CytoscapeLocalBrowser\data\style.js" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
 </Project>

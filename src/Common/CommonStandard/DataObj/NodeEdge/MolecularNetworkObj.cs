@@ -88,10 +88,6 @@ namespace CompMs.Common.DataObj.NodeEdge {
         public List<Edge> edges { get; set; }
     }
 
-    public class RootObj4Cytoscape {
-        public RootObject elements { get; set; }
-    }
-
     public sealed class MetaboliteColorCode {
         public static readonly Dictionary<string, string> metabolite_colorcode = new Dictionary<string, string> {
             { "SM", "rgb(255, 165, 0)" },
