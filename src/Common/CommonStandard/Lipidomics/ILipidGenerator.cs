@@ -5,7 +5,8 @@ namespace CompMs.Common.Lipidomics
 {
     public interface ILipidGenerator {
         bool CanGenerate(ILipid lipid);
-        IEnumerable<ILipid> Generate(Lipid lipid);
+        IEnumerable<ILipid> Generate(ILipid lipid);
+        IEnumerable<ILipid> GenerateUntil(ILipid lipid, Func<ILipid, bool> predicate);
     }
 
     public class LipidGenerator : ILipidGenerator
