@@ -153,28 +153,37 @@ namespace CompMs.Graphics.Chart
             CoerceTree();
         }
 
+        private Lazy<ScatterControlSlimItem[]> _items;
         private Lazy<KdTree<ScatterControlSlimItem>> tree;
 
         private void CoerceTree() {
+            if (_items != null && _items.IsValueCreated) {
+                foreach (var item in _items.Value) {
+                    item.Dispose();
+                }
+                _items = null;
+            }
+
             if (!(collectionView is IEnumerable source)
                 || xLambda == null
                 || yLambda == null
+                || HorizontalProperty == null
+                || VerticalProperty == null
                 || !(HorizontalAxis is IAxisManager haxis)
                 || !(VerticalAxis is IAxisManager vaxis)) {
                 tree = null;
                 return;
             }
-
+            
             var xlambda = xLambda.Value;
             var ylambda = yLambda.Value;
+            Func<object, AxisValue> xmap = (object o) => xlambda(o, haxis), ymap = (object o) => ylambda(o, vaxis);
+            var hprop = HorizontalProperty;
+            var vprop = VerticalProperty;
 
-            tree = new Lazy<KdTree<ScatterControlSlimItem>>(() =>
-                KdTree.Build(
-                    source.Cast<object>().Select(item => // TODO: I need to remove boxing here.
-                        new ScatterControlSlimItem(xlambda(item, haxis), ylambda(item, vaxis), item)),
-                    new ScatterDistanceCalculator(this),
-                    v => v.X.Value,
-                    v => v.Y.Value));
+            var collection = source.Cast<object>().Select(item => new ScatterControlSlimItem(item, hprop, vprop, xmap, ymap)); // TODO: Need to remove boxing here.
+            _items = new Lazy<ScatterControlSlimItem[]>(() => collection.ToArray());
+            tree = new Lazy<KdTree<ScatterControlSlimItem>>(() => KdTree.Build(_items.Value, new ScatterDistanceCalculator(this), v => v.X.Value, v => v.Y.Value));
         }
 
         private Lazy<Func<object, IAxisManager, AxisValue>> xLambda, yLambda;
@@ -470,16 +479,64 @@ namespace CompMs.Graphics.Chart
         }
     }
 
-    class ScatterControlSlimItem
+    class ScatterControlSlimItem : IDisposable
     {
-        public ScatterControlSlimItem(AxisValue x, AxisValue y, object item) {
-            X = x;
-            Y = y;
+        private INotifyPropertyChanged _np;
+        private PropertyChangedEventHandler _handle;
+        private bool _disposedValue;
+
+        public ScatterControlSlimItem(object item, string xname, string yname, Func<object, AxisValue> xmap, Func<object, AxisValue> ymap) {
+            X = xmap(item);
+            Y = ymap(item);
             Item = item;
+            if (item is INotifyPropertyChanged np) {
+                _np = np;
+                _handle = CreateOnPropertyChanged(this, xname, yname, xmap, ymap);
+                np.PropertyChanged += _handle;
+            }
         }
 
-        public AxisValue X { get; }
-        public AxisValue Y { get; }
+        public AxisValue X { get; private set; }
+        public AxisValue Y { get; private set; }
         public object Item { get; }
+
+        private static PropertyChangedEventHandler CreateOnPropertyChanged(ScatterControlSlimItem item, string xname, string yname, Func<object, AxisValue> xmap, Func<object, AxisValue> ymap) {
+            void f(object s, PropertyChangedEventArgs e) {
+                if (e.PropertyName == xname) {
+                    item.X = xmap(s);
+                }
+                if (e.PropertyName == yname) {
+                    item.Y = ymap(s);
+                }
+            }
+            return f;
+        }
+
+        protected virtual void Dispose(bool disposing) {
+            if (!_disposedValue) {
+                if (disposing) {
+
+                }
+
+                if (_np != null) {
+                    _np.PropertyChanged -= _handle;
+                    _np = null;
+                    _handle = null;
+                }
+                _disposedValue = true;
+            }
+        }
+
+        ~ScatterControlSlimItem()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: false);
+        }
+
+        public void Dispose() {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 }
