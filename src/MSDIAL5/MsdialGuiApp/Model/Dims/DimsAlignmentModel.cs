@@ -173,9 +173,9 @@ namespace CompMs.App.Msdial.Model.Dims
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
+            var barItemsLoaderObservable = barItemsLoaderDataProperty.SkipNull().SelectSwitch(data => data.ObservableLoader);
             var filter = peakSpotFiltering.CreateFilter(peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), FilterEnableStatus.All);
-            AlignmentSpotTableModel = new DimsAlignmentSpotTableModel(Ms1Spots, target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderProperty, filter, spectraLoader).AddTo(Disposables);
+            AlignmentSpotTableModel = new DimsAlignmentSpotTableModel(Ms1Spots, target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderObservable, filter, spectraLoader).AddTo(Disposables);
 
             _msdecResult = target.SkipNull()
                 .Select(t => _alignmentFile.LoadMSDecResultByIndexAsync(t.MasterAlignmentID))

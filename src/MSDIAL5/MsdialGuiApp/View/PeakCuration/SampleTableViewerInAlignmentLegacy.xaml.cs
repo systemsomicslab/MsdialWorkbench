@@ -197,7 +197,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
         }
 
         private static IObservable<SampleTableRows> GetSourceOfAlignedSampleTableViewer(
-            IObservable<AlignmentSpotPropertyModel> alignmentProp,
+            IObservable<AlignmentSpotPropertyModel?> alignmentProp,
             IObservable<List<PeakChromatogram>> chromatogramSource,
             List<AnalysisFileBean> files,
             ParameterBase parameter) {

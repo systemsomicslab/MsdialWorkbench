@@ -193,6 +193,8 @@ namespace CompMs.App.Msdial.Model.Loader
                 .ToList();
         }
 
+        PeakChromatogram IChromatogramLoader<ChromatogramPeakFeatureModel>.EmptyChromatogram => new PeakChromatogram(new List<PeakItem>(0), new List<PeakItem>(0), null, string.Empty, Colors.Black, chromXType, chromXUnit);
+
         public static EicLoader BuildForAllRange(AnalysisFileBean file, IDataProvider provider, ParameterBase parameter, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd) {
             return new EicLoader(file, provider, parameter.PeakPickBaseParam, parameter.IonMode, chromXType, chromXUnit, rangeBegin, rangeEnd);
         }

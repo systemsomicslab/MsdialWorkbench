@@ -34,13 +34,13 @@ namespace CompMs.App.Msdial.View.PeakCuration
     }
 
     public sealed class AlignedChromatogramModificationModelLegacy : BindableBase {
-        public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> ObservableModel { get; }
+        public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel?> ObservableModel { get; }
         public ReactiveProperty<bool> IsRI { get; }
         public ReactiveProperty<bool> IsDrift { get; }
-        public List<PeakChromatogram> Chromatograms { get; }
+        public List<PeakChromatogram>? Chromatograms { get; }
         public IObservable<List<PeakChromatogram>> ObservableChromatograms { get; }
         public List<AnalysisFileBean> Files { get; }
-        public ReadOnlyReactivePropertySlim<PeakPropertiesLegacy> ObservablePeakProperties { get; }
+        public ReadOnlyReactivePropertySlim<PeakPropertiesLegacy?> ObservablePeakProperties { get; }
 
         public AlignedChromatogramModificationModelLegacy(
             IObservable<AlignmentSpotPropertyModel?> model,
@@ -76,7 +76,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
         }
        
         public static IObservable<PeakPropertiesLegacy> LoadPeakProperty(
-            IObservable<AlignmentSpotPropertyModel> model,
+            IObservable<AlignmentSpotPropertyModel?> model,
             IObservable<List<PeakChromatogram>> chromatogramSource,
             List<AnalysisFileBean> files,
             ParameterBase parameter) {
@@ -84,6 +84,9 @@ namespace CompMs.App.Msdial.View.PeakCuration
             var classnameToBrushes = ChartBrushes.ConvertToSolidBrushDictionary(classnameToBytes);
             return model.Select(spot =>
             {
+                if (spot is null) {
+                    return Observable.Never<PeakPropertiesLegacy>();
+                }
                 var observablePeaks = spot.AlignedPeakPropertiesModelProperty;
                 return observablePeaks.CombineLatest(chromatogramSource, (peaks, chromatograms) =>
                 {

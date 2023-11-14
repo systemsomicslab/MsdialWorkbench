@@ -106,7 +106,7 @@ namespace CompMs.App.Msdial.Model.Information
         private ReadOnlyReactiveCollection<IPeakPoint> _peakPoints;
         private readonly ObservableCollection<Func<ChromatogramPeakFeatureModel?, IPeakPoint>> _peakPointMaps;
 
-        public void Add(params Func<ChromatogramPeakFeatureModel, IPeakPoint>[] maps) {
+        public void Add(params Func<ChromatogramPeakFeatureModel?, IPeakPoint>[] maps) {
             foreach (var map in maps) {
                 _peakPointMaps.Add(map);
             }
@@ -120,7 +120,7 @@ namespace CompMs.App.Msdial.Model.Information
         private ReadOnlyReactiveCollection<IPeakAmount> _peakAmounts;
         private readonly ObservableCollection<Func<ChromatogramPeakFeatureModel?, IPeakAmount>> _peakAmountMaps;
 
-        public void Add(params Func<ChromatogramPeakFeatureModel, IPeakAmount>[] maps) {
+        public void Add(params Func<ChromatogramPeakFeatureModel?, IPeakAmount>[] maps) {
             foreach (var map in maps) {
                 _peakAmountMaps.Add(map);
             }
@@ -129,21 +129,23 @@ namespace CompMs.App.Msdial.Model.Information
 
     internal sealed class PeakInformationAlignmentModel : DisposableModelBase, IPeakInformationModel
     {
-        public PeakInformationAlignmentModel(IObservable<AlignmentSpotPropertyModel> model) {
-            model.SkipNull()
-                .Select(m => {
-                    return new CompositeDisposable
-                    {
-                        m.ObserveProperty(m_ => m_.Name).Subscribe(m_ => Annotation = m_),
-                        m.ObserveProperty(m_ => m_.AdductType).Subscribe(m_ => AdductIonName = m_.AdductIonName),
-                        m.ObserveProperty(m_ => m_.Formula).Subscribe(m_ => Formula = m_.FormulaString),
-                        m.ObserveProperty(m_ => m_.Ontology).Subscribe(m_ => Ontology = m_),
-                        m.ObserveProperty(m_ => m_.InChIKey).Subscribe(m_ => InChIKey = m_),
-                        m.ObserveProperty(m_ => m_.Comment).Subscribe(m_ => Comment = m_)
-                    };
-                }).DisposePreviousValue()
-                .Subscribe()
-                .AddTo(Disposables);
+        public PeakInformationAlignmentModel(IObservable<AlignmentSpotPropertyModel?> model) {
+            model.Select(m => {
+                if (m is null) {
+                    return null;
+                }
+                return new CompositeDisposable
+                {
+                    m.ObserveProperty(m_ => m_.Name).Subscribe(m_ => Annotation = m_),
+                    m.ObserveProperty(m_ => m_.AdductType).Subscribe(m_ => AdductIonName = m_.AdductIonName),
+                    m.ObserveProperty(m_ => m_.Formula).Subscribe(m_ => Formula = m_.FormulaString),
+                    m.ObserveProperty(m_ => m_.Ontology).Subscribe(m_ => Ontology = m_),
+                    m.ObserveProperty(m_ => m_.InChIKey).Subscribe(m_ => InChIKey = m_),
+                    m.ObserveProperty(m_ => m_.Comment).Subscribe(m_ => Comment = m_)
+                };
+            }).DisposePreviousValue()
+            .Subscribe()
+            .AddTo(Disposables);
 
             _peakPointMaps = new ObservableCollection<Func<AlignmentSpotPropertyModel, IPeakPoint>>();
             _peakPoints = new ReadOnlyReactiveCollection<IPeakPoint>(Observable.Never<IPeakPoint>(), new ObservableCollection<IPeakPoint>());

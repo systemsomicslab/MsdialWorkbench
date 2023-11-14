@@ -105,7 +105,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
             return new AlignmentEicModel(
                 source,
-                source.DefaultIfNull(loader.LoadEicAsObservable, Observable.Never<List<Chromatogram>>()).Switch(),
+                source.DefaultIfNull(loader.LoadEicAsObservable, Observable.Never<List<PeakChromatogram>>()).Switch(),
                 AnalysisFiles,
                 Param,
                 horizontalSelector, verticalSelector

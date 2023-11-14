@@ -98,7 +98,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     propRanges[orderedProp] = (j, k);
                 }
             }
-            var accumulatedTarget = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
+            var accumulatedTarget = new ReactivePropertySlim<AlignmentSpotPropertyModel?>().AddTo(Disposables);
             var target = accumulatedTarget.SkipNull()
                 .Delay(TimeSpan.FromSeconds(.05d))
                 .Select(t =>
@@ -230,7 +230,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             var classBrush = new KeyBrushMapper<BarItem, string>(classToColor, item => item.Class, Colors.Blue);
             var fileIdToClassNameAsObservable = projectBaseParameter.ObserveProperty(p => p.FileIdToClassName).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            var peakSpotAxisLabelAsObservable = target.OfType<AlignmentSpotPropertyModel>().SelectSwitch(t => t.ObserveProperty(t_ => t_.IonAbundanceUnit).Select(t_ => t_.ToLabel())).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var peakSpotAxisLabelAsObservable = target!.OfType<AlignmentSpotPropertyModel>().SelectSwitch(t => t.ObserveProperty(t_ => t_.IonAbundanceUnit).Select(t_ => t_.ToLabel())).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposables);
             var normalizedAreaZeroLoader = new BarItemsLoaderData("Normalized peak area above zero", peakSpotAxisLabelAsObservable, new NormalizedAreaAboveZeroBarItemsLoader(fileIdToClassNameAsObservable, fileCollection), NormalizationSetModel.IsNormalized);
             var normalizedAreaBaselineLoader = new BarItemsLoaderData("Normalized peak area above base line", peakSpotAxisLabelAsObservable, new NormalizedAreaAboveBaseLineBarItemsLoader(fileIdToClassNameAsObservable, fileCollection), NormalizationSetModel.IsNormalized);
             var normalizedHeightLoader = new BarItemsLoaderData("Normalized peak height", peakSpotAxisLabelAsObservable, new NormalizedHeightBarItemsLoader(fileIdToClassNameAsObservable, fileCollection), NormalizationSetModel.IsNormalized);
@@ -246,7 +246,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             RtBarChartModel = new BarChartModel(accumulatedTarget, barItemsLoaderDataProperty, barItemLoaderDatas, Observable.Return(classBrush), projectBaseParameter, fileCollection, projectBaseParameter.ClassProperties).AddTo(Disposables);
             DtBarChartModel = new BarChartModel(target, barItemsLoaderDataProperty, barItemLoaderDatas, Observable.Return(classBrush), projectBaseParameter, fileCollection, projectBaseParameter.ClassProperties).AddTo(Disposables);
 
-            var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
+            var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().SelectSwitch(data => data.ObservableLoader);
             var filter = peakSpotFiltering.CreateFilter(peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), FilterEnableStatus.All);
             AlignmentSpotTableModel = new LcimmsAlignmentSpotTableModel(driftProps, target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderProperty, filter, spectraLoader).AddTo(Disposables);
 

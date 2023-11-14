@@ -33,7 +33,7 @@ namespace CompMs.App.Msdial.Model.Dims
     {
         public DimsAlignmentSpotTableModel(
             IReadOnlyList<AlignmentSpotPropertyModel> spots,
-            IReactiveProperty<AlignmentSpotPropertyModel> target,
+            IReactiveProperty<AlignmentSpotPropertyModel?> target,
             IObservable<IBrushMapper<BarItem>> classBrush,
             FileClassPropertiesModel classProperties,
             IObservable<IBarItemsLoader> barItemsLoader,

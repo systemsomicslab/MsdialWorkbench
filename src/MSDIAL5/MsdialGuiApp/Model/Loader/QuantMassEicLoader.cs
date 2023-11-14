@@ -71,6 +71,8 @@ namespace CompMs.App.Msdial.Model.Loader
             return eic.Argmin(peak => Math.Abs(target.ChromXsTop.RT.Value - peak.Time));
         }
 
+        PeakChromatogram IChromatogramLoader<Ms1BasedSpectrumFeature>.EmptyChromatogram  => new PeakChromatogram(new List<PeakItem>(0), new List<PeakItem>(0), null, string.Empty, Colors.Black, _chromXType, _chromXUnit);
+
         private static readonly double PEAK_WIDTH_FACTOR = 3d;
         private ChromatogramRange GetChromatogramRange(IChromatogramPeakFeature target) {
             if (_isConstantRange) {

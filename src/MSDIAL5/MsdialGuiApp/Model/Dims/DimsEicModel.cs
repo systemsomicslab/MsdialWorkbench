@@ -46,8 +46,6 @@ namespace CompMs.App.Msdial.Model.Dims
             });
         }
 
-        DataObj.Chromatogram IChromatogramLoader.EmptyChromatogram => new DataObj.Chromatogram(new List<PeakItem>(0), new List<PeakItem>(0), null, string.Empty, Colors.Black, ChromXType.Mz, ChromXUnit.Mz);
-
         public static DimsEicLoader BuildForEicView(AnalysisFileBean analysisFile, IDataProvider provider, ParameterBase parameter) {
             return new DimsEicLoader(analysisFile, provider, parameter, parameter.MassRangeBegin, parameter.MassRangeEnd);
         }

@@ -14,13 +14,13 @@ namespace CompMs.App.Msdial.Model.Table
 {
     internal abstract class AlignmentSpotTableModelBase : PeakSpotTableModelBase<AlignmentSpotPropertyModel>
     {
-        private readonly IReactiveProperty<AlignmentSpotPropertyModel> _target;
+        private readonly IReactiveProperty<AlignmentSpotPropertyModel?> _target;
         private readonly PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter _peakSpotFilter;
         private readonly AlignmentSpotSpectraLoader _spectraLoader;
 
         public AlignmentSpotTableModelBase(
             IReadOnlyList<AlignmentSpotPropertyModel> spots,
-            IReactiveProperty<AlignmentSpotPropertyModel> target,
+            IReactiveProperty<AlignmentSpotPropertyModel?> target,
             IObservable<IBrushMapper<BarItem>> classBrush,
             FileClassPropertiesModel classProperties,
             IObservable<IBarItemsLoader> barItemsLoader,

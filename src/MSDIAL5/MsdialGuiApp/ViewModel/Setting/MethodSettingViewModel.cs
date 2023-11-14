@@ -41,7 +41,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 model.MobilitySettingModel is null ? null : new MobilitySettingViewModel(model.MobilitySettingModel, isEnabled).AddTo(Disposables),
                 model.IsotopeTrackSettingModel is null ? null : new IsotopeTrackSettingViewModel(model.IsotopeTrackSettingModel, isEnabled).AddTo(Disposables),
             };
-            SettingViewModels = new ObservableCollection<ISettingViewModel>(vms.Where(vm => vm != null));
+            SettingViewModels = new ObservableCollection<ISettingViewModel>(vms.OfType<ISettingViewModel>());
 
             IsReadOnlyPeakPickParameter = model.IsReadOnlyPeakPickParameter;
             IsReadOnlyAnnotationParameter = model.IsReadOnlyAnnotationParameter;

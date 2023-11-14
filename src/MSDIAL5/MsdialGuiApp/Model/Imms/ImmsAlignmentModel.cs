@@ -75,7 +75,7 @@ namespace CompMs.App.Msdial.Model.Imms
             var brushMapDataSelector = BrushMapDataSelectorFactory.CreateAlignmentSpotBrushes(parameter.TargetOmics);
             Brushes = brushMapDataSelector.Brushes.ToList();
             SelectedBrush = brushMapDataSelector.SelectedBrush;
-            Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
+            Target = new ReactivePropertySlim<AlignmentSpotPropertyModel?>().AddTo(Disposables);
             CurrentRepresentativeFile = Target.Select(t => t is null ? null : fileCollection.FindByID(t.RepresentativeFileID)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(Ms1Spots, peakSpotFiltering).AddTo(Disposables);
@@ -158,7 +158,7 @@ namespace CompMs.App.Msdial.Model.Imms
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
+            var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().SelectSwitch(data => data.ObservableLoader);
             var filter = peakSpotFiltering.CreateFilter(peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), FilterEnableStatus.All);
             AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(Ms1Spots, Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderProperty, filter, spectraLoader).AddTo(Disposables);
 
@@ -205,7 +205,7 @@ namespace CompMs.App.Msdial.Model.Imms
         public ReadOnlyObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
         public InternalStandardSetModel InternalStandardSetModel { get; }
         public NormalizationSetModel NormalizationSetModel { get; }
-        public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
+        public ReactivePropertySlim<AlignmentSpotPropertyModel?> Target { get; }
         public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel> CurrentRepresentativeFile { get; }
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }

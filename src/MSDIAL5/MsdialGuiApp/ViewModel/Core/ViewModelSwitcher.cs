@@ -24,8 +24,8 @@ namespace CompMs.App.Msdial.ViewModel.Core
             ViewModels = viewmodels
                 .CombineLatest()
                 .StartWith(new ViewModelBase[0])
-                .Select(xs => new ObservableCollection<ViewModelBase>(xs))
-                .Select(xs => new ReadOnlyObservableCollection<ViewModelBase>(xs))
+                .Select(xs => new ObservableCollection<ViewModelBase?>(xs))
+                .Select(xs => new ReadOnlyObservableCollection<ViewModelBase?>(xs))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -42,7 +42,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         public ReactivePropertySlim<int> SelectedIndex { get; }
 
-        public ReadOnlyReactivePropertySlim<ReadOnlyObservableCollection<ViewModelBase>> ViewModels { get; }
+        public ReadOnlyReactivePropertySlim<ReadOnlyObservableCollection<ViewModelBase?>> ViewModels { get; }
 
         public void SelectAnalysisFile() {
             if (whenAnalysisFileSelecting >= 0 && whenAnalysisFileSelecting < ViewModels.Value.Count) {

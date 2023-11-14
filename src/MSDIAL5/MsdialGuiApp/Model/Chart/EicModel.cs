@@ -43,7 +43,7 @@ namespace CompMs.App.Msdial.Model.Chart
             VerticalProperty = nameof(PeakItem.Intensity);
 
             var sources = targetSource.SelectSwitch(t => Observable.FromAsync(token => loader.LoadChromatogramAsync(t, token)));
-            ReactiveProperty<Chromatogram> chromatogram_ = sources
+            ReactiveProperty<PeakChromatogram> chromatogram_ = sources
                 .ToReactiveProperty(loader.EmptyChromatogram)
                 .AddTo(Disposables);
             Chromatogram = chromatogram_;

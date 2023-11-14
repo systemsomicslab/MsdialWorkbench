@@ -44,6 +44,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 return new PeakChromatogram(eic, area, top, string.Empty, Colors.Black, ChromXType.Drift, ChromXUnit.Msec, $"EIC chromatogram of {target.Mass:N4} tolerance [Da]: {_parameter.CentroidMs1Tolerance:F} RT [min]: {target.InnerModel.PeakFeature.ChromXsTop.RT.Value:F2} tolerance [min]: {_parameter.AccumulatedRtRange} Max intensity: {area.Max(peak => peak.Intensity):F0}");
             });
         }
-        DataObj.Chromatogram IChromatogramLoader.EmptyChromatogram => new DataObj.Chromatogram(new List<PeakItem>(0), new List<PeakItem>(0), null, string.Empty, Colors.Black, ChromXType.Drift, ChromXUnit.Msec);
+        PeakChromatogram IChromatogramLoader<ChromatogramPeakFeatureModel>.EmptyChromatogram => new PeakChromatogram(new List<PeakItem>(0), new List<PeakItem>(0), null, string.Empty, Colors.Black, ChromXType.Drift, ChromXUnit.Msec);
     }
 }

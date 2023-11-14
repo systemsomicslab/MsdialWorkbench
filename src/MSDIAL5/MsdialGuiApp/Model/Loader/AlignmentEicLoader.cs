@@ -59,7 +59,7 @@ namespace CompMs.App.Msdial.Model.Loader
                 _color = class2Prop.CombineLatest(_clss, (c2p, cls) => c2p.TryGetValue(cls, out var prop) ? prop.ObserveProperty(p => p.Color) : Observable.Return(Colors.Blue)).Switch(); 
             }
 
-            public IObservable<PeakChromatogram> GetChromatogram(AlignmentSpotPropertyModel _spot, IObservable<AlignmentChromPeakFeatureModel> _peak, ChromatogramPeakInfo _peakInfo) {
+            public IObservable<PeakChromatogram> GetChromatogram(AlignmentSpotPropertyModel _spot, IObservable<AlignmentChromPeakFeatureModel?> _peak, ChromatogramPeakInfo _peakInfo) {
                 var peaks = _peakInfo.Chromatogram.Select(peak => new PeakItem(peak)).ToList();
                 var area = new[]
                 {
