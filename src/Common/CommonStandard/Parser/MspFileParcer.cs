@@ -260,7 +260,7 @@ namespace CompMs.Common.Parser
 
                 case "formula": 
                     mspObj.Formula = FormulaStringParcer.OrganicElementsReader(fieldValue); 
-                    if (mspObj.Formula != null) {
+                    if (mspObj.Formula != null && mspObj.Formula.IsCorrectlyImported) {
                         mspObj.Formula.M1IsotopicAbundance = SevenGoldenRulesCheck.GetM1IsotopicAbundance(mspObj.Formula);
                         mspObj.Formula.M2IsotopicAbundance = SevenGoldenRulesCheck.GetM2IsotopicAbundance(mspObj.Formula);
 
