@@ -24,7 +24,7 @@ namespace CompMs.App.Msdial.Model.Core
         private readonly AnalysisFileBeanModelCollection _analysisFileBeanModelCollection;
         private readonly AlignmentFileBeanModelCollection _alignmentFileBeanModelCollection;
         private readonly IMessageBroker _broker;
-        private readonly ProjectBaseParameterModel _projectBaseParameter;
+        private readonly FilePropertiesModel _projectBaseParameter;
 
         public DatasetModel(IMsdialDataStorage<ParameterBase> storage, IMessageBroker broker) : this(storage, new AnalysisFileBeanModelCollection(storage.AnalysisFiles), broker) {
 
@@ -33,7 +33,7 @@ namespace CompMs.App.Msdial.Model.Core
         public DatasetModel(IMsdialDataStorage<ParameterBase> storage, AnalysisFileBeanModelCollection files, IMessageBroker broker) {
             Storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _broker = broker;
-            _projectBaseParameter = new ProjectBaseParameterModel(storage.Parameter.ProjectParam).AddTo(Disposables);
+            _projectBaseParameter = new FilePropertiesModel(storage.Parameter.ProjectParam).AddTo(Disposables);
             _analysisFileBeanModelCollection = files.AddTo(Disposables);
             _alignmentFileBeanModelCollection = new AlignmentFileBeanModelCollection(storage.AlignmentFiles, storage.AnalysisFiles).AddTo(Disposables);
             AnalysisFilePropertyResetModel = new AnalysisFilePropertyResetModel(files, _projectBaseParameter);

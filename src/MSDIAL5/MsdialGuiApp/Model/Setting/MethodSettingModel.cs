@@ -15,7 +15,7 @@ namespace CompMs.App.Msdial.Model.Setting
 {
     internal sealed class MethodSettingModel : BindableBase
     {
-        public MethodSettingModel(ProcessOption option, AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileModelCollection, IMsdialDataStorage<ParameterBase> storage, Func<MethodSettingModel, IMethodModel, CancellationToken, Task> asyncHandler, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker) {
+        public MethodSettingModel(ProcessOption option, AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileModelCollection, IMsdialDataStorage<ParameterBase> storage, Func<MethodSettingModel, IMethodModel, CancellationToken, Task> asyncHandler, FilePropertiesModel projectBaseParameter, IMessageBroker broker) {
             Storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _asyncHandler = asyncHandler;
             _broker = broker;

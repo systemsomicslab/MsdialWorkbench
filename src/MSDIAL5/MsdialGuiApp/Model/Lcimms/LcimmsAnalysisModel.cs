@@ -63,7 +63,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             MsdialLcImMsParameter parameter,
             PeakFilterModel peakFilterModel,
             PeakFilterModel accumulatedPeakFilterModel,
-            ProjectBaseParameterModel projectBaseParameterModel,
+            FilePropertiesModel projectBaseParameterModel,
             IMessageBroker broker) {
             if (analysisFileModel is null) {
                 throw new ArgumentNullException(nameof(analysisFileModel));

@@ -52,7 +52,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         private readonly AlignmentFileBeanModel _alignmentFile;
         private readonly DataBaseMapper _dataBaseMapper;
-        private readonly ProjectBaseParameterModel _projectBaseParameter;
+        private readonly FilePropertiesModel _projectBaseParameter;
         private readonly List<AnalysisFileBean> _files;
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly UndoManager _undoManager;
@@ -69,7 +69,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             PeakFilterModel peakFilterModel,
             DataBaseMapper mapper,
             MsdialLcmsParameter parameter,
-            ProjectBaseParameterModel projectBaseParameter,
+            FilePropertiesModel projectBaseParameter,
             List<AnalysisFileBean> files,
             AnalysisFileBeanModelCollection fileCollection,
             IMessageBroker messageBroker)
