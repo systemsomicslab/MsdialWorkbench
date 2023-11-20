@@ -2,11 +2,8 @@
 using CompMs.CommonMVVM;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
@@ -28,7 +25,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             get => _path;
             set => SetProperty(ref _path, value);
         }
-        private string _path;
+        private string _path = string.Empty;
 
         public Task SaveAsync()
         {
@@ -37,6 +34,9 @@ namespace CompMs.App.Msdial.Model.ImagingImms
 
             return Task.Run(() =>
             {
+                if (string.IsNullOrEmpty(Path)) {
+                    return;
+                }
                 BitmapEncoder encoder = null;
                 if (Path.EndsWith("png"))
                 {
