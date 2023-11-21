@@ -22,7 +22,7 @@ namespace CompMs.App.Msdial.Model.Loader
         private readonly string _eicFile;
         private readonly List<FileChromatogram> _fileChromatograms;
 
-        public AlignmentEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer, string eicFile, AnalysisFileBeanModelCollection files, ProjectBaseParameterModel projectParameter) {
+        public AlignmentEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer, string eicFile, AnalysisFileBeanModelCollection files, FilePropertiesModel projectParameter) {
             _chromatogramSpotSerializer = chromatogramSpotSerializer ?? throw new ArgumentNullException(nameof(chromatogramSpotSerializer));
             _eicFile = eicFile ?? throw new ArgumentNullException(nameof(eicFile));
             // var classToColor = projectParameter.ObserveProperty(p => p.ClassProperties).Select(props => props.ToDictionary(prop => prop.Name, prop => prop.ObserveProperty(p => p.Color))).ToReactiveProperty().AddTo(Disposables);

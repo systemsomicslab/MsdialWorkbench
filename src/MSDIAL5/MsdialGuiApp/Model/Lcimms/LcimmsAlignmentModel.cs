@@ -55,7 +55,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseStorage databases,
             DataBaseMapper mapper,
-            ProjectBaseParameterModel projectBaseParameter,
+            FilePropertiesModel projectBaseParameter,
             MsdialLcImMsParameter parameter,
             List<AnalysisFileBean> files,
             PeakSpotFiltering<AlignmentSpotPropertyModel> peakSpotFiltering,
