@@ -21,8 +21,8 @@ namespace CompMs.App.Msdial.Model.Core
 {
     internal sealed class DatasetModel : DisposableModelBase, IDatasetModel
     {
-        private readonly AnalysisFileBeanModelCollection _analysisFileBeanModelCollection;
         private readonly AlignmentFileBeanModelCollection _alignmentFileBeanModelCollection;
+        private readonly AnalysisFileBeanModelCollection _analysisFileBeanModelCollection;
         private readonly IMessageBroker _broker;
         private readonly FilePropertiesModel _projectBaseParameter;
 
@@ -34,6 +34,7 @@ namespace CompMs.App.Msdial.Model.Core
             Storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _broker = broker;
             _projectBaseParameter = new FilePropertiesModel(storage.Parameter.ProjectParam).AddTo(Disposables);
+            StudyContext = new StudyContextModel(storage.Parameter.ProjectParam);
             _analysisFileBeanModelCollection = files.AddTo(Disposables);
             _alignmentFileBeanModelCollection = new AlignmentFileBeanModelCollection(storage.AlignmentFiles, storage.AnalysisFiles).AddTo(Disposables);
             AnalysisFilePropertyResetModel = new AnalysisFilePropertyResetModel(files, _projectBaseParameter);
@@ -86,6 +87,7 @@ namespace CompMs.App.Msdial.Model.Core
 
         public AnalysisFilePropertyResetModel AnalysisFilePropertyResetModel { get; }
         public FileClassSetModel FileClassSetModel { get; }
+        public StudyContextModel StudyContext { get; }
 
         public async Task SaveAsync() {
             // TODO: implement process when project save failed.
