@@ -167,7 +167,7 @@ namespace CompMs.Common.Parser
         public static List<MoleculeMsReference> ReadSerializedLbmLibrary(string file, List<LbmQuery> queries,
             IonMode ionMode, SolventType solventType, CollisionType collisionType) {
             var tQueries = getTrueQueryStrings(queries);
-            if (tQueries.Count == 0) return null;
+            if (tQueries.Count == 0) return new List<MoleculeMsReference>();
 
             var usedMspDB = new List<MoleculeMsReference>();
             var mspDB = ReadSerializedMspObject(file);
