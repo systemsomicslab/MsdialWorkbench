@@ -44,10 +44,12 @@ namespace CompMs.App.Msdial.Model.Dims
             AnalysisFileBeanModelCollection analysisFileBeanModelCollection,
             AlignmentFileBeanModelCollection alignmentFiles,
             FilePropertiesModel projectBaseParameter,
+            StudyContextModel studyContext,
             IMessageBroker broker)
             : base(analysisFileBeanModelCollection, alignmentFiles, projectBaseParameter) {
             Storage = storage;
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
+            StudyContext = studyContext;
             _broker = broker;
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
@@ -108,6 +110,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public PeakFilterModel PeakFilterModel { get; }
         public IMsdialDataStorage<MsdialDimsParameter> Storage { get; }
+        public StudyContextModel StudyContext { get; }
 
         public DimsAnalysisModel AnalysisModel {
             get => _analysisModel;

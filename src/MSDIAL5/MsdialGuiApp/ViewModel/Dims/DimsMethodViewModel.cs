@@ -102,7 +102,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                     FileSuffix = "msp",
                     Label = "Nist format (*.msp)"
                 },
-                new MsdialAnalysisMassBankRecordExportModel(container.Parameter.ProjectParam),
+                new MsdialAnalysisMassBankRecordExportModel(container.Parameter.ProjectParam, _model.StudyContext),
             };
             var model = new AnalysisResultExportModel(_model.AnalysisFileModelCollection, _model.Storage.Parameter.ProjectParam.ProjectFolderPath, models);
             using (var vm = new AnalysisResultExportViewModel(model)) {
