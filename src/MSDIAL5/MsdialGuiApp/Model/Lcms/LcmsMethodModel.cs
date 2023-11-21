@@ -39,6 +39,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         private readonly IDataProviderFactory<AnalysisFileBean> _providerFactory;
         private readonly FilePropertiesModel _projectBaseParameter;
+        private readonly StudyContextModel _studyContext;
         private readonly IMessageBroker _broker;
         private readonly IMsdialDataStorage<MsdialLcmsParameter> _storage;
         private readonly FacadeMatchResultEvaluator _matchResultEvaluator;
@@ -50,6 +51,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             IMsdialDataStorage<MsdialLcmsParameter> storage,
             IDataProviderFactory<AnalysisFileBean> providerFactory,
             FilePropertiesModel projectBaseParameter,
+            StudyContextModel studyContext,
             IMessageBroker broker)
             : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, projectBaseParameter) {
 
@@ -57,6 +59,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             _providerFactory = providerFactory ?? throw new ArgumentNullException(nameof(providerFactory));
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
+            _studyContext = studyContext;
             _broker = broker;
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
             CanShowProteinGroupTable = Observable.Return(storage.Parameter.TargetOmics == TargetOmics.Proteomics);
@@ -110,7 +113,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
-            var massBank = new AlignmentResultMassBankRecordExportModel(peakSpotSupplyer, _matchResultEvaluator, storage.DataBaseMapper, storage.Parameter.ProjectParam);
+            var massBank = new AlignmentResultMassBankRecordExportModel(peakSpotSupplyer, storage.Parameter.ProjectParam, studyContext);
             var spectraAndReference = new AlignmentMatchedSpectraExportModel(peakSpotSupplyer, storage.DataBaseMapper, analysisFileBeanModelCollection.IncludedAnalysisFiles, CompoundSearcherCollection.BuildSearchers(storage.DataBases, storage.DataBaseMapper));
             var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, massBank, spectraAndReference, };
             if (storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
