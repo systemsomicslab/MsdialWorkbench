@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace CompMs.Common.MessagePack.Tests
 {
@@ -119,6 +120,26 @@ namespace CompMs.Common.MessagePack.Tests
             Debug.WriteLine("Deserialize: {0} ms", timer.ElapsedMilliseconds);
             CollectionAssert.AreEqual(datas[index].Xs, actual.Xs);
             CollectionAssert.AreEqual(datas[index].Ys, actual.Ys);
+        }
+
+        [TestMethod]
+        public void CompareSerializedBinaryTest() {
+            var data = new LargeSample[4];
+            for (int i = 0; i < data.Length; i++) {
+                data[i] = new LargeSample
+                {
+                    Xs = Enumerable.Range(0, 10).Select(i => (long)i).ToArray()
+                };
+            }
+            var expected = new byte[]
+            {
+                0xC9, 0x00, 0x00, 0x00, 0x21, 0x63, 0xD2, 0x00, 0x00, 0x00, 0x35, 0xFF, 0x02, 0x94, 0x00, 0x00,
+                0x00, 0x00, 0x91, 0x9A, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0C, 0x00,
+                0x0C, 0x50, 0x05, 0x06, 0x07, 0x08, 0x09
+            };
+            using var stream = new MemoryStream();
+            LargeListMessagePack.Serialize(stream, data);
+            CollectionAssert.AreEqual(expected, stream.ToArray());
         }
 
         [MessagePackObject]
