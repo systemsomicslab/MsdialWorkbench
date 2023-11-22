@@ -46,7 +46,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             ParameterBase parameter,
             PeakFilterModel peakFilterModel,
-            ProjectBaseParameterModel projectBaseParameterModel,
+            FilePropertiesModel projectBaseParameterModel,
             IMessageBroker broker)
             : base(analysisFileModel, parameter.MolecularSpectrumNetworkingBaseParam, broker) {
             if (provider is null) {

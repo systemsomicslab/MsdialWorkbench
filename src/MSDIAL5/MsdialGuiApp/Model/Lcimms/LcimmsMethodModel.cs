@@ -39,7 +39,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
         }
 
-        public LcimmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialLcImMsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker)
+        public LcimmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialLcImMsParameter> storage, FilePropertiesModel projectBaseParameter, IMessageBroker broker)
             : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, projectBaseParameter) {
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));
@@ -130,7 +130,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
         private readonly IDataProviderFactory<RawMeasurement> providerFactory;
         private readonly IDataProviderFactory<RawMeasurement> accProviderFactory;
-        private readonly ProjectBaseParameterModel _projectBaseParameter;
+        private readonly FilePropertiesModel _projectBaseParameter;
         private readonly IMessageBroker _broker;
         private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _peakSpotFiltering;
 

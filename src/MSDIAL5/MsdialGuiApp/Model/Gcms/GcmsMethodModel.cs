@@ -9,7 +9,7 @@ namespace CompMs.App.Msdial.Model.Gcms
 {
     internal sealed class GcmsMethodModel : MethodModelBase
     {
-        public GcmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFiles, ProjectBaseParameterModel projectBaseParameter) : base(analysisFileBeanModelCollection, alignmentFiles, projectBaseParameter) {
+        public GcmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFiles, FilePropertiesModel projectBaseParameter) : base(analysisFileBeanModelCollection, alignmentFiles, projectBaseParameter) {
 
         }
 

@@ -17,7 +17,6 @@ using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive;
@@ -41,24 +40,24 @@ namespace CompMs.App.Msdial.Model.Setting
 
     internal sealed class MethodSettingModelFactory : IMethodSettingModelFactory
     {
-        public MethodSettingModelFactory(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileModelCollection, IMsdialDataStorage<ParameterBase> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process, IMessageBroker messageBroker) {
+        public MethodSettingModelFactory(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileModelCollection, IMsdialDataStorage<ParameterBase> storage, FilePropertiesModel fileProperties, StudyContextModel studyContext, ProcessOption process, IMessageBroker messageBroker) {
             switch (storage) {
                 case IMsdialDataStorage<MsdialLcImMsParameter> lcimmsStorage:
-                    factoryImpl = new LcimmsMethodSettingModelFactory(analysisFileBeanModelCollection, alignmentFileModelCollection, lcimmsStorage, projectBaseParameter, process, messageBroker);
+                    factoryImpl = new LcimmsMethodSettingModelFactory(analysisFileBeanModelCollection, alignmentFileModelCollection, lcimmsStorage, fileProperties, studyContext, process, messageBroker);
                     break;
                 case IMsdialDataStorage<MsdialLcmsParameter> lcmsStorage:
-                    factoryImpl = new LcmsMethodSettingModelFactory(analysisFileBeanModelCollection, alignmentFileModelCollection, lcmsStorage, projectBaseParameter, process, messageBroker);
+                    factoryImpl = new LcmsMethodSettingModelFactory(analysisFileBeanModelCollection, alignmentFileModelCollection, lcmsStorage, fileProperties, studyContext, process, messageBroker);
                     break;
                 case IMsdialDataStorage<MsdialImmsParameter> immsStorage:
                     if (immsStorage.Parameter.MachineCategory == MachineCategory.IIMMS) {
-                        factoryImpl = new ImagingImmsMethodSettingModelFactory(analysisFileBeanModelCollection, immsStorage, projectBaseParameter, process, messageBroker, alignmentFileModelCollection);
+                        factoryImpl = new ImagingImmsMethodSettingModelFactory(analysisFileBeanModelCollection, alignmentFileModelCollection, immsStorage, fileProperties, studyContext, process, messageBroker);
                     }
                     else {
-                        factoryImpl = new ImmsMethodSettingModelFactory(analysisFileBeanModelCollection, alignmentFileModelCollection, immsStorage, projectBaseParameter, process, messageBroker);
+                        factoryImpl = new ImmsMethodSettingModelFactory(analysisFileBeanModelCollection, alignmentFileModelCollection, immsStorage, fileProperties, studyContext, process, messageBroker);
                     }
                     break;
                 case IMsdialDataStorage<MsdialDimsParameter> dimsStorage:
-                    factoryImpl = new DimsMethodSettingModelFactory(analysisFileBeanModelCollection, alignmentFileModelCollection, dimsStorage, projectBaseParameter, process, messageBroker);
+                    factoryImpl = new DimsMethodSettingModelFactory(analysisFileBeanModelCollection, alignmentFileModelCollection, dimsStorage, fileProperties, studyContext, process, messageBroker);
                     break;
                 default:
                     throw new ArgumentException(nameof(storage));
@@ -84,15 +83,17 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly AnalysisFileBeanModelCollection _analysisFileBeanModelCollection;
         private readonly AlignmentFileBeanModelCollection _alignmentFileBeanModelCollection;
         private readonly IMsdialDataStorage<MsdialDimsParameter> storage;
-        private readonly ProjectBaseParameterModel _projectBaseParameter;
+        private readonly FilePropertiesModel _projectBaseParameter;
+        private readonly StudyContextModel _studyContext;
         private readonly ProcessOption process;
         private readonly IMessageBroker _messageBroker;
 
-        public DimsMethodSettingModelFactory(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialDimsParameter> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process, IMessageBroker messageBroker) {
+        public DimsMethodSettingModelFactory(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialDimsParameter> storage, FilePropertiesModel projectBaseParameter, StudyContextModel studyContext, ProcessOption process, IMessageBroker messageBroker) {
             _analysisFileBeanModelCollection = analysisFileBeanModelCollection;
             _alignmentFileBeanModelCollection = alignmentFileBeanModelCollection;
             this.storage = storage;
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
+            _studyContext = studyContext;
             this.process = process;
             _messageBroker = messageBroker;
         }
@@ -168,7 +169,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            return new DimsMethodModel(storage, _analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, _projectBaseParameter, _messageBroker);
+            return new DimsMethodModel(storage, _analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, _projectBaseParameter, _studyContext, _messageBroker);
         }
     }
 
@@ -177,15 +178,17 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly AnalysisFileBeanModelCollection _analysisFileBeanModelCollection;
         private readonly AlignmentFileBeanModelCollection _alignmentFileBeanModelCollection;
         private readonly IMsdialDataStorage<MsdialLcmsParameter> storage;
-        private readonly ProjectBaseParameterModel _projectBaseParameter;
+        private readonly FilePropertiesModel _fileProperties;
+        private readonly StudyContextModel _studyContext;
         private readonly ProcessOption process;
         private readonly IMessageBroker _broker;
 
-        public LcmsMethodSettingModelFactory(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialLcmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process, IMessageBroker broker) {
+        public LcmsMethodSettingModelFactory(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialLcmsParameter> storage, FilePropertiesModel fileProperties, StudyContextModel studyContext, ProcessOption process, IMessageBroker broker) {
             _analysisFileBeanModelCollection = analysisFileBeanModelCollection;
             _alignmentFileBeanModelCollection = alignmentFileBeanModelCollection;
             this.storage = storage;
-            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
+            _fileProperties = fileProperties ?? throw new ArgumentNullException(nameof(fileProperties));
+            _studyContext = studyContext;
             this.process = process;
             _broker = broker;
             if (this.storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
@@ -261,7 +264,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            return new LcmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, new StandardDataProviderFactory(retry: 5, isGuiProcess: true), _projectBaseParameter, _broker);
+            return new LcmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, new StandardDataProviderFactory(retry: 5, isGuiProcess: true), _fileProperties, _studyContext, _broker);
         }
     }
 
@@ -270,15 +273,17 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly AnalysisFileBeanModelCollection _analysisFileBeanModelCollection;
         private readonly AlignmentFileBeanModelCollection _alignmentFileBeanModelCollection;
         private readonly IMsdialDataStorage<MsdialImmsParameter> storage;
-        private readonly ProjectBaseParameterModel _projectBaseParameter;
+        private readonly FilePropertiesModel _fileProperties;
+        private readonly StudyContextModel _studyContext;
         private readonly ProcessOption process;
         private readonly IMessageBroker _broker;
 
-        public ImmsMethodSettingModelFactory(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process, IMessageBroker broker) {
+        public ImmsMethodSettingModelFactory(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, FilePropertiesModel fileProperties, StudyContextModel studyContext, ProcessOption process, IMessageBroker broker) {
             _analysisFileBeanModelCollection = analysisFileBeanModelCollection;
             _alignmentFileBeanModelCollection = alignmentFileBeanModelCollection;
             this.storage = storage;
-            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
+            _fileProperties = fileProperties ?? throw new ArgumentNullException(nameof(fileProperties));
+            _studyContext = studyContext;
             this.process = process;
             _broker = broker;
         }
@@ -349,7 +354,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            return new ImmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, _projectBaseParameter, _broker);
+            return new ImmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, _fileProperties, _studyContext, _broker);
         }
     }
 
@@ -358,11 +363,11 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly AnalysisFileBeanModelCollection _analysisFileBeanModelCollection;
         private readonly AlignmentFileBeanModelCollection _alignmentFileBeanModelCollection;
         private readonly IMsdialDataStorage<MsdialLcImMsParameter> storage;
-        private readonly ProjectBaseParameterModel _projectBaseParameter;
+        private readonly FilePropertiesModel _projectBaseParameter;
         private readonly ProcessOption process;
         private readonly IMessageBroker _broker;
 
-        public LcimmsMethodSettingModelFactory(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialLcImMsParameter> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process, IMessageBroker broker) {
+        public LcimmsMethodSettingModelFactory(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialLcImMsParameter> storage, FilePropertiesModel projectBaseParameter, StudyContextModel studyContext, ProcessOption process, IMessageBroker broker) {
             _analysisFileBeanModelCollection = analysisFileBeanModelCollection;
             _alignmentFileBeanModelCollection = alignmentFileBeanModelCollection;
             this.storage = storage;
@@ -446,15 +451,17 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly AnalysisFileBeanModelCollection _analysisFileBeanModelCollection;
         private readonly AlignmentFileBeanModelCollection _alignmentFileBeanModelCollection;
         private readonly IMsdialDataStorage<MsdialImmsParameter> storage;
-        private readonly ProjectBaseParameterModel _projectBaseParameter;
+        private readonly FilePropertiesModel _fileProperties;
+        private readonly StudyContextModel _studyContext;
         private readonly ProcessOption process;
         private readonly IMessageBroker _broker;
 
-        public ImagingImmsMethodSettingModelFactory(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process, IMessageBroker broker, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection) {
+        public ImagingImmsMethodSettingModelFactory(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, FilePropertiesModel fileProperties, StudyContextModel studyContext, ProcessOption process, IMessageBroker broker) {
             _analysisFileBeanModelCollection = analysisFileBeanModelCollection;
             _alignmentFileBeanModelCollection = alignmentFileBeanModelCollection;
             this.storage = storage;
-            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
+            _fileProperties = fileProperties ?? throw new ArgumentNullException(nameof(fileProperties));
+            _studyContext = studyContext;
             this.process = process;
             _broker = broker;
         }
@@ -525,7 +532,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            var method = new ImagingImmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, _projectBaseParameter, _broker);
+            var method = new ImagingImmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, _fileProperties, _studyContext, _broker);
             return method;
         }
     }

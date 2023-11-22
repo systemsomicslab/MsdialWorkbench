@@ -6,6 +6,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Export"
         xmlns:m="clr-namespace:CompMs.App.Msdial.Model.Export"
+        xmlns:setting="clr-namespace:CompMs.App.Msdial.View.Setting"
         xmlns:common="clr-namespace:CompMs.Common.Enum;assembly=Common"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type={x:Type vm:AlignmentResultExportViewModel}}"
@@ -203,10 +204,18 @@
                 <DataTemplate DataType="{x:Type vm:AlignmentResultMassBankRecordExportViewModel}">
                     <Expander Header="MassBank" IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
                         <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
                             <CheckBox Content="Record"
                                       IsChecked="{Binding IsSelected.Value, Mode=TwoWay}"
                                       HorizontalAlignment="Left" VerticalAlignment="Center"
                                       Margin="8,8,0,0" Width="180"/>
+                            <StackPanel Orientation="Horizontal" Grid.Row="1">
+                                <TextBlock Text="ContributorID:" Margin="8,0"/>
+                                <TextBox Text="{Binding ContributorID.Value}" Width="120"/>
+                            </StackPanel>
                         </Grid>
                     </Expander>
                 </DataTemplate>
