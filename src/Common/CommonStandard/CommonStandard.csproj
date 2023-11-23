@@ -33,9 +33,10 @@
 
   <ItemGroup>
     <PackageReference Include="Accord.Statistics" Version="3.8.0" />
-    <PackageReference Include="MessagePack" Version="1.7.3.7" />
+    <PackageReference Include="MessagePack" Version="2.5.129" />
     <PackageReference Include="MessagePackAnalyzer" Version="1.6.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.IO.Pipelines" Version="8.0.0" />
     <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
     <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
