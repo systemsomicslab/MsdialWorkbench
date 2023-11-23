@@ -149,6 +149,22 @@ namespace CompMs.Common.MessagePack.Tests
             CollectionAssert.AreEqual(expected, results);
         }
 
+        [TestMethod]
+        public void DeserializePreviousVersionTest() {
+            var data = new byte[]
+            {
+                0xC9, 0x00, 0x00, 0x00, 0x21, 0x63, 0xD2, 0x00, 0x00, 0x00, 0x35, 0xFF, 0x02, 0x94, 0x00, 0x00,
+                0x00, 0x00, 0x91, 0x9A, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0C, 0x00,
+                0x0C, 0x50, 0x05, 0x06, 0x07, 0x08, 0x09
+            };
+            using var stream = new MemoryStream(data);
+            var actuals = LargeListMessagePack.Deserialize<LargeSample>(stream);
+            Assert.AreEqual(4, actuals.Count);
+            for (int i = 0; i < actuals.Count; i++) {
+                CollectionAssert.AreEqual(Enumerable.Range(0, 10).Select(i => (long)i).ToList(), actuals[i].Xs);
+            }
+        }
+
         [MessagePackObject]
         public class SmallSample {
 
