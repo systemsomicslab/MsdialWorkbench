@@ -139,7 +139,14 @@ namespace CompMs.Common.MessagePack.Tests
             };
             using var stream = new MemoryStream();
             LargeListMessagePack.Serialize(stream, data);
-            CollectionAssert.AreEqual(expected, stream.ToArray());
+            var results = stream.ToArray();
+            for (int i = 0; i < results.Length; i++) {
+                Debug.Write(results[i].ToString("X2") + " ");
+                if (i % 16 == 15) {
+                    Debug.Write(Environment.NewLine);
+                }
+            }
+            CollectionAssert.AreEqual(expected, results);
         }
 
         [MessagePackObject]
