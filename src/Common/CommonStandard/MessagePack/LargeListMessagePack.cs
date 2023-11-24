@@ -117,7 +117,7 @@ namespace CompMs.Common.MessagePack
         }
 
         [MessagePackFormatter(typeof(SerializingDataContainer<>.DataContainerFormatter))]
-        internal sealed class SerializingDataContainer<T> {
+        private sealed class SerializingDataContainer<T> {
             public IReadOnlyList<T> Data { get; set; }
 
             class DataContainerFormatter : IMessagePackFormatter<SerializingDataContainer<T>>
@@ -138,7 +138,7 @@ namespace CompMs.Common.MessagePack
 
 
         [MessagePackFormatter(typeof(DeserializedDataContainer<>.DataContainerFormatter))]
-        internal sealed class DeserializedDataContainer<T> {
+        private sealed class DeserializedDataContainer<T> {
             public List<T> Data { get; set; }
             public int Length { get; set; }
 
