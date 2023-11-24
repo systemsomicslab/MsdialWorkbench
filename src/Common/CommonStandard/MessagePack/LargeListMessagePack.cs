@@ -1,4 +1,5 @@
 ﻿using MessagePack;
+using MessagePack.Formatters;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,16 +28,8 @@ namespace CompMs.Common.MessagePack
             }
             else
             {
-                using (var memory = new MemoryStream()) {
-                    var pipeWriter = PipeWriter.Create(memory);
-                    var writer_ = writer.Clone(pipeWriter);
-                    var newOptions = options.WithCompression(MessagePackCompression.Lz4Block).WithCompressionMinLength(1);
-                    MessagePackSerializer.Serialize(ref writer_, value, newOptions);
-                    writer_.Flush();
-                    pipeWriter.Complete();
-
-                    writer.WriteExtensionFormat(new ExtensionResult(ExtensionTypeCode, memory.ToArray()));
-                }
+                var newOptions = options.WithCompression(MessagePackCompression.Lz4BlockArray);
+                MessagePackSerializer.Serialize(ref writer, new SerializingDataContainer<T> { Data = value }, newOptions);
             }
         }
 
@@ -86,18 +79,26 @@ namespace CompMs.Common.MessagePack
 
         private static List<T> DeserializeEach<T>(ref MessagePackReader reader, MessagePackSerializerOptions options)
         {
+            if (!reader.End)
+            {
+                return MessagePackSerializer.Deserialize<DeserializedDataContainer<T>>(ref reader, options.WithCompression(MessagePackCompression.Lz4BlockArray)).Data;
+                var result = reader.ReadExtensionFormat();
+                var reader_ = reader.Clone(result.Data);
+                // LZ4 Decode
+                return DeserializeList<T>(ref reader_, options);
+            }
             if (reader.NextMessagePackType == MessagePackType.Extension)
             {
                 var header = reader.ReadExtensionFormatHeader();
                 if (header.TypeCode == ExtensionTypeCode)
                 {
-                    // decode lz4
-                    //var _length = reader.ReadInt32();
                     if (!reader.End)
                     {
                         // LZ4 Decode
-                        var newOptions = options.WithCompression(MessagePackCompression.Lz4Block).WithCompressionMinLength(1);
-                        return DeserializeList<T>(ref reader, newOptions);
+                        var serialized = reader.ReadRaw(header.Length);
+                        var reader_ = reader.Clone(serialized);
+                        var length = reader_.ReadInt32();
+                        return DeserializeList<T>(ref reader_, options);
                     }
                 }
             }
@@ -112,7 +113,9 @@ namespace CompMs.Common.MessagePack
             }
             else
             {
-                return MessagePackSerializer.Deserialize<List<T>>(ref reader, options);
+                // decode lz4
+                var newOptions = options.WithCompression(MessagePackCompression.Lz4Block).WithCompressionMinLength(1);
+                return MessagePackSerializer.Deserialize<List<T>>(ref reader, newOptions);
             }
         }
 
@@ -139,28 +142,72 @@ namespace CompMs.Common.MessagePack
 
         private static bool TryDeserializeAtOrSkip<T>(ref MessagePackReader reader, MessagePackSerializerOptions options, int index, out T result, out int skipArraySize)
         {
-            if (reader.NextMessagePackType == MessagePackType.Extension)
+            var newOptions = options.WithCompression(MessagePackCompression.Lz4BlockArray);
+            if (!reader.End)
             {
-                var header = reader.ReadExtensionFormatHeader();
-                if (header.TypeCode == ExtensionTypeCode)
-                {
-                    // decode lz4
-                    var newOptions = options.WithCompression(MessagePackCompression.Lz4Block).WithCompressionMinLength(1);
-                    if (!reader.End)
-                    {
-                        // LZ4 Decode
-                        var results = MessagePackSerializer.Deserialize<T[]>(ref reader, newOptions);
-                        skipArraySize = results.Length;
-                        if (skipArraySize > index) {
-                            result = results[index];
-                            return true;
-                        }
-                    }
+                var results = MessagePackSerializer.Deserialize<DeserializedDataContainer<T>>(ref reader, newOptions);
+                skipArraySize = results.Length;
+                if (skipArraySize > index) {
+                    result = results.Data[index];
+                    return true;
                 }
             }
             result = default;
             skipArraySize = 0;
             return false;
+        }
+
+        [MessagePackFormatter(typeof(SerializingDataContainer<>.DataContainerFormatter))]
+        internal sealed class SerializingDataContainer<T> {
+            public IReadOnlyList<T> Data { get; set; }
+
+            class DataContainerFormatter : IMessagePackFormatter<SerializingDataContainer<T>>
+            {
+                public SerializingDataContainer<T> Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
+                    throw new NotSupportedException();
+                }
+
+                public void Serialize(ref MessagePackWriter writer, SerializingDataContainer<T> value, MessagePackSerializerOptions options) {
+                    writer.WriteInt32(value.Data.Count);
+                    for (int i = 0; i < value.Data.Count; i++) {
+                        MessagePackSerializer.Serialize(ref writer, value.Data[i], options);
+                    }
+                }
+            }
+        }
+
+
+        [MessagePackFormatter(typeof(DeserializedDataContainer<>.DataContainerFormatter))]
+        internal sealed class DeserializedDataContainer<T> {
+            public int Length { get; set; }
+            public List<T> Data { get; set; }
+
+            class DataContainerFormatter : IMessagePackFormatter<DeserializedDataContainer<T>>
+            {
+                public DeserializedDataContainer<T> Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
+                    int length;
+                    if (reader.NextMessagePackType == MessagePackType.Integer) {
+                        length = reader.ReadInt32(); // length
+                    }
+                    else if (reader.NextMessagePackType == MessagePackType.Array) {
+                        var reader_ = reader.CreatePeekReader();
+                        length = reader_.ReadArrayHeader();
+                        reader.ReadRaw(5);
+                    }
+                    else {
+                        throw new NotSupportedException($"Unknown MessagePackType: {reader.NextMessagePackType}");
+                    }
+                    var data = new List<T>(length);
+                    for (int i = 0; i < length; i++) {
+                        data.Add(MessagePackSerializer.Deserialize<T>(ref reader, options));
+                    }
+                    return new DeserializedDataContainer<T> { Length = length, Data = data };
+                }
+
+                public void Serialize(ref MessagePackWriter writer, DeserializedDataContainer<T> value, MessagePackSerializerOptions options) {
+                    throw new NotSupportedException();
+                }
+            }
         }
     }
 }
