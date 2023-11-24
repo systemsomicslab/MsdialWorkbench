@@ -1,5 +1,6 @@
 ﻿using MessagePack;
 using MessagePack.Formatters;
+using MessagePack.Resolvers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -105,19 +106,14 @@ namespace CompMs.Common.MessagePack
 
         private static bool TryDeserializeAtOrSkip<T>(ref MessagePackReader reader, MessagePackSerializerOptions options, int index, out T result, out int skipArraySize)
         {
-            var newOptions = options.WithCompression(MessagePackCompression.Lz4BlockArray);
-            if (!reader.End)
-            {
-                var results = MessagePackSerializer.Deserialize<DeserializedDataContainer<T>>(ref reader, newOptions);
-                skipArraySize = results.Length;
-                if (skipArraySize > index) {
-                    result = results.Data[index];
-                    return true;
-                }
-            }
-            result = default;
-            skipArraySize = 0;
-            return false;
+            var resolver = CompositeResolver.Create(
+                new[] { DeserializedDataContainer<T>.CreateFormatter(index), },
+                new[] { StandardResolver.Instance });
+            var newOptions = options.WithCompression(MessagePackCompression.Lz4BlockArray).WithResolver(resolver);
+            var deserialized = MessagePackSerializer.Deserialize<DeserializedDataContainer<T>>(ref reader, newOptions);
+            result = deserialized.Data.FirstOrDefault();
+            skipArraySize = deserialized.Length;
+            return result != null;
         }
 
         [MessagePackFormatter(typeof(SerializingDataContainer<>.DataContainerFormatter))]
@@ -131,7 +127,8 @@ namespace CompMs.Common.MessagePack
                 }
 
                 public void Serialize(ref MessagePackWriter writer, SerializingDataContainer<T> value, MessagePackSerializerOptions options) {
-                    writer.WriteInt32(value.Data.Count);
+                    writer.WriteArrayHeader(1);
+                    writer.WriteArrayHeader(value.Data.Count);
                     for (int i = 0; i < value.Data.Count; i++) {
                         MessagePackSerializer.Serialize(ref writer, value.Data[i], options);
                     }
@@ -142,29 +139,61 @@ namespace CompMs.Common.MessagePack
 
         [MessagePackFormatter(typeof(DeserializedDataContainer<>.DataContainerFormatter))]
         internal sealed class DeserializedDataContainer<T> {
-            public int Length { get; set; }
             public List<T> Data { get; set; }
+            public int Length { get; set; }
+
+            public static IMessagePackFormatter<DeserializedDataContainer<T>> CreateFormatter(int index) => new SpecificDataFormatter(index);
 
             class DataContainerFormatter : IMessagePackFormatter<DeserializedDataContainer<T>>
             {
                 public DeserializedDataContainer<T> Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
-                    int length;
-                    if (reader.NextMessagePackType == MessagePackType.Integer) {
-                        length = reader.ReadInt32(); // length
-                    }
-                    else if (reader.NextMessagePackType == MessagePackType.Array) {
-                        var reader_ = reader.CreatePeekReader();
-                        length = reader_.ReadArrayHeader();
-                        reader.ReadRaw(5);
+                    var reader_ = reader.CreatePeekReader();
+                    var length = reader_.ReadArrayHeader();
+                    if (reader_.NextMessagePackType == MessagePackType.Array) {
+                        reader.ReadArrayHeader();
+                        length = reader.ReadArrayHeader();
                     }
                     else {
-                        throw new NotSupportedException($"Unknown MessagePackType: {reader.NextMessagePackType}");
+                        reader.ReadRaw(5);
                     }
                     var data = new List<T>(length);
                     for (int i = 0; i < length; i++) {
                         data.Add(MessagePackSerializer.Deserialize<T>(ref reader, options));
                     }
                     return new DeserializedDataContainer<T> { Length = length, Data = data };
+                }
+
+                public void Serialize(ref MessagePackWriter writer, DeserializedDataContainer<T> value, MessagePackSerializerOptions options) {
+                    throw new NotSupportedException();
+                }
+            }
+
+            class SpecificDataFormatter : IMessagePackFormatter<DeserializedDataContainer<T>>
+            {
+                private readonly int _index;
+
+                public SpecificDataFormatter(int index)
+                {
+                    _index = index;
+                }
+
+                public DeserializedDataContainer<T> Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
+                    var reader_ = reader.CreatePeekReader();
+                    var length = reader_.ReadArrayHeader();
+                    if (reader_.NextMessagePackType == MessagePackType.Array) {
+                        reader.ReadArrayHeader();
+                        length = reader.ReadArrayHeader();
+                    }
+                    else {
+                        reader.ReadRaw(5);
+                    }
+                    if (length <= _index) {
+                        return new DeserializedDataContainer<T> { Length = length, };
+                    }
+                    for (int i = 0; i < _index; i++) {
+                        reader.Skip();
+                    }
+                    return new DeserializedDataContainer<T> { Data = new List<T> { MessagePackSerializer.Deserialize<T>(ref reader, options) }, Length = length };
                 }
 
                 public void Serialize(ref MessagePackWriter writer, DeserializedDataContainer<T> value, MessagePackSerializerOptions options) {
