@@ -82,41 +82,8 @@ namespace CompMs.Common.MessagePack
             if (!reader.End)
             {
                 return MessagePackSerializer.Deserialize<DeserializedDataContainer<T>>(ref reader, options.WithCompression(MessagePackCompression.Lz4BlockArray)).Data;
-                var result = reader.ReadExtensionFormat();
-                var reader_ = reader.Clone(result.Data);
-                // LZ4 Decode
-                return DeserializeList<T>(ref reader_, options);
-            }
-            if (reader.NextMessagePackType == MessagePackType.Extension)
-            {
-                var header = reader.ReadExtensionFormatHeader();
-                if (header.TypeCode == ExtensionTypeCode)
-                {
-                    if (!reader.End)
-                    {
-                        // LZ4 Decode
-                        var serialized = reader.ReadRaw(header.Length);
-                        var reader_ = reader.Clone(serialized);
-                        var length = reader_.ReadInt32();
-                        return DeserializeList<T>(ref reader_, options);
-                    }
-                }
             }
             return new List<T>();
-        }
-
-        private static List<T> DeserializeList<T>(ref MessagePackReader reader, MessagePackSerializerOptions options)
-        {
-            if (reader.IsNil)
-            {
-                return null;
-            }
-            else
-            {
-                // decode lz4
-                var newOptions = options.WithCompression(MessagePackCompression.Lz4Block).WithCompressionMinLength(1);
-                return MessagePackSerializer.Deserialize<List<T>>(ref reader, newOptions);
-            }
         }
 
         public static T DeserializeAt<T>(Stream stream, int index) {
