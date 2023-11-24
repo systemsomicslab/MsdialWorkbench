@@ -891,7 +891,7 @@ namespace CompMs.Common.Lipidomics
                     //20230612
                     case LbmClass.NATryA:
                         result = LipidMsmsCharacterization.JudgeIfNAcylTryA(msScanProp, ms2tol, refMz,
-                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                             totalCarbon, totalDbBond, totalOxidized, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
                         break;
                     case LbmClass.NA5HT:
                         result = LipidMsmsCharacterization.JudgeIfNAcyl5HT(msScanProp, ms2tol, refMz,
