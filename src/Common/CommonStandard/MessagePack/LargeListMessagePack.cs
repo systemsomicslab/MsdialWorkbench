@@ -52,10 +52,6 @@ namespace CompMs.Common.MessagePack
             }
         }
 
-        public static IEnumerable<List<T>> DeserializeIncremental<T>(ref MessagePackReader reader, MessagePackSerializerOptions options) {
-            return DeserializeIncrementalCore<T>(ref reader, options);
-        }
-
         private static List<T> DeserializeCore<T>(ref MessagePackReader reader, MessagePackSerializerOptions options) {
             var res = new List<List<T>>();
             // HeaderSize: extension header(always 6 bytes) + length(always 5 bytes) = 11
