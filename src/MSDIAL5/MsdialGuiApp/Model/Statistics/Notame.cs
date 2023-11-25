@@ -27,10 +27,12 @@
 //    }
 //}
 
+using RDotNet;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.IO.Pipes;
 using System.Text;
 using System.Windows.Forms;
 using Newtonsoft.Json;
@@ -39,90 +41,110 @@ namespace CompMs.App.Msdial.Model.Statistics
 {
     public class Notame : Form
     {
-        private TextBox parameter1;
-        private TextBox parameter2;
-        private TextBox parameter3;
-        private TextBox parameter4;
-        private Label label1;
-        private Label label2;
-        private Label label3;
-        private Label label4;
+        private TextBox _path;
+        private TextBox _fileName;
+        private TextBox _ionMod;
+        private TextBox _groupingName;
+        private Label _label1;
+        private Label _label2;
+        private Label _label3;
+        private Label _label4;
 
         public void Run()
         {
+            Form form = CreateForm();
+            form.ShowDialog();
+        }
+
+        private Form CreateForm()
+        {
             Form form = new Form();
-            Button button = new Button();
-            button.Text = "Run";
-            button.Location = new System.Drawing.Point(110, 150);
-            button.Click += new EventHandler(SaveParameters);
+            Button button = CreateButton("Run");
+            button.Click += SaveParameters;
 
-            label1 = new Label();
-            label1.Text = "Parameter 1";
-            label1.Location = new Point(10, 10);
-            form.Controls.Add(label1);
+            _label1 = CreateLabel("File path: ", 10, 10);
+            _path = CreateTextBox(120, 10);
 
-            parameter1 = new System.Windows.Forms.TextBox();
-            parameter1.Location = new Point(120, 10);
-            form.Controls.Add(parameter1);
+            _label2 = CreateLabel("File name: ", 10, 40);
+            _fileName = CreateTextBox(120, 40);
 
-            label2 = new Label();
-            label2.Text = "Parameter 2";
-            label2.Location = new Point(10, 40);
-            form.Controls.Add(label2);
+            _label3 = CreateLabel("Ion mode: ", 10, 70);
+            _ionMod = CreateTextBox(120, 70);
 
-            parameter2 = new System.Windows.Forms.TextBox();
-            parameter2.Location = new Point(120, 40);
-            form.Controls.Add(parameter2);
+            _label4 = CreateLabel("Grouping name: ", 10, 100);
+            _groupingName = CreateTextBox(120, 100);
 
-            label3 = new Label();
-            label3.Text = "Parameter 3";
-            label3.Location = new Point(10, 70);
-            form.Controls.Add(label3);
-
-            parameter3 = new System.Windows.Forms.TextBox();
-            parameter3.Location = new Point(120, 70);
-            form.Controls.Add(parameter3);
-
-            label4 = new Label();
-            label4.Text = "Parameter 4";
-            label4.Location = new Point(10, 100);
-            form.Controls.Add(label4);
-
-            parameter4 = new System.Windows.Forms.TextBox();
-            parameter4.Location = new Point(120, 100);
-            form.Controls.Add(parameter4);
-
-            form.Text = "Insert Parameters";
+            form.Text = "Insert Parameters: ";
             form.StartPosition = FormStartPosition.CenterParent;
-            form.Controls.Add(button);
+            form.Controls.AddRange(new Control[] { button, _label1, _path, _label2, _fileName, _label3, _ionMod, _label4, _groupingName });
             form.MaximizeBox = false;
             form.MinimizeBox = false;
-            form.ShowDialog();
+            return form;
+        }
+
+        private Button CreateButton(string text)
+        {
+            Button button = new Button();
+            button.Text = text;
+            button.Location = new System.Drawing.Point(110, 150);
+            return button;
+        }
+
+        private Label CreateLabel(string text, int x, int y)
+        {
+            Label label = new Label();
+            label.Text = text;
+            label.Location = new Point(x, y);
+            return label;
+        }
+
+        private TextBox CreateTextBox(int x, int y)
+        {
+            TextBox textBox = new System.Windows.Forms.TextBox();
+            textBox.Location = new Point(x, y);
+            return textBox;
         }
 
         private void SaveParameters(object sender, EventArgs e)
         {
-            string parameter1Value = parameter1.Text;
-            string parameter2Value = parameter2.Text;
-            string parameter3Value = parameter3.Text;
-            string parameter4Value = parameter4.Text;
+            string pathValue = _path.Text;
+            string fileNameValue = _fileName.Text;
+            string ionModValue = _ionMod.Text;
+            string groupingNameValue = _groupingName.Text;
 
-            SaveParametersAsJson(parameter1Value, parameter2Value, parameter3Value, parameter4Value);
+            SaveParametersAsJson(pathValue, fileNameValue, ionModValue, groupingNameValue);
         }
 
-        private void SaveParametersAsJson(string parameter1, string parameter2, string parameter3, string parameter4)
+        private void SaveParametersAsJson(string path, string fileName, string ionMod, string groupingName)
         {
-            Dictionary<string, string> parameters = new Dictionary<string, string>();
-            parameters.Add("Parameter1", parameter1);
-            parameters.Add("Parameter2", parameter2);
-            parameters.Add("Parameter3", parameter3);
-            parameters.Add("Parameter4", parameter4);
+            Dictionary<string, string> parameters = new Dictionary<string, string>
+            {
+                { "path", path },
+                { "file_name", fileName },
+                { "ion_mod", ionMod },
+                { "grouping_name", groupingName }
+            };
 
-            string jsonString = JsonConvert.SerializeObject(parameters, Formatting.Indented);
-            string filePath = "D:/2023/11/Notame/NotameParameters.json";
-            File.WriteAllText(filePath, jsonString);
-
+            string jsonParameter = JsonConvert.SerializeObject(parameters, Formatting.Indented);
+            string filePath = "C:/src/NotameParameters.json";
+            File.WriteAllText(filePath, jsonParameter);
             MessageBox.Show("Parameters saved to the JSON file.");
+
+            SendParametersToNotame(jsonParameter);
+        }
+
+        private void SendParametersToNotame(string jsonParameter)
+        {
+            using (var pipeClient = new NamedPipeClientStream("notameParameters"))
+            {
+                pipeClient.Connect();
+
+                using (var writer = new StreamWriter(pipeClient))
+                {
+                    writer.Write(jsonParameter);
+                }
+            }
+            MessageBox.Show("Parameters sent to the Notame.");
         }
     }
 }
