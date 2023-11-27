@@ -149,13 +149,13 @@ namespace CompMs.Common.MessagePack
                 public DeserializedDataContainer<T> Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
                     var reader_ = reader.CreatePeekReader();
                     var length = reader_.ReadArrayHeader();
-                    if (reader_.NextMessagePackType == MessagePackType.Array) {
-                        reader.ReadArrayHeader();
-                        length = reader.ReadArrayHeader();
-                    }
-                    else {
+                    //if (reader_.NextMessagePackType == MessagePackType.Array) {
+                    //    reader.ReadArrayHeader();
+                    //    length = reader.ReadArrayHeader();
+                    //}
+                    //else {
                         reader.ReadRaw(5);
-                    }
+                    //}
                     var data = new List<T>(length);
                     for (int i = 0; i < length; i++) {
                         data.Add(MessagePackSerializer.Deserialize<T>(ref reader, options));
