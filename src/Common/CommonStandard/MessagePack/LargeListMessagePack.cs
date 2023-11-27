@@ -118,6 +118,7 @@ namespace CompMs.Common.MessagePack
 
         [MessagePackFormatter(typeof(SerializingDataContainer<>.DataContainerFormatter))]
         private sealed class SerializingDataContainer<T> {
+            public sbyte VersionCode { get; } = 2;
             public IReadOnlyList<T> Data { get; set; }
 
             class DataContainerFormatter : IMessagePackFormatter<SerializingDataContainer<T>>
@@ -127,7 +128,7 @@ namespace CompMs.Common.MessagePack
                 }
 
                 public void Serialize(ref MessagePackWriter writer, SerializingDataContainer<T> value, MessagePackSerializerOptions options) {
-                    writer.WriteArrayHeader(1);
+                    writer.WriteInt8(value.VersionCode);
                     writer.WriteArrayHeader(value.Data.Count);
                     for (int i = 0; i < value.Data.Count; i++) {
                         MessagePackSerializer.Serialize(ref writer, value.Data[i], options);
@@ -147,15 +148,16 @@ namespace CompMs.Common.MessagePack
             class DataContainerFormatter : IMessagePackFormatter<DeserializedDataContainer<T>>
             {
                 public DeserializedDataContainer<T> Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
-                    var reader_ = reader.CreatePeekReader();
-                    var length = reader_.ReadArrayHeader();
-                    //if (reader_.NextMessagePackType == MessagePackType.Array) {
-                    //    reader.ReadArrayHeader();
-                    //    length = reader.ReadArrayHeader();
-                    //}
-                    //else {
+                    int length;
+                    if (reader.NextCode == MessagePackCode.Int8) {
+                        _ = reader.ReadSByte();
+                        length = reader.ReadArrayHeader();
+                    }
+                    else {
+                        var reader_ = reader.CreatePeekReader();
+                        length = reader_.ReadArrayHeader();
                         reader.ReadRaw(5);
-                    //}
+                    }
                     var data = new List<T>(length);
                     for (int i = 0; i < length; i++) {
                         data.Add(MessagePackSerializer.Deserialize<T>(ref reader, options));
@@ -178,13 +180,14 @@ namespace CompMs.Common.MessagePack
                 }
 
                 public DeserializedDataContainer<T> Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
-                    var reader_ = reader.CreatePeekReader();
-                    var length = reader_.ReadArrayHeader();
-                    if (reader_.NextMessagePackType == MessagePackType.Array) {
-                        reader.ReadArrayHeader();
+                    int length;
+                    if (reader.NextCode == MessagePackCode.Int8) {
+                        _ = reader.ReadSByte();
                         length = reader.ReadArrayHeader();
                     }
                     else {
+                        var reader_ = reader.CreatePeekReader();
+                        length = reader_.ReadArrayHeader();
                         reader.ReadRaw(5);
                     }
                     if (length <= _index) {
