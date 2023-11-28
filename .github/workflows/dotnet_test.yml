@@ -41,7 +41,7 @@ jobs:
       - name: Publish
         run: dotnet publish src/MSDIAL5/MsdialGuiApp/MsdialGuiApp.csproj -p:PublishProfile=FolderProfile -o artifact --configuration "Release vendor unsupported"
       - name: Copy licenses
-        run: Copy-Item -Path LGPL.txt,THIRD-PARTH-LICENSE-README.md,README.md -Destination artifact
+        run: Copy-Item -Path LGPL.txt,THIRD-PARTY-LICENSE-README.md,README.md -Destination artifact
       - name: Upload
         uses: actions/upload-artifact@v3.1.2
         with:
