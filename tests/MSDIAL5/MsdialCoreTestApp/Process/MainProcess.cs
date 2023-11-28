@@ -14,6 +14,7 @@ namespace CompMs.App.MsdialConsole.Process {
 
             var inputFolder = string.Empty;
             var methodFile = string.Empty;
+            var methodFile2 = string.Empty;
             var outputFolder = string.Empty;
             var isProjectStore = false;
             var isAif = false;
@@ -31,6 +32,7 @@ namespace CompMs.App.MsdialConsole.Process {
                     }
                 }
                 else if (args[i] == "-ionmode" && i + 1 < args.Length) ionmode = args[i + 1];
+                else if (args[i] == "-m2" && i + 1 < args.Length) methodFile2 = args[i + 1];
             }
             if (inputFolder == string.Empty || methodFile == string.Empty || outputFolder == string.Empty) return argsError();
             var analysisType = args[0];
@@ -39,7 +41,10 @@ namespace CompMs.App.MsdialConsole.Process {
                     case "gcms":
                         return new GcmsProcess().Run(inputFolder, outputFolder, methodFile, isProjectStore);
                     case "lcms":
-                        return new LcmsProcess().Run(inputFolder, outputFolder, methodFile, isProjectStore, targetMz);
+                        if (methodFile != string.Empty && methodFile2 != string.Empty)
+                            return new LcmsProcess().AutoRun(inputFolder, outputFolder, methodFile, methodFile2, isProjectStore, targetMz);
+                        else
+                            return new LcmsProcess().Run(inputFolder, outputFolder, methodFile, isProjectStore, targetMz);
                     case "lcimms":
                         return new LcimmsProcess().Run(inputFolder, outputFolder, methodFile, isProjectStore, targetMz);
                     case "dims":

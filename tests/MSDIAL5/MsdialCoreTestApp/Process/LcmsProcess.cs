@@ -19,26 +19,155 @@ using CompMs.MsdialLcMsApi.Algorithm.Annotation;
 using CompMs.MsdialLcMsApi.DataObj;
 using CompMs.MsdialLcMsApi.Export;
 using CompMs.MsdialLcMsApi.Process;
+using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.App.MsdialConsole.Process
 {
+    public class FileTask {
+        public string FilePath { get; set; }
+        public string IonModeTask { get; set; } // positive, negative, both, unknown
+    }
+
     public class LcmsProcess
     {
-        public int Run(string inputFolder, string outputFolder, string methodFile, bool isProjectSaved, float targetMz)
-        {
+        public List<FileTask> GetFileTasks(string inputfolder) {
+            var analysisFiles = AnalysisFilesParser.ReadInput(inputfolder);
+            var tasks = new List<FileTask>();
+            foreach (var file in analysisFiles) {
+                var filetask = new FileTask() { FilePath = file.AnalysisFilePath, IonModeTask = "Unknown" };
+                using (var access = new RawDataAccess(file.AnalysisFilePath, 0, false, false, false, null)) {
+                    for (var i = 0; i < 5; i++) {
+                        var rawObj = access.GetMeasurement();
+                        if (rawObj != null) {
+                            var spectra = rawObj.SpectrumList;
+                            if (!spectra.IsEmptyOrNull()) {
+                                var ionmodes = spectra.Select(n => n.ScanPolarity).Distinct().ToList();
+
+                                if (ionmodes.Count == 1) {
+                                    var ionmode = ionmodes[0];
+                                    switch (ionmode) {
+                                        case Common.DataObj.ScanPolarity.Positive:
+                                            filetask.IonModeTask = "Positive";
+                                            break;
+                                        case Common.DataObj.ScanPolarity.Negative:
+                                            filetask.IonModeTask = "Negative";
+                                            break;
+                                        default:
+                                            filetask.IonModeTask = "Unknown";
+                                            break;
+                                    }
+                                } 
+                                else if (ionmodes.Count == 2) {
+                                    var ionmode1 = ionmodes[0];
+                                    var ionmode2 = ionmodes[1];
+                                    if ((ionmode1 == Common.DataObj.ScanPolarity.Positive && ionmode2 == Common.DataObj.ScanPolarity.Negative) ||
+                                        (ionmode1 == Common.DataObj.ScanPolarity.Negative && ionmode2 == Common.DataObj.ScanPolarity.Positive)) {
+                                        filetask.IonModeTask = "Both";
+                                    }
+                                }
+                            }
+                        }
+                        Thread.Sleep(5000);
+                    }
+                }
+                tasks.Add(filetask);
+            }
+            return tasks;
+        }
+
+        public int Run(List<FileTask> filetasks, string inputfolder, string outputfolder, string posmethodfile, string negmethodfile, bool isProjectSaved, float targetMz) {
+            var ionmodetasks = filetasks.Select(n => n.IonModeTask).Distinct().ToList();
+            if (ionmodetasks.Count == 1) { // pos only, neg only, unknown only
+                var ionmodetask = ionmodetasks[0];
+                if (ionmodetask == "Unknown") return -1;
+                if (ionmodetask == "Positive") {
+                    return Run(inputfolder, outputfolder, posmethodfile, isProjectSaved, targetMz);
+                }
+                else if (ionmodetask == "Negative") {
+                    return Run(inputfolder, outputfolder, negmethodfile, isProjectSaved, targetMz);
+                }
+                else if (ionmodetask == "Both") {
+
+                    Run(inputfolder, outputfolder, posmethodfile, isProjectSaved, targetMz);
+                    return Run(inputfolder, outputfolder, negmethodfile, isProjectSaved, targetMz);
+                }
+                else { return -1; }
+            }
+            else if (ionmodetasks.Count > 1) { // case: a folder contains several polarity setting files
+                foreach (var modetask in ionmodetasks) {
+                    switch (modetask) {
+                        case "Positive":
+                            var ignorefiles_pos = filetasks.Where(n => n.IonModeTask != "Positive").Select(n => n.FilePath).ToList();
+                            Run(inputfolder, outputfolder, posmethodfile, isProjectSaved, targetMz, ignorefiles_pos);
+                            break;
+                        case "Negative":
+                            var ignorefiles_neg = filetasks.Where(n => n.IonModeTask != "Negative").Select(n => n.FilePath).ToList();
+                            Run(inputfolder, outputfolder, posmethodfile, isProjectSaved, targetMz, ignorefiles_neg);
+                            break;
+                        case "Both":
+                            var ignorefiles_pos_vs2 = filetasks.Where(n => n.IonModeTask != "Positive").Select(n => n.FilePath).ToList();
+                            Run(inputfolder, outputfolder, posmethodfile, isProjectSaved, targetMz, ignorefiles_pos_vs2);
+
+                            var ignorefiles_neg_vs2 = filetasks.Where(n => n.IonModeTask != "Negative").Select(n => n.FilePath).ToList();
+                            Run(inputfolder, outputfolder, posmethodfile, isProjectSaved, targetMz, ignorefiles_neg_vs2);
+                            break;
+                        default: break; 
+                    }
+                }
+                return 1;
+            }
+            return -1;
+        }
+
+        public int Run(string inputFolder, string outputFolder, string methodFile, bool isProjectSaved, float targetMz, List<string> ignorefiles) {
             var param = ConfigParser.ReadForLcmsParameter(methodFile);
             if (param.ProjectParam.AcquisitionType == AcquisitionType.None) param.ProjectParam.AcquisitionType = AcquisitionType.DDA;
             var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile);
             if (!isCorrectlyImported) return -1;
 
+            var nAnalysisFiles = new List<AnalysisFileBean>();
+            foreach (var file in analysisFiles) {
+                var filepath = file.AnalysisFilePath;
+                if (!ignorefiles.IsEmptyOrNull()) {
+                    var flag = false;
+                    foreach (var ifile in ignorefiles) {
+                        if (filepath == ifile) { 
+                            flag = true;
+                            break;
+                        }
+                    }
+                    if (flag) continue;
+                    nAnalysisFiles.Add(file);
+                }
+            }
+
+            return Run(nAnalysisFiles, alignmentFile, param, outputFolder, methodFile, isProjectSaved, targetMz);
+        }
+
+        public int Run(string inputFolder, string outputFolder, string methodFile, bool isProjectSaved, float targetMz) {
+            var param = ConfigParser.ReadForLcmsParameter(methodFile);
+            if (param.ProjectParam.AcquisitionType == AcquisitionType.None) param.ProjectParam.AcquisitionType = AcquisitionType.DDA;
+            var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile);
+            if (!isCorrectlyImported) return -1;
+
+            return Run(analysisFiles, alignmentFile, param, outputFolder, methodFile, isProjectSaved, targetMz);
+        }
+
+        public int AutoRun(string inputFolder, string outputFolder, string posmethod, string negmethod, bool isProjectSaved, float targetMz) {
+            var tasks = GetFileTasks(inputFolder);
+            return Run(tasks, inputFolder, outputFolder, posmethod, negmethod, isProjectSaved, targetMz);
+        }
+
+        public int Run(List<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile, MsdialLcmsParameter param, string outputFolder, string methodFile, bool isProjectSaved, float targetMz) {
             CommonProcess.ParseLibraries(param, targetMz, out IupacDatabase iupacDB,
-                out List<MoleculeMsReference> mspDB, out List<MoleculeMsReference> txtDB, 
+                out List<MoleculeMsReference> mspDB, out List<MoleculeMsReference> txtDB,
                 out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode,
                 out List<MoleculeMsReference> lbmDB);
 
@@ -72,6 +201,8 @@ namespace CompMs.App.MsdialConsole.Process
             Console.WriteLine("Start processing..");
             return Execute(projectDataStorage, container, outputFolder, isProjectSaved);
         }
+
+        
 
         private int Execute(ProjectDataStorage projectDataStorage, IMsdialDataStorage<MsdialLcmsParameter> storage, string outputFolder, bool isProjectSaved) {
             var files = storage.AnalysisFiles;
