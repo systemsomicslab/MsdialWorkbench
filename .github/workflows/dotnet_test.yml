@@ -39,7 +39,7 @@ jobs:
       - name: Copy licenses
         run: Copy-Item -Path LGPL.txt,THIRD-PARTH-LICENSE-README.md,README.md -Destination artifact
       - name: Upload
-        uses: actions/upload-argifact@v3.1.2
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: MSDIAL
           path: artifact
