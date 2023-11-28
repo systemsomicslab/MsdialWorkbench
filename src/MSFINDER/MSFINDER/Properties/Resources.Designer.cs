@@ -70,46 +70,6 @@ namespace Rfx.Riken.OsakaUniv.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon IsotopeButton {
-            get {
-                object obj = ResourceManager.GetObject("IsotopeButton", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon NeutralLossButton {
-            get {
-                object obj = ResourceManager.GetObject("NeutralLossButton", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon ProductIonButton {
-            get {
-                object obj = ResourceManager.GetObject("ProductIonButton", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon RawDataButton {
-            get {
-                object obj = ResourceManager.GetObject("RawDataButton", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to http://prime.psc.riken.jp/compms/msfinder/vdd.json.
         /// </summary>
         internal static string VDD_URI {
