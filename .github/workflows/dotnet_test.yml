@@ -34,6 +34,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Add package source
+        run: dotnet nuget add source ${{ github.workspace }}/Assemblies
+      - name: Restore packages
+        run: dotnet restore /property:Configuration="Release vendor unsupported"
       - name: Publish
         run: dotnet publish src/MSDIAL5/MsdialGuiApp/MsdialGuiApp.csproj -p:PublishProfile=FolderProfile -o artifact --configuration "Release vendor unsupported"
       - name: Copy licenses
