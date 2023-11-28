@@ -2824,8 +2824,9 @@ namespace CompMs.Common.Lipidomics
 
             if (lipidclass == LbmClass.Cer_EODS || lipidclass == LbmClass.Cer_EBDS
                 || lipidclass == LbmClass.ASM
-                || lipidclass == LbmClass.FAHFA || lipidclass == LbmClass.NAGly || lipidclass == LbmClass.NAGlySer || lipidclass == LbmClass.NAGlySer
-                || lipidclass == LbmClass.NATryA || lipidclass == LbmClass.TG_EST || lipidclass == LbmClass.DMEDFAHFA)
+                || lipidclass == LbmClass.FAHFA || lipidclass == LbmClass.NAGly || lipidclass == LbmClass.NAGlySer || lipidclass == LbmClass.NAOrn
+                || lipidclass == LbmClass.TG_EST || lipidclass == LbmClass.DMEDFAHFA
+                || lipidclass == LbmClass.NATryA)
             {
                 rdbString = (rdb + 1).ToString();
                 oxidized = oxidized + 1;
