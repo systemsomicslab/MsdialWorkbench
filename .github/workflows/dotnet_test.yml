@@ -5,7 +5,7 @@ name: Build and Test
 
 on:
   push:
-    branches: [ "master", "add-github-action" ]
+    branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
 
@@ -30,6 +30,7 @@ jobs:
         run: dotnet test --no-build --verbosity normal --configuration "Debug vendor unsupported"
 
   publish:
+    if: ${{ github.event_name == 'push' }}
     needs: test
     runs-on: windows-latest
     steps:
