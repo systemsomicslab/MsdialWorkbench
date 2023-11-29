@@ -183,7 +183,7 @@ namespace CompMs.Common.DataObj.Property
                 adduct.M2Intensity = MessagePackBinary.ReadDouble(bytes, offset + tmp, out read);
                 tmp += read;
                 tmp += MessagePackBinary.ReadNext(bytes, offset + tmp);
-                adduct.IsIncluded = MessagePackBinary.ReadBoolean(bytes, offset + tmp, out _);
+                adduct.IsIncluded |= MessagePackBinary.ReadBoolean(bytes, offset + tmp, out _);
                 return adduct;
             }
 
