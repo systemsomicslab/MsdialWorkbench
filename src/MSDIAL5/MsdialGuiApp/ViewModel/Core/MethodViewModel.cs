@@ -171,6 +171,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public ViewModelSwitcher ChromatogramViewModels { get; }
         public ViewModelSwitcher MassSpectrumViewModels { get; }
 
+
         public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??  (_goToMsfinderCommand = new DelegateCommand(GoToMsfinderMethod));
         private DelegateCommand _goToMsfinderCommand;
 

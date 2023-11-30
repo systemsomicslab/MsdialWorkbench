@@ -23,7 +23,7 @@ namespace CompMs.Common.DataObj.NodeEdge {
         public string Smiles { get; set; }
         public double MsMin { get; set; }
         public double MsmsMin { get; set; }
-
+        public Chart BarGraph { get; set; }
         public List<List<double>> MS { get; set; }
         public List<List<double>> MSMS { get; set; }
         public List<string> MsLabel { get; set; }

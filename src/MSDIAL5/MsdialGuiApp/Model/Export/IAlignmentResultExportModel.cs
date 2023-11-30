@@ -4,7 +4,7 @@ using System;
 namespace CompMs.App.Msdial.Model.Export
 {
     internal interface IAlignmentResultExportModel {
-        int CountExportFiles();
+        int CountExportFiles(AlignmentFileBeanModel alignmentFile);
         void Export(AlignmentFileBeanModel alignmentFile, string exportDirectory, Action<string> notification);
     }
 }

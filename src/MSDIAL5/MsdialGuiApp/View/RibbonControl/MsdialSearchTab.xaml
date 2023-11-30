@@ -1,0 +1,33 @@
+﻿<RibbonTab x:Class="CompMs.App.Msdial.View.RibbonControl.MsdialSearchTab"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+           xmlns:common="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
+           xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Core"
+           mc:Ignorable="d" 
+           d:DataContext="{d:DesignInstance Type={x:Type vm:MethodViewModel}}"
+           Header="Search"
+           KeyTip="S">
+    <RibbonTab.Resources>
+        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+    </RibbonTab.Resources>
+    <RibbonGroup>
+        <RibbonButton Label="MS/MS fragment searcher" LargeImageSource="{StaticResource Fragment_search_is}"
+                      Command="{Binding ShowFragmentSearchSettingCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      KeyTip="F"
+                      ToolTip="The unique product ion or neutral loss can be examined."/>
+        <RibbonButton Label="Spectral search" LargeImageSource="{StaticResource Spectral_library_search_is}"
+                      IsEnabled="False"
+                      KeyTip="S"/>
+        <RibbonButton Label="Msfinder search" LargeImageSource="{StaticResource Msfinder_is}"
+                      Command="{Binding GoToMsfinderCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      KeyTip="M"/>
+        <RibbonButton Label="MassQL search" LargeImageSource="{StaticResource MassQL_icon_is}"
+                      Command="{Binding ShowMassqlSearchSettingCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      KeyTip="T"/>
+        <RibbonButton Label="Find target compounds"
+                      Command="{Binding AlignmentViewModel.Value.ShowFindCompoundSpotViewCommand, Mode=OneWay, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      KeyTip="C"/>
+    </RibbonGroup>
+</RibbonTab>

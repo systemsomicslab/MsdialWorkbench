@@ -27,7 +27,6 @@ namespace CompMs.App.Msdial.ViewModel.Core
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
         private readonly IWindowService<PeakSpotTableViewModelBase> proteomicsTableService;
-        private readonly IWindowService<AnalysisFilePropertyResetViewModel> analysisFilePropertyResetService;
         private readonly IMessageBroker _messageBroker;
 
         public DatasetViewModel(
@@ -35,13 +34,11 @@ namespace CompMs.App.Msdial.ViewModel.Core
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
-            IWindowService<AnalysisFilePropertyResetViewModel> analysisFilePropertyResetService,
             IMessageBroker messageBroker) {
             Model = model;
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
             this.proteomicsTableService = proteomicsTableService;
-            this.analysisFilePropertyResetService = analysisFilePropertyResetService;
             _messageBroker = messageBroker;
             MethodViewModel = model.ObserveProperty(m => m.Method)
                 .Select(ConvertToViewModel)
@@ -54,6 +51,10 @@ namespace CompMs.App.Msdial.ViewModel.Core
             var fileClassSetViewModel = new FileClassSetViewModel(model.FileClassSetModel).AddTo(Disposables);
             FileClassSettingCommand = new ReactiveCommand()
                 .WithSubscribe(() => messageBroker.Publish(fileClassSetViewModel))
+                .AddTo(Disposables);
+            var projectSettingViewModel = new ProjectPropertySettingViewModel(((DatasetModel)model).StudyContext).AddTo(Disposables);
+            ProjectSettingCommand = new ReactiveCommand()
+                .WithSubscribe(() => messageBroker.Publish(projectSettingViewModel))
                 .AddTo(Disposables);
             SaveParameterAsCommand = new ReactiveCommand()
                 .WithSubscribe(() => model.SaveParameterAsAsync())
@@ -71,7 +72,8 @@ namespace CompMs.App.Msdial.ViewModel.Core
         private void FilePropertyResetting() {
             var model = Model.AnalysisFilePropertyResetModel;
             using (var analysisFilePropertyResetWindowVM = new AnalysisFilePropertyResetViewModel(model)) {
-                var afpsw_result = analysisFilePropertyResetService.ShowDialog(analysisFilePropertyResetWindowVM);
+                _messageBroker.Publish(analysisFilePropertyResetWindowVM);
+                var afpsw_result = analysisFilePropertyResetWindowVM.Result;// analysisFilePropertyResetService.ShowDialog(analysisFilePropertyResetWindowVM);
                 if (afpsw_result == true) {
                     model.Update();
                 }
@@ -79,7 +81,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
         }
 
         public ReactiveCommand FileClassSettingCommand { get; }
-
+        public ReactiveCommand ProjectSettingCommand { get; }
         public ReactiveCommand SaveParameterAsCommand { get; }
 
         private MethodViewModel ConvertToViewModel(IMethodModel model) {

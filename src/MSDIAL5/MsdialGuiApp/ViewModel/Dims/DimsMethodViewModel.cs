@@ -2,7 +2,6 @@
 using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Utility;
-using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
@@ -26,7 +25,6 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
@@ -50,9 +48,11 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             _focusControlManager = focusControlManager.AddTo(Disposables);
 
             PeakFilterViewModel = new PeakFilterViewModel(model.PeakFilterModel).AddTo(Disposables);
+            ExportParameterCommand = new AsyncReactiveCommand().WithSubscribe(model.ParameterExportModel.ExportAsync).AddTo(Disposables);
         }
 
         public PeakFilterViewModel PeakFilterViewModel { get; }
+        public AsyncReactiveCommand ExportParameterCommand { get; }
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
             if (analysisFile?.File == null || _model.AnalysisFileModel == analysisFile.File) {
@@ -78,12 +78,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 new SpectraType(
                     ExportspectraType.deconvoluted,
                     new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.deconvoluted)),
-                new SpectraType(
-                    ExportspectraType.centroid,
-                    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.centroid)),
-                new SpectraType(
-                    ExportspectraType.profile,
-                    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.profile)),
+                //new SpectraType(
+                //    ExportspectraType.centroid,
+                //    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.centroid)),
+                //new SpectraType(
+                //    ExportspectraType.profile,
+                //    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.profile)),
             };
             var spectraFormats = new List<SpectraFormat>
             {
@@ -102,6 +102,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                     FileSuffix = "msp",
                     Label = "Nist format (*.msp)"
                 },
+                new MsdialAnalysisMassBankRecordExportModel(container.Parameter.ProjectParam, _model.StudyContext),
             };
             var model = new AnalysisResultExportModel(_model.AnalysisFileModelCollection, _model.Storage.Parameter.ProjectParam.ProjectFolderPath, models);
             using (var vm = new AnalysisResultExportViewModel(model)) {

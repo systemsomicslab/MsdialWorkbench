@@ -23,7 +23,7 @@ namespace CompMs.App.MsdialConsole.Process
             var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile);
             if (!isCorrectlyImported) return -1;
             CommonProcess.ParseLibraries(param, targetMz, out IupacDatabase iupacDB,
-                out List<MoleculeMsReference> mspDB, out List<MoleculeMsReference> txtDB, out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode);
+                out List<MoleculeMsReference> mspDB, out List<MoleculeMsReference> txtDB, out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode, out var lbmDB);
 
             var container = new MsdialDimsDataStorage() {
                 AnalysisFiles = analysisFiles, AlignmentFiles = new List<AlignmentFileBean>() { alignmentFile },
@@ -55,7 +55,7 @@ namespace CompMs.App.MsdialConsole.Process
             foreach (var file in files) {
                 ProcessFile.Run(file, providerFactory.Create(file), storage, annotationProcess, evaluator);
             }
-
+            if (!storage.MsdialDimsParameter.TogetherWithAlignment) return 0;
             var alignmentFile = storage.AlignmentFiles.First();
             var factory = new DimsAlignmentProcessFactory(storage, evaluator);
             var aligner = factory.CreatePeakAligner();

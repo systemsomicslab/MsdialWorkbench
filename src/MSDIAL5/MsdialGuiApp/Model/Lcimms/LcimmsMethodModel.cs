@@ -39,7 +39,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
         }
 
-        public LcimmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialLcImMsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker)
+        public LcimmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialLcImMsParameter> storage, FilePropertiesModel projectBaseParameter, IMessageBroker broker)
             : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, projectBaseParameter) {
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));
@@ -106,6 +106,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
             var spectraAndReference = new AlignmentMatchedSpectraExportModel(peakSpotSupplyer, storage.DataBaseMapper, analysisFileBeanModelCollection.IncludedAnalysisFiles, CompoundSearcherCollection.BuildSearchers(storage.DataBases, storage.DataBaseMapper));
             AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, spectraAndReference, }, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam);
+
+            ParameterExportModel = new ParameterExportModel(storage.DataBases, storage.Parameter, broker);
         }
 
         private FacadeMatchResultEvaluator matchResultEvaluator;
@@ -128,13 +130,14 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
         private readonly IDataProviderFactory<RawMeasurement> providerFactory;
         private readonly IDataProviderFactory<RawMeasurement> accProviderFactory;
-        private readonly ProjectBaseParameterModel _projectBaseParameter;
+        private readonly FilePropertiesModel _projectBaseParameter;
         private readonly IMessageBroker _broker;
         private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _peakSpotFiltering;
 
         public PeakFilterModel AccumulatedPeakFilterModel { get; }
         public PeakFilterModel PeakFilterModel { get; }
         public AlignmentResultExportModel AlignmentResultExportModel { get; }
+        public ParameterExportModel ParameterExportModel { get; }
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             if (AnalysisModel != null) {
@@ -152,6 +155,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 Storage.Parameter,
                 PeakFilterModel,
                 AccumulatedPeakFilterModel,
+                _projectBaseParameter,
                 _broker)
             .AddTo(Disposables);
         }
@@ -284,7 +288,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             if (analysisModel is null) {
                 return null;
             }
-            return new DisplayEicSettingModel(analysisModel.EicLoader, Storage.Parameter);
+            return new DisplayEicSettingModel(analysisModel.EicLoader, Storage.Parameter.AdvancedProcessOptionBaseParam);
         }
 
         public ChromatogramsModel PrepareTicBpcRepEIC() {

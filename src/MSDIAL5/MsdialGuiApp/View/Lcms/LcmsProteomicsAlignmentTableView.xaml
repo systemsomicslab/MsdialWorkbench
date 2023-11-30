@@ -135,9 +135,15 @@
                   HeadersVisibility="All"
                   AutoGenerateColumns="False"
                   VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                  behavior:DataGridPasteBehavior.Enable="True"
                   behavior:DataGridCommitBehavior.Enable="True"
                   behavior:DataGridScrollToSelectionBehavior.Enable="True"
                   Grid.Row="1">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Save matched spectra at each current peak spot" Command="{Binding ExportMatchedSpectraCommand, Mode=OneTime}"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
             <DataGrid.Resources>
                 <commonmvvm:BindingProxy x:Key="TableVM" Data="{Binding Mode=OneTime}"/>
             </DataGrid.Resources>

@@ -41,7 +41,7 @@ namespace CompMs.App.Msdial.Model.Export
                 var task = TaskNotification.Start($"Exporting {AlignmentFilesForExport.SelectedFile.FileName}");
                 broker.Publish(task);
 
-                var numExportFile = (double)Groups.Sum(group => group.CountExportFiles());
+                var numExportFile = (double)Groups.Sum(group => group.CountExportFiles(AlignmentFilesForExport.SelectedFile));
                 var count = 0;
                 void notify(string file) {
                     broker.Publish(task.Progress(Interlocked.Increment(ref count) / numExportFile, file));

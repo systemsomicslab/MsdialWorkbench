@@ -52,6 +52,11 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                 var analysisFileBean = new MsfinderQueryFile() { RawDataFilePath = filePath, RawDataFileName = System.IO.Path.GetFileNameWithoutExtension(filePath) };
                 files.Add(analysisFileBean);
             }
+            // get raw files (MassBank record)
+            foreach (var filePath in System.IO.Directory.GetFiles(importFolderPath, "*-*-*.txt", System.IO.SearchOption.TopDirectoryOnly)) {
+                var analysisFileBean = new MsfinderQueryFile() { RawDataFilePath = filePath, RawDataFileName = System.IO.Path.GetFileNameWithoutExtension(filePath) };
+                files.Add(analysisFileBean);
+            }
 
             // getting ismarked property
             //var param = new AnalysisParamOfMsfinder();

@@ -104,7 +104,7 @@ Num Peaks: 4
         public void SaveSpectraTableAsNistFormatUnknownTest()
         {
             var expects =
-$@"NAME: Unknown|ID=0200|RT=3
+$@"NAME: Unknown|ID=0|MZ=200|RT=3
 PRECURSORMZ: 200
 PRECURSORTYPE: [M+H]+
 RETENTIONTIME: 3

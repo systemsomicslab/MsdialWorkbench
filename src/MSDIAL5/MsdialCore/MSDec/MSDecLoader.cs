@@ -34,6 +34,10 @@ namespace CompMs.MsdialCore.MSDec {
             return File.Open(deconvolutionFile, FileMode.Open, FileAccess.Read, FileShare.Read);
         }
 
+        public List<MSDecResult> LoadMSDecResults() {
+            return MsdecResultsReader.ReadMSDecResults(_deconvolutionStream, out _, out _);
+        }
+
         public MSDecResult LoadMSDecResult(int idx) {
             if (_disposedValue) {
                 return null;

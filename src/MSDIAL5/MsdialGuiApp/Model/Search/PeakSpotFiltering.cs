@@ -252,6 +252,10 @@ namespace CompMs.App.Msdial.Model.Search
                 }
                 return peaks;
             }
+
+            public IEnumerable<T> FilterAnnotatedPeaks(IEnumerable<T> peaks) {
+                return peaks.Where(p => _evaluator.IsReferenceMatched(p) || _evaluator.IsAnnotationSuggested(p));
+            }
         } 
     }
 }

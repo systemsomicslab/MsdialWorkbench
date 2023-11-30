@@ -42,7 +42,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             _model = model;
             _broker = broker;
             _focusControlManager = focusControlManager.AddTo(Disposables);
+            ExportParameterCommand = new AsyncReactiveCommand().WithSubscribe(model.ParameterExportModel.ExportAsync).AddTo(Disposables);
         }
+
+        public AsyncReactiveCommand ExportParameterCommand { get; }
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
             if (analysisFile?.File is null || analysisFile.File == _model.AnalysisFileModel) {
@@ -75,7 +78,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             if (model is null) {
                 return;
             }
-            var vm = new ChromatogramsViewModel(model);
+            var vm = new ChromatogramsViewModel(model, _broker);
             _broker.Publish(vm);
         }
 
@@ -87,7 +90,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             if (model is null) {
                 return;
             }
-            var vm = new ChromatogramsViewModel(model);
+            var vm = new ChromatogramsViewModel(model, _broker);
             _broker.Publish(vm);
         }
 
@@ -99,7 +102,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             if (model is null) {
                 return;
             }
-            var vm = new ChromatogramsViewModel(model);
+            var vm = new ChromatogramsViewModel(model, _broker);
             _broker.Publish(vm);
         }
 
@@ -118,7 +121,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             if (chromatograms is null) {
                 return;
             }
-            var vm = new ChromatogramsViewModel(chromatograms);
+            var vm = new ChromatogramsViewModel(chromatograms, _broker);
             _broker.Publish(vm);
         }
 

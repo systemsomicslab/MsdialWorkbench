@@ -9,14 +9,16 @@ using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.Model.Table;
 using CompMs.App.Msdial.Utility;
+using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.Common.Algorithm.Function;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Proteomics.DataObj;
-using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
@@ -34,7 +36,6 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcms
@@ -51,10 +52,14 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         private readonly AlignmentFileBeanModel _alignmentFile;
         private readonly DataBaseMapper _dataBaseMapper;
+        private readonly FilePropertiesModel _projectBaseParameter;
         private readonly List<AnalysisFileBean> _files;
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly UndoManager _undoManager;
         private readonly ReadOnlyReactivePropertySlim<MSDecResult> _msdecResult;
+        private readonly IMessageBroker _messageBroker;
+        private readonly ReactiveProperty<BarItemsLoaderData> _barItemsLoaderDataProperty;
+        private readonly ParameterBase _parameter;
 
         public LcmsAlignmentModel(
             AlignmentFileBeanModel alignmentFileBean,
@@ -64,7 +69,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             PeakFilterModel peakFilterModel,
             DataBaseMapper mapper,
             MsdialLcmsParameter parameter,
-            ProjectBaseParameterModel projectBaseParameter,
+            FilePropertiesModel projectBaseParameter,
             List<AnalysisFileBean> files,
             AnalysisFileBeanModelCollection fileCollection,
             IMessageBroker messageBroker)
@@ -77,13 +82,14 @@ namespace CompMs.App.Msdial.Model.Lcms
                 throw new ArgumentNullException(nameof(projectBaseParameter));
             }
 
-
             _alignmentFile = alignmentFileBean;
-            Parameter = parameter;
+            _parameter = parameter;
+            _projectBaseParameter = projectBaseParameter;
             _files = files ?? throw new ArgumentNullException(nameof(files));
             _dataBaseMapper = mapper;
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper);
             _undoManager = new UndoManager().AddTo(Disposables);
+            _messageBroker = messageBroker;
 
             var spotsSource = new AlignmentSpotSource(alignmentFileBean, Container, CHROMATOGRAM_SPOT_SERIALIZER).AddTo(Disposables);
             Ms1Spots = spotsSource.Spots.Items;
@@ -110,40 +116,11 @@ namespace CompMs.App.Msdial.Model.Lcms
             filterRegistrationManager.AttachFilter(Ms1Spots, peakFilterModel, evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: FilterEnableStatus.All & ~FilterEnableStatus.Dt);
 
             // Peak scatter plot
-            var ontologyBrush = new BrushMapData<AlignmentSpotPropertyModel>(
-                    new KeyBrushMapper<AlignmentSpotPropertyModel, string>(
-                        ChemOntologyColor.Ontology2RgbaBrush,
-                        spot => spot?.Ontology ?? string.Empty,
-                        Color.FromArgb(180, 181, 181, 181)),
-                    "Ontology");
-            var intensityBrush = new BrushMapData<AlignmentSpotPropertyModel>(
-                    new DelegateBrushMapper<AlignmentSpotPropertyModel>(
-                        spot => Color.FromArgb(
-                            180,
-                            (byte)(255 * spot.innerModel.RelativeAmplitudeValue),
-                            (byte)(255 * (1 - Math.Abs(spot.innerModel.RelativeAmplitudeValue - 0.5))),
-                            (byte)(255 - 255 * spot.innerModel.RelativeAmplitudeValue)),
-                        enableCache: true),
-                    "Amplitude");
-            var brushes = new List<BrushMapData<AlignmentSpotPropertyModel>>
-            {
-                ontologyBrush, intensityBrush,
-            };
-            BrushMapData<AlignmentSpotPropertyModel> selectedBrush = null;
-            switch (parameter.TargetOmics) {
-                case TargetOmics.Lipidomics:
-                    selectedBrush = ontologyBrush;
-                    break;
-                case TargetOmics.Metabolomics:
-                case TargetOmics.Proteomics:
-                default:
-                    selectedBrush = intensityBrush;
-                    break;
-            }
+            var brushMapDataSelector = BrushMapDataSelectorFactory.CreateAlignmentSpotBrushes(parameter.TargetOmics);
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, selectedBrush, brushes)
+            PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes)
             {
                 GraphTitle = ((IFileBean)_alignmentFile).FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
@@ -153,53 +130,25 @@ namespace CompMs.App.Msdial.Model.Lcms
             }.AddTo(Disposables);
 
             // Ms2 spectrum
-            var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-               Parameter.ProjectParam.SpectrumCommentToColorBytes
-               .ToDictionary(
-                   kvp => kvp.Key,
-                   kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-               ),
-               item => item.ToString(),
-               Colors.Blue);
-            var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(
-                comment =>
-                {
-                    var commentString = comment.ToString();
-                    var projectParameter = Parameter.ProjectParam;
-                    if (projectParameter.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
-                        return Color.FromRgb(color[0], color[1], color[2]);
-                    }
-                    else if ((comment & SpectrumComment.doublebond) == SpectrumComment.doublebond
-                        && projectParameter.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
-                        return Color.FromRgb(color[0], color[1], color[2]);
-                    }
-                    else {
-                        return Colors.Red;
-                    }
-                },
-                true);
             MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
-            IConnectableObservable<List<SpectrumPeak>> refSpectrum = MatchResultCandidatesModel.LoadSpectrumObservable(refLoader).Publish();
-            Disposables.Add(refSpectrum.Connect());
             IMsSpectrumLoader<AlignmentSpotPropertyModel> msDecSpectrumLoader = new AlignmentMSDecSpectrumLoader(_alignmentFile);
             var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
-            var spectraExporter = new NistSpectraExporter<AlignmentSpotProperty>(Target.Select(t => t?.innerModel), mapper, Parameter).AddTo(Disposables);
-            Ms2SpectrumModel = new MsSpectrumModel(
-                Target.SelectSwitch(msDecSpectrumLoader.LoadSpectrumAsObservable),
-                refSpectrum,
+            var spectraExporter = new NistSpectraExporter<AlignmentSpotProperty>(Target.Select(t => t?.innerModel), mapper, parameter).AddTo(Disposables);
+            AlignmentSpotSpectraLoader spectraLoader = new AlignmentSpotSpectraLoader(fileCollection, refLoader, _compoundSearchers, fileCollection);
+            Ms2SpectrumModel = new AlignmentMs2SpectrumModel(
+                Target, MatchResultCandidatesModel.SelectedCandidate, fileCollection,
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Mass), peak => peak.Mass),
                 new PropertySelector<SpectrumPeak, double>(nameof(SpectrumPeak.Intensity), peak => peak.Intensity),
+                new ChartHueItem(projectBaseParameter, Colors.Blue),
+                new ChartHueItem(projectBaseParameter, Colors.Red),
                 new GraphLabels("Representative vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity)),
-                nameof(SpectrumPeak.SpectrumComment),
-                Observable.Return(upperSpecBrush),
-                Observable.Return(lowerSpecBrush),
                 Observable.Return(spectraExporter),
                 Observable.Return(referenceExporter),
                 null,
-                MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers)).AddTo(Disposables);
+                spectraLoader).AddTo(Disposables);
 
             // Class intensity bar chart
             var classBrush = projectBaseParameter.ClassProperties
@@ -224,6 +173,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 normalizedHeightLoader, normalizedAreaBaselineLoader, normalizedAreaZeroLoader,
             };
             var barItemsLoaderDataProperty = NormalizationSetModel.Normalized.ToConstant(normalizedHeightLoader).ToReactiveProperty(NormalizationSetModel.IsNormalized.Value ? normalizedHeightLoader : heightLoader).AddTo(Disposables);
+            _barItemsLoaderDataProperty = barItemsLoaderDataProperty;
             BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, barItemLoaderDatas, barBrush, projectBaseParameter, fileCollection, projectBaseParameter.ClassProperties).AddTo(Disposables);
 
             // Class eic
@@ -241,7 +191,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
             var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
-            AlignmentSpotTableModel = new LcmsAlignmentSpotTableModel(Ms1Spots, Target, PeakSpotNavigatorModel, barBrush, projectBaseParameter.ClassProperties, barItemsLoaderProperty, parameter.ReferenceFileParam.SearchedAdductIons).AddTo(Disposables);
+            var filter = peakSpotFiltering.CreateFilter(peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), FilterEnableStatus.All);
+            AlignmentSpotTableModel = new LcmsAlignmentSpotTableModel(Ms1Spots, Target, barBrush, projectBaseParameter.ClassProperties, barItemsLoaderProperty, parameter.ProjectParam.TargetOmics, filter, spectraLoader).AddTo(Disposables);
 
             CanSearchCompound = new[]
             {
@@ -257,7 +208,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Target,
                 id => Ms1Spots.Argmin(spot => Math.Abs(spot.MasterAlignmentID - id)),
                 Target.Select(t => t?.MasterAlignmentID ?? 0d),
-                "Region focus by ID",
+                "ID",
                 ((ISpotFocus, Func<AlignmentSpotPropertyModel, double>))(rtSpotFocus, spot => spot.TimesCenter),
                 ((ISpotFocus, Func<AlignmentSpotPropertyModel, double>))(mzSpotFocus, spot => spot.MassCenter)).AddTo(Disposables);
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, rtSpotFocus, mzSpotFocus);
@@ -298,10 +249,10 @@ namespace CompMs.App.Msdial.Model.Lcms
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
         public FocusNavigatorModel FocusNavigatorModel { get; }
         public AlignmentPeakPlotModel PlotModel { get; }
-        public MsSpectrumModel Ms2SpectrumModel { get; }
+        public AlignmentMs2SpectrumModel Ms2SpectrumModel { get; }
         public BarChartModel BarChartModel { get; }
         public AlignmentEicModel AlignmentEicModel { get; }
-        public LcmsAlignmentSpotTableModel AlignmentSpotTableModel { get; private set; }
+        public LcmsAlignmentSpotTableModel AlignmentSpotTableModel { get; }
         public NormalizationSetModel NormalizationSetModel { get; }
         public MultivariateAnalysisSettingModel MultivariateAnalysisSettingModel { get; }
         public FindTargetCompoundsSpotModel FindTargetCompoundSpotModel { get; }
@@ -327,7 +278,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     Target.Value.innerModel,
                     _msdecResult.Value,
                     _dataBaseMapper,
-                    Parameter);
+                    _parameter);
             }
         }
 
@@ -335,7 +286,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public override void SearchFragment() {
             using (var decLoader = _alignmentFile.CreateTemporaryMSDecLoader()) {
-                MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), decLoader, Parameter);
+                FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), decLoader, _parameter);
             }
         }
 
@@ -348,7 +299,97 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Target.Value.innerModel,
                 _msdecResult.Value,
                 _dataBaseMapper,
-                Parameter);
+                _parameter);
+        }
+
+        private MolecularNetworkInstance GetMolecularNetworkInstance(MolecularSpectrumNetworkingBaseParameter parameter) {
+            var param = _projectBaseParameter;
+            var loaderProperty = _barItemsLoaderDataProperty.Value;
+            var loader = loaderProperty.ObservableLoader.ToReactiveProperty().Value;
+            var publisher = new TaskProgressPublisher(_messageBroker, $"Exporting MN results in {parameter.ExportFolderPath}");
+
+            using (publisher.Start()) {
+                var spots = Ms1Spots;
+                var peaks = _alignmentFileModel.LoadMSDecResults();
+
+                void notify(double progressRate) {
+                    publisher.Progress(progressRate, $"Exporting MN results in {parameter.ExportFolderPath}");
+                }
+                var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter);
+                var builder = new MoleculerNetworkingBase();
+                var network = builder.GetMolecularNetworkInstance(spots, peaks, query, notify);
+                var rootObj = network.Root;
+                for (int i = 0; i < rootObj.nodes.Count; i++) {
+                    var node = rootObj.nodes[i];
+                    node.data.BarGraph = CytoscapejsModel.GetBarGraphProperty(spots[i], loader, param.ClassProperties.ClassToColor);
+                }
+
+                if (parameter.MnIsExportIonCorrelation && _alignmentFileModel.CountRawFiles >= 6) {
+                    var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots.Select(n => n.innerModel).ToList(), parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode);
+                    rootObj.edges.AddRange(ion_edges);
+                }
+
+                return network;
+            }
+        }
+
+        private MolecularNetworkInstance GetMolecularNetworkInstanceForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter) {
+            if (parameter.MaxEdgeNumberPerNode == 0) {
+                parameter.MinimumPeakMatch = 3;
+                parameter.MaxEdgeNumberPerNode = 6;
+                parameter.MaxPrecursorDifference = 400;
+            }
+            if (Target.Value is null) {
+                return new MolecularNetworkInstance(new CompMs.Common.DataObj.NodeEdge.RootObject());
+            }
+
+            var param = _projectBaseParameter;
+            var loaderProperty = _barItemsLoaderDataProperty.Value;
+            var loader = loaderProperty.ObservableLoader.ToReactiveProperty().Value;
+            var publisher = new TaskProgressPublisher(_messageBroker, $"Preparing MN results");
+
+            using (publisher.Start()) {
+                var spots = Ms1Spots;
+                var peaks = _alignmentFileModel.LoadMSDecResults();
+              
+                var targetSpot = Target.Value;
+                var targetPeak = peaks[targetSpot.MasterAlignmentID];
+
+                void notify(double progressRate) {
+                    publisher.Progress(progressRate, $"Preparing MN results");
+                }
+                var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter);
+                var builder = new MoleculerNetworkingBase();
+                var network = builder.GetMoleculerNetworkInstanceForTargetSpot(targetSpot, targetPeak, spots, peaks, query, notify);
+                var rootObj = network.Root;
+
+                for (int i = 0; i < rootObj.nodes.Count; i++) {
+                    var node = rootObj.nodes[i];
+                    node.data.BarGraph = CytoscapejsModel.GetBarGraphProperty(spots[node.data.id], loader, param.ClassProperties.ClassToColor);
+                }
+
+                if (parameter.MnIsExportIonCorrelation && _alignmentFileModel.CountRawFiles >= 6) {
+                    var ion_edges = MolecularNetworking.GenerateEdgesByIonValues(spots.Select(n => n.innerModel).ToList(), parameter.MnIonCorrelationSimilarityCutOff, parameter.MaxEdgeNumberPerNode);
+                    rootObj.edges.AddRange(ion_edges.Where(e => e.data.source == targetSpot.MasterAlignmentID || e.data.target == targetSpot.MasterAlignmentID));
+                }
+
+                return network;
+            }
+        }
+
+        public override void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter) {
+            var network = GetMolecularNetworkInstance(parameter);
+            network.ExportNodeEdgeFiles(parameter.ExportFolderPath);
+        }
+
+        public override void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
+            var network = GetMolecularNetworkInstance(parameter);
+            CytoscapejsModel.SendToCytoscapeJs(network);
+        }
+
+        public override void InvokeMoleculerNetworkingForTargetSpot() {
+            var network = GetMolecularNetworkInstanceForTargetSpot(_parameter.MolecularSpectrumNetworkingBaseParam);
+            CytoscapejsModel.SendToCytoscapeJs(network);
         }
     }
 }

@@ -1,149 +1,53 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Loader;
-using CompMs.App.Msdial.Utility;
+﻿using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Algorithm.Scoring;
-using CompMs.Common.Components;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.Base;
-using CompMs.MsdialCore.Export;
-using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Collections.Generic;
-using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class RawDecSpectrumsModel : DisposableModelBase
     {
-        public RawDecSpectrumsModel(
-            IObservable<ChromatogramPeakFeatureModel> targetSource,
-            MultiMsRawSpectrumLoader rawLoader,
-            IMsSpectrumLoader<ChromatogramPeakFeatureModel> decLoader,
-            IObservable<List<SpectrumPeak>> refSpectrum,
-            PropertySelector<SpectrumPeak, double> horizontalPropertySelector,
-            PropertySelector<SpectrumPeak, double> verticalPropertySelector,
-            GraphLabels graphLabels,
-            string hueProperty,
-            IObservable<IBrushMapper> upperSpectrumBrush,
-            IObservable<IBrushMapper> lowerSpectrumBrush,
-            IObservable<ISpectraExporter> rawSpectraExporeter,
-            IObservable<ISpectraExporter> deconvolutedSpectraExporter,
-            IObservable<ISpectraExporter> referenceSpectraExporter,
-            IObservable<Ms2ScanMatching> ms2ScanMatching)
-            : this(targetSource,
-                  (IMsSpectrumLoader<ChromatogramPeakFeatureModel>)rawLoader,
-                  decLoader,
-                  refSpectrum,
-                  horizontalPropertySelector, verticalPropertySelector,
-                  graphLabels,
-                  hueProperty, upperSpectrumBrush, lowerSpectrumBrush,
-                  rawSpectraExporeter, deconvolutedSpectraExporter, referenceSpectraExporter,
-                  ms2ScanMatching) {
-            RawLoader = rawLoader;
+        public RawDecSpectrumsModel(MsSpectrumModel rawRefSpectrumModels, MsSpectrumModel decRefSpectrumModels, MultiMsmsRawSpectrumLoader loader) {
+            RawRefSpectrumModels = rawRefSpectrumModels ?? throw new ArgumentNullException(nameof(rawRefSpectrumModels));
+            DecRefSpectrumModels = decRefSpectrumModels ?? throw new ArgumentNullException(nameof(decRefSpectrumModels));
+            RawLoader = loader;
         }
 
-        public RawDecSpectrumsModel(
-            IObservable<ChromatogramPeakFeatureModel> targetSource,
-            MultiMsRawSpectrumLoader rawLoader,
-            IMsSpectrumLoader<ChromatogramPeakFeatureModel> decLoader,
-            IMsSpectrumLoader<ChromatogramPeakFeatureModel> refLoader,
-            PropertySelector<SpectrumPeak, double> horizontalPropertySelector,
-            PropertySelector<SpectrumPeak, double> verticalPropertySelector,
-            GraphLabels graphLabels,
-            string hueProperty,
-            IObservable<IBrushMapper> upperSpectrumBrush,
-            IObservable<IBrushMapper> lowerSpectrumBrush,
-            IObservable<ISpectraExporter> rawSpectraExporeter,
-            IObservable<ISpectraExporter> deconvolutedSpectraExporter,
-            IObservable<ISpectraExporter> referenceSpectraExporter,
-            IObservable<Ms2ScanMatching> ms2ScanMatching)
-            : this(targetSource,
-                  (IMsSpectrumLoader<ChromatogramPeakFeatureModel>)rawLoader,
-                  decLoader,
-                  targetSource.WithLatestFrom(Observable.Return(refLoader),
-                    (target, loader) => loader.LoadSpectrumAsObservable(target))
-                    .Switch(),
-                  horizontalPropertySelector, verticalPropertySelector,
-                  graphLabels,
-                  hueProperty, upperSpectrumBrush, lowerSpectrumBrush,
-                  rawSpectraExporeter, deconvolutedSpectraExporter, referenceSpectraExporter,
-                  ms2ScanMatching) {
-            RawLoader = rawLoader;
-        }
+        public RawDecSpectrumsModel(SingleSpectrumModel rawSpectrumModel, SingleSpectrumModel decSpectrumModel, SingleSpectrumModel referenceSpectrumModel, IObservable<Ms2ScanMatching> ms2ScanMatching, MultiMsmsRawSpectrumLoader loader = null) {
+            if (rawSpectrumModel is null) {
+                throw new ArgumentNullException(nameof(rawSpectrumModel));
+            }
 
-        public RawDecSpectrumsModel(
-            IObservable<ChromatogramPeakFeatureModel> targetSource,
-            IMsSpectrumLoader<ChromatogramPeakFeatureModel> rawLoader,
-            IMsSpectrumLoader<ChromatogramPeakFeatureModel> decLoader,
-            IObservable<List<SpectrumPeak>> refSpectrum,
-            PropertySelector<SpectrumPeak, double> horizontalPropertySelector,
-            PropertySelector<SpectrumPeak, double> verticalPropertySelector,
-            GraphLabels graphLabels,
-            string hueProperty,
-            IObservable<IBrushMapper> upperSpectrumBrush,
-            IObservable<IBrushMapper> lowerSpectrumBrush,
-            IObservable<ISpectraExporter> rawSpectraExporeter,
-            IObservable<ISpectraExporter> deconvolutedSpectraExporter,
-            IObservable<ISpectraExporter> referenceSpectraExporter,
-            IObservable<Ms2ScanMatching> ms2ScanMatching) {
+            if (decSpectrumModel is null) {
+                throw new ArgumentNullException(nameof(decSpectrumModel));
+            }
 
-            var rawSource = targetSource.WithLatestFrom(Observable.Return(rawLoader),
-                (target, loader) => loader.LoadSpectrumAsObservable(target))
-                .Switch()
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            var rawSpectrumLoaded = new[]
+            if (referenceSpectrumModel is null) {
+                throw new ArgumentNullException(nameof(referenceSpectrumModel));
+            }
+
+            if (ms2ScanMatching is null) {
+                throw new ArgumentNullException(nameof(ms2ScanMatching));
+            }
+
+            RawRefSpectrumModels = new MsSpectrumModel(rawSpectrumModel, referenceSpectrumModel, ms2ScanMatching)
             {
-                targetSource.ToConstant(false),
-                rawSource.Delay(TimeSpan.FromSeconds(.05d)).ToConstant(true),
-            }.Merge()
-            .Throttle(TimeSpan.FromSeconds(.1d))
-            .ToReadOnlyReactivePropertySlim()
-            .AddTo(Disposables);
-            var decSource = targetSource.WithLatestFrom(Observable.Return(decLoader),
-                (target, loader) => loader.LoadSpectrumAsObservable(target))
-                .Switch()
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            var decSpectrumLoaded = new[]
+                GraphTitle = "Measure vs. Reference",
+                HorizontalTitle = "m/z",
+                VerticalTitle = "Relative abundance",
+            }.AddTo(Disposables);
+            DecRefSpectrumModels = new MsSpectrumModel(decSpectrumModel, referenceSpectrumModel, ms2ScanMatching)
             {
-                targetSource.ToConstant(false),
-                decSource.Delay(TimeSpan.FromSeconds(.05d)).ToConstant(true),
-            }.Merge()
-            .Throttle(TimeSpan.FromSeconds(.1d))
-            .ToReadOnlyReactivePropertySlim()
-            .AddTo(Disposables);
-
-            RawRefSpectrumModels = new MsSpectrumModel(
-                rawSource, refSpectrum,
-                horizontalPropertySelector,
-                verticalPropertySelector,
-                graphLabels,
-                hueProperty,
-                upperSpectrumBrush,
-                lowerSpectrumBrush,
-                rawSpectraExporeter,
-                referenceSpectraExporter,
-                rawSpectrumLoaded,
-                ms2ScanMatching).AddTo(Disposables);
-            DecRefSpectrumModels = new MsSpectrumModel(
-                decSource, refSpectrum,
-                horizontalPropertySelector,
-                verticalPropertySelector,
-                graphLabels,
-                hueProperty,
-                upperSpectrumBrush,
-                lowerSpectrumBrush,
-                deconvolutedSpectraExporter,
-                referenceSpectraExporter,
-                decSpectrumLoaded,
-                ms2ScanMatching).AddTo(Disposables);
+                GraphTitle =  "Deconvolution vs. Reference",
+                HorizontalTitle = "m/z",
+                VerticalTitle = "Relative abundacne",
+            }.AddTo(Disposables);
+            RawLoader = loader;
         }
-
 
         public MsSpectrumModel RawRefSpectrumModels { get; }
         public MsSpectrumModel DecRefSpectrumModels { get; }
-        public MultiMsRawSpectrumLoader RawLoader { get; }
+        public MultiMsmsRawSpectrumLoader RawLoader { get; }
     }
 }

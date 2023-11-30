@@ -1,6 +1,8 @@
-﻿using CompMs.App.Msdial.Model.Core;
+﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imms;
+using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
@@ -23,13 +25,13 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private readonly ImmsAlignmentModel _model;
         private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
-        private readonly IMessageBroker _messageBroker;
+        private readonly IMessageBroker _broker;
 
         public ImmsAlignmentViewModel(
             ImmsAlignmentModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IMessageBroker messageBroker,
+            IMessageBroker broker,
             FocusControlManager focusControlManager) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
@@ -45,7 +47,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             _model = model;
             _compoundSearchService = compoundSearchService;
             _peakSpotTableService = peakSpotTableService;
-            _messageBroker = messageBroker;
+            _broker = broker;
             UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
             Target = model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
@@ -56,15 +58,15 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
 
             var (focusAction, focused) = focusControlManager.Request();
-            PlotViewModel = new Chart.AlignmentPeakPlotViewModel(model.PlotModel, focusAction, focused).AddTo(Disposables);
+            PlotViewModel = new AlignmentPeakPlotViewModel(model.PlotModel, focusAction, focused).AddTo(Disposables);
 
             var (msSpectrumViewFocusAction, msSpectrumViewFocused) = focusControlManager.Request();
-            Ms2SpectrumViewModel = new Chart.MsSpectrumViewModel(model.Ms2SpectrumModel, focusAction: msSpectrumViewFocusAction, isFocused: msSpectrumViewFocused).AddTo(Disposables);
+            Ms2SpectrumViewModel = new AlignmentMs2SpectrumViewModel(model.Ms2SpectrumModel, broker, focusAction: msSpectrumViewFocusAction, isFocused: msSpectrumViewFocused).AddTo(Disposables);
 
             var (barChartViewFocusAction, barChartViewFocused) = focusControlManager.Request();
-            BarChartViewModel = new Chart.BarChartViewModel(model.BarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
-            AlignmentEicViewModel = new Chart.AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
-            AlignmentSpotTableViewModel = new ImmsAlignmentSpotTableViewModel(model.AlignmentSpotTableModel, PeakSpotNavigatorViewModel, SetUnknownCommand, UndoManagerViewModel).AddTo(Disposables);
+            BarChartViewModel = new BarChartViewModel(model.BarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
+            AlignmentEicViewModel = new AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
+            AlignmentSpotTableViewModel = new ImmsAlignmentSpotTableViewModel(model.AlignmentSpotTableModel, PeakSpotNavigatorViewModel, SetUnknownCommand, UndoManagerViewModel, broker).AddTo(Disposables);
 
             SearchCompoundCommand = model.CanSearchCompound
                 .ToReactiveCommand()
@@ -78,49 +80,25 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel, matchResultCandidatesViewModel, };
 
             var internalStandardSetViewModel = new InternalStandardSetViewModel(model.InternalStandardSetModel).AddTo(Disposables);
-            InternalStandardSetCommand = new ReactiveCommand().WithSubscribe(_ => messageBroker.Publish(internalStandardSetViewModel)).AddTo(Disposables);
+            InternalStandardSetCommand = new ReactiveCommand().WithSubscribe(_ => broker.Publish(internalStandardSetViewModel)).AddTo(Disposables);
 
             var notification = TaskNotification.Start("Loading alignment results...");
-            messageBroker.Publish(notification);
-            model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => messageBroker.Publish(TaskNotification.End(notification)));
+            broker.Publish(notification);
+            model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => broker.Publish(TaskNotification.End(notification)));
 
             NormalizationSetViewModel = new NormalizationSetViewModel(model.NormalizationSetModel, internalStandardSetViewModel).AddTo(Disposables);
             ShowNormalizationSettingCommand = new ReactiveCommand()
-                .WithSubscribe(() => messageBroker.Publish(NormalizationSetViewModel))
+                .WithSubscribe(() => broker.Publish(NormalizationSetViewModel))
                 .AddTo(Disposables);
         }
 
         public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel> CurrentRepresentativeFile => _model.CurrentRepresentativeFile;
 
-        public Chart.AlignmentPeakPlotViewModel PlotViewModel {
-            get => _plotViewModel;
-            set => SetProperty(ref _plotViewModel, value);
-        }
-        private Chart.AlignmentPeakPlotViewModel _plotViewModel;
-
-        public Chart.MsSpectrumViewModel Ms2SpectrumViewModel {
-            get => _ms2SpectrumViewModel;
-            set => SetProperty(ref _ms2SpectrumViewModel, value);
-        }
-        private Chart.MsSpectrumViewModel _ms2SpectrumViewModel;
-
-        public Chart.BarChartViewModel BarChartViewModel {
-            get => _barChartViewModel;
-            set => SetProperty(ref _barChartViewModel, value);
-        }
-        private Chart.BarChartViewModel _barChartViewModel;
-
-        public Chart.AlignmentEicViewModel AlignmentEicViewModel {
-            get => _alignmentEicViewModel;
-            set => SetProperty(ref _alignmentEicViewModel, value);
-        }
-        private Chart.AlignmentEicViewModel _alignmentEicViewModel;
-
-        public ImmsAlignmentSpotTableViewModel AlignmentSpotTableViewModel {
-            get => _alignmentSpotTableViewModel;
-            set => SetProperty(ref _alignmentSpotTableViewModel, value);
-        }
-        private ImmsAlignmentSpotTableViewModel _alignmentSpotTableViewModel;
+        public AlignmentPeakPlotViewModel PlotViewModel { get; }
+        public AlignmentMs2SpectrumViewModel Ms2SpectrumViewModel { get; }
+        public BarChartViewModel BarChartViewModel { get; }
+        public AlignmentEicViewModel AlignmentEicViewModel { get; }
+        public ImmsAlignmentSpotTableViewModel AlignmentSpotTableViewModel { get; }
 
         public UndoManagerViewModel UndoManagerViewModel { get; }
 
@@ -161,6 +139,20 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             _peakSpotTableService.Show(AlignmentSpotTableViewModel);
         }
 
+        public DelegateCommand SearchAlignmentSpectrumByMoleculerNetworkingCommand => _searchAlignmentSpectrumByMoleculerNetworkingCommand ?? (_searchAlignmentSpectrumByMoleculerNetworkingCommand = new DelegateCommand(SearchAlignmentSpectrumByMoleculerNetworkingMethod));
+        private DelegateCommand _searchAlignmentSpectrumByMoleculerNetworkingCommand;
+
+        private void SearchAlignmentSpectrumByMoleculerNetworkingMethod() {
+            _model.InvokeMoleculerNetworkingForTargetSpot();
+        }
+
+        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ?? (_goToMsfinderCommand = new DelegateCommand(GoToMsfinderMethod));
+        private DelegateCommand _goToMsfinderCommand;
+
+        private void GoToMsfinderMethod() {
+            _model.InvokeMsfinder();
+        }
+
         public ICommand SaveSpectraCommand => _saveSpectraCommand ?? (_saveSpectraCommand = new DelegateCommand(SaveSpectra, CanSaveSpectra));
 
         private DelegateCommand _saveSpectraCommand;
@@ -173,7 +165,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 RestoreDirectory = true,
                 AddExtension = true,
             };
-            _messageBroker.Publish(request);
+            _broker.Publish(request);
         }
 
         private bool CanSaveSpectra() {

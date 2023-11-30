@@ -15,37 +15,46 @@ namespace CompMs.App.Msdial.Model.Setting {
         private readonly AdvancedProcessOptionBaseParameter _parameter;
         private readonly IAnalysisModel _analysisModel;
         private readonly IAlignmentModel _alignmentModel;
+        private readonly List<PeakFeatureSearchValue> _fragmentQuerySettingValues;
+        private readonly ObservableCollection<PeakFeatureSearchValueModel> _fragmentQuerySettingValueModels;
 
         public FragmentQuerySettingModel(AdvancedProcessOptionBaseParameter parameter, IAnalysisModel analysisModel, IAlignmentModel alignmentModel) {
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
             _analysisModel = analysisModel;
             _alignmentModel = alignmentModel;
 
-            if (parameter.FragmentSearchSettingValues is null) {
-                parameter.FragmentSearchSettingValues = new List<PeakFeatureSearchValue>();
-            }
-            var values = parameter.FragmentSearchSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0 && n.RelativeIntensityCutoff > 0).ToList();
+            parameter.FragmentSearchSettingValues ??= new List<PeakFeatureSearchValue>();
             SearchOption = new ReactivePropertySlim<AndOr>(parameter.AndOrAtFragmentSearch);
-
             IsAlignSpotViewSelected = new ReactivePropertySlim<bool>();
 
+            var values = parameter.FragmentSearchSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0 && n.RelativeIntensityCutoff > 0).ToList();
             values.AddRange(Enumerable.Range(0, 100).Select(_ => new PeakFeatureSearchValue
             {
                 PeakFeatureQueryLevel = PeakFeatureQueryLevel.MS2,
             }));
-            FragmentQuerySettingValues = new ObservableCollection<PeakFeatureSearchValue>(values);
+
+            _fragmentQuerySettingValues = values;
+            _fragmentQuerySettingValueModels = new ObservableCollection<PeakFeatureSearchValueModel>(values.Select(v => new PeakFeatureSearchValueModel(v)));
+            FragmentQuerySettingValueModels = new ReadOnlyObservableCollection<PeakFeatureSearchValueModel>(_fragmentQuerySettingValueModels);
         }
 
-        public ObservableCollection<PeakFeatureSearchValue> FragmentQuerySettingValues { get; }
+        public ReadOnlyObservableCollection<PeakFeatureSearchValueModel> FragmentQuerySettingValueModels;
         public ReactivePropertySlim<AndOr> SearchOption { get; }
         public ReactivePropertySlim<bool> IsAlignSpotViewSelected { get; }
 
         public void ClearListMethod() {
-            FragmentQuerySettingValues.Clear();
+            foreach (var query in _fragmentQuerySettingValueModels) {
+                query.ClearPeakSearchQuery();
+            }
         }
 
         public void Search() {
-            _parameter.FragmentSearchSettingValues = FragmentQuerySettingValues.Where(v => v.Mass > 0 && v.MassTolerance > 0 && v.RelativeIntensityCutoff > 0).ToList();
+            foreach (var query in _fragmentQuerySettingValueModels) {
+                query.Commit();
+            }
+            _parameter.FragmentSearchSettingValues.Clear();
+            _parameter.FragmentSearchSettingValues.AddRange(_fragmentQuerySettingValues.Where(v => v.Mass > 0 && v.MassTolerance > 0 && v.RelativeIntensityCutoff > 0));
+
             _parameter.AndOrAtFragmentSearch = SearchOption.Value;
             if (IsAlignSpotViewSelected.Value) {
                 if (_alignmentModel is null) {

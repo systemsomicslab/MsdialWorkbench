@@ -40,7 +40,7 @@ namespace Rfx.Riken.OsakaUniv
             try {
                 var releaseInfoDataTransferObjects = (List<ReleaseInfoDataTransferObject>)serializer.ReadObject(jsonStream);
                 foreach (var dto in releaseInfoDataTransferObjects) {
-                    if (dto.TagName.StartsWith("MSFINDER")) { 
+                    if (!dto.IsPrerelease && dto.TagName.StartsWith("MSFINDER")) { 
                         var vdd = dto.ToVersionDescriptionDocument();
                         callback?.Invoke(vdd);
                         break;
@@ -106,6 +106,9 @@ namespace Rfx.Riken.OsakaUniv
 
             [DataMember(Name = "assets")]
             public List<AssetsDataTransferObject> Assets { get; set; }
+
+            [DataMember(Name = "prerelease")]
+            public bool IsPrerelease { get; set; }
 
             public VersionDescriptionDocument ToVersionDescriptionDocument() {
                 return new VersionDescriptionDocument {

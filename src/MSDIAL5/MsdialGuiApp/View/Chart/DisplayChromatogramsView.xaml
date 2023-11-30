@@ -6,6 +6,7 @@
         mc:Ignorable="d"
         xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+        xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
         Name="ChromatogramsPlot"
         d:DataContext="{d:DesignInstance Type={x:Type vm:ChromatogramsViewModel}}"
         Title="Display chromatograms" Height="450" Width="800">
@@ -62,6 +63,29 @@
                     </Grid>
                 </DataTemplate>
             </chart:MultiChart.ItemTemplate>
+            <chart:MultiChart.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Save image as...">
+                        <MenuItem Header="Save as emf"
+                                  Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Save as png"
+                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                    <MenuItem Header="Copy image as...">
+                        <MenuItem Header="Copy as emf"
+                                  Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Copy as png"
+                                  Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                    <Separator/>
+                    <MenuItem Header="Copy as table" Command="{Binding CopyAsTableCommand, Mode=OneTime}"/>
+                    <MenuItem Header="Save as table" Command="{Binding SaveAsTableCommand, Mode=OneTime}"/>
+                </ContextMenu>
+            </chart:MultiChart.ContextMenu>
         </chart:MultiChart>
         <ItemsControl 
             ItemsSource="{Binding DisplayChromatograms}"

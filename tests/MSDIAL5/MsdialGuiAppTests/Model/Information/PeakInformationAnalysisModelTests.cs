@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
 using CompMs.MsdialCore.DataObj;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reactive.Bindings;
@@ -77,6 +78,7 @@ namespace CompMs.App.Msdial.Model.Information.Tests
                 })
                 {
                     Name = "Test 1",
+                    AdductType = AdductIon.GetAdductIon("[M-H]-"),
                 };
                 var y = new ChromatogramPeakFeatureModel(x);
                 var x2 = new ChromatogramPeakFeature(new BaseChromatogramPeakFeature
@@ -86,6 +88,7 @@ namespace CompMs.App.Msdial.Model.Information.Tests
                 })
                 {
                     Name = "Test 1-2",
+                    AdductType = AdductIon.GetAdductIon("[M-H]-"),
                 };
                 var y2 = new ChromatogramPeakFeatureModel(x2);
                 yield return new object[] { Observable.Return(y).ToReactiveProperty(), y2, };
@@ -96,6 +99,7 @@ namespace CompMs.App.Msdial.Model.Information.Tests
                 })
                 {
                     Name = "Test 2",
+                    AdductType = AdductIon.GetAdductIon("[M-H]-"),
                 };
                 var w = new ChromatogramPeakFeatureModel(z);
                 var z2 = new ChromatogramPeakFeature(new BaseChromatogramPeakFeature
@@ -105,6 +109,7 @@ namespace CompMs.App.Msdial.Model.Information.Tests
                 })
                 {
                     Name = "Test 2-2",
+                    AdductType = AdductIon.GetAdductIon("[M-H]-"),
                 };
                 var w2 = new ChromatogramPeakFeatureModel(z2);
                 yield return new object[] { Observable.Return(w).ToReactiveProperty(), w2, };

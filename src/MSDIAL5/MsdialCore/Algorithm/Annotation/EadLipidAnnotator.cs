@@ -24,7 +24,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private readonly MsRefSearchParameterBase _parameter;
 
         public EadLipidAnnotator(EadLipidDatabase db, string id, int priority, MsRefSearchParameterBase parameter) {
-            _lipidGenerator = new LipidGenerator(new TotalChainVariationGenerator(chainGenerator: new Omega3nChainGenerator(), minLength: 12));
+            _lipidGenerator = new DGTSLipidGeneratorDecorator(new LipidGenerator(new TotalChainVariationGenerator(chainGenerator: new Omega3nChainGenerator(), minLength: 12)));
             Id = id ?? throw new ArgumentNullException(nameof(id));
             Priority = priority;
             _lipidDatabase = db ?? throw new ArgumentNullException(nameof(db));
@@ -98,12 +98,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         private IEnumerable<ILipid> GenerateLipid(ILipid lipid) {
-            if (_lipidDatabase.Source == DataBaseSource.OadLipid && lipid.AnnotationLevel < 2) {
-                return new[] { lipid };
+            if (_lipidDatabase.Source == DataBaseSource.OadLipid) {
+                return _lipidGenerator.GenerateUntil(lipid, l => l.AnnotationLevel >= 2).Prepend(lipid);
             }
-            return lipid.Generate(_lipidGenerator).
-                SelectMany(GenerateLipid).
-                Prepend(lipid);
+            return _lipidGenerator.GenerateUntil(lipid, _ => true).Prepend(lipid);
         }
 
         public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results) {

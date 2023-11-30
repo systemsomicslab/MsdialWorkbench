@@ -3,15 +3,15 @@ using CompMs.Graphics.Core.Base;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    public class AxisItemModel : BindableBase
-    {
-        public AxisItemModel(IAxisManager<double> axisManager, string label) {
+    public sealed class AxisItemModel<T> : BindableBase {
+        public AxisItemModel(string label, IAxisManager<T> axisManager, string graphLabel) {
             AxisManager = axisManager;
             Label = label;
+            GraphLabel = graphLabel;
         }
 
-        public IAxisManager<double> AxisManager { get; }
-
+        public IAxisManager<T> AxisManager { get; }
         public string Label { get; }
+        public string GraphLabel { get; }
     }
 }

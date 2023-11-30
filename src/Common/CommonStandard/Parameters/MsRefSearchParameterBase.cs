@@ -73,5 +73,30 @@ namespace CompMs.Common.Parameter {
             IsUseCcsForAnnotationFiltering = parameter.IsUseCcsForAnnotationFiltering;
             IsUseCcsForAnnotationScoring = parameter.IsUseCcsForAnnotationScoring;
         }
+
+        public string ParameterAsString() {
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine($"{nameof(MassRangeBegin)}: {MassRangeBegin:f5}");
+            sb.AppendLine($"{nameof(MassRangeEnd)}: {MassRangeEnd:f5}");
+            sb.AppendLine($"{nameof(RtTolerance)}: {RtTolerance:f2}");
+            sb.AppendLine($"{nameof(RiTolerance)}: {RiTolerance:f3}");
+            sb.AppendLine($"{nameof(CcsTolerance)}: {CcsTolerance:f2}");
+            sb.AppendLine($"{nameof(Ms1Tolerance)}: {Ms1Tolerance:f5}");
+            sb.AppendLine($"{nameof(Ms2Tolerance)}: {Ms2Tolerance:f5}");
+            sb.AppendLine($"{nameof(RelativeAmpCutoff)}: {RelativeAmpCutoff:f3}");
+            sb.AppendLine($"{nameof(AbsoluteAmpCutoff)}: {AbsoluteAmpCutoff}");
+            sb.AppendLine($"{nameof(WeightedDotProductCutOff)}: {WeightedDotProductCutOff:f3}");
+            sb.AppendLine($"{nameof(SimpleDotProductCutOff)}: {SimpleDotProductCutOff:f3}");
+            sb.AppendLine($"{nameof(ReverseDotProductCutOff)}: {ReverseDotProductCutOff:f3}");
+            sb.AppendLine($"{nameof(MatchedPeaksPercentageCutOff)}: {MatchedPeaksPercentageCutOff:f3}");
+            sb.AppendLine($"{nameof(AndromedaScoreCutOff)}: {AndromedaScoreCutOff:f3}");
+            sb.AppendLine($"{nameof(TotalScoreCutoff)}: {TotalScoreCutoff:f3}");
+            sb.AppendLine($"{nameof(MinimumSpectrumMatch)}: {MinimumSpectrumMatch:f3}");
+            sb.AppendLine($"{nameof(IsUseTimeForAnnotationFiltering)}: {IsUseTimeForAnnotationFiltering:f3}");
+            sb.AppendLine($"{nameof(IsUseTimeForAnnotationScoring)}: {IsUseTimeForAnnotationScoring:f3}");
+            sb.AppendLine($"{nameof(IsUseCcsForAnnotationFiltering)}: {IsUseCcsForAnnotationFiltering:f3}");
+            sb.AppendLine($"{nameof(IsUseCcsForAnnotationScoring)}: {IsUseCcsForAnnotationScoring:f3}");
+            return sb.ToString();
+        }
     }
 }

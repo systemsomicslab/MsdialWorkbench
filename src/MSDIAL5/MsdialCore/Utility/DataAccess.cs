@@ -33,7 +33,9 @@ namespace CompMs.MsdialCore.Utility {
         // raw data support
         public static bool IsDataFormatSupported(string filepath) {
             if (System.IO.File.Exists(filepath)) {
-                var extension = System.IO.Path.GetExtension(filepath).ToLower().Substring(1); // .abf -> abf
+                var extension = System.IO.Path.GetExtension(filepath).ToLower();
+                if (extension.Length <= 1) return false;
+                extension = extension.Substring(1); // .abf -> abf
                 foreach (var item in System.Enum.GetNames(typeof(SupportMsRawDataExtension))) {
                     if (item == extension) return true;
                 }
@@ -1197,7 +1199,12 @@ namespace CompMs.MsdialCore.Utility {
         public static void SetMoleculeMsPropertyAsSuggested(ChromatogramPeakFeature feature, MoleculeMsReference reference, MsScanMatchResult result) {
             SetMoleculePropertyCore(feature, reference);
             feature.SetAdductType(reference.AdductType);
-            feature.Name = "w/o MS2: " + result.Name;
+            if (feature.MS2RawSpectrumID < 0) {
+                feature.Name = "no MS2: " + result.Name;
+            }
+            else {
+                feature.Name = "low score: " + result.Name;
+            }
         }
 
         public static void SetMoleculeMsPropertyAsConfidence<T>(T feature, MoleculeMsReference reference)

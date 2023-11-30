@@ -1,14 +1,17 @@
 ﻿using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.MSDec;
+using Reactive.Bindings.Extensions;
+using System;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class AnalysisFileBeanModel : BindableBase, IFileBean
+    public sealed class AnalysisFileBeanModel : DisposableModelBase, IFileBean
     {
         private readonly AnalysisFileBean _file;
 
-        public AnalysisFileBeanModel(AnalysisFileBean file) {
+        internal AnalysisFileBeanModel(AnalysisFileBean file) {
             _file = file;
         }
 
@@ -121,8 +124,20 @@ namespace CompMs.App.Msdial.Model.DataObj
         }
 
         public string PeakAreaBeanInformationFilePath => _file.PeakAreaBeanInformationFilePath;
+        [Obsolete("Use MSDecLoader property directly.")]
         public string DeconvolutionFilePath => _file.DeconvolutionFilePath;
         public string ProteinAssembledResultFilePath => _file.ProteinAssembledResultFilePath;
+
+        public MSDecLoader MSDecLoader {
+            get => _mSDecLoader ?? (_mSDecLoader = new MSDecLoader(_file.DeconvolutionFilePath).AddTo(Disposables));
+        }
+        private MSDecLoader _mSDecLoader;
+
+        public void ReleaseMSDecLoader() {
+            var loader = _mSDecLoader;
+            _mSDecLoader = null;
+            loader?.Dispose();
+        }
 
         int IFileBean.FileID => AnalysisFileId;
         string IFileBean.FileName => AnalysisFileName;

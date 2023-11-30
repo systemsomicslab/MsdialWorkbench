@@ -157,10 +157,22 @@ namespace CompMs.App.Msdial.Model.Setting {
             return Task.Run(() => {
                 Commit();
                 if (IsAlignSpotViewSelected) {
-                    _currentAlignmentModel.Value?.RunMoleculerNetworking(_parameter);
+                    _currentAlignmentModel.Value?.ExportMoleculerNetworkingData(_parameter);
                 }
                 else {
-                    _currentFileModel.Value?.RunMoleculerNetworking(_parameter);
+                    _currentFileModel.Value?.ExportMoleculerNetworkingData(_parameter);
+                }
+            });
+        }
+
+        public Task SendMolecularNetworkingDataToCytoscapeJsAsync() {
+            return Task.Run(() => {
+                Commit();
+                if (IsAlignSpotViewSelected) {
+                    _currentAlignmentModel.Value?.InvokeMoleculerNetworking(_parameter);
+                }
+                else {
+                    _currentFileModel.Value?.InvokeMoleculerNetworking(_parameter);
                 }
             });
         }

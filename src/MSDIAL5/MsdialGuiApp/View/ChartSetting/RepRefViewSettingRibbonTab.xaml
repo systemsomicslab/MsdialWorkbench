@@ -6,7 +6,7 @@
            xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
            mc:Ignorable="d" 
            Header="MS/MS spectrum"
-           d:DataContext="{d:DesignInstance Type={x:Type vmchart:MsSpectrumViewModel}}"
+           d:DataContext="{d:DesignInstance Type={x:Type vmchart:AlignmentMs2SpectrumViewModel}}"
            d:DesignHeight="450" d:DesignWidth="800" d:Background="White">
     <RibbonGroup Header="Intensity axis type">
         <RibbonComboBox Label="Representative"
