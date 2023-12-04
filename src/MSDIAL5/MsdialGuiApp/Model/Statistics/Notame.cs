@@ -1,3 +1,4 @@
+using CompMs.CommonMVVM;
 using Newtonsoft.Json;
 using RDotNet;
 using System;
@@ -11,8 +12,32 @@ using System.Windows.Forms;
 
 namespace CompMs.App.Msdial.Model.Statistics
 {
-    public class Notame : Form
+    public sealed class Notame : BindableBase
     {
+        public string Path {
+            get => __path;
+            set => SetProperty(ref __path, value);
+        }
+        private string __path = string.Empty;
+
+        public string FileName {
+            get => __fileName;
+            set => SetProperty(ref __fileName, value);
+        }
+        private string __fileName = string.Empty;
+
+        public string IonMode {
+            get => __ionMode;
+            set => SetProperty(ref __ionMode, value);
+        }
+        private string __ionMode = string.Empty;
+
+        public string GroupingName {
+            get => __groupingName;
+            set => SetProperty(ref __groupingName, value);
+        }
+        private string __groupingName = string.Empty;
+
         private TextBox _path;
         private TextBox _fileName;
         private TextBox _ionMod;
@@ -35,16 +60,16 @@ namespace CompMs.App.Msdial.Model.Statistics
             button.Click += SaveParameters;
 
             _label1 = CreateLabel("File path: ", 10, 10);
-            _path = CreateTextBox(120, 10);
+            _path = CreateTextBox(120, 10, "Sample data file path (For example: c:/src/)");
 
             _label2 = CreateLabel("File name: ", 10, 40);
-            _fileName = CreateTextBox(120, 40);
+            _fileName = CreateTextBox(120, 40, "File name (For example: Hilic_pos.xlsx)");
 
             _label3 = CreateLabel("Ion mode: ", 10, 70);
-            _ionMod = CreateTextBox(120, 70);
+            _ionMod = CreateTextBox(120, 70, "Ion Mode (For example: HILIC_pos)");
 
             _label4 = CreateLabel("Grouping name: ", 10, 100);
-            _groupingName = CreateTextBox(120, 100);
+            _groupingName = CreateTextBox(120, 100, "Grouping name (For example: Group");
 
             form.Text = "Insert Parameters: ";
             form.StartPosition = FormStartPosition.CenterParent;
@@ -70,7 +95,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             return label;
         }
 
-        private TextBox CreateTextBox(int x, int y)
+        private TextBox CreateTextBox(int x, int y, string description)
         {
             TextBox textBox = new System.Windows.Forms.TextBox();
             textBox.Location = new Point(x, y);
@@ -118,6 +143,9 @@ namespace CompMs.App.Msdial.Model.Statistics
             engine.SetSymbol("file_name", engine.CreateCharacter(fileName));
             engine.SetSymbol("ion_mod", engine.CreateCharacter(ionMod));
             engine.SetSymbol("grouping_name", engine.CreateCharacter(groupingName));
+
+            //File path = Sample data file path (For example: )
+            //File name =
 
             string rScript = @"
                 data <- notame::read_from_excel(file = paste0(path, file_name), sheet = 1, name = ion_mod)
