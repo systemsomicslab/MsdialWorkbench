@@ -176,6 +176,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmark", "benchmark", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonStandardBenchmark", "benchmark\CompMs\CommonStandardBenchmark\CommonStandardBenchmark.csproj", "{B1A4AFD3-ACF3-48B7-A55C-E37E082FEEBD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{DC2AD876-69E5-4D56-AD01-A871FA14CF04}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
+		LGPL.txt = LGPL.txt
+		README.md = README.md
+		THIRD-PARTY-LICENSE-README.md = THIRD-PARTY-LICENSE-README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug vendor unsupported|Any CPU = Debug vendor unsupported|Any CPU
