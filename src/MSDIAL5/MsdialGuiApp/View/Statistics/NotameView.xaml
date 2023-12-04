@@ -6,6 +6,7 @@
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Statistics"
              mc:Ignorable="d" 
              d:Background="White"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:NotameViewModel}}"
              d:DesignHeight="600" d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
@@ -19,20 +20,28 @@
             <ColumnDefinition Width="128"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-    
 
         <TextBlock Text="File path:" Grid.Row="0" Grid.Column="0"/>
-        <TextBox ToolTip="Sample data file path (For example: c:/src/)" Grid.Row="0" Grid.Column="1"/>
+        <TextBox Text="{Binding Path.Value}"
+                 ToolTip="Sample data file path (For example: c:/src/)"
+                 Grid.Row="0" Grid.Column="1"/>
 
         <TextBlock Text="File name:" Grid.Row="1" Grid.Column="0"/>
-        <TextBox ToolTip="File name (For example: Hilic_pos.xlsx)" Grid.Row="1" Grid.Column="1"/>
+        <TextBox Text="{Binding FileName.Value}"
+                 ToolTip="File name (For example: Hilic_pos.xlsx)"
+                 Grid.Row="1" Grid.Column="1"/>
 
         <TextBlock Text="Ion mode:" Grid.Row="2" Grid.Column="0"/>
-        <TextBox ToolTip="Ion Mode (For example: HILIC_pos)" Grid.Row="2" Grid.Column="1"/>
+        <TextBox Text="{Binding IonMode.Value}"
+                 ToolTip="Ion Mode (For example: HILIC_pos)" 
+                 Grid.Row="2" Grid.Column="1"/>
 
         <TextBlock Text ="Grouping name:" Grid.Row="3" Grid.Column="0"/>
-        <TextBox ToolTip="Grouping name (For example: Group)" Grid.Row="3" Grid.Column="1"/>
+        <TextBox Text="{Binding GroupingName.Value}" 
+                 ToolTip="Grouping name (For example: Group)" 
+                 Grid.Row="3" Grid.Column="1"/>
 
-        <Button Content="Run" Width="64" Grid.Row="4"/>
+        <Button Content="Run" Command="{Binding RunNotameCommand, Mode=OneTime}"
+                Width="64" Grid.Row="4"/>
     </Grid>
 </UserControl>
