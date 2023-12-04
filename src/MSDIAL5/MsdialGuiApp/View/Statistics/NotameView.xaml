@@ -1,0 +1,38 @@
+<UserControl x:Class="CompMs.App.Msdial.View.Statistics.NotameView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Statistics"
+             mc:Ignorable="d" 
+             d:Background="White"
+             d:DesignHeight="600" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="16"/>
+            <RowDefinition Height="16"/>
+            <RowDefinition Height="16"/>
+            <RowDefinition Height="16"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="128"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+    
+
+        <TextBlock Text="File path:" Grid.Row="0" Grid.Column="0"/>
+        <TextBox ToolTip="Sample data file path (For example: c:/src/)" Grid.Row="0" Grid.Column="1"/>
+
+        <TextBlock Text="File name:" Grid.Row="1" Grid.Column="0"/>
+        <TextBox ToolTip="File name (For example: Hilic_pos.xlsx)" Grid.Row="1" Grid.Column="1"/>
+
+        <TextBlock Text="Ion mode:" Grid.Row="2" Grid.Column="0"/>
+        <TextBox ToolTip="Ion Mode (For example: HILIC_pos)" Grid.Row="2" Grid.Column="1"/>
+
+        <TextBlock Text ="Grouping name:" Grid.Row="3" Grid.Column="0"/>
+        <TextBox ToolTip="Grouping name (For example: Group)" Grid.Row="3" Grid.Column="1"/>
+
+        <Button Content="Run" Width="64" Grid.Row="4"/>
+    </Grid>
+</UserControl>
