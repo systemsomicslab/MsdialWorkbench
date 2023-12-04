@@ -2,16 +2,20 @@
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 
 namespace CompMs.App.Msdial.ViewModel.Statistics
 {
     public sealed class NotameViewModel : ViewModelBase
     {
         private readonly Notame _notame;
+        private readonly IMessageBroker _broker;
 
-        public NotameViewModel(Notame notame) {
-            RunNotameCommand = new DelegateCommand(RunNotame);
+        public NotameViewModel(Notame notame, IMessageBroker broker) {
             _notame = notame;
+            _broker = broker;
+            RunNotameCommand = new DelegateCommand(RunNotame);
+            ShowSettingViewCommand = new DelegateCommand(ShowSettingView);
 
             Path = notame.ToReactivePropertyAsSynchronized(m => m.Path).AddTo(Disposables);
             FileName = notame.ToReactivePropertyAsSynchronized(m => m.FileName).AddTo(Disposables);
@@ -31,6 +35,12 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
         private void RunNotame() {
             _notame.Run();
+        }
+
+        public DelegateCommand ShowSettingViewCommand;
+
+        private void ShowSettingView() {
+            _broker.Publish(this);
         }
     }
 }

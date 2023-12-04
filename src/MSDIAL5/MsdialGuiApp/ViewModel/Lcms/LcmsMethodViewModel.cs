@@ -75,7 +75,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             _molecularNetworkingSendingToCytoscapeJsSettingViewModel = new MolecularNetworkingSendingToCytoscapeJsSettingViewModel(_model.MolecularNetworkingSettingModel).AddTo(Disposables);
             ExportParameterCommand = new AsyncReactiveCommand().WithSubscribe(model.ParameterExportModel.ExportAsync).AddTo(Disposables);
 
-            NotameViewModel = new NotameViewModel(model.Notame);
+            NotameViewModel = new NotameViewModel(model.Notame, broker).AddTo(Disposables);
         }
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
