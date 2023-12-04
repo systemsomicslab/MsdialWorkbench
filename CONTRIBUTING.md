@@ -41,7 +41,7 @@ Feel free to create a GitHub issue on https://github.com/systemsomicslab/MsdialW
 Feel free to create a GitHub discussion on https://github.com/systemsomicslab/MsdialWorkbench/discussions .
 
 ## Technical Topics
-- We use dot net framework XXX and .NET core XXX.
-- This project can be coded in Visual Studio Code (VSCode), but the GUI part cannot be written in VSCode. If you also want to contribute on the GUI part of the code, Visual Studio will be necessary.
-- In this project, we are using XXX for the implementation of the GUI. XXX is believed to support multiple platforms, but the GUI of this project only supports Windows.
-- This project is basically based on the MVVM pattern, but XXX does not follow it. If you want to know more about this, please refer to XXX.
+- In this project, we primarily utilize the frameworks of .NET Framework 4.7.2, .NET Core 3.1, and .NET 6. The .NET class libraries adhere at least to the specifications of .NET Standard 2.0 unless there is a specific reason to deviate. Currently, the main MsdialGuiApp project can be built using .NET Framework 4.7.2.
+- This project can be coded in Visual Studio Code (VSCode), but the GUI part may have limitations in terms of preview functionality within VSCode. If you intend to contribute to the GUI part of the code and would like to have access to a preview, we recommend using Visual Studio.
+- In this project, we are using the WPF (Windows Presentation Foundation) UI framework for GUI implementation. The GUI is designed for Windows exclusivity due to inherent limitations in WPF.
+- This project primarily adopts the MVVM pattern, utilizing packages such as ReactiveExtensions and ReactiveProperty. However, MVVM frameworks like Prism or Livet are not used in this project. If you are interested in learning more about MVVM, please refer to Microsoft's official documentation at https://learn.microsoft.com/en-us/dotnet/architecture/maui/mvvm.
