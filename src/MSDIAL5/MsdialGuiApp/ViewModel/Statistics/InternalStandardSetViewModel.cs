@@ -6,6 +6,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -30,6 +31,13 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
             Spots.ObserveElementPropertyChanged().Subscribe(_ => isEditting.TurnOn()).AddTo(Disposables);
             commit.Subscribe(_ => isEditting.TurnOff()).AddTo(Disposables);
+
+            AutoFillCommand = new ReactiveCommand<(NormalizationSpotPropertyViewModel, IEnumerable<NormalizationSpotPropertyViewModel>)>().AddTo(Disposables);
+            AutoFillCommand.Subscribe(args => {
+                foreach (var target in args.targets) {
+                    target.InternalStandardId = args.selected.InternalStandardId;
+                }
+            }).AddTo(Disposables);
         }
 
         public ReadOnlyObservableCollection<NormalizationSpotPropertyViewModel> Spots { get; }
@@ -37,6 +45,8 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public TargetMsMethod TargetMsMethod { get; }
 
         public BooleanNotifier IsEditting { get; }
+
+        public ReactiveCommand<(NormalizationSpotPropertyViewModel selected, IEnumerable<NormalizationSpotPropertyViewModel> targets)> AutoFillCommand { get; }
 
         public ReactiveCommand ApplyChangeCommand => _applyChangeCommand;
         public override ICommand FinishCommand => _applyChangeCommand;
