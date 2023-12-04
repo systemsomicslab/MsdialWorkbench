@@ -43,5 +43,5 @@ Feel free to create a GitHub discussion on https://github.com/systemsomicslab/Ms
 ## Technical Topics
 - We use dot net framework XXX and .NET core XXX.
 - This project can be coded in Visual Studio Code (VSCode), but the GUI part cannot be written in VSCode. If you also want to contribute on the GUI part of the code, Visual Studio will be necessary.
-- In this project, we are using XXX for the implementation of the GUI. XXX is believed to support multiple platforms, but the GUI of this project only supports Windows. The non-GUI parts are compatible with multiple platforms, and we are also creating binaries for Linux. Please refer to line XXX of https://github.com/systemsomicslab/MsdialWorkbench/blob/master/.github/workflows/dotnet_test.yml for the building binaries for Linux OS. The Linux binaries do not work on every version of the Linux OS and depend on the version of XXX.
+- In this project, we are using XXX for the implementation of the GUI. XXX is believed to support multiple platforms, but the GUI of this project only supports Windows.
 - This project is basically based on the MVVM pattern, but XXX does not follow it. If you want to know more about this, please refer to XXX.
