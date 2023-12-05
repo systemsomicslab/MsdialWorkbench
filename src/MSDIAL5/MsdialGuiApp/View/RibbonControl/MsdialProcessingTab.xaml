@@ -47,9 +47,9 @@
         <RibbonButton Label="notame"
                       LargeImageSource="/Resources/notame.png"
                       DataContext="{Binding MethodViewModel.Value}"
-                      Command="{Binding NotameViewModel.RunNotameCommand, FallbackValue={x:Static commonmmvvm:NeverCommand.Instance}}"
+                      Command="{Binding NotameViewModel.ShowSettingViewCommand, FallbackValue={x:Static commonmmvvm:NeverCommand.Instance}}"
                       KeyTip="N">
-            <RibbonButton.ToolTip>Execute "notame" and save a graph as ".png".</RibbonButton.ToolTip>
+            <RibbonButton.ToolTip>Send parameters to Notame.</RibbonButton.ToolTip>
             
         </RibbonButton>
     </RibbonGroup>
