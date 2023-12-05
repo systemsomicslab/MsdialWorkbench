@@ -8,13 +8,21 @@
              d:Background="White"
              d:DataContext="{d:DesignInstance Type={x:Type vm:NotameViewModel}}"
              d:DesignHeight="600" d:DesignWidth="800">
-    <Grid>
+	<UserControl.Resources>
+		<Style TargetType="TextBlock">
+			<Setter Property="Margin" Value="0,4"/>
+		</Style>
+		<Style TargetType="TextBox">
+			<Setter Property="Margin" Value="0,4"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>
+		</Style>
+	</UserControl.Resources>
+	<Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="16"/>
-            <RowDefinition Height="16"/>
-            <RowDefinition Height="16"/>
-            <RowDefinition Height="16"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="32"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="128"/>
@@ -40,8 +48,5 @@
         <TextBox Text="{Binding GroupingName.Value}" 
                  ToolTip="Grouping name (For example: Group)" 
                  Grid.Row="3" Grid.Column="1"/>
-
-        <Button Content="Run" Command="{Binding RunNotameCommand, Mode=OneTime}"
-                Width="64" Grid.Row="4"/>
     </Grid>
 </UserControl>
