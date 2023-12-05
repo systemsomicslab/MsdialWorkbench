@@ -1,12 +1,14 @@
 ﻿using CompMs.App.Msdial.Model.Statistics;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.UI;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Statistics
 {
-    public sealed class NotameViewModel : ViewModelBase
+    public sealed class NotameViewModel : SettingDialogViewModel
     {
         private readonly Notame _notame;
         private readonly IMessageBroker _broker;
@@ -37,10 +39,13 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             _notame.Run();
         }
 
-        public DelegateCommand ShowSettingViewCommand;
+        public DelegateCommand ShowSettingViewCommand { get; }
 
         private void ShowSettingView() {
             _broker.Publish(this);
         }
+
+        public override ICommand ApplyCommand => null;
+        public override ICommand FinishCommand => RunNotameCommand;
     }
 }
