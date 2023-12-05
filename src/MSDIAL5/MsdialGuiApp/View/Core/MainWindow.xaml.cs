@@ -110,6 +110,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildSettingDialog<AnalysisFilePropertyResettingView>("Analysis property setting", height: 700, width: 1000));
             broker.ToObservable<ProcessSettingViewModel>()
                 .Subscribe(ShowChildDialog<ProjectSettingDialog>);
+            broker.ToObservable<NotameViewModel>()
+                .Subscribe(ShowChildSettingDialog<NotameView>("Insert Parameters", height: 240, width: 300));
             /*
             broker.ToObservable<CompoundSearchVM>()
                 .Subscribe(ShowChildDialog<CompoundSearchWindow>);
