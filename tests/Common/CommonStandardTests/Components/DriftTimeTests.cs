@@ -11,6 +11,7 @@ namespace CompMs.Common.Components.Tests
             var memory = new MemoryStream();
             var dt = new DriftTime(10d, ChromXUnit.K0);
             MessagePack.MessagePackDefaultHandler.SaveToStream<IChromX>(dt, memory);
+            memory.Position = 0;
             var actual = MessagePack.MessagePackDefaultHandler.LoadFromStream<IChromX>(memory);
             Assert.IsInstanceOfType(actual, typeof(DriftTime));
             Assert.That.AreEqual(dt, actual);

@@ -21,6 +21,7 @@ namespace CompMs.MsdialCore.Parser.Tests
 
             using (var stream = new MemoryStream()) {
                 Common.MessagePack.MessagePackDefaultHandler.SaveToStream<IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>(key, stream);
+                stream.Position = 0;
                 actual = Common.MessagePack.MessagePackDefaultHandler.LoadFromStream<IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>(stream);
             }
 

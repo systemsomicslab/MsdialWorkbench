@@ -16,7 +16,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
     {
         [TestMethod()]
         public async Task LoadTest() {
-            var projectParameter = new ProjectParameter(DateTime.Parse("2021/12/16 23:14:30"), "Folder", "TestProject");
+            var projectParameter = new ProjectParameter(DateTime.Parse("2021/12/16 23:14:30 +0:00"), "Folder", "TestProject");
             var proj = new ProjectDataStorage(projectParameter, new List<IMsdialDataStorage<ParameterBase>>());
             var storage1 = new MockStorage { Parameter = new ParameterBase { ProjectFileName = "Test1", } };
             var storage2 = new MockStorage { Parameter = new ParameterBase { ProjectFileName = "Test2", } };
@@ -53,7 +53,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
 
         [TestMethod()]
         public async Task LoadFaultedTest() {
-            var projectParameter = new ProjectParameter(DateTime.Parse("2022/03/11 16:23:50"), "Folder", "TestProject");
+            var projectParameter = new ProjectParameter(DateTime.Parse("2022/03/11 16:23:50 +0:00"), "Folder", "TestProject");
             var proj = new ProjectDataStorage(projectParameter, new List<IMsdialDataStorage<ParameterBase>>());
             var storage1 = new MockStorage { Parameter = new ParameterBase { ProjectFileName = "Test1", } };
             var storage2 = new MockStorage { Parameter = new ParameterBase { ProjectFileName = "Test2", } };
@@ -100,7 +100,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
 
         [TestMethod()]
         public async Task LoadRetryOnNewFolderTest() {
-            var projectParameter = new ProjectParameter(DateTime.Parse("2022/07/05 16:56:50"), "Folder", "TestProject");
+            var projectParameter = new ProjectParameter(DateTime.Parse("2022/07/05 16:56:50 +0:00"), "Folder", "TestProject");
             var proj = new ProjectDataStorage(projectParameter, new List<IMsdialDataStorage<ParameterBase>>());
             var storage1 = new MockStorage { Parameter = new ParameterBase { ProjectFileName = "Test1", } };
             var storage2 = new MockStorage { Parameter = new ParameterBase { ProjectFileName = "Test2", } };
