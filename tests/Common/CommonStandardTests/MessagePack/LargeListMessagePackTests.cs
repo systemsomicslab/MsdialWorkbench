@@ -21,10 +21,15 @@ namespace CompMs.Common.MessagePack.Tests
             for (int i = 0; i < datas.Length; i++) {
                 datas[i] = new LargeSample();
             }
+            var sw = new Stopwatch();
             var memory = new MemoryStream();
+            sw.Start();
             LargeListMessagePack.Serialize(memory, datas);
+            Debug.WriteLine($"Serialize: {sw.Elapsed}");
             memory.Seek(0, SeekOrigin.Begin);
+            sw.Restart();
             var actual = LargeListMessagePack.Deserialize<LargeSample>(memory);
+            Debug.WriteLine($"Deserialize: {sw.Elapsed}");
             Assert.AreEqual(datas.Length, actual.Count);
         }
 
