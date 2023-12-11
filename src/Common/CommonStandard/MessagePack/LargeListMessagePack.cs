@@ -23,14 +23,21 @@ namespace CompMs.Common.MessagePack
 
         public static void Serialize<T>(ref MessagePackWriter writer, IReadOnlyList<T> value, MessagePackSerializerOptions options)
         {
-            if (value == null)
+            if (value is null)
             {
                 writer.WriteNil();
             }
             else
             {
                 var newOptions = options.WithCompression(MessagePackCompression.Lz4BlockArray);
-                MessagePackSerializer.Serialize(ref writer, new SerializingDataContainer<T> { Data = value }, newOptions);
+                //MessagePackSerializer.Serialize(ref writer, new SerializingDataContainer<T> { Data = value }, newOptions);
+                Memory<T> memory = (value as T[]) ?? value.ToArray();
+                var length = memory.Length;
+                var size = (int)Math.Sqrt(length) + 1;
+                var iteration = (length + size - 1) / size;
+                for (int i = 0; i < iteration; i++) {
+                    MessagePackSerializer.Serialize(ref writer, new SerializingDataContainer<T> { Data = memory.Slice(i * size, Math.Min(size, length - i * size)) }, newOptions);
+                }
             }
         }
 
@@ -111,7 +118,12 @@ namespace CompMs.Common.MessagePack
                 new[] { StandardResolver.Instance });
             var newOptions = options.WithCompression(MessagePackCompression.Lz4BlockArray).WithResolver(resolver);
             var deserialized = MessagePackSerializer.Deserialize<DeserializedDataContainer<T>>(ref reader, newOptions);
-            result = deserialized.Data.FirstOrDefault();
+            if (deserialized.Data is null) {
+                result = default;
+            }
+            else {
+                result = deserialized.Data.FirstOrDefault();
+            }
             skipArraySize = deserialized.Length;
             return result != null;
         }
@@ -119,7 +131,8 @@ namespace CompMs.Common.MessagePack
         [MessagePackFormatter(typeof(SerializingDataContainer<>.DataContainerFormatter))]
         private sealed class SerializingDataContainer<T> {
             public sbyte VersionCode { get; } = 2;
-            public IReadOnlyList<T> Data { get; set; }
+            //public IReadOnlyList<T> Data { get; set; }
+            public Memory<T> Data { get; set; }
 
             class DataContainerFormatter : IMessagePackFormatter<SerializingDataContainer<T>>
             {
@@ -129,9 +142,13 @@ namespace CompMs.Common.MessagePack
 
                 public void Serialize(ref MessagePackWriter writer, SerializingDataContainer<T> value, MessagePackSerializerOptions options) {
                     writer.WriteInt8(value.VersionCode);
-                    writer.WriteArrayHeader(value.Data.Count);
-                    for (int i = 0; i < value.Data.Count; i++) {
-                        MessagePackSerializer.Serialize(ref writer, value.Data[i], options);
+                    //writer.WriteArrayHeader(value.Data.Count);
+                    //for (int i = 0; i < value.Data.Count; i++) {
+                    //    MessagePackSerializer.Serialize(ref writer, value.Data[i], options);
+                    //}
+                    writer.WriteArrayHeader(value.Data.Length);
+                    for (int i = 0; i < value.Data.Length; i++) {
+                        MessagePackSerializer.Serialize(ref writer, value.Data.Span[i], options);
                     }
                 }
             }
@@ -191,6 +208,9 @@ namespace CompMs.Common.MessagePack
                         reader.ReadRaw(5);
                     }
                     if (length <= _index) {
+                        for (int i = 0; i < length; i++) {
+                            reader.Skip();
+                        }
                         return new DeserializedDataContainer<T> { Length = length, };
                     }
                     for (int i = 0; i < _index; i++) {
