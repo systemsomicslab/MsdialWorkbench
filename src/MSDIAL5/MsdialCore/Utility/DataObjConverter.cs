@@ -29,6 +29,7 @@ namespace CompMs.MsdialCore.Utility
             alignmentPeak.PeakAreaAboveBaseline = peak.PeakFeature.PeakAreaAboveBaseline;
             alignmentPeak.PeakShape = peak.PeakShape;
             alignmentPeak.Mass = spectrum.AnnotatedMSDecResult.QuantMass;
+            alignmentPeak.Mass = spectrum.AnnotatedMSDecResult.QuantMass;
             alignmentPeak.IonMode = scan.IonMode;
             alignmentPeak.Name = molecule.Name;
             alignmentPeak.Formula = molecule.Formula;
