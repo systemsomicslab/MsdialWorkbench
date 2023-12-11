@@ -24,16 +24,17 @@ namespace CompMs.App.Msdial.Model.ImagingImms
     {
         private readonly IMsdialDataStorage<MsdialImmsParameter> _storage;
         private readonly IMessageBroker _broker;
-        private readonly ProjectBaseParameterModel _projectBaseParameter;
+        private readonly FilePropertiesModel _projectBaseParameter;
         private readonly FacadeMatchResultEvaluator _evaluator;
         private readonly IDataProviderFactory<AnalysisFileBeanModel> _providerFactory;
 
-        public ImagingImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker)
+        public ImagingImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, FilePropertiesModel projectBaseParameter, StudyContextModel studyContext, IMessageBroker broker)
             : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, projectBaseParameter) {
             _storage = storage;
             _projectBaseParameter = projectBaseParameter;
             _broker = broker;
             _projectBaseParameter = projectBaseParameter;
+            StudyContext = studyContext;
             _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             _providerFactory = storage.Parameter.ProviderFactoryParameter.Create().ContraMap((AnalysisFileBeanModel file) => file.File.LoadRawMeasurement(true, true, 5, 5000));
             ImageModels = new ObservableCollection<ImagingImmsImageModel>();
@@ -51,6 +52,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         private ImagingImmsImageModel _image;
 
         public ParameterExportModel ParameterExporModel { get; }
+        public StudyContextModel StudyContext { get; }
 
         public override async Task RunAsync(ProcessOption option, CancellationToken token) {
             if (option.HasFlag(ProcessOption.Identification | ProcessOption.PeakSpotting)) {
@@ -130,7 +132,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                     FileSuffix = "msp",
                     Label = "Nist format (*.msp)"
                 },
-                new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam),
+                new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam, StudyContext),
             };
 
             return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, models);

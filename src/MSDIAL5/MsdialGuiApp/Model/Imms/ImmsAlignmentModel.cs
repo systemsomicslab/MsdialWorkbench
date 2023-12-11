@@ -52,7 +52,7 @@ namespace CompMs.App.Msdial.Model.Imms
             DataBaseMapper mapper,
             PeakSpotFiltering<AlignmentSpotPropertyModel> peakSpotFiltering,
             PeakFilterModel peakFilterModel,
-            ProjectBaseParameterModel projectBaseParameter,
+            FilePropertiesModel projectBaseParameter,
             ParameterBase parameter,
             List<AnalysisFileBean> files,
             IMessageBroker broker)

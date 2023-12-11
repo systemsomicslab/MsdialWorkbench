@@ -50,7 +50,7 @@ namespace CompMs.App.Msdial.Model.Imms
             DataBaseMapper mapper,
             MsdialImmsParameter parameter,
             PeakFilterModel peakFilterModel,
-            ProjectBaseParameterModel projectBaseParameterModel,
+            FilePropertiesModel projectBaseParameterModel,
             IMessageBroker broker)
             : base(analysisFileModel, parameter.MolecularSpectrumNetworkingBaseParam, broker) {
             if (evaluator is null) {

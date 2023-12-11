@@ -172,8 +172,19 @@ namespace CompMs.Common.DataObj.Property
                 }
                 tmp += MessagePackBinary.ReadNext(bytes, offset + tmp);
                 tmp += MessagePackBinary.ReadNext(bytes, offset + tmp);
-                var name = MessagePackBinary.ReadString(bytes, offset + tmp, out _);
-                return GetAdductIon(name);
+                var name = MessagePackBinary.ReadString(bytes, offset + tmp, out var read);
+                tmp += read;
+                var adduct = GetAdductIon(name);
+                tmp += MessagePackBinary.ReadNext(bytes, offset + tmp);
+                tmp += MessagePackBinary.ReadNext(bytes, offset + tmp);
+                tmp += MessagePackBinary.ReadNext(bytes, offset + tmp);
+                adduct.M1Intensity = MessagePackBinary.ReadDouble(bytes, offset + tmp, out read);
+                tmp += read;
+                adduct.M2Intensity = MessagePackBinary.ReadDouble(bytes, offset + tmp, out read);
+                tmp += read;
+                tmp += MessagePackBinary.ReadNext(bytes, offset + tmp);
+                adduct.IsIncluded |= MessagePackBinary.ReadBoolean(bytes, offset + tmp, out _);
+                return adduct;
             }
 
             int IMessagePackFormatter<AdductIon>.Serialize(ref byte[] bytes, int offset, AdductIon value, IFormatterResolver formatterResolver) {

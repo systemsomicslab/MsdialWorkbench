@@ -53,7 +53,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             ExcuteRtCorrection = model.ToReactivePropertySlimAsSynchronized(m => m.ExcuteRtCorrection).AddTo(Disposables);
 
-            DataCollectionRangeSettings = model.DataCollectionRangeSettings.ToReadOnlyReactiveCollection(DataCollectionRangeSettingViewModelFactory.Create).AddTo(Disposables); // TODO: change to readonlyreactivecollection
+            DataCollectionRangeSettings = model.DataCollectionRangeSettings.ToReadOnlyReactiveCollection(DataCollectionRangeSettingViewModelFactory.Create).AddTo(Disposables);
 
             DimsDataCollectionSettingViewModel = model.DimsProviderFactoryParameter is null
                 ? null

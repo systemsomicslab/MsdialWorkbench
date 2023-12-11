@@ -17,11 +17,11 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class ProjectBaseParameterModel : DisposableModelBase
+    public sealed class FilePropertiesModel : DisposableModelBase
     {
         private readonly ProjectBaseParameter _projectParameter;
 
-        public ProjectBaseParameterModel(ProjectBaseParameter projectParameter) {
+        public FilePropertiesModel(ProjectBaseParameter projectParameter) {
             _projectParameter = projectParameter ?? throw new ArgumentNullException(nameof(projectParameter));
 
             if (_projectParameter.FileID_AnalysisFileType is null) {

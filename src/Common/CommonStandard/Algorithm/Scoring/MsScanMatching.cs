@@ -1676,7 +1676,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                         totalCarbon, totalDbBond, adduct);
 
                 case LbmClass.NAGly:
-                    if (totalCarbon < 29) {
+                    if (totalCarbon == sn1Carbon) {
                         return LipidEieioMsmsCharacterization.JudgeIfNAcylGlyOxFa(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, totalOxidized, adduct);
                     }
@@ -1687,7 +1687,7 @@ namespace CompMs.Common.Algorithm.Scoring {
 
 
                 case LbmClass.NAGlySer:
-                    if (totalCarbon < 29) {
+                    if (totalCarbon == sn1Carbon) {
                         return LipidMsmsCharacterization.JudgeIfNAcylGlySerOxFa(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, totalOxidized, adduct);
                     }
@@ -1728,7 +1728,7 @@ namespace CompMs.Common.Algorithm.Scoring {
 
 
                 case LbmClass.NAOrn:
-                    if (totalCarbon < 29) {
+                    if (totalCarbon == sn1Carbon) {
                         return LipidMsmsCharacterization.JudgeIfNAcylOrnOxFa(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, totalOxidized, adduct);
                     }
@@ -2034,7 +2034,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 //20230612
                 case LbmClass.NATryA:
                     return LipidMsmsCharacterization.JudgeIfNAcylTryA(msScanProp, ms2tol, refMz,
-                     totalCarbon, totalDbBond, totalOxidized, adduct);
+                     totalCarbon, totalDbBond, totalOxidized, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
                 case LbmClass.NA5HT:
                     return LipidMsmsCharacterization.JudgeIfNAcyl5HT(msScanProp, ms2tol, refMz,
                      totalCarbon, totalDbBond, totalOxidized, adduct);
@@ -2467,7 +2467,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                         totalCarbon, totalDbBond, adduct);
 
                 case LbmClass.NAGly:
-                    if (totalCarbon < 29)
+                    if (totalCarbon == sn1Carbon)
                     {
                         return LipidMsmsCharacterization.JudgeIfNAcylGlyOxFa(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, totalOxidized, adduct);
@@ -2479,7 +2479,7 @@ namespace CompMs.Common.Algorithm.Scoring {
 
 
                 case LbmClass.NAGlySer:
-                    if (totalCarbon < 29)
+                    if (totalCarbon == sn1Carbon)
                     {
                         return LipidMsmsCharacterization.JudgeIfNAcylGlySerOxFa(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, totalOxidized, adduct);
@@ -2521,7 +2521,7 @@ namespace CompMs.Common.Algorithm.Scoring {
 
 
                 case LbmClass.NAOrn:
-                    if (totalCarbon < 29)
+                    if (totalCarbon == sn1Carbon)
                     {
                         return LipidMsmsCharacterization.JudgeIfNAcylOrnOxFa(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, totalOxidized, adduct);
@@ -2826,7 +2826,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 //20230612
                 case LbmClass.NATryA:
                     return LipidMsmsCharacterization.JudgeIfNAcylTryA(msScanProp, ms2tol, refMz,
-                     totalCarbon, totalDbBond, totalOxidized, adduct);
+                     totalCarbon, totalDbBond, totalOxidized, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
                 case LbmClass.NA5HT:
                     return LipidMsmsCharacterization.JudgeIfNAcyl5HT(msScanProp, ms2tol, refMz,
                      totalCarbon, totalDbBond, totalOxidized, adduct);

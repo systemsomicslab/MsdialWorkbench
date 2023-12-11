@@ -14,6 +14,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
         public AlignmentResultMassBankRecordExportViewModel(AlignmentResultMassBankRecordExportModel model) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             IsSelected = model.ToReactivePropertySlimAsSynchronized(m => m.IsSelected).AddTo(Disposables);
+            ContributorID = model.ToReactivePropertyAsSynchronized(m => m.ContributorID).AddTo(Disposables);
             _canExport = new ReactivePropertySlim<bool>(true).AddTo(Disposables);
         }
 
@@ -24,6 +25,8 @@ namespace CompMs.App.Msdial.ViewModel.Export
         private bool _isExpanded;
 
         public ReactivePropertySlim<bool> IsSelected { get; }
+
+        public ReactiveProperty<string> ContributorID { get; }
 
         IReadOnlyReactiveProperty<bool> IAlignmentResultExportViewModel.CanExport => _canExport; 
     }

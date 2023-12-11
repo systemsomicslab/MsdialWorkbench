@@ -17,7 +17,7 @@ namespace CompMs.App.Msdial.Model.Core
         public MethodModelBase(
             AnalysisFileBeanModelCollection analysisFileBeanModelCollection,
             AlignmentFileBeanModelCollection alignmentFiles,
-            ProjectBaseParameterModel projectBaseParameter) {
+            FilePropertiesModel projectBaseParameter) {
             if (projectBaseParameter is null) {
                 throw new ArgumentNullException(nameof(projectBaseParameter));
             }

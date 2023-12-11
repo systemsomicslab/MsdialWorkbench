@@ -45,7 +45,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             PeakFilterModel peakFilterModel,
             DataBaseMapper mapper,
             MsdialGcmsParameter parameter,
-            ProjectBaseParameterModel projectBaseParameter,
+            FilePropertiesModel projectBaseParameter,
             List<AnalysisFileBean> files,
             AnalysisFileBeanModelCollection fileCollection,
             IMessageBroker broker)

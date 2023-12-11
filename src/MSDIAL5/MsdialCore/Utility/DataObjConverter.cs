@@ -155,6 +155,7 @@ namespace CompMs.MsdialCore.Utility
             spot.TimesMin = alignedPeaks.Argmin(peak => peak.ChromXsTop.Value).ChromXsTop;
             spot.TimesMax = alignedPeaks.Argmax(peak => peak.ChromXsTop.Value).ChromXsTop;
 
+            spot.MassCenter = alignedPeaks.Argmax(peak => peak.PeakHeightTop).Mass;
             spot.MassMin = (float)alignedPeaks.Min(peak => peak.Mass);
             spot.MassMax = (float)alignedPeaks.Max(peak => peak.Mass);
 
@@ -164,10 +165,9 @@ namespace CompMs.MsdialCore.Utility
                 MainType = chromXType,
                 RT = new RetentionTime(alignedPeaks.Average(peak => peak.ChromXsTop.RT.Value), representative.ChromXsTop.RT.Unit),
                 RI = new RetentionIndex(alignedPeaks.Average(peak => peak.ChromXsTop.RI.Value), representative.ChromXsTop.RI.Unit),
-                Mz = new MzValue(alignedPeaks.Average(peak => peak.ChromXsTop.Mz.Value), representative.ChromXsTop.Mz.Unit),
+                Mz = new MzValue(spot.MassCenter, representative.ChromXsTop.Mz.Unit),
                 Drift = new DriftTime(alignedPeaks.Average(peak => peak.ChromXsTop.Drift.Value), representative.ChromXsTop.Drift.Unit),
             };
-            spot.MassCenter = alignedPeaks.Max(peak => (peak.ChromXsTop.Value, peak.Mass)).Mass;
         }
 
         public static int GetRepresentativeFileID(IReadOnlyList<AlignmentChromPeakFeature> alignment) {

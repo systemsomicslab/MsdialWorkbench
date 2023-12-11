@@ -160,7 +160,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             await SaveMSDecResultsAsync(results.Append(result), token).ConfigureAwait(false);
         }
 
-        public AlignmentEicLoader CreateEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> deserializer, AnalysisFileBeanModelCollection analysisFiles, ProjectBaseParameterModel projectBaseParameter) {
+        public AlignmentEicLoader CreateEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> deserializer, AnalysisFileBeanModelCollection analysisFiles, FilePropertiesModel projectBaseParameter) {
             return new AlignmentEicLoader(deserializer, _alignmentFile.EicFilePath, analysisFiles, projectBaseParameter);
         }
 

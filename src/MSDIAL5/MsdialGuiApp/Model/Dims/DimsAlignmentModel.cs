@@ -59,7 +59,7 @@ namespace CompMs.App.Msdial.Model.Dims
             DataBaseStorage databaseStorage,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseMapper mapper,
-            ProjectBaseParameterModel projectBaseParameter,
+            FilePropertiesModel projectBaseParameter,
             ParameterBase parameter,
             List<AnalysisFileBean> files,
             AnalysisFileBeanModelCollection fileCollection,

@@ -505,7 +505,7 @@ namespace CompMs.Common.Lipidomics
                         break;
 
                     case LbmClass.NAGly:
-                        if (totalCarbon < 29)
+                        if (totalCarbon == sn1MinCarbon && totalCarbon == sn1MaxCarbon)
                         {
                             result = LipidMsmsCharacterization.JudgeIfNAcylGlyOxFa(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, totalOxidized, adduct);
@@ -518,7 +518,7 @@ namespace CompMs.Common.Lipidomics
                         break;
 
                     case LbmClass.NAGlySer:
-                        if (totalCarbon < 29)
+                        if (totalCarbon == sn1MinCarbon && totalCarbon == sn1MaxCarbon)
                         {
                             result = LipidMsmsCharacterization.JudgeIfNAcylGlySerOxFa(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, totalOxidized, adduct);
@@ -562,7 +562,7 @@ namespace CompMs.Common.Lipidomics
                         break;
 
                     case LbmClass.NAOrn:
-                        if (totalCarbon < 29)
+                        if (totalCarbon == sn1MinCarbon && totalCarbon == sn1MaxCarbon)
                         {
                             result = LipidMsmsCharacterization.JudgeIfNAcylOrnOxFa(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, totalOxidized, adduct);
@@ -891,7 +891,7 @@ namespace CompMs.Common.Lipidomics
                     //20230612
                     case LbmClass.NATryA:
                         result = LipidMsmsCharacterization.JudgeIfNAcylTryA(msScanProp, ms2tol, refMz,
-                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                             totalCarbon, totalDbBond, totalOxidized, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
                         break;
                     case LbmClass.NA5HT:
                         result = LipidMsmsCharacterization.JudgeIfNAcyl5HT(msScanProp, ms2tol, refMz,

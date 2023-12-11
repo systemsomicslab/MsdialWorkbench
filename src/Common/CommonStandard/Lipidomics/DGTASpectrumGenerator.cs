@@ -11,7 +11,7 @@ namespace CompMs.Common.Lipidomics
 {
     public class DGTASpectrumGenerator : ILipidSpectrumGenerator
     {
-        private static readonly double C7H13NO2 = new[] {
+        private static readonly double C7H13NO2 = new[] { //144
             MassDiffDictionary.CarbonMass * 7,
             MassDiffDictionary.HydrogenMass * 13,
             MassDiffDictionary.NitrogenMass,

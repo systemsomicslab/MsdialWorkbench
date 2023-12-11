@@ -55,6 +55,10 @@ namespace CompMs.App.Msdial.ViewModel.Core
             FileClassSettingCommand = new ReactiveCommand()
                 .WithSubscribe(() => messageBroker.Publish(fileClassSetViewModel))
                 .AddTo(Disposables);
+            var projectSettingViewModel = new ProjectPropertySettingViewModel(((DatasetModel)model).StudyContext).AddTo(Disposables);
+            ProjectSettingCommand = new ReactiveCommand()
+                .WithSubscribe(() => messageBroker.Publish(projectSettingViewModel))
+                .AddTo(Disposables);
             SaveParameterAsCommand = new ReactiveCommand()
                 .WithSubscribe(() => model.SaveParameterAsAsync())
                 .AddTo(Disposables);
@@ -80,7 +84,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
         }
 
         public ReactiveCommand FileClassSettingCommand { get; }
-
+        public ReactiveCommand ProjectSettingCommand { get; }
         public ReactiveCommand SaveParameterAsCommand { get; }
 
         private MethodViewModel ConvertToViewModel(IMethodModel model) {

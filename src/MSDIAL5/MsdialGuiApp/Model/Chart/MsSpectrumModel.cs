@@ -45,7 +45,7 @@ namespace CompMs.App.Msdial.Model.Chart
             {
                 upperSpectrumModel.GetHorizontalRange(),
                 lowerSpectrumModel.GetHorizontalRange(),
-            }.CombineLatest(xs => xs.Aggregate((x, y) => (Math.Min(x.Item1, y.Item1), Math.Max(x.Item2, x.Item2))))
+            }.CombineLatest(xs => xs.Aggregate((x, y) => (Math.Min(x.Item1, y.Item1), Math.Max(x.Item2, y.Item2))))
             .ToReactiveContinuousAxisManager(new ConstantMargin(40))
             .AddTo(Disposables);
             HorizontalAxis = Observable.Return(horizontalAxis);

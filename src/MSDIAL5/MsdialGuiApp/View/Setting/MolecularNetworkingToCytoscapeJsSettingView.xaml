@@ -165,9 +165,10 @@
             </ToolTipService.ToolTip>
         </CheckBox>
 
-        <Label Content="Similarity cut off [%]:" Grid.Row="10" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,30,0,0" />
+        <Label Content="Similarity cut off [%]:" IsEnabled="{Binding IsExportIonCorrelation.Value}" Grid.Row="10" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,30,0,0" />
         <TextBox Name="TextBox_IonCorrelationSimilarityCutoff" Grid.Row="10" 
                  Text="{Binding IonCorrelationSimilarityCutoff.Value}"
+                 IsEnabled="{Binding IsExportIonCorrelation.Value}"
                  HorizontalAlignment="Right" VerticalAlignment="Top" VerticalContentAlignment="Center"
                  Width="120" Height="25" Margin="0,31,5,0" />
 

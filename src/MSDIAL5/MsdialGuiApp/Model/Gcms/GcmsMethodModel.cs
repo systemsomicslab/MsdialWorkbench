@@ -23,7 +23,7 @@ namespace CompMs.App.Msdial.Model.Gcms
     internal sealed class GcmsMethodModel : MethodModelBase
     {
         private readonly IMsdialDataStorage<MsdialGcmsParameter> _storage;
-        private readonly ProjectBaseParameterModel _projectBaseParameter;
+        private readonly FilePropertiesModel _projectBaseParameter;
         private readonly FacadeMatchResultEvaluator _evaluator;
         private readonly IMessageBroker _broker;
         private readonly StandardDataProviderFactory _providerFactory;
@@ -35,7 +35,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT);
             //CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RI);
         }
-        public GcmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFiles, IMsdialDataStorage<MsdialGcmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker) : base(analysisFileBeanModelCollection, alignmentFiles, projectBaseParameter) {
+        public GcmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFiles, IMsdialDataStorage<MsdialGcmsParameter> storage, FilePropertiesModel projectBaseParameter, IMessageBroker broker) : base(analysisFileBeanModelCollection, alignmentFiles, projectBaseParameter) {
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _projectBaseParameter = projectBaseParameter;
             _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);

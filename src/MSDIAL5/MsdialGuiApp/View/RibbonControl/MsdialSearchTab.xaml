@@ -27,7 +27,7 @@
                       Command="{Binding ShowMassqlSearchSettingCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       KeyTip="T"/>
         <RibbonButton Label="Find target compounds"
-                      Command="{Binding AlignmentViewModel.Value.ShowFindCompoundSpotViewCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      Command="{Binding AlignmentViewModel.Value.ShowFindCompoundSpotViewCommand, Mode=OneWay, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       KeyTip="C"/>
     </RibbonGroup>
 </RibbonTab>
