@@ -19,12 +19,10 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             if (!(_param is MsdialGcmsParameter param)) return alignmentSpotList;
 
             var cSpots = new List<AlignmentSpotProperty>();
-            foreach (var spot in alignmentSpotList.Where(n => n.MspID >= 0)) {
-                cSpots.Add(spot); // first, identifid spots are stored for this priority.
-            }
+            cSpots.AddRange(alignmentSpotList.Where(spot => spot.IsReferenceMatched(evaluator)));
 
             //if both Quant mass and Retention is same, exclude the spot information.
-            foreach (var aSpot in alignmentSpotList.Where(n => n.MspID < 0)) {
+            foreach (var aSpot in alignmentSpotList.Where(spot => !spot.IsReferenceMatched(evaluator))) {
                 var aSpotRt = aSpot.TimesCenter.RT.Value;
                 var aSpotRi = aSpot.TimesCenter.RI.Value;
                 var aSpotMass = aSpot.QuantMass;
