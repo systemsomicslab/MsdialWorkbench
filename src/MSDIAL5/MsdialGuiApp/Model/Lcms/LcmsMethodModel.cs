@@ -335,9 +335,12 @@ namespace CompMs.App.Msdial.Model.Lcms
         public AnalysisResultExportModel ExportAnalysis() {
             var spectraTypes = new List<SpectraType>
             {
+                //new SpectraType(
+                //    ExportspectraType.deconvoluted,
+                //    new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.deconvoluted)),
                 new SpectraType(
                     ExportspectraType.deconvoluted,
-                    new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.deconvoluted),
+                    new ChromatogramShapeMetadataAccessorDecorator(new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.deconvoluted)),
                     _providerFactory),
                 //new SpectraType(
                 //    ExportspectraType.centroid,
