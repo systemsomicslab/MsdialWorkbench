@@ -11,4 +11,8 @@
     <PackageReference Include="MudBlazor" Version="6.11.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\MSDIAL5\MsdialIntegrate\MsdialIntegrate.csproj" />
+  </ItemGroup>
+
 </Project>
