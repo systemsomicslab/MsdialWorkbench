@@ -20,11 +20,13 @@ namespace CompMs.MsdialGcMsApi.Algorithm
         private readonly string _annotatorID;
         private readonly MsdialGcmsParameter _parameter;
         private readonly RetentionType _rType;
+        private readonly bool _replaceQuantmass;
         private readonly float _rTolerance;
 
         public Annotation(DataBaseItem<MoleculeDataBase> mspDB, MsdialGcmsParameter parameter) {
             _parameter = parameter;
             _rType = parameter.RetentionType;
+            _replaceQuantmass = parameter.IsReplaceQuantmassByUserDefinedValue;
             ChromXType type;
             float tolerance;
             switch (_rType) {
@@ -79,10 +81,10 @@ namespace CompMs.MsdialGcMsApi.Algorithm
 
                             var reference = _mspDB[container.Representative.LibraryIDWhenOrdered];
                             if (used.Contains(reference)) {
-                                features[i] = new AnnotatedMSDecResult(ms1DecResults[i], container, reference.AsPutative(), reference.QuantMass != 0 ? reference.QuantMass : ms1DecResults[i].ModelPeakMz);
+                                features[i] = new AnnotatedMSDecResult(ms1DecResults[i], container, reference.AsPutative(), _replaceQuantmass && reference.QuantMass != 0 ? reference.QuantMass : ms1DecResults[i].ModelPeakMz);
                             }
                             else {
-                                features[i] = new AnnotatedMSDecResult(ms1DecResults[i], container, reference);
+                                features[i] = new AnnotatedMSDecResult(ms1DecResults[i], container, reference, _replaceQuantmass && reference.QuantMass != 0 ? reference.QuantMass : ms1DecResults[i].ModelPeakMz);
                                 used.Add(reference);
                             }
                         }
