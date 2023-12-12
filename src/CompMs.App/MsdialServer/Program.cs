@@ -1,9 +1,9 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using MsdialServer.Data;
+using CompMs.App.MsdialServer.Presenter;
+using CompMs.App.MsdialServer.Usecase;
+using CompMs.App.MsdialServer.Data;
 using MudBlazor.Services;
 
-namespace MsdialServer
+namespace CompMs.App.MsdialServer
 {
     public class Program
     {
@@ -15,6 +15,8 @@ namespace MsdialServer
             builder.Services.AddServerSideBlazor();
             builder.Services.AddSingleton<WeatherForecastService>();
             builder.Services.AddMudServices();
+            builder.Services.AddScoped<ILoadProjectPresenter, LoadProjectPresenter>();
+            builder.Services.AddScoped<IListEntriesUsecase, ListEntriesUsecase>();
 
             var app = builder.Build();
 
