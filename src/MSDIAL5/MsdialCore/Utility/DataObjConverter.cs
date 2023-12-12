@@ -29,7 +29,6 @@ namespace CompMs.MsdialCore.Utility
             alignmentPeak.PeakAreaAboveBaseline = peak.PeakFeature.PeakAreaAboveBaseline;
             alignmentPeak.PeakShape = peak.PeakShape;
             alignmentPeak.Mass = spectrum.AnnotatedMSDecResult.QuantMass;
-            alignmentPeak.Mass = spectrum.AnnotatedMSDecResult.QuantMass;
             alignmentPeak.IonMode = scan.IonMode;
             alignmentPeak.Name = molecule.Name;
             alignmentPeak.Formula = molecule.Formula;
@@ -159,6 +158,7 @@ namespace CompMs.MsdialCore.Utility
             spot.MassCenter = alignedPeaks.Argmax(peak => peak.PeakHeightTop).Mass;
             spot.MassMin = (float)alignedPeaks.Min(peak => peak.Mass);
             spot.MassMax = (float)alignedPeaks.Max(peak => peak.Mass);
+            spot.QuantMass = representative.Mass;
 
             spot.FillParcentage = (float)alignedPeaks.Length / alignment.Count;
             spot.MonoIsotopicPercentage = alignedPeaks.Count(peak => peak.PeakCharacter.IsotopeWeightNumber == 0) / (float)alignedPeaks.Length;
