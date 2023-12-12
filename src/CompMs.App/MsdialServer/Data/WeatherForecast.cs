@@ -1,4 +1,4 @@
-namespace MsdialServer.Data
+namespace CompMs.App.MsdialServer.Data
 {
     public class WeatherForecast
     {
