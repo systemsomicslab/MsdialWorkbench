@@ -1,0 +1,16 @@
+﻿@inject ILoadProjectPresenter _presenter
+
+<MudButton Variant="Variant.Filled" OnClick="@((e) => _presenter.SearchEntriesAsync())">Search</MudButton>
+
+<MudTable Items="@_presenter.Entries.Value" Hover="true" Breakpoint="Breakpoint.Sm">
+    <HeaderContent>
+        <MudTh>Project</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Project">@context.Name</MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    
+}
