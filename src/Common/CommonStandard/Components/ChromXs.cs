@@ -61,28 +61,8 @@ namespace CompMs.Common.Components
             MainType = ChromXType.RT;
         }
 
-        public ChromXs(double value, ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) {
-            RT = RetentionTime.Default;
-            RI = RetentionIndex.Default;
-            Drift = DriftTime.Default;
-            Mz = MzValue.Default;
-            switch (type) {
-                case ChromXType.RT:
-                    RT = new RetentionTime(value, unit);
-                    break;
-                case ChromXType.RI:
-                    RI = new RetentionIndex(value, unit);
-                    break;
-                case ChromXType.Drift:
-                    Drift = new DriftTime(value, unit);
-                    break;
-                case ChromXType.Mz:
-                    Mz = new MzValue(value, unit);
-                    break;
-                default:
-                    break;
-            }
-            MainType = type;
+        public ChromXs(double value, ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) : this(ChromX.Convert(value, type, unit)) {
+
         }
 
         public ChromXs(IChromX chromX)
@@ -214,6 +194,26 @@ namespace CompMs.Common.Components
                     return Mz;
                 default:
                     throw new ArgumentException(nameof(type));
+            }
+        }
+
+        public void SetChromX(IChromX chrom) {
+            switch (chrom.Type)
+            {
+                case ChromXType.RT:
+                    InnerRT = chrom;
+                    break;
+                case ChromXType.RI:
+                    InnerRI = chrom;
+                    break;
+                case ChromXType.Drift:
+                    InnerDrift = chrom;
+                    break;
+                case ChromXType.Mz:
+                    InnerMz = chrom;
+                    break;
+                default:
+                    throw new ArgumentException(nameof(chrom));
             }
         }
 
