@@ -158,6 +158,13 @@
                         </Button.Content>
                     </Button>
                 </Grid>
+
+                <GridSplitter Width="2" ResizeDirection="Columns" ResizeBehavior="CurrentAndNext" 
+                              VerticalAlignment="Stretch" HorizontalAlignment="Right" 
+                              Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"/>
+                <GridSplitter Height="2" ResizeDirection="Rows" ResizeBehavior="CurrentAndNext" 
+                              VerticalAlignment="Bottom" HorizontalAlignment="Stretch" 
+                              Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
             </Grid>
 
             <Grid Grid.Column="1">
@@ -350,7 +357,15 @@
                         </DataTemplate>
                     </TabControl.ContentTemplate>
                 </TabControl>
+
+                <GridSplitter Height="2" ResizeDirection="Rows" ResizeBehavior="CurrentAndNext" 
+                              VerticalAlignment="Bottom" HorizontalAlignment="Stretch" 
+                              Grid.Row="0"/>
             </Grid>
+
+            <GridSplitter Width="2" ResizeDirection="Columns" ResizeBehavior="PreviousAndCurrent" 
+                          VerticalAlignment="Stretch" HorizontalAlignment="Left" 
+                          Grid.Column="1"/>
         </Grid>
 
         <GridSplitter Margin="0,0,0,0" 
