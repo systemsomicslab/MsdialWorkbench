@@ -1,17 +1,18 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{1DDACBB2-AC43-40BD-B094-091458158523}</ProjectGuid>
     <OutputType>Library</OutputType>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Rfx.Riken.OsakaUniv</RootNamespace>
     <AssemblyName>PairwisePlot</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFramework>net472</TargetFramework>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -50,70 +51,10 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="PairwisePlotAlignmentView\PairwisePlotAlignmentViewFE.cs" />
-    <Compile Include="PairwisePlotAlignmentView\PairwisePlotAlignmentViewUI.xaml.cs">
-      <DependentUpon>PairwisePlotAlignmentViewUI.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PairwisePlotBean.cs" />
-    <Compile Include="PairwisePlotNormal\PairwisePlotFE.cs" />
-    <Compile Include="PairwisePlotPeakView\PairwisePlotPeakViewFE.cs" />
-    <Compile Include="PairwisePlotPeakView\PairwisePlotPeakViewUI.xaml.cs">
-      <DependentUpon>PairwisePlotPeakViewUI.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PairwisePlotNormal\PairwisePlotUI.xaml.cs">
-      <DependentUpon>PairwisePlotUI.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PlotLabelBean.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="PairwisePlotAlignmentView\PairwisePlotAlignmentViewUI.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PairwisePlotPeakView\PairwisePlotPeakViewUI.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PairwisePlotNormal\PairwisePlotUI.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj">
-      <Project>{eb161441-a663-485f-8cd6-d1d5794f7ad9}</Project>
-      <Name>CommonStandard</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MsdialGcmsProcessStandard\MsdialGcmsProcessStandard.csproj">
-      <Project>{ed56a430-b975-4073-b8a2-7115b4fd8fcc}</Project>
-      <Name>MsdialGcmsProcessStandard</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj"/>
+    <ProjectReference Include="..\MsdialGcmsProcessStandard\MsdialGcmsProcessStandard.csproj"/>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

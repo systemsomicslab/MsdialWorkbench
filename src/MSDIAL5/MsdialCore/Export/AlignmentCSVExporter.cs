@@ -80,7 +80,7 @@ namespace CompMs.MsdialCore.Export
             var metadata = metaAccessor.GetContent(spot, msdec);
             var quantValues = quantAccessor.GetQuantValues(spot);
             var statValues = stats.Select(stat => quantAccessor.GetStatsValues(spot, stat))
-                .SelectMany(dict => classHeaders.Select(clss => dict[clss]));
+                .SelectMany(dict => classHeaders.Where(dict.ContainsKey).Select(clss => dict[clss]));
             sw.WriteLine(
                 JoinContents(
                     metaHeaders.Select(header => metadata[header]),
