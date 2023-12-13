@@ -1,7 +1,7 @@
-using CompMs.App.MsdialServer.Presenter;
-using CompMs.App.MsdialServer.Usecase;
 using CompMs.App.MsdialServer.Data;
 using MudBlazor.Services;
+using CompMs.App.MsdialServer.Project.View;
+using CompMs.App.MsdialServer.Project.Model;
 
 namespace CompMs.App.MsdialServer
 {
@@ -15,8 +15,8 @@ namespace CompMs.App.MsdialServer
             builder.Services.AddServerSideBlazor();
             builder.Services.AddSingleton<WeatherForecastService>();
             builder.Services.AddMudServices();
-            builder.Services.AddScoped<ILoadProjectPresenter, LoadProjectPresenter>();
-            builder.Services.AddScoped<IListEntriesUsecase, ListEntriesUsecase>();
+            builder.Services.AddScoped<IListProjectDataViewModel, ListProjectDataViewModel>();
+            builder.Services.AddScoped<ISearchProjectDataModel, SearchProjectDataModel>();
 
             var app = builder.Build();
 

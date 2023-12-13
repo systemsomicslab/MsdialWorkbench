@@ -1,10 +1,11 @@
-﻿namespace CompMs.App.MsdialServer.Entity;
+﻿namespace CompMs.App.MsdialServer.Project.Entity;
 
 public sealed class ProjectDataFile
 {
     public ProjectDataFile(string path)
     {
-        if (!path.EndsWith(".mdproject")) {
+        if (!path.EndsWith(".mdproject"))
+        {
             throw new ArgumentException("Invalid project file.");
         }
 

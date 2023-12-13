@@ -1,8 +1,8 @@
-﻿@inject ILoadProjectPresenter _presenter
+﻿@inject IListProjectDataViewModel _viewmodel
 
-<MudButton Variant="Variant.Filled" OnClick="@((e) => _presenter.SearchEntriesAsync())">Search</MudButton>
+<MudButton Variant="Variant.Filled" OnClick="@((e) => _viewmodel.SearchEntriesAsync())">Search</MudButton>
 
-<MudTable Items="@_presenter.Entries.Value" Hover="true" Breakpoint="Breakpoint.Sm">
+<MudTable Items="@_viewmodel.Entries.Value" Hover="true" Breakpoint="Breakpoint.Sm">
     <ColGroup>
         <col/>
         <col style="width:100px"/>
