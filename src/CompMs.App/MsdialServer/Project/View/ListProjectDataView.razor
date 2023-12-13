@@ -4,7 +4,7 @@
 
 <MudButton Variant="Variant.Filled" OnClick="@((e) => _viewmodel.SearchEntriesAsync())">Search</MudButton>
 
-<MudTable Items="@_viewmodel.Entries.Value" Hover="true" Breakpoint="Breakpoint.Sm">
+<MudTable Items="@_viewmodel.Entries.Value" Hover="true" Breakpoint="Breakpoint.Sm" Height="320px">
     <ColGroup>
         <col/>
         <col style="width:100px"/>
@@ -19,6 +19,3 @@
     </RowTemplate>
 </MudTable>
 
-@code {
-    
-}

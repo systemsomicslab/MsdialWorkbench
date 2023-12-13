@@ -1,0 +1,41 @@
+﻿@using CompMs.App.MsdialServer.Project.Model
+@inject ProjectModel _project
+@implements IDisposable
+
+@if (_project.ProjectDataStorage.Value is not null) {
+    <MudText Typo="Typo.h5">Select dataset</MudText>
+    @foreach (var parameter in _project.ProjectDataStorage.Value.ProjectParameters) {
+        <MudCard>
+            <MudCardHeader>
+                <MudText Typo="Typo.h6">@parameter.ProjectFileName</MudText>
+                <MudSpacer/>
+                <MudText Class="small">@parameter.FinalSavedDate</MudText>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText>@parameter.IonMode</MudText>
+                <MudText>@parameter.TargetOmics</MudText>
+                <MudText>@parameter.Ionization</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary">Load</MudButton>
+            </MudCardActions>
+        </MudCard>
+    }
+}
+else {
+    <MudText>No datasets loaded</MudText>
+}
+
+
+@code {
+    private System.Reactive.Disposables.SingleAssignmentDisposable _disposable = new();
+
+    protected override void OnInitialized() {
+        base.OnInitialized();
+        _disposable.Disposable = _project.ProjectDataStorage.Subscribe(_ => StateHasChanged());
+    }
+
+    public void Dispose() {
+        _disposable.Dispose();
+    }
+}
