@@ -33,9 +33,9 @@ namespace CompMs.App.Msdial.Model.Gcms
     {
         private readonly AlignmentFileBeanModel _alignmentFileBean;
         private readonly IMessageBroker _broker;
-        private readonly UndoManager _undoManager;
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly ReactiveProperty<BarItemsLoaderData> _barItemsLoaderDataProperty;
+        private readonly ReactivePropertySlim<AlignmentSpotPropertyModel> _target;
 
         public GcmsAlignmentModel(
             AlignmentFileBeanModel alignmentFileBean,
@@ -53,11 +53,12 @@ namespace CompMs.App.Msdial.Model.Gcms
         {
             _alignmentFileBean = alignmentFileBean;
             _broker = broker;
-            _undoManager = new UndoManager().AddTo(Disposables);
+            UndoManager = new UndoManager().AddTo(Disposables);
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper);
 
             var chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT); // TODO: RI
             var target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
+            _target = target;
 
             var spotsSource = new AlignmentSpotSource(alignmentFileBean, Container, chromatogramSpotSerializer).AddTo(Disposables);
             var ms1Spots = spotsSource.Spots.Items;
@@ -146,6 +147,10 @@ namespace CompMs.App.Msdial.Model.Gcms
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
+            var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
+            var filter = peakSpotFiltering.CreateFilter(peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), FilterEnableStatus.All);
+            AlignmentSpotTableModel = new GcmsAlignmentSpotTableModel(ms1Spots, target, barBrush, projectBaseParameter.ClassProperties, barItemsLoaderProperty, filter, spectraLoader).AddTo(Disposables);
+
             var peakInformationModel = new PeakInformationAlignmentModel(target).AddTo(Disposables);
             peakInformationModel.Add(
                 t => new RtPoint(t?.innerModel.TimesCenter.RT.Value ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.ChromXs.RT.Value), // TODO: RI supoprt
@@ -176,6 +181,10 @@ namespace CompMs.App.Msdial.Model.Gcms
         public AlignmentEicModel AlignmentEicModel { get; }
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
         public AlignmentMs2SpectrumModel MsSpectrumModel { get; }
+        public GcmsAlignmentSpotTableModel AlignmentSpotTableModel { get; }
+        public UndoManager UndoManager { get; }
+        public IObservable<bool> CanSetUnknown => _target.Select(t => !(t is null));
+        public void SetUnknown() => _target.Value?.SetUnknown(UndoManager);
 
         public override void InvokeMoleculerNetworkingForTargetSpot() {
             throw new NotImplementedException();

@@ -5,7 +5,9 @@ using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
@@ -23,6 +25,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             Model = model;
 
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
+            UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
 
             var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
             PlotViewModel = new AlignmentPeakPlotViewModel(model.PlotModel, peakPlotAction, peakPlotFocused).AddTo(Disposables);
@@ -35,6 +38,12 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 
             AlignmentEicViewModel = new AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
 
+            SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
+
+            AlignmentSpotTableViewModel = new GcmsAlignmentSpotTableViewModel(model.AlignmentSpotTableModel, PeakSpotNavigatorViewModel, SetUnknownCommand, UndoManagerViewModel, broker).AddTo(Disposables);
+
+            ShowIonTableCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish<AlignmentSpotTableViewModelBase>(AlignmentSpotTableViewModel)).AddTo(Disposables);
+
             var peakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             var compoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
             var moleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
@@ -45,6 +54,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         public BarChartViewModel BarChartViewModel { get; }
 
         public AlignmentEicViewModel AlignmentEicViewModel { get; }
+        public GcmsAlignmentSpotTableViewModel AlignmentSpotTableViewModel { get; }
 
         public ICommand InternalStandardSetCommand => throw new NotImplementedException();
 
@@ -52,11 +62,11 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
 
-        public ICommand ShowIonTableCommand => throw new NotImplementedException();
+        public ICommand ShowIonTableCommand { get; }
 
-        public ICommand SetUnknownCommand => throw new NotImplementedException();
+        public ICommand SetUnknownCommand { get; }
 
-        public UndoManagerViewModel UndoManagerViewModel => throw new NotImplementedException();
+        public UndoManagerViewModel UndoManagerViewModel { get; }
 
         public AlignmentPeakPlotViewModel PlotViewModel { get; }
         public AlignmentMs2SpectrumViewModel Ms2SpectrumViewModel { get; }
