@@ -1,4 +1,6 @@
-﻿@inject IListProjectDataViewModel _viewmodel
+﻿@using CompMs.App.MsdialServer.Project.Model
+@inject ProjectModel _project
+@inject IListProjectDataViewModel _viewmodel
 
 <MudButton Variant="Variant.Filled" OnClick="@((e) => _viewmodel.SearchEntriesAsync())">Search</MudButton>
 
@@ -13,7 +15,7 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Project">@context.Name</MudTd>
-        <MudTd><MudButton Variant="Variant.Outlined" Size="Size.Small">Load</MudButton></MudTd>
+        <MudTd><MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@((e) => _project.LoadAsync(context))">Load</MudButton></MudTd>
     </RowTemplate>
 </MudTable>
 
