@@ -1,11 +1,15 @@
 ﻿@page "/"
 @using CompMs.App.MsdialServer.Project.View
-@using CompMs.App.MsdialServer.Dataset.View
+@inject NavigationManager _navigation
 
 <PageTitle>Msdial server</PageTitle>
 
-<h1>Hello, world!</h1>
+<h3>Select MSDIAL projects</h3>
 
-<ListProjectDataView/>
+<ListProjectDataView OnLoaded="NavigateToDatasets"/>
 
-<SelectDatasetView/>
+@code {
+    private void NavigateToDatasets() {
+        _navigation.NavigateTo("/datasets");
+    }
+}

@@ -3,7 +3,6 @@
 @implements IDisposable
 
 @if (_project.ProjectDataStorage.Value is not null) {
-    <MudText Typo="Typo.h5">Select dataset</MudText>
     @foreach (var parameter in _project.ProjectDataStorage.Value.ProjectParameters) {
         <MudCard>
             <MudCardHeader>

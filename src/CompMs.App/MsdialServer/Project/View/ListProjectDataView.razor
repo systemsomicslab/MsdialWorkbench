@@ -1,4 +1,5 @@
-﻿@using CompMs.App.MsdialServer.Project.Model
+﻿@using CompMs.App.MsdialServer.Project.Entity
+@using CompMs.App.MsdialServer.Project.Model
 @inject ProjectModel _project
 @inject IListProjectDataViewModel _viewmodel
 
@@ -15,7 +16,17 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Project">@context.Name</MudTd>
-        <MudTd><MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@((e) => _project.LoadAsync(context))">Load</MudButton></MudTd>
+        <MudTd><MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@((e) => LoadAsync(context))">Load</MudButton></MudTd>
     </RowTemplate>
 </MudTable>
+
+    @code {
+    [Parameter]
+    public Action? OnLoaded { get; set; }
+
+    async Task LoadAsync(ProjectDataFile projectDataFile) {
+        await _project.LoadAsync(projectDataFile).ConfigureAwait(false);
+        OnLoaded?.Invoke();
+    }
+}
 
