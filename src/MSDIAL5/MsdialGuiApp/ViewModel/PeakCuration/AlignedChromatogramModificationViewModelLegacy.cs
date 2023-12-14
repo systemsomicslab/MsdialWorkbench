@@ -99,9 +99,9 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
                     return;
                 }
 
-                p.Model.ChromXsLeft = new ChromXs(p.Accessory.Chromatogram.RtLeft, _spot.ChromXType, _spot.ChromXUnit);
-                p.Model.ChromXsTop = new ChromXs(p.Accessory.Chromatogram.RtTop, _spot.ChromXType, _spot.ChromXUnit);
-                p.Model.ChromXsRight = new ChromXs(p.Accessory.Chromatogram.RtRight, _spot.ChromXType, _spot.ChromXUnit);
+                p.Model.ChromXsLeft.SetChromX(ChromX.Convert(p.Accessory.Chromatogram.RtLeft, _spot.ChromXType, _spot.ChromXUnit));
+                p.Model.ChromXsTop.SetChromX(ChromX.Convert(p.Accessory.Chromatogram.RtTop, _spot.ChromXType, _spot.ChromXUnit));
+                p.Model.ChromXsRight.SetChromX(ChromX.Convert(p.Accessory.Chromatogram.RtRight, _spot.ChromXType, _spot.ChromXUnit));
 
                 rtList.Add(p.Accessory.Chromatogram.RtTop);
 
@@ -115,7 +115,7 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
             if (rtList.Max() > 0) {
                 Properties[0].AverageRt = (float)rtList.Average();
             }
-            _spot.TimesCenter = Properties[0].AverageRt;
+            _spot.TimesCenter = _spot.AlignedPeakPropertiesModelProperty.Value.DefaultIfEmpty().Average(p => p?.ChromXsTop.GetRepresentativeXAxis().Value) ?? 0d;
             _spot.IsManuallyModifiedForQuant = true;
         }
 
