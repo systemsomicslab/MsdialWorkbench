@@ -1,5 +1,4 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Search;
+﻿using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.DataObj;
@@ -103,8 +102,6 @@ namespace CompMs.App.Msdial.ViewModel.Search
         public ReadOnlyReactivePropertySlim<MsRefSearchParameterBaseViewModel> ParameterVM { get; }
 
         public IFileBean File => _model.File;
-
-        public IPeakSpotModel PeakSpot => _model.PeakSpot;
 
         public ReadOnlyReactivePropertySlim<CompoundResultCollection> Compounds { get; protected set; }
 

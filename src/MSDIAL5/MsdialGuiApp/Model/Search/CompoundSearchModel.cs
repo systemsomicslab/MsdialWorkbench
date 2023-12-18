@@ -32,8 +32,6 @@ namespace CompMs.App.Msdial.Model.Search
         
         IFileBean File { get; }
 
-        IPeakSpotModel PeakSpot { get; }
-
         MsSpectrumModel MsSpectrumModel { get; }
 
         MoleculeMsReference SelectedReference { get; set; }
