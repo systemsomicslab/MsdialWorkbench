@@ -1207,10 +1207,11 @@ namespace CompMs.MsdialCore.Utility {
             }
         }
 
-        public static void SetMoleculeMsPropertyAsConfidence<T>(T feature, MoleculeMsReference reference)
-            where T: IMoleculeProperty, IIonProperty {
+        public static void SetMoleculeMsPropertyAsConfidence(IMoleculeProperty feature, MoleculeMsReference reference) {
             SetMoleculePropertyCore(feature, reference);
-            feature.SetAdductType(reference.AdductType);
+            if (feature is IIonProperty ion) {
+                ion.SetAdductType(reference.AdductType);
+            }
 
             if (!reference.CompoundClass.IsEmptyOrNull()) { // meaning lipidomics
                 feature.Name = MsScanMatching.GetLipidNameFromReference(reference);
@@ -1220,10 +1221,11 @@ namespace CompMs.MsdialCore.Utility {
             }
         }
 
-        public static void SetMoleculeMsPropertyAsUnsettled<T>(T feature, MoleculeMsReference reference)
-            where T: IMoleculeProperty, IIonProperty {
+        public static void SetMoleculeMsPropertyAsUnsettled(IMoleculeProperty feature, MoleculeMsReference reference) {
             SetMoleculePropertyCore(feature, reference);
-            feature.SetAdductType(reference.AdductType);
+            if (feature is IIonProperty ion) {
+                ion.SetAdductType(reference.AdductType);
+            }
             feature.Name = $"Unsettled: {reference.Name}";
         }
 
