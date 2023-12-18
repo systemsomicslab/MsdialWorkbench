@@ -176,7 +176,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
         public FocusNavigatorModel FocusNavigatorModel { get; }
 
-        public ICompoundSearchModel BuildCompoundSearchModel() {
+        public CompoundSearchModel BuildCompoundSearchModel() {
             return new CompoundSearchModel(AnalysisFileModel, Target.Value, MsdecResult.Value, _compoundSearchers, _undoManager);
         }
 

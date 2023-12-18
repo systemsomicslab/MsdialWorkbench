@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
-    internal sealed class ImmsCompoundSearchModel : CompoundSearchModel, ICompoundSearchModel
+    internal sealed class ImmsCompoundSearchModel : CompoundSearchModel, IEsiCompoundSearchModel
     {
         public ImmsCompoundSearchModel(IFileBean fileBean, IPeakSpotModel peakSpot, MSDecResult msdecResult, IReadOnlyList<CompoundSearcher> compoundSearchers, UndoManager undoManager)
             : base(fileBean, peakSpot, msdecResult, compoundSearchers, undoManager) {

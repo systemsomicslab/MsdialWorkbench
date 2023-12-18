@@ -1,5 +1,4 @@
-﻿using Accord;
-using CompMs.App.Msdial.Common;
+﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Service;
@@ -9,8 +8,6 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.AxisManager.Generic;
-using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
@@ -26,10 +23,6 @@ using System.Windows.Media;
 namespace CompMs.App.Msdial.Model.Search
 {
     interface ICompoundSearchModel : INotifyPropertyChanged, IDisposable {
-        IReadOnlyList<CompoundSearcher> CompoundSearchers { get; }
-
-        CompoundSearcher SelectedCompoundSearcher { get; set; }
-        
         IFileBean File { get; }
 
         MsSpectrumModel MsSpectrumModel { get; }
@@ -47,7 +40,13 @@ namespace CompMs.App.Msdial.Model.Search
         void SetUnknown();
     }
 
-    internal class CompoundSearchModel : DisposableModelBase, ICompoundSearchModel
+    interface IEsiCompoundSearchModel : ICompoundSearchModel {
+        IReadOnlyList<CompoundSearcher> CompoundSearchers { get; }
+
+        CompoundSearcher SelectedCompoundSearcher { get; set; }
+    }
+
+    internal class CompoundSearchModel : DisposableModelBase, IEsiCompoundSearchModel
     {
         private readonly MSDecResult _msdecResult;
         private readonly UndoManager _undoManager;

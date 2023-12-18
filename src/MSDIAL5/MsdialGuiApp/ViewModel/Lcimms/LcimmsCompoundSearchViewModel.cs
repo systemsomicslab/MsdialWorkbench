@@ -13,7 +13,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
     internal sealed class LcimmsCompoundSearchViewModel : CompoundSearchVM
     {
-        public LcimmsCompoundSearchViewModel(ICompoundSearchModel model, ICommand setUnknownCommand) : base(model, setUnknownCommand) {
+        public LcimmsCompoundSearchViewModel(IEsiCompoundSearchModel model, ICommand setUnknownCommand) : base(model, setUnknownCommand) {
             ParameterHasErrors = ParameterVM.SelectSwitch(parameter =>
                 parameter is null
                     ? Observable.Return(true)

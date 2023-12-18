@@ -25,9 +25,9 @@ namespace CompMs.App.Msdial.ViewModel.Search
     internal class CompoundSearchVM : ViewModelBase, ICompoundSearchViewModel
     {
         protected static readonly double MassEPS = 1e-10;
-        private readonly ICompoundSearchModel _model;
+        private readonly IEsiCompoundSearchModel _model;
 
-        public CompoundSearchVM(ICompoundSearchModel model, ICommand setUnknownCommand) {
+        public CompoundSearchVM(IEsiCompoundSearchModel model, ICommand setUnknownCommand) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
@@ -129,7 +129,5 @@ namespace CompMs.App.Msdial.ViewModel.Search
         public ReactiveCommand SetUnsettledCommand { get; }
 
         public ICommand SetUnknownCommand { get; }
-
-        public bool? Result { get; set; }
     }
 }

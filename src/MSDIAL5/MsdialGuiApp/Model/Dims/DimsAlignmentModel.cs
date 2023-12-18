@@ -34,7 +34,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
-    internal class DimsAlignmentModel : AlignmentModelBase
+    internal sealed class DimsAlignmentModel : AlignmentModelBase
     {
         static DimsAlignmentModel() {
             CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Mz);
@@ -239,7 +239,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public MoleculeStructureModel MoleculeStructureModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
-        public ICompoundSearchModel BuildCompoundSearchModel() {
+        public CompoundSearchModel BuildCompoundSearchModel() {
             return new CompoundSearchModel(_files[Target.Value.RepresentativeFileID], Target.Value, _msdecResult.Value, _compoundSearchers, _undoManager);
         }
 

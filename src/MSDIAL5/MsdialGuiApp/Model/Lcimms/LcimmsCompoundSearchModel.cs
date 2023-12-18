@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Lcimms
 {
-    internal sealed class LcimmsCompoundSearchModel : CompoundSearchModel, ICompoundSearchModel
+    internal sealed class LcimmsCompoundSearchModel : CompoundSearchModel, IEsiCompoundSearchModel
     {
         public LcimmsCompoundSearchModel(
             IFileBean fileBean,
