@@ -200,15 +200,15 @@ namespace CompMs.Common.Algorithm.Function
             var counter = 0;
             var max = peaks1.Count;
             var node2links = new Dictionary<int, List<LinkNode>>();
-            Console.WriteLine("Query1 {0}, Query2 {1}, Total {2}", peaks1.Count, peaks2.Count, peaks1.Count * peaks2.Count);
+            // Console.WriteLine("Query1 {0}, Query2 {1}, Total {2}", peaks1.Count, peaks2.Count, peaks1.Count * peaks2.Count);
             for (int i = 0; i < peaks1.Count; i++) {
                 if (peaks1[i].Spectrum.Count <= 0) continue;
                 counter++;
                 report?.Invoke(counter / (double)max);
-                if (counter % 100 == 0) {
-                    Console.Write("{0} / {1}", counter, max);
-                    Console.SetCursorPosition(0, Console.CursorTop);
-                }
+                //if (counter % 100 == 0) {
+                //    Console.Write("{0} / {1}", counter, max);
+                //    Console.SetCursorPosition(0, Console.CursorTop);
+                //}
 
                 for (int j = 0; j < peaks2.Count; j++) {
                     if (peaks2[j].Spectrum.Count <= 0) continue;
