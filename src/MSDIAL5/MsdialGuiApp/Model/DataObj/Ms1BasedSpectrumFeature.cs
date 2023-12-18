@@ -1,6 +1,9 @@
 ﻿using CompMs.App.Msdial.Model.Service;
+using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Utility;
 using System;
 using System.ComponentModel;
 
@@ -118,6 +121,20 @@ namespace CompMs.App.Msdial.Model.DataObj
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+
+        public void SetConfidence(MoleculeMsReference reference, MsScanMatchResult result) {
+            DataAccess.SetMoleculeMsPropertyAsConfidence(Molecule, reference);
+            MatchResults.RemoveManuallyResults();
+            MatchResults.AddResult(result);
+            OnPropertyChanged(string.Empty);
+        }
+
+        public void SetUnsettled(MoleculeMsReference reference, MsScanMatchResult result) {
+            DataAccess.SetMoleculeMsPropertyAsUnsettled(Molecule, reference);
+            MatchResults.RemoveManuallyResults();
+            MatchResults.AddResult(result);
+            OnPropertyChanged(string.Empty);
         }
 
         public void SetUnknown(UndoManager undoManager) {
