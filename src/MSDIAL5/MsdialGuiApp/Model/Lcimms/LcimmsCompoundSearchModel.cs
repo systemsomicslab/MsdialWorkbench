@@ -22,11 +22,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         }
 
-        public override CompoundResultCollection Search() {
-            return new CompoundResultCollection
-            {
-                Results = SearchCore().Select(c => new LcimmsCompoundResult(c)).ToList<ICompoundResult>(),
-            };
+        protected override IEnumerable<ICompoundResult> SearchCore() {
+            return base.SearchCore().Select(c => new LcimmsCompoundResult(c));
         }
     }
 

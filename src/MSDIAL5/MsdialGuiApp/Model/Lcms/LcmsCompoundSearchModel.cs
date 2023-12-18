@@ -22,11 +22,8 @@ namespace CompMs.App.Msdial.Model.Lcms
              
         }
 
-        public override CompoundResultCollection Search() {
-            return new LcmsCompoundResultCollection
-            {
-                Results = SearchCore().Select(c => new LcmsCompoundResult(c)).ToList<ICompoundResult>(),
-            };
+        protected override IEnumerable<ICompoundResult> SearchCore() {
+            return base.SearchCore().Select(c => new LcmsCompoundResult(c));
         }
     }
 
@@ -43,10 +40,5 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public double RtSimilarity => matchResult.RtSimilarity;
-    }
-
-    internal sealed class LcmsCompoundResultCollection : CompoundResultCollection
-    {
-
     }
 }

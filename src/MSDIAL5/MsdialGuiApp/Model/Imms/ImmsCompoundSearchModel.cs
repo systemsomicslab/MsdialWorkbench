@@ -17,11 +17,8 @@ namespace CompMs.App.Msdial.Model.Imms
 
         }
 
-        public override CompoundResultCollection Search() {
-            return new ImmsCompoundResultCollection
-            {
-                Results = SearchCore().Select(c => new ImmsCompoundResult(c)).ToList<ICompoundResult>(),
-            };
+        protected override IEnumerable<ICompoundResult> SearchCore() {
+            return base.SearchCore().Select(c => new ImmsCompoundResult(c));
         }
     }
 
@@ -39,10 +36,5 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public double CollisionCrossSection => msReference.CollisionCrossSection;
         public double CcsSimilarity => matchResult.CcsSimilarity;
-    }
-
-    internal sealed class ImmsCompoundResultCollection : CompoundResultCollection
-    {
-
     }
 }

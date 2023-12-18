@@ -131,14 +131,15 @@ namespace CompMs.App.Msdial.Model.Search
         }
         private MsScanMatchResult _selectedMatchResult;
 
-        public virtual CompoundResultCollection Search() {
+        public CompoundResultCollection Search() {
+            var results = SearchCore();
             return new CompoundResultCollection
             {
-                Results = SearchCore().ToList(),
+                Results = (results as IList<ICompoundResult>) ?? results.ToList(),
             };
         }
 
-        protected IEnumerable<ICompoundResult> SearchCore() {
+        protected virtual IEnumerable<ICompoundResult> SearchCore() {
             return SelectedCompoundSearcher.Search(
                 _peakSpot.MSIon,
                 _msdecResult,
