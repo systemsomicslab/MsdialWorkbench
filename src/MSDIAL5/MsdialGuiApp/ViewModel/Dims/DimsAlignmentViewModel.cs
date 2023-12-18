@@ -22,20 +22,15 @@ namespace CompMs.App.Msdial.ViewModel.Dims
     internal sealed class DimsAlignmentViewModel : ViewModelBase, IAlignmentResultViewModel
     {
         private readonly DimsAlignmentModel _model;
-        private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
         private readonly IMessageBroker _broker;
         private readonly InternalStandardSetViewModel _internalStandardSetViewModel;
 
         public DimsAlignmentViewModel(
             DimsAlignmentModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IMessageBroker broker,
             FocusControlManager focusControlManager) {
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
@@ -45,7 +40,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             }
 
             _model = model;
-            _compoundSearchService = compoundSearchService;
             _peakSpotTableService = peakSpotTableService;
             _broker = broker;
 
@@ -105,12 +99,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         public ReactiveCommand SearchCompoundCommand { get; }
         private void SearchCompound() {
-            using (var model = _model.BuildCompoundSearchModel())
-            using (var vm = new DimsCompoundSearchViewModel(model, SetUnknownCommand)) {
-                if (_compoundSearchService.ShowDialog(vm) == true) {
-                    _model.Target.Value.RaisePropertyChanged();
-                }
+            using var model = _model.BuildCompoundSearchModel();
+            if (model is null) {
+                return;
             }
+            using var vm = new DimsCompoundSearchViewModel(model, SetUnknownCommand);
+            _broker.Publish((ICompoundSearchViewModel)vm);
         }
 
         public DelegateCommand SaveMs2SpectrumCommand => _saveMs2SpectrumCommand ?? (_saveMs2SpectrumCommand = new DelegateCommand(SaveSpectra, _model.CanSaveSpectra));

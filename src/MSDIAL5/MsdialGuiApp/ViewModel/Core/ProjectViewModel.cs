@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Model.Core;
-using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -14,7 +13,6 @@ namespace CompMs.App.Msdial.ViewModel.Core
     {
         public ProjectViewModel(
             IProjectModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
             IMessageBroker broker) {
@@ -22,7 +20,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
             Datasets = model.Datasets.ToReadOnlyReactiveCollection().AddTo(Disposables);
 
             CurrentDatasetViewModel = model.ObserveProperty(m => m.CurrentDataset)
-                .Select(m => m is null ? null : new DatasetViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService, broker))
+                .Select(m => m is null ? null : new DatasetViewModel(m, peakSpotTableService, proteomicsTableService, broker))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);

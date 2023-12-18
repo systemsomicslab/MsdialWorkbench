@@ -18,7 +18,11 @@ using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Search
 {
-    internal class CompoundSearchVM : ViewModelBase
+    internal interface ICompoundSearchViewModel {
+
+    }
+
+    internal class CompoundSearchVM : ViewModelBase, ICompoundSearchViewModel
     {
         protected static readonly double MassEPS = 1e-10;
         private readonly ICompoundSearchModel _model;
@@ -125,5 +129,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
         public ReactiveCommand SetUnsettledCommand { get; }
 
         public ICommand SetUnknownCommand { get; }
+
+        public bool? Result { get; set; }
     }
 }

@@ -11,7 +11,6 @@ using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
-using CompMs.CommonMVVM.WindowService;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -26,12 +25,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     internal sealed class LcmsAlignmentViewModel : ViewModelBase, IAlignmentResultViewModel
     {
         private readonly LcmsAlignmentModel _model;
-        private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
         private readonly IMessageBroker _broker;
 
         public LcmsAlignmentViewModel(
             LcmsAlignmentModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IMessageBroker broker,
             FocusControlManager focusControlManager) {
             if (focusControlManager is null) {
@@ -39,7 +36,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
 
             _model = model ?? throw new ArgumentNullException(nameof(model));
-            _compoundSearchService = compoundSearchService ?? throw new ArgumentNullException(nameof(compoundSearchService));
             _broker = broker ?? throw new ArgumentNullException(nameof(broker));
 
             Target = _model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -138,14 +134,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public ICommand SetUnknownCommand { get; }
         public ReactiveCommand SearchCompoundCommand { get; }
         private void SearchCompound() {
-            using (var csm = _model.CreateCompoundSearchModel()) {
-                if (csm is null) {
-                    return;
-                }
-                using (var vm = new LcmsCompoundSearchViewModel(csm, SetUnknownCommand)) {
-                    _compoundSearchService.ShowDialog(vm);
-                }
+            using var csm = _model.CreateCompoundSearchModel();
+            if (csm is null) {
+                return;
             }
+            using var vm = new LcmsCompoundSearchViewModel(csm, SetUnknownCommand);
+            _broker.Publish((ICompoundSearchViewModel)vm);
         }
 
         public DelegateCommand SearchAlignmentSpectrumByMoleculerNetworkingCommand => _searchAlignmentSpectrumByMoleculerNetworkingCommand ?? (_searchAlignmentSpectrumByMoleculerNetworkingCommand = new DelegateCommand(SearchAlignmentSpectrumByMoleculerNetworkingMethod));

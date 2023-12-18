@@ -247,17 +247,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         private static IReadOnlyReactiveProperty<LcmsAnalysisViewModel> ConvertToAnalysisViewModelAsObservable(
             LcmsMethodModel method,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
             IMessageBroker broker,
             FocusControlManager focusManager) {
             if (method is null) {
                 throw new ArgumentNullException(nameof(method));
-            }
-
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
             }
 
             if (peakSpotTableService is null) {
@@ -275,7 +270,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             ReadOnlyReactivePropertySlim<LcmsAnalysisViewModel> result;
             using (var subject = new Subject<LcmsAnalysisModel>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AnalysisModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
-                    .Select(m => m is null ? null : new LcmsAnalysisViewModel(m, compoundSearchService, broker, focusManager))
+                    .Select(m => m is null ? null : new LcmsAnalysisViewModel(m, broker, focusManager))
                     .DisposePreviousValue()
                     .ToReadOnlyReactivePropertySlim();
                 subject.OnNext(method.AnalysisModel);
@@ -286,17 +281,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         private static IReadOnlyReactiveProperty<LcmsAlignmentViewModel> ConvertToAlignmentViewModelAsObservable(
             LcmsMethodModel method,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
             IMessageBroker broker,
             FocusControlManager focusControlManager) {
             if (method is null) {
                 throw new ArgumentNullException(nameof(method));
-            }
-
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
             }
 
             if (peakSpotTableService is null) {
@@ -314,7 +304,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             ReadOnlyReactivePropertySlim<LcmsAlignmentViewModel> result;
             using (var subject = new Subject<LcmsAlignmentModel>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AlignmentModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
-                    .Select(m => m is null ? null : new LcmsAlignmentViewModel(m, compoundSearchService, broker, focusControlManager))
+                    .Select(m => m is null ? null : new LcmsAlignmentViewModel(m, broker, focusControlManager))
                     .DisposePreviousValue()
                     .ToReadOnlyReactivePropertySlim();
                 subject.OnNext(method.AlignmentModel);
@@ -340,14 +330,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public static LcmsMethodViewModel Create(
                 LcmsMethodModel model,
-                IWindowService<CompoundSearchVM> compoundSearchService,
                 IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
                 IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
                 IMessageBroker broker) {
 
             var focusControlManager = new FocusControlManager();
-            var analysisAsObservable = ConvertToAnalysisViewModelAsObservable(model, compoundSearchService, peakSpotTableService, proteomicsTableService, broker, focusControlManager);
-            var alignmentAsObservable = ConvertToAlignmentViewModelAsObservable(model, compoundSearchService, peakSpotTableService, proteomicsTableService, broker, focusControlManager);
+            var analysisAsObservable = ConvertToAnalysisViewModelAsObservable(model, peakSpotTableService, proteomicsTableService, broker, focusControlManager);
+            var alignmentAsObservable = ConvertToAlignmentViewModelAsObservable(model, peakSpotTableService, proteomicsTableService, broker, focusControlManager);
 
             return new LcmsMethodViewModel(model, analysisAsObservable, alignmentAsObservable, broker, focusControlManager);
         }

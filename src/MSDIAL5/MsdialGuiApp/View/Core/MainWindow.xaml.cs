@@ -42,11 +42,9 @@ namespace CompMs.App.Msdial.View.Core
         public MainWindow() {
             InitializeComponent();
 
-            var compoundSearchService = new DialogService<CompoundSearchWindow, CompoundSearchVM>(this);
             var peakSpotTableService = new DialogService<AlignmentSpotTable, PeakSpotTableViewModelBase>(this);
             var proteomicsTableService = new DialogService<AlignmentSpotTable, PeakSpotTableViewModelBase>(this);
             DataContext = new MainWindowVM(
-                compoundSearchService,
                 peakSpotTableService,
                 proteomicsTableService);
 
@@ -114,9 +112,9 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildDialog<ProjectSettingDialog>);
             broker.ToObservable<ProjectPropertySettingViewModel>()
                 .Subscribe(ShowChildSettingDialog<ProjectPropertySettingView>("Project property setting", height: 400, width: 400));
-            /*
-            broker.ToObservable<CompoundSearchVM>()
+            broker.ToObservable<ICompoundSearchViewModel>()
                 .Subscribe(ShowChildDialog<CompoundSearchWindow>);
+            /*
             broker.ToObservable<PeakSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<AlignmentSpotTable>);
             broker.ToObservable<PeakSpotTableViewModelBase>()
