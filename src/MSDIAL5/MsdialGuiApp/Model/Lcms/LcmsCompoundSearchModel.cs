@@ -4,28 +4,33 @@ using CompMs.App.Msdial.Model.Service;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.MSDec;
-using System.Collections.Generic;
-using System.Linq;
+using Reactive.Bindings.Extensions;
+using System;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
     internal sealed class LcmsCompoundSearchModel : CompoundSearchModel, ICompoundSearchModel
     {
+        private readonly LcmsCompoundSearchService _compoundSearchService;
+        private readonly PeakSpotModel _peakSpot;
+
         public LcmsCompoundSearchModel(
             IFileBean fileBean,
-            IPeakSpotModel peakSpot,
-            MSDecResult msdecResult,
-            IReadOnlyList<CompoundSearcher> compoundSearcher,
+            PeakSpotModel peakSpot,
+            LcmsCompoundSearchService compoundSearchService,
             UndoManager undoManager)
-            : base(fileBean, peakSpot, msdecResult, compoundSearcher, undoManager) {
-             
+            : base(fileBean, peakSpot.PeakSpot, peakSpot.MSDecResult, compoundSearchService.CompoundSearchers, undoManager) {
+            _compoundSearchService = compoundSearchService;
+            _peakSpot = peakSpot;
+
+            this.ObserveProperty(m => m.SelectedCompoundSearcher).Subscribe(s => compoundSearchService.SelectedCompoundSearcher = s).AddTo(Disposables);
         }
 
         public override CompoundResultCollection Search() {
-            return new LcmsCompoundResultCollection
+            return new CompoundResultCollection
             {
-                Results = SearchCore().Select(c => new LcmsCompoundResult(c)).ToList<ICompoundResult>(),
+                Results = _compoundSearchService.Search(_peakSpot),
             };
         }
     }
@@ -43,10 +48,5 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public double RtSimilarity => matchResult.RtSimilarity;
-    }
-
-    internal sealed class LcmsCompoundResultCollection : CompoundResultCollection
-    {
-
     }
 }
