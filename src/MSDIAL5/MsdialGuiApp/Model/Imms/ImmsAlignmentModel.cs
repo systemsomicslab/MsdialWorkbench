@@ -229,9 +229,8 @@ namespace CompMs.App.Msdial.Model.Imms
 
             return new ImmsCompoundSearchModel(
                 _files[Target.Value.RepresentativeFileID],
-                Target.Value,
-                MsdecResult.Value,
-                _compoundSearchers.Items,
+                new PeakSpotModel(Target.Value, MsdecResult.Value),
+                new ImmsCompoundSearchService(_compoundSearchers.Items),
                 _undoManager);
         }
 

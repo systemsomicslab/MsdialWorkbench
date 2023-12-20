@@ -4,23 +4,28 @@ using CompMs.App.Msdial.Model.Service;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.MSDec;
-using System.Collections.Generic;
-using System.Linq;
+using Reactive.Bindings.Extensions;
+using System;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
     internal sealed class ImmsCompoundSearchModel : CompoundSearchModel, ICompoundSearchModel
     {
-        public ImmsCompoundSearchModel(IFileBean fileBean, IPeakSpotModel peakSpot, MSDecResult msdecResult, IReadOnlyList<CompoundSearcher> compoundSearchers, UndoManager undoManager)
-            : base(fileBean, peakSpot, msdecResult, compoundSearchers, undoManager) {
+        private readonly ImmsCompoundSearchService _compoundSearchService;
+        private readonly PeakSpotModel _peakSpot;
 
+        public ImmsCompoundSearchModel(IFileBean fileBean, PeakSpotModel peakSpotModel, ImmsCompoundSearchService compoundSearchService, UndoManager undoManager)
+            : base(fileBean, peakSpotModel.PeakSpot, peakSpotModel.MSDecResult, compoundSearchService.CompoundSearchers, undoManager) {
+            _peakSpot = peakSpotModel;
+            _compoundSearchService = compoundSearchService;
+
+            this.ObserveProperty(m => m.SelectedCompoundSearcher).Subscribe(s => compoundSearchService.SelectedCompoundSearcher = s).AddTo(Disposables);
         }
 
         public override CompoundResultCollection Search() {
-            return new ImmsCompoundResultCollection
+            return new CompoundResultCollection
             {
-                Results = SearchCore().Select(c => new ImmsCompoundResult(c)).ToList<ICompoundResult>(),
+                Results = _compoundSearchService.Search(_peakSpot),
             };
         }
     }
@@ -39,10 +44,5 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public double CollisionCrossSection => msReference.CollisionCrossSection;
         public double CcsSimilarity => matchResult.CcsSimilarity;
-    }
-
-    internal sealed class ImmsCompoundResultCollection : CompoundResultCollection
-    {
-
     }
 }

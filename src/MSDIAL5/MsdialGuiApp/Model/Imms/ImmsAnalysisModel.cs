@@ -217,9 +217,8 @@ namespace CompMs.App.Msdial.Model.Imms
 
             return new ImmsCompoundSearchModel(
                 AnalysisFileModel,
-                Target.Value,
-                MsdecResult.Value,
-                _compoundSearchers.Items,
+                new PeakSpotModel(Target.Value, MsdecResult.Value),
+                new ImmsCompoundSearchService(_compoundSearchers.Items),
                 _undoManager);
         }
 
