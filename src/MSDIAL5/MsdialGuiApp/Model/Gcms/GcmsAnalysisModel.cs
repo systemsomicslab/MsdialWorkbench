@@ -17,6 +17,8 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
+using CompMs.MsdialGcMsApi.Algorithm;
+using CompMs.MsdialGcMsApi.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -41,11 +43,17 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly Ms1BasedSpectrumFeatureCollection _spectrumFeatures;
         private readonly ObservableCollection<ChromatogramPeakFeatureModel> _peaks;
         private readonly AnalysisFileBeanModel _file;
+        private readonly CalculateMatchScore _calculateMatchScore;
 
-        public GcmsAnalysisModel(AnalysisFileBeanModel file, IDataProviderFactory<AnalysisFileBeanModel> providerFactory, ProjectBaseParameter projectParameter, PeakPickBaseParameter peakPickParameter, ChromDecBaseParameter chromDecParameter, DataBaseMapper dbMapper, DataBaseStorage dbStorage, FilePropertiesModel projectBaseParameterModel, PeakFilterModel peakFilterModel, IMessageBroker broker) {
+        public GcmsAnalysisModel(AnalysisFileBeanModel file, IDataProviderFactory<AnalysisFileBeanModel> providerFactory, MsdialGcmsParameter parameter, DataBaseMapper dbMapper, DataBaseStorage dbStorage, FilePropertiesModel projectBaseParameterModel, PeakFilterModel peakFilterModel, CalculateMatchScore calculateMatchScore, IMessageBroker broker) {
+            var projectParameter = parameter.ProjectParam;
+            var peakPickParameter = parameter.PeakPickBaseParam;
+            var chromDecParameter = parameter.ChromDecBaseParam; 
             _disposables = new CompositeDisposable();
             _spectrumFeatures = file.LoadMs1BasedSpectrumFeatureCollection().AddTo(_disposables);
             _peaks =  file.LoadChromatogramPeakFeatureModels();
+            _file = file;
+            _calculateMatchScore = calculateMatchScore;
             UndoManager = new UndoManager().AddTo(_disposables);
 
             var evaluator = FacadeMatchResultEvaluator.FromDataBases(dbStorage);
@@ -178,7 +186,6 @@ namespace CompMs.App.Msdial.Model.Gcms
                 (rtSpotFocus, s => s.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value),
                 (mzSpotFocus, s => s.QuantifiedChromatogramPeak.PeakFeature.Mass)).AddTo(_disposables);
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, rtSpotFocus, mzSpotFocus);
-            _file = file;
         }
 
         public SpectrumFeaturePlotModel PeakPlotModel { get; }
@@ -203,6 +210,13 @@ namespace CompMs.App.Msdial.Model.Gcms
         public FocusNavigatorModel FocusNavigatorModel { get; }
 
         public void SetUnknown() => PeakPlotModel.SelectedSpectrum.Value?.SetUnknown(UndoManager);
+
+        public GcmsAnalysisCompoundSearchModel CreateCompoundSearchModel() {
+            if (PeakPlotModel.SelectedSpectrum.Value is Ms1BasedSpectrumFeature spectrumFeature) {
+                return new GcmsAnalysisCompoundSearchModel(spectrumFeature, _file, _calculateMatchScore, UndoManager);
+            }
+            return null;
+        }
 
         // IAnalysisModel interface
         Task IAnalysisModel.SaveAsync(CancellationToken token) {

@@ -35,7 +35,7 @@ namespace CompMs.MsdialGcMsApi.Process
         private readonly Ms1Dec _ms1Deconvolution;
         private readonly Annotation _annotation;
 
-        public FileProcess(IDataProviderFactory<AnalysisFileBean> providerFactory, IMsdialDataStorage<MsdialGcmsParameter> storage) {
+        public FileProcess(IDataProviderFactory<AnalysisFileBean> providerFactory, IMsdialDataStorage<MsdialGcmsParameter> storage, CalculateMatchScore calculateMatchScore) {
             if (storage is null || storage.Parameter is null) {
                 throw new ArgumentNullException(nameof(storage));
             }
@@ -44,7 +44,7 @@ namespace CompMs.MsdialGcMsApi.Process
             _riDictionaryInfo = storage.Parameter.FileIdRiInfoDictionary;
             _peakSpotting = new PeakSpotting(storage.IupacDatabase, storage.Parameter);
             _ms1Deconvolution = new Ms1Dec(storage.Parameter);
-            _annotation = new Annotation(storage.DataBases.MetabolomicsDataBases.FirstOrDefault(), storage.Parameter);
+            _annotation = new Annotation(calculateMatchScore, storage.Parameter);
         }
 
         public async Task RunAsync(AnalysisFileBean analysisFile, Action<int> reportAction, CancellationToken token = default) {
@@ -111,7 +111,7 @@ namespace CompMs.MsdialGcMsApi.Process
 
         public static void Run(AnalysisFileBean file, IMsdialDataStorage<MsdialGcmsParameter> container, bool isGuiProcess = false, Action<int> reportAction = null, CancellationToken token = default) {
             var providerFactory = new StandardDataProviderFactory(isGuiProcess: isGuiProcess);
-            new FileProcess(providerFactory, container).RunAsync(file, reportAction, token).Wait();
+            new FileProcess(providerFactory, container, new CalculateMatchScore(container.DataBases.MetabolomicsDataBases.FirstOrDefault(), container.Parameter.MspSearchParam, container.Parameter.RetentionType)).RunAsync(file, reportAction, token).Wait();
         }
 
         private void SetRetentionIndexForChromatogramPeakFeature(IReadOnlyList<IChromatogramPeakFeature> peaks, Dictionary<int, float> carbon2RtDict) {

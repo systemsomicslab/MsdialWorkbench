@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.ViewModel.Dims;
+using CompMs.App.Msdial.ViewModel.Gcms;
 using CompMs.App.Msdial.ViewModel.Imms;
 using CompMs.App.Msdial.ViewModel.Lcms;
 using System;

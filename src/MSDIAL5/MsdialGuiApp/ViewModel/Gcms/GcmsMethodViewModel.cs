@@ -51,7 +51,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
                 observer.OnNext(model.SelectedAnalysisModel);
                 return model.ObserveProperty(m => m.SelectedAnalysisModel, isPushCurrentValueAtFirst: false).Subscribe(observer);
             }).Where(m => m != null)
-            .Select(m => new GcmsAnalysisViewModel(m, peakSpotTableService, focusControlManager))
+            .Select(m => new GcmsAnalysisViewModel(m, peakSpotTableService, focusControlManager, broker))
             .ToReadOnlyReactivePropertySlim();
             var alignmentAsObservable = Observable.Create<GcmsAlignmentModel>(observer => {
                 observer.OnNext(model.SelectedAlignmentModel);

@@ -8,6 +8,7 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialGcMsApi.Algorithm;
 using CompMs.MsdialGcMsApi.Algorithm.Alignment;
 using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialGcMsApi.Process;
@@ -29,6 +30,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly StandardDataProviderFactory _providerFactory;
         private readonly PeakFilterModel _peakFilterModel;
         private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _peakSpotFiltering;
+        private readonly CalculateMatchScore _calculateMatchScore;
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> CHROMATOGRAM_SPOT_SERIALIZER;
 
         static GcmsMethodModel() {
@@ -43,6 +45,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             _providerFactory = new StandardDataProviderFactory(retry: 5, isGuiProcess: true);
             _peakFilterModel = new PeakFilterModel(DisplayFilter.RefMatched | DisplayFilter.Unknown /*&& DisplayFilter.Blank*/); // TODO: Implement blank filtering
             _peakSpotFiltering = new PeakSpotFiltering<AlignmentSpotPropertyModel>(FilterEnableStatus.All & ~FilterEnableStatus.Dt & ~FilterEnableStatus.Protein).AddTo(Disposables);
+            _calculateMatchScore = new CalculateMatchScore(storage.DataBases.MetabolomicsDataBases[0], storage.Parameter.MspSearchParam, RetentionType.RT); // TODO: RI support
         }
 
         public GcmsAnalysisModel SelectedAnalysisModel {
@@ -101,7 +104,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             var request = new ProgressBarMultiContainerRequest(
                 vm_ =>
                 {
-                    var processor = new FileProcess(_providerFactory, _storage);
+                    var processor = new FileProcess(_providerFactory, _storage, _calculateMatchScore);
                     var runner = new ProcessRunner(processor);
                     return runner.RunAllAsync(
                         _storage.AnalysisFiles,
@@ -119,7 +122,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             var request = new ProgressBarMultiContainerRequest(
                 vm_ =>
                 {
-                    var processor = new FileProcess(_providerFactory, _storage);
+                    var processor = new FileProcess(_providerFactory, _storage, _calculateMatchScore);
                     var runner = new ProcessRunner(processor);
                     return runner.AnnotateAllAsync(
                         _storage.AnalysisFiles,
@@ -161,7 +164,7 @@ namespace CompMs.App.Msdial.Model.Gcms
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             var providerFactory = _providerFactory.ContraMap((AnalysisFileBeanModel fileModel) => fileModel.File);
-            return SelectedAnalysisModel = new GcmsAnalysisModel(analysisFile, providerFactory, _storage.Parameter.ProjectParam, _storage.Parameter.PeakPickBaseParam, _storage.Parameter.ChromDecBaseParam, _storage.DataBaseMapper, _storage.DataBases, _projectBaseParameter, _peakFilterModel, _broker);
+            return SelectedAnalysisModel = new GcmsAnalysisModel(analysisFile, providerFactory, _storage.Parameter, _storage.DataBaseMapper, _storage.DataBases, _projectBaseParameter, _peakFilterModel, _calculateMatchScore, _broker);
         }
     }
 }

@@ -11,6 +11,7 @@ using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System.Reactive.Linq;
 using System.Windows.Input;
 
@@ -20,10 +21,12 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
     {
         private readonly GcmsAnalysisModel _model;
         private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
+        private readonly IMessageBroker _broker;
 
-        public GcmsAnalysisViewModel(GcmsAnalysisModel model, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, FocusControlManager focusControlManager) {
+        public GcmsAnalysisViewModel(GcmsAnalysisModel model, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, FocusControlManager focusControlManager, IMessageBroker broker) {
             _model = model;
             _peakSpotTableService = peakSpotTableService;
+            _broker = broker;
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
             PeakPlotViewModel = new SpectrumFeaturePlotViewModel(model.PeakPlotModel).AddTo(Disposables);
             EicViewModel = new EicViewModel(_model.EicModel, horizontalAxis: PeakPlotViewModel.HorizontalAxis as IAxisManager<double>).AddTo(Disposables);
@@ -68,6 +71,18 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 
         private void ShowIonTable() {
             _peakSpotTableService.Show(PeakTableViewModel);
+        }
+
+        public ICommand SearchCompoundCommand => _searchCompoundCommand ??= new DelegateCommand(ShowSearchCompound);
+        private DelegateCommand _searchCompoundCommand;
+
+        private void ShowSearchCompound() {
+            using var csm = _model.CreateCompoundSearchModel();
+            if (csm is null) {
+                return;
+            }
+            using var vm = new GcmsAnalysisCompoundSearchViewModel(csm);
+            _broker.Publish((ICompoundSearchViewModel)vm);
         }
 
 
