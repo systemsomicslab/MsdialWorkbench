@@ -176,8 +176,12 @@ namespace CompMs.App.Msdial.Model.Dims
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
         public FocusNavigatorModel FocusNavigatorModel { get; }
 
-        public ICompoundSearchModel BuildCompoundSearchModel() {
-            return new CompoundSearchModel(AnalysisFileModel, Target.Value, MsdecResult.Value, _compoundSearchers, _undoManager);
+        public DimsCompoundSearchModel BuildCompoundSearchModel() {
+            return new DimsCompoundSearchModel(
+                AnalysisFileModel,
+                new PeakSpotModel(Target.Value, MsdecResult.Value),
+                new DimsCompoundSearchService(_compoundSearchers.Items),
+                _undoManager);
         }
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));

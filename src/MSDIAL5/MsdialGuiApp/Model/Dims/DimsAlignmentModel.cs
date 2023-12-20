@@ -236,8 +236,12 @@ namespace CompMs.App.Msdial.Model.Dims
         public MoleculeStructureModel MoleculeStructureModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
-        public ICompoundSearchModel BuildCompoundSearchModel() {
-            return new CompoundSearchModel(_files[Target.Value.RepresentativeFileID], Target.Value, _msdecResult.Value, _compoundSearchers, _undoManager);
+        public DimsCompoundSearchModel BuildCompoundSearchModel() {
+            return new DimsCompoundSearchModel(
+                _files[Target.Value.RepresentativeFileID],
+                new PeakSpotModel(Target.Value, _msdecResult.Value),
+                new DimsCompoundSearchService(_compoundSearchers.Items),
+                _undoManager);
         }
 
         public InternalStandardSetModel InternalStandardSetModel { get; }
