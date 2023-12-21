@@ -4,28 +4,28 @@ using CompMs.App.Msdial.Model.Service;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.MSDec;
-using System.Collections.Generic;
-using System.Linq;
+using Reactive.Bindings.Extensions;
+using System;
 
 namespace CompMs.App.Msdial.Model.Lcimms
 {
     internal sealed class LcimmsCompoundSearchModel : CompoundSearchModel, ICompoundSearchModel
     {
-        public LcimmsCompoundSearchModel(
-            IFileBean fileBean,
-            IPeakSpotModel peakSpot,
-            MSDecResult msdecResult,
-            IReadOnlyList<CompoundSearcher> compoundSearchers,
-            UndoManager undoManager)
-            : base(fileBean, peakSpot, msdecResult, compoundSearchers, undoManager) {
+        private readonly PeakSpotModel _peakSpotModel;
+        private readonly LcimmsCompoundSearchService _compoundSearchService;
 
+        public LcimmsCompoundSearchModel(IFileBean fileBean, PeakSpotModel peakSpotModel, LcimmsCompoundSearchService compoundSearchService, UndoManager undoManager)
+            : base(fileBean, peakSpotModel.PeakSpot, peakSpotModel.MSDecResult, compoundSearchService.CompoundSearchers, undoManager) {
+            _peakSpotModel = peakSpotModel;
+            _compoundSearchService = compoundSearchService;
+
+            this.ObserveProperty(m => m.SelectedCompoundSearcher).Subscribe(s => compoundSearchService.SelectedCompoundSearcher = s).AddTo(Disposables);
         }
 
         public override CompoundResultCollection Search() {
             return new CompoundResultCollection
             {
-                Results = SearchCore().Select(c => new LcimmsCompoundResult(c)).ToList<ICompoundResult>(),
+                Results = _compoundSearchService.Search(_peakSpotModel),
             };
         }
     }
