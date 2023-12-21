@@ -1,11 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Information;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings.Extensions;
 using System;
 
-namespace CompMs.App.Msdial.Model.Search
+namespace CompMs.App.Msdial.Model.Dims
 {
     internal sealed class DimsCompoundSearchModel : CompoundSearchModel
     {
