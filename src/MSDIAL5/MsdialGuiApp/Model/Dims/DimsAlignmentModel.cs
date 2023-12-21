@@ -241,7 +241,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 _files[Target.Value.RepresentativeFileID],
                 new PeakSpotModel(Target.Value, _msdecResult.Value),
                 new DimsCompoundSearchService(_compoundSearchers.Items),
-                _undoManager);
+                new SetAnnotationService(Target.Value, Target.Value.MatchResultsModel, _undoManager));
         }
 
         public InternalStandardSetModel InternalStandardSetModel { get; }

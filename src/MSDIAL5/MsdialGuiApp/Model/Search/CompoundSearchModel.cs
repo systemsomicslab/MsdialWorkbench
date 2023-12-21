@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Algorithm.Scoring;
@@ -29,6 +30,8 @@ namespace CompMs.App.Msdial.Model.Search
 
         MsSpectrumModel MsSpectrumModel { get; }
 
+        ICompoundResult SelectedCompoundResult { get; set; }
+
         MoleculeMsReference SelectedReference { get; set; }
 
         MsScanMatchResult SelectedMatchResult { get; set; }
@@ -45,20 +48,15 @@ namespace CompMs.App.Msdial.Model.Search
     internal class CompoundSearchModel : DisposableModelBase, ICompoundSearchModel
     {
         private readonly MSDecResult _msdecResult;
-        private readonly UndoManager _undoManager;
+        private readonly SetAnnotationService _setAnnotationService;
         private readonly IPeakSpotModel _peakSpot;
         private readonly PlotComparedMsSpectrumService _plotService;
 
-        public CompoundSearchModel(IFileBean fileBean, IPeakSpotModel peakSpot, MSDecResult msdecResult, CompoundSearcherCollection compoundSearchers, UndoManager undoManager)
-            : this(fileBean, peakSpot, msdecResult, compoundSearchers.Items, undoManager) {
-
-        }
-
-        public CompoundSearchModel(IFileBean fileBean, IPeakSpotModel peakSpot, MSDecResult msdecResult, IReadOnlyList<CompoundSearcher> compoundSearchers, UndoManager undoManager) {
+        public CompoundSearchModel(IFileBean fileBean, IPeakSpotModel peakSpot, MSDecResult msdecResult, IReadOnlyList<CompoundSearcher> compoundSearchers, SetAnnotationService setAnnotationService) {
             File = fileBean ?? throw new ArgumentNullException(nameof(fileBean));
             _peakSpot = peakSpot ?? throw new ArgumentNullException(nameof(peakSpot));
             CompoundSearchers = compoundSearchers;
-            _undoManager = undoManager;
+            _setAnnotationService = setAnnotationService;
             SelectedCompoundSearcher = CompoundSearchers.FirstOrDefault();
             _msdecResult = msdecResult ?? throw new ArgumentNullException(nameof(msdecResult));
 
@@ -84,6 +82,12 @@ namespace CompMs.App.Msdial.Model.Search
         public IPeakSpotModel PeakSpot => _peakSpot;
 
         public MsSpectrumModel MsSpectrumModel => _plotService.MsSpectrumModel;
+
+        public ICompoundResult SelectedCompoundResult {
+            get => _selectedCompoundResult;
+            set => SetProperty(ref _selectedCompoundResult, value);
+        }
+        private ICompoundResult _selectedCompoundResult;
 
         public MoleculeMsReference SelectedReference { 
             get => _selectedReference;
@@ -114,15 +118,15 @@ namespace CompMs.App.Msdial.Model.Search
         }
 
         public void SetConfidence() {
-            _peakSpot.SetConfidence(SelectedReference, SelectedMatchResult);
+            _setAnnotationService.SetConfidence(SelectedCompoundResult);
         }
 
         public void SetUnsettled() {
-            _peakSpot.SetUnsettled(SelectedReference, SelectedMatchResult);
+            _setAnnotationService.SetUnsettled(SelectedCompoundResult);
         }
 
         public void SetUnknown() {
-            _peakSpot.SetUnknown(_undoManager);
+            _setAnnotationService.SetUnknown();
         }
     }
 }

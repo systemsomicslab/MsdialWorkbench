@@ -1,6 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Dims;
-using CompMs.App.Msdial.Model.Service;
+using CompMs.App.Msdial.Model.Information;
 using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings.Extensions;
 using System;
@@ -12,8 +12,8 @@ namespace CompMs.App.Msdial.Model.Search
         private readonly DimsCompoundSearchService _compoundSearchService;
         private readonly PeakSpotModel _peakSpot;
 
-        public DimsCompoundSearchModel(IFileBean fileBean, PeakSpotModel peakSpotModel, DimsCompoundSearchService compoundSearchService, UndoManager undoManager)
-            : base(fileBean, peakSpotModel.PeakSpot, peakSpotModel.MSDecResult, compoundSearchService.CompoundSearchers, undoManager) {
+        public DimsCompoundSearchModel(IFileBean fileBean, PeakSpotModel peakSpotModel, DimsCompoundSearchService compoundSearchService, SetAnnotationService setAnnotationService)
+            : base(fileBean, peakSpotModel.PeakSpot, peakSpotModel.MSDecResult, compoundSearchService.CompoundSearchers, setAnnotationService) {
             _peakSpot = peakSpotModel;
             _compoundSearchService = compoundSearchService;
 

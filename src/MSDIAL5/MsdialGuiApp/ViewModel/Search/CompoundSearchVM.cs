@@ -41,8 +41,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            SelectedCompound = new ReactivePropertySlim<ICompoundResult>()
-                .AddTo(Disposables);
+            SelectedCompound = model.ToReactivePropertySlimAsSynchronized(m => m.SelectedCompoundResult).AddTo(Disposables);
             SelectedCompound.Subscribe(c =>
             {
                 model.SelectedReference = c?.MsReference;

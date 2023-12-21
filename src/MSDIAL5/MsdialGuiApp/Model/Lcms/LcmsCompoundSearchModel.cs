@@ -1,6 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Search;
-using CompMs.App.Msdial.Model.Service;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.DataObj;
@@ -19,8 +19,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             IFileBean fileBean,
             PeakSpotModel peakSpot,
             LcmsCompoundSearchService compoundSearchService,
-            UndoManager undoManager)
-            : base(fileBean, peakSpot.PeakSpot, peakSpot.MSDecResult, compoundSearchService.CompoundSearchers, undoManager) {
+            SetAnnotationService setAnnotationService)
+            : base(fileBean, peakSpot.PeakSpot, peakSpot.MSDecResult, compoundSearchService.CompoundSearchers, setAnnotationService) {
             _compoundSearchService = compoundSearchService;
             _peakSpot = peakSpot;
 

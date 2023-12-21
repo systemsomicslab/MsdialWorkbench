@@ -257,7 +257,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (Target.Value?.InnerModel is null || MsdecResult.Value is null) {
                 return null;
             }
-            return new LcmsCompoundSearchModel(AnalysisFileModel, new PeakSpotModel(Target.Value, MsdecResult.Value), new LcmsCompoundSearchService(_compoundSearchers.Items), _undoManager);
+            return new LcmsCompoundSearchModel(AnalysisFileModel, new PeakSpotModel(Target.Value, MsdecResult.Value), new LcmsCompoundSearchService(_compoundSearchers.Items), new SetAnnotationService(Target.Value, Target.Value.MatchResultsModel, _undoManager));
         }
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));

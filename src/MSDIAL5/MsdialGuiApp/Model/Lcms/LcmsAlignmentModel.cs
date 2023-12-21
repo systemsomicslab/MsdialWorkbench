@@ -267,7 +267,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
         public ICompoundSearchModel CreateCompoundSearchModel() {
-            return new LcmsCompoundSearchModel(_files[Target.Value.RepresentativeFileID], new PeakSpotModel(Target.Value, _msdecResult.Value), new LcmsCompoundSearchService(_compoundSearchers.Items), _undoManager);
+            return new LcmsCompoundSearchModel(_files[Target.Value.RepresentativeFileID], new PeakSpotModel(Target.Value, _msdecResult.Value), new LcmsCompoundSearchService(_compoundSearchers.Items), new SetAnnotationService(Target.Value, Target.Value.MatchResultsModel, _undoManager));
         }
 
         public void SaveSpectra(string filename) {

@@ -231,7 +231,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 _files[Target.Value.RepresentativeFileID],
                 new PeakSpotModel(Target.Value, MsdecResult.Value),
                 new ImmsCompoundSearchService(_compoundSearchers.Items),
-                _undoManager);
+                new SetAnnotationService(Target.Value, Target.Value.MatchResultsModel, _undoManager));
         }
 
         public List<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }

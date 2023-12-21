@@ -219,7 +219,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 AnalysisFileModel,
                 new PeakSpotModel(Target.Value, MsdecResult.Value),
                 new ImmsCompoundSearchService(_compoundSearchers.Items),
-                _undoManager);
+                new SetAnnotationService(Target.Value, Target.Value.MatchResultsModel, _undoManager));
         }
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));

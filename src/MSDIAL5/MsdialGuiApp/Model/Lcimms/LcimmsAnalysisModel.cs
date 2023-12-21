@@ -285,7 +285,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
 
             CompoundSearchModel = target
-                .CombineLatest(msdecResult, (t, r) => t is null || r is null ? null : new LcimmsCompoundSearchModel(analysisFileModel, new PeakSpotModel(t, r), new LcimmsCompoundSearchService(compoundSearchers.Items), _undoManager))
+                .CombineLatest(msdecResult, (t, r) => t is null || r is null ? null : new LcimmsCompoundSearchModel(analysisFileModel, new PeakSpotModel(t, r), new LcimmsCompoundSearchService(compoundSearchers.Items), new SetAnnotationService(t, t.MatchResultsModel, _undoManager)))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);

@@ -181,7 +181,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 AnalysisFileModel,
                 new PeakSpotModel(Target.Value, MsdecResult.Value),
                 new DimsCompoundSearchService(_compoundSearchers.Items),
-                _undoManager);
+                new SetAnnotationService(Target.Value, Target.Value.MatchResultsModel, _undoManager));
         }
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
