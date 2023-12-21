@@ -1,15 +1,12 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
-using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.MSDec;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
@@ -47,20 +44,19 @@ namespace CompMs.App.Msdial.Model.Search
 
     internal class CompoundSearchModel : DisposableModelBase, ICompoundSearchModel
     {
-        private readonly MSDecResult _msdecResult;
         private readonly SetAnnotationService _setAnnotationService;
-        private readonly IPeakSpotModel _peakSpot;
         private readonly PlotComparedMsSpectrumService _plotService;
+        private readonly ICompoundSearchService<ICompoundResult, PeakSpotModel> _compoundSearchService;
+        private readonly PeakSpotModel _peakSpot;
 
-        public CompoundSearchModel(IFileBean fileBean, IPeakSpotModel peakSpot, MSDecResult msdecResult, IReadOnlyList<CompoundSearcher> compoundSearchers, SetAnnotationService setAnnotationService) {
+        public CompoundSearchModel(IFileBean fileBean, PeakSpotModel peakSpot, ICompoundSearchService<ICompoundResult, PeakSpotModel> compoundSearchService, PlotComparedMsSpectrumService plotComparedMsSpectrumService, SetAnnotationService setAnnotationService) {
             File = fileBean ?? throw new ArgumentNullException(nameof(fileBean));
-            _peakSpot = peakSpot ?? throw new ArgumentNullException(nameof(peakSpot));
-            CompoundSearchers = compoundSearchers;
+            _peakSpot = peakSpot;
+            _compoundSearchService = compoundSearchService;
+            _plotService = plotComparedMsSpectrumService;
             _setAnnotationService = setAnnotationService;
             SelectedCompoundSearcher = CompoundSearchers.FirstOrDefault();
-            _msdecResult = msdecResult ?? throw new ArgumentNullException(nameof(msdecResult));
 
-            _plotService = new PlotComparedMsSpectrumService(msdecResult).AddTo(Disposables);
             this.ObserveProperty(m => SelectedReference)
                 .Subscribe(_plotService.UpdateReference).AddTo(Disposables);
             this.ObserveProperty(m => SelectedCompoundSearcher)
@@ -69,17 +65,21 @@ namespace CompMs.App.Msdial.Model.Search
                 .Subscribe(_plotService.UpdateMatchingScorer).AddTo(Disposables);
         }
 
-        public IReadOnlyList<CompoundSearcher> CompoundSearchers { get; }
+        public IReadOnlyList<CompoundSearcher> CompoundSearchers => _compoundSearchService.CompoundSearchers;
 
         public CompoundSearcher SelectedCompoundSearcher {
-            get => _compoundSearcher;
-            set => SetProperty(ref _compoundSearcher, value);
+            get => _compoundSearchService.SelectedCompoundSearcher;
+            set {
+                if (_compoundSearchService.SelectedCompoundSearcher != value) {
+                    _compoundSearchService.SelectedCompoundSearcher = value;
+                    OnPropertyChanged(nameof(SelectedCompoundSearcher));
+                }
+            }
         }
-        private CompoundSearcher _compoundSearcher;
         
         public IFileBean File { get; }
 
-        public IPeakSpotModel PeakSpot => _peakSpot;
+        public IPeakSpotModel PeakSpot => _peakSpot.PeakSpot;
 
         public MsSpectrumModel MsSpectrumModel => _plotService.MsSpectrumModel;
 
@@ -104,17 +104,8 @@ namespace CompMs.App.Msdial.Model.Search
         public virtual CompoundResultCollection Search() {
             return new CompoundResultCollection
             {
-                Results = SearchCore().ToList(),
+                Results = _compoundSearchService.Search(_peakSpot),
             };
-        }
-
-        protected IEnumerable<ICompoundResult> SearchCore() {
-            return SelectedCompoundSearcher.Search(
-                _peakSpot.MSIon,
-                _msdecResult,
-                new List<RawPeakElement>(),
-                new IonFeatureCharacter { IsotopeWeightNumber = 0, } // Assume this is not isotope.
-            );
         }
 
         public void SetConfidence() {
@@ -128,5 +119,7 @@ namespace CompMs.App.Msdial.Model.Search
         public void SetUnknown() {
             _setAnnotationService.SetUnknown();
         }
+
+        internal new IList<IDisposable> Disposables => base.Disposables;
     }
 }

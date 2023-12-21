@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
-    internal sealed class ImmsCompoundSearchService : BindableBase
+    internal sealed class ImmsCompoundSearchService : BindableBase, ICompoundSearchService<ImmsCompoundResult, PeakSpotModel>
     {
         public ImmsCompoundSearchService(IReadOnlyList<CompoundSearcher> compoundSearchers) {
             CompoundSearchers = compoundSearchers;
@@ -22,7 +22,7 @@ namespace CompMs.App.Msdial.Model.Imms
         }
         private CompoundSearcher _compoundSearcher;
 
-        public ImmsCompoundResult[] Search(PeakSpotModel peakSpot) {
+        public IReadOnlyList<ImmsCompoundResult> Search(PeakSpotModel peakSpot) {
             var results = SelectedCompoundSearcher?.Search(
                 peakSpot.PeakSpot.MSIon,
                 peakSpot.MSDecResult,
