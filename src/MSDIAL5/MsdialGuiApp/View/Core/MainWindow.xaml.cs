@@ -112,9 +112,9 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildDialog<ProjectSettingDialog>);
             broker.ToObservable<ProjectPropertySettingViewModel>()
                 .Subscribe(ShowChildSettingDialog<ProjectPropertySettingView>("Project property setting", height: 400, width: 400));
-            /*
-            broker.ToObservable<CompoundSearchVM>()
+            broker.ToObservable<ICompoundSearchViewModel>()
                 .Subscribe(ShowChildDialog<CompoundSearchWindow>);
+            /*
             broker.ToObservable<PeakSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<AlignmentSpotTable>);
             broker.ToObservable<PeakSpotTableViewModelBase>()

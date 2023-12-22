@@ -14,7 +14,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Search
 {
-    internal abstract class CompoundSearchVM : ViewModelBase
+    internal abstract class CompoundSearchVM : ViewModelBase, ICompoundSearchViewModel
     {
         protected static readonly double MassEPS = 1e-10;
         private readonly CompoundSearchModel _model;

@@ -105,12 +105,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         public ReactiveCommand SearchCompoundCommand { get; }
         private void SearchCompound() {
-            using (var model = _model.BuildCompoundSearchModel())
-            using (var vm = new DimsCompoundSearchViewModel(model)) {
-                if (_compoundSearchService.ShowDialog(vm) == true) {
-                    _model.Target.Value.RaisePropertyChanged();
-                }
-            }
+            using var model = _model.BuildCompoundSearchModel();
+            using var vm = new DimsCompoundSearchViewModel(model);
+            _broker.Publish<ICompoundSearchViewModel>(vm);
         }
 
         public DelegateCommand SaveMs2SpectrumCommand => _saveMs2SpectrumCommand ?? (_saveMs2SpectrumCommand = new DelegateCommand(SaveSpectra, _model.CanSaveSpectra));

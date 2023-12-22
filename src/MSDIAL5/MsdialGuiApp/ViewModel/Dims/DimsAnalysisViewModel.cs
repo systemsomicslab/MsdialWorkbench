@@ -95,10 +95,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public ICommand SetUnknownCommand { get; }
         public ReactiveCommand SearchCompoundCommand { get; }
         private void SearchCompound() {
-            using (var model = _model.BuildCompoundSearchModel())
-            using (var vm = new DimsCompoundSearchViewModel(model)) {
-                _compoundSearchService.ShowDialog(vm);
-            }
+            using var model = _model.BuildCompoundSearchModel();
+            using var vm = new DimsCompoundSearchViewModel(model);
+            _broker.Publish<ICompoundSearchViewModel>(vm);
         }
 
         public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));

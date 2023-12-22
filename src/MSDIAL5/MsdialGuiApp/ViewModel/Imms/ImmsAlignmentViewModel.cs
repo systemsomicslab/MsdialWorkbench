@@ -117,14 +117,12 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public ICommand SetUnknownCommand { get; }
         public ReactiveCommand SearchCompoundCommand { get; }
         private void SearchCompound() {
-            using (var csm = _model.CreateCompoundSearchModel()) {
-                if (csm is null) {
-                    return;
-                }
-                using (var vm = new ImmsCompoundSearchVM(csm)) {
-                    _compoundSearchService.ShowDialog(vm);
-                }
+            using var csm = _model.CreateCompoundSearchModel();
+            if (csm is null) {
+                return;
             }
+            using var vm = new ImmsCompoundSearchVM(csm);
+            _broker.Publish<ICompoundSearchViewModel>(vm);
         }
 
         public ICommand InternalStandardSetCommand { get; }

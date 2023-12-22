@@ -10,6 +10,7 @@ using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Reactive.Linq;
 using System.Windows.Input;
@@ -25,7 +26,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             LcimmsAnalysisModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            FocusControlManager focusControlManager) {
+            FocusControlManager focusControlManager,
+            IMessageBroker broker) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
@@ -78,9 +80,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 .ToReactiveCommand()
                 .WithSubscribe(() =>
                 {
-                    using (var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value)) {
-                        compoundSearchService.ShowDialog(vm);
-                    }
+                    using var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value);
+                    broker.Publish<ICompoundSearchViewModel>(vm);
                 }).AddTo(Disposables);
 
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);

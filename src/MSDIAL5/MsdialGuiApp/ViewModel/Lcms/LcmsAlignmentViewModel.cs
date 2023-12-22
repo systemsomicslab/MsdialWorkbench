@@ -137,14 +137,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public ICommand SetUnknownCommand { get; }
         public ReactiveCommand SearchCompoundCommand { get; }
         private void SearchCompound() {
-            using (var csm = _model.CreateCompoundSearchModel()) {
-                if (csm is null) {
-                    return;
-                }
-                using (var vm = new LcmsCompoundSearchViewModel(csm)) {
-                    _compoundSearchService.ShowDialog(vm);
-                }
+            using var csm = _model.CreateCompoundSearchModel();
+            if (csm is null) {
+                return;
             }
+            using var vm = new LcmsCompoundSearchViewModel(csm);
+            _broker.Publish<ICompoundSearchViewModel>(vm);
         }
 
         public DelegateCommand SearchAlignmentSpectrumByMoleculerNetworkingCommand => _searchAlignmentSpectrumByMoleculerNetworkingCommand ?? (_searchAlignmentSpectrumByMoleculerNetworkingCommand = new DelegateCommand(SearchAlignmentSpectrumByMoleculerNetworkingMethod));
