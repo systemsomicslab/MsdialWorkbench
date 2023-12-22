@@ -266,7 +266,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
-        public ICompoundSearchModel CreateCompoundSearchModel() {
+        public CompoundSearchModel CreateCompoundSearchModel() {
             PlotComparedMsSpectrumService plotService = new PlotComparedMsSpectrumService(_msdecResult.Value);
             var compoundSearch =  new CompoundSearchModel(
                 _files[Target.Value.RepresentativeFileID],

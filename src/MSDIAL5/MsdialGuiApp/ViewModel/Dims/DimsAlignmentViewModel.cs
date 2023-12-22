@@ -106,7 +106,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public ReactiveCommand SearchCompoundCommand { get; }
         private void SearchCompound() {
             using (var model = _model.BuildCompoundSearchModel())
-            using (var vm = new DimsCompoundSearchViewModel(model, SetUnknownCommand)) {
+            using (var vm = new DimsCompoundSearchViewModel(model)) {
                 if (_compoundSearchService.ShowDialog(vm) == true) {
                     _model.Target.Value.RaisePropertyChanged();
                 }

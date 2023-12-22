@@ -78,7 +78,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 .ToReactiveCommand()
                 .WithSubscribe(() =>
                 {
-                    using (var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value, null)) {
+                    using (var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value)) {
                         compoundSearchService.ShowDialog(vm);
                     }
                 }).AddTo(Disposables);

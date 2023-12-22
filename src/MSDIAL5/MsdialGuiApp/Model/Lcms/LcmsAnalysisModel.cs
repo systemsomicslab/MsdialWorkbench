@@ -253,7 +253,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
 
-        public ICompoundSearchModel CreateCompoundSearchModel() {
+        public CompoundSearchModel CreateCompoundSearchModel() {
             if (Target.Value?.InnerModel is null || MsdecResult.Value is null) {
                 return null;
             }

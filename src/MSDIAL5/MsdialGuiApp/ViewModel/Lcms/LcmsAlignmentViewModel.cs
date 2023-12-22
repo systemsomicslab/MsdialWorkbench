@@ -141,7 +141,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 if (csm is null) {
                     return;
                 }
-                using (var vm = new LcmsCompoundSearchViewModel(csm, SetUnknownCommand)) {
+                using (var vm = new LcmsCompoundSearchViewModel(csm)) {
                     _compoundSearchService.ShowDialog(vm);
                 }
             }

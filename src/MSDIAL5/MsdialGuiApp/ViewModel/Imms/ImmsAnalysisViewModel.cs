@@ -98,7 +98,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 if (csm is null) {
                     return;
                 }
-                using (var vm = new ImmsCompoundSearchVM(csm, SetUnknownCommand)) {
+                using (var vm = new ImmsCompoundSearchVM(csm)) {
                     _compoundSearchService.ShowDialog(vm);
                 }
             }

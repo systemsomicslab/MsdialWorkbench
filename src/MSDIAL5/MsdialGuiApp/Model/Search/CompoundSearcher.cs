@@ -12,7 +12,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Search
 {
-    public class CompoundSearcher
+    public sealed class CompoundSearcher
     {
         private readonly IAnnotationQueryFactory<MsScanMatchResult> _queryFactory;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
@@ -42,6 +42,10 @@ namespace CompMs.App.Msdial.Model.Search
             return candidates
                 .OrderByDescending(result => result.TotalScore)
                 .Select(result => new CompoundResult(_refer.Refer(result), result));
+        }
+
+        public override string ToString() {
+            return Id;
         }
     }
 }

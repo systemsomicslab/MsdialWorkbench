@@ -1,13 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using CompMs.Common.Parameter;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace CompMs.App.Msdial.Model.Search
 {
     internal interface ICompoundSearchService<out TCompoundResult, in TTarget> : INotifyPropertyChanged
     {
-        IReadOnlyList<CompoundSearcher> CompoundSearchers { get; }
+        IList SearchMethods { get; }
 
-        CompoundSearcher SelectedCompoundSearcher { get; set; }
+        object SearchMethod { get; set; }
+
+        MsRefSearchParameterBase SearchParameter { get; }
 
         IReadOnlyList<TCompoundResult> Search(TTarget target);
     }

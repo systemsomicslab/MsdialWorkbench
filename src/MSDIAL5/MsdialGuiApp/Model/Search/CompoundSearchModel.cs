@@ -3,37 +3,37 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Algorithm.Scoring;
-using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
+using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Search
 {
     interface ICompoundSearchModel : INotifyPropertyChanged, IDisposable {
-        IReadOnlyList<CompoundSearcher> CompoundSearchers { get; }
+        IList SearchMethods { get; }
 
-        CompoundSearcher SelectedCompoundSearcher { get; set; }
+        object SearchMethod { get; set; }
+
+        ReadOnlyReactivePropertySlim<MsRefSearchParameterBase> SearchParameter { get; }
         
         IFileBean File { get; }
 
         IPeakSpotModel PeakSpot { get; }
 
-        MsSpectrumModel MsSpectrumModel { get; }
-
         ICompoundResult SelectedCompoundResult { get; set; }
 
-        MoleculeMsReference SelectedReference { get; set; }
-
-        MsScanMatchResult SelectedMatchResult { get; set; }
-
-        CompoundResultCollection Search();
+        MsSpectrumModel MsSpectrumModel { get; }
 
         void SetConfidence();
 
@@ -48,6 +48,7 @@ namespace CompMs.App.Msdial.Model.Search
         private readonly PlotComparedMsSpectrumService _plotService;
         private readonly ICompoundSearchService<ICompoundResult, PeakSpotModel> _compoundSearchService;
         private readonly PeakSpotModel _peakSpot;
+        private readonly BusyNotifier _isBusy;
 
         public CompoundSearchModel(IFileBean fileBean, PeakSpotModel peakSpot, ICompoundSearchService<ICompoundResult, PeakSpotModel> compoundSearchService, PlotComparedMsSpectrumService plotComparedMsSpectrumService, SetAnnotationService setAnnotationService) {
             File = fileBean ?? throw new ArgumentNullException(nameof(fileBean));
@@ -55,27 +56,33 @@ namespace CompMs.App.Msdial.Model.Search
             _compoundSearchService = compoundSearchService;
             _plotService = plotComparedMsSpectrumService;
             _setAnnotationService = setAnnotationService;
-            SelectedCompoundSearcher = CompoundSearchers.FirstOrDefault();
+            _isBusy = new BusyNotifier();
+            SearchParameter = _compoundSearchService.ObserveProperty(m => m.SearchParameter)
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            SearchMethod = SearchMethods.OfType<object>().FirstOrDefault();
 
-            this.ObserveProperty(m => SelectedReference)
-                .Subscribe(_plotService.UpdateReference).AddTo(Disposables);
-            this.ObserveProperty(m => SelectedCompoundSearcher)
+            this.ObserveProperty(m => SelectedCompoundResult)
+                .Subscribe(r => _plotService.UpdateReference(r?.MsReference)).AddTo(Disposables);
+            _compoundSearchService.ObserveProperty(m => m.SearchParameter)
                 .SkipNull()
-                .Select(s => new Ms2ScanMatching(s.MsRefSearchParameter))
+                .Select(s => new Ms2ScanMatching(s))
                 .Subscribe(_plotService.UpdateMatchingScorer).AddTo(Disposables);
         }
 
-        public IReadOnlyList<CompoundSearcher> CompoundSearchers => _compoundSearchService.CompoundSearchers;
+        public IList SearchMethods => _compoundSearchService.SearchMethods;
 
-        public CompoundSearcher SelectedCompoundSearcher {
-            get => _compoundSearchService.SelectedCompoundSearcher;
+        public object SearchMethod {
+            get => _compoundSearchService.SearchMethod;
             set {
-                if (_compoundSearchService.SelectedCompoundSearcher != value) {
-                    _compoundSearchService.SelectedCompoundSearcher = value;
-                    OnPropertyChanged(nameof(SelectedCompoundSearcher));
+                if (_compoundSearchService.SearchMethod != value) {
+                    _compoundSearchService.SearchMethod = value;
+                    OnPropertyChanged(nameof(SearchMethod));
                 }
             }
         }
+
+        public ReadOnlyReactivePropertySlim<MsRefSearchParameterBase> SearchParameter { get; }
         
         public IFileBean File { get; }
 
@@ -89,23 +96,18 @@ namespace CompMs.App.Msdial.Model.Search
         }
         private ICompoundResult _selectedCompoundResult;
 
-        public MoleculeMsReference SelectedReference { 
-            get => _selectedReference;
-            set => SetProperty(ref _selectedReference, value);
+        public IReadOnlyList<ICompoundResult> CompoundResults {
+            get => _compoundResults;
+            private set => SetProperty(ref _compoundResults, value);
         }
-        private MoleculeMsReference _selectedReference;
+        private IReadOnlyList<ICompoundResult> _compoundResults;
 
-        public MsScanMatchResult SelectedMatchResult {
-            get => _selectedMatchResult;
-            set => SetProperty(ref _selectedMatchResult, value);
-        }
-        private MsScanMatchResult _selectedMatchResult;
+        public IObservable<bool> IsBusy => _isBusy;
 
-        public virtual CompoundResultCollection Search() {
-            return new CompoundResultCollection
-            {
-                Results = _compoundSearchService.Search(_peakSpot),
-            };
+        public async Task SearchAsync(CancellationToken token) {
+            using (_isBusy.ProcessStart()) {
+                CompoundResults = await Task.Run(() => _compoundSearchService.Search(_peakSpot), token).ConfigureAwait(false);
+            }
         }
 
         public void SetConfidence() {

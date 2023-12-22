@@ -92,7 +92,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             }.CombineLatestValuesAreAllFalse()
             .ToReactiveCommand()
             .WithSubscribe(() => {
-                using (var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value, SetUnknownCommand)) {
+                using (var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value)) {
                     compoundSearchService.ShowDialog(vm);
                 }
             })
