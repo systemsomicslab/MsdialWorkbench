@@ -9,7 +9,6 @@ using CompMs.App.Msdial.ViewModel.ImagingImms;
 using CompMs.App.Msdial.ViewModel.Imms;
 using CompMs.App.Msdial.ViewModel.Lcimms;
 using CompMs.App.Msdial.ViewModel.Lcms;
-using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
@@ -24,21 +23,15 @@ namespace CompMs.App.Msdial.ViewModel.Core
 {
     internal sealed class DatasetViewModel : ViewModelBase
     {
-        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
-        private readonly IWindowService<PeakSpotTableViewModelBase> proteomicsTableService;
         private readonly IMessageBroker _messageBroker;
 
         public DatasetViewModel(
             IDatasetModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
             IMessageBroker messageBroker) {
             Model = model;
-            this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
-            this.proteomicsTableService = proteomicsTableService;
             _messageBroker = messageBroker;
             MethodViewModel = model.ObserveProperty(m => m.Method)
                 .Select(ConvertToViewModel)
@@ -87,16 +80,16 @@ namespace CompMs.App.Msdial.ViewModel.Core
         private MethodViewModel ConvertToViewModel(IMethodModel model) {
             switch (model) {
                 case LcmsMethodModel lc:
-                    return LcmsMethodViewModel.Create(lc, compoundSearchService, peakSpotTableService, proteomicsTableService, _messageBroker);
+                    return LcmsMethodViewModel.Create(lc, _messageBroker);
                 case ImmsMethodModel im:
-                    return ImmsMethodViewModel.Create(im, compoundSearchService, peakSpotTableService, _messageBroker);
+                    return ImmsMethodViewModel.Create(im, peakSpotTableService, _messageBroker);
                 case DimsMethodModel di:
-                    return DimsMethodViewModel.Create(di, compoundSearchService, peakSpotTableService, _messageBroker);
+                    return DimsMethodViewModel.Create(di, peakSpotTableService, _messageBroker);
                 case LcimmsMethodModel lcim:
-                    return LcimmsMethodViewModel.Create(lcim, compoundSearchService, peakSpotTableService, _messageBroker);
+                    return LcimmsMethodViewModel.Create(lcim, peakSpotTableService, _messageBroker);
                 // case GcmsMethodModel _:
                 case ImagingImmsMethodModel iim:
-                    return new ImagingImmsMainViewModel(iim, _messageBroker, compoundSearchService, peakSpotTableService);
+                    return new ImagingImmsMainViewModel(iim, _messageBroker, peakSpotTableService);
                 default:
                     return null;
             }

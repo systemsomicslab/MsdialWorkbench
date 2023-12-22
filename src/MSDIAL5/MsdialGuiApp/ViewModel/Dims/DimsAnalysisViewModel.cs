@@ -20,19 +20,14 @@ namespace CompMs.App.Msdial.ViewModel.Dims
     internal sealed class DimsAnalysisViewModel : ViewModelBase, IAnalysisResultViewModel
     {
         private readonly DimsAnalysisModel _model;
-        private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
         private readonly IMessageBroker _broker;
 
         public DimsAnalysisViewModel(
             DimsAnalysisModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IMessageBroker broker,
             FocusControlManager focusControlManager) {
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
@@ -42,7 +37,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             }
 
             _model = model;
-            _compoundSearchService = compoundSearchService;
             _peakSpotTableService = peakSpotTableService;
             _broker = broker ?? throw new ArgumentNullException(nameof(broker));
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);

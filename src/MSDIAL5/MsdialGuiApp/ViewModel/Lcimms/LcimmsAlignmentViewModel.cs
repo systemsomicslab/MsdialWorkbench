@@ -26,18 +26,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
     internal sealed class LcimmsAlignmentViewModel : ViewModelBase, IAlignmentResultViewModel
     {
         private readonly LcimmsAlignmentModel _model;
-        private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
 
         public LcimmsAlignmentViewModel(
             LcimmsAlignmentModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             FocusControlManager focusControlManager,
             IMessageBroker broker) {
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
@@ -47,7 +42,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             }
 
             _model = model;
-            _compoundSearchService = compoundSearchService;
             _peakSpotTableService = peakSpotTableService;
 
             UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);

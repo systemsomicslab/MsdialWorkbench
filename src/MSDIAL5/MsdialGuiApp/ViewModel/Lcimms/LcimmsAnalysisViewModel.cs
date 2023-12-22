@@ -24,14 +24,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
         public LcimmsAnalysisViewModel(
             LcimmsAnalysisModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             FocusControlManager focusControlManager,
             IMessageBroker broker) {
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
-
             if (focusControlManager is null) {
                 throw new ArgumentNullException(nameof(focusControlManager));
             }

@@ -42,15 +42,10 @@ namespace CompMs.App.Msdial.View.Core
         public MainWindow() {
             InitializeComponent();
 
-            var compoundSearchService = new DialogService<CompoundSearchWindow, CompoundSearchVM>(this);
             var peakSpotTableService = new DialogService<AlignmentSpotTable, PeakSpotTableViewModelBase>(this);
-            var proteomicsTableService = new DialogService<AlignmentSpotTable, PeakSpotTableViewModelBase>(this);
-            DataContext = new MainWindowVM(
-                compoundSearchService,
-                peakSpotTableService,
-                proteomicsTableService);
+            DataContext = new MainWindowVM(peakSpotTableService);
 
-            broker = MessageBroker.Default;
+            var broker = MessageBroker.Default;
 
             broker.ToObservable<ProgressBarMultiContainerRequest>()
                 .Subscribe(ShowMultiProgressBarWindow);
@@ -126,8 +121,6 @@ namespace CompMs.App.Msdial.View.Core
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Warning;
 #endif
         }
-
-        private readonly IMessageBroker broker;
 
         public void CloseOwnedWindows() {
             Dispatcher.Invoke(() =>

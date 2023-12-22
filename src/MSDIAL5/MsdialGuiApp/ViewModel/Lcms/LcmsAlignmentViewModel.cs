@@ -4,14 +4,12 @@ using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
-using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
-using CompMs.CommonMVVM.WindowService;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -26,12 +24,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     internal sealed class LcmsAlignmentViewModel : ViewModelBase, IAlignmentResultViewModel
     {
         private readonly LcmsAlignmentModel _model;
-        private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
         private readonly IMessageBroker _broker;
 
         public LcmsAlignmentViewModel(
             LcmsAlignmentModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IMessageBroker broker,
             FocusControlManager focusControlManager) {
             if (focusControlManager is null) {
@@ -39,7 +35,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
 
             _model = model ?? throw new ArgumentNullException(nameof(model));
-            _compoundSearchService = compoundSearchService ?? throw new ArgumentNullException(nameof(compoundSearchService));
             _broker = broker ?? throw new ArgumentNullException(nameof(broker));
 
             Target = _model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);

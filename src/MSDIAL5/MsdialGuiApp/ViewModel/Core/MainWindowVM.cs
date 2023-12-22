@@ -23,21 +23,9 @@ namespace CompMs.App.Msdial.ViewModel.Core
 {
     internal sealed class MainWindowVM : ViewModelBase
     {
-        public MainWindowVM(
-            IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService) {
-
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
-
+        public MainWindowVM(IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
-            }
-
-            if (proteomicsTableService is null) {
-                throw new ArgumentNullException(nameof(proteomicsTableService));
             }
 
             _broker = MessageBroker.Default;
@@ -45,7 +33,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
             Model = new MainWindowModel(_broker);
 
             var projectViewModel = Model.ObserveProperty(m => m.CurrentProject)
-                .Select(m => m is null ? null : new ProjectViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService, _broker))
+                .Select(m => m is null ? null : new ProjectViewModel(m, peakSpotTableService, _broker))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
