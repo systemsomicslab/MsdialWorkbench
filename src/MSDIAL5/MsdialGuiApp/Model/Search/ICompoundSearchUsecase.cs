@@ -5,7 +5,7 @@ using System.ComponentModel;
 
 namespace CompMs.App.Msdial.Model.Search
 {
-    internal interface ICompoundSearchService<out TCompoundResult, in TTarget> : INotifyPropertyChanged
+    internal interface ICompoundSearchUsecase<out TCompoundResult, in TTarget> : INotifyPropertyChanged
     {
         IList SearchMethods { get; }
 

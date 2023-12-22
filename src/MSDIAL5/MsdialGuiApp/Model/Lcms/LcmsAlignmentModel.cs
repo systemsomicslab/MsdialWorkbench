@@ -267,13 +267,13 @@ namespace CompMs.App.Msdial.Model.Lcms
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
         public CompoundSearchModel CreateCompoundSearchModel() {
-            PlotComparedMsSpectrumService plotService = new PlotComparedMsSpectrumService(_msdecResult.Value);
+            PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(_msdecResult.Value);
             var compoundSearch =  new CompoundSearchModel(
                 _files[Target.Value.RepresentativeFileID],
                 new PeakSpotModel(Target.Value, _msdecResult.Value),
-                new LcmsCompoundSearchService(_compoundSearchers.Items),
+                new LcmsCompoundSearchUsecase(_compoundSearchers.Items),
                 plotService,
-                new SetAnnotationService(Target.Value, Target.Value.MatchResultsModel, _undoManager));
+                new SetAnnotationUsecase(Target.Value, Target.Value.MatchResultsModel, _undoManager));
             compoundSearch.Disposables.Add(plotService);
             return compoundSearch;
         }

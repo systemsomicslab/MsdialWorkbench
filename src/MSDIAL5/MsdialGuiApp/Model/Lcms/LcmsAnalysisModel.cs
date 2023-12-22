@@ -258,13 +258,13 @@ namespace CompMs.App.Msdial.Model.Lcms
                 return null;
             }
 
-            PlotComparedMsSpectrumService plotService = new PlotComparedMsSpectrumService(MsdecResult.Value);
+            PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(MsdecResult.Value);
             var compoundSearch = new CompoundSearchModel(
                 AnalysisFileModel,
                 new PeakSpotModel(Target.Value, MsdecResult.Value),
-                new LcmsCompoundSearchService(_compoundSearchers.Items),
+                new LcmsCompoundSearchUsecase(_compoundSearchers.Items),
                 plotService,
-                new SetAnnotationService(Target.Value, Target.Value.MatchResultsModel, _undoManager));
+                new SetAnnotationUsecase(Target.Value, Target.Value.MatchResultsModel, _undoManager));
             compoundSearch.Disposables.Add(plotService);
             return compoundSearch;
         }

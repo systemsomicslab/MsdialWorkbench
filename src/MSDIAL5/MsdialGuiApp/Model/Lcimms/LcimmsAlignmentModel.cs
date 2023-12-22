@@ -345,13 +345,13 @@ namespace CompMs.App.Msdial.Model.Lcimms
             if (spot is null || msdec is null) {
                 return null;
             }
-            var plotService = new PlotComparedMsSpectrumService(msdec);
+            var plotService = new PlotComparedMsSpectrumUsecase(msdec);
             var compoundSearchModel = new CompoundSearchModel(
                 _files[spot.RepresentativeFileID],
                 new PeakSpotModel(spot, msdec),
-                new LcimmsCompoundSearchService(searcherCollection.Items),
+                new LcimmsCompoundSearchUsecase(searcherCollection.Items),
                 plotService,
-                new SetAnnotationService(spot, spot.MatchResultsModel, _undoManager));
+                new SetAnnotationUsecase(spot, spot.MatchResultsModel, _undoManager));
             compoundSearchModel.Disposables.Add(plotService);
             return compoundSearchModel;
         }

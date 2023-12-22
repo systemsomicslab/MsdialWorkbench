@@ -14,13 +14,13 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    internal sealed class PlotComparedMsSpectrumService : IDisposable
+    internal sealed class PlotComparedMsSpectrumUsecase : IDisposable
     {
         private CompositeDisposable _disposables = new CompositeDisposable();
         private Subject<IMSScanProperty> _reference;
         private Subject<Ms2ScanMatching> _matchingScorer;
 
-        public PlotComparedMsSpectrumService(IMSScanProperty scan)
+        public PlotComparedMsSpectrumUsecase(IMSScanProperty scan)
         {
             _reference = new Subject<IMSScanProperty>().AddTo(_disposables);
             _matchingScorer = new Subject<Ms2ScanMatching>().AddTo(_disposables);

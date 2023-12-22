@@ -8,13 +8,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CompMs.App.Msdial.Model.Lcms
+namespace CompMs.App.Msdial.Model.Imms
 {
-    internal sealed class LcmsCompoundSearchService : BindableBase, ICompoundSearchService<LcmsCompoundResult, PeakSpotModel>
+    internal sealed class ImmsCompoundSearchUsecase : BindableBase, ICompoundSearchUsecase<ImmsCompoundResult, PeakSpotModel>
     {
-        public LcmsCompoundSearchService(IReadOnlyList<CompoundSearcher> compoundSearchers) {
+        public ImmsCompoundSearchUsecase(IReadOnlyList<CompoundSearcher> compoundSearchers) {
             CompoundSearchers = compoundSearchers;
-            SelectedCompoundSearcher = compoundSearchers.FirstOrDefault();
         }
 
         public IReadOnlyList<CompoundSearcher> CompoundSearchers { get; }
@@ -23,7 +22,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             get => _selectedCompoundSearcher;
             set {
                 if (SetProperty(ref _selectedCompoundSearcher, value)) {
-                    SearchParameter = _selectedCompoundSearcher?.MsRefSearchParameter;
+                    SearchParameter = _selectedCompoundSearcher.MsRefSearchParameter;
                 }
             }
         }
@@ -47,7 +46,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
         private MsRefSearchParameterBase _searchParameterBase;
 
-        public IReadOnlyList<LcmsCompoundResult> Search(PeakSpotModel peakSpot) {
+        public IReadOnlyList<ImmsCompoundResult> Search(PeakSpotModel peakSpot) {
             var results = SelectedCompoundSearcher?.Search(
                 peakSpot.PeakSpot.MSIon,
                 peakSpot.MSDecResult,
@@ -55,9 +54,9 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new IonFeatureCharacter { IsotopeWeightNumber = 0, } // Assume this is not isotope.
             );
             if (results is null) {
-                return System.Array.Empty<LcmsCompoundResult>();
+                return System.Array.Empty<ImmsCompoundResult>();
             }
-            return results.Select(r => new LcmsCompoundResult(r)).ToArray();
+            return results.Select(r => new ImmsCompoundResult(r)).ToArray();
         }
     }
 }

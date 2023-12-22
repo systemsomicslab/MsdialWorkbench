@@ -44,13 +44,13 @@ namespace CompMs.App.Msdial.Model.Search
 
     internal class CompoundSearchModel : DisposableModelBase, ICompoundSearchModel
     {
-        private readonly SetAnnotationService _setAnnotationService;
-        private readonly PlotComparedMsSpectrumService _plotService;
-        private readonly ICompoundSearchService<ICompoundResult, PeakSpotModel> _compoundSearchService;
+        private readonly SetAnnotationUsecase _setAnnotationService;
+        private readonly PlotComparedMsSpectrumUsecase _plotService;
+        private readonly ICompoundSearchUsecase<ICompoundResult, PeakSpotModel> _compoundSearchService;
         private readonly PeakSpotModel _peakSpot;
         private readonly BusyNotifier _isBusy;
 
-        public CompoundSearchModel(IFileBean fileBean, PeakSpotModel peakSpot, ICompoundSearchService<ICompoundResult, PeakSpotModel> compoundSearchService, PlotComparedMsSpectrumService plotComparedMsSpectrumService, SetAnnotationService setAnnotationService) {
+        public CompoundSearchModel(IFileBean fileBean, PeakSpotModel peakSpot, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel> compoundSearchService, PlotComparedMsSpectrumUsecase plotComparedMsSpectrumService, SetAnnotationUsecase setAnnotationService) {
             File = fileBean ?? throw new ArgumentNullException(nameof(fileBean));
             _peakSpot = peakSpot;
             _compoundSearchService = compoundSearchService;

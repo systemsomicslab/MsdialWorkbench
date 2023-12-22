@@ -6,13 +6,13 @@ using CompMs.MsdialCore.Utility;
 
 namespace CompMs.App.Msdial.Model.Information
 {
-    internal sealed class SetAnnotationService
+    internal sealed class SetAnnotationUsecase
     {
         private readonly IMoleculeProperty _molecule;
         private readonly MsScanMatchResultContainerModel _results;
         private readonly UndoManager _undoManager;
 
-        public SetAnnotationService(IMoleculeProperty molecule, MsScanMatchResultContainerModel results, UndoManager undoManager) {
+        public SetAnnotationUsecase(IMoleculeProperty molecule, MsScanMatchResultContainerModel results, UndoManager undoManager) {
             _molecule = molecule;
             _results = results;
             _undoManager = undoManager;

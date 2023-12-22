@@ -10,9 +10,9 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Lcimms
 {
-    internal sealed class LcimmsCompoundSearchService : BindableBase, ICompoundSearchService<LcimmsCompoundResult, PeakSpotModel>
+    internal sealed class LcimmsCompoundSearchUsecase : BindableBase, ICompoundSearchUsecase<LcimmsCompoundResult, PeakSpotModel>
     {
-        public LcimmsCompoundSearchService(IReadOnlyList<CompoundSearcher> compoundSearchers) {
+        public LcimmsCompoundSearchUsecase(IReadOnlyList<CompoundSearcher> compoundSearchers) {
             CompoundSearchers = compoundSearchers;
         }
 

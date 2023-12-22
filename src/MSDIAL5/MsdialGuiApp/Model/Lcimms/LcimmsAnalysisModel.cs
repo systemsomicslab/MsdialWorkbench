@@ -326,13 +326,13 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 return null;
             }
 
-            PlotComparedMsSpectrumService plotService = new PlotComparedMsSpectrumService(msdec);
+            PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(msdec);
             var compoundSearchModel = new CompoundSearchModel(
                 _analysisFileModel,
                 new PeakSpotModel(peak, msdec),
-                new LcimmsCompoundSearchService(compoundSearchers.Items),
+                new LcimmsCompoundSearchUsecase(compoundSearchers.Items),
                 plotService,
-                new SetAnnotationService(peak, peak.MatchResultsModel, _undoManager));
+                new SetAnnotationUsecase(peak, peak.MatchResultsModel, _undoManager));
             compoundSearchModel.Disposables.Add(plotService);
             return compoundSearchModel;
         }
