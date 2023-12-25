@@ -1,6 +1,4 @@
-﻿using CompMs.Common.Components;
-using CompMs.Common.Enum;
-using CompMs.Common.Extension;
+﻿using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
@@ -50,6 +48,7 @@ namespace CompMs.MsdialGcMsApi.Process
         public async Task RunAsync(AnalysisFileBean analysisFile, Action<int> reportAction, CancellationToken token = default) {
             reportAction?.Invoke((int)PROCESS_START);
             var carbon2RtDict = analysisFile.GetRiDictionary(_riDictionaryInfo);
+            var riHandler = new RetentionIndexHandler(_riCompoundType, carbon2RtDict);
 
             Console.WriteLine("Loading spectral information");
             var provider = _providerFactory.Create(analysisFile);
@@ -59,7 +58,7 @@ namespace CompMs.MsdialGcMsApi.Process
             Console.WriteLine("Peak picking started");
             var reportSpotting = ReportProgress.FromRange(reportAction, PEAKSPOTTING_START, PEAKSPOTTING_END);
             var chromPeakFeatures = _peakSpotting.Run(analysisFile, provider, reportSpotting, token);
-            SetRetentionIndexForChromatogramPeakFeature(chromPeakFeatures, carbon2RtDict);
+            SetRetentionIndex(chromPeakFeatures, riHandler);
             await analysisFile.SetChromatogramPeakFeaturesSummaryAsync(provider, chromPeakFeatures, token).ConfigureAwait(false);
             token.ThrowIfCancellationRequested();
 
@@ -68,7 +67,7 @@ namespace CompMs.MsdialGcMsApi.Process
             var reportDeconvolution = ReportProgress.FromRange(reportAction, DECONVOLUTION_START, DECONVOLUTION_END);
             var spectra = await provider.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
             var msdecResults = _ms1Deconvolution.GetMSDecResults(spectra, chromPeakFeatures, reportDeconvolution);
-            SetRetentionIndexForMSDecResult(msdecResults, carbon2RtDict);
+            SetRetentionIndex(msdecResults, riHandler);
             token.ThrowIfCancellationRequested();
 
             // annotations
@@ -78,6 +77,7 @@ namespace CompMs.MsdialGcMsApi.Process
             token.ThrowIfCancellationRequested();
 
             var spectrumFeatureCollection = _ms1Deconvolution.GetSpectrumFeaturesByQuantMassInformation(analysisFile, spectra, annotatedMSDecResults);
+            SetRetentionIndex(spectrumFeatureCollection, riHandler);
 
             // save
             analysisFile.SaveChromatogramPeakFeatures(chromPeakFeatures);
@@ -89,6 +89,9 @@ namespace CompMs.MsdialGcMsApi.Process
 
         public async Task AnnotateAsync(AnalysisFileBean analysisFile, Action<int> reportAction, CancellationToken token = default) {
             reportAction?.Invoke((int)PROCESS_START);
+            var carbon2RtDict = analysisFile.GetRiDictionary(_riDictionaryInfo);
+            var riHandler = new RetentionIndexHandler(_riCompoundType, carbon2RtDict);
+
             Console.WriteLine("Loading spectral information");
             var provider = _providerFactory.Create(analysisFile);
             token.ThrowIfCancellationRequested();
@@ -102,6 +105,7 @@ namespace CompMs.MsdialGcMsApi.Process
             token.ThrowIfCancellationRequested();
 
             var spectrumFeatureCollection = _ms1Deconvolution.GetSpectrumFeaturesByQuantMassInformation(analysisFile, spectra, annotatedMSDecResults);
+            SetRetentionIndex(spectrumFeatureCollection, riHandler);
 
             // save
             analysisFile.SaveMsdecResultWithAnnotationInfo(mSDecResults);
@@ -114,39 +118,29 @@ namespace CompMs.MsdialGcMsApi.Process
             new FileProcess(providerFactory, container, new CalculateMatchScore(container.DataBases.MetabolomicsDataBases.FirstOrDefault(), container.Parameter.MspSearchParam, container.Parameter.RetentionType)).RunAsync(file, reportAction, token).Wait();
         }
 
-        private void SetRetentionIndexForChromatogramPeakFeature(IReadOnlyList<IChromatogramPeakFeature> peaks, Dictionary<int, float> carbon2RtDict) {
-            if (carbon2RtDict.IsEmptyOrNull()) {
-                return;
-            }
-            if (_riCompoundType == RiCompoundType.Alkanes)
-                ExecuteForKovats(carbon2RtDict, peaks.SelectMany(p => new[] { p.ChromXsLeft, p.ChromXsTop, p.ChromXsRight }));
-            else {
-                ExecuteForFiehnFames(carbon2RtDict, peaks.SelectMany(p => new[] { p.ChromXsLeft, p.ChromXsTop, p.ChromXsRight }));
+        private void SetRetentionIndex(IReadOnlyList<IChromatogramPeakFeature> peaks, RetentionIndexHandler riHandler) {
+            foreach (var peak in peaks) {
+                peak.ChromXsLeft.RI = riHandler.Convert(peak.ChromXsLeft.RT);
+                peak.ChromXsTop.RI = riHandler.Convert(peak.ChromXsTop.RT);
+                peak.ChromXsRight.RI = riHandler.Convert(peak.ChromXsRight.RT);
             }
         }
 
-        private void SetRetentionIndexForMSDecResult(IReadOnlyList<MSDecResult> results, Dictionary<int, float> carbon2RtDict) {
-            if (carbon2RtDict.IsEmptyOrNull()) {
-                return;
-            }
-            if (_riCompoundType == RiCompoundType.Alkanes)
-                ExecuteForKovats(carbon2RtDict, results.SelectMany(r => r.ModelPeakChromatogram.Select(p => p.ChromXs).Append(r.ChromXs)));
-            else {
-                ExecuteForFiehnFames(carbon2RtDict, results.SelectMany(r => r.ModelPeakChromatogram.Select(p => p.ChromXs).Append(r.ChromXs)));
+        private void SetRetentionIndex(IReadOnlyList<MSDecResult> results, RetentionIndexHandler riHandler) {
+            foreach (var result in results) {
+                result.ChromXs.RI = riHandler.Convert(result.ChromXs.RT);
+                foreach (var chrom in result.ModelPeakChromatogram.Select(p => p.ChromXs)) {
+                    chrom.RI = riHandler.Convert(chrom.RT);
+                }
             }
         }
 
-        private void ExecuteForKovats(Dictionary<int, float> carbon2RtDict, IEnumerable<ChromXs> chroms) {
-            foreach (var chrom in chroms) {
-                chrom.RI = new RetentionIndex(RetentionIndexHandler.GetRetentionIndexByAlkanes(carbon2RtDict, (float)chrom.RT.Value));
-            }
-        }
-
-        private void ExecuteForFiehnFames(Dictionary<int, float> famesRtDict, IEnumerable<ChromXs> chroms) {
-            var fiehnRiDict = RetentionIndexHandler.GetFiehnFamesDictionary();
-            var fiehnRiCoeff = RetentionIndexHandler.GetFiehnRiCoefficient(fiehnRiDict, famesRtDict);
-            foreach (var chrom in chroms) {
-                chrom.RI = new RetentionIndex(Math.Round(RetentionIndexHandler.CalculateFiehnRi(fiehnRiCoeff, chrom.RT.Value), 1));
+        private void SetRetentionIndex(SpectrumFeatureCollection spectrumFeatures, RetentionIndexHandler riHandler) {
+            foreach (var spectrumFeature in spectrumFeatures.Items) {
+                var peakFeature = spectrumFeature.QuantifiedChromatogramPeak.PeakFeature;
+                peakFeature.ChromXsLeft.RI = riHandler.Convert(peakFeature.ChromXsLeft.RT);
+                peakFeature.ChromXsTop.RI = riHandler.Convert(peakFeature.ChromXsTop.RT);
+                peakFeature.ChromXsRight.RI = riHandler.Convert(peakFeature.ChromXsRight.RT);
             }
         }
     }
