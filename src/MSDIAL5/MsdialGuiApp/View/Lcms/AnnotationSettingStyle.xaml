@@ -178,10 +178,10 @@
         <ScrollViewer>
             <StackPanel>
                 <TextBlock Text="Mass tolerance"/>
-                <ContentControl Content="{Binding ParameterVM.Value}"
+                <ContentControl Content="{Binding ParameterViewModel.Value}"
                                 ContentTemplate="{StaticResource ToleranceSettingForLcms}"/>
                 <TextBlock Text="Retention time setting"/>
-                <ContentControl Content="{Binding ParameterVM.Value}"
+                <ContentControl Content="{Binding ParameterViewModel.Value}"
                                 ContentTemplate="{StaticResource RetentionTimeSetting}"/>
             </StackPanel>
         </ScrollViewer>
@@ -192,13 +192,13 @@
         <ScrollViewer>
             <StackPanel>
                 <TextBlock Text="Mass tolerance"/>
-                <ContentControl Content="{Binding ParameterVM.Value}"
+                <ContentControl Content="{Binding ParameterViewModel.Value}"
                                 ContentTemplate="{StaticResource ToleranceSettingWithMs2ForLcms}"/>
                 <TextBlock Text="MS2 spectrum cut off"/>
-                <ContentControl Content="{Binding ParameterVM.Value}"
+                <ContentControl Content="{Binding ParameterViewModel.Value}"
                                 ContentTemplate="{StaticResource Ms2Setting}"/>
                 <TextBlock Text="Retention time setting"/>
-                <ContentControl Content="{Binding ParameterVM.Value}"
+                <ContentControl Content="{Binding ParameterViewModel.Value}"
                                 ContentTemplate="{StaticResource RetentionTimeSetting}"/>
             </StackPanel>
         </ScrollViewer>

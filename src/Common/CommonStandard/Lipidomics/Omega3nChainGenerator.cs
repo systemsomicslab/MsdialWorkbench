@@ -251,6 +251,9 @@ namespace CompMs.Common.Lipidomics
 
             public IEnumerable<IDoubleBond> Append(int carbon, IDoubleBond baseBond) {
                 if (_map.TryGetValue((carbon, baseBond.Count), out var bonds)) {
+                    if (baseBond.DecidedCount >= 1) {
+                        return bonds.Where(baseBond.Includes);
+                    }
                     return bonds;
                 }
                 return Array.Empty<IDoubleBond>();
