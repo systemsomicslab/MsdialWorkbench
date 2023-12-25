@@ -211,11 +211,19 @@ namespace CompMs.App.Msdial.Model.Gcms
 
         public void SetUnknown() => PeakPlotModel.SelectedSpectrum.Value?.SetUnknown(UndoManager);
 
-        public GcmsAnalysisCompoundSearchModel CreateCompoundSearchModel() {
-            if (PeakPlotModel.SelectedSpectrum.Value is Ms1BasedSpectrumFeature spectrumFeature) {
-                return new GcmsAnalysisCompoundSearchModel(spectrumFeature, _file, _calculateMatchScore, UndoManager);
+        public CompoundSearchModel<Ms1BasedSpectrumFeature> CreateCompoundSearchModel() {
+            if (!(PeakPlotModel.SelectedSpectrum.Value is Ms1BasedSpectrumFeature spectrumFeature)) {
+                return null;
             }
-            return null;
+            var plotService = new PlotComparedMsSpectrumUsecase(spectrumFeature.Scan);
+            var compoundSearch = new CompoundSearchModel<Ms1BasedSpectrumFeature>(
+                _file,
+                spectrumFeature,
+                new GcmsCompoundSearchUsecase(_calculateMatchScore),
+                plotService,
+                new SetAnnotationUsecase(spectrumFeature.Molecule, spectrumFeature.MatchResults, UndoManager));
+            compoundSearch.Disposables.Add(plotService);
+            return compoundSearch;
         }
 
         // IAnalysisModel interface

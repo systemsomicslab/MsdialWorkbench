@@ -313,16 +313,16 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public MoleculeStructureModel MoleculeStructureModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
-        public ReadOnlyReactivePropertySlim<CompoundSearchModel> CompoundSearchModel { get; }
+        public ReadOnlyReactivePropertySlim<CompoundSearchModel<PeakSpotModel>> CompoundSearchModel { get; }
         public IObservable<bool> CanSearchCompound { get; }
 
-        private CompoundSearchModel CreateCompoundearchModel(ChromatogramPeakFeatureModel peak, MSDecResult msdec, CompoundSearcherCollection compoundSearchers) {
+        private CompoundSearchModel<PeakSpotModel> CreateCompoundearchModel(ChromatogramPeakFeatureModel peak, MSDecResult msdec, CompoundSearcherCollection compoundSearchers) {
             if (peak is null || msdec is null) {
                 return null;
             }
 
             PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(msdec);
-            var compoundSearchModel = new CompoundSearchModel(
+            var compoundSearchModel = new CompoundSearchModel<PeakSpotModel>(
                 _analysisFileModel,
                 new PeakSpotModel(peak, msdec),
                 new LcimmsCompoundSearchUsecase(compoundSearchers.Items),

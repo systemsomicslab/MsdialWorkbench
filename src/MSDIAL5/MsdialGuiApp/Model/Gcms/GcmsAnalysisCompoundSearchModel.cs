@@ -16,6 +16,8 @@ using CompMs.MsdialGcMsApi.Algorithm;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -91,6 +93,16 @@ namespace CompMs.App.Msdial.Model.Gcms
             set => SetProperty(ref _selectedMatchResut, value);
         }
         private MsScanMatchResult _selectedMatchResut;
+
+        public IList SearchMethods => throw new NotImplementedException();
+
+        public object SearchMethod { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        ReadOnlyReactivePropertySlim<MsRefSearchParameterBase> ICompoundSearchModel.SearchParameter => throw new NotImplementedException();
+
+        public ICompoundResult SelectedCompoundResult { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public IReadOnlyList<ICompoundResult> CompoundResults => throw new NotImplementedException();
 
         public CompoundResultCollection Search() {
             var compounds = _calculateMatchScore.CalculateMatches(SpectrumFeature.Scan)

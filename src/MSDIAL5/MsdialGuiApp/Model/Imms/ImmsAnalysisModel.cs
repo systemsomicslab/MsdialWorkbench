@@ -205,13 +205,13 @@ namespace CompMs.App.Msdial.Model.Imms
             }, token);
         }
 
-        public CompoundSearchModel CreateCompoundSearchModel() {
+        public CompoundSearchModel<PeakSpotModel> CreateCompoundSearchModel() {
             if (Target.Value?.InnerModel is null || MsdecResult.Value is null) {
                 return null;
             }
 
             PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(MsdecResult.Value);
-            var compoundSearchModel = new CompoundSearchModel(
+            var compoundSearchModel = new CompoundSearchModel<PeakSpotModel>(
                 AnalysisFileModel,
                 new PeakSpotModel(Target.Value, MsdecResult.Value),
                 new ImmsCompoundSearchUsecase(_compoundSearchers.Items),

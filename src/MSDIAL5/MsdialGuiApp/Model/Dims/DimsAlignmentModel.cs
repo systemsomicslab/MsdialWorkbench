@@ -239,9 +239,9 @@ namespace CompMs.App.Msdial.Model.Dims
         public MoleculeStructureModel MoleculeStructureModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
-        public CompoundSearchModel BuildCompoundSearchModel() {
+        public CompoundSearchModel<PeakSpotModel> BuildCompoundSearchModel() {
             var plotService = new PlotComparedMsSpectrumUsecase(_msdecResult.Value);
-            var compoundSearchModel = new CompoundSearchModel(
+            var compoundSearchModel = new CompoundSearchModel<PeakSpotModel>(
                 _files[Target.Value.RepresentativeFileID],
                 new PeakSpotModel(Target.Value, _msdecResult.Value),
                 new DimsCompoundSearchUsecase(_compoundSearchers.Items),

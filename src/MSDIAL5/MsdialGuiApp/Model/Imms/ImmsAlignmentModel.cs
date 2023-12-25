@@ -225,13 +225,13 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
 
-        public CompoundSearchModel CreateCompoundSearchModel() {
+        public CompoundSearchModel<PeakSpotModel> CreateCompoundSearchModel() {
             if (Target.Value?.innerModel is null || MsdecResult.Value is null) {
                 return null;
             }
 
             PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(MsdecResult.Value);
-            var compoundSearchModel = new CompoundSearchModel(
+            var compoundSearchModel = new CompoundSearchModel<PeakSpotModel>(
                 _files[Target.Value.RepresentativeFileID],
                 new PeakSpotModel(Target.Value, MsdecResult.Value),
                 new ImmsCompoundSearchUsecase(_compoundSearchers.Items),

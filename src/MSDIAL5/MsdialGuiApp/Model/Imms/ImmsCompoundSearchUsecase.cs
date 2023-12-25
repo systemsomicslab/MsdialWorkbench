@@ -33,7 +33,7 @@ namespace CompMs.App.Msdial.Model.Imms
         public object SearchMethod {
             get => SelectedCompoundSearcher;
             set {
-                if (SearchMethod != value || SearchMethods.Contains(value)) {
+                if (SearchMethod != value && SearchMethods.Contains(value)) {
                     SelectedCompoundSearcher = (CompoundSearcher)value;
                     OnPropertyChanged(nameof(SearchMethod));
                 }

@@ -82,7 +82,7 @@
                             Margin="4">
                     <ui:LabeledContent PrependLabel="MS1 tol. [Da]:" Height="25">
                         <TextBox Name="TextBox_Ms1Tolerance"
-                                 DataContext="{Binding ParameterVM.Value}"
+                                 DataContext="{Binding ParameterViewModel.Value}"
                                  Text="{Binding Ms1Tolerance.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  Validation.ErrorTemplate="{StaticResource BasicErrorTemplate}"
                                  HorizontalAlignment="Left" VerticalAlignment="Center"
@@ -92,7 +92,7 @@
                                        Margin="10,0,0,0"
                                        Height="25" >
                         <TextBox Name="TextBox_RtTolerance"
-                                 DataContext="{Binding ParameterVM.Value}"
+                                 DataContext="{Binding ParameterViewModel.Value}"
                                  Text="{Binding RtTolerance.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  Validation.ErrorTemplate="{StaticResource BasicErrorTemplate}"
                                  HorizontalAlignment="Left" VerticalAlignment="Center"
@@ -102,7 +102,7 @@
                                        Margin="10,0,0,0"
                                        Height="25" >
                         <TextBox Name="TextBox_RiTolerance"
-                                 DataContext="{Binding ParameterVM.Value}"
+                                 DataContext="{Binding ParameterViewModel.Value}"
                                  Text="{Binding RiTolerance.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  Validation.ErrorTemplate="{StaticResource BasicErrorTemplate}"
                                  HorizontalAlignment="Left" VerticalAlignment="Center"
@@ -159,7 +159,7 @@
                 <ContentControl Content="{Binding File, Mode=OneTime}"
                                 ContentTemplate="{StaticResource FileInfoTemplate}"
                                 Margin="8"/>
-                <ContentControl Content="{Binding SpectrumFeature, Mode=OneTime}"
+                <ContentControl Content="{Binding PeakSpot, Mode=OneTime}"
                                 ContentTemplate="{StaticResource SpectrumInfoTemplate}"
                                 Margin="8"/>
             </WrapPanel>
@@ -174,7 +174,7 @@
                        HorizontalAlignment="Left" VerticalAlignment="Top"
                        Grid.Row="0"/>
                 <DataGrid Name="DataGrid_LibraryInformation"
-                          ItemsSource="{Binding Path=Compounds.Results, IsAsync=True}"
+                          ItemsSource="{Binding Path=Compounds.Value, IsAsync=True}"
                           SelectedItem="{Binding SelectedCompound.Value, Mode=OneWayToSource}"
                           IsSynchronizedWithCurrentItem="True"
                           CanUserAddRows="False" CanUserDeleteRows="False"
@@ -255,26 +255,26 @@
 
                 </StackPanel.Resources>
                     <ui:LabeledContent PrependLabel="Selected Library ID:"
-                                       Content="{Binding Compounds.Results/LibraryID, Mode=OneWay}"/>
+                                       Content="{Binding Compounds.Value/LibraryID, Mode=OneWay}"/>
                     <ui:LabeledContent PrependLabel="Name:"
-                                       Content="{Binding Compounds.Results/Name, Mode=OneWay}"/>
+                                       Content="{Binding Compounds.Value/Name, Mode=OneWay}"/>
                     <ui:LabeledContent PrependLabel="EI similarity score:"
-                                       Content="{Binding Compounds.Results/WeightedDotProduct, Mode=OneWay}"
+                                       Content="{Binding Compounds.Value/WeightedDotProduct, Mode=OneWay}"
                                        Style="{StaticResource F4}"/>
                     <ui:LabeledContent PrependLabel="Rt similarity score:"
-                                       Content="{Binding Compounds.Results/RtSimilarity, Mode=OneWay}"
+                                       Content="{Binding Compounds.Value/RtSimilarity, Mode=OneWay}"
                                        Style="{StaticResource F4}"/>
                     <ui:LabeledContent PrependLabel="Ri similarity score:"
-                                       Content="{Binding Compounds.Results/RiSimilarity, Mode=OneWay}"
+                                       Content="{Binding Compounds.Value/RiSimilarity, Mode=OneWay}"
                                        Style="{StaticResource F4}"/>
                     <ui:LabeledContent PrependLabel="Dot product similarity score:"
-                                       Content="{Binding Compounds.Results/SimpleDotProduct, Mode=OneWay}"
+                                       Content="{Binding Compounds.Value/SimpleDotProduct, Mode=OneWay}"
                                        Style="{StaticResource F4}"/>
                     <ui:LabeledContent PrependLabel="Reverse dot product similarity score:"
-                                       Content="{Binding Compounds.Results/ReverseDotProduct, Mode=OneWay}"
+                                       Content="{Binding Compounds.Value/ReverseDotProduct, Mode=OneWay}"
                                        Style="{StaticResource F4}"/>
                     <ui:LabeledContent PrependLabel="Total score:"
-                                       Content="{Binding Compounds.Results/TotalScore, StringFormat=F4, Mode=OneWay}"
+                                       Content="{Binding Compounds.Value/TotalScore, StringFormat=F4, Mode=OneWay}"
                                        Style="{StaticResource F4}"/>
             </StackPanel>
 

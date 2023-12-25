@@ -176,9 +176,9 @@ namespace CompMs.App.Msdial.Model.Dims
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
         public FocusNavigatorModel FocusNavigatorModel { get; }
 
-        public CompoundSearchModel BuildCompoundSearchModel() {
+        public CompoundSearchModel<PeakSpotModel> BuildCompoundSearchModel() {
             PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(MsdecResult.Value);
-            var compoundSearchModel = new CompoundSearchModel(
+            var compoundSearchModel = new CompoundSearchModel<PeakSpotModel>(
                 AnalysisFileModel,
                 new PeakSpotModel(Target.Value, MsdecResult.Value),
                 new DimsCompoundSearchUsecase(_compoundSearchers.Items),

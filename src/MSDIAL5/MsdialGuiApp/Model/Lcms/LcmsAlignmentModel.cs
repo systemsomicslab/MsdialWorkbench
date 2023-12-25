@@ -269,9 +269,9 @@ namespace CompMs.App.Msdial.Model.Lcms
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
-        public CompoundSearchModel CreateCompoundSearchModel() {
+        public CompoundSearchModel<PeakSpotModel> CreateCompoundSearchModel() {
             PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(_msdecResult.Value);
-            var compoundSearch =  new CompoundSearchModel(
+            var compoundSearch =  new CompoundSearchModel<PeakSpotModel>(
                 _files[Target.Value.RepresentativeFileID],
                 new PeakSpotModel(Target.Value, _msdecResult.Value),
                 new LcmsCompoundSearchUsecase(_compoundSearchers.Items),

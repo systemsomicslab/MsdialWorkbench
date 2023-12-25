@@ -342,14 +342,14 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
-        public ReadOnlyReactivePropertySlim<CompoundSearchModel> CompoundSearchModel { get; }
+        public ReadOnlyReactivePropertySlim<CompoundSearchModel<PeakSpotModel>> CompoundSearchModel { get; }
 
-        private CompoundSearchModel CreateCompundSearchModel(AlignmentSpotPropertyModel spot, MSDecResult msdec, CompoundSearcherCollection searcherCollection) {
+        private CompoundSearchModel<PeakSpotModel> CreateCompundSearchModel(AlignmentSpotPropertyModel spot, MSDecResult msdec, CompoundSearcherCollection searcherCollection) {
             if (spot is null || msdec is null) {
                 return null;
             }
             var plotService = new PlotComparedMsSpectrumUsecase(msdec);
-            var compoundSearchModel = new CompoundSearchModel(
+            var compoundSearchModel = new CompoundSearchModel<PeakSpotModel>(
                 _files[spot.RepresentativeFileID],
                 new PeakSpotModel(spot, msdec),
                 new LcimmsCompoundSearchUsecase(searcherCollection.Items),
