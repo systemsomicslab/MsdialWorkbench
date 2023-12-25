@@ -1,4 +1,5 @@
 ﻿using MessagePack;
+using System;
 using System.ComponentModel;
 
 namespace CompMs.Common.Components
@@ -289,5 +290,22 @@ namespace CompMs.Common.Components
         }
 
         internal static MzValue Default { get; } = new MzValue(-1, ChromXUnit.Mz);
+    }
+
+    public static class ChromX {
+        public static IChromX Convert(double value, ChromXType type, ChromXUnit unit) {
+            switch (type) {
+                case ChromXType.RT:
+                    return new RetentionTime(value, unit);
+                case ChromXType.RI:
+                    return new RetentionIndex(value, unit);
+                case ChromXType.Drift:
+                    return new DriftTime(value, unit);
+                case ChromXType.Mz:
+                    return new MzValue(value, unit);
+                default:
+                    throw new NotSupportedException(nameof(type));
+            }
+        }
     }
 }

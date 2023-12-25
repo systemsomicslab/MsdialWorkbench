@@ -117,7 +117,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public BarChartViewModel BarChartViewModel { get; }
         public AlignmentEicViewModel AlignmentEicViewModel { get; }
         public AlignmentSpotTableViewModelBase AlignmentSpotTableViewModel { get; }
-        public AlignedChromatogramModificationViewModelLegacy AlignedChromatogramModificationViewModel { get; }
         public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
         public PeakInformationViewModel PeakInformationViewModel { get; }
         public CompoundDetailViewModel CompoundDetailViewModel { get; }

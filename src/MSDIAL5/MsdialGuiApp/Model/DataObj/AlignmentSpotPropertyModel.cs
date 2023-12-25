@@ -42,7 +42,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             get => innerModel.TimesCenter.Value;
             set {
                 if (innerModel.TimesCenter.Value != value) {
-                    innerModel.TimesCenter = new ChromXs(value, ChromXType, ChromXUnit);
+                    innerModel.TimesCenter.SetChromX(ChromX.Convert(value, ChromXType, ChromXUnit));
                     OnPropertyChanged(nameof(TimesCenter));
                 }
             }

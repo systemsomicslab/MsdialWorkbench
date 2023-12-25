@@ -40,7 +40,7 @@ jobs:
       - name: Restore packages
         run: dotnet restore /property:Configuration="Release vendor unsupported"
       - name: Publish
-        run: dotnet publish src/MSDIAL5/MsdialGuiApp/MsdialGuiApp.csproj -p:PublishProfile=FolderProfile -o artifact --configuration "Release vendor unsupported"
+        run: dotnet publish src/MSDIAL5/MsdialGuiApp/MsdialGuiApp.csproj -p:PublishProfile=FolderProfile -o artifact --configuration "Release vendor unsupported" --framework net481
       - name: Copy licenses
         run: Copy-Item -Path LGPL.txt,THIRD-PARTY-LICENSE-README.md,README.md -Destination artifact
       - name: Upload
