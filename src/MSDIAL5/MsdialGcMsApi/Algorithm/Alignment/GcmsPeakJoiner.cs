@@ -180,7 +180,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             foreach (var target in targets) {
                 int? matchIdx = null;
                 double matchFactor = double.MinValue;
-                var lo = SearchCollection.LowerBound(masters, (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value, target.QuantifiedChromatogramPeak.PeakFeature.Mass), (s, p) => (s.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value, s.QuantifiedChromatogramPeak.PeakFeature.Mass).CompareTo(p));
+                var lo = SearchCollection.LowerBound(masters, (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value - rtTol, target.QuantifiedChromatogramPeak.PeakFeature.Mass), (s, p) => (s.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value, s.QuantifiedChromatogramPeak.PeakFeature.Mass).CompareTo(p));
                 for (var i = lo; i < n; i++) {
                     if (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value + rtTol < masters[i].QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value) {
                         break;
@@ -282,7 +282,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             foreach (var target in targets) {
                 int? matchIdx = null;
                 double matchFactor = double.MinValue;
-                var lo = SearchCollection.LowerBound(masters, (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value, target.QuantifiedChromatogramPeak.PeakFeature.Mass), (s, p) => (s.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value, s.QuantifiedChromatogramPeak.PeakFeature.Mass).CompareTo(p));
+                var lo = SearchCollection.LowerBound(masters, (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value - riTol, target.QuantifiedChromatogramPeak.PeakFeature.Mass), (s, p) => (s.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value, s.QuantifiedChromatogramPeak.PeakFeature.Mass).CompareTo(p));
                 for (var i = lo; i < n; i++) {
                     if (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value + riTol < masters[i].QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value) {
                         break;
