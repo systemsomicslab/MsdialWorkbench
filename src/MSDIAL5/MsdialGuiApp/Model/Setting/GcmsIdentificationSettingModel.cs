@@ -25,6 +25,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public RiDictionaryModel(string file, RiDictionaryInfo dictionaryInfo) {
             File = file;
             _dictionaryInfo = dictionaryInfo;
+            DictionaryPath = dictionaryInfo.DictionaryFilePath;
         }
 
         public string File { get; }
@@ -35,8 +36,11 @@ namespace CompMs.App.Msdial.Model.Setting
         private string _dictionaryPath = string.Empty;
 
         public List<RiDictionaryError> Validate(RiCompoundType compoundType) {
-            var dictionary = RiDictionaryInfo.FromDictionaryFile(DictionaryPath);
             var result = new List<RiDictionaryError>();
+            if (!System.IO.File.Exists(DictionaryPath)) {
+                result.Add(RiDictionaryError.FileNotFound(DictionaryPath));
+            }
+            var dictionary = RiDictionaryInfo.FromDictionaryFile(DictionaryPath);
             if (dictionary.IsIncorrectFormat) {
                 result.Add(RiDictionaryError.Incorrect(DictionaryPath));
             }
@@ -75,6 +79,10 @@ namespace CompMs.App.Msdial.Model.Setting
 
             public static List<RiDictionaryError> MergeErrors(List<RiDictionaryError> errors) {
                 return errors.GroupBy(e => e._message).Select(group => new RiDictionaryError(group.SelectMany(e => e._files).ToArray(), group.Key)).ToList();
+            }
+
+            public static RiDictionaryError FileNotFound(string file) {
+                return new RiDictionaryError(file, $"{file} does not found.");
             }
 
             public static RiDictionaryError Incorrect(string file) {
@@ -131,7 +139,7 @@ namespace CompMs.App.Msdial.Model.Setting
             RetentionIndexFiles = new ObservableCollection<RiDictionaryModel>(dictionaries);
             CompoundType = compountType;
             _broker = broker;
-            IsImported = false;
+            IsImported = CheckSetted(RetentionIndexFiles, compountType);
         }
 
         public ObservableCollection<RiDictionaryModel> RetentionIndexFiles { get; }
@@ -176,6 +184,12 @@ namespace CompMs.App.Msdial.Model.Setting
                 IsImported = true;
                 return true;
             }
+        }
+
+        private static bool CheckSetted(ObservableCollection<RiDictionaryModel> retentionIndexFiles, RiCompoundType compoundType) {
+            var errors = retentionIndexFiles.SelectMany(file => file.Validate(compoundType)).ToList();
+            errors = RiDictionaryModel.RiDictionaryError.MergeErrors(errors);
+            return !errors.Any();
         }
 
         public bool TryCommit(MsdialGcmsParameter parameter) {
