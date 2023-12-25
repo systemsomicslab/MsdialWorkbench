@@ -31,12 +31,8 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly PeakFilterModel _peakFilterModel;
         private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _peakSpotFiltering;
         private readonly CalculateMatchScore _calculateMatchScore;
-        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> CHROMATOGRAM_SPOT_SERIALIZER;
+        private readonly ChromatogramSerializer<ChromatogramSpotInfo> _chromatogramSpotSerializer;
 
-        static GcmsMethodModel() {
-            CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT);
-            //CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RI);
-        }
         public GcmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFiles, IMsdialDataStorage<MsdialGcmsParameter> storage, FilePropertiesModel projectBaseParameter, IMessageBroker broker) : base(analysisFileBeanModelCollection, alignmentFiles, projectBaseParameter) {
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _projectBaseParameter = projectBaseParameter;
@@ -45,7 +41,24 @@ namespace CompMs.App.Msdial.Model.Gcms
             _providerFactory = new StandardDataProviderFactory(retry: 5, isGuiProcess: true);
             _peakFilterModel = new PeakFilterModel(DisplayFilter.RefMatched | DisplayFilter.Unknown /*&& DisplayFilter.Blank*/); // TODO: Implement blank filtering
             _peakSpotFiltering = new PeakSpotFiltering<AlignmentSpotPropertyModel>(FilterEnableStatus.All & ~FilterEnableStatus.Dt & ~FilterEnableStatus.Protein).AddTo(Disposables);
-            _calculateMatchScore = new CalculateMatchScore(storage.DataBases.MetabolomicsDataBases[0], storage.Parameter.MspSearchParam, RetentionType.RT); // TODO: RI support
+            switch (storage.Parameter.RetentionType) {
+                case RetentionType.RI:
+                    _calculateMatchScore = new CalculateMatchScore(storage.DataBases.MetabolomicsDataBases[0], storage.Parameter.MspSearchParam, RetentionType.RI);
+                    break;
+                case RetentionType.RT:
+                default:
+                    _calculateMatchScore = new CalculateMatchScore(storage.DataBases.MetabolomicsDataBases[0], storage.Parameter.MspSearchParam, RetentionType.RT);
+                    break;
+            }
+            switch (storage.Parameter.AlignmentIndexType) {
+                case AlignmentIndexType.RI:
+                    _chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT);
+                    break;
+                case AlignmentIndexType.RT:
+                default:
+                    _chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RI);
+                    break;
+            }
         }
 
         public GcmsAnalysisModel SelectedAnalysisModel {
@@ -145,7 +158,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                     aligner.ProviderFactory = _providerFactory; // TODO: I'll remove this later.
 
                     var alignmentFileModel = AlignmentFiles.Files.Last();
-                    var result = await Task.Run(() => alignmentFileModel.RunAlignment(aligner, CHROMATOGRAM_SPOT_SERIALIZER)).ConfigureAwait(false);
+                    var result = await Task.Run(() => alignmentFileModel.RunAlignment(aligner, _chromatogramSpotSerializer)).ConfigureAwait(false);
 
                     var tasks = new[]
                     {
