@@ -78,7 +78,7 @@ namespace CompMs.MsdialCore.DataObj
 
             public int Serialize(ref byte[] bytes, int offset, AnnotatedMSDecResult value, IFormatterResolver formatterResolver) {
                 var currentOffset = offset;
-                currentOffset += MessagePackBinary.WriteArrayHeader(ref bytes, currentOffset, 3);
+                currentOffset += MessagePackBinary.WriteArrayHeader(ref bytes, currentOffset, 4);
                 var memory = new MemoryStream();
                 MsdecResultsWriter.MSDecWriterVer1(memory, value.MSDecResult);
                 var buffer = memory.ToArray();
