@@ -1209,8 +1209,8 @@ namespace CompMs.MsdialCore.Utility {
 
         public static void SetMoleculeMsPropertyAsConfidence(IMoleculeProperty feature, MoleculeMsReference reference) {
             SetMoleculePropertyCore(feature, reference);
-            if (feature is IIonProperty ion) {
-                ion.SetAdductType(reference.AdductType);
+            if (feature is IIonProperty ionProperty) {
+                ionProperty.SetAdductType(reference.AdductType);
             }
 
             if (!reference.CompoundClass.IsEmptyOrNull()) { // meaning lipidomics
@@ -1223,8 +1223,8 @@ namespace CompMs.MsdialCore.Utility {
 
         public static void SetMoleculeMsPropertyAsUnsettled(IMoleculeProperty feature, MoleculeMsReference reference) {
             SetMoleculePropertyCore(feature, reference);
-            if (feature is IIonProperty ion) {
-                ion.SetAdductType(reference.AdductType);
+            if (feature is IIonProperty ionProperty) {
+                ionProperty.SetAdductType(reference.AdductType);
             }
             feature.Name = $"Unsettled: {reference.Name}";
         }

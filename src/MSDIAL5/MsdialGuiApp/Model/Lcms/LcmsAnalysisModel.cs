@@ -248,12 +248,20 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
 
-        public LcmsCompoundSearchModel CreateCompoundSearchModel() {
+        public CompoundSearchModel CreateCompoundSearchModel() {
             if (Target.Value?.InnerModel is null || MsdecResult.Value is null) {
                 return null;
             }
 
-            return new LcmsCompoundSearchModel(AnalysisFileModel, Target.Value, MsdecResult.Value, _compoundSearchers.Items, _undoManager);
+            PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(MsdecResult.Value);
+            var compoundSearch = new CompoundSearchModel(
+                AnalysisFileModel,
+                new PeakSpotModel(Target.Value, MsdecResult.Value),
+                new LcmsCompoundSearchUsecase(_compoundSearchers.Items),
+                plotService,
+                new SetAnnotationUsecase(Target.Value, Target.Value.MatchResultsModel, _undoManager));
+            compoundSearch.Disposables.Add(plotService);
+            return compoundSearch;
         }
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));

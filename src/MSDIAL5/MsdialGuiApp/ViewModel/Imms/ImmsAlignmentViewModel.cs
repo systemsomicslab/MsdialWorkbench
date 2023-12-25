@@ -115,8 +115,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             if (csm is null) {
                 return;
             }
-            using var vm = new ImmsCompoundSearchVM(csm, SetUnknownCommand);
-            _broker.Publish((ICompoundSearchViewModel)vm);
+            using var vm = new ImmsCompoundSearchVM(csm);
+            _broker.Publish<ICompoundSearchViewModel>(vm);
         }
 
         public ICommand InternalStandardSetCommand { get; }

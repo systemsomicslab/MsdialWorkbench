@@ -247,22 +247,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         private static IReadOnlyReactiveProperty<LcmsAnalysisViewModel> ConvertToAnalysisViewModelAsObservable(
             LcmsMethodModel method,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
             IMessageBroker broker,
             FocusControlManager focusManager) {
             if (method is null) {
                 throw new ArgumentNullException(nameof(method));
             }
-
-            if (peakSpotTableService is null) {
-                throw new ArgumentNullException(nameof(peakSpotTableService));
-            }
-
-            if (proteomicsTableService is null) {
-                throw new ArgumentNullException(nameof(proteomicsTableService));
-            }
-
             if (focusManager is null) {
                 throw new ArgumentNullException(nameof(focusManager));
             }
@@ -281,22 +270,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         private static IReadOnlyReactiveProperty<LcmsAlignmentViewModel> ConvertToAlignmentViewModelAsObservable(
             LcmsMethodModel method,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
             IMessageBroker broker,
             FocusControlManager focusControlManager) {
             if (method is null) {
                 throw new ArgumentNullException(nameof(method));
             }
-
-            if (peakSpotTableService is null) {
-                throw new ArgumentNullException(nameof(peakSpotTableService));
-            }
-
-            if (proteomicsTableService is null) {
-                throw new ArgumentNullException(nameof(proteomicsTableService));
-            }
-
             if (focusControlManager is null) {
                 throw new ArgumentNullException(nameof(focusControlManager));
             }
@@ -330,13 +308,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public static LcmsMethodViewModel Create(
                 LcmsMethodModel model,
-                IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-                IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
                 IMessageBroker broker) {
 
             var focusControlManager = new FocusControlManager();
-            var analysisAsObservable = ConvertToAnalysisViewModelAsObservable(model, peakSpotTableService, proteomicsTableService, broker, focusControlManager);
-            var alignmentAsObservable = ConvertToAlignmentViewModelAsObservable(model, peakSpotTableService, proteomicsTableService, broker, focusControlManager);
+            var analysisAsObservable = ConvertToAnalysisViewModelAsObservable(model, broker, focusControlManager);
+            var alignmentAsObservable = ConvertToAlignmentViewModelAsObservable(model, broker, focusControlManager);
 
             return new LcmsMethodViewModel(model, analysisAsObservable, alignmentAsObservable, broker, focusControlManager);
         }

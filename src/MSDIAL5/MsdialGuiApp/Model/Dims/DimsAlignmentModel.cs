@@ -240,7 +240,15 @@ namespace CompMs.App.Msdial.Model.Dims
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
         public CompoundSearchModel BuildCompoundSearchModel() {
-            return new CompoundSearchModel(_files[Target.Value.RepresentativeFileID], Target.Value, _msdecResult.Value, _compoundSearchers, _undoManager);
+            var plotService = new PlotComparedMsSpectrumUsecase(_msdecResult.Value);
+            var compoundSearchModel = new CompoundSearchModel(
+                _files[Target.Value.RepresentativeFileID],
+                new PeakSpotModel(Target.Value, _msdecResult.Value),
+                new DimsCompoundSearchUsecase(_compoundSearchers.Items),
+                plotService,
+                new SetAnnotationUsecase(Target.Value, Target.Value.MatchResultsModel, _undoManager));
+            compoundSearchModel.Disposables.Add(plotService);
+            return compoundSearchModel;
         }
 
         public InternalStandardSetModel InternalStandardSetModel { get; }

@@ -269,8 +269,16 @@ namespace CompMs.App.Msdial.Model.Lcms
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
-        public LcmsCompoundSearchModel CreateCompoundSearchModel() {
-            return new LcmsCompoundSearchModel(_files[Target.Value.RepresentativeFileID], Target.Value, _msdecResult.Value, _compoundSearchers.Items, _undoManager);
+        public CompoundSearchModel CreateCompoundSearchModel() {
+            PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(_msdecResult.Value);
+            var compoundSearch =  new CompoundSearchModel(
+                _files[Target.Value.RepresentativeFileID],
+                new PeakSpotModel(Target.Value, _msdecResult.Value),
+                new LcmsCompoundSearchUsecase(_compoundSearchers.Items),
+                plotService,
+                new SetAnnotationUsecase(Target.Value, Target.Value.MatchResultsModel, _undoManager));
+            compoundSearch.Disposables.Add(plotService);
+            return compoundSearch;
         }
 
         public void SaveSpectra(string filename) {

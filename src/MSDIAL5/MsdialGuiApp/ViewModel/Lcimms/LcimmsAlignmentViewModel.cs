@@ -86,8 +86,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             }.CombineLatestValuesAreAllFalse()
             .ToReactiveCommand()
             .WithSubscribe(() => {
-                using var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value, SetUnknownCommand);
-                broker.Publish((ICompoundSearchViewModel)vm);
+                using var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value);
+                broker.Publish<ICompoundSearchViewModel>(vm);
             })
             .AddTo(Disposables);
 

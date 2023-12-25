@@ -26,17 +26,14 @@ namespace CompMs.App.Msdial.ViewModel.Core
     internal sealed class DatasetViewModel : ViewModelBase
     {
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
-        private readonly IWindowService<PeakSpotTableViewModelBase> proteomicsTableService;
         private readonly IMessageBroker _messageBroker;
 
         public DatasetViewModel(
             IDatasetModel model,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
             IMessageBroker messageBroker) {
             Model = model;
             this.peakSpotTableService = peakSpotTableService;
-            this.proteomicsTableService = proteomicsTableService;
             _messageBroker = messageBroker;
             MethodViewModel = model.ObserveProperty(m => m.Method)
                 .Select(ConvertToViewModel)
@@ -85,7 +82,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
         private MethodViewModel ConvertToViewModel(IMethodModel model) {
             switch (model) {
                 case LcmsMethodModel lc:
-                    return LcmsMethodViewModel.Create(lc, peakSpotTableService, proteomicsTableService, _messageBroker);
+                    return LcmsMethodViewModel.Create(lc, _messageBroker);
                 case ImmsMethodModel im:
                     return ImmsMethodViewModel.Create(im, peakSpotTableService, _messageBroker);
                 case DimsMethodModel di:

@@ -118,8 +118,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             if (csm is null) {
                 return;
             }
-            using var vm = new LcmsCompoundSearchViewModel(csm, SetUnknownCommand);
-            _broker.Publish((ICompoundSearchViewModel)vm);
+            using var vm = new LcmsCompoundSearchViewModel(csm);
+            _broker.Publish<ICompoundSearchViewModel>(vm);
         }
 
         public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));

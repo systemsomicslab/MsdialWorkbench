@@ -4,7 +4,6 @@ using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
-using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Statistics;
@@ -137,8 +136,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             if (csm is null) {
                 return;
             }
-            using var vm = new LcmsCompoundSearchViewModel(csm, SetUnknownCommand);
-            _broker.Publish((ICompoundSearchViewModel)vm);
+            using var vm = new LcmsCompoundSearchViewModel(csm);
+            _broker.Publish<ICompoundSearchViewModel>(vm);
         }
 
         public DelegateCommand SearchAlignmentSpectrumByMoleculerNetworkingCommand => _searchAlignmentSpectrumByMoleculerNetworkingCommand ?? (_searchAlignmentSpectrumByMoleculerNetworkingCommand = new DelegateCommand(SearchAlignmentSpectrumByMoleculerNetworkingMethod));

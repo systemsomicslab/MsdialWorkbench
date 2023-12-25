@@ -205,17 +205,20 @@ namespace CompMs.App.Msdial.Model.Imms
             }, token);
         }
 
-        public ImmsCompoundSearchModel CreateCompoundSearchModel() {
+        public CompoundSearchModel CreateCompoundSearchModel() {
             if (Target.Value?.InnerModel is null || MsdecResult.Value is null) {
                 return null;
             }
 
-            return new ImmsCompoundSearchModel(
+            PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(MsdecResult.Value);
+            var compoundSearchModel = new CompoundSearchModel(
                 AnalysisFileModel,
-                Target.Value,
-                MsdecResult.Value,
-                _compoundSearchers.Items,
-                _undoManager);
+                new PeakSpotModel(Target.Value, MsdecResult.Value),
+                new ImmsCompoundSearchUsecase(_compoundSearchers.Items),
+                plotService,
+                new SetAnnotationUsecase(Target.Value, Target.Value.MatchResultsModel, _undoManager));
+            compoundSearchModel.Disposables.Add(plotService);
+            return compoundSearchModel;
         }
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));

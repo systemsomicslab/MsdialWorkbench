@@ -291,7 +291,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
 
             CompoundSearchModel = target
-                .CombineLatest(MsdecResult, (t, r) => t is null || r is null ? null : new LcimmsCompoundSearchModel(_files[t.RepresentativeFileID], t, r, searcherCollection.Items, _undoManager))
+                .CombineLatest(MsdecResult, (t, r) => CreateCompundSearchModel(t, r, searcherCollection))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -342,7 +342,22 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
-        public ReadOnlyReactivePropertySlim<LcimmsCompoundSearchModel> CompoundSearchModel { get; }
+        public ReadOnlyReactivePropertySlim<CompoundSearchModel> CompoundSearchModel { get; }
+
+        private CompoundSearchModel CreateCompundSearchModel(AlignmentSpotPropertyModel spot, MSDecResult msdec, CompoundSearcherCollection searcherCollection) {
+            if (spot is null || msdec is null) {
+                return null;
+            }
+            var plotService = new PlotComparedMsSpectrumUsecase(msdec);
+            var compoundSearchModel = new CompoundSearchModel(
+                _files[spot.RepresentativeFileID],
+                new PeakSpotModel(spot, msdec),
+                new LcimmsCompoundSearchUsecase(searcherCollection.Items),
+                plotService,
+                new SetAnnotationUsecase(spot, spot.MatchResultsModel, _undoManager));
+            compoundSearchModel.Disposables.Add(plotService);
+            return compoundSearchModel;
+        }
 
         public override void SearchFragment() {
             using (var decLoader = _alignmentFileBean.CreateTemporaryMSDecLoader()) {

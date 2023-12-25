@@ -75,8 +75,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 .ToReactiveCommand()
                 .WithSubscribe(() =>
                 {
-                    using var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value, null);
-                    broker.Publish((ICompoundSearchViewModel)vm);
+                    using var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value);
+                    broker.Publish<ICompoundSearchViewModel>(vm);
                 }).AddTo(Disposables);
 
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);

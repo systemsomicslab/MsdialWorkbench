@@ -14,13 +14,12 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public ProjectViewModel(
             IProjectModel model,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
             IMessageBroker broker) {
             CurrentDataset = model.ToReactivePropertySlimAsSynchronized(m => m.CurrentDataset).AddTo(Disposables);
             Datasets = model.Datasets.ToReadOnlyReactiveCollection().AddTo(Disposables);
 
             CurrentDatasetViewModel = model.ObserveProperty(m => m.CurrentDataset)
-                .Select(m => m is null ? null : new DatasetViewModel(m, peakSpotTableService, proteomicsTableService, broker))
+                .Select(m => m is null ? null : new DatasetViewModel(m, peakSpotTableService, broker))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);

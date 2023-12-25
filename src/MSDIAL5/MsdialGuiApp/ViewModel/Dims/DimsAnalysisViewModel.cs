@@ -93,8 +93,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             if (model is null) {
                 return;
             }
-            using var vm = new DimsCompoundSearchViewModel(model, SetUnknownCommand);
-            _broker.Publish((ICompoundSearchViewModel)vm);
+            using var vm = new DimsCompoundSearchViewModel(model);
+            _broker.Publish<ICompoundSearchViewModel>(vm);
         }
 
         public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
