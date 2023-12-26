@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blazor-ApexCharts" Version="2.2.0" />
     <PackageReference Include="MudBlazor" Version="6.11.1" />
+    <PackageReference Include="Plotly.Blazor" Version="4.1.0" />
     <PackageReference Include="ReactiveProperty.Blazor" Version="9.3.4" />
   </ItemGroup>
 
