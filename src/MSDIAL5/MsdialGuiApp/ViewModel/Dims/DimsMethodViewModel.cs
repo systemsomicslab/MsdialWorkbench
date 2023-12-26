@@ -121,20 +121,16 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         private static IReadOnlyReactiveProperty<DimsAnalysisViewModel> ConvertToAnalysisViewModel(
             DimsMethodModel method,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IMessageBroker broker,
             FocusControlManager focusControlManager) {
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
             ReadOnlyReactivePropertySlim<DimsAnalysisViewModel> result;
             using (var subject = new Subject<DimsAnalysisModel>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AnalysisModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
-                    .Select(m => m is null ? null : new DimsAnalysisViewModel(m, compoundSearchService, peakSpotTableService, broker, focusControlManager))
+                    .Select(m => m is null ? null : new DimsAnalysisViewModel(m, peakSpotTableService, broker, focusControlManager))
                     .DisposePreviousValue()
                     .ToReadOnlyReactivePropertySlim();
                 subject.OnNext(method.AnalysisModel);
@@ -145,13 +141,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         private static IReadOnlyReactiveProperty<DimsAlignmentViewModel> ConvertToAlignmentViewModel(
             DimsMethodModel method,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IMessageBroker broker,
             FocusControlManager focusControlManager) {
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
@@ -162,19 +154,18 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             return method.ObserveProperty(m => m.AlignmentModel)
                 .SkipNull()
-                .Select(m => new DimsAlignmentViewModel(m, compoundSearchService, peakSpotTableService, broker, focusControlManager))
+                .Select(m => new DimsAlignmentViewModel(m, peakSpotTableService, broker, focusControlManager))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim();
         }
 
         public static DimsMethodViewModel Create(
             DimsMethodModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IMessageBroker broker) {
             var focusControlManager = new FocusControlManager();
-            var analysisVM = ConvertToAnalysisViewModel(model, compoundSearchService, peakSpotTableService, broker, focusControlManager);
-            var alignmentVM = ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService, broker, focusControlManager);
+            var analysisVM = ConvertToAnalysisViewModel(model, peakSpotTableService, broker, focusControlManager);
+            var alignmentVM = ConvertToAlignmentViewModel(model, peakSpotTableService, broker, focusControlManager);
             var chromvms = PrepareChromatogramViewModels(analysisVM, alignmentVM);
             var msvms = PrepareMassSpectrumViewModels(analysisVM, alignmentVM);
             return new DimsMethodViewModel(model, broker, analysisVM, alignmentVM, chromvms, msvms, focusControlManager);

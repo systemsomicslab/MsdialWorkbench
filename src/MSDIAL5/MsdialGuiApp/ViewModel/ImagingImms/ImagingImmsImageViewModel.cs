@@ -1,7 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.ImagingImms;
 using CompMs.App.Msdial.ViewModel.Imaging;
 using CompMs.App.Msdial.ViewModel.Information;
-using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
@@ -18,11 +17,11 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
     {
         private readonly ImagingImmsImageModel _model;
 
-        public ImagingImmsImageViewModel(ImagingImmsImageModel model, FocusControlManager focusManager, IMessageBroker broker, IWindowService<CompoundSearchVM> compoundSearchService, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
+        public ImagingImmsImageViewModel(ImagingImmsImageModel model, FocusControlManager focusManager, IMessageBroker broker, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
             _model = model ?? throw new System.ArgumentNullException(nameof(model));
             RoiViewModels = model.ImagingRoiModels.ToReadOnlyReactiveCollection(m => new ImagingRoiViewModel(m)).AddTo(Disposables);
             SelectedRoiViewModels = RoiViewModels.ToFilteredReadOnlyObservableCollection(vm => vm.IsSelected.Value, vm => vm.IsSelected).AddTo(Disposables);
-            ImageResultViewModel = new WholeImageResultViewModel(model.ImageResult, focusManager, compoundSearchService, peakSpotTableService, broker).AddTo(Disposables);
+            ImageResultViewModel = new WholeImageResultViewModel(model.ImageResult, focusManager, peakSpotTableService, broker).AddTo(Disposables);
             var peakInfo = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             var moleculeStructure = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
             RoiEditViewModel = new RoiEditViewModel(model.RoiEditModel).AddTo(Disposables);

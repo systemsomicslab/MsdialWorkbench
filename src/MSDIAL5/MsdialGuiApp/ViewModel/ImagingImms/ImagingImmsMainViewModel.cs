@@ -3,7 +3,6 @@ using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Imaging;
-using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
@@ -24,7 +23,7 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
         private readonly ImagingImmsMethodModel _model;
         private readonly IMessageBroker _broker;
 
-        public ImagingImmsMainViewModel(ImagingImmsMethodModel model, IMessageBroker broker, IWindowService<CompoundSearchVM> compoundSearchService, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
+        public ImagingImmsMainViewModel(ImagingImmsMethodModel model, IMessageBroker broker, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : base(model,
                   new ReactiveProperty<IAnalysisResultViewModel>(), new ReactiveProperty<IAlignmentResultViewModel>(),
                   new ViewModelSwitcher(Observable.Never<ViewModelBase>(), Observable.Never<ViewModelBase>(), new IObservable<ViewModelBase>[0]),
@@ -32,7 +31,7 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _broker = broker;
             var focusManager = new FocusControlManager().AddTo(Disposables);
-            ImageViewModels = model.ImageModels.ToReadOnlyReactiveCollection(m => new ImagingImmsImageViewModel(m, focusManager, broker, compoundSearchService, peakSpotTableService)).AddTo(Disposables);
+            ImageViewModels = model.ImageModels.ToReadOnlyReactiveCollection(m => new ImagingImmsImageViewModel(m, focusManager, broker, peakSpotTableService)).AddTo(Disposables);
             RoiCompareViewModels = new ReadOnlyObservableCollection<ImagingRoiCompareViewModel>(new ObservableCollection<ImagingRoiCompareViewModel>());
             ExportParameterCommand = new AsyncReactiveCommand().WithSubscribe(model.ParameterExporModel.ExportAsync).AddTo(Disposables);
         }
