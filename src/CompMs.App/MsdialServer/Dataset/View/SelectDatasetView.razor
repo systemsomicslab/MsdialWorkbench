@@ -1,5 +1,8 @@
-﻿@using CompMs.App.MsdialServer.Project.Model
+﻿@using CompMs.App.MsdialServer.Dataset.Model
+@using CompMs.App.MsdialServer.Project.Model
+@using CompMs.MsdialCore.DataObj
 @inject ProjectModel _project
+@inject DatasetModel _dataset
 @implements IDisposable
 
 @if (_project.ProjectDataStorage.Value is not null) {
@@ -16,7 +19,7 @@
                 <MudText>Ionization method: @parameter.Ionization</MudText>
             </MudCardContent>
             <MudCardActions>
-                <MudButton Variant="Variant.Text" Color="Color.Primary">Load</MudButton>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@((e) => LoadAsync(parameter))">Load</MudButton>
             </MudCardActions>
         </MudCard>
     }
@@ -29,6 +32,19 @@ else {
 @code {
     private System.Reactive.Disposables.SingleAssignmentDisposable _disposable = new();
 
+    [Parameter]
+    public Action? OnLoaded { get; set; }
+
+    Task LoadAsync(MsdialCore.Parameter.ProjectBaseParameter parameter) {
+        if (_project.ProjectDataStorage.Value is ProjectDataStorage storage) {
+            var idx = storage.ProjectParameters.IndexOf(parameter);
+            var datasetStorage = storage.Storages[idx];
+            _dataset.DatasetStorage.Value = datasetStorage;
+            OnLoaded?.Invoke();
+        }
+        return Task.CompletedTask;
+    }
+
     protected override void OnInitialized() {
         base.OnInitialized();
         _disposable.Disposable = _project.ProjectDataStorage.Subscribe(_ => StateHasChanged());
@@ -38,3 +54,4 @@ else {
         _disposable.Dispose();
     }
 }
+

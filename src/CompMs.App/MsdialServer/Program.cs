@@ -3,6 +3,7 @@ using MudBlazor.Services;
 using CompMs.App.MsdialServer.Project.View;
 using CompMs.App.MsdialServer.Project.Model;
 using CompMs.App.MsdialServer.Project.Service;
+using CompMs.App.MsdialServer.Dataset.Model;
 
 namespace CompMs.App.MsdialServer
 {
@@ -20,10 +21,11 @@ namespace CompMs.App.MsdialServer
             // Project
             builder.Services.AddScoped<ProjectModel>();
             builder.Services.AddScoped<ILoadProjectDataService, LoadProjectDataService>();
-
             // ProjectDataFile
             builder.Services.AddScoped<IListProjectDataViewModel, ListProjectDataViewModel>();
             builder.Services.AddScoped<ISearchProjectDataModel, SearchProjectDataModel>();
+            // Dataset
+            builder.Services.AddScoped<DatasetModel>();
 
             var app = builder.Build();
 
