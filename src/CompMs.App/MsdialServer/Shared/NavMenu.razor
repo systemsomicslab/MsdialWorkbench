@@ -1,6 +1,22 @@
-﻿<MudNavMenu>
+﻿@using CompMs.App.MsdialServer.Dataset.Model
+@inject DatasetModel _dataset
+@implements IDisposable
+
+<MudNavMenu>
     <MudNavLink Href="/" Match="NavLinkMatch.All">Start</MudNavLink>
     <MudNavLink Href="/datasets" Match="NavLinkMatch.Prefix">Datasets</MudNavLink>
+    @if (_dataset.DatasetStorage.Value is { }) {
+        <MudNavGroup Title="Files" Expanded=true>
+            @foreach (var file in _dataset.DatasetStorage.Value.AnalysisFiles) {
+                <MudNavLink>@file.AnalysisFileName</MudNavLink>
+            }
+        </MudNavGroup>
+        <MudNavGroup Title="Alignments" Expanded=true>
+            @foreach (var alignment in _dataset.DatasetStorage.Value.AlignmentFiles) {
+                <MudNavLink>@alignment.FileName</MudNavLink>
+            }
+        </MudNavGroup>
+    }
 
     <MudNavLink Href="/counter" Match="NavLinkMatch.Prefix">Counters</MudNavLink>
     <MudNavGroup Title="Settings" Expanded>
@@ -9,3 +25,14 @@
     </MudNavGroup>
     <MudNavLink Href="/fetchdata" Match="NavLinkMatch.Prefix">Fetch data</MudNavLink>
 </MudNavMenu>
+
+@code {
+    private System.Reactive.Disposables.SingleAssignmentDisposable _disposable = new();
+
+    protected override void OnInitialized() {
+        base.OnInitialized();
+        _disposable.Disposable = _dataset.DatasetStorage.Subscribe(_ => StateHasChanged());
+    }
+
+    public void Dispose() => _disposable.Dispose();
+}
