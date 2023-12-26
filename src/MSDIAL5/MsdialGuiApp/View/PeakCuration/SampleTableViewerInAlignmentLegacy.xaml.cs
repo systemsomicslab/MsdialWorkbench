@@ -209,8 +209,9 @@ namespace CompMs.App.Msdial.View.PeakCuration
                     var chromatograms_ = chromatograms ?? Enumerable.Empty<Chromatogram>();
                     var peaks_ = peaks ?? Enumerable.Empty<AlignmentChromPeakFeatureModel>();
                     var brushes = Enumerable.Range(0, files.Count).Select(ChartBrushes.GetChartBrush);
-                    var rows = files.Zip(chromatograms_, peaks_, brushes, (file, chromatogram, peak, brush) =>
-                        GetSampleTableRow(prop, peak, chromatogram, file, classnameToBrushes.TryGetValue(file.AnalysisFileClass, out var b) ? b : brush, parameter.CentroidMs1Tolerance));
+                    var rows = files.Zip(peaks_, brushes).Where(triple => triple.Item1.AnalysisFileIncluded)
+                        .Zip(chromatograms_, (triple, chromatogram) =>
+                            GetSampleTableRow(prop, triple.Item2, chromatogram, triple.Item1, classnameToBrushes.TryGetValue(triple.Item1.AnalysisFileClass, out var b) ? b : triple.Item3, parameter.CentroidMs1Tolerance));
                     return new SampleTableRows(new ObservableCollection<SampleTableRow>(rows));
                 });
             }).Switch();

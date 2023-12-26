@@ -28,6 +28,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -232,7 +233,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             Disposables.Add(ms2ScanMatching.Connect());
 
             // Ms2 chromatogram
-            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(target, target.Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation)), rawLoader, spectrumProvider, parameter, analysisFileModel.AcquisitionType, broker).AddTo(Disposables);
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(target, target.DefaultIfNull(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation)), rawLoader, spectrumProvider, parameter, analysisFileModel.AcquisitionType, broker).AddTo(Disposables);
 
             // Raw vs Purified spectrum model
             RawPurifiedSpectrumsModel = new RawPurifiedSpectrumsModel(Ms2SpectrumModel.RawRefSpectrumModels.UpperSpectrumModel, Ms2SpectrumModel.DecRefSpectrumModels.UpperSpectrumModel).AddTo(Disposables);
@@ -285,7 +286,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
 
             CompoundSearchModel = target
-                .CombineLatest(msdecResult, (t, r) => t is null || r is null ? null : new LcimmsCompoundSearchModel(analysisFileModel, t, r, compoundSearchers.Items, _undoManager))
+                .CombineLatest(msdecResult, (t, r) => CreateCompoundearchModel(t, r, compoundSearchers))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -317,8 +318,24 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public MoleculeStructureModel MoleculeStructureModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
-        public ReadOnlyReactivePropertySlim<LcimmsCompoundSearchModel> CompoundSearchModel { get; }
+        public ReadOnlyReactivePropertySlim<CompoundSearchModel> CompoundSearchModel { get; }
         public IObservable<bool> CanSearchCompound { get; }
+
+        private CompoundSearchModel CreateCompoundearchModel(ChromatogramPeakFeatureModel peak, MSDecResult msdec, CompoundSearcherCollection compoundSearchers) {
+            if (peak is null || msdec is null) {
+                return null;
+            }
+
+            PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(msdec);
+            var compoundSearchModel = new CompoundSearchModel(
+                _analysisFileModel,
+                new PeakSpotModel(peak, msdec),
+                new LcimmsCompoundSearchUsecase(compoundSearchers.Items),
+                plotService,
+                new SetAnnotationUsecase(peak, peak.MatchResultsModel, _undoManager));
+            compoundSearchModel.Disposables.Add(plotService);
+            return compoundSearchModel;
+        }
 
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
 

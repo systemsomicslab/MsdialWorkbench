@@ -23,19 +23,14 @@ namespace CompMs.App.Msdial.ViewModel.Imms
     internal sealed class ImmsAlignmentViewModel : ViewModelBase, IAlignmentResultViewModel
     {
         private readonly ImmsAlignmentModel _model;
-        private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
         private readonly IMessageBroker _broker;
 
         public ImmsAlignmentViewModel(
             ImmsAlignmentModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IMessageBroker broker,
             FocusControlManager focusControlManager) {
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
@@ -45,7 +40,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }
 
             _model = model;
-            _compoundSearchService = compoundSearchService;
             _peakSpotTableService = peakSpotTableService;
             _broker = broker;
             UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
@@ -117,14 +111,12 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public ICommand SetUnknownCommand { get; }
         public ReactiveCommand SearchCompoundCommand { get; }
         private void SearchCompound() {
-            using (var csm = _model.CreateCompoundSearchModel()) {
-                if (csm is null) {
-                    return;
-                }
-                using (var vm = new ImmsCompoundSearchVM(csm, SetUnknownCommand)) {
-                    _compoundSearchService.ShowDialog(vm);
-                }
+            using var csm = _model.CreateCompoundSearchModel();
+            if (csm is null) {
+                return;
             }
+            using var vm = new ImmsCompoundSearchVM(csm);
+            _broker.Publish<ICompoundSearchViewModel>(vm);
         }
 
         public ICommand InternalStandardSetCommand { get; }
