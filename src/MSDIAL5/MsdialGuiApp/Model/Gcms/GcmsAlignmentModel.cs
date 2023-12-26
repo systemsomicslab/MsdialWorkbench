@@ -56,7 +56,16 @@ namespace CompMs.App.Msdial.Model.Gcms
             UndoManager = new UndoManager().AddTo(Disposables);
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper);
 
-            var chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT); // TODO: RI
+            ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer = null;
+            switch (parameter.AlignmentIndexType) {
+                case AlignmentIndexType.RI:
+                    chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RI);
+                    break;
+                case AlignmentIndexType.RT:
+                default:
+                    chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT);
+                    break;
+            }
             var target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
             _target = target;
 
@@ -80,9 +89,17 @@ namespace CompMs.App.Msdial.Model.Gcms
                 GraphTitle = alignmentFileBean.FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
                 VerticalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
-                HorizontalTitle = "Retention time [min]", // TODO: RI
                 VerticalTitle = "m/z",
             }.AddTo(Disposables);
+            switch (parameter.AlignmentIndexType) {
+                case AlignmentIndexType.RI:
+                    PlotModel.HorizontalTitle = "Retention index";
+                    break;
+                case AlignmentIndexType.RT:
+                default:
+                    PlotModel.HorizontalTitle = "Retention time [min]";
+                    break;
+            }
 
             MatchResultCandidatesModel = new MatchResultCandidatesModel(target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
 
@@ -142,27 +159,47 @@ namespace CompMs.App.Msdial.Model.Gcms
                 peak => peak.Time,
                 peak => peak.Intensity).AddTo(Disposables);
             AlignmentEicModel.Elements.GraphTitle = "EIC";
-            AlignmentEicModel.Elements.HorizontalTitle = "Retention time [min]"; // TODO: RI support
             AlignmentEicModel.Elements.VerticalTitle = "Abundance";
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
+            switch (parameter.AlignmentIndexType) {
+                case AlignmentIndexType.RI:
+                    AlignmentEicModel.Elements.HorizontalTitle = "Retention index";
+                    break;
+                case AlignmentIndexType.RT:
+                default:
+                    AlignmentEicModel.Elements.HorizontalTitle = "Retention time [min]";
+                    break;
+            }
 
             var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
             var filter = peakSpotFiltering.CreateFilter(peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), FilterEnableStatus.All);
             AlignmentSpotTableModel = new GcmsAlignmentSpotTableModel(ms1Spots, target, barBrush, projectBaseParameter.ClassProperties, barItemsLoaderProperty, filter, spectraLoader).AddTo(Disposables);
 
             var peakInformationModel = new PeakInformationAlignmentModel(target).AddTo(Disposables);
-            peakInformationModel.Add(
-                t => new RtPoint(t?.innerModel.TimesCenter.RT.Value ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.ChromXs.RT.Value), // TODO: RI supoprt
-                t => new MzPoint(t?.MassCenter ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.PrecursorMz));
+            peakInformationModel.Add(t => new MzPoint(t?.MassCenter ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.PrecursorMz));
+            switch (parameter.AlignmentIndexType) {
+                case AlignmentIndexType.RI:
+                    peakInformationModel.Add(t => new RiPoint(t?.innerModel.TimesCenter.RI.Value ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.ChromXs.RI.Value));
+                    break;
+                case AlignmentIndexType.RT:
+                    peakInformationModel.Add(t => new RtPoint(t?.innerModel.TimesCenter.RT.Value ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.ChromXs.RT.Value));
+                    break;
+            }
             peakInformationModel.Add(t => new HeightAmount(t?.HeightAverage ?? 0d));
             PeakInformationModel = peakInformationModel;
 
             var compoundDetailModel = new CompoundDetailModel(target.DefaultIfNull(t => t.ObserveProperty(p => p.ScanMatchResult), Observable.Return<MsScanMatchResult>(null)).Switch(), mapper).AddTo(Disposables);
-            compoundDetailModel.Add(
-                r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d),
-                r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d),
-                r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
+            compoundDetailModel.Add(r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d));
+            switch (parameter.RetentionType) {
+                case RetentionType.RI:
+                    compoundDetailModel.Add(r_ => new RiSimilarity(r_?.RiSimilarity ?? 0d));
+                    break;
+                case RetentionType.RT:
+                    compoundDetailModel.Add(r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d));
+                    break;
+            }
+            compoundDetailModel.Add(r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
 
             var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);

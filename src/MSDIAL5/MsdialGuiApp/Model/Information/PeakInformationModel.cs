@@ -337,6 +337,23 @@ namespace CompMs.App.Msdial.Model.Information
         public string Point { get; }
     }
 
+    internal sealed class RiPoint : BindableBase, IPeakPoint
+    {
+        private const string RI_LABEL = "RI";
+
+        public RiPoint(double ri, double? reference = null) {
+            if (reference is null) {
+                Point = ri.ToString("F3");
+            }
+            else {
+                Point = $"{ri:F3}|ref={reference:F3}|diff={Math.Abs(ri - reference.Value):F2}";
+            }
+        }
+
+        public string Label => RI_LABEL;
+        public string Point { get; }
+    }
+
     internal sealed class MzPoint : BindableBase, IPeakPoint
     {
         private const string MZ_LABEL = "m/z";

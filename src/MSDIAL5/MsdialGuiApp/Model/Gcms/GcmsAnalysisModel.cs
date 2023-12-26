@@ -70,8 +70,8 @@ namespace CompMs.App.Msdial.Model.Gcms
 
             IDataProvider provider = providerFactory.Create(file);
             // Eic chart
-            var eicLoader = new QuantMassEicLoader(file.File, provider, peakPickParameter, projectParameter.IonMode, ChromXType.RT, ChromXUnit.Min, peakPickParameter.RetentionTimeBegin, peakPickParameter.RetentionTimeEnd, isConstantRange: true); // TODO: Not only RT, but also RI.
-            var tableEicLoader = new QuantMassEicLoader(file.File, provider, peakPickParameter, projectParameter.IonMode, ChromXType.RT, ChromXUnit.Min, peakPickParameter.RetentionTimeBegin, peakPickParameter.RetentionTimeEnd, isConstantRange: false); // TODO: Not only RT, but also RI.
+            var eicLoader = new QuantMassEicLoader(file.File, provider, peakPickParameter, projectParameter.IonMode, ChromXType.RT, ChromXUnit.Min, peakPickParameter.RetentionTimeBegin, peakPickParameter.RetentionTimeEnd, isConstantRange: true);
+            var tableEicLoader = new QuantMassEicLoader(file.File, provider, peakPickParameter, projectParameter.IonMode, ChromXType.RT, ChromXUnit.Min, peakPickParameter.RetentionTimeBegin, peakPickParameter.RetentionTimeEnd, isConstantRange: false);
             EicLoader = tableEicLoader;
             EicModel = EicModel.Create(selectedSpectrum, eicLoader, string.Empty, string.Empty, string.Empty).AddTo(_disposables);
             EicModel.VerticalTitle = "Abundance";
@@ -120,9 +120,9 @@ namespace CompMs.App.Msdial.Model.Gcms
                 .Select(chromatograms => chromatograms.Select(chromatogram => chromatogram.ChromatogramSmoothing(CompMs.Common.Enum.SmoothingMethod.LinearWeightedMovingAverage, peakPickParameter.SmoothingLevel)))
                 .Select(chromatograms => new ChromatogramsModel(
                     "EI chromatograms",
-                    chromatograms.Zip(ChartBrushes.GetSolidColorPenList(1d, DashStyles.Dash), (chromatogram, pen) => new DisplayChromatogram(chromatogram.Peaks.Select(peak_ => peak_.ConvertToChromatogramPeak(ChromXType.RT, ChromXUnit.Min)).ToList(), linePen: pen, title: chromatogram.ExtractedMz.ToString())).ToList(), // TODO: [magic number] ChromXType, ChromXUnit
+                    chromatograms.Zip(ChartBrushes.GetSolidColorPenList(1d, DashStyles.Dash), (chromatogram, pen) => new DisplayChromatogram(chromatogram.Peaks.Select(peak_ => peak_.ConvertToChromatogramPeak(ChromXType.RT, ChromXUnit.Min)).ToList(), linePen: pen, title: chromatogram.ExtractedMz.ToString())).ToList(),
                     "EI chromatograms",
-                    "Retention time [min]", // TODO: [magic number] Retention time 
+                    "Retention time [min]",
                     "Abundance"));
             var rawChromatogram = new SelectableChromatogram(rawChromatograms, new ReactivePropertySlim<bool>(false), Observable.Return(true).ToReadOnlyReactivePropertySlim()).AddTo(_disposables);
             var deconvolutedChromatograms = selectedSpectrum.SkipNull()
@@ -132,7 +132,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                     "EI chromatograms",
                     chromatograms.Zip(ChartBrushes.GetSolidColorPenList(1d, DashStyles.Solid), (chromatogram, pen) => new DisplayChromatogram(chromatogram, linePen: pen, title: chromatogram.FirstOrDefault()?.Mass.ToString() ?? "NA")).ToList(),
                     "EI chromatograms",
-                    "Retention time [min]", // TODO: [magic number] Retention time 
+                    "Retention time [min]",
                     "Abundance"));
             var deconvolutedChromatogram = new SelectableChromatogram(deconvolutedChromatograms, new ReactivePropertySlim<bool>(true), Observable.Return(true).ToReadOnlyReactivePropertySlim()).AddTo(_disposables);
             EiChromatogramsModel = new EiChromatogramsModel(rawChromatogram, deconvolutedChromatogram, broker).AddTo(_disposables);
