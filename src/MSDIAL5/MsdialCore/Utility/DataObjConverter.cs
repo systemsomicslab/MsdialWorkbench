@@ -8,7 +8,7 @@ using System.Linq;
 namespace CompMs.MsdialCore.Utility
 {
     public static class DataObjConverter {
-        public static void SetAlignmentChromPeakFeatureFromSpectrumFeature(AlignmentChromPeakFeature alignmentPeak, SpectrumFeature spectrum) {
+        public static void SetAlignmentChromPeakFeatureFromSpectrumFeature(AlignmentChromPeakFeature alignmentPeak, SpectrumFeature spectrum, ChromXType mainType) {
             var scan = spectrum.AnnotatedMSDecResult.MSDecResult;
             var peak = spectrum.QuantifiedChromatogramPeak;
             var molecule = spectrum.AnnotatedMSDecResult.Molecule;
@@ -20,8 +20,11 @@ namespace CompMs.MsdialCore.Utility
             alignmentPeak.MS1RawSpectrumIdLeft = peak.MS1RawSpectrumIdLeft;
             alignmentPeak.MS1RawSpectrumIdRight = peak.MS1RawSpectrumIdRight;
             alignmentPeak.ChromXsTop = peak.PeakFeature.ChromXsTop;
+            alignmentPeak.ChromXsTop.MainType = mainType;
             alignmentPeak.ChromXsLeft = peak.PeakFeature.ChromXsLeft;
+            alignmentPeak.ChromXsLeft.MainType = mainType;
             alignmentPeak.ChromXsRight = peak.PeakFeature.ChromXsRight;
+            alignmentPeak.ChromXsRight.MainType = mainType;
             alignmentPeak.PeakHeightTop = peak.PeakFeature.PeakHeightTop;
             alignmentPeak.PeakHeightLeft = peak.PeakFeature.PeakHeightLeft;
             alignmentPeak.PeakHeightRight = peak.PeakFeature.PeakHeightRight;

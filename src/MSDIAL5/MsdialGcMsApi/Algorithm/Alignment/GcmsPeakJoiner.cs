@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CompMs.Common.Algorithm.Scoring;
+﻿using CompMs.Common.Algorithm.Scoring;
+using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
@@ -12,6 +10,9 @@ using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
 {
@@ -60,12 +61,12 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             return result.TotalScore;
         }
 
-        protected static List<AlignmentSpotProperty> GetSpots(IReadOnlyCollection<SpectrumFeature> masters, IEnumerable<AnalysisFileBean> analysisFiles) {
+        protected List<AlignmentSpotProperty> GetSpots(IReadOnlyCollection<SpectrumFeature> masters, IEnumerable<AnalysisFileBean> analysisFiles, ChromXType mainType) {
             var masterId = 0;
-            return InitSpots(masters, analysisFiles, ref masterId);
+            return InitSpots(masters, analysisFiles, mainType, ref masterId);
         }
 
-        protected static List<AlignmentSpotProperty> InitSpots(IEnumerable<SpectrumFeature> scanProps, IEnumerable<AnalysisFileBean> analysisFiles, ref int masterId) {
+        protected List<AlignmentSpotProperty> InitSpots(IEnumerable<SpectrumFeature> scanProps, IEnumerable<AnalysisFileBean> analysisFiles, ChromXType mainType, ref int masterId) {
             if (scanProps == null) return new List<AlignmentSpotProperty>();
 
             var spots = new List<AlignmentSpotProperty>();
@@ -79,6 +80,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
                     IonMode = scanProp.AnnotatedMSDecResult.MSDecResult.IonMode,
                     InternalStandardAlignmentID = -1
                 };
+                spot.TimesCenter.MainType = mainType;
 
                 var peaks = new List<AlignmentChromPeakFeature>();
                 foreach (var file in analysisFiles) {
@@ -100,21 +102,21 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
         }
     }
 
-    public class GcmsRTPeakJoiner : GcmsPeakJoiner
+    internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
     {
-        private readonly double mzTol, rtTol;
-        private readonly double mzBucket, rtBucket;
-        private readonly int mzWidth, rtWidth;
+        private readonly double _mzTol, _rtTol;
+        private readonly double _mzBucket, _rtBucket;
+        private readonly int _mzWidth, _rtWidth;
 
         public GcmsRTPeakJoiner(RiCompoundType riCompoundType, MsRefSearchParameterBase msMatchParam, AlignmentBaseParameter alignmentParameter)
             : base(AlignmentIndexType.RT, riCompoundType, msMatchParam, ChromXsComparer.RTComparer, alignmentParameter) {
 
-            this.mzTol = alignmentParameter.Ms1AlignmentTolerance;
-            this.mzBucket = alignmentParameter.Ms1AlignmentTolerance * 2;
-            this.mzWidth = (int)Math.Ceiling(this.mzTol / this.mzBucket);
-            this.rtTol = alignmentParameter.RetentionTimeAlignmentTolerance;
-            this.rtBucket = alignmentParameter.RetentionTimeAlignmentTolerance * 2;
-            this.rtWidth = (int)Math.Ceiling(this.rtTol / this.rtBucket);
+            _mzTol = alignmentParameter.Ms1AlignmentTolerance;
+            _mzBucket = alignmentParameter.Ms1AlignmentTolerance * 2;
+            _mzWidth = (int)Math.Ceiling(this._mzTol / this._mzBucket);
+            _rtTol = alignmentParameter.RetentionTimeAlignmentTolerance;
+            _rtBucket = alignmentParameter.RetentionTimeAlignmentTolerance * 2;
+            _rtWidth = (int)Math.Ceiling(this._rtTol / this._rtBucket);
         }
 
         protected override List<SpectrumFeature> GetMasterList(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceID) {
@@ -124,7 +126,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             }
             var spectrumFeatures = referenceFile.LoadSpectrumFeatures();
             var master = spectrumFeatures.Items
-                .GroupBy(prop => ((int)Math.Ceiling(prop.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value / rtBucket), (int)Math.Ceiling(prop.QuantifiedChromatogramPeak.PeakFeature.Mass / mzBucket)))
+                .GroupBy(prop => ((int)Math.Ceiling(prop.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value / _rtBucket), (int)Math.Ceiling(prop.QuantifiedChromatogramPeak.PeakFeature.Mass / _mzBucket)))
                 .ToDictionary(group => group.Key, group => group.ToList());
 
             foreach (var analysisFile in analysisFiles) {
@@ -144,10 +146,10 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
         }
 
         private bool SetToMaster(IDictionary<(int, int), List<SpectrumFeature>> master, SpectrumFeature target) {
-            var mzTarget = (int)Math.Ceiling(target.QuantifiedChromatogramPeak.PeakFeature.Mass / mzBucket);
-            var rtTarget = (int)Math.Ceiling(target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value / rtBucket);
-            for(int rtIdc = rtTarget - rtWidth; rtIdc <= rtTarget + rtWidth; rtIdc++) { // in many case, rtIdc is from rtTarget - 1 to rtTarget + 1
-                for(int mzIdc = mzTarget - mzWidth; mzIdc <= mzTarget + mzWidth; mzIdc++) { // in many case, mzIdc is from mzTarget - 1 to mzTarget + 1
+            var mzTarget = (int)Math.Ceiling(target.QuantifiedChromatogramPeak.PeakFeature.Mass / _mzBucket);
+            var rtTarget = (int)Math.Ceiling(target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value / _rtBucket);
+            for(int rtIdc = rtTarget - _rtWidth; rtIdc <= rtTarget + _rtWidth; rtIdc++) { // in many case, rtIdc is from rtTarget - 1 to rtTarget + 1
+                for(int mzIdc = mzTarget - _mzWidth; mzIdc <= mzTarget + _mzWidth; mzIdc++) { // in many case, mzIdc is from mzTarget - 1 to mzTarget + 1
                     if (master.ContainsKey((rtIdc, mzIdc))) {
                         foreach (var candidate in master[(rtIdc, mzIdc)]) {
                             if (IsSimilarTo(candidate, target)) {
@@ -165,7 +167,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
         }
 
         protected override List<AlignmentSpotProperty> JoinAll(List<SpectrumFeature> master, IReadOnlyList<AnalysisFileBean> analysisFiles) {
-            var result = GetSpots(master, analysisFiles);
+            var result = GetSpots(master, analysisFiles, ChromXType.RT);
             foreach (var analysisFile in analysisFiles) {
                 var spectrumFeatures = analysisFile.LoadSpectrumFeatures();
                 AlignPeaksToMaster(result, master, spectrumFeatures.Items, analysisFile.AnalysisFileId);
@@ -180,9 +182,9 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             foreach (var target in targets) {
                 int? matchIdx = null;
                 double matchFactor = double.MinValue;
-                var lo = SearchCollection.LowerBound(masters, (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value - rtTol, target.QuantifiedChromatogramPeak.PeakFeature.Mass), (s, p) => (s.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value, s.QuantifiedChromatogramPeak.PeakFeature.Mass).CompareTo(p));
+                var lo = SearchCollection.LowerBound(masters, (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value - _rtTol, target.QuantifiedChromatogramPeak.PeakFeature.Mass), (s, p) => (s.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value, s.QuantifiedChromatogramPeak.PeakFeature.Mass).CompareTo(p));
                 for (var i = lo; i < n; i++) {
-                    if (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value + rtTol < masters[i].QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value) {
+                    if (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value + _rtTol < masters[i].QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value) {
                         break;
                     }
                     if (!IsSimilarTo(masters[i], target)) {
@@ -195,26 +197,26 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
                     }
                 }
                 if (matchIdx.HasValue) {
-                    DataObjConverter.SetAlignmentChromPeakFeatureFromSpectrumFeature(spots[matchIdx.Value].AlignedPeakProperties[fileId], target);
+                    DataObjConverter.SetAlignmentChromPeakFeatureFromSpectrumFeature(spots[matchIdx.Value].AlignedPeakProperties[fileId], target, ChromXType.RT);
                 }
             }
         }
     }
 
-    public class GcmsRIPeakJoiner : GcmsPeakJoiner
+    internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
     {
-        private readonly double mzTol, riTol;
-        private readonly double mzBucket, riBucket;
-        private readonly int mzWidth, riWidth;
+        private readonly double _mzTol, _riTol;
+        private readonly double _mzBucket, _riBucket;
+        private readonly int _mzWidth, _riWidth;
 
         public GcmsRIPeakJoiner(RiCompoundType riCompoundType, MsRefSearchParameterBase msMatchParam, double riTol, AlignmentBaseParameter alignmentParameter)
             : base(AlignmentIndexType.RI, riCompoundType, msMatchParam, ChromXsComparer.RIComparer, alignmentParameter) {
-            this.mzTol = alignmentParameter.Ms1AlignmentTolerance;
-            this.mzBucket = alignmentParameter.Ms1AlignmentTolerance * 2;
-            this.mzWidth = (int)Math.Ceiling(this.mzTol / this.mzBucket);
-            this.riTol = riTol;
-            this.riBucket = riTol * 2;
-            this.riWidth = (int)Math.Ceiling(this.riTol / this.riBucket);
+            _mzTol = alignmentParameter.Ms1AlignmentTolerance;
+            _mzBucket = alignmentParameter.Ms1AlignmentTolerance * 2;
+            _mzWidth = (int)Math.Ceiling(_mzTol / _mzBucket);
+            _riTol = riTol;
+            _riBucket = riTol * 2;
+            _riWidth = (int)Math.Ceiling(_riTol / _riBucket);
         }
 
         protected override List<SpectrumFeature> GetMasterList(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceId) {
@@ -225,7 +227,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             }
 
             var master = referenceFile.LoadSpectrumFeatures().Items
-                .GroupBy(spectrum => ((int)Math.Ceiling(spectrum.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value / riBucket), (int)Math.Ceiling(spectrum.QuantifiedChromatogramPeak.PeakFeature.Mass / mzBucket)))
+                .GroupBy(spectrum => ((int)Math.Ceiling(spectrum.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value / _riBucket), (int)Math.Ceiling(spectrum.QuantifiedChromatogramPeak.PeakFeature.Mass / _mzBucket)))
                  .ToDictionary(group => group.Key, group => group.ToList());
 
             foreach (var analysisFile in analysisFiles) {
@@ -245,10 +247,10 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
         }
 
         private bool SetToMaster(IDictionary<(int, int), List<SpectrumFeature>> master, SpectrumFeature target) {
-            var mzTarget = (int)Math.Ceiling(target.QuantifiedChromatogramPeak.PeakFeature.Mass / mzBucket);
-            var riTarget = (int)Math.Ceiling(target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value / riBucket);
-            for(int riIdc = riTarget - riWidth; riIdc <= riTarget + riWidth; riIdc++) { // in many case, riIdc is from riTarget - 1 to riTarget + 1
-                for(int mzIdc = mzTarget - mzWidth; mzIdc <= mzTarget + mzWidth; mzIdc++) { // in many case, mzIdc is from mzTarget - 1 to mzTarget + 1
+            var mzTarget = (int)Math.Ceiling(target.QuantifiedChromatogramPeak.PeakFeature.Mass / _mzBucket);
+            var riTarget = (int)Math.Ceiling(target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value / _riBucket);
+            for(int riIdc = riTarget - _riWidth; riIdc <= riTarget + _riWidth; riIdc++) { // in many case, riIdc is from riTarget - 1 to riTarget + 1
+                for(int mzIdc = mzTarget - _mzWidth; mzIdc <= mzTarget + _mzWidth; mzIdc++) { // in many case, mzIdc is from mzTarget - 1 to mzTarget + 1
                     if (master.ContainsKey((riIdc, mzIdc))) {
                         foreach (var candidate in master[(riIdc, mzIdc)]) {
                             if (IsSimilarTo(candidate, target)) {
@@ -266,7 +268,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
         }
 
         protected override List<AlignmentSpotProperty> JoinAll(List<SpectrumFeature> master, IReadOnlyList<AnalysisFileBean> analysisFiles) {
-            var result = GetSpots(master, analysisFiles);
+            var result = GetSpots(master, analysisFiles, ChromXType.RI);
             
             foreach (var analysisFile in analysisFiles) {
                 var spectrums = analysisFile.LoadSpectrumFeatures();
@@ -282,9 +284,9 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             foreach (var target in targets) {
                 int? matchIdx = null;
                 double matchFactor = double.MinValue;
-                var lo = SearchCollection.LowerBound(masters, (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value - riTol, target.QuantifiedChromatogramPeak.PeakFeature.Mass), (s, p) => (s.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value, s.QuantifiedChromatogramPeak.PeakFeature.Mass).CompareTo(p));
+                var lo = SearchCollection.LowerBound(masters, (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value - _riTol, target.QuantifiedChromatogramPeak.PeakFeature.Mass), (s, p) => (s.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value, s.QuantifiedChromatogramPeak.PeakFeature.Mass).CompareTo(p));
                 for (var i = lo; i < n; i++) {
-                    if (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value + riTol < masters[i].QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value) {
+                    if (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value + _riTol < masters[i].QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value) {
                         break;
                     }
                     if (!IsSimilarTo(masters[i], target)) {
@@ -297,7 +299,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
                     }
                 }
                 if (matchIdx.HasValue) {
-                    DataObjConverter.SetAlignmentChromPeakFeatureFromSpectrumFeature(spots[matchIdx.Value].AlignedPeakProperties[fileId], target);
+                    DataObjConverter.SetAlignmentChromPeakFeatureFromSpectrumFeature(spots[matchIdx.Value].AlignedPeakProperties[fileId], target, ChromXType.RI);
                 }
             }
         }

@@ -9,6 +9,7 @@ using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
@@ -156,9 +157,11 @@ namespace CompMs.App.Msdial.Model.Gcms
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
 
             var peakInformationModel = new PeakInformationMs1BasedModel(selectedSpectrum).AddTo(_disposables);
-            peakInformationModel.Add(
-                t => new RtPoint(t?.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value ?? 0d, dbMapper.MoleculeMsRefer(t.MatchResults.Representative)?.ChromXs.RT.Value),
-                t => new MzPoint(t?.QuantifiedChromatogramPeak.PeakFeature.Mass ?? 0d, dbMapper.MoleculeMsRefer(t.MatchResults.Representative)?.PrecursorMz));
+            peakInformationModel.Add(t => new RtPoint(t?.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value ?? 0d, dbMapper.MoleculeMsRefer(t.MatchResults.Representative)?.ChromXs.RT.Value));
+            if (parameter.RetentionType == RetentionType.RI) {
+                peakInformationModel.Add(t => new RiPoint(t?.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value ?? 0d, dbMapper.MoleculeMsRefer(t.MatchResults.Representative)?.ChromXs.RI.Value));
+            }
+            peakInformationModel.Add(t => new MzPoint(t?.QuantifiedChromatogramPeak.PeakFeature.Mass ?? 0d, dbMapper.MoleculeMsRefer(t.MatchResults.Representative)?.PrecursorMz));
             peakInformationModel.Add(
                 t => new HeightAmount(t?.QuantifiedChromatogramPeak.PeakFeature.PeakHeightTop ?? 0d),
                 t => new AreaAmount(t?.QuantifiedChromatogramPeak.PeakFeature.PeakAreaAboveZero ?? 0d));
@@ -167,8 +170,11 @@ namespace CompMs.App.Msdial.Model.Gcms
             var compoundDetailModel = new CompoundDetailModel(selectedSpectrum.SkipNull().SelectSwitch(t => t.ObserveProperty(p => p.MatchResults.Representative)).Publish().RefCount(), dbMapper).AddTo(_disposables);
             compoundDetailModel.Add(
                 r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d),
-                r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d),
-                r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
+                r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d));
+            if (parameter.RetentionType == RetentionType.RI) {
+                compoundDetailModel.Add(r_ => new RiSimilarity(r_?.RiSimilarity ?? 0d));
+            }
+            compoundDetailModel.Add(r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
             var moleculeStructureModel = new MoleculeStructureModel().AddTo(_disposables);
             MoleculeStructureModel = moleculeStructureModel;

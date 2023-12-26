@@ -12,22 +12,39 @@ namespace CompMs.Common.Utility {
     public sealed class RetentionIndexHandler {
         private readonly RiCompoundType _riCompoundType;
         private readonly Dictionary<int, float> _carbon2RtDict;
+        private readonly FiehnRiCoefficient _fiehnRiCoefficient;
 
         public RetentionIndexHandler(RiCompoundType riCompoundType, Dictionary<int, float> carbon2RtDict)
         {
             _riCompoundType = riCompoundType;
             _carbon2RtDict = carbon2RtDict;
+            if (riCompoundType == RiCompoundType.Fames) {
+                _fiehnRiCoefficient = GetFiehnRiCoefficient(carbon2RtDict, GetFiehnFamesDictionary());
+            }
         }
 
         public RetentionIndex Convert(RetentionTime retentionTime) {
             if (_carbon2RtDict.IsEmptyOrNull()) {
                 return RetentionIndex.Default;
             }
-            if (_riCompoundType == RiCompoundType.Alkanes) {
-                return ConvertWithKovats(retentionTime);
+            switch (_riCompoundType) {
+                case RiCompoundType.Alkanes:
+                    return ConvertWithKovats(retentionTime);
+                case RiCompoundType.Fames:
+                    return ConvertWithFiehnFames(retentionTime);
+                default:
+                    throw new NotSupportedException($"RI compound type: {_riCompoundType}");
             }
-            else {
-                return ConvertWithFiehnFames(retentionTime);
+        }
+
+        public RetentionTime ConvertBack(RetentionIndex retentionIndex) {
+            switch (_riCompoundType) {
+                case RiCompoundType.Alkanes:
+                    return new RetentionTime(ConvertKovatsRiToRetentiontime(_carbon2RtDict, retentionIndex.Value));
+                case RiCompoundType.Fames:
+                    return new RetentionTime(ConvertFiehnRiToRetentionTime(_fiehnRiCoefficient, retentionIndex.Value));
+                default:
+                    throw new NotSupportedException($"RI compound type: {_riCompoundType}");
             }
         }
 

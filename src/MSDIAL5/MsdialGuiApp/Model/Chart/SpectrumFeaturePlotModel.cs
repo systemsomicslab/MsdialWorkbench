@@ -22,10 +22,10 @@ namespace CompMs.App.Msdial.Model.Chart
             SelectedChromatogramPeak = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
 
 
-            HorizontalLabel = new ReactivePropertySlim<string>("Retention time [min]").AddTo(Disposables); // TODO: RI support
+            HorizontalLabel = new ReactivePropertySlim<string>("Retention time [min]").AddTo(Disposables);
             VerticalLabel = new ReactivePropertySlim<string>("m/z").AddTo(Disposables);
 
-            Title = new[] // TODO: RI support
+            Title = new[]
             {
                 SelectedSpectrum.Where(s => s != null)
                     .Select(s => $"Scan: {s.Scan.ScanID} RT: {s.Scan.ChromXs.RT.Value} min Quant mass: m/z {s.QuantifiedChromatogramPeak.PeakFeature.Mass}"),
@@ -36,7 +36,7 @@ namespace CompMs.App.Msdial.Model.Chart
             .AddTo(Disposables);
 
             HorizontalAxis = peaks.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default).Throttle(TimeSpan.FromSeconds(.01d))
-                .Select(_ => peaks.Any() ? new Range(peaks.Min(p => p.RT.Value), peaks.Max(p => p.RT.Value)) : new Range(0, 1)) // TODO: RI support
+                .Select(_ => peaks.Any() ? new Range(peaks.Min(p => p.RT.Value), peaks.Max(p => p.RT.Value)) : new Range(0, 1))
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
             VerticalAxis = peaks.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default).Throttle(TimeSpan.FromSeconds(.01d))

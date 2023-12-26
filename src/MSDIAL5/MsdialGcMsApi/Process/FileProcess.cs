@@ -48,7 +48,7 @@ namespace CompMs.MsdialGcMsApi.Process
         public async Task RunAsync(AnalysisFileBean analysisFile, Action<int> reportAction, CancellationToken token = default) {
             reportAction?.Invoke((int)PROCESS_START);
             var carbon2RtDict = analysisFile.GetRiDictionary(_riDictionaryInfo);
-            var riHandler = new RetentionIndexHandler(_riCompoundType, carbon2RtDict);
+            var riHandler = carbon2RtDict is null ? null : new RetentionIndexHandler(_riCompoundType, carbon2RtDict);
 
             Console.WriteLine("Loading spectral information");
             var provider = _providerFactory.Create(analysisFile);
@@ -90,7 +90,7 @@ namespace CompMs.MsdialGcMsApi.Process
         public async Task AnnotateAsync(AnalysisFileBean analysisFile, Action<int> reportAction, CancellationToken token = default) {
             reportAction?.Invoke((int)PROCESS_START);
             var carbon2RtDict = analysisFile.GetRiDictionary(_riDictionaryInfo);
-            var riHandler = new RetentionIndexHandler(_riCompoundType, carbon2RtDict);
+            var riHandler = carbon2RtDict is null ? null : new RetentionIndexHandler(_riCompoundType, carbon2RtDict);
 
             Console.WriteLine("Loading spectral information");
             var provider = _providerFactory.Create(analysisFile);
@@ -119,6 +119,9 @@ namespace CompMs.MsdialGcMsApi.Process
         }
 
         private void SetRetentionIndex(IReadOnlyList<IChromatogramPeakFeature> peaks, RetentionIndexHandler riHandler) {
+            if (riHandler is null) {
+                return;
+            }
             foreach (var peak in peaks) {
                 peak.ChromXsLeft.RI = riHandler.Convert(peak.ChromXsLeft.RT);
                 peak.ChromXsTop.RI = riHandler.Convert(peak.ChromXsTop.RT);
@@ -127,6 +130,9 @@ namespace CompMs.MsdialGcMsApi.Process
         }
 
         private void SetRetentionIndex(IReadOnlyList<MSDecResult> results, RetentionIndexHandler riHandler) {
+            if (riHandler is null) {
+                return;
+            }
             foreach (var result in results) {
                 result.ChromXs.RI = riHandler.Convert(result.ChromXs.RT);
                 foreach (var chrom in result.ModelPeakChromatogram.Select(p => p.ChromXs)) {
@@ -136,6 +142,9 @@ namespace CompMs.MsdialGcMsApi.Process
         }
 
         private void SetRetentionIndex(SpectrumFeatureCollection spectrumFeatures, RetentionIndexHandler riHandler) {
+            if (riHandler is null) {
+                return;
+            }
             foreach (var spectrumFeature in spectrumFeatures.Items) {
                 var peakFeature = spectrumFeature.QuantifiedChromatogramPeak.PeakFeature;
                 peakFeature.ChromXsLeft.RI = riHandler.Convert(peakFeature.ChromXsLeft.RT);
