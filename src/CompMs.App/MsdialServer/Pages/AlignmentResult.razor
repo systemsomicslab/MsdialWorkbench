@@ -1,0 +1,18 @@
+﻿@page "/alignment/{file}"
+
+@using CompMs.App.MsdialServer.Dataset.Model
+@using CompMs.MsdialCore.DataObj
+@inject DatasetModel _dataset
+
+<CompMs.App.MsdialServer.Alignment.View.SpotScatter File="_file" />
+
+@code {
+    AlignmentFileBean _file;
+
+    [Parameter]
+    public string? File { get; set; } 
+
+    protected override void OnInitialized() {
+        _file = _dataset.DatasetStorage.Value.AlignmentFiles.FirstOrDefault(f => f.FileName == File);
+    }
+}

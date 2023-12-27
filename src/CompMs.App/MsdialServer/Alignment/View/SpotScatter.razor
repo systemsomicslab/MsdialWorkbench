@@ -1,0 +1,32 @@
+﻿@using CompMs.Common.Components
+@using CompMs.Common.DataObj
+@using CompMs.MsdialCore.DataObj
+@using Plotly.Blazor.Traces.ScatterLib
+
+<PlotlyChart @bind-Config="_config" @bind-Layout="_layout" @bind-Data="_data" @ref="_chart" />
+
+@code {
+    PlotlyChart _chart;
+    Config _config = new();
+    Layout _layout = new();
+    IList<ITrace> _data = new List<ITrace>();
+
+    AlignmentResultContainer _spots;
+
+    [Parameter]
+    public AlignmentFileBean? File { get; set; }
+
+    protected override void OnInitialized() {
+        _spots = AlignmentResultContainer.Load(File);
+
+        if (_spots is not null) {
+            _data.Add(new Scatter
+            {
+                Name = "Peaks",
+                Mode = ModeFlag.Markers,
+                X = _spots.AlignmentSpotProperties.Select(p => p.TimesCenter.RT.Value).Cast<object>().ToList(),
+                Y = _spots.AlignmentSpotProperties.Select(p => p.MassCenter).Cast<object>().ToList(),
+            });
+        }
+    }
+}

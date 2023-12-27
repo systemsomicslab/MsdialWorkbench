@@ -8,12 +8,12 @@
     @if (_dataset.DatasetStorage.Value is { }) {
         <MudNavGroup Title="Files" Expanded=true>
             @foreach (var file in _dataset.DatasetStorage.Value.AnalysisFiles) {
-                <MudNavLink>@file.AnalysisFileName</MudNavLink>
+                <MudNavLink Href=@($"/analysis/{file.AnalysisFileName}")>@file.AnalysisFileName</MudNavLink>
             }
         </MudNavGroup>
         <MudNavGroup Title="Alignments" Expanded=true>
             @foreach (var alignment in _dataset.DatasetStorage.Value.AlignmentFiles) {
-                <MudNavLink>@alignment.FileName</MudNavLink>
+                <MudNavLink Href=@($"/alignment/{alignment.FileName}")>@alignment.FileName</MudNavLink>
             }
         </MudNavGroup>
     }
