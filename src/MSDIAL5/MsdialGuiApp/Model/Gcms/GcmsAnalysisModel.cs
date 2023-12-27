@@ -57,6 +57,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             _calculateMatchScore = calculateMatchScore;
             UndoManager = new UndoManager().AddTo(_disposables);
 
+            var selectedSpectrum = _spectrumFeatures.SelectedSpectrum;
             var evaluator = FacadeMatchResultEvaluator.FromDataBases(dbStorage);
 
             var compoundSearchers = CompoundSearcherCollection.BuildSearchers(dbStorage, dbMapper);
@@ -64,10 +65,9 @@ namespace CompMs.App.Msdial.Model.Gcms
             PeakPlotModel = new SpectrumFeaturePlotModel(_spectrumFeatures, _peaks, brushMapDataSelector).AddTo(_disposables);
 
             var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Dt & ~FilterEnableStatus.Protein;
-            var filterRegistrationManager = new SpectrumFeatureFilterRegistrationManager(PeakPlotModel.Spectra, new SpectrumFeatureFiltering()).AddTo(_disposables);
-            filterRegistrationManager.AttachFilter(PeakPlotModel.Spectra, peakFilterModel, evaluator.Contramap<Ms1BasedSpectrumFeature, MsScanMatchResult>(spectrumFeature => spectrumFeature.MatchResults.Representative), status: filterEnabled);
+            var filterRegistrationManager = new SpectrumFeatureFilterRegistrationManager(_spectrumFeatures.Items, new SpectrumFeatureFiltering()).AddTo(_disposables);
+            filterRegistrationManager.AttachFilter(_spectrumFeatures.Items, peakFilterModel, evaluator.Contramap<Ms1BasedSpectrumFeature, MsScanMatchResult>(spectrumFeature => spectrumFeature.MatchResults.Representative), status: filterEnabled);
             PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
-            var selectedSpectrum = PeakPlotModel.SelectedSpectrum;
 
             IDataProvider provider = providerFactory.Create(file);
             // Eic chart
@@ -180,7 +180,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             MoleculeStructureModel = moleculeStructureModel;
             selectedSpectrum.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.GetCurrentSpectrumFeature().AnnotatedMSDecResult.Molecule)).AddTo(_disposables);
 
-            PeakTableModel = new GcmsAnalysisPeakTableModel(PeakPlotModel.Spectra, selectedSpectrum, PeakSpotNavigatorModel);
+            PeakTableModel = new GcmsAnalysisPeakTableModel(_spectrumFeatures.Items, selectedSpectrum, PeakSpotNavigatorModel);
 
             var rtSpotFocus = new ChromSpotFocus(PeakPlotModel.HorizontalAxis, RT_TOL, selectedSpectrum.Select(s => s?.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(_disposables);
             var mzSpotFocus = new ChromSpotFocus(PeakPlotModel.VerticalAxis, MZ_TOL, selectedSpectrum.Select(s => s?.QuantifiedChromatogramPeak.PeakFeature.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(_disposables);
@@ -211,14 +211,14 @@ namespace CompMs.App.Msdial.Model.Gcms
         public GcmsAnalysisPeakTableModel PeakTableModel { get; }
         public UndoManager UndoManager { get; }
 
-        public IObservable<bool> CanSetUnknown => PeakPlotModel.SelectedSpectrum.Select(t => !(t is null));
+        public IObservable<bool> CanSetUnknown => _spectrumFeatures.SelectedSpectrum.Select(t => !(t is null));
 
         public FocusNavigatorModel FocusNavigatorModel { get; }
 
-        public void SetUnknown() => PeakPlotModel.SelectedSpectrum.Value?.SetUnknown(UndoManager);
+        public void SetUnknown() => _spectrumFeatures.SelectedSpectrum.Value?.SetUnknown(UndoManager);
 
         public CompoundSearchModel<Ms1BasedSpectrumFeature> CreateCompoundSearchModel() {
-            if (!(PeakPlotModel.SelectedSpectrum.Value is Ms1BasedSpectrumFeature spectrumFeature)) {
+            if (!(_spectrumFeatures.SelectedSpectrum.Value is Ms1BasedSpectrumFeature spectrumFeature)) {
                 return null;
             }
             var plotService = new PlotComparedMsSpectrumUsecase(spectrumFeature.Scan);

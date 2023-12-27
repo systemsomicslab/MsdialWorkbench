@@ -15,8 +15,8 @@ namespace CompMs.App.Msdial.Model.Chart
     internal sealed class SpectrumFeaturePlotModel : DisposableModelBase
     {
         public SpectrumFeaturePlotModel(Ms1BasedSpectrumFeatureCollection spectra, ObservableCollection<ChromatogramPeakFeatureModel> peaks, BrushMapDataSelector<ChromatogramPeakFeatureModel> brushMapDataSelector) {
-            Spectra = new ReadOnlyObservableCollection<Ms1BasedSpectrumFeature>(spectra.Items);
-            SelectedSpectrum = new ReactiveProperty<Ms1BasedSpectrumFeature>().AddTo(Disposables);
+            Spectra = spectra.Items;
+            SelectedSpectrum = spectra.SelectedSpectrum;
 
             ChromatogramPeaks = new ReadOnlyObservableCollection<ChromatogramPeakFeatureModel>(peaks);
             SelectedChromatogramPeak = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
@@ -27,7 +27,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
             Title = new[]
             {
-                SelectedSpectrum.Where(s => s != null)
+                spectra.SelectedSpectrum.Where(s => s != null)
                     .Select(s => $"Scan: {s.Scan.ScanID} RT: {s.Scan.ChromXs.RT.Value} min Quant mass: m/z {s.QuantifiedChromatogramPeak.PeakFeature.Mass}"),
                 SelectedChromatogramPeak.Where(p => p != null)
                     .Select(p => $"ID: {p.MasterPeakID} Scan: {p.MS1RawSpectrumIdTop} RT: {p.RT.Value} min Mass: m/z {p.Mass}"),
@@ -46,9 +46,7 @@ namespace CompMs.App.Msdial.Model.Chart
             BrushMapDataSelector = brushMapDataSelector;
         }
 
-        public ReactivePropertySlim<object> SelectedSpectrumWrapper { get; }
-        public ReadOnlyObservableCollection<object> SpectraWrapper { get; }
-        public ReactiveProperty<Ms1BasedSpectrumFeature> SelectedSpectrum { get; }
+        public ReactivePropertySlim<Ms1BasedSpectrumFeature> SelectedSpectrum { get; }
         public ReadOnlyObservableCollection<Ms1BasedSpectrumFeature> Spectra { get; }
         public ReactivePropertySlim<ChromatogramPeakFeatureModel> SelectedChromatogramPeak { get; }
         public ReadOnlyObservableCollection<ChromatogramPeakFeatureModel> ChromatogramPeaks { get; }

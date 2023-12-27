@@ -12,10 +12,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         private readonly SpectrumFeaturePlotModel _model;
 
         public SpectrumFeaturePlotViewModel(SpectrumFeaturePlotModel model) {
-            _model = model;
+            _model = model ?? throw new System.ArgumentNullException(nameof(model));
         }
 
-        public ReactiveProperty<Ms1BasedSpectrumFeature> SelectedSpectrum => _model.SelectedSpectrum;
+        public ReactivePropertySlim<Ms1BasedSpectrumFeature> SelectedSpectrum => _model.SelectedSpectrum;
         public ReadOnlyObservableCollection<Ms1BasedSpectrumFeature> Spectra => _model.Spectra;
         public ReactivePropertySlim<ChromatogramPeakFeatureModel> SelectedChromatogramPeak => _model.SelectedChromatogramPeak;
         public ReadOnlyObservableCollection<ChromatogramPeakFeatureModel> ChromatogramPeaks => _model.ChromatogramPeaks;
