@@ -1668,11 +1668,11 @@ SOFTWARE.
 
 ======================================
 
-Blazor-ApexCharts (https://github.com/apexcharts/Blazor-ApexCharts)
+Plotly.Blazor (https://github.com/LayTec-AG/Plotly.Blazor/)
 
 MIT License
 
-Copyright (c) 2020 Joakim Dangården
+Copyright (c) 2020 LayTec AG
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
