@@ -67,8 +67,8 @@ namespace CompMs.MsdialCore.DataObj {
             MessagePackDefaultHandler.SaveLargeListToFile(spectrumFeatures, path);
         }
 
-        public RawMeasurement LoadRawMeasurement(bool isImagingMsData, bool isGuiProcess, int retry, int sleepMilliSeconds) {
-            return DataAccess.LoadMeasurement(this, isImagingMsData, isGuiProcess, retry, sleepMilliSeconds);
+        public RawMeasurement LoadRawMeasurement(bool isImagingMsData, bool isGuiProcess, int retry, int sleepMilliSeconds, bool isNewProcess = false) {
+            return DataAccess.LoadMeasurement(this, isImagingMsData, isGuiProcess, retry, sleepMilliSeconds, isNewProcess);
         }
 
         public MaldiFrameLaserInfo GetMaldiFrameLaserInfo() {
