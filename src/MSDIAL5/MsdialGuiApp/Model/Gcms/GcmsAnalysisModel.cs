@@ -186,7 +186,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             var mzSpotFocus = new ChromSpotFocus(PeakPlotModel.VerticalAxis, MZ_TOL, selectedSpectrum.Select(s => s?.QuantifiedChromatogramPeak.PeakFeature.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(_disposables);
             var idSpotFocus = new IdSpotFocus<Ms1BasedSpectrumFeature>(
                 selectedSpectrum,
-                id => _spectrumFeatures.Items.Argmin(s => s.Scan.ScanID - id),
+                id => _spectrumFeatures.Items.Argmin(s => Math.Abs(s.Scan.ScanID - id)),
                 selectedSpectrum.Select(s => s?.Scan.ScanID ?? 0d),
                 "ID",
                 (rtSpotFocus, s => s.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value),
