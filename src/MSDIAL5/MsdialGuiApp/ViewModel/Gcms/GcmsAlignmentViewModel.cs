@@ -49,6 +49,8 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             var moleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
             var matchResultCandidatesViewModel = new MatchResultCandidatesViewModel(model.MatchResultCandidatesModel).AddTo(Disposables);
             PeakDetailViewModels = new ViewModelBase[] { peakInformationViewModel, compoundDetailViewModel, moleculeStructureViewModel, matchResultCandidatesViewModel, };
+
+            FocusNavigatorViewModel = new FocusNavigatorViewModel(model.FocusNavigatorModel).AddTo(Disposables);
         }
 
         public BarChartViewModel BarChartViewModel { get; }
@@ -61,7 +63,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         public IResultModel Model { get; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
-
+        public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
         public ICommand ShowIonTableCommand { get; }
 
         public ICommand SetUnknownCommand { get; }

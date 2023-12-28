@@ -10,6 +10,7 @@ using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -31,6 +32,8 @@ namespace CompMs.App.Msdial.Model.Gcms
 {
     internal sealed class GcmsAlignmentModel : AlignmentModelBase
     {
+        private static readonly double _rt_tol = .5, _ri_tol = 20d, _mz_tol = 20d;
+
         private readonly AlignmentFileBeanModel _alignmentFileBean;
         private readonly IMessageBroker _broker;
         private readonly CompoundSearcherCollection _compoundSearchers;
@@ -205,6 +208,26 @@ namespace CompMs.App.Msdial.Model.Gcms
             var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
             MoleculeStructureModel = moleculeStructureModel;
             target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
+
+            ISpotFocus timeSpotFocus;
+            switch (parameter.AlignmentIndexType) {
+                case AlignmentIndexType.RI:
+                    timeSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, _ri_tol, target.DefaultIfNull(t => t.TimesCenter), "F0", "RI", isItalic: false).AddTo(Disposables);
+                    break;
+                case AlignmentIndexType.RT:
+                default:
+                    timeSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, _rt_tol, target.DefaultIfNull(t => t.TimesCenter), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
+                    break;
+            }
+            var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, _mz_tol, target.DefaultIfNull(t => t.MassCenter), "F3", "m/z", isItalic: true).AddTo(Disposables);
+            var idSpotFocus = new IdSpotFocus<AlignmentSpotPropertyModel>(
+                target,
+                id => ms1Spots.Argmin(spot => Math.Abs(spot.MasterAlignmentID - id)),
+                target.DefaultIfNull(t => (double)t.MasterAlignmentID),
+                "ID",
+                ((ISpotFocus, Func<AlignmentSpotPropertyModel, double>))(timeSpotFocus, spot => spot.TimesCenter),
+                ((ISpotFocus, Func<AlignmentSpotPropertyModel, double>))(mzSpotFocus, spot => spot.MassCenter)).AddTo(Disposables);
+            FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, timeSpotFocus, mzSpotFocus);
         }
 
         public AlignmentPeakPlotModel PlotModel { get; }
@@ -221,6 +244,9 @@ namespace CompMs.App.Msdial.Model.Gcms
         public GcmsAlignmentSpotTableModel AlignmentSpotTableModel { get; }
         public UndoManager UndoManager { get; }
         public IObservable<bool> CanSetUnknown => _target.Select(t => !(t is null));
+
+        public FocusNavigatorModel FocusNavigatorModel { get; }
+
         public void SetUnknown() => _target.Value?.SetUnknown(UndoManager);
 
         public override void InvokeMoleculerNetworkingForTargetSpot() {
