@@ -95,7 +95,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
                 Header = "RI",
                 IsReadOnly = true,
                 CanUserSort = true,
-                Binding = new Binding("AlignedPeakPropertyBeanCollection.RetentionIndex") { StringFormat = "0.0" },
+                Binding = new Binding($"{nameof(SampleTableRow.AlignedPeakProperty)}.{nameof(AlignmentChromPeakFeatureModel.ChromXsTop)}.{nameof(CompMs.Common.Components.ChromXs.RI)}.{nameof(CompMs.Common.Components.RetentionIndex.Value)}") { StringFormat = "0.0" },
                 HeaderStyle = dg.ColumnHeaderStyle,
                 CellStyle = dg.CellStyle,
                 Width = new DataGridLength(0.8, DataGridLengthUnitType.Star)
