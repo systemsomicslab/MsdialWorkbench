@@ -23,7 +23,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public BrushMapDataSelector<ChromatogramPeakFeatureModel> BrushMapDataSelector => _model.BrushMapDataSelector;
         public string HorizontalProperty { get; } = nameof(ChromatogramPeakFeatureModel.ChromXValue);
         public string VerticalProperty { get; } = nameof(ChromatogramPeakFeatureModel.Mass);
-        public string LabelProperty { get; } = nameof(ChromatogramPeakFeatureModel.MasterPeakID);
+        public ReadOnlyReactivePropertySlim<string> LabelProperty => _model.Label;
         public IAxisManager HorizontalAxis => _model.HorizontalAxis;
         public IAxisManager VerticalAxis => _model.VerticalAxis;
         public IReadOnlyReactiveProperty<string> HorizontalLabel => _model.HorizontalLabel;

@@ -14,9 +14,12 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class SpectrumFeaturePlotModel : DisposableModelBase
     {
-        public SpectrumFeaturePlotModel(Ms1BasedSpectrumFeatureCollection spectra, ObservableCollection<ChromatogramPeakFeatureModel> peaks, BrushMapDataSelector<ChromatogramPeakFeatureModel> brushMapDataSelector) {
+        public SpectrumFeaturePlotModel(Ms1BasedSpectrumFeatureCollection spectra, ObservableCollection<ChromatogramPeakFeatureModel> peaks, BrushMapDataSelector<ChromatogramPeakFeatureModel> brushMapDataSelector, ReadOnlyReactivePropertySlim<string> label) {
             Spectra = spectra.Items;
             SelectedSpectrum = spectra.SelectedSpectrum;
+
+            BrushMapDataSelector = brushMapDataSelector;
+            Label = label;
 
             ChromatogramPeaks = new ReadOnlyObservableCollection<ChromatogramPeakFeatureModel>(peaks);
             SelectedChromatogramPeak = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
@@ -43,7 +46,6 @@ namespace CompMs.App.Msdial.Model.Chart
                 .Select(_ => peaks.Any() ? new Range(peaks.Min(p => p.Mass), peaks.Max(p => p.Mass)) : new Range(0, 1))
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
-            BrushMapDataSelector = brushMapDataSelector;
         }
 
         public ReactivePropertySlim<Ms1BasedSpectrumFeature> SelectedSpectrum { get; }
@@ -57,5 +59,6 @@ namespace CompMs.App.Msdial.Model.Chart
         public ReactivePropertySlim<string> VerticalLabel { get; }
         public ReadOnlyReactivePropertySlim<string> Title { get; }
         public BrushMapDataSelector<ChromatogramPeakFeatureModel> BrushMapDataSelector { get; }
+        public ReadOnlyReactivePropertySlim<string> Label { get; }
     }
 }

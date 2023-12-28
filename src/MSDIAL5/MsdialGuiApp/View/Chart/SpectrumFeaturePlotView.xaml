@@ -92,7 +92,7 @@
             <chart:Annotator ItemsSource="{Binding ChromatogramPeaks, Mode=OneWay}"
                              HorizontalPropertyName="{Binding HorizontalProperty, Mode=OneWay}"
                              VerticalPropertyName="{Binding VerticalProperty, Mode=OneWay}"
-                             LabelPropertyName="{Binding LabelProperty, Mode=OneWay}"/>
+                             LabelPropertyName="{Binding LabelProperty.Value, Mode=OneWay}"/>
             <chart:ScatterControl x:Name="spectrumSelector"
                                   ItemsSource="{Binding Spectra, Mode=OneWay}"
                                   SelectedItem="{Binding SelectedSpectrum.Value}"
