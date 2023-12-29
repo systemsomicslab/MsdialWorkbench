@@ -106,7 +106,8 @@ namespace CompMs.MsdialImmsCore.Process
         }
 
         public RawSpectraOnPixels RetrieveRawSpectraOnPixels(AnalysisFileBean file, List<Raw2DElement> targetElements, bool isNewFileProcess) {
-            using (RawDataAccess rawDataAccess = new RawDataAccess(file.AnalysisFilePath, 0, true, true, true, 10, 0.02, 0.015, isNewProcessInMaldiImagingAnalyais: isNewFileProcess)) {
+            if (targetElements.IsEmptyOrNull()) return null;
+            using (RawDataAccess rawDataAccess = new RawDataAccess(file.AnalysisFilePath, 0, true, true, true, 10, 0.02, 0.015)) {
                 return rawDataAccess.GetRawPixelFeatures(targetElements, file.GetMaldiFrames(), isNewFileProcess)
                     ?? new RawSpectraOnPixels { PixelPeakFeaturesList = new List<RawPixelFeatures>(0), XYFrames = new List<MaldiFrameInfo>(0), };
             }
