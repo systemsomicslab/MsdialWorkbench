@@ -242,7 +242,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
             int smootherlevel = 3,
             double datapointMargin = 2.0, double absThreshold = 0.0, double relativeThreshold = 0.0) {
 
-            if (peaks.IsEmptyOrNull()) return null;
+            if (peaks.IsEmptyOrNull()) return Array.Empty<RawPeakElement>();
             peaks = Smoothing.LinearWeightedMovingAverage(peaks, smootherlevel);
 
             var localMaxima = new List<int>();
