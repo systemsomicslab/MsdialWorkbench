@@ -279,13 +279,12 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
         }
 
         private void AlignPeaksToMaster(List<AlignmentSpotProperty> spots, List<SpectrumFeature> masters, IReadOnlyList<SpectrumFeature> targets, int fileId) {
-            var n = masters.Count;
-            var maxMatchs = new double[n];
+            var maxMatchs = new double[masters.Count];
             foreach (var target in targets) {
                 int? matchIdx = null;
                 double matchFactor = double.MinValue;
                 var lo = SearchCollection.LowerBound(masters, (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value - _riTol, target.QuantifiedChromatogramPeak.PeakFeature.Mass), (s, p) => (s.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value, s.QuantifiedChromatogramPeak.PeakFeature.Mass).CompareTo(p));
-                for (var i = lo; i < n; i++) {
+                for (var i = lo; i < masters.Count; i++) {
                     if (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value + _riTol < masters[i].QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value) {
                         break;
                     }

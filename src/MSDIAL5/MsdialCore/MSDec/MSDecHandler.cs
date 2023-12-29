@@ -268,15 +268,10 @@ namespace CompMs.MsdialCore.MSDec {
             var startRt = model[0].ChromXs.RT.Value;
             var endRt = model[model.Count - 1].ChromXs.RT.Value;
             var offset = 0.1;
-            ChromatogramRange peakRange = new ChromatogramRange(startRt, endRt, ChromXType.RT, ChromXUnit.Min);
+            ChromatogramRange chromatogramRange = new ChromatogramRange(startRt, endRt, ChromXType.RT, ChromXUnit.Min).ExtendWith(offset).RestrictBy(spectra.StartRt, spectra.EndRt);
 
-            return GetChromatogramQuantInformation(spectra, targetMz, startID, endID, offset, param, peakRange);
-        }
-
-        public static QuantifiedChromatogramPeak GetChromatogramQuantInformation(RawSpectra spectra, double targetMz, int startID, int endID, double offset, ParameterBase param, ChromatogramRange peakRange) {
-            var chromatogramRange = peakRange.ExtendWith(offset).RestrictBy(spectra.StartRt, spectra.EndRt);
             var chrom = spectra.GetMs1ExtractedChromatogram_temp2(targetMz, param.MassSliceWidth, chromatogramRange).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
-            var peakResult = chrom.GetPeakDetectionResultFromRange(startID, endID);
+            var peakResult = chrom.GetPeakDetectionResultFromRange(startID, endID, result.ScanID);
             var peak = peakResult.ConvertToPeakFeature(chrom, targetMz);
             var peakShape = new ChromatogramPeakShape(peakResult);
             return new QuantifiedChromatogramPeak(peak, peakShape, peakResult, chrom);
