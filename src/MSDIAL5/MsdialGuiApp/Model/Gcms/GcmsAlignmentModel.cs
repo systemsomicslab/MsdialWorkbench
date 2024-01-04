@@ -16,7 +16,9 @@ using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
+using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialGcMsApi.Algorithm;
 using CompMs.MsdialGcMsApi.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -26,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Gcms
@@ -34,10 +37,9 @@ namespace CompMs.App.Msdial.Model.Gcms
     {
         private static readonly double _rt_tol = .5, _ri_tol = 20d, _mz_tol = 20d;
 
-        private readonly AlignmentFileBeanModel _alignmentFileBean;
-        private readonly IMessageBroker _broker;
+        private readonly AnalysisFileBeanModelCollection _fileCollection;
+        private readonly CalculateMatchScore _calculateMatchScore;
         private readonly CompoundSearcherCollection _compoundSearchers;
-        private readonly ReactiveProperty<BarItemsLoaderData> _barItemsLoaderDataProperty;
         private readonly ReactivePropertySlim<AlignmentSpotPropertyModel> _target;
 
         public GcmsAlignmentModel(
@@ -51,11 +53,12 @@ namespace CompMs.App.Msdial.Model.Gcms
             FilePropertiesModel projectBaseParameter,
             List<AnalysisFileBean> files,
             AnalysisFileBeanModelCollection fileCollection,
+            CalculateMatchScore calculateMatchScore,
             IMessageBroker broker)
             : base(alignmentFileBean, broker)
         {
-            _alignmentFileBean = alignmentFileBean;
-            _broker = broker;
+            _fileCollection = fileCollection ?? throw new ArgumentNullException(nameof(fileCollection));
+            _calculateMatchScore = calculateMatchScore ?? throw new ArgumentNullException(nameof(calculateMatchScore));
             UndoManager = new UndoManager().AddTo(Disposables);
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper);
 
@@ -77,6 +80,11 @@ namespace CompMs.App.Msdial.Model.Gcms
 
             InternalStandardSetModel = new InternalStandardSetModel(spotsSource.Spots.Items, TargetMsMethod.Gcms).AddTo(Disposables);
             NormalizationSetModel = new NormalizationSetModel(Container, files, fileCollection, mapper, evaluator, InternalStandardSetModel, parameter, broker).AddTo(Disposables);
+
+            _msdecResult = target.DefaultIfNull(t => alignmentFileBean.LoadMSDecResultByIndexAsync(t.MasterAlignmentID), Task.FromResult<MSDecResult>(null))
+                .Switch()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
 
             var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(ms1Spots, peakSpotFiltering).AddTo(Disposables);
             PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
@@ -150,7 +158,6 @@ namespace CompMs.App.Msdial.Model.Gcms
                 normalizedHeightLoader, normalizedAreaBaselineLoader, normalizedAreaZeroLoader,
             };
             var barItemsLoaderDataProperty = NormalizationSetModel.Normalized.ToConstant(normalizedHeightLoader).ToReactiveProperty(NormalizationSetModel.IsNormalized.Value ? normalizedHeightLoader : heightLoader).AddTo(Disposables);
-            _barItemsLoaderDataProperty = barItemsLoaderDataProperty;
             BarChartModel = new BarChartModel(target, barItemsLoaderDataProperty, barItemLoaderDatas, barBrush, projectBaseParameter, fileCollection, projectBaseParameter.ClassProperties).AddTo(Disposables);
 
             // Class eic
@@ -235,6 +242,9 @@ namespace CompMs.App.Msdial.Model.Gcms
         public BarChartModel BarChartModel { get; }
         public InternalStandardSetModel InternalStandardSetModel { get; }
         public NormalizationSetModel NormalizationSetModel { get; }
+
+        private readonly ReadOnlyReactivePropertySlim<MSDecResult> _msdecResult;
+
         public PeakInformationAlignmentModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
         public MoleculeStructureModel MoleculeStructureModel { get; }
@@ -242,12 +252,26 @@ namespace CompMs.App.Msdial.Model.Gcms
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
         public AlignmentMs2SpectrumModel MsSpectrumModel { get; }
         public GcmsAlignmentSpotTableModel AlignmentSpotTableModel { get; }
-        public UndoManager UndoManager { get; }
-        public IObservable<bool> CanSetUnknown => _target.Select(t => !(t is null));
-
         public FocusNavigatorModel FocusNavigatorModel { get; }
+        public UndoManager UndoManager { get; }
 
+        public IObservable<bool> CanSetUnknown => _target.Select(t => !(t is null));
         public void SetUnknown() => _target.Value?.SetUnknown(UndoManager);
+
+        public CompoundSearchModel<PeakSpotModel> CreateCompoundSearchModel() {
+            if (!(_target.Value is AlignmentSpotPropertyModel spot && _msdecResult.Value is MSDecResult scan)) {
+                return null;
+            }
+            var plotService = new PlotComparedMsSpectrumUsecase(scan);
+            var compoundSearch = new CompoundSearchModel<PeakSpotModel>(
+                _fileCollection.FindByID(spot.RepresentativeFileID),
+                new PeakSpotModel(spot, scan),
+                new GcmsAlignmentCompoundSearchUsecase(_calculateMatchScore),
+                plotService,
+                new SetAnnotationUsecase(spot, spot.MatchResultsModel, UndoManager));
+            compoundSearch.Disposables.Add(plotService);
+            return compoundSearch;
+        }
 
         public override void InvokeMoleculerNetworkingForTargetSpot() {
             throw new NotImplementedException();

@@ -17,13 +17,16 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 {
     internal sealed class GcmsAlignmentViewModel : ViewModelBase, IAlignmentResultViewModel
     {
+        private readonly GcmsAlignmentModel _model;
+        private readonly IMessageBroker _broker;
+
         public GcmsAlignmentViewModel(GcmsAlignmentModel model, FocusControlManager focusControlManager, IMessageBroker broker) {
             if (focusControlManager is null) {
                 throw new ArgumentNullException(nameof(focusControlManager));
             }
 
-            Model = model;
-
+            _model = model;
+            _broker = broker;
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
             UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
 
@@ -60,7 +63,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 
         public ICommand InternalStandardSetCommand => throw new NotImplementedException();
 
-        public IResultModel Model { get; }
+        public IResultModel Model => _model;
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
         public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
@@ -72,5 +75,17 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 
         public AlignmentPeakPlotViewModel PlotViewModel { get; }
         public AlignmentMs2SpectrumViewModel Ms2SpectrumViewModel { get; }
+
+        public ICommand SearchCompoundCommand => _searchCompoundCommand ??= new DelegateCommand(SearchCompound);
+        private DelegateCommand _searchCompoundCommand;
+
+        private void SearchCompound() {
+            using var csm = _model.CreateCompoundSearchModel();
+            if (csm is null) {
+                return;
+            }
+            using var vm = new GcmsAlignmentCompoundSearchViewModel(csm);
+            _broker?.Publish((ICompoundSearchViewModel)vm);
+        }
     }
 }
