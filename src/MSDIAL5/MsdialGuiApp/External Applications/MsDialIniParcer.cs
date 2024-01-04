@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace CompMs.App.Msdial.ExternalApp {
-    public sealed class MsDialIniParcer
+namespace CompMs.App.Msdial.ExternalApp
+{
+    internal static class MsDialIniParcer
     {
-        private MsDialIniParcer() { }
-
         public static MsDialIniField Read()
         {
             var iniField = new MsDialIniField();
 
-            var iniPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), "MSDIAL.INI");
+            var iniPath = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), "MSDIAL.INI");
 
-            if (!System.IO.File.Exists(iniPath)) { Write(iniField); return iniField; }
+            if (!File.Exists(iniPath)) { Write(iniField); return iniField; }
 
             using (var sr = new StreamReader(iniPath, Encoding.ASCII))
             {
@@ -36,7 +32,7 @@ namespace CompMs.App.Msdial.ExternalApp {
 
         public static void Write(MsDialIniField iniField)
         {
-            var iniPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), "MSDIAL.INI");
+            var iniPath = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), "MSDIAL.INI");
 
             using (StreamWriter sw = new StreamWriter(iniPath, false, Encoding.ASCII))
             {

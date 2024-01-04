@@ -87,5 +87,8 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             using var vm = new GcmsAlignmentCompoundSearchViewModel(csm);
             _broker?.Publish((ICompoundSearchViewModel)vm);
         }
+
+        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??= new DelegateCommand(Model.InvokeMsfinder);
+        private DelegateCommand _goToMsfinderCommand = null;
     }
 }

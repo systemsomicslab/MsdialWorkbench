@@ -90,5 +90,8 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
 
         public UndoManagerViewModel UndoManagerViewModel { get; }
         public GcmsAnalysisPeakTableViewModel PeakTableViewModel { get; }
+
+        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??= new DelegateCommand(((IResultModel)_model).InvokeMsfinder);
+        private DelegateCommand _goToMsfinderCommand = null;
     }
 }

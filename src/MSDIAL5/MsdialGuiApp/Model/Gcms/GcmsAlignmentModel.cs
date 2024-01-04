@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Chart;
+﻿using CompMs.App.Msdial.ExternalApp;
+using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
@@ -17,6 +18,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialGcMsApi.Algorithm;
 using CompMs.MsdialGcMsApi.Parameter;
@@ -36,11 +38,12 @@ namespace CompMs.App.Msdial.Model.Gcms
     internal sealed class GcmsAlignmentModel : AlignmentModelBase
     {
         private static readonly double _rt_tol = .5, _ri_tol = 20d, _mz_tol = 20d;
-
+        private readonly ProjectBaseParameter _projectParameter;
         private readonly AnalysisFileBeanModelCollection _fileCollection;
         private readonly CalculateMatchScore _calculateMatchScore;
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly ReactivePropertySlim<AlignmentSpotPropertyModel> _target;
+        private readonly ReadOnlyReactivePropertySlim<MSDecResult> _msdecResult;
 
         public GcmsAlignmentModel(
             AlignmentFileBeanModel alignmentFileBean,
@@ -57,6 +60,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             IMessageBroker broker)
             : base(alignmentFileBean, broker)
         {
+            _projectParameter = parameter.ProjectParam;
             _fileCollection = fileCollection ?? throw new ArgumentNullException(nameof(fileCollection));
             _calculateMatchScore = calculateMatchScore ?? throw new ArgumentNullException(nameof(calculateMatchScore));
             UndoManager = new UndoManager().AddTo(Disposables);
@@ -242,9 +246,6 @@ namespace CompMs.App.Msdial.Model.Gcms
         public BarChartModel BarChartModel { get; }
         public InternalStandardSetModel InternalStandardSetModel { get; }
         public NormalizationSetModel NormalizationSetModel { get; }
-
-        private readonly ReadOnlyReactivePropertySlim<MSDecResult> _msdecResult;
-
         public PeakInformationAlignmentModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
         public MoleculeStructureModel MoleculeStructureModel { get; }
@@ -278,7 +279,10 @@ namespace CompMs.App.Msdial.Model.Gcms
         }
 
         public override void InvokeMsfinder() {
-            throw new NotImplementedException();
+            if (!(_target.Value is AlignmentSpotPropertyModel spot && _msdecResult.Value is MSDecResult scan)) {
+                return;
+            }
+            MsDialToExternalApps.SendToMsFinderProgramForGcms(_alignmentFileModel, spot.innerModel, scan, _projectParameter);
         }
 
         public override void SearchFragment() {

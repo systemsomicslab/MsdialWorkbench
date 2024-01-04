@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.ExternalApp;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
@@ -40,6 +41,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         private static readonly double RT_TOL = .5, MZ_TOL = 20d;
 
         private bool _disposedValue;
+        private readonly ProjectBaseParameter _projectParameter;
         private CompositeDisposable _disposables;
         private readonly Ms1BasedSpectrumFeatureCollection _spectrumFeatures;
         private readonly ObservableCollection<ChromatogramPeakFeatureModel> _peaks;
@@ -49,7 +51,8 @@ namespace CompMs.App.Msdial.Model.Gcms
         public GcmsAnalysisModel(AnalysisFileBeanModel file, IDataProviderFactory<AnalysisFileBeanModel> providerFactory, MsdialGcmsParameter parameter, DataBaseMapper dbMapper, DataBaseStorage dbStorage, FilePropertiesModel projectBaseParameterModel, PeakFilterModel peakFilterModel, CalculateMatchScore calculateMatchScore, IMessageBroker broker) {
             var projectParameter = parameter.ProjectParam;
             var peakPickParameter = parameter.PeakPickBaseParam;
-            var chromDecParameter = parameter.ChromDecBaseParam; 
+            var chromDecParameter = parameter.ChromDecBaseParam;
+            _projectParameter = projectParameter;
             _disposables = new CompositeDisposable();
             _spectrumFeatures = file.LoadMs1BasedSpectrumFeatureCollection().AddTo(_disposables);
             _peaks =  file.LoadChromatogramPeakFeatureModels();
@@ -240,7 +243,10 @@ namespace CompMs.App.Msdial.Model.Gcms
 
         // IResultModel interface
         void IResultModel.InvokeMsfinder() {
-            throw new NotImplementedException();
+            if (!(_spectrumFeatures.SelectedSpectrum.Value is Ms1BasedSpectrumFeature spectrumFeature)) {
+                return;
+            }
+            MsDialToExternalApps.SendToMsFinderProgramForGcms(_file, spectrumFeature.GetCurrentSpectrumFeature(), _projectParameter);
         }
 
         void IResultModel.SearchFragment() {
