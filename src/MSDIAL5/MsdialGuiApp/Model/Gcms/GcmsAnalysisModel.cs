@@ -226,7 +226,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             var compoundSearch = new CompoundSearchModel<Ms1BasedSpectrumFeature>(
                 _file,
                 spectrumFeature,
-                new GcmsCompoundSearchUsecase(_calculateMatchScore),
+                new GcmsAnalysisCompoundSearchUsecase(_calculateMatchScore),
                 plotService,
                 new SetAnnotationUsecase(spectrumFeature.Molecule, spectrumFeature.MatchResults, UndoManager));
             compoundSearch.Disposables.Add(plotService);

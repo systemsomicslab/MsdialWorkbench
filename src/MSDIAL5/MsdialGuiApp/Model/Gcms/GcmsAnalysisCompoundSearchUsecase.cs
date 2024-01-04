@@ -11,11 +11,11 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Gcms
 {
-    internal sealed class GcmsCompoundSearchUsecase : BindableBase, ICompoundSearchUsecase<GcmsCompoundResult, Ms1BasedSpectrumFeature>
+    internal sealed class GcmsAnalysisCompoundSearchUsecase : BindableBase, ICompoundSearchUsecase<GcmsCompoundResult, Ms1BasedSpectrumFeature>
     {
         private readonly CalculateMatchScore _calculateMatchScore;
 
-        public GcmsCompoundSearchUsecase(CalculateMatchScore calculateMatchScore)
+        public GcmsAnalysisCompoundSearchUsecase(CalculateMatchScore calculateMatchScore)
         {
             _calculateMatchScore = calculateMatchScore;
             SearchParameter = calculateMatchScore.SearchParameter;
