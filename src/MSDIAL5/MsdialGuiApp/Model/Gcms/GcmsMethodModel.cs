@@ -121,9 +121,9 @@ namespace CompMs.App.Msdial.Model.Gcms
                     var runner = new ProcessRunner(processor);
                     return runner.RunAllAsync(
                         _storage.AnalysisFiles,
-                        Enumerable.Repeat((Action<int>)null, _storage.AnalysisFiles.Count),
+                        vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
                         Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
-                        null,
+                        vm_.Increment,
                         default);
                 },
                 _storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());
@@ -139,9 +139,9 @@ namespace CompMs.App.Msdial.Model.Gcms
                     var runner = new ProcessRunner(processor);
                     return runner.AnnotateAllAsync(
                         _storage.AnalysisFiles,
-                        Enumerable.Repeat((Action<int>)null, _storage.AnalysisFiles.Count),
+                        vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
                         Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
-                        null,
+                        vm_.Increment,
                         default);
                 },
                 _storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());
@@ -151,9 +151,11 @@ namespace CompMs.App.Msdial.Model.Gcms
 
         private bool RunAlignment() {
             var request = new ProgressBarRequest("Process alignment..", isIndeterminate: false,
-                async vm =>
-                {
-                    var factory = new GcmsAlignmentProcessFactory(_storage.AnalysisFiles, _storage, _evaluator);
+                async vm => {
+                    var factory = new GcmsAlignmentProcessFactory(_storage.AnalysisFiles, _storage, _evaluator)
+                    {
+                        ReportAction = v => vm.CurrentValue = v
+                    };
                     var aligner = factory.CreatePeakAligner();
                     aligner.ProviderFactory = _providerFactory; // TODO: I'll remove this later.
 

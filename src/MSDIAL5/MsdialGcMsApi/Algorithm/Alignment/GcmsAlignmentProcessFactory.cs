@@ -5,6 +5,7 @@ using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialGcMsApi.Parameter;
+using System;
 using System.Collections.Generic;
 
 namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
@@ -16,6 +17,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
         public MsdialGcmsParameter GcmsParameter { get; }
         public List<AnalysisFileBean> Files { get; }
         public List<MoleculeMsReference> MspDB { get; }
+        public Action<int> ReportAction { get; set; }
 
         public GcmsAlignmentProcessFactory(List<AnalysisFileBean> files, IMsdialDataStorage<MsdialGcmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator) : base(storage.Parameter, storage.IupacDatabase) {
             Files = files;
@@ -43,7 +45,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
         }
 
         public override PeakAligner CreatePeakAligner() {
-            return new PeakAligner(this, null);
+            return new PeakAligner(this, ReportAction);
         }
 
         public override IPeakJoiner CreatePeakJoiner() {
