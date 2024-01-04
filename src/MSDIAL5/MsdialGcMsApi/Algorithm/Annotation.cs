@@ -38,7 +38,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                 return ms1DecResults.Select(r => new AnnotatedMSDecResult(r, new MsScanMatchResultContainer())).ToArray();
             }
 
-            if (!_calculateMatchScore.LibraryIsEmpty) {
+            if (_calculateMatchScore != null && !_calculateMatchScore.LibraryIsEmpty) {
                 var containers = new MsScanMatchResultContainer[ms1DecResults.Count];
                 foreach (var (decResult, index) in ms1DecResults.WithIndex()) {
                     var results = containers[index] = new MsScanMatchResultContainer();

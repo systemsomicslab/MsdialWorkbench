@@ -18,7 +18,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         public GcmsAnalysisCompoundSearchUsecase(CalculateMatchScore calculateMatchScore)
         {
             _calculateMatchScore = calculateMatchScore;
-            SearchParameter = calculateMatchScore.SearchParameter;
+            SearchParameter = calculateMatchScore?.SearchParameter;
         }
 
         public IList SearchMethods => Array.Empty<object>();
@@ -37,6 +37,9 @@ namespace CompMs.App.Msdial.Model.Gcms
         public MsRefSearchParameterBase SearchParameter { get; }
 
         public IReadOnlyList<GcmsCompoundResult> Search(Ms1BasedSpectrumFeature target) {
+            if (_calculateMatchScore is null) {
+                return Array.Empty<GcmsCompoundResult>();
+            }
             var compounds = _calculateMatchScore.CalculateMatches(target.Scan)
                     .OrderByDescending(r => r.TotalScore)
                     .Select(result => new GcmsCompoundResult(_calculateMatchScore.Reference(result), result))

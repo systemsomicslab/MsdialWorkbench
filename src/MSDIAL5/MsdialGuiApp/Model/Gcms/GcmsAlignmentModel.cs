@@ -62,7 +62,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         {
             _projectParameter = parameter.ProjectParam;
             _fileCollection = fileCollection ?? throw new ArgumentNullException(nameof(fileCollection));
-            _calculateMatchScore = calculateMatchScore ?? throw new ArgumentNullException(nameof(calculateMatchScore));
+            _calculateMatchScore = calculateMatchScore;
             UndoManager = new UndoManager().AddTo(Disposables);
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper);
 

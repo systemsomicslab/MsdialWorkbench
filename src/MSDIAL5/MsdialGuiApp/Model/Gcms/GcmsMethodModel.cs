@@ -15,6 +15,7 @@ using CompMs.MsdialGcMsApi.Process;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly StandardDataProviderFactory _providerFactory;
         private readonly PeakFilterModel _peakFilterModel;
         private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _peakSpotFiltering;
-        private readonly CalculateMatchScore _calculateMatchScore;
+        private readonly List<CalculateMatchScore> _calculateMatchScores;
         private readonly ChromatogramSerializer<ChromatogramSpotInfo> _chromatogramSpotSerializer;
 
         public GcmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFiles, IMsdialDataStorage<MsdialGcmsParameter> storage, FilePropertiesModel projectBaseParameter, IMessageBroker broker) : base(analysisFileBeanModelCollection, alignmentFiles, projectBaseParameter) {
@@ -43,11 +44,11 @@ namespace CompMs.App.Msdial.Model.Gcms
             _peakSpotFiltering = new PeakSpotFiltering<AlignmentSpotPropertyModel>(FilterEnableStatus.All & ~FilterEnableStatus.Dt & ~FilterEnableStatus.Protein).AddTo(Disposables);
             switch (storage.Parameter.RetentionType) {
                 case RetentionType.RI:
-                    _calculateMatchScore = new CalculateMatchScore(storage.DataBases.MetabolomicsDataBases[0], storage.Parameter.MspSearchParam, RetentionType.RI);
+                    _calculateMatchScores = storage.DataBases.MetabolomicsDataBases.Select(db => new CalculateMatchScore(db, storage.Parameter.MspSearchParam, RetentionType.RI)).ToList();
                     break;
                 case RetentionType.RT:
                 default:
-                    _calculateMatchScore = new CalculateMatchScore(storage.DataBases.MetabolomicsDataBases[0], storage.Parameter.MspSearchParam, RetentionType.RT);
+                    _calculateMatchScores = storage.DataBases.MetabolomicsDataBases.Select(db => new CalculateMatchScore(db, storage.Parameter.MspSearchParam, RetentionType.RT)).ToList();
                     break;
             }
             switch (storage.Parameter.AlignmentIndexType) {
@@ -117,7 +118,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             var request = new ProgressBarMultiContainerRequest(
                 vm_ =>
                 {
-                    var processor = new FileProcess(_providerFactory, _storage, _calculateMatchScore);
+                    var processor = new FileProcess(_providerFactory, _storage, _calculateMatchScores.FirstOrDefault());
                     var runner = new ProcessRunner(processor);
                     return runner.RunAllAsync(
                         _storage.AnalysisFiles,
@@ -135,7 +136,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             var request = new ProgressBarMultiContainerRequest(
                 vm_ =>
                 {
-                    var processor = new FileProcess(_providerFactory, _storage, _calculateMatchScore);
+                    var processor = new FileProcess(_providerFactory, _storage, _calculateMatchScores.FirstOrDefault());
                     var runner = new ProcessRunner(processor);
                     return runner.AnnotateAllAsync(
                         _storage.AnalysisFiles,
@@ -174,12 +175,12 @@ namespace CompMs.App.Msdial.Model.Gcms
         }
 
         protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBeanModel alignmentFileModel) {
-            return SelectedAlignmentModel = new GcmsAlignmentModel(alignmentFileModel, _evaluator, _storage.DataBases, _peakSpotFiltering, _peakFilterModel, _storage.DataBaseMapper, _storage.Parameter, _projectBaseParameter, _storage.AnalysisFiles, AnalysisFileModelCollection, _calculateMatchScore, _broker);
+            return SelectedAlignmentModel = new GcmsAlignmentModel(alignmentFileModel, _evaluator, _storage.DataBases, _peakSpotFiltering, _peakFilterModel, _storage.DataBaseMapper, _storage.Parameter, _projectBaseParameter, _storage.AnalysisFiles, AnalysisFileModelCollection, _calculateMatchScores.FirstOrDefault(), _broker);
         }
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             var providerFactory = _providerFactory.ContraMap((AnalysisFileBeanModel fileModel) => fileModel.File);
-            return SelectedAnalysisModel = new GcmsAnalysisModel(analysisFile, providerFactory, _storage.Parameter, _storage.DataBaseMapper, _storage.DataBases, _projectBaseParameter, _peakFilterModel, _calculateMatchScore, _broker);
+            return SelectedAnalysisModel = new GcmsAnalysisModel(analysisFile, providerFactory, _storage.Parameter, _storage.DataBaseMapper, _storage.DataBases, _projectBaseParameter, _peakFilterModel, _calculateMatchScores.FirstOrDefault(), _broker);
         }
     }
 }
