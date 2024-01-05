@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="CompMs.App.Msdial.View.Chart.ChromatogramsView"
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Chart.CheckChromatogramsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -9,7 +9,7 @@
              xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance Type={x:Type vm:ChromatogramsViewModel2}}"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:CheckChromatogramsViewModel}}"
              d:Background="White"
              d:DesignHeight="450" d:DesignWidth="1200">
     <UserControl.Resources>

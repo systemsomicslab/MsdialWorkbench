@@ -3,11 +3,11 @@
 namespace CompMs.App.Msdial.View.Chart
 {
     /// <summary>
-    /// Interaction logic for ChromatogramsView.xaml
+    /// Interaction logic for CheckChromatogramsView.xaml
     /// </summary>
-    public partial class ChromatogramsView : UserControl
+    public partial class CheckChromatogramsView : UserControl
     {
-        public ChromatogramsView() {
+        public CheckChromatogramsView() {
             InitializeComponent();
         }
     }

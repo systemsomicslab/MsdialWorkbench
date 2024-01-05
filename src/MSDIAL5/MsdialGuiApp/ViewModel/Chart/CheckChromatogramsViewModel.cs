@@ -19,12 +19,12 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    internal sealed class ChromatogramsViewModel2 : ViewModelBase
+    internal sealed class CheckChromatogramsViewModel : ViewModelBase
     {
         private readonly ChromatogramsModel _model;
         private readonly IMessageBroker _broker;
 
-        public ChromatogramsViewModel2(ChromatogramsModel chromatogramsModel, DisplayEicSettingModel settingModel, IMessageBroker broker = null) {
+        public CheckChromatogramsViewModel(ChromatogramsModel chromatogramsModel, DisplayEicSettingModel settingModel, IMessageBroker broker = null) {
             _model = chromatogramsModel ?? throw new ArgumentNullException(nameof(chromatogramsModel));
             _broker = broker ?? MessageBroker.Default;
 
