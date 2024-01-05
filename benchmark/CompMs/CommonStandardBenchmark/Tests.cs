@@ -9,28 +9,33 @@ namespace CommonStandardBenchmark
     public class IEnumerableExtensionSequenceBenchmark
     {
         [Params(1, 64, 1024)]
-        public int Length { get; set; }
+        public int Width { get; set; }
 
         [Params(1, 64, 1024)]
-        public int Width { get; set; }
+        public int Length { get; set; }
 
         private double[][] input;
 
         [GlobalSetup]
         public void Setup() {
             var r = new Random();
-            input = new double[Length][];
-            for (int i = 0; i < Length; i++) {
-                input[i] = new double[Width];
-                for (int j = 0; j < Width; j++) {
+            input = new double[Width][];
+            for (int i = 0; i < Width; i++) {
+                input[i] = new double[Length];
+                for (int j = 0; j < Length; j++) {
                     input[i][j] = r.NextDouble();
                 }
             }
         }
 
-        [Benchmark]
+        [Benchmark(Baseline = true)]
         public int Sequence() {
             return input.Sequence().Count();
+        }
+
+        [Benchmark]
+        public int SequenceNew() {
+            return input.SequenceNew().Count();
         }
     }
 }
