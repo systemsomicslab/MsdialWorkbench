@@ -4,10 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Chart"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type={x:Type vm:ChromatogramsViewModel2}}"
              d:Background="White"
              d:DesignHeight="450" d:DesignWidth="1200">
     <UserControl.Resources>
