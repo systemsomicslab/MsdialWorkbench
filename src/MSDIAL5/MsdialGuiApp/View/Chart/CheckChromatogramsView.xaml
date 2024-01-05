@@ -142,9 +142,9 @@
                         <Setter Property="Margin" Value="8,0"/>
                     </Style>
                 </StackPanel.Resources>
-                <CheckBox Content="TIC"/>
-                <CheckBox Content="BPC"/>
-                <CheckBox Content="Highest m/z EIC"/>
+                <CheckBox Content="TIC" IsChecked="{Binding InsertTic.Value}"/>
+                <CheckBox Content="BPC" IsChecked="{Binding InsertBpc.Value}"/>
+                <CheckBox Content="Highest m/z EIC" IsChecked="{Binding InsertHeighestEic.Value}"/>
             </StackPanel>
 
             <DataGrid ClipboardCopyMode="IncludeHeader" x:Name="Datagrid_EicDiplayProperties" Style="{StaticResource ResourceKey=ToolTipErrorStyleDataGrid}" 

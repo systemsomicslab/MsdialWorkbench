@@ -102,6 +102,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         }
 
         public ReadOnlyReactiveCollection<PeakFeatureSearchValueViewModel> DiplayEicSettingValues { get; }
+        public ReactivePropertySlim<bool> InsertTic { get; }
+        public ReactivePropertySlim<bool> InsertBpc { get; }
+        public ReactivePropertySlim<bool> InsertHeighestEic { get; }
+
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
 
         public ReactiveCommand ApplyCommand { get; }
