@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Algorithm.ChromSmoothing;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.Extension;
 using CompMs.Common.Mathematics.Basic;
 using System;
@@ -237,12 +238,69 @@ namespace CompMs.Common.Algorithm.PeakPick {
             return cPeaks;
         }
 
+        public static RawPeakElement[] CentroidByLocalMaximumMethod(RawPeakElement[] peaks,
+            int smootherlevel = 3,
+            double datapointMargin = 2.0, double absThreshold = 0.0, double relativeThreshold = 0.0) {
+
+            if (peaks.IsEmptyOrNull()) return Array.Empty<RawPeakElement>();
+            peaks = Smoothing.LinearWeightedMovingAverage(peaks, smootherlevel);
+
+            var localMaxima = new List<int>();
+            var peakMax = double.MinValue;
+            for (int i = 2; i < peaks.Length - 2; i++) {
+                if (peaks[i].Intensity > peakMax) {
+                    peakMax = peaks[i].Intensity;
+                }
+                if (isLocalMaximum(peaks[i - 2], peaks[i - 1], peaks[i], peaks[i + 1], peaks[i + 2])) {
+                    localMaxima.Add(i);
+                }
+            }
+
+            var cPeaks = new List<RawPeakElement>();
+            for (int i = 0; i < localMaxima.Count - 1; i++) {
+                RawPeakElement cPeak;
+                if (localMaxima[i + 1] - localMaxima[i] <= datapointMargin) {
+                    if (peaks[localMaxima[i]].Intensity <= peaks[localMaxima[i + 1]].Intensity) {
+                        cPeak = peaks[localMaxima[i + 1]];
+                    }
+                    else {
+                        cPeak = peaks[localMaxima[i]];
+                    }
+                    i++;
+                }
+                else {
+                    cPeak = peaks[localMaxima[i]];
+                }
+                if (cPeak.Intensity > 0) {
+                    if (cPeak.Intensity >= absThreshold && cPeak.Intensity >= peakMax * relativeThreshold / 100.0) {
+                        cPeaks.Add(cPeak);
+                    }
+                }
+            }
+            return cPeaks.ToArray();
+        }
+
+
         private static bool isLocalMaximum(
             SpectrumPeak peak1, SpectrumPeak peak2, 
             SpectrumPeak peak3, 
             SpectrumPeak peak4, SpectrumPeak peak5) {
             if (peak3.Intensity > peak2.Intensity && peak3.Intensity > peak4.Intensity) return true;
             if (peak1.Intensity < peak2.Intensity && 
+                peak2.Intensity <= peak3.Intensity &&
+                peak3.Intensity > peak4.Intensity) return true;
+            if (peak5.Intensity < peak4.Intensity &&
+                peak4.Intensity <= peak3.Intensity &&
+                peak3.Intensity > peak2.Intensity) return true;
+            return false;
+        }
+
+        private static bool isLocalMaximum(
+            RawPeakElement peak1, RawPeakElement peak2,
+            RawPeakElement peak3,
+            RawPeakElement peak4, RawPeakElement peak5) {
+            if (peak3.Intensity > peak2.Intensity && peak3.Intensity > peak4.Intensity) return true;
+            if (peak1.Intensity < peak2.Intensity &&
                 peak2.Intensity <= peak3.Intensity &&
                 peak3.Intensity > peak4.Intensity) return true;
             if (peak5.Intensity < peak4.Intensity &&
