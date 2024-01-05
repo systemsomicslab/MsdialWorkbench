@@ -49,86 +49,87 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="160" />
             <ColumnDefinition Width="320" />
         </Grid.ColumnDefinitions>
-        <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis}"
-                          VerticalAxis="{Binding VerticalAxis}"
-                          HorizontalTitle="{Binding HorizontalTitle}"
-                          GraphTitle="{Binding GraphTitle}"
-                          ItemsSource="{Binding DisplayChromatograms}"
-                          Background="WhiteSmoke"
-                          BorderBrush="Black">
-            <chart:MultiChart.Style>
-                <Style TargetType="{x:Type chart:MultiChart}" BasedOn="{StaticResource OverlapChart}">
-                    <Setter Property="VerticalTitle">
-                        <Setter.Value>
-                            <MultiBinding StringFormat="{}{0}({1})">
-                                <MultiBinding.Bindings>
-                                    <Binding Path="VerticalTitle"/>
-                                    <Binding Path="VerticalAxis.UnitLabel"/>
-                                </MultiBinding.Bindings>
-                            </MultiBinding>
-                        </Setter.Value>
-                    </Setter>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding VerticalAxis.UnitLabel, TargetNullValue=''}" Value="">
-                            <Setter Property="VerticalTitle" Value="{Binding VerticalTitle}"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </chart:MultiChart.Style>
-            <chart:MultiChart.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <chart:LineChartControl ItemsSource="{Binding ChromatogramPeaks}"
-                                               LinePen="{Binding LinePen}"
-                                               HorizontalPropertyName="{Binding DataContext.HorizontalProperty, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
-                                               VerticalPropertyName="{Binding DataContext.VerticalProperty, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"/>
-                    </Grid>
-                </DataTemplate>
-            </chart:MultiChart.ItemTemplate>
-            <chart:MultiChart.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Save image as...">
-                        <MenuItem Header="Save as emf"
-                                  Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
-                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                        <MenuItem Header="Save as png"
-                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
-                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                    </MenuItem>
-                    <MenuItem Header="Copy image as...">
-                        <MenuItem Header="Copy as emf"
-                                  Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
-                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                        <MenuItem Header="Copy as png"
-                                  Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
-                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                    </MenuItem>
-                    <Separator/>
-                    <MenuItem Header="Copy as table" Command="{Binding CopyAsTableCommand, Mode=OneTime}"/>
-                    <MenuItem Header="Save as table" Command="{Binding SaveAsTableCommand, Mode=OneTime}"/>
-                </ContextMenu>
-            </chart:MultiChart.ContextMenu>
-        </chart:MultiChart>
-        <ItemsControl 
-            ItemsSource="{Binding DisplayChromatograms}"
-            VerticalAlignment="Center"
-            Grid.Column="1">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Name}" Margin="8,0" Foreground="{Binding LineBrush}" />
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
 
-        <GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Right"
-                      Background="LightGray"
-                      Width="3"
-                      Grid.Column="1"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="160" />
+            </Grid.ColumnDefinitions>
+            <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis.Value}"
+                              VerticalAxis="{Binding VerticalAxis.Value}"
+                              HorizontalTitle="{Binding HorizontalTitle.Value}"
+                              GraphTitle="{Binding GraphTitle.Value}"
+                              ItemsSource="{Binding DisplayChromatograms.Value}"
+                              Background="WhiteSmoke"
+                              BorderBrush="Black">
+                <chart:MultiChart.Style>
+                    <Style TargetType="{x:Type chart:MultiChart}" BasedOn="{StaticResource OverlapChart}">
+                        <Setter Property="VerticalTitle">
+                            <Setter.Value>
+                                <MultiBinding StringFormat="{}{0}({1})">
+                                    <MultiBinding.Bindings>
+                                        <Binding Path="VerticalTitle"/>
+                                        <Binding Path="VerticalAxis.Value.UnitLabel"/>
+                                    </MultiBinding.Bindings>
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding VerticalAxis.Value.UnitLabel, TargetNullValue=''}" Value="">
+                                <Setter Property="VerticalTitle" Value="{Binding VerticalTitle.Value}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </chart:MultiChart.Style>
+                <chart:MultiChart.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <chart:LineChartControl ItemsSource="{Binding ChromatogramPeaks}"
+                                                   LinePen="{Binding LinePen}"
+                                                   HorizontalPropertyName="{Binding DataContext.HorizontalProperty.Value, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                                   VerticalPropertyName="{Binding DataContext.VerticalProperty.Value, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"/>
+                        </Grid>
+                    </DataTemplate>
+                </chart:MultiChart.ItemTemplate>
+                <chart:MultiChart.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Save image as...">
+                            <MenuItem Header="Save as emf"
+                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                            <MenuItem Header="Save as png"
+                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        </MenuItem>
+                        <MenuItem Header="Copy image as...">
+                            <MenuItem Header="Copy as emf"
+                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                            <MenuItem Header="Copy as png"
+                                      Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        </MenuItem>
+                        <Separator/>
+                        <MenuItem Header="Copy as table" Command="{Binding CopyAsTableCommand, Mode=OneTime}"/>
+                        <MenuItem Header="Save as table" Command="{Binding SaveAsTableCommand, Mode=OneTime}"/>
+                    </ContextMenu>
+                </chart:MultiChart.ContextMenu>
+            </chart:MultiChart>
+            <ItemsControl 
+                ItemsSource="{Binding DisplayChromatograms.Value}"
+                VerticalAlignment="Center"
+                Grid.Column="1">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}" Margin="8,0" Foreground="{Binding LineBrush}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
 
-        <Grid Grid.Column="2">
+        <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" MaxHeight="80"/>
                 <RowDefinition/>
@@ -144,7 +145,7 @@
                 </StackPanel.Resources>
                 <CheckBox Content="TIC" IsChecked="{Binding InsertTic.Value}"/>
                 <CheckBox Content="BPC" IsChecked="{Binding InsertBpc.Value}"/>
-                <CheckBox Content="Highest m/z EIC" IsChecked="{Binding InsertHeighestEic.Value}"/>
+                <CheckBox Content="Highest peak m/z's EIC" IsChecked="{Binding InsertHighestEic.Value}"/>
             </StackPanel>
 
             <DataGrid ClipboardCopyMode="IncludeHeader" x:Name="Datagrid_EicDiplayProperties" Style="{StaticResource ResourceKey=ToolTipErrorStyleDataGrid}" 
@@ -233,5 +234,10 @@
                 <Button Content="Clear" Command="{Binding ClearCommand, Mode=OneTime}"/>
             </StackPanel>
         </Grid>
+
+        <GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Right"
+                      Background="LightGray"
+                      Width="3"
+                      Grid.Column="0"/>
     </Grid>
 </UserControl>

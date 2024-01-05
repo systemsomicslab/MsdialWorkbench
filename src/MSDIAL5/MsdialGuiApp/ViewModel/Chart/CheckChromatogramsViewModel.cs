@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.CommonMVVM;
@@ -21,12 +20,26 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 {
     internal sealed class CheckChromatogramsViewModel : ViewModelBase
     {
-        private readonly ChromatogramsModel _model;
+        private readonly CheckChromatogramsModel _model;
         private readonly IMessageBroker _broker;
 
-        public CheckChromatogramsViewModel(ChromatogramsModel chromatogramsModel, DisplayEicSettingModel settingModel, IMessageBroker broker = null) {
-            _model = chromatogramsModel ?? throw new ArgumentNullException(nameof(chromatogramsModel));
+        public CheckChromatogramsViewModel(CheckChromatogramsModel model, IMessageBroker broker = null) {
+            _model = model ?? throw new ArgumentNullException(nameof(model));
             _broker = broker ?? MessageBroker.Default;
+
+            var chromatograms = model.ObserveProperty(m => m.Chromatograms).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            DisplayChromatograms = chromatograms.Select(c => c.DisplayChromatograms).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            HorizontalAxis = chromatograms.Select(c => c.ChromAxis).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            VerticalAxis = chromatograms.Select(c => c.AbundanceAxis).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            GraphTitle = chromatograms.Select(c => c.GraphTitle).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            HorizontalTitle = chromatograms.Select(c => c.HorizontalTitle).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            VerticalTitle = chromatograms.Select(c => c.VerticalTitle).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            HorizontalProperty = chromatograms.Select(c => c.HorizontalProperty).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            VerticalProperty = chromatograms.Select(c => c.VerticalProperty).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            InsertTic = model.ToReactivePropertySlimAsSynchronized(m => m.InsertTic).AddTo(Disposables);
+            InsertBpc = model.ToReactivePropertySlimAsSynchronized(m => m.InsertBpc).AddTo(Disposables);
+            InsertHighestEic = model.ToReactivePropertySlimAsSynchronized(m => m.InsertHighestEic).AddTo(Disposables);
 
             CopyAsTableCommand = new ReactiveCommand()
                 .WithSubscribe(CopyAsTable)
@@ -35,7 +48,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .WithSubscribe(SaveAsTableAsync)
                 .AddTo(Disposables);
 
-            DiplayEicSettingValues = settingModel.DisplayEicSettingValueModels
+            DiplayEicSettingValues = model.DisplayEicSettingValues
                 .ToReadOnlyReactiveCollection(x => new PeakFeatureSearchValueViewModel(x))
                 .AddTo(Disposables);
 
@@ -56,32 +69,32 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             ApplyCommand = ObserveHasErrors.Inverse()
                .ToReactiveCommand()
-               .WithSubscribe(Commit)
+               .WithSubscribe(Apply)
                .AddTo(Disposables);
             ClearCommand = new ReactiveCommand()
-                .WithSubscribe(settingModel.Clear)
+                .WithSubscribe(model.Clear)
                 .AddTo(Disposables);
         }
 
-        public ReadOnlyObservableCollection<DisplayChromatogram> DisplayChromatograms => _model.DisplayChromatograms;
+        public ReadOnlyReactivePropertySlim<ReadOnlyObservableCollection<DisplayChromatogram>> DisplayChromatograms { get; }
 
-        public IAxisManager<double> HorizontalAxis => _model.ChromAxis;
-        public IAxisManager<double> VerticalAxis => _model.AbundanceAxis;
+        public ReadOnlyReactivePropertySlim<IAxisManager<double>> HorizontalAxis { get; }
+        public ReadOnlyReactivePropertySlim<IAxisManager<double>> VerticalAxis { get; }
 
-        public string GraphTitle => _model.GraphTitle;
+        public ReadOnlyReactivePropertySlim<string> GraphTitle { get; }
 
-        public string HorizontalTitle => _model.HorizontalTitle;
-        public string VerticalTitle => _model.VerticalTitle;
+        public ReadOnlyReactivePropertySlim<string> HorizontalTitle { get; }
+        public ReadOnlyReactivePropertySlim<string> VerticalTitle { get; }
 
-        public string HorizontalProperty => _model.HorizontalProperty;
-        public string VerticalProperty => _model.VerticalProperty;
+        public ReadOnlyReactivePropertySlim<string> HorizontalProperty { get; }
+        public ReadOnlyReactivePropertySlim<string> VerticalProperty { get; }
 
         public ReactiveCommand CopyAsTableCommand { get; }
 
         private void CopyAsTable() {
             using var stream = new MemoryStream();
             _model.ExportAsync(stream, "\t").Wait();
-            Clipboard.SetDataObject(Encoding.UTF8.GetString(stream.ToArray()));
+            Clipboard.SetDataObject(new UTF8Encoding(encoderShouldEmitUTF8Identifier: false).GetString(stream.ToArray()));
         }
 
         public AsyncReactiveCommand SaveAsTableCommand { get; }
@@ -104,17 +117,18 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactiveCollection<PeakFeatureSearchValueViewModel> DiplayEicSettingValues { get; }
         public ReactivePropertySlim<bool> InsertTic { get; }
         public ReactivePropertySlim<bool> InsertBpc { get; }
-        public ReactivePropertySlim<bool> InsertHeighestEic { get; }
+        public ReactivePropertySlim<bool> InsertHighestEic { get; }
 
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
 
         public ReactiveCommand ApplyCommand { get; }
         public ReactiveCommand ClearCommand { get; }
 
-        private void Commit() {
+        private void Apply() {
             foreach (var value in DiplayEicSettingValues) {
                 value.Commit();
             }
+            _model.Update();
         }
     }
 }
