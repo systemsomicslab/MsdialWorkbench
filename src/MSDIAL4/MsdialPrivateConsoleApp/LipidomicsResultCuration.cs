@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -82,8 +83,102 @@ namespace MsdialPrivateConsoleApp {
 
     }
 
+    public class EadResultObj {
+        public string FileName { get; set; } = string.Empty;
+        public string Lipid { get; set; } = string.Empty;
+        public string File_Lipid => FileName + "_" + Lipid;
+        public string Result { get; set; } = string.Empty;
+        public string AnnotationLabel { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
+    }
+
     public sealed class LipidomicsResultCuration {
         private LipidomicsResultCuration() { }
+
+        // msdial5 paper
+        public static void EadValidationResultExport(string annofile, string pairfile, string peaknamefile, string exportfile) {
+
+            // parse pairfile
+            var name2type = new Dictionary<string, string>();
+            using (var sr = new StreamReader(pairfile)) {
+                sr.ReadLine();
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine();
+                    var linearray = line.Split('\t');
+                    if (linearray.Length == 2) {
+                        var name = linearray[0];
+                        var type = linearray[1];
+                        name2type[name] = type;
+                    }
+                }
+            };
+            // parse annofile
+            var resultlist = new List<EadResultObj>();
+            var files = new List<string>();
+            var lipids = new List<string>();
+            using (var sr = new StreamReader(annofile)) {
+                var line = sr.ReadLine();
+                var linearray = line.Split('\t');
+                for (int i = 2; i < linearray.Length; i++) files.Add(linearray[i]);
+
+                while (sr.Peek() > -1) {
+                    line = sr.ReadLine();
+                    linearray = line.Split('\t');
+
+                    var lipid = linearray[1];
+                    lipids.Add(lipid);
+                    for (int i = 2; i < linearray.Length; i++) {
+                        resultlist.Add(new EadResultObj() {
+                            FileName = files[i - 2],
+                            Lipid = lipid, AnnotationLabel = linearray[i], Type = linearray[i] == "no MS/MS" ? "noMS2" : string.Empty,
+                            Result = linearray[i] == "no MS/MS" ? "null" : string.Empty
+                        });
+                    }
+                }
+            };
+
+            using (var sr = new StreamReader(peaknamefile)) {
+                var line = sr.ReadLine();
+                var linearray = line.Split('\t');
+                var headerfiles = new List<string>();
+                for (int i = 3; i < linearray.Length; i++) headerfiles.Add(linearray[i]);
+
+                while (sr.Peek() > -1) {
+                    line = sr.ReadLine();
+                    linearray = line.Split('\t');
+                    var lipid = linearray[1];
+                    for (int i = 3; i < linearray.Length; i++) {
+                        var tFile = headerfiles[i - 3];
+                        var tLipid = linearray[1];
+                        foreach (var result in resultlist) {
+                            var rFile = result.FileName;
+                            var rLipid = result.Lipid;
+                            if (tFile == rFile && tLipid == rLipid) {
+                                if (result.Type != "noMS2") {
+                                    result.Result = linearray[i];
+                                    if (name2type.ContainsKey(result.Result)) {
+                                        result.Type = name2type[result.Result];
+                                    }
+                                    else {
+                                        result.Type = "misslabel";
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            };
+
+            using (var sw = new StreamWriter(exportfile)) {
+                var header = new List<string>() { "file_lipid", "file", "lipid", "result", "type" };
+                sw.WriteLine(String.Join("\t", header));
+                foreach (var result in resultlist) {
+                    var sResult = new List<string>() { result.File_Lipid, result.FileName, result.Lipid, result.Result, result.Type };
+                    sw.WriteLine(String.Join("\t", sResult));
+                }
+            }
+        }
 
         public static void Text2Msp(string input, string output) {
 
