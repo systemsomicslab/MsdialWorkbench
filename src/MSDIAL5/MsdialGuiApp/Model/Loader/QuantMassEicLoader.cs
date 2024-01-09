@@ -34,7 +34,7 @@ namespace CompMs.App.Msdial.Model.Loader
             _chromatogramRange = new ChromatogramRange(rangeBegin, rangeEnd, chromXType, chromXUnit);
         }
 
-        public double MzTolerance => _peakPickParameter.CentroidMs1Tolerance;
+        public double MzTolerance => _peakPickParameter.MassSliceWidth;
 
         async Task<DataObj.Chromatogram> IChromatogramLoader<Ms1BasedSpectrumFeature>.LoadChromatogramAsync(Ms1BasedSpectrumFeature target, CancellationToken token) {
             if (target != null) {
@@ -55,7 +55,7 @@ namespace CompMs.App.Msdial.Model.Loader
         private async Task<List<PeakItem>> LoadEicCoreAsync(IChromatogramPeakFeature peakFeature, CancellationToken token) {
             var rawSpectra = await _rawSpectraTask.ConfigureAwait(false);
             token.ThrowIfCancellationRequested();
-            var ms1Peaks = rawSpectra.GetMs1ExtractedChromatogram(peakFeature.Mass, _peakPickParameter.CentroidMs1Tolerance, GetChromatogramRange(peakFeature));
+            var ms1Peaks = rawSpectra.GetMs1ExtractedChromatogram(peakFeature.Mass, _peakPickParameter.MassSliceWidth, GetChromatogramRange(peakFeature));
             token.ThrowIfCancellationRequested();
             return ms1Peaks.Smoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel)
                 .Where(peak => peak != null)
@@ -64,11 +64,11 @@ namespace CompMs.App.Msdial.Model.Loader
         }
 
         private List<PeakItem> LoadEicPeakCore(IChromatogramPeakFeature target, List<PeakItem> eic) {
-            return eic.Where(peak => target.ChromXsLeft.Value <= peak.Time && peak.Time <= target.ChromXsRight.Value).ToList();
+            return eic.Where(peak => target.ChromXsLeft.RT.Value <= peak.Time && peak.Time <= target.ChromXsRight.RT.Value).ToList();
         }
 
         private PeakItem LoadEicFocusedCore(IChromatogramPeakFeature target, List<PeakItem> eic) {
-            return eic.Argmin(peak => Math.Abs(target.ChromXsTop.Value - peak.Time));
+            return eic.Argmin(peak => Math.Abs(target.ChromXsTop.RT.Value - peak.Time));
         }
 
         private static readonly double PEAK_WIDTH_FACTOR = 3d;
@@ -77,7 +77,7 @@ namespace CompMs.App.Msdial.Model.Loader
                 return _chromatogramRange;
             }
             var width = target.PeakWidth(_chromXType) * PEAK_WIDTH_FACTOR;
-            var center = target.ChromXsTop.Value;
+            var center = target.ChromXsTop.RT.Value;
             return new ChromatogramRange(center - width / 2, center + width / 2, _chromXType, _chromXUnit);
         }
     }

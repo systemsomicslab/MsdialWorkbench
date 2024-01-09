@@ -271,7 +271,7 @@ namespace CompMs.MsdialCore.MSDec {
             ChromatogramRange chromatogramRange = new ChromatogramRange(startRt, endRt, ChromXType.RT, ChromXUnit.Min).ExtendWith(offset).RestrictBy(spectra.StartRt, spectra.EndRt);
 
             var chrom = spectra.GetMs1ExtractedChromatogram_temp2(targetMz, param.MassSliceWidth, chromatogramRange).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
-            var peakResult = chrom.GetPeakDetectionResultFromRange(startID, endID, result.ScanID);
+            var peakResult = chrom.GetPeakDetectionResultFromRange(startID, endID);
             var peak = peakResult.ConvertToPeakFeature(chrom, targetMz);
             var peakShape = new ChromatogramPeakShape(peakResult);
             return new QuantifiedChromatogramPeak(peak, peakShape, peakResult, chrom);

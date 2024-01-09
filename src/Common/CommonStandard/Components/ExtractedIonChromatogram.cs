@@ -249,16 +249,16 @@ namespace CompMs.Common.Components
             }
         }
 
-        public PeakDetectionResult GetPeakDetectionResultFromRange(int startID, int endID, int peakTopID) {
+        public PeakDetectionResult GetPeakDetectionResultFromRange(int startID, int endID) {
             var datapoints = new List<double[]>();
             var datapointsPeakTopIndex = 0;
-            var peakTopDiff = int.MaxValue;
+            var peaktopIntensity = double.MinValue;
             for (int i = 0; i < _peaks.Count; i++) {
                 var peak = _peaks[i];
                 if (peak.Id >= startID && peak.Id <= endID) {
                     datapoints.Add(new double[] { i, peak.Time, peak.Mz, peak.Intensity });
-                    if (Math.Abs(peak.Id - peakTopID) < peakTopDiff) {
-                        peakTopDiff = Math.Abs(peak.Id - peakTopID);
+                    if (peak.Intensity > peaktopIntensity) {
+                        peaktopIntensity = peak.Intensity;
                         datapointsPeakTopIndex = datapoints.Count - 1;
                     }
                 }

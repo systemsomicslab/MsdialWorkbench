@@ -29,8 +29,11 @@ namespace CompMs.App.Msdial.Model.Setting
             if (IsReadOnly) {
                 return;
             }
-            PeakPickSettingModel.Commit();
             _chromDecBaseParameter.AccuracyType = AccuracyType;
+            if (AccuracyType == AccuracyType.IsNominal) {
+                PeakPickSettingModel.MassSliceWidth = .5f;
+            }
+            PeakPickSettingModel.Commit();
         }
 
         public void LoadParameter(PeakPickBaseParameter parameter) {

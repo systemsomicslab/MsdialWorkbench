@@ -118,7 +118,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 mzRange = ((float)Math.Floor(mzRange.Min), (float)Math.Ceiling(mzRange.Max));
             }
 
-            var targetMasses = GetFocusedMassList(startMass, endMass, massStep, _parameter.MassRangeBegin, _parameter.MassRangeEnd);
+            var targetMasses = GetFocusedMassList(startMass, endMass, massStep);
             var chromPeakFeaturesArray = new List<ChromatogramPeakFeature>[targetMasses.Count];
 
             using (var bc = new BlockingCollection<(ExtractedIonChromatogram, int)>()) {
@@ -192,16 +192,13 @@ namespace CompMs.MsdialCore.Algorithm {
             return GetCombinedChromPeakFeatures(chromPeakFeaturesList, provider, type);
         }
 
-        public List<double> GetFocusedMassList(float startMass, float endMass, float massStep, float massBegin, float massEnd) {
+        public List<double> GetFocusedMassList(float startMass, float endMass, float massStep) {
             var massList = new List<double>();
             var focusedMass = startMass;
             while (focusedMass < endMass) {
-                if (focusedMass < massBegin) { focusedMass += massStep; continue; }
-                if (focusedMass > massEnd) break;
                 massList.Add(focusedMass);
                 focusedMass += massStep;
             }
-
             return massList;
         }
 
