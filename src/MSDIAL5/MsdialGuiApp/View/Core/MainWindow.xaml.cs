@@ -79,8 +79,6 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildView<ProteinGroupTable>);
             broker.ToObservable<ChromatogramsViewModel>()
                 .Subscribe(ShowChildView<DisplayChromatogramsView>);
-            broker.ToObservable<DisplayEicSettingViewModel>()
-                .Subscribe(ShowChildDialog<EICDisplaySettingView>);
             broker.ToObservable<CheckChromatogramsViewModel>()
                 .Subscribe(ShowChildViewWithDispose<CheckChromatogramsView>("Display chromatograms", height: 400, width: 1000));
             broker.ToObservable<NormalizationSetViewModel>()
