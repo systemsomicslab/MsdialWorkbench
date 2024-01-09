@@ -123,7 +123,7 @@ namespace CompMs.MsdialCore.Export
                     if (!string.IsNullOrEmpty(spot.Comment) && spot.Comment.IndexOf("unk", StringComparison.OrdinalIgnoreCase) >= 0) continue;
 
                     MspFormatCompoundInformationBean reference = _refer.Refer(spot.MatchResults.Representative);
-                    var name = stringReplaceForWindowsAcceptableCharacters(reference.Name + "_" + spot.AlignmentID);
+                    var name = stringReplaceForWindowsAcceptableCharacters(reference.Name + "_" + spot.MasterAlignmentID);
                     var precursorMz = Math.Round(reference.PrecursorMz, 5);
                     var rtBegin = Math.Max(Math.Round(spot.TimesCenter.RT.Value - rtTolerance, 2), 0);
                     var rtEnd = Math.Round(spot.TimesCenter.RT.Value + rtTolerance, 2);
@@ -176,7 +176,7 @@ namespace CompMs.MsdialCore.Export
             using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
                 writeHeaderAsMrmprobsReferenceFormat(sw);
 
-                var name = stringReplaceForWindowsAcceptableCharacters(spotProp.Name + "_" + spotProp.AlignmentID);
+                var name = stringReplaceForWindowsAcceptableCharacters(spotProp.Name + "_" + spotProp.MasterAlignmentID);
                 var precursorMz = Math.Round(spotProp.MassCenter, 5);
                 var rtBegin = Math.Max(Math.Round(spotProp.TimesCenter.RT.Value - rtTolerance, 2), 0);
                 var rtEnd = Math.Round(spotProp.TimesCenter.RT.Value + rtTolerance, 2);
@@ -186,28 +186,32 @@ namespace CompMs.MsdialCore.Export
             }
         }
 
-        public static void ExportExperimentalMsmsAsMrmprobsFormat(string filepath, ObservableCollection<AlignmentPropertyBean> alignmentSpots,
-            FileStream fs, List<long> seekpoints, double rtTolerance, double ms1Tolerance, double ms2Tolerance, int topN = 5, bool isIncludeMslevel1 = true, bool isUseMs1LevelForQuant = true)
+        public void ExportExperimentalMsmsAsMrmprobsFormat(
+            string filepath,
+            ObservableCollection<AlignmentPropertyBean> alignmentSpots,
+            Stream fs,
+            List<long> seekpoints,
+            double rtTolerance,
+            double ms1Tolerance,
+            double ms2Tolerance,
+            int topN,
+            bool isIncludeMslevel1,
+            bool isUseMs1LevelForQuant)
         {
-            using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII))
-            {
-
+            using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
                 writeHeaderAsMrmprobsReferenceFormat(sw);
 
                 foreach (var spot in alignmentSpots)
                 {
-                    //if (peak.LibraryID < 0 || peak.PostIdentificationLibraryID < 0) continue;
+                    var ms2Dec = SpectralDeconvolution.ReadMSDecResult(fs, seekpoints[spot.MSDecResultIdUsed], 1, false);
 
-                    var ms2DecResult = SpectralDeconvolution.ReadMS2DecResult(fs, seekpoints, spot.AlignmentID);
+                    var name = stringReplaceForWindowsAcceptableCharacters(spot.Name + "_" + spot.MasterAlignmentID);
+                    var precursorMz = Math.Round(spot.MassCenter, 5);
+                    var rtBegin = Math.Max(Math.Round(spot.TimesCenter.RT.Value - rtTolerance, 2), 0);
+                    var rtEnd = Math.Round(spot.TimesCenter.RT.Value + rtTolerance, 2);
+                    var rt = Math.Round(spot.TimesCenter.RT.Value, 2);
 
-                    var name = stringReplaceForWindowsAcceptableCharacters(spot.MetaboliteName + "_" + spot.AlignmentID);
-                    var precursorMz = Math.Round(spot.CentralAccurateMass, 5);
-                    var rtBegin = Math.Max(Math.Round(spot.CentralRetentionTime - rtTolerance, 2), 0);
-                    var rtEnd = Math.Round(spot.CentralRetentionTime + rtTolerance, 2);
-                    var rt = Math.Round(spot.CentralRetentionTime, 2);
-
-                    writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd,
-                        ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, ms2DecResult);
+                    writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, ms2Dec);
                 }
             }
         }
