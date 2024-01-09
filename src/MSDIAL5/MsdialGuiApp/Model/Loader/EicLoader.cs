@@ -14,7 +14,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Loader
 {
-    public class EicLoader : IChromatogramLoader
+    public class EicLoader : IChromatogramLoader, IWholeChromatogramLoader<(double mass, double tolerance)>
     {
         protected EicLoader(AnalysisFileBean file, IDataProvider provider, ParameterBase parameter, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd, bool isConstantRange = true) {
             this.provider = provider;
@@ -148,6 +148,10 @@ namespace CompMs.App.Msdial.Model.Loader
             return new List<PeakItem> {
                 eic.Argmin(peak => Math.Abs(target.ChromXValue.Value - peak.Time))
             };
+        }
+
+        List<PeakItem> IWholeChromatogramLoader<(double mass, double tolerance)>.LoadChromatogram((double mass, double tolerance) state) {
+            return LoadEicCore(state.mass, state.tolerance);
         }
 
         internal List<PeakItem>

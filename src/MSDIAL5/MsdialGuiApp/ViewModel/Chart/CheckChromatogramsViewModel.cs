@@ -37,9 +37,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             HorizontalProperty = chromatograms.Select(c => c.HorizontalProperty).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             VerticalProperty = chromatograms.Select(c => c.VerticalProperty).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
-            InsertTic = model.ToReactivePropertySlimAsSynchronized(m => m.InsertTic).AddTo(Disposables);
-            InsertBpc = model.ToReactivePropertySlimAsSynchronized(m => m.InsertBpc).AddTo(Disposables);
-            InsertHighestEic = model.ToReactivePropertySlimAsSynchronized(m => m.InsertHighestEic).AddTo(Disposables);
+            InsertTic = model.LoadChromatogramsUsecase.ToReactivePropertySlimAsSynchronized(m => m.InsertTic).AddTo(Disposables);
+            InsertBpc = model.LoadChromatogramsUsecase.ToReactivePropertySlimAsSynchronized(m => m.InsertBpc).AddTo(Disposables);
+            InsertHighestEic = model.LoadChromatogramsUsecase.ToReactivePropertySlimAsSynchronized(m => m.InsertHighestEic).AddTo(Disposables);
 
             CopyAsTableCommand = new ReactiveCommand()
                 .WithSubscribe(CopyAsTable)

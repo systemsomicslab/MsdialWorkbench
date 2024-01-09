@@ -262,12 +262,13 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 return null;
             }
 
-            var model = new CheckChromatogramsModel(analysisModel.EicLoader, analysisModel.Ms1Peaks, Storage.Parameter.PeakPickBaseParam, Storage.Parameter.AdvancedProcessOptionBaseParam)
+            var loadChromatogramsUsecase = new LoadChromatogramsUsecase(analysisModel.EicLoader, analysisModel.Ms1Peaks, Storage.Parameter.PeakPickBaseParam)
             {
                 InsertTic = tic,
                 InsertBpc = bpc,
                 InsertHighestEic = highestEic,
             };
+            var model = new CheckChromatogramsModel(loadChromatogramsUsecase, Storage.Parameter.AdvancedProcessOptionBaseParam);
             model.Update();
             return model;
         }
