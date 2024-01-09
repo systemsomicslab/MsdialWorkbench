@@ -3,56 +3,32 @@ using CompMs.Common.Components;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Utility;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace CompMs.App.Msdial.Model.Loader {
-    class TicLoader {
-        public TicLoader(
-            AnalysisFileBean file,
-            IDataProvider provider,
-            ParameterBase parameter,
-            ChromXType chromXType,
-            ChromXUnit chromXUnit,
-            double rangeBegin, double rangeEnd) {
-
-            this.file = file;
-            this.provider = provider;
+namespace CompMs.App.Msdial.Model.Loader
+{
+    internal sealed class TicLoader {
+        public TicLoader(AnalysisFileBean file, IDataProvider provider, ParameterBase parameter, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd) {
             this.parameter = parameter;
-            this.chromXType = chromXType;
-            this.chromXUnit = chromXUnit;
-            this.rangeBegin = rangeBegin;
-            this.rangeEnd = rangeEnd;
+            _rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), parameter.IonMode, file.AcquisitionType);
+            _chromatogramRange = new ChromatogramRange(rangeBegin, rangeEnd, chromXType, chromXUnit);
         }
 
-        protected readonly AnalysisFileBean file;
-        protected readonly IDataProvider provider;
-        protected readonly ParameterBase parameter;
-        protected readonly ChromXType chromXType;
-        protected readonly ChromXUnit chromXUnit;
-        protected readonly double rangeBegin, rangeEnd;
+        private readonly ParameterBase parameter;
+        private readonly RawSpectra _rawSpectra;
+        private readonly ChromatogramRange _chromatogramRange;
 
-
-        internal List<PeakItem>
-            LoadTic() {
-
+        internal List<PeakItem> LoadTic() {
             var tic = LoadTicCore();
             if (tic.Count == 0) {
-                return new List<PeakItem>();
+                return new List<PeakItem>(0);
             }
-
             return tic;
         }
 
-        protected virtual List<PeakItem> LoadTicCore() {
-            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), parameter.IonMode, file.AcquisitionType);
-            var chromatogramRange = new ChromatogramRange(rangeBegin, rangeEnd, chromXType, chromXUnit);
-            var chromatogram = rawSpectra.GetMs1TotalIonChromatogram(chromatogramRange);
+        private List<PeakItem> LoadTicCore() {
+            var chromatogram = _rawSpectra.GetMs1TotalIonChromatogram(_chromatogramRange);
             return chromatogram
                 .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
                 .Where(peak => peak != null)
