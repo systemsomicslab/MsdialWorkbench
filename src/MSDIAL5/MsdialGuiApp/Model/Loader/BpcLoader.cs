@@ -18,14 +18,11 @@ namespace CompMs.App.Msdial.Model.Loader
         private readonly ParameterBase _parameter;
         private readonly ChromatogramRange _chromatogramRange;
 
-        internal List<PeakItem>
-            LoadBpc() {
-
+        internal List<PeakItem> LoadBpc() {
             var bpc = LoadBpcCore();
             if (bpc.Count == 0) {
-                return new List<PeakItem>();
+                return new List<PeakItem>(0);
             }
-
             return bpc;
         }
 
