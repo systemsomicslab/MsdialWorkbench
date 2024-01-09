@@ -56,7 +56,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReadOnlyReactivePropertySlim<bool> ItemLoaded { get; }
 
-        public ReadOnlyReactivePropertySlim<Chromatogram> Chromatogram { get; }
+        public ReadOnlyReactivePropertySlim<PeakChromatogram> Chromatogram { get; }
 
         public IAxisManager<double> HorizontalAxis { get; }
 

@@ -42,14 +42,14 @@ namespace CompMs.App.Msdial.Model.Loader
 
         public double MzTolerance => parameter.CentroidMs1Tolerance;
 
-        async Task<DataObj.Chromatogram> IChromatogramLoader.LoadChromatogramAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
+        async Task<PeakChromatogram> IChromatogramLoader.LoadChromatogramAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
 
             if (target != null) {
                 var chromatogram = await Task.Run(async () =>
                 {
                     var eic = await LoadEicCoreAsync(target, token).ConfigureAwait(false);
                     if (eic.Count == 0) {
-                        return new DataObj.Chromatogram(new List<PeakItem>(), new List<PeakItem>(), null, string.Empty, Colors.Black, chromXType, chromXUnit);
+                        return new PeakChromatogram(new List<PeakItem>(), new List<PeakItem>(), null, string.Empty, Colors.Black, chromXType, chromXUnit);
                     }
 
                     token.ThrowIfCancellationRequested();
@@ -59,13 +59,13 @@ namespace CompMs.App.Msdial.Model.Loader
                     var results = await Task.WhenAll(eicPeakTask, eicFocusedTask).ConfigureAwait(false);
                     var peakEic = results[0];
                     var focusedEic = results[1];
-                    return new DataObj.Chromatogram(eic, peakEic, focusedEic.FirstOrDefault(), string.Empty, Colors.Black, chromXType, chromXUnit, $"EIC chromatogram of {target.Mass:N4} tolerance [Da]: {MzTolerance:F} Max intensity: {peakEic.Max(peak => peak.Intensity):F0}");
+                    return new PeakChromatogram(eic, peakEic, focusedEic.FirstOrDefault(), string.Empty, Colors.Black, chromXType, chromXUnit, $"EIC chromatogram of {target.Mass:N4} tolerance [Da]: {MzTolerance:F} Max intensity: {peakEic.Max(peak => peak.Intensity):F0}");
                 }, token).ConfigureAwait(false);
                 return chromatogram;
             }
 
             token.ThrowIfCancellationRequested();
-            return new DataObj.Chromatogram(new List<PeakItem>(), new List<PeakItem>(), null, string.Empty, Colors.Black, chromXType, chromXUnit);
+            return new PeakChromatogram(new List<PeakItem>(), new List<PeakItem>(), null, string.Empty, Colors.Black, chromXType, chromXUnit);
         }
 
         internal async Task<(List<PeakItem>, List<PeakItem>, List<PeakItem>)>

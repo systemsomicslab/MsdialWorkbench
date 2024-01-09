@@ -54,7 +54,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public ReadOnlyReactivePropertySlim<bool> ItemLoaded { get; }
 
-        public IReadOnlyReactiveProperty<Chromatogram> Chromatogram { get; }
+        public IReadOnlyReactiveProperty<PeakChromatogram> Chromatogram { get; }
 
         public IObservable<Range> ChromRangeSource { get; }
         public IObservable<Range> AbundanceRangeSource { get; }

@@ -6,6 +6,6 @@ namespace CompMs.App.Msdial.Model.Loader
 {
     public interface IChromatogramLoader
     {
-        Task<Chromatogram> LoadChromatogramAsync(ChromatogramPeakFeatureModel target, CancellationToken token);
+        Task<PeakChromatogram> LoadChromatogramAsync(ChromatogramPeakFeatureModel target, CancellationToken token);
     }
 }
