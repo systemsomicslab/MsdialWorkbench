@@ -119,7 +119,7 @@ namespace CompMs.MsdialCore.Export
 
                 foreach (var spot in alignedSpots)
                 {
-                    if (!spot.MatchResults.IsReferenceMatched(_evaluator)) return;
+                    if (!spot.MatchResults.IsReferenceMatched(_evaluator)) continue;
                     if (!string.IsNullOrEmpty(spot.Comment) && spot.Comment.IndexOf("unk", StringComparison.OrdinalIgnoreCase) >= 0) continue;
 
                     MspFormatCompoundInformationBean reference = _refer.Refer(spot.MatchResults.Representative);
@@ -216,8 +216,15 @@ namespace CompMs.MsdialCore.Export
             }
         }
 
-        public static void ExportReferenceMsmsAsMrmprobsFormat(string filepath, FileStream fs, List<long> seekpoints, PeakAreaBean peakSpot, List<MspFormatCompoundInformationBean> mspDB,
-            AnalysisParametersBean param, ProjectPropertyBean projectProp)
+        public void ExportReferenceMsmsAsMrmprobsFormat(
+            string filepath,
+            Stream fs,
+            List<long> seekpoints,
+            PeakAreaBean peakSpot,
+            List<MspFormatCompoundInformationBean> mspDB,
+            AnalysisParametersBean param,
+            IAnnotationQueryFactory<MsScanMatchResult> queryFactory,
+            MsRefSearchParameterBase searchParameter)
         {
             var rtTolerance = param.MpRtTolerance;
             var ms1Tolerance = param.MpMs1Tolerance;
@@ -227,53 +234,49 @@ namespace CompMs.MsdialCore.Export
             var isUseMs1LevelForQuant = param.MpIsUseMs1LevelForQuant;
             var isExportOtherCanidates = param.MpIsExportOtherCandidates;
             var identificationScoreCutoff = param.MpIdentificationScoreCutOff;
+            if (isExportOtherCanidates) {
+                param.MpIdentificationScoreCutOff = searchParameter.TotalScoreCutoff;
+            }
 
-            using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII))
-            {
-
+            using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
                 writeHeaderAsMrmprobsReferenceFormat(sw);
 
-                if (peakSpot.LibraryID < 0 || mspDB.Count == 0 || peakSpot.MetaboliteName.Contains("w/o")) return;
+                if (!peakSpot.MatchResults.IsReferenceMatched(_evaluator)) return;
 
-                var mspID = peakSpot.LibraryID;
-                var name = stringReplaceForWindowsAcceptableCharacters(mspDB[mspID].Name + "_" + peakSpot.PeakID);
-                var precursorMz = Math.Round(mspDB[mspID].PrecursorMz, 5);
-                var rtBegin = Math.Max(Math.Round(peakSpot.RtAtPeakTop - rtTolerance, 2), 0);
-                var rtEnd = Math.Round(peakSpot.RtAtPeakTop + rtTolerance, 2);
-                var rt = Math.Round(peakSpot.RtAtPeakTop, 2);
+                MspFormatCompoundInformationBean reference = _refer.Refer(peakSpot.MatchResults.Representative);
+                var name = stringReplaceForWindowsAcceptableCharacters(reference.Name + "_" + peakSpot.MasterPeakID);
+                var precursorMz = Math.Round(reference.PrecursorMz, 5);
+                var rtBegin = Math.Max(Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value - rtTolerance, 2), 0);
+                var rtEnd = Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value + rtTolerance, 2);
+                var rt = Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value, 2);
 
-                writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, mspDB[mspID]);
+                writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, reference);
 
-                if (isExportOtherCanidates)
-                {
-
+                if (isExportOtherCanidates) {
                     mspDB = mspDB.OrderBy(n => n.PrecursorMz).ToList();
 
-                    var ms2Dec = SpectralDeconvolution.ReadMS2DecResult(fs, seekpoints, peakSpot.PeakID);
-                    var spectrum = ms2Dec.MassSpectra;
-                    if (spectrum != null && spectrum.Count > 0)
-                        spectrum = spectrum.OrderBy(n => n[0]).ToList();
+                    var ms2Dec = SpectralDeconvolution.ReadMSDecResult(fs, seekpoints[peakSpot.MSDecResultIdUsed], 1, false);
+                    var spectrum = ms2Dec.Spectrum;
+                    if (spectrum != null && spectrum.Count > 0) {
+                        spectrum = spectrum.OrderBy(n => n.Mass).ToList();
+                    }
 
-                    var otherCandidateMspIDs = SpectralSimilarity.GetHighSimilarityMspIDs(peakSpot.AccurateMass, param.Ms1LibrarySearchTolerance,
-                        peakSpot.RtAtPeakTop, param.RetentionTimeLibrarySearchTolerance, param.Ms2LibrarySearchTolerance,
-                        spectrum, mspDB, identificationScoreCutoff, projectProp.TargetOmics, param.IsUseRetentionInfoForIdentificationScoring);
+                    var query = queryFactory.Create(peakSpot, ms2Dec, Array.Empty<RawPeakElement>(), peakSpot.PeakCharacter, searchParameter);
+                    var candidates = query.FindCandidates().ToArray();
 
-                    mspDB = mspDB.OrderBy(n => n.Id).ToList();
+                    foreach (var candidate in candidates) {
+                        var r = _refer.Refer(candidate);
+                        if (r == reference) {
+                            continue;
+                        }
 
-                    foreach (var id in otherCandidateMspIDs)
-                    {
-                        if (id == peakSpot.LibraryID) continue;
+                        name = stringReplaceForWindowsAcceptableCharacters(r.Name + "_" + peakSpot.MasterPeakID);
+                        precursorMz = Math.Round(r.PrecursorMz, 5);
+                        rtBegin = Math.Max(Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value - rtTolerance, 2), 0);
+                        rtEnd = Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value + rtTolerance, 2);
+                        rt = Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value, 2);
 
-                        mspID = id;
-
-                        name = stringReplaceForWindowsAcceptableCharacters(mspDB[mspID].Name + "_" + peakSpot.PeakID);
-                        precursorMz = Math.Round(mspDB[mspID].PrecursorMz, 5);
-                        rtBegin = Math.Max(Math.Round(peakSpot.RtAtPeakTop - rtTolerance, 2), 0);
-                        rtEnd = Math.Round(peakSpot.RtAtPeakTop + rtTolerance, 2);
-                        rt = Math.Round(peakSpot.RtAtPeakTop, 2);
-
-                        writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance,
-                            ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, mspDB[mspID]);
+                        writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, r);
                     }
                 }
             }
