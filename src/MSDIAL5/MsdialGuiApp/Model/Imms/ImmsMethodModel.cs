@@ -24,6 +24,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Reactive.Linq;
+using CompMs.App.Msdial.Model.Loader;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
@@ -302,12 +303,10 @@ namespace CompMs.App.Msdial.Model.Imms
                 return null;
             }
 
-            var loadChromatogramsUsecase = new LoadChromatogramsUsecase(analysisModel.EicLoader, analysisModel.Ms1Peaks, _storage.Parameter.PeakPickBaseParam)
-            {
-                InsertTic = tic,
-                InsertBpc = bpc,
-                InsertHighestEic = highestEic,
-            };
+            var loadChromatogramsUsecase = analysisModel.LoadChromatogramsUsecase();
+            loadChromatogramsUsecase.InsertTic = tic;
+            loadChromatogramsUsecase.InsertBpc = bpc;
+            loadChromatogramsUsecase.InsertHighestEic = highestEic;
             var model = new CheckChromatogramsModel(loadChromatogramsUsecase, _storage.Parameter.AdvancedProcessOptionBaseParam);
             model.Update();
             return model;

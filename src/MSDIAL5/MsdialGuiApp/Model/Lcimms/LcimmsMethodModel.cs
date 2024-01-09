@@ -258,16 +258,14 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public CheckChromatogramsModel PrepareChromatograms(bool tic, bool bpc, bool highestEic) {
             var analysisModel = AnalysisModel;
-            if (analysisModel is null || analysisModel.EicLoader is null) {
+            if (analysisModel is null) {
                 return null;
             }
 
-            var loadChromatogramsUsecase = new LoadChromatogramsUsecase(analysisModel.EicLoader, analysisModel.Ms1Peaks, Storage.Parameter.PeakPickBaseParam)
-            {
-                InsertTic = tic,
-                InsertBpc = bpc,
-                InsertHighestEic = highestEic,
-            };
+            var loadChromatogramsUsecase = analysisModel.LoadChromatogramsUsecase();
+            loadChromatogramsUsecase.InsertTic = tic;
+            loadChromatogramsUsecase.InsertBpc = bpc;
+            loadChromatogramsUsecase.InsertHighestEic = highestEic;
             var model = new CheckChromatogramsModel(loadChromatogramsUsecase, Storage.Parameter.AdvancedProcessOptionBaseParam);
             model.Update();
             return model;

@@ -1,6 +1,4 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Loader;
-using CompMs.App.Msdial.Model.Setting;
+﻿using CompMs.App.Msdial.Model.Setting;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -18,11 +16,6 @@ namespace CompMs.App.Msdial.Model.Chart
         private readonly AdvancedProcessOptionBaseParameter _advancedProcessParameter;
         private readonly List<PeakFeatureSearchValue> _displaySettingValueCandidates;
         private readonly ObservableCollection<PeakFeatureSearchValueModel> _displaySettingValues;
-
-        public CheckChromatogramsModel(EicLoader loader, ObservableCollection<ChromatogramPeakFeatureModel> peaks, PeakPickBaseParameter peakPickParameter, AdvancedProcessOptionBaseParameter advancedProcessParameter)
-            : this(new LoadChromatogramsUsecase(loader, peaks, peakPickParameter), advancedProcessParameter) {
-
-        }
 
         public CheckChromatogramsModel(LoadChromatogramsUsecase loadingChromatograms, AdvancedProcessOptionBaseParameter advancedProcessParameter) {
             LoadChromatogramsUsecase = loadingChromatograms ?? throw new ArgumentNullException(nameof(loadingChromatograms));

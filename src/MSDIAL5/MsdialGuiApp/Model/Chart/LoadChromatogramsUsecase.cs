@@ -15,12 +15,16 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class LoadChromatogramsUsecase : BindableBase
     {
-        private readonly EicLoader _loader;
         private readonly ObservableCollection<ChromatogramPeakFeatureModel> _peaks;
         private readonly PeakPickBaseParameter _peakPickParameter;
+        private readonly IWholeChromatogramLoader _ticLoader;
+        private readonly IWholeChromatogramLoader _bpcLoader;
+        private readonly IWholeChromatogramLoader<(double, double)> _eicLoader;
 
-        public LoadChromatogramsUsecase(EicLoader loader, ObservableCollection<ChromatogramPeakFeatureModel> peaks, PeakPickBaseParameter peakPickParameter) {
-            _loader = loader ?? throw new ArgumentNullException(nameof(loader));
+        public LoadChromatogramsUsecase(IWholeChromatogramLoader ticLoader, IWholeChromatogramLoader bpcLoader, IWholeChromatogramLoader<(double, double)> eicLoader, ObservableCollection<ChromatogramPeakFeatureModel> peaks, PeakPickBaseParameter peakPickParameter) {
+            _ticLoader = ticLoader;
+            _bpcLoader = bpcLoader;
+            _eicLoader = eicLoader;
             _peaks = peaks;
             _peakPickParameter = peakPickParameter;
         }
@@ -43,7 +47,7 @@ namespace CompMs.App.Msdial.Model.Chart
         private bool _insertHighestEic;
 
         public ChromatogramsModel Load(List<PeakFeatureSearchValue> displayEICs) {
-            var builder = new ChromatogramsBuilder(_loader, _peaks, _peakPickParameter);
+            var builder = new ChromatogramsBuilder(_ticLoader, _bpcLoader, _eicLoader, _peaks, _peakPickParameter);
             if (InsertTic) {
                 builder.AddTic();
             }
@@ -56,48 +60,58 @@ namespace CompMs.App.Msdial.Model.Chart
             if (!displayEICs.IsEmptyOrNull()) {
                 builder.AddEics(displayEICs);
             }
-            return builder.Build();
+            builder.Build();
+            return builder.ChromatogramsModel;
         }
 
         class ChromatogramsBuilder {
-            private readonly EicLoader _loader;
-            private readonly IReadOnlyList<ChromatogramPeakFeatureModel> _peaks;
-            private readonly PeakPickBaseParameter _peakPickParameter;
             private readonly List<DisplayChromatogram> _displayChroms;
             private readonly List<string> _contents;
+            private readonly IWholeChromatogramLoader _ticLoader;
+            private readonly IWholeChromatogramLoader _bpcLoader;
+            private readonly IWholeChromatogramLoader<(double, double)> _eicLoader;
+            private readonly IReadOnlyList<ChromatogramPeakFeatureModel> _peaks;
+            private readonly PeakPickBaseParameter _peakPickParameter;
 
-            public ChromatogramsBuilder(EicLoader loader, IReadOnlyList<ChromatogramPeakFeatureModel> peaks, PeakPickBaseParameter peakPickParameter)
+            public ChromatogramsBuilder(IWholeChromatogramLoader ticLoader, IWholeChromatogramLoader bpcLoader, IWholeChromatogramLoader<(double, double)> eicLoader, IReadOnlyList<ChromatogramPeakFeatureModel> peaks, PeakPickBaseParameter peakPickParameter)
             {
                 _displayChroms = new List<DisplayChromatogram>();
                 _contents = new List<string>();
-                _loader = loader;
+                _ticLoader = ticLoader;
+                _bpcLoader = bpcLoader;
+                _eicLoader = eicLoader;
                 _peaks = peaks;
                 _peakPickParameter = peakPickParameter;
             }
 
+            public ChromatogramsModel ChromatogramsModel { get; private set; }
+
             public void AddTic() {
-                var tic = _loader.LoadTic();
+                var tic = _ticLoader.LoadChromatogram();
                 _displayChroms.Add(new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC"));
                 _contents.Add("TIC");
             }
 
             public void AddBpc() {
-                var bpc = _loader.LoadBpc();
+                var bpc = _bpcLoader.LoadChromatogram();
                 _displayChroms.Add(new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC"));
                 _contents.Add("BPC");
             }
 
             public void AddHighestEic() {
-                var maxPeakMz = _peaks.Argmax(n => n.Intensity).Mass;
-                var eic = _loader.LoadEicTrace(maxPeakMz, _peakPickParameter.MassSliceWidth);
-                _displayChroms.Add(new DisplayChromatogram(eic, new Pen(Brushes.Blue, 1.0), "EIC of m/z " + Math.Round(maxPeakMz, 5).ToString()));
+                var maxPeakMz = _peaks.DefaultIfEmpty().Argmax(peak => peak?.Intensity ?? -1d)?.Mass;
+                if (maxPeakMz is null) {
+                    return;
+                }
+                var eic = _eicLoader.LoadChromatogram((maxPeakMz.Value, _peakPickParameter.MassSliceWidth));
+                _displayChroms.Add(new DisplayChromatogram(eic, new Pen(Brushes.Blue, 1.0), "EIC of m/z " + Math.Round(maxPeakMz.Value, 5).ToString()));
                 _contents.Add("most abundant ion's EIC");
             }
 
             public void AddEics(List<PeakFeatureSearchValue> displayEICs) {
                 var counter = 0;
                 foreach (var set in displayEICs) {
-                    var eic = _loader.LoadEicTrace(set.Mass, set.MassTolerance);
+                    var eic = _eicLoader.LoadChromatogram((set.Mass, set.MassTolerance));
                     var title = set.Title;
                     if (!string.IsNullOrEmpty(title)) {
                         title += "; ";
@@ -126,9 +140,9 @@ namespace CompMs.App.Msdial.Model.Chart
                 return title;
             }
 
-            public ChromatogramsModel Build() {
+            public void Build() {
                 string title = BuildTitle();
-                return new ChromatogramsModel(title, _displayChroms, title, "Retention time [min]", "Absolute ion abundance");
+                ChromatogramsModel = new ChromatogramsModel(title, _displayChroms, title, "Retention time [min]", "Absolute ion abundance");
             }
         }
     }
