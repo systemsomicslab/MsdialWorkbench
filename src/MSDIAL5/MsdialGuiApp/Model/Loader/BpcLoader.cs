@@ -7,23 +7,15 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Loader
 {
-    internal sealed class BpcLoader {
-        public BpcLoader(RawSpectra rawSpectra, ParameterBase parameter, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd) {
-            _parameter = parameter;
-            _chromatogramRange = new ChromatogramRange(rangeBegin, rangeEnd, chromXType, chromXUnit);
-            _rawSpectra = rawSpectra;
-        }
-
+    internal sealed class BpcLoader : IWholeChromatogramLoader {
         private readonly RawSpectra _rawSpectra;
         private readonly ParameterBase _parameter;
         private readonly ChromatogramRange _chromatogramRange;
 
-        internal List<PeakItem> LoadBpc() {
-            var bpc = LoadBpcCore();
-            if (bpc.Count == 0) {
-                return new List<PeakItem>(0);
-            }
-            return bpc;
+        public BpcLoader(RawSpectra rawSpectra, ParameterBase parameter, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd) {
+            _parameter = parameter;
+            _chromatogramRange = new ChromatogramRange(rangeBegin, rangeEnd, chromXType, chromXUnit);
+            _rawSpectra = rawSpectra;
         }
 
         private List<PeakItem> LoadBpcCore() {
@@ -34,5 +26,7 @@ namespace CompMs.App.Msdial.Model.Loader
                 .Select(peak => new PeakItem(peak))
                 .ToList();
         }
+
+        List<PeakItem> IWholeChromatogramLoader.LoadChromatogram() => LoadBpcCore();
     }
 }
