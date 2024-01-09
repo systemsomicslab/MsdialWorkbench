@@ -14,6 +14,10 @@ using AlignmentPropertyBean = CompMs.MsdialCore.DataObj.AlignmentSpotProperty;
 using MspFormatCompoundInformationBean = CompMs.Common.Components.MoleculeMsReference;
 using SpectralDeconvolution = CompMs.MsdialCore.Parser.MsdecResultsReader;
 using SpectralSimilarity = CompMs.Common.Algorithm.Scoring.MsScanMatching;
+using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.Common.DataObj.Result;
+using CompMs.Common.Parameter;
+using CompMs.Common.DataObj;
 
 namespace CompMs.MsdialCore.Export
 {
@@ -23,8 +27,17 @@ namespace CompMs.MsdialCore.Export
 
     internal sealed class EsiMrmprobsExporter
     {
-        public static void ExportReferenceMsmsAsMrmprobsFormat(string filepath, FileStream fs, List<long> seekpoints, AlignmentPropertyBean alignedSpot,
-            List<MspFormatCompoundInformationBean> mspDB, AnalysisParametersBean param, ProjectPropertyBean projectProp)
+        private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
+        private readonly IMatchResultRefer<MspFormatCompoundInformationBean, MsScanMatchResult> _refer;
+
+        public void ExportReferenceMsmsAsMrmprobsFormat(
+            string filepath,
+            Stream fs,
+            List<long> seekpoints,
+            AlignmentPropertyBean alignedSpot,
+            AnalysisParametersBean param,
+            IAnnotationQueryFactory<MsScanMatchResult> queryFactory,
+            MsRefSearchParameterBase searchParameter)
         {
             var rtTolerance = param.MpRtTolerance;
             var ms1Tolerance = param.MpMs1Tolerance;
@@ -33,55 +46,45 @@ namespace CompMs.MsdialCore.Export
             var isIncludeMslevel1 = param.MpIsIncludeMsLevel1;
             var isUseMs1LevelForQuant = param.MpIsUseMs1LevelForQuant;
             var isExportOtherCanidates = param.MpIsExportOtherCandidates;
-            var identificationScoreCutoff = param.MpIdentificationScoreCutOff;
 
-            using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII))
-            {
-
+            using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
                 writeHeaderAsMrmprobsReferenceFormat(sw);
 
-                if (alignedSpot.LibraryID < 0 || mspDB.Count == 0 || alignedSpot.MetaboliteName.Contains("w/o")) return;
+                if (!alignedSpot.MatchResults.IsReferenceMatched(_evaluator)) return;
 
-                var mspID = alignedSpot.LibraryID;
-                var name = stringReplaceForWindowsAcceptableCharacters(mspDB[mspID].Name + "_" + alignedSpot.AlignmentID);
-                var precursorMz = Math.Round(mspDB[mspID].PrecursorMz, 5);
-                var rtBegin = Math.Max(Math.Round(alignedSpot.CentralRetentionTime - rtTolerance, 2), 0);
-                var rtEnd = Math.Round(alignedSpot.CentralRetentionTime + rtTolerance, 2);
-                var rt = Math.Round(alignedSpot.CentralRetentionTime, 2);
+                MspFormatCompoundInformationBean reference = _refer.Refer(alignedSpot.MatchResults.Representative);
+                var name = stringReplaceForWindowsAcceptableCharacters(reference.Name + "_" + alignedSpot.MasterAlignmentID);
+                var precursorMz = Math.Round(reference.PrecursorMz, 5);
+                var rtBegin = Math.Max(Math.Round(alignedSpot.TimesCenter.RT.Value - rtTolerance, 2), 0);
+                var rtEnd = Math.Round(alignedSpot.TimesCenter.RT.Value + rtTolerance, 2);
+                var rt = Math.Round(alignedSpot.TimesCenter.RT.Value, 2);
+                writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, reference);
 
-                writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, mspDB[mspID]);
+                if (isExportOtherCanidates) {
+                    param.MpIdentificationScoreCutOff = searchParameter.TotalScoreCutoff;
+                    var ms2Dec = SpectralDeconvolution.ReadMSDecResult(fs, seekpoints[alignedSpot.MSDecResultIdUsed], 1, false);
+                    var spectrum = ms2Dec.Spectrum;
+                    if (spectrum != null && spectrum.Count > 0) {
+                        spectrum = spectrum.OrderBy(n => n.Mass).ToList();
+                    }
 
-                if (isExportOtherCanidates)
-                {
+                    var query = queryFactory.Create(alignedSpot, ms2Dec, alignedSpot.IsotopicPeaks.Select(p => new RawPeakElement { Mz = p.Mass, Intensity = p.AbsoluteAbundance }).ToArray(), alignedSpot.PeakCharacter, searchParameter);
+                    var candidates = query.FindCandidates().ToArray();
 
-                    mspDB = mspDB.OrderBy(n => n.PrecursorMz).ToList();
-
-                    var ms2Dec = SpectralDeconvolution.ReadMS2DecResult(fs, seekpoints, alignedSpot.AlignmentID);
-                    var spectrum = ms2Dec.MassSpectra;
-                    if (spectrum != null && spectrum.Count > 0)
-                        spectrum = spectrum.OrderBy(n => n[0]).ToList();
-
-                    var otherCandidateMspIDs = SpectralSimilarity.GetHighSimilarityMspIDs(alignedSpot.CentralAccurateMass, param.Ms1LibrarySearchTolerance,
-                        alignedSpot.CentralRetentionTime, param.RetentionTimeLibrarySearchTolerance, param.Ms2LibrarySearchTolerance,
-                        spectrum, mspDB, identificationScoreCutoff, projectProp.TargetOmics, param.IsUseRetentionInfoForIdentificationScoring);
-
-                    mspDB = mspDB.OrderBy(n => n.Id).ToList();
-
-                    foreach (var id in otherCandidateMspIDs)
+                    foreach (var candidate in candidates)
                     {
-                        if (id == alignedSpot.LibraryID) continue;
+                        var r = _refer.Refer(candidate);
+                        if (r == reference) {
+                            continue;
+                        }
 
-                        mspID = id;
+                        name = stringReplaceForWindowsAcceptableCharacters(r.Name + "_" + alignedSpot.AlignmentID);
+                        precursorMz = Math.Round(r.PrecursorMz, 5);
+                        rtBegin = Math.Max(Math.Round(alignedSpot.TimesCenter.RT.Value - rtTolerance, 2), 0);
+                        rtEnd = Math.Round(alignedSpot.TimesCenter.RT.Value + rtTolerance, 2);
+                        rt = Math.Round(alignedSpot.TimesCenter.RT.Value, 2);
 
-                        name = stringReplaceForWindowsAcceptableCharacters(mspDB[mspID].Name + "_" + alignedSpot.AlignmentID);
-                        precursorMz = Math.Round(mspDB[mspID].PrecursorMz, 5);
-                        rtBegin = Math.Max(Math.Round(alignedSpot.CentralRetentionTime - rtTolerance, 2), 0);
-                        rtEnd = Math.Round(alignedSpot.CentralRetentionTime + rtTolerance, 2);
-                        rt = Math.Round(alignedSpot.CentralRetentionTime, 2);
-
-                        writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd,
-                            ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, mspDB[mspID]);
-
+                        writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, r);
                     }
                 }
             }
