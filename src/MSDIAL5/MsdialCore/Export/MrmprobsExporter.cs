@@ -163,22 +163,26 @@ namespace CompMs.MsdialCore.Export
             }
         }
 
-        public static void ExportExperimentalMsmsAsMrmprobsFormat(string filepath, MS2DecResult ms2DecResult, AlignmentPropertyBean spotProp,
-            double rtTolerance, double ms1Tolerance, double ms2Tolerance, int topN = 5, bool isIncludeMslevel1 = true, bool isUseMs1LevelForQuant = true)
-        {
-            using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII))
-            {
-
+        public void ExportExperimentalMsmsAsMrmprobsFormat(
+            string filepath,
+            MS2DecResult ms2DecResult,
+            AlignmentPropertyBean spotProp,
+            double rtTolerance,
+            double ms1Tolerance,
+            double ms2Tolerance,
+            int topN,
+            bool isIncludeMslevel1,
+            bool isUseMs1LevelForQuant) {
+            using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
                 writeHeaderAsMrmprobsReferenceFormat(sw);
 
-                var name = stringReplaceForWindowsAcceptableCharacters(spotProp.MetaboliteName + "_" + spotProp.AlignmentID);
-                var precursorMz = Math.Round(spotProp.CentralAccurateMass, 5);
-                var rtBegin = Math.Max(Math.Round(spotProp.CentralRetentionTime - rtTolerance, 2), 0);
-                var rtEnd = Math.Round(spotProp.CentralRetentionTime + rtTolerance, 2);
-                var rt = Math.Round(spotProp.CentralRetentionTime, 2);
+                var name = stringReplaceForWindowsAcceptableCharacters(spotProp.Name + "_" + spotProp.AlignmentID);
+                var precursorMz = Math.Round(spotProp.MassCenter, 5);
+                var rtBegin = Math.Max(Math.Round(spotProp.TimesCenter.RT.Value - rtTolerance, 2), 0);
+                var rtEnd = Math.Round(spotProp.TimesCenter.RT.Value + rtTolerance, 2);
+                var rt = Math.Round(spotProp.TimesCenter.RT.Value, 2);
 
-                writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd,
-                    ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, ms2DecResult);
+                writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, ms2DecResult);
             }
         }
 
@@ -429,6 +433,41 @@ namespace CompMs.MsdialCore.Export
                 if (tqRatio == 0) tqRatio = 1;
 
                 writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, productMz, rt, tqRatio, rtBegin, rtEnd, ms1Tolerrance, ms2Tolerance, 2, compClass);
+            }
+        }
+
+        private static void writeFieldsAsMrmprobsReferenceFormat(StreamWriter sw, string name, double precursorMz, double rt, double rtBegin, double rtEnd, double ms1Tolerrance, double ms2Tolerance, int topN, bool isIncludeMslevel1, bool isUseMs1LevelForQuant, MS2DecResult ms2DecResult)
+        {
+            if (isIncludeMslevel1 == false && ms2DecResult.MassSpectra.Count == 0) return;
+            if (isIncludeMslevel1)
+            {
+                var tqRatio = 99;
+                if (isUseMs1LevelForQuant) tqRatio = 100;
+                if (tqRatio == 100 && !isUseMs1LevelForQuant) tqRatio = 99; // 100 is used just once for the target (quantified) m/z trace. Otherwise, non-100 value should be used.
+                writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, precursorMz, rt, tqRatio, rtBegin, rtEnd, ms1Tolerrance, ms2Tolerance, 1, "NA");
+            }
+
+            if (topN == 1 && isIncludeMslevel1) return;
+            if (ms2DecResult.MassSpectra == null || ms2DecResult.MassSpectra.Count == 0) return;
+
+            var massSpec = ms2DecResult.MassSpectra.OrderByDescending(n => n[1]).ToList();
+            var baseIntensity = 0.0;
+
+            if (isUseMs1LevelForQuant) baseIntensity = ms2DecResult.Ms1PeakHeight;
+            else baseIntensity = massSpec[0][1];
+
+            for (int i = 0; i < massSpec.Count; i++)
+            {
+                if (i > topN - 1) break;
+                var productMz = Math.Round(massSpec[i][0], 5);
+                var tqRatio = Math.Round(massSpec[i][1] / baseIntensity * 100, 0);
+                if (isUseMs1LevelForQuant && i == 0) tqRatio = 99;
+                else if (!isUseMs1LevelForQuant && i == 0) tqRatio = 100;
+                else if (i != 0 && tqRatio == 100) tqRatio = 99;  // 100 is used just once for the target (quantified) m/z trace. Otherwise, non-100 value should be used.
+
+                if (tqRatio == 0) tqRatio = 1;
+
+                writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, productMz, rt, tqRatio, rtBegin, rtEnd, ms1Tolerrance, ms2Tolerance, 2, "NA");
             }
         }
     }
