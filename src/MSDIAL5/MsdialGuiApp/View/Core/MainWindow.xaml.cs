@@ -79,8 +79,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildView<ProteinGroupTable>);
             broker.ToObservable<ChromatogramsViewModel>()
                 .Subscribe(ShowChildView<DisplayChromatogramsView>);
-            broker.ToObservable<DisplayEicSettingViewModel>()
-                .Subscribe(ShowChildDialog<EICDisplaySettingView>);
+            broker.ToObservable<CheckChromatogramsViewModel>()
+                .Subscribe(ShowChildViewWithDispose<CheckChromatogramsView>("Display chromatograms", height: 400, width: 1000));
             broker.ToObservable<NormalizationSetViewModel>()
                 .Subscribe(ShowChildDialog<NormalizationSetView>);
             broker.ToObservable<MultivariateAnalysisSettingViewModel>()
@@ -144,7 +144,7 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void ShowChildViewWithDispose<TView>(object viewmodel) where TView : Window, new() {
-            var view = new TView()
+            Window view = new TView()
             {
                 DataContext = viewmodel,
                 Owner = this,
@@ -152,6 +152,23 @@ namespace CompMs.App.Msdial.View.Core
             };
             DataContextCleanupBehavior.SetIsEnabled(view, true);
             view.Show();
+        }
+
+        private Action<object> ShowChildViewWithDispose<TView>(string title, double height, double width) where TView: FrameworkElement, new() {
+            void InnerShowDialog(object viewmodel) {
+                var view = new Window
+                {
+                    Height = height, Width = width,
+                    Title = title,
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    DataContext = viewmodel,
+                    Content = new TView(),
+                };
+                DataContextCleanupBehavior.SetIsEnabled(view, true);
+                view.Show();
+            }
+            return InnerShowDialog;
         }
 
         private void ShowChildDialog<TView>(object viewmodel) where TView : Window, new() {

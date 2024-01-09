@@ -31,7 +31,7 @@ namespace CompMs.App.Msdial.Model.Loader
             _fileChromatograms = files.AnalysisFiles.Select(file => new FileChromatogram(file, classToProp)).ToList();           
         }
 
-        public IObservable<List<Chromatogram>> LoadEicAsObservable(AlignmentSpotPropertyModel target) {
+        public IObservable<List<PeakChromatogram>> LoadEicAsObservable(AlignmentSpotPropertyModel target) {
             if (target != null) {
                 var spotinfo = _chromatogramSpotSerializer.DeserializeAtFromFile(_eicFile, target.MasterAlignmentID);
                 var ps = Enumerable.Range(0, _fileChromatograms.Count)
@@ -42,7 +42,7 @@ namespace CompMs.App.Msdial.Model.Loader
                     .Select(chromatograms => chromatograms.Where(chromatogram => !(chromatogram is null)).ToList());
             }
             else {
-                return Observable.Return(new List<Chromatogram>(0));
+                return Observable.Return(new List<PeakChromatogram>(0));
             }
         }
 
@@ -59,7 +59,7 @@ namespace CompMs.App.Msdial.Model.Loader
                 _color = class2Prop.CombineLatest(_clss, (c2p, cls) => c2p.TryGetValue(cls, out var prop) ? prop.ObserveProperty(p => p.Color) : Observable.Return(Colors.Blue)).Switch(); 
             }
 
-            public IObservable<Chromatogram> GetChromatogram(AlignmentSpotPropertyModel _spot, IObservable<AlignmentChromPeakFeatureModel> _peak, ChromatogramPeakInfo _peakInfo) {
+            public IObservable<PeakChromatogram> GetChromatogram(AlignmentSpotPropertyModel _spot, IObservable<AlignmentChromPeakFeatureModel> _peak, ChromatogramPeakInfo _peakInfo) {
                 var peaks = _peakInfo.Chromatogram.Select(peak => new PeakItem(peak)).ToList();
                 var area = new[]
                 {
@@ -69,8 +69,8 @@ namespace CompMs.App.Msdial.Model.Loader
 
                 return new[]
                 {
-                    _includes.Where(x => x).Select(_ => Observable.Return(Unit.Default).CombineLatest(_clss, _name, _color, area, (_2, clss, name, color, area_) => new Chromatogram(peaks, area_, clss, color, _spot.ChromXType, _spot.ChromXUnit, name))),
-                    _includes.Where(x => !x).Select(_ => Observable.Return((Chromatogram)null)),
+                    _includes.Where(x => x).Select(_ => Observable.Return(Unit.Default).CombineLatest(_clss, _name, _color, area, (_2, clss, name, color, area_) => new PeakChromatogram(peaks, area_, clss, color, _spot.ChromXType, _spot.ChromXUnit, name))),
+                    _includes.Where(x => !x).Select(_ => Observable.Return((PeakChromatogram)null)),
                 }.Merge().Switch();
             }
         }

@@ -165,7 +165,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
     internal sealed class SampleTableViewerInAlignmentModelLegacy : BindableBase {
         public SampleTableViewerInAlignmentModelLegacy(
             IObservable<AlignmentSpotPropertyModel> alignmentProp,
-            IObservable<List<Chromatogram>> chromatoramSource,
+            IObservable<List<PeakChromatogram>> chromatoramSource,
             List<AnalysisFileBean> files,
             ParameterBase parameter) {
 
@@ -198,7 +198,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
 
         private static IObservable<SampleTableRows> GetSourceOfAlignedSampleTableViewer(
             IObservable<AlignmentSpotPropertyModel> alignmentProp,
-            IObservable<List<Chromatogram>> chromatogramSource,
+            IObservable<List<PeakChromatogram>> chromatogramSource,
             List<AnalysisFileBean> files,
             ParameterBase parameter) {
             var classnameToBytes = parameter.ClassnameToColorBytes;
@@ -206,7 +206,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
             return alignmentProp.ObserveOn(TaskPoolScheduler.Default).Select(prop => {
                 var observablePeaks = prop?.AlignedPeakPropertiesModelProperty ?? Observable.Never<ReadOnlyCollection<AlignmentChromPeakFeatureModel>>();
                 return observablePeaks.CombineLatest(chromatogramSource, (peaks, chromatograms) => {
-                    var chromatograms_ = chromatograms ?? Enumerable.Empty<Chromatogram>();
+                    var chromatograms_ = chromatograms ?? Enumerable.Empty<PeakChromatogram>();
                     var peaks_ = peaks ?? Enumerable.Empty<AlignmentChromPeakFeatureModel>();
                     var brushes = Enumerable.Range(0, files.Count).Select(ChartBrushes.GetChartBrush);
                     var rows = files.Zip(peaks_, brushes).Where(triple => triple.Item1.AnalysisFileIncluded)
@@ -220,7 +220,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
         private static SampleTableRow GetSampleTableRow(
             AlignmentSpotPropertyModel alignmentProp,
             AlignmentChromPeakFeatureModel peak,
-            Chromatogram chromatogram,
+            PeakChromatogram chromatogram,
             AnalysisFileBean file,
             SolidColorBrush brush,
             float ms1Tolerance) {
