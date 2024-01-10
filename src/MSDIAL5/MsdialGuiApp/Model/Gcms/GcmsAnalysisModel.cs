@@ -180,7 +180,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             if (parameter.RetentionType == RetentionType.RI) {
                 peakInformationModel.Add(t => new RiPoint(t?.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value ?? 0d, dbMapper.MoleculeMsRefer(t.MatchResults.Representative)?.ChromXs.RI.Value));
             }
-            peakInformationModel.Add(t => new MzPoint(t?.QuantifiedChromatogramPeak.PeakFeature.Mass ?? 0d, dbMapper.MoleculeMsRefer(t.MatchResults.Representative)?.PrecursorMz));
+            peakInformationModel.Add(t => new QuantMassPoint(t?.QuantifiedChromatogramPeak.PeakFeature.Mass ?? 0d, dbMapper.MoleculeMsRefer(t.MatchResults.Representative)?.PrecursorMz));
             peakInformationModel.Add(
                 t => new HeightAmount(t?.QuantifiedChromatogramPeak.PeakFeature.PeakHeightTop ?? 0d),
                 t => new AreaAmount(t?.QuantifiedChromatogramPeak.PeakFeature.PeakAreaAboveZero ?? 0d));

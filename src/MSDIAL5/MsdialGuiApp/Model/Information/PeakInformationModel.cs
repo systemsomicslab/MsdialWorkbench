@@ -371,6 +371,23 @@ namespace CompMs.App.Msdial.Model.Information
         public string Point { get; }
     }
 
+    internal sealed class QuantMassPoint : BindableBase, IPeakPoint
+    {
+        private const string QUANTMASS_LABEL = "Quant mass";
+
+        public QuantMassPoint(double mz, double? reference = null) {
+            if (reference is null) {
+                Point = mz.ToString("F2");
+            }
+            else {
+                Point = $"{mz:F2}|ref={reference:F2}";
+            }
+        }
+
+        public string Label => QUANTMASS_LABEL;
+        public string Point { get; }
+    }
+
     internal sealed class DriftPoint : BindableBase, IPeakPoint
     {
         private const string DRIFT_LABEL = "Mobility [1/K0]";

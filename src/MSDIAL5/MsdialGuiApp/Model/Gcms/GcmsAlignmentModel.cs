@@ -191,7 +191,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             AlignmentSpotTableModel = new GcmsAlignmentSpotTableModel(ms1Spots, target, barBrush, projectBaseParameter.ClassProperties, barItemsLoaderProperty, filter, spectraLoader).AddTo(Disposables);
 
             var peakInformationModel = new PeakInformationAlignmentModel(target).AddTo(Disposables);
-            peakInformationModel.Add(t => new MzPoint(t?.MassCenter ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.PrecursorMz));
+            peakInformationModel.Add(t => new QuantMassPoint(t?.MassCenter ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.PrecursorMz));
             switch (parameter.AlignmentIndexType) {
                 case AlignmentIndexType.RI:
                     peakInformationModel.Add(t => new RiPoint(t?.innerModel.TimesCenter.RI.Value ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.ChromXs.RI.Value));
