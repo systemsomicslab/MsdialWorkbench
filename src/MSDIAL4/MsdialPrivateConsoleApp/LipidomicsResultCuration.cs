@@ -9,6 +9,7 @@ using System.Linq;
 using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace MsdialPrivateConsoleApp {
 
@@ -90,6 +91,10 @@ namespace MsdialPrivateConsoleApp {
         public string Result { get; set; } = string.Empty;
         public string AnnotationLabel { get; set; } = string.Empty;
         public string Type { get; set; } = string.Empty;
+        public string TotalScore { get; set; } = string.Empty;
+
+        public string ClassID => FileName.Split('_')[1] == "Lsplash" ? FileName.Split('_')[2] : FileName.Split('_')[1];
+        public string ReplicateID => int.TryParse(FileName.Split('_')[FileName.Split('_').Length - 1], out int id) ? id.ToString() : "1";
     }
 
     public sealed class LipidomicsResultCuration {
@@ -176,6 +181,143 @@ namespace MsdialPrivateConsoleApp {
                 foreach (var result in resultlist) {
                     var sResult = new List<string>() { result.File_Lipid, result.FileName, result.Lipid, result.Result, result.Type };
                     sw.WriteLine(String.Join("\t", sResult));
+                }
+            }
+        }
+
+        public static void EadValidationResultExport(string xmlfile, string pairfile) {
+            // parse pairfile
+            var name2type = new Dictionary<string, string>();
+            using (var sr = new StreamReader(pairfile)) {
+                sr.ReadLine();
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine();
+                    var linearray = line.Split('\t');
+                    if (linearray.Length == 2) {
+                        var name = linearray[0];
+                        var type = linearray[1];
+                        name2type[name] = type;
+                    }
+                }
+            };
+
+            var xmlDoc = new XmlDocument();
+            xmlDoc.Load(xmlfile);
+
+            var alignedSpots = new List<EadResultObj>();
+            // <MatchedSpot>要素をすべて取得
+            XmlNodeList matchedSpotNodes = xmlDoc.DocumentElement.SelectNodes("//MatchedSpot");
+
+            foreach (XmlNode matchedSpot in matchedSpotNodes) {
+                // <Reference>の<Name>を取得
+                string referenceName = matchedSpot.SelectSingleNode("Reference/Name")?.InnerText ?? "";
+
+                // <AlignedSpot>要素をすべて取得
+                XmlNodeList alignedSpotNodes = matchedSpot.SelectNodes("AlignedSpot");
+
+                foreach (XmlNode alignedSpot in alignedSpotNodes) {
+                    // AlignedSpotの<Name>を取得
+                    string alignedName = alignedSpot.SelectSingleNode("Name")?.InnerText ?? "";
+
+                    // <Peak>要素をすべて取得
+                    XmlNodeList peakNodes = alignedSpot.SelectNodes("Peak");
+
+                    foreach (XmlNode peak in peakNodes) {
+                        // 各フィールドの値を取得
+                        string file = peak.SelectSingleNode("File")?.InnerText ?? "";
+                        string peakName = peak.SelectSingleNode("Name")?.InnerText ?? "null";
+                        string totalScore = peak.SelectSingleNode("TotalScore")?.InnerText ?? "null";
+                        string isMsmsAssigned = peak.SelectSingleNode("IsMsmsAssigned")?.InnerText ?? "null";
+                        string labeltype = "noMS2";
+
+                        if (peakName.Contains("|")) peakName = peakName.Split('|')[1];
+
+                        if (isMsmsAssigned != "false") {
+                            if (name2type.ContainsKey(peakName)) {
+                                labeltype = name2type[peakName];
+                            }
+                            else {
+                                labeltype = "misslabel";
+                            }
+                        }
+                        alignedSpots.Add(new EadResultObj() {
+                            FileName = file, Lipid = referenceName, Result = peakName, TotalScore = totalScore, Type = labeltype
+                        });
+                    }
+                }
+            }
+
+            var directory = Path.GetDirectoryName(xmlfile);
+            var xmlname = Path.GetFileNameWithoutExtension(xmlfile);
+            var exportfile = Path.Combine(directory, xmlname + ".resultall");
+            var allcount = 0;
+            var misscount = 0;
+            using (var sw = new StreamWriter(exportfile)) {
+                var header = new List<string>() { "file_lipid", "file", "class", "replicate_id", "lipid", "result", "score", "type" };
+                sw.WriteLine(String.Join("\t", header));
+                foreach (var spot in alignedSpots) {
+                    var sResult = new List<string>() { spot.File_Lipid, spot.FileName, spot.ClassID, spot.ReplicateID, spot.Lipid, spot.Result, spot.TotalScore, spot.Type };
+                    sw.WriteLine(String.Join("\t", sResult));
+
+                    if (spot.Type == "noMS2") continue;
+                    if (spot.Type == "misslabel") misscount++;
+                    allcount++;
+                }
+            }
+
+            Console.WriteLine("query {0}, miss {1}, percent {2}", allcount, misscount, ((double)misscount / (double)allcount) * 100);
+
+            var exportfile_summary = Path.Combine(directory, xmlname + ".resultsummary");
+
+            var dict = new Dictionary<string, List<EadResultObj>>();
+            foreach (var spot in alignedSpots) {
+                var classid = spot.ClassID;
+                var lipid = spot.Lipid;
+                var key = classid + "|" + lipid;
+                if (dict.ContainsKey(key)) {
+                    dict[key].Add(spot);
+                }
+                else {
+                    dict[key] = new List<EadResultObj>() { spot };
+                }
+            }
+            using (var sw = new StreamWriter(exportfile_summary)) {
+                var header = new List<string>() { "class", "lipid", "result", "score", "type" };
+                sw.WriteLine(String.Join("\t", header));
+
+                foreach (var item in dict) {
+                    var key = item.Key;
+                    var value = item.Value;
+
+                    var classid = key.Split('|')[0];
+                    var lipid = key.Split('|')[1];
+                    
+                    if (value.Count < 3) {
+                        var sResult = new List<string>() { classid, lipid, value[0].Result, value[0].TotalScore, value[0].Type };
+                        sw.WriteLine(String.Join("\t", sResult));
+                    }
+                    else {
+                        var sorted = value.OrderByDescending(n => n.TotalScore).ToList();
+                        var distinctlabels = sorted.Select(n => n.Result).Distinct().ToList();
+                        if (distinctlabels.Count() == 3 || distinctlabels.Count() == 1) {
+                            var sResult = new List<string>() { classid, lipid, sorted[0].Result, sorted[0].TotalScore, sorted[0].Type };
+                            sw.WriteLine(String.Join("\t", sResult));
+                        }
+                        else {
+                            if (sorted[0].Result == sorted[1].Result) {
+                                var sResult = new List<string>() { classid, lipid, sorted[0].Result, sorted[0].TotalScore, sorted[0].Type };
+                                sw.WriteLine(String.Join("\t", sResult));
+                            }
+                            else if (sorted[0].Result == sorted[2].Result) {
+                                var sResult = new List<string>() { classid, lipid, sorted[0].Result, sorted[0].TotalScore, sorted[0].Type };
+                                sw.WriteLine(String.Join("\t", sResult));
+                            }
+                            else if (sorted[1].Result == sorted[2].Result) {
+                                var sResult = new List<string>() { classid, lipid, sorted[1].Result, sorted[1].TotalScore, sorted[1].Type };
+                                sw.WriteLine(String.Join("\t", sResult));
+                            }
+                        }
+                    }
                 }
             }
         }
