@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -22,12 +23,52 @@ namespace CompMs.MsdialCore.Export
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
 
-        public void ExportReferenceMsmsAsMrmprobsFormat(
+        public void ExportReferenceMsms<T>(string filepath, T peakSpot, MrmprobsExportBaseParameter parameter) where T: IChromatogramPeak, IAnnotatedObject {
+            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+                writer.WriteHeader();
+                if (!peakSpot.MatchResults.IsReferenceMatched(_evaluator)) {
+                    return;
+                }
+                MoleculeMsReference reference = _refer.Refer(peakSpot.MatchResults.Representative);
+                writer.WriteFieldsBasedOnReference(peakSpot, reference, parameter);
+            }
+        }
+
+        public void ExportReferenceMsms(string filepath, ObservableCollection<AlignmentSpotProperty> alignedSpots, MrmprobsExportBaseParameter parameter) {
+            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+                writer.WriteHeader();
+                foreach (var spot in alignedSpots) {
+                    if (!string.IsNullOrEmpty(spot.Comment) && spot.Comment.IndexOf("unk", StringComparison.OrdinalIgnoreCase) >= 0) {
+                        continue;
+                    }
+                    if (!spot.MatchResults.IsReferenceMatched(_evaluator)) {
+                        continue;
+                    }
+                    MoleculeMsReference reference = _refer.Refer(spot.MatchResults.Representative);
+                    writer.WriteFieldsBasedOnReference(spot, reference, parameter);
+                }
+            }
+        }
+
+        public void ExportReferenceMsms(string filepath, ObservableCollection<ChromatogramPeakFeature> peakSpots, MrmprobsExportBaseParameter parameter) {
+            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+                writer.WriteHeader();
+                foreach (var peak in peakSpots) {
+                    if (!peak.MatchResults.IsReferenceMatched(_evaluator)) {
+                        continue;
+                    }
+                    MoleculeMsReference reference = _refer.Refer(peak.MatchResults.Representative);
+                    writer.WriteFieldsBasedOnReference(peak, reference, parameter);
+                }
+            }
+        }
+
+        public void ExportReferenceMsms(
             string filepath,
-            MSDecLoader msdecLoader,
             AlignmentSpotProperty alignedSpot,
             MrmprobsExportBaseParameter parameter,
             IAnnotationQueryFactory<MsScanMatchResult> queryFactory,
+            MSDecLoader msdecLoader,
             MsRefSearchParameterBase searchParameter)
         {
             if (parameter.MpIsExportOtherCandidates) {
@@ -36,7 +77,6 @@ namespace CompMs.MsdialCore.Export
 
             using (var writer = new MrmprobsReferenceWriter(filepath)) {
                 writer.WriteHeader();
-
                 if (!alignedSpot.MatchResults.IsReferenceMatched(_evaluator)) return;
 
                 MoleculeMsReference reference = _refer.Refer(alignedSpot.MatchResults.Representative);
@@ -63,12 +103,54 @@ namespace CompMs.MsdialCore.Export
             }
         }
 
-        public void ExportReferenceMsmsAsMrmprobsFormat(
+        public void ExportReferenceMsms(
             string filepath,
+            ChromatogramPeakFeature peakSpot,
+            MrmprobsExportBaseParameter parameter,
+            IAnnotationQueryFactory<MsScanMatchResult> queryFactory,
             MSDecLoader msdecLoader,
+            MsRefSearchParameterBase searchParameter)
+        {
+            if (parameter.MpIsExportOtherCandidates) {
+                searchParameter.TotalScoreCutoff = parameter.MpIdentificationScoreCutOff;
+            }
+
+            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+                writer.WriteHeader();
+
+                if (!peakSpot.MatchResults.IsReferenceMatched(_evaluator)) return;
+
+                MoleculeMsReference reference = _refer.Refer(peakSpot.MatchResults.Representative);
+                writer.WriteFieldsBasedOnReference(peakSpot, reference, parameter);
+
+                if (parameter.MpIsExportOtherCandidates) {
+                    var ms2Dec = msdecLoader.LoadMSDecResult(peakSpot.MSDecResultIdUsed);
+                    var spectrum = ms2Dec.Spectrum;
+                    if (spectrum != null && spectrum.Count > 0) {
+                        spectrum = spectrum.OrderBy(n => n.Mass).ToList();
+                    }
+
+                    var query = queryFactory.Create(peakSpot, ms2Dec, Array.Empty<RawPeakElement>(), peakSpot.PeakCharacter, searchParameter);
+                    var candidates = query.FindCandidates();
+
+                    foreach (var candidate in candidates) {
+                        var r = _refer.Refer(candidate);
+                        if (r == reference) {
+                            continue;
+                        }
+
+                        writer.WriteFieldsBasedOnReference(peakSpot, r, parameter);
+                    }
+                }
+            }
+        }
+
+        public void ExportReferenceMsms(
+            string filepath,
             ObservableCollection<AlignmentSpotProperty> alignedSpots,
             MrmprobsExportBaseParameter parameter,
             IAnnotationQueryFactory<MsScanMatchResult> queryFactory,
+            MSDecLoader msdecLoader,
             MsRefSearchParameterBase searchParameter)
         {
             if (parameter.MpIsExportOtherCandidates) {
@@ -107,81 +189,12 @@ namespace CompMs.MsdialCore.Export
             }
         }
 
-        public void ExportExperimentalMsmsAsMrmprobsFormat(
+        public void ExportReferenceMsms(
             string filepath,
-            MSDecResult ms2DecResult,
-            AlignmentSpotProperty spotProp,
-            MrmprobsExportBaseParameter parameter) {
-
-            using (var writer = new MrmprobsReferenceWriter(filepath)) {
-                writer.WriteHeader();
-                writer.WriteFieldsBasedOnExperiment(spotProp, ms2DecResult, parameter);
-            }
-        }
-
-        public void ExportExperimentalMsmsAsMrmprobsFormat(
-            string filepath,
-            ObservableCollection<AlignmentSpotProperty> alignmentSpots,
-            MSDecLoader msdecLoader,
-            MrmprobsExportBaseParameter parameter)
-        {
-            using (var writer = new MrmprobsReferenceWriter(filepath)) {
-                writer.WriteHeader();
-                foreach (var spot in alignmentSpots) {
-                    var ms2Dec = msdecLoader.LoadMSDecResult(spot.MSDecResultIdUsed);
-                    writer.WriteFieldsBasedOnExperiment(spot, ms2Dec, parameter);
-                }
-            }
-        }
-
-        public void ExportReferenceMsmsAsMrmprobsFormat(
-            string filepath,
-            MSDecLoader msdecLoader,
-            ChromatogramPeakFeature peakSpot,
-            MrmprobsExportBaseParameter parameter,
-            IAnnotationQueryFactory<MsScanMatchResult> queryFactory,
-            MsRefSearchParameterBase searchParameter)
-        {
-            if (parameter.MpIsExportOtherCandidates) {
-                searchParameter.TotalScoreCutoff = parameter.MpIdentificationScoreCutOff;
-            }
-
-            using (var writer = new MrmprobsReferenceWriter(filepath)) {
-                writer.WriteHeader();
-
-                if (!peakSpot.MatchResults.IsReferenceMatched(_evaluator)) return;
-
-                MoleculeMsReference reference = _refer.Refer(peakSpot.MatchResults.Representative);
-                writer.WriteFieldsBasedOnReference(peakSpot, reference, parameter);
-
-                if (parameter.MpIsExportOtherCandidates) {
-                    var ms2Dec = msdecLoader.LoadMSDecResult(peakSpot.MSDecResultIdUsed);
-                    var spectrum = ms2Dec.Spectrum;
-                    if (spectrum != null && spectrum.Count > 0) {
-                        spectrum = spectrum.OrderBy(n => n.Mass).ToList();
-                    }
-
-                    var query = queryFactory.Create(peakSpot, ms2Dec, Array.Empty<RawPeakElement>(), peakSpot.PeakCharacter, searchParameter);
-                    var candidates = query.FindCandidates();
-
-                    foreach (var candidate in candidates) {
-                        var r = _refer.Refer(candidate);
-                        if (r == reference) {
-                            continue;
-                        }
-
-                        writer.WriteFieldsBasedOnReference(peakSpot, r, parameter);
-                    }
-                }
-            }
-        }
-
-        public void ExportReferenceMsmsAsMrmprobsFormat(
-            string filepath,
-            MSDecLoader msdecLoader,
             ObservableCollection<ChromatogramPeakFeature> peakSpots,
             MrmprobsExportBaseParameter parameter,
             IAnnotationQueryFactory<MsScanMatchResult> queryFactory,
+            MSDecLoader msdecLoader,
             MsRefSearchParameterBase searchParameter)
         {
             if (parameter.MpIsExportOtherCandidates) {
@@ -215,13 +228,24 @@ namespace CompMs.MsdialCore.Export
                     }
                 }
             }
-
         }
 
-        public void ExportExperimentalMsmsAsMrmprobsFormat(
+        public void ExportExperimentalMsms(
             string filepath,
+            AlignmentSpotProperty spotProp,
             MSDecResult ms2DecResult,
+            MrmprobsExportBaseParameter parameter) {
+
+            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+                writer.WriteHeader();
+                writer.WriteFieldsBasedOnExperiment(spotProp, ms2DecResult, parameter);
+            }
+        }
+
+        public void ExportExperimentalMsms(
+            string filepath,
             ChromatogramPeakFeature peakSpot,
+            MSDecResult ms2DecResult,
             MrmprobsExportBaseParameter parameter)
         {
             using (var writer = new MrmprobsReferenceWriter(filepath)) {
@@ -230,7 +254,22 @@ namespace CompMs.MsdialCore.Export
             }
         }
 
-        public static void ExportExperimentalMsmsAsMrmprobsFormat(
+        public void ExportExperimentalMsms(
+            string filepath,
+            ObservableCollection<AlignmentSpotProperty> alignmentSpots,
+            MSDecLoader msdecLoader,
+            MrmprobsExportBaseParameter parameter)
+        {
+            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+                writer.WriteHeader();
+                foreach (var spot in alignmentSpots) {
+                    var ms2Dec = msdecLoader.LoadMSDecResult(spot.MSDecResultIdUsed);
+                    writer.WriteFieldsBasedOnExperiment(spot, ms2Dec, parameter);
+                }
+            }
+        }
+
+        public static void ExportExperimentalMsms(
             string filepath,
             ObservableCollection<ChromatogramPeakFeature> peakSpots,
             MSDecLoader loader,
