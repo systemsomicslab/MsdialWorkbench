@@ -56,7 +56,7 @@
         </GroupBox>
 
         <GroupBox Header="Separation type" Padding="4" IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}">
-            <Grid>
+            <Grid IsEnabled="{Binding IsChecked, ElementName=RadioButton_ESI}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
@@ -116,7 +116,7 @@
 
         <GroupBox Header="Collision type"
                   IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}">
-            <UniformGrid Columns="6">
+            <UniformGrid Columns="6" IsEnabled="{Binding IsChecked, ElementName=RadioButton_ESI}">
                 <UniformGrid.Resources>
                     <Style TargetType="RadioButton">
                         <Setter Property="Margin" Value="8"/>
