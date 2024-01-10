@@ -77,19 +77,24 @@ namespace CompMs.App.Msdial.Model.Gcms
             PeakPlotModel = new SpectrumFeaturePlotModel(_spectrumFeatures, _peaks, brushMapDataSelector, label).AddTo(_disposables);
 
             IDataProvider provider = providerFactory.Create(file);
-            // Eic chart
-            var eicLoader = new QuantMassEicLoader(file.File, provider, peakPickParameter, projectParameter.IonMode, ChromXType.RT, ChromXUnit.Min, peakPickParameter.RetentionTimeBegin, peakPickParameter.RetentionTimeEnd, isConstantRange: true);
-            var tableEicLoader = new QuantMassEicLoader(file.File, provider, peakPickParameter, projectParameter.IonMode, ChromXType.RT, ChromXUnit.Min, peakPickParameter.RetentionTimeBegin, peakPickParameter.RetentionTimeEnd, isConstantRange: false);
-            EicLoader = tableEicLoader;
-            EicModel = EicModel.Create(selectedSpectrum, eicLoader, string.Empty, string.Empty, string.Empty).AddTo(_disposables);
-            EicModel.VerticalTitle = "Abundance";
-            PeakPlotModel.HorizontalLabel.Subscribe(label => EicModel.HorizontalTitle = label).AddTo(_disposables);
 
             var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), parameter.IonMode, file.File.AcquisitionType);
             ChromatogramRange chromatogramRange = new ChromatogramRange(parameter.RetentionTimeBegin, parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
             _ticLoader = new TicLoader(rawSpectra, chromatogramRange, peakPickParameter);
             _bpcLoader = new BpcLoader(rawSpectra, chromatogramRange, peakPickParameter);
-            _eicLoader = Loader.EicLoader.BuildForAllRange(file.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
+            var eicLoader2 = Loader.EicLoader.BuildForAllRange(file.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
+            _eicLoader = eicLoader2;
+
+            // Eic chart
+            var eicLoader = new QuantMassEicLoader(file.File, provider, peakPickParameter, projectParameter.IonMode, ChromXType.RT, ChromXUnit.Min, peakPickParameter.RetentionTimeBegin, peakPickParameter.RetentionTimeEnd, isConstantRange: true);
+            var tableEicLoader = new QuantMassEicLoader(file.File, provider, peakPickParameter, projectParameter.IonMode, ChromXType.RT, ChromXUnit.Min, peakPickParameter.RetentionTimeBegin, peakPickParameter.RetentionTimeEnd, isConstantRange: false);
+            EicLoader = tableEicLoader;
+            EicModel = EicModel.CreateBuilder(string.Empty, string.Empty, string.Empty)
+                .Append(selectedSpectrum, eicLoader)
+                .Append(PeakPlotModel.SelectedChromatogramPeak, eicLoader2)
+                .Build().AddTo(_disposables);
+            EicModel.VerticalTitle = "Abundance";
+            PeakPlotModel.HorizontalLabel.Subscribe(label => EicModel.HorizontalTitle = label).AddTo(_disposables);
 
             var matchResultCandidatesModel = new MatchResultCandidatesModel(selectedSpectrum.Select(t => t?.MatchResults)).AddTo(_disposables);
             MatchResultCandidatesModel = matchResultCandidatesModel;

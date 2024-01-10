@@ -6,12 +6,14 @@ using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    public sealed class EicModel : DisposableModelBase
+    internal sealed class EicModel : DisposableModelBase
     {
         private EicModel(IReadOnlyReactiveProperty<PeakChromatogram> chromatogram_, ReadOnlyReactivePropertySlim<bool> itemLoaded, string graphTitle, string horizontalTitle, string verticalTitle) {
             GraphTitle = graphTitle;
@@ -107,15 +109,41 @@ namespace CompMs.App.Msdial.Model.Chart
         }
         private string verticalProperty;
 
-        public static EicModel Create<T>(IObservable<T> targetSource, IChromatogramLoader<T> loader, string graphTitle, string horizontalTitle, string verticalTitle) {
-            var source = targetSource.SelectSwitch(t => Observable.FromAsync(token => loader.LoadChromatogramAsync(t, token)).Select(c => (c, true)).StartWith((null, false))).Publish();
-            var chromatogram = source.Select(p => p.c).ToReactiveProperty();
-            var itemLoaded = source.Select(p => p.Item2).ToReadOnlyReactivePropertySlim();
-            var result = new EicModel(chromatogram, itemLoaded, graphTitle, horizontalTitle, verticalTitle);
-            result.Disposables.Add(source.Connect());
-            result.Disposables.Add(chromatogram);
-            result.Disposables.Add(itemLoaded);
-            return result;
+        public static Builder CreateBuilder(string graphTitle, string horizontalTitle, string verticalTitle) {
+            return new Builder(graphTitle, horizontalTitle, verticalTitle);
+        }
+
+        internal class Builder {
+            private readonly string _graphTitle, _horizontalTitle, _verticalTitle;
+            private readonly List<IConnectableObservable<(PeakChromatogram Chromatogram, bool Loaded)>> _sources; 
+
+            public Builder(string graphTitle, string horizontalTitle, string verticalTitle)
+            {
+                _graphTitle = graphTitle;
+                _horizontalTitle = horizontalTitle;
+                _verticalTitle = verticalTitle;
+                _sources = new List<IConnectableObservable<(PeakChromatogram, bool)>>();
+            }
+
+            public Builder Append<T>(IObservable<T> targetSource, IChromatogramLoader<T> loader) {
+                var source = targetSource.SelectSwitch(t => Observable.FromAsync(token => loader.LoadChromatogramAsync(t, token)).Select(c => (c, true)).StartWith((null, false))).Publish();
+                _sources.Add(source);
+                return this;
+            }
+
+            public EicModel Build() {
+                var source = _sources.Merge();
+                var chromatogram = source.Select(p => p.Chromatogram).ToReactiveProperty();
+                var itemLoaded = source.Select(p => p.Loaded).ToReadOnlyReactivePropertySlim();
+                var result = new EicModel(chromatogram, itemLoaded, _graphTitle, _horizontalTitle, _verticalTitle);
+                for (int i = 0; i < _sources.Count; i++) {
+                    result.Disposables.Add(_sources[i].Connect());
+                }
+                result.Disposables.Add(chromatogram);
+                result.Disposables.Add(itemLoaded);
+                _sources.Clear();
+                return result;
+            }
         }
     }
 }
