@@ -338,22 +338,27 @@ namespace CompMs.MsdialCore.Export
 
         }
 
-        public static void ExportExperimentalMsmsAsMrmprobsFormat(string filepath, MS2DecResult ms2DecResult, PeakAreaBean peakSpot,
-            double rtTolerance, double ms1Tolerance, double ms2Tolerance, int topN = 5, bool isIncludeMslevel1 = true, bool isUseMs1LevelForQuant = true)
+        public static void ExportExperimentalMsmsAsMrmprobsFormat(
+            string filepath,
+            MS2DecResult ms2DecResult,
+            PeakAreaBean peakSpot,
+            double rtTolerance,
+            double ms1Tolerance,
+            double ms2Tolerance,
+            int topN,
+            bool isIncludeMslevel1,
+            bool isUseMs1LevelForQuant)
         {
-            using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII))
-            {
-
+            using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
                 writeHeaderAsMrmprobsReferenceFormat(sw);
 
-                var name = stringReplaceForWindowsAcceptableCharacters(peakSpot.MetaboliteName + "_" + peakSpot.PeakID);
-                var precursorMz = Math.Round(peakSpot.AccurateMass, 5);
-                var rtBegin = Math.Max(Math.Round(peakSpot.RtAtPeakTop - rtTolerance, 2), 0);
-                var rtEnd = Math.Round(peakSpot.RtAtPeakTop + rtTolerance, 2);
-                var rt = Math.Round(peakSpot.RtAtPeakTop, 2);
+                var name = stringReplaceForWindowsAcceptableCharacters(peakSpot.Name + "_" + peakSpot.MasterPeakID);
+                var precursorMz = Math.Round(peakSpot.PrecursorMz, 5);
+                var rtBegin = Math.Max(Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value - rtTolerance, 2), 0);
+                var rtEnd = Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value + rtTolerance, 2);
+                var rt = Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value, 2);
 
-                writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd,
-                    ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, ms2DecResult);
+                writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, ms2DecResult);
             }
         }
 
