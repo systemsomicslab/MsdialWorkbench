@@ -13,7 +13,7 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     public sealed class EicModel : DisposableModelBase
     {
-        private EicModel(IReadOnlyReactiveProperty<Chromatogram> chromatogram_, ReadOnlyReactivePropertySlim<bool> itemLoaded, string graphTitle, string horizontalTitle, string verticalTitle) {
+        private EicModel(IReadOnlyReactiveProperty<PeakChromatogram> chromatogram_, ReadOnlyReactivePropertySlim<bool> itemLoaded, string graphTitle, string horizontalTitle, string verticalTitle) {
             GraphTitle = graphTitle;
             HorizontalTitle = horizontalTitle;
             VerticalTitle = verticalTitle;
@@ -72,7 +72,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public ReadOnlyReactivePropertySlim<bool> ItemLoaded { get; }
 
-        public IReadOnlyReactiveProperty<Chromatogram> Chromatogram { get; }
+        public IReadOnlyReactiveProperty<PeakChromatogram> Chromatogram { get; }
 
         public IObservable<Range> ChromRangeSource { get; }
         public IObservable<Range> AbundanceRangeSource { get; }

@@ -6,6 +6,7 @@ using CompMs.Graphics.Core.Base;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -14,9 +15,12 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    internal sealed class ChromatogramsModel : DisposableModelBase {
-        public ChromatogramsModel(string name, IReadOnlyList<DisplayChromatogram> chromatograms, string graphTitle, string horizontalTitle, string verticalTitle) {
-            DisplayChromatograms = (chromatograms as List<DisplayChromatogram>) ?? chromatograms?.ToList() ?? throw new ArgumentNullException(nameof(chromatograms));
+    public sealed class ChromatogramsModel : DisposableModelBase {
+        private readonly ObservableCollection<DisplayChromatogram> _displayChromatograms;
+
+        public ChromatogramsModel(string name, ObservableCollection<DisplayChromatogram> chromatograms, string graphTitle, string horizontalTitle, string verticalTitle) {
+            _displayChromatograms = chromatograms ?? throw new ArgumentNullException(nameof(chromatograms));
+            DisplayChromatograms = new ReadOnlyObservableCollection<DisplayChromatogram>(_displayChromatograms);
 
             Name = name;
             GraphTitle = graphTitle;
@@ -34,7 +38,22 @@ namespace CompMs.App.Msdial.Model.Chart
             ChromAxisItemSelector = new AxisItemSelector<double>(new AxisItemModel<double>(horizontalTitle, chromAxis, horizontalTitle)).AddTo(Disposables);
         }
 
-        public List<DisplayChromatogram> DisplayChromatograms { get; }
+        public ChromatogramsModel(string name, DisplayChromatogram chromatogram, string graphTitle, string horizontalTitle, string verticalTitle)
+           : this(name, new ObservableCollection<DisplayChromatogram>() { chromatogram }, graphTitle, horizontalTitle, verticalTitle) {
+
+        }
+
+        public ChromatogramsModel(string name, DisplayChromatogram chromatogram)
+           : this(name, new ObservableCollection<DisplayChromatogram>() { chromatogram }, string.Empty, string.Empty, string.Empty) {
+
+        }
+
+        public ChromatogramsModel(string name, List<DisplayChromatogram> chromatograms, string graphTitle, string horizontalTitle, string verticalTitle)
+            : this(name, new ObservableCollection<DisplayChromatogram>(chromatograms), graphTitle, horizontalTitle, verticalTitle){
+
+        }
+
+        public ReadOnlyObservableCollection<DisplayChromatogram> DisplayChromatograms { get; }
 
         public AxisItemSelector<double> AbundanceAxisItemSelector { get; }
         public AxisItemSelector<double> ChromAxisItemSelector { get; }
@@ -45,20 +64,19 @@ namespace CompMs.App.Msdial.Model.Chart
         public string VerticalProperty { get; }
 
         public ChromatogramsModel Merge(ChromatogramsModel other) {
-            return new ChromatogramsModel($"{Name} and {other.Name}", DisplayChromatograms.Concat(other.DisplayChromatograms).ToList(), $"{GraphTitle} and {other.GraphTitle}", ChromAxisItemSelector.SelectedAxisItem.GraphLabel, AbundanceAxisItemSelector.SelectedAxisItem.GraphLabel);
+            return new ChromatogramsModel($"{Name} and {other.Name}", new ObservableCollection<DisplayChromatogram>(DisplayChromatograms.Concat(other.DisplayChromatograms)), $"{GraphTitle} and {other.GraphTitle}", ChromAxisItemSelector.SelectedAxisItem.GraphLabel, AbundanceAxisItemSelector.SelectedAxisItem.GraphLabel);
         }
 
         public async Task ExportAsync(Stream stream, string separator) {
-            using (var writer = new StreamWriter(stream, encoding: new UTF8Encoding(false), bufferSize: 1024, leaveOpen: true)) {
-                await writer.WriteLineAsync(string.Format("Chromatogram{0}Time{0}Intensity", separator)).ConfigureAwait(false);
-                for (int i = 0; i < DisplayChromatograms.Count; i++) {
-                    var chromatogram = DisplayChromatograms[i];
-                    var builder = new StringBuilder();
-                    foreach (var peak in chromatogram.ChromatogramPeaks) {
-                        builder.AppendLine(string.Format("{1}{0}{2}{0}{3}", separator, chromatogram.Name, peak.Time, peak.Intensity));
-                    }
-                    await writer.WriteAsync(builder.ToString()).ConfigureAwait(false);
+            using var writer = new StreamWriter(stream, encoding: new UTF8Encoding(false), bufferSize: 1024, leaveOpen: true);
+            await writer.WriteLineAsync(string.Format("Chromatogram{0}Time{0}Intensity", separator)).ConfigureAwait(false);
+            for (int i = 0; i < DisplayChromatograms.Count; i++) {
+                var chromatogram = DisplayChromatograms[i];
+                var builder = new StringBuilder();
+                foreach (var peak in chromatogram.ChromatogramPeaks) {
+                    builder.AppendLine(string.Format("{1}{0}{2}{0}{3}", separator, chromatogram.Name, peak.Time, peak.Intensity));
                 }
+                await writer.WriteAsync(builder.ToString()).ConfigureAwait(false);
             }
         }
     }

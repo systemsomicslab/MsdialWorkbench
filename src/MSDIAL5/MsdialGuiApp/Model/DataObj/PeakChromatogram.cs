@@ -7,12 +7,12 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class Chromatogram
+    public sealed class PeakChromatogram
     {
         private readonly ChromXType _type;
         private readonly ChromXUnit _unit;
 
-        public Chromatogram(List<PeakItem> peaks, List<PeakItem> peakArea, PeakItem peakTop, string class_, Color color, ChromXType type, ChromXUnit unit, string description = "") {
+        public PeakChromatogram(List<PeakItem> peaks, List<PeakItem> peakArea, PeakItem peakTop, string class_, Color color, ChromXType type, ChromXUnit unit, string description = "") {
             Peaks = peaks;
             PeakArea = peakArea;
             PeakTop = peakTop;
@@ -23,12 +23,12 @@ namespace CompMs.App.Msdial.Model.DataObj
             Description = description;
         }
 
-        public Chromatogram(List<PeakItem> peaks, List<PeakItem> peakArea, string class_, Color color, ChromXType type, ChromXUnit unit, string description = "")
+        public PeakChromatogram(List<PeakItem> peaks, List<PeakItem> peakArea, string class_, Color color, ChromXType type, ChromXUnit unit, string description = "")
             : this(peaks, peakArea, peakArea.DefaultIfEmpty().Argmax(item => item?.Intensity ?? 0d), class_, color, type, unit, description) {
 
         }
 
-        public Chromatogram(List<PeakItem> peaks, string class_, Color color, ChromXType type, ChromXUnit unit)
+        public PeakChromatogram(List<PeakItem> peaks, string class_, Color color, ChromXType type, ChromXUnit unit)
             : this(peaks, peaks, peaks.DefaultIfEmpty().Argmax(item => item?.Intensity ?? 0d), class_, color, type, unit) {
 
         }
@@ -54,8 +54,8 @@ namespace CompMs.App.Msdial.Model.DataObj
             return new Range(0d, Peaks.Max(peak => peak.Intensity));
         }
 
-        public CompMs.Common.Components.Chromatogram Convert() {
-            return new CompMs.Common.Components.Chromatogram(Peaks.Select(peak => peak.Chrom).ToArray(), _type, _unit);
+        public Chromatogram Convert() {
+            return new Chromatogram(Peaks.Select(peak => peak.Chrom).ToArray(), _type, _unit);
         }
 
         public DisplayChromatogram ConvertToDisplayChromatogram() {

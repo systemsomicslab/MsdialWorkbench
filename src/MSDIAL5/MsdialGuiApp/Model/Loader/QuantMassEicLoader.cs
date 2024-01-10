@@ -36,20 +36,20 @@ namespace CompMs.App.Msdial.Model.Loader
 
         public double MzTolerance => _peakPickParameter.MassSliceWidth;
 
-        async Task<DataObj.Chromatogram> IChromatogramLoader<Ms1BasedSpectrumFeature>.LoadChromatogramAsync(Ms1BasedSpectrumFeature target, CancellationToken token) {
+        async Task<PeakChromatogram> IChromatogramLoader<Ms1BasedSpectrumFeature>.LoadChromatogramAsync(Ms1BasedSpectrumFeature target, CancellationToken token) {
             if (target != null) {
                 var eic = await LoadEicCoreAsync(target.QuantifiedChromatogramPeak.PeakFeature, token).ConfigureAwait(false);
                 if (eic.Count == 0) {
-                    return new DataObj.Chromatogram(new List<PeakItem>(), new List<PeakItem>(), null, string.Empty, Colors.Black, _chromXType, _chromXUnit);
+                    return new PeakChromatogram(new List<PeakItem>(), new List<PeakItem>(), null, string.Empty, Colors.Black, _chromXType, _chromXUnit);
                 }
                 token.ThrowIfCancellationRequested();
                 Task<List<PeakItem>> peakEicTask = Task.Run(() => LoadEicPeakCore(target.QuantifiedChromatogramPeak.PeakFeature, eic), token);
                 Task<PeakItem> focusedEicTask = Task.Run(() => LoadEicFocusedCore(target.QuantifiedChromatogramPeak.PeakFeature, eic), token);
                 await Task.WhenAll(peakEicTask, focusedEicTask).ConfigureAwait(false);
                 var peakEic = peakEicTask.Result;
-                return new DataObj.Chromatogram(eic, peakEic, focusedEicTask.Result, string.Empty, Colors.Black, _chromXType, _chromXUnit, $"EIC of {target.QuantifiedChromatogramPeak.PeakFeature.Mass:N4} tolerance [Da]: {MzTolerance:F} Max intensity: {peakEic.Max(peak => peak.Intensity):F0}");
+                return new PeakChromatogram(eic, peakEic, focusedEicTask.Result, string.Empty, Colors.Black, _chromXType, _chromXUnit, $"EIC of {target.QuantifiedChromatogramPeak.PeakFeature.Mass:N4} tolerance [Da]: {MzTolerance:F} Max intensity: {peakEic.Max(peak => peak.Intensity):F0}");
             }
-            return new DataObj.Chromatogram(new List<PeakItem>(), new List<PeakItem>(), null, string.Empty, Colors.Black, _chromXType, _chromXUnit);
+            return new PeakChromatogram(new List<PeakItem>(), new List<PeakItem>(), null, string.Empty, Colors.Black, _chromXType, _chromXUnit);
         }
 
         private async Task<List<PeakItem>> LoadEicCoreAsync(IChromatogramPeakFeature peakFeature, CancellationToken token) {

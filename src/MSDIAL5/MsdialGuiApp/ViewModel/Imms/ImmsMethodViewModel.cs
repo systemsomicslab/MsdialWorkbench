@@ -3,9 +3,7 @@ using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
-using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
-using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -70,62 +68,28 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }
         }
 
-        public DelegateCommand ShowTicCommand => _showTicCommand ?? (_showTicCommand = new DelegateCommand(ShowTIC));
+        public DelegateCommand ShowTicCommand => _showTicCommand ??= new DelegateCommand(ShowChromatograms(tic: true));
         private DelegateCommand _showTicCommand;
 
-        private void ShowTIC() {
-            var m = model.PrepareTIC();
-            if (m is null) {
-                return;
-            }
-            var vm = new ChromatogramsViewModel(m, _broker);
-            _broker.Publish(vm);
-        } 
-
-        public DelegateCommand ShowBpcCommand => _showBpcCommand ?? (_showBpcCommand = new DelegateCommand(ShowBPC));
+        public DelegateCommand ShowBpcCommand => _showBpcCommand ??= new DelegateCommand(ShowChromatograms(bpc: true));
         private DelegateCommand _showBpcCommand;
 
-        private void ShowBPC() {
-            var m = model.PrepareBPC();
-            if (m is null) {
-                return;
-            }
-            var vm = new ChromatogramsViewModel(m, _broker);
-            _broker.Publish(vm);
-        }
-
-        public DelegateCommand ShowTicBpcRepEICCommand => _showTicBpcRepEIC ?? (_showTicBpcRepEIC = new DelegateCommand(ShowTicBpcRepEIC));
+        public DelegateCommand ShowTicBpcRepEICCommand => _showTicBpcRepEIC ??= new DelegateCommand(ShowChromatograms(tic: true, bpc: true, highestEic: true));
         private DelegateCommand _showTicBpcRepEIC;
 
-        private void ShowTicBpcRepEIC() {
-            var m = model.PrepareTicBpcRepEIC();
-            if (m is null) {
-                return;
-            }
-            var vm = new ChromatogramsViewModel(m, _broker);
-            _broker.Publish(vm);
-        }
-
-        public DelegateCommand ShowEicCommand => _showEicCommand ?? (_showEicCommand = new DelegateCommand(ShowEIC));
+        public DelegateCommand ShowEicCommand => _showEicCommand ??= new DelegateCommand(ShowChromatograms());
         private DelegateCommand _showEicCommand;
 
-        private void ShowEIC() {
-            var m = model.PrepareEicSetting();
-            if (m is null) {
-                return;
-            }
-            using (var settingvm = new DisplayEicSettingViewModel(m)) {
-                _broker.Publish(settingvm);
-                if (!settingvm.DialogResult) {
+        private Action ShowChromatograms(bool tic = false, bool bpc = false, bool highestEic = false) {
+            void InnerShowChromatograms() {
+                var m = model.PrepareChromatograms(tic, bpc, highestEic);
+                if (m is null) {
                     return;
                 }
+                var vm = new CheckChromatogramsViewModel(m, _broker);
+                _broker.Publish(vm);
             }
-            var chromatograms = m.PrepareChromatograms();
-            if (chromatograms is null) {
-                return;
-            }
-            var vm = new ChromatogramsViewModel(chromatograms, _broker);
-            _broker.Publish(vm);
+            return InnerShowChromatograms;
         }
 
         private static IReadOnlyReactiveProperty<ImmsAnalysisViewModel> ConvertToAnalysisViewModel(

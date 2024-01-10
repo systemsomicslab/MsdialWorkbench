@@ -65,7 +65,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 horizontalAxis: RtMzPlotViewModel.VerticalAxis).AddTo(Disposables);
             PeakTableViewModel = new LcimmsAnalysisPeakTableViewModel(
                 model.PeakTableModel,
-                Observable.Return(model.EicLoader),
+                Observable.Return(model.DtEicLoader),
                 PeakSpotNavigatorViewModel,
                 SetUnknownCommand,
                 UndoManagerViewModel)
