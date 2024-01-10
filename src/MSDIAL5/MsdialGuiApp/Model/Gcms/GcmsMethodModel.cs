@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Core;
+﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
@@ -181,6 +182,21 @@ namespace CompMs.App.Msdial.Model.Gcms
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             var providerFactory = _providerFactory.ContraMap((AnalysisFileBeanModel fileModel) => fileModel.File);
             return SelectedAnalysisModel = new GcmsAnalysisModel(analysisFile, providerFactory, _storage.Parameter, _storage.DataBaseMapper, _storage.DataBases, _projectBaseParameter, _peakFilterModel, _calculateMatchScores.FirstOrDefault(), _broker);
+        }
+
+        public CheckChromatogramsModel ShowChromatograms(bool tic, bool bpc, bool highestEic) {
+            var analysisModel = SelectedAnalysisModel;
+            if (analysisModel is null) {
+                return null;
+            }
+
+            var loadChromatogramsUsecase = analysisModel.LoadChromatogramsUsecase();
+            loadChromatogramsUsecase.InsertTic = tic;
+            loadChromatogramsUsecase.InsertBpc = bpc;
+            loadChromatogramsUsecase.InsertHighestEic = highestEic;
+            var model = new CheckChromatogramsModel(loadChromatogramsUsecase, _storage.Parameter.AdvancedProcessOptionBaseParam);
+            model.Update();
+            return model;
         }
     }
 }

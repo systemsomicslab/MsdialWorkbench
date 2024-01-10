@@ -42,17 +42,21 @@ namespace CompMs.App.Msdial.Model.Gcms
 
         private bool _disposedValue;
         private readonly ProjectBaseParameter _projectParameter;
+        private readonly PeakPickBaseParameter _peakPickParameter;
         private CompositeDisposable _disposables;
         private readonly Ms1BasedSpectrumFeatureCollection _spectrumFeatures;
         private readonly ObservableCollection<ChromatogramPeakFeatureModel> _peaks;
         private readonly AnalysisFileBeanModel _file;
         private readonly CalculateMatchScore _calculateMatchScore;
+        private readonly IWholeChromatogramLoader _ticLoader, _bpcLoader;
+        private readonly IWholeChromatogramLoader<(double, double)> _eicLoader;
 
         public GcmsAnalysisModel(AnalysisFileBeanModel file, IDataProviderFactory<AnalysisFileBeanModel> providerFactory, MsdialGcmsParameter parameter, DataBaseMapper dbMapper, DataBaseStorage dbStorage, FilePropertiesModel projectBaseParameterModel, PeakFilterModel peakFilterModel, CalculateMatchScore calculateMatchScore, IMessageBroker broker) {
             var projectParameter = parameter.ProjectParam;
             var peakPickParameter = parameter.PeakPickBaseParam;
             var chromDecParameter = parameter.ChromDecBaseParam;
             _projectParameter = projectParameter;
+            _peakPickParameter = peakPickParameter;
             _disposables = new CompositeDisposable();
             _spectrumFeatures = file.LoadMs1BasedSpectrumFeatureCollection().AddTo(_disposables);
             _peaks =  file.LoadChromatogramPeakFeatureModels();
@@ -80,6 +84,12 @@ namespace CompMs.App.Msdial.Model.Gcms
             EicModel = EicModel.Create(selectedSpectrum, eicLoader, string.Empty, string.Empty, string.Empty).AddTo(_disposables);
             EicModel.VerticalTitle = "Abundance";
             PeakPlotModel.HorizontalLabel.Subscribe(label => EicModel.HorizontalTitle = label).AddTo(_disposables);
+
+            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), parameter.IonMode, file.File.AcquisitionType);
+            ChromatogramRange chromatogramRange = new ChromatogramRange(parameter.RetentionTimeBegin, parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
+            _ticLoader = new TicLoader(rawSpectra, chromatogramRange, peakPickParameter);
+            _bpcLoader = new BpcLoader(rawSpectra, chromatogramRange, peakPickParameter);
+            _eicLoader = Loader.EicLoader.BuildForAllRange(file.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
 
             var matchResultCandidatesModel = new MatchResultCandidatesModel(selectedSpectrum.Select(t => t?.MatchResults)).AddTo(_disposables);
             MatchResultCandidatesModel = matchResultCandidatesModel;
@@ -220,6 +230,10 @@ namespace CompMs.App.Msdial.Model.Gcms
         public FocusNavigatorModel FocusNavigatorModel { get; }
 
         public void SetUnknown() => _spectrumFeatures.SelectedSpectrum.Value?.SetUnknown(UndoManager);
+
+        public LoadChromatogramsUsecase LoadChromatogramsUsecase() {
+            return new LoadChromatogramsUsecase(_ticLoader, _bpcLoader, _eicLoader, _peaks, _peakPickParameter);
+        }
 
         public CompoundSearchModel<Ms1BasedSpectrumFeature> CreateCompoundSearchModel() {
             if (!(_spectrumFeatures.SelectedSpectrum.Value is Ms1BasedSpectrumFeature spectrumFeature)) {

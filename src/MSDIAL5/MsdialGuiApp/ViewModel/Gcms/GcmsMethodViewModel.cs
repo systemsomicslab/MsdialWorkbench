@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Gcms;
+using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Service;
@@ -43,6 +44,30 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
                 return Task.CompletedTask;
             }
             return _model.LoadAnalysisFileAsync(analysisFile.File, token);
+        }
+
+        public DelegateCommand ShowTicCommand => _showTicCommand ??= new DelegateCommand(ShowChromatograms(tic: true));
+        private DelegateCommand _showTicCommand;
+
+        public DelegateCommand ShowBpcCommand => _showBpcCommand ??= new DelegateCommand(ShowChromatograms(bpc: true));
+        private DelegateCommand _showBpcCommand;
+
+        public DelegateCommand ShowEicCommand => _showEicCommand ??= new DelegateCommand(ShowChromatograms());
+        private DelegateCommand _showEicCommand;
+
+        public DelegateCommand ShowTicBpcRepEICCommand => _showTicBpcRepEIC ??= new DelegateCommand(ShowChromatograms(tic: true, bpc: true, highestEic: true));
+        private DelegateCommand _showTicBpcRepEIC;
+
+        private Action ShowChromatograms(bool tic = false, bool bpc = false, bool highestEic = false) {
+            void InnerShowChromatorams() {
+                var m = _model.ShowChromatograms(tic, bpc, highestEic);
+                if (m is null) {
+                    return;
+                }
+                var vm = new CheckChromatogramsViewModel(m, _broker);
+                _broker.Publish(vm);
+            }
+            return InnerShowChromatorams;
         }
 
         public static GcmsMethodViewModel Create(GcmsMethodModel model, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, IMessageBroker broker) {
