@@ -524,15 +524,22 @@ namespace CompMs.MsdialCore.Export
         }
     }
 
-    internal sealed class EiMrmprobsExporter
-    {
-        public static void ExportSpectraAsMrmprobsFormat(string filepath, List<MS1DecResult> ms1DecResults, int focusedMs1DecID,
-            double rtTolerance, double ms1Tolerance, List<MspFormatCompoundInformationBean> mspDB, int topN = 5, bool isReferenceBase = true) {
+    //TODO: Implement this after the development of GCMS is complete
+/*
+    internal sealed class EiMrmprobsExporter {
+        public void ExportSpectraAsMrmprobsFormat(
+            string filepath,
+            List<MS1DecResult> ms1DecResults,
+            int focusedMs1DecID,
+            double rtTolerance,
+            double ms1Tolerance,
+            List<MspFormatCompoundInformationBean> mspDB,
+            int topN,
+            bool isReferenceBase) {
             using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
+                WriteHeaderAsMrmprobsReferenceFormat(sw);
 
-                writeHeaderAsMrmprobsReferenceFormat(sw);
-
-                if (isReferenceBase == true) {
+                if (isReferenceBase) {
                     if (mspDB == null || mspDB.Count == 0) return;
                     if (focusedMs1DecID == -1) { // it means all of identified spots will be exported.
                         foreach (var result in ms1DecResults) {
@@ -544,7 +551,7 @@ namespace CompMs.MsdialCore.Export
                             var rtEnd = Math.Round(result.RetentionTime + rtTolerance, 2);
                             var rt = Math.Round(result.RetentionTime, 2);
 
-                            writeFieldsAsMrmprobsReferenceFormat(sw, probsName, rt, rtBegin, rtEnd, ms1Tolerance, topN, mspDB[result.MspDbID]);
+                            WriteFieldsAsMrmprobsReferenceFormat(sw, probsName, rt, rtBegin, rtEnd, ms1Tolerance, topN, mspDB[result.MspDbID]);
                         }
                     }
                     else {
@@ -556,7 +563,7 @@ namespace CompMs.MsdialCore.Export
                         var rtEnd = Math.Round(result.RetentionTime + rtTolerance, 2);
                         var rt = Math.Round(result.RetentionTime, 2);
 
-                        writeFieldsAsMrmprobsReferenceFormat(sw, probsName, rt, rtBegin, rtEnd, ms1Tolerance, topN, mspDB[result.MspDbID]);
+                        WriteFieldsAsMrmprobsReferenceFormat(sw, probsName, rt, rtBegin, rtEnd, ms1Tolerance, topN, mspDB[result.MspDbID]);
                     }
                 }
                 else {
@@ -570,7 +577,7 @@ namespace CompMs.MsdialCore.Export
                             var rtEnd = Math.Round(result.RetentionTime + rtTolerance, 2);
                             var rt = Math.Round(result.RetentionTime, 2);
 
-                            writeFieldsAsMrmprobsReferenceFormat(sw, probsName, rt, rtBegin, rtEnd, ms1Tolerance, topN, result);
+                            WriteFieldsAsMrmprobsReferenceFormat(sw, probsName, rt, rtBegin, rtEnd, ms1Tolerance, topN, result);
                         }
                     }
                     else {
@@ -581,39 +588,44 @@ namespace CompMs.MsdialCore.Export
                         var rtEnd = Math.Round(result.RetentionTime + rtTolerance, 2);
                         var rt = Math.Round(result.RetentionTime, 2);
 
-                        writeFieldsAsMrmprobsReferenceFormat(sw, probsName, rt, rtBegin, rtEnd, ms1Tolerance, topN, result);
+                        WriteFieldsAsMrmprobsReferenceFormat(sw, probsName, rt, rtBegin, rtEnd, ms1Tolerance, topN, result);
                     }
                 }
             }
         }
 
-        private static void writeHeaderAsMrmprobsReferenceFormat(StreamWriter sw)
-        {
+        private static void WriteHeaderAsMrmprobsReferenceFormat(StreamWriter sw) {
             sw.WriteLine("Compound name\tPrecursor mz\tProduct mz\tRT min\tTQ Ratio\tRT begin\tRT end\tMS1 tolerance\tMS2 tolerance\tMS level\tClass");
         }
 
-        private static string stringReplaceForWindowsAcceptableCharacters(string name)
-        {
+        private static string StringReplaceForWindowsAcceptableCharacters(string name) {
             var chars = Path.GetInvalidFileNameChars();
             return new string(name.Select(c => chars.Contains(c) ? '_' : c).ToArray());
         }
 
-        private static void writeFieldsAsMrmprobsReferenceFormat(StreamWriter sw, string name, double rt, double rtBegin, double rtEnd,
-            double ms1Tolerance, int topN, MspFormatCompoundInformationBean mspLib)
+        private static void WriteFieldsAsMrmprobsReferenceFormat(
+            StreamWriter sw,
+            string name,
+            double rt,
+            double rtBegin,
+            double rtEnd,
+            double ms1Tolerance,
+            int topN,
+            MspFormatCompoundInformationBean mspLib)
         {
-            if (mspLib.MzIntensityCommentBeanList.Count == 0) return;
-            var massSpec = mspLib.MzIntensityCommentBeanList.OrderByDescending(n => n.Intensity).ToList();
+            if (mspLib.Spectrum.Count == 0) return;
+            var massSpec = mspLib.Spectrum.OrderByDescending(n => n.Intensity).ToList();
 
-            var quantMass = Math.Round(massSpec[0].Mz, 4);
+            var quantMass = Math.Round(massSpec[0].Mass, 4);
             var quantIntensity = massSpec[0].Intensity;
 
-            writeAsMrmprobsReferenceFormat(sw, name, quantMass, quantMass, rt, 100, rtBegin, rtEnd, ms1Tolerance, ms1Tolerance, 1, "NA");
+            WriteAsMrmprobsReferenceFormat(sw, name, quantMass, quantMass, rt, 100, rtBegin, rtEnd, ms1Tolerance, ms1Tolerance, 1, "NA");
 
             for (int i = 1; i < massSpec.Count; i++) {
 
                 if (i > topN - 1) break;
 
-                var mass = Math.Round(massSpec[i].Mz, 4);
+                var mass = Math.Round(massSpec[i].Mass, 4);
                 var intensity = massSpec[i].Intensity;
 
                 if (Math.Abs(mass - quantMass) < ms1Tolerance) continue;
@@ -621,11 +633,23 @@ namespace CompMs.MsdialCore.Export
                 var tqRatio = Math.Round(intensity / quantIntensity * 100, 0);
                 if (tqRatio < 0.5) tqRatio = 1;
                 if (tqRatio == 100) tqRatio = 99; // 100 is used just once for the target (quantified) m/z trace. Otherwise, non-100 value should be used.
-                writeAsMrmprobsReferenceFormat(sw, name, mass, mass, rt, tqRatio, rtBegin, rtEnd, ms1Tolerance, ms1Tolerance, 1, "NA");
+                WriteAsMrmprobsReferenceFormat(sw, name, mass, mass, rt, tqRatio, rtBegin, rtEnd, ms1Tolerance, ms1Tolerance, 1, "NA");
             }
         }
 
-        private static void writeAsMrmprobsReferenceFormat(StreamWriter sw, string name, double precursorMz, double productMz, double rt, double tqRatio, double rtBegin, double rtEnd, double ms1Tolerance, double ms2Tolerance, int msLevel, string compoundClass)
+        private static void WriteAsMrmprobsReferenceFormat(
+            StreamWriter sw,
+            string name,
+            double precursorMz,
+            double productMz,
+            double rt,
+            double tqRatio,
+            double rtBegin,
+            double rtEnd,
+            double ms1Tolerance,
+            double ms2Tolerance,
+            int msLevel,
+            string compoundClass)
         {
             sw.Write(name + "\t");
             sw.Write(precursorMz + "\t");
@@ -639,6 +663,6 @@ namespace CompMs.MsdialCore.Export
             sw.Write(msLevel + "\t");
             sw.WriteLine(compoundClass);
         }
-
     }
+*/
 }
