@@ -69,9 +69,6 @@ namespace CompMs.MsdialCore.Export
 
                         name = StringReplaceForWindowsAcceptableCharacters(r.Name + "_" + alignedSpot.MasterAlignmentID);
                         precursorMz = Math.Round(r.PrecursorMz, 5);
-                        rtBegin = Math.Max(Math.Round(alignedSpot.TimesCenter.RT.Value - (float)parameter.MpRtTolerance, 2), 0);
-                        rtEnd = Math.Round(alignedSpot.TimesCenter.RT.Value + (float)parameter.MpRtTolerance, 2);
-                        rt = Math.Round(alignedSpot.TimesCenter.RT.Value, 2);
 
                         WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, r, parameter);
                     }
@@ -125,10 +122,6 @@ namespace CompMs.MsdialCore.Export
 
                             name = StringReplaceForWindowsAcceptableCharacters(r.Name + "_" + spot.MasterAlignmentID);
                             precursorMz = Math.Round(r.PrecursorMz, 5);
-                            rtBegin = Math.Max(Math.Round(spot.TimesCenter.RT.Value - (float)parameter.MpRtTolerance, 2), 0);
-                            rtEnd = Math.Round(spot.TimesCenter.RT.Value + (float)parameter.MpRtTolerance, 2);
-                            rt = Math.Round(spot.TimesCenter.RT.Value, 2);
-
                             WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, r, parameter);
                         }
                     }
@@ -222,9 +215,6 @@ namespace CompMs.MsdialCore.Export
 
                         name = StringReplaceForWindowsAcceptableCharacters(r.Name + "_" + peakSpot.MasterPeakID);
                         precursorMz = Math.Round(r.PrecursorMz, 5);
-                        rtBegin = Math.Max(Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value - (float)parameter.MpRtTolerance, 2), 0);
-                        rtEnd = Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value + (float)parameter.MpRtTolerance, 2);
-                        rt = Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value, 2);
 
                         WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, r, parameter);
                     }
@@ -276,9 +266,6 @@ namespace CompMs.MsdialCore.Export
 
                             name = StringReplaceForWindowsAcceptableCharacters(r.Name + "_" + peak.MasterPeakID);
                             precursorMz = Math.Round(r.PrecursorMz, 5);
-                            rtBegin = Math.Max(Math.Round(peak.PeakFeature.ChromXsTop.RT.Value - (float)parameter.MpRtTolerance, 2), 0);
-                            rtEnd = Math.Round(peak.PeakFeature.ChromXsTop.RT.Value + (float)parameter.MpRtTolerance, 2);
-                            rt = Math.Round(peak.PeakFeature.ChromXsTop.RT.Value, 2);
 
                             WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, r, parameter);
                         }
