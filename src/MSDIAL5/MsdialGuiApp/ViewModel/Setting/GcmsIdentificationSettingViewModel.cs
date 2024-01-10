@@ -15,6 +15,8 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using CompMs.Graphics.UI;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
@@ -52,7 +54,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         }
     }
 
-    public sealed class RiDictionarySettingViewModel : ViewModelBase {
+    public sealed class RiDictionarySettingViewModel : SettingDialogViewModel {
         private readonly RiDictionarySettingModel _model;
 
         public RiDictionarySettingViewModel(RiDictionarySettingModel model, IMessageBroker broker) {
@@ -69,9 +71,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 op => op.Where(p => p).ToConstant(RiCompoundType.Fames)
             ).AddTo(Disposables);
             IsImported = model.ObserveProperty(m => m.IsImported).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            ApplyCommand = RetentionIndexFiles.Select(ri => ri.ErrorsChangedAsObservable().ToUnit().StartWith(Unit.Default).Select(_ => ri.HasValidationErrors))
+            _finishCommand = RetentionIndexFiles.Select(ri => ri.ErrorsChangedAsObservable().ToUnit().StartWith(Unit.Default).Select(_ => ri.HasValidationErrors))
                 .CombineLatestValuesAreAllFalse()
-                .ToReactiveCommand().WithSubscribe(Apply).AddTo(Disposables);
+                .ToReactiveCommand().WithSubscribe(Set).AddTo(Disposables);
             AutoFillCommand = new ReactiveCommand<RiDictionaryViewModel>().WithSubscribe(vm => model.AutoFill(vm.Model)).AddTo(Disposables);
         }
 
@@ -82,9 +84,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReactiveCommand<RiDictionaryViewModel> AutoFillCommand { get; }
 
-        public ReactiveCommand ApplyCommand { get; }
+        public override ICommand FinishCommand => _finishCommand;
+        private readonly ReactiveCommand _finishCommand;
 
-        private void Apply() {
+        private void Set() {
             _model.TrySet();
         }
     }
