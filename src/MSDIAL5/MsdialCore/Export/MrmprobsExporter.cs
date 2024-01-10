@@ -16,6 +16,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parameter;
 using CompMs.Common.DataObj;
+using CompMs.Common.Interfaces;
 
 namespace CompMs.MsdialCore.Export
 {
@@ -49,17 +50,17 @@ namespace CompMs.MsdialCore.Export
             }
 
             using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
-                writeHeaderAsMrmprobsReferenceFormat(sw);
+                WriteHeaderAsMrmprobsReferenceFormat(sw);
 
                 if (!alignedSpot.MatchResults.IsReferenceMatched(_evaluator)) return;
 
                 MspFormatCompoundInformationBean reference = _refer.Refer(alignedSpot.MatchResults.Representative);
-                var name = stringReplaceForWindowsAcceptableCharacters(reference.Name + "_" + alignedSpot.MasterAlignmentID);
+                var name = StringReplaceForWindowsAcceptableCharacters(reference.Name + "_" + alignedSpot.MasterAlignmentID);
                 var precursorMz = Math.Round(reference.PrecursorMz, 5);
                 var rtBegin = Math.Max(Math.Round(alignedSpot.TimesCenter.RT.Value - rtTolerance, 2), 0);
                 var rtEnd = Math.Round(alignedSpot.TimesCenter.RT.Value + rtTolerance, 2);
                 var rt = Math.Round(alignedSpot.TimesCenter.RT.Value, 2);
-                writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, reference);
+                WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, reference);
 
                 if (isExportOtherCanidates) {
                     var ms2Dec = SpectralDeconvolution.ReadMSDecResult(fs, seekpoints[alignedSpot.MSDecResultIdUsed], 1, false);
@@ -77,13 +78,13 @@ namespace CompMs.MsdialCore.Export
                             continue;
                         }
 
-                        name = stringReplaceForWindowsAcceptableCharacters(r.Name + "_" + alignedSpot.MasterAlignmentID);
+                        name = StringReplaceForWindowsAcceptableCharacters(r.Name + "_" + alignedSpot.MasterAlignmentID);
                         precursorMz = Math.Round(r.PrecursorMz, 5);
                         rtBegin = Math.Max(Math.Round(alignedSpot.TimesCenter.RT.Value - rtTolerance, 2), 0);
                         rtEnd = Math.Round(alignedSpot.TimesCenter.RT.Value + rtTolerance, 2);
                         rt = Math.Round(alignedSpot.TimesCenter.RT.Value, 2);
 
-                        writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, r);
+                        WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, r);
                     }
                 }
             }
@@ -112,19 +113,19 @@ namespace CompMs.MsdialCore.Export
             }
 
             using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
-                writeHeaderAsMrmprobsReferenceFormat(sw);
+                WriteHeaderAsMrmprobsReferenceFormat(sw);
 
                 foreach (var spot in alignedSpots) {
                     if (!spot.MatchResults.IsReferenceMatched(_evaluator)) continue;
                     if (!string.IsNullOrEmpty(spot.Comment) && spot.Comment.IndexOf("unk", StringComparison.OrdinalIgnoreCase) >= 0) continue;
 
                     MspFormatCompoundInformationBean reference = _refer.Refer(spot.MatchResults.Representative);
-                    var name = stringReplaceForWindowsAcceptableCharacters(reference.Name + "_" + spot.MasterAlignmentID);
+                    var name = StringReplaceForWindowsAcceptableCharacters(reference.Name + "_" + spot.MasterAlignmentID);
                     var precursorMz = Math.Round(reference.PrecursorMz, 5);
                     var rtBegin = Math.Max(Math.Round(spot.TimesCenter.RT.Value - rtTolerance, 2), 0);
                     var rtEnd = Math.Round(spot.TimesCenter.RT.Value + rtTolerance, 2);
                     var rt = Math.Round(spot.TimesCenter.RT.Value, 2);
-                    writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, reference);
+                    WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, reference);
 
                     if (isExportOtherCanidates) {
                         mspDB = mspDB.OrderBy(n => n.PrecursorMz).ToList();
@@ -144,13 +145,13 @@ namespace CompMs.MsdialCore.Export
                                 continue;
                             }
 
-                            name = stringReplaceForWindowsAcceptableCharacters(r.Name + "_" + spot.MasterAlignmentID);
+                            name = StringReplaceForWindowsAcceptableCharacters(r.Name + "_" + spot.MasterAlignmentID);
                             precursorMz = Math.Round(r.PrecursorMz, 5);
                             rtBegin = Math.Max(Math.Round(spot.TimesCenter.RT.Value - rtTolerance, 2), 0);
                             rtEnd = Math.Round(spot.TimesCenter.RT.Value + rtTolerance, 2);
                             rt = Math.Round(spot.TimesCenter.RT.Value, 2);
 
-                            writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, r);
+                            WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, r);
                         }
                     }
                 }
@@ -168,15 +169,15 @@ namespace CompMs.MsdialCore.Export
             bool isIncludeMslevel1,
             bool isUseMs1LevelForQuant) {
             using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
-                writeHeaderAsMrmprobsReferenceFormat(sw);
+                WriteHeaderAsMrmprobsReferenceFormat(sw);
 
-                var name = stringReplaceForWindowsAcceptableCharacters(spotProp.Name + "_" + spotProp.MasterAlignmentID);
+                var name = StringReplaceForWindowsAcceptableCharacters(spotProp.Name + "_" + spotProp.MasterAlignmentID);
                 var precursorMz = Math.Round(spotProp.MassCenter, 5);
                 var rtBegin = Math.Max(Math.Round(spotProp.TimesCenter.RT.Value - rtTolerance, 2), 0);
                 var rtEnd = Math.Round(spotProp.TimesCenter.RT.Value + rtTolerance, 2);
                 var rt = Math.Round(spotProp.TimesCenter.RT.Value, 2);
 
-                writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, ms2DecResult);
+                WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, ms2DecResult, spotProp);
             }
         }
 
@@ -193,18 +194,18 @@ namespace CompMs.MsdialCore.Export
             bool isUseMs1LevelForQuant)
         {
             using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
-                writeHeaderAsMrmprobsReferenceFormat(sw);
+                WriteHeaderAsMrmprobsReferenceFormat(sw);
 
                 foreach (var spot in alignmentSpots) {
                     var ms2Dec = SpectralDeconvolution.ReadMSDecResult(fs, seekpoints[spot.MSDecResultIdUsed], 1, false);
 
-                    var name = stringReplaceForWindowsAcceptableCharacters(spot.Name + "_" + spot.MasterAlignmentID);
+                    var name = StringReplaceForWindowsAcceptableCharacters(spot.Name + "_" + spot.MasterAlignmentID);
                     var precursorMz = Math.Round(spot.MassCenter, 5);
                     var rtBegin = Math.Max(Math.Round(spot.TimesCenter.RT.Value - rtTolerance, 2), 0);
                     var rtEnd = Math.Round(spot.TimesCenter.RT.Value + rtTolerance, 2);
                     var rt = Math.Round(spot.TimesCenter.RT.Value, 2);
 
-                    writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, ms2Dec);
+                    WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, ms2Dec, spot);
                 }
             }
         }
@@ -231,18 +232,18 @@ namespace CompMs.MsdialCore.Export
             }
 
             using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
-                writeHeaderAsMrmprobsReferenceFormat(sw);
+                WriteHeaderAsMrmprobsReferenceFormat(sw);
 
                 if (!peakSpot.MatchResults.IsReferenceMatched(_evaluator)) return;
 
                 MspFormatCompoundInformationBean reference = _refer.Refer(peakSpot.MatchResults.Representative);
-                var name = stringReplaceForWindowsAcceptableCharacters(reference.Name + "_" + peakSpot.MasterPeakID);
+                var name = StringReplaceForWindowsAcceptableCharacters(reference.Name + "_" + peakSpot.MasterPeakID);
                 var precursorMz = Math.Round(reference.PrecursorMz, 5);
                 var rtBegin = Math.Max(Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value - rtTolerance, 2), 0);
                 var rtEnd = Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value + rtTolerance, 2);
                 var rt = Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value, 2);
 
-                writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, reference);
+                WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, reference);
 
                 if (isExportOtherCanidates) {
                     var ms2Dec = SpectralDeconvolution.ReadMSDecResult(fs, seekpoints[peakSpot.MSDecResultIdUsed], 1, false);
@@ -260,13 +261,13 @@ namespace CompMs.MsdialCore.Export
                             continue;
                         }
 
-                        name = stringReplaceForWindowsAcceptableCharacters(r.Name + "_" + peakSpot.MasterPeakID);
+                        name = StringReplaceForWindowsAcceptableCharacters(r.Name + "_" + peakSpot.MasterPeakID);
                         precursorMz = Math.Round(r.PrecursorMz, 5);
                         rtBegin = Math.Max(Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value - rtTolerance, 2), 0);
                         rtEnd = Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value + rtTolerance, 2);
                         rt = Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value, 2);
 
-                        writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, r);
+                        WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, r);
                     }
                 }
             }
@@ -294,19 +295,19 @@ namespace CompMs.MsdialCore.Export
             }
 
             using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
-                writeHeaderAsMrmprobsReferenceFormat(sw);
+                WriteHeaderAsMrmprobsReferenceFormat(sw);
 
                 foreach (var peak in peakSpots) {
                     if (!peak.MatchResults.IsReferenceMatched(_evaluator)) continue;
 
                     MspFormatCompoundInformationBean reference = _refer.Refer(peak.MatchResults.Representative);
-                    var name = stringReplaceForWindowsAcceptableCharacters(reference.Name + "_" + peak.MasterPeakID);
+                    var name = StringReplaceForWindowsAcceptableCharacters(reference.Name + "_" + peak.MasterPeakID);
                     var precursorMz = Math.Round(reference.PrecursorMz, 5);
                     var rtBegin = Math.Max(Math.Round(peak.PeakFeature.ChromXsTop.RT.Value - rtTolerance, 2), 0);
                     var rtEnd = Math.Round(peak.PeakFeature.ChromXsTop.RT.Value + rtTolerance, 2);
                     var rt = Math.Round(peak.PeakFeature.ChromXsTop.RT.Value, 2);
 
-                    writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, reference);
+                    WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, reference);
 
                     if (isExportOtherCanidates) {
                         var ms2Dec = SpectralDeconvolution.ReadMSDecResult(fs, seekpoints[peak.MSDecResultIdUsed], 1, false);
@@ -324,13 +325,13 @@ namespace CompMs.MsdialCore.Export
                                 continue;
                             }
 
-                            name = stringReplaceForWindowsAcceptableCharacters(r.Name + "_" + peak.MasterPeakID);
+                            name = StringReplaceForWindowsAcceptableCharacters(r.Name + "_" + peak.MasterPeakID);
                             precursorMz = Math.Round(r.PrecursorMz, 5);
                             rtBegin = Math.Max(Math.Round(peak.PeakFeature.ChromXsTop.RT.Value - rtTolerance, 2), 0);
                             rtEnd = Math.Round(peak.PeakFeature.ChromXsTop.RT.Value + rtTolerance, 2);
                             rt = Math.Round(peak.PeakFeature.ChromXsTop.RT.Value, 2);
 
-                            writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, r);
+                            WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, r);
                         }
                     }
                 }
@@ -350,15 +351,15 @@ namespace CompMs.MsdialCore.Export
             bool isUseMs1LevelForQuant)
         {
             using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
-                writeHeaderAsMrmprobsReferenceFormat(sw);
+                WriteHeaderAsMrmprobsReferenceFormat(sw);
 
-                var name = stringReplaceForWindowsAcceptableCharacters(peakSpot.Name + "_" + peakSpot.MasterPeakID);
+                var name = StringReplaceForWindowsAcceptableCharacters(peakSpot.Name + "_" + peakSpot.MasterPeakID);
                 var precursorMz = Math.Round(peakSpot.PrecursorMz, 5);
                 var rtBegin = Math.Max(Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value - rtTolerance, 2), 0);
                 var rtEnd = Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value + rtTolerance, 2);
                 var rt = Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value, 2);
 
-                writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, ms2DecResult);
+                WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, ms2DecResult, peakSpot);
             }
         }
 
@@ -375,59 +376,71 @@ namespace CompMs.MsdialCore.Export
             bool isUseMs1LevelForQuant)
         {
             using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
-                writeHeaderAsMrmprobsReferenceFormat(sw);
+                WriteHeaderAsMrmprobsReferenceFormat(sw);
 
                 foreach (var peak in peakSpots) {
                     var ms2Dec = SpectralDeconvolution.ReadMSDecResult(fs, seekpoints[peak.MSDecResultIdUsed], 1, false);
 
-                    var name = stringReplaceForWindowsAcceptableCharacters(peak.Name + "_" + peak.MasterPeakID);
+                    var name = StringReplaceForWindowsAcceptableCharacters(peak.Name + "_" + peak.MasterPeakID);
                     var precursorMz = Math.Round(peak.PrecursorMz, 5);
                     var rtBegin = Math.Max(Math.Round(peak.PeakFeature.ChromXsTop.RT.Value - rtTolerance, 2), 0);
                     var rtEnd = Math.Round(peak.PeakFeature.ChromXsTop.RT.Value + rtTolerance, 2);
                     var rt = Math.Round(peak.PeakFeature.ChromXsTop.RT.Value, 2);
 
-                    writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, ms2Dec);
+                    WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, ms2Dec, peak);
                 }
             }
         }
 
-        private static void writeHeaderAsMrmprobsReferenceFormat(StreamWriter sw)
-        {
+        private static void WriteHeaderAsMrmprobsReferenceFormat(StreamWriter sw) {
             sw.WriteLine("Compound name\tPrecursor mz\tProduct mz\tRT min\tTQ Ratio\tRT begin\tRT end\tMS1 tolerance\tMS2 tolerance\tMS level\tClass");
         }
 
-        private static string stringReplaceForWindowsAcceptableCharacters(string name)
-        {
+        private static string StringReplaceForWindowsAcceptableCharacters(string name) {
             var chars = Path.GetInvalidFileNameChars();
             return new string(name.Select(c => chars.Contains(c) ? '_' : c).ToArray());
         }
 
-        private static void writeFieldsAsMrmprobsReferenceFormat(StreamWriter sw, string name, double precursorMz, double rt, double rtBegin, double rtEnd, double ms1Tolerrance,
-            double ms2Tolerance, int topN, bool isIncludeMslevel1, bool isUseMs1LevelForQuant, MspFormatCompoundInformationBean mspQuery)
+        private static void WriteFieldsAsMrmprobsReferenceFormat(
+            StreamWriter sw,
+            string name,
+            double precursorMz,
+            double rt,
+            double rtBegin,
+            double rtEnd,
+            double ms1Tolerrance,
+            double ms2Tolerance,
+            int topN,
+            bool isIncludeMslevel1,
+            bool isUseMs1LevelForQuant,
+            MspFormatCompoundInformationBean mspQuery)
         {
-            if ((isIncludeMslevel1 == false || isUseMs1LevelForQuant == true) && mspQuery.MzIntensityCommentBeanList.Count == 0) return;
+            if ((!isIncludeMslevel1 || isUseMs1LevelForQuant) && mspQuery.Spectrum.Count == 0) {
+                return;
+            }
 
-            var massSpec = mspQuery.MzIntensityCommentBeanList.OrderByDescending(n => n.Intensity).ToList();
+            var massSpec = mspQuery.Spectrum.OrderByDescending(p => p.Intensity).ToList();
             var compClass = mspQuery.CompoundClass;
-            if (compClass == null || compClass == string.Empty) compClass = "NA";
+            if (string.IsNullOrEmpty(compClass)) {
+                compClass = "NA";
+            }
 
-            if (isIncludeMslevel1)
-            {
+            if (isIncludeMslevel1) {
                 var tqRatio = 100;
                 if (!isUseMs1LevelForQuant) tqRatio = 150;
                 // Since we cannot calculate the real QT ratio from the reference DB and the real MS1 value (actually I can calculate them from the raw data with the m/z matching),
                 //currently the ad hoc value 150 is used.
 
-                writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, precursorMz, rt, tqRatio, rtBegin, rtEnd, ms1Tolerrance, ms2Tolerance, 1, compClass);
+                WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, precursorMz, rt, tqRatio, rtBegin, rtEnd, ms1Tolerrance, ms2Tolerance, 1, compClass);
             }
 
             if (topN == 1 && isIncludeMslevel1) return;
-            if (mspQuery.MzIntensityCommentBeanList.Count == 0) return;
+            if (mspQuery.Spectrum.Count == 0) return;
             var basePeak = massSpec[0].Intensity;
             for (int i = 0; i < massSpec.Count; i++)
             {
                 if (i > topN - 1) break;
-                var productMz = Math.Round(massSpec[i].Mz, 5);
+                var productMz = Math.Round(massSpec[i].Mass, 5);
                 var tqRatio = Math.Round(massSpec[i].Intensity / basePeak * 100, 0);
                 if (isUseMs1LevelForQuant && i == 0) tqRatio = 99;
                 else if (!isUseMs1LevelForQuant && i == 0) tqRatio = 100;
@@ -435,43 +448,79 @@ namespace CompMs.MsdialCore.Export
 
                 if (tqRatio == 0) tqRatio = 1;
 
-                writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, productMz, rt, tqRatio, rtBegin, rtEnd, ms1Tolerrance, ms2Tolerance, 2, compClass);
+                WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, productMz, rt, tqRatio, rtBegin, rtEnd, ms1Tolerrance, ms2Tolerance, 2, compClass);
             }
         }
 
-        private static void writeFieldsAsMrmprobsReferenceFormat(StreamWriter sw, string name, double precursorMz, double rt, double rtBegin, double rtEnd, double ms1Tolerrance, double ms2Tolerance, int topN, bool isIncludeMslevel1, bool isUseMs1LevelForQuant, MS2DecResult ms2DecResult)
-        {
-            if (isIncludeMslevel1 == false && ms2DecResult.MassSpectra.Count == 0) return;
-            if (isIncludeMslevel1)
-            {
+        private static void WriteFieldsAsMrmprobsReferenceFormat(
+            StreamWriter sw,
+            string name,
+            double precursorMz,
+            double rt,
+            double rtBegin,
+            double rtEnd,
+            double ms1Tolerrance,
+            double ms2Tolerance,
+            int topN,
+            bool isIncludeMslevel1,
+            bool isUseMs1LevelForQuant,
+            MS2DecResult ms2DecResult,
+            IChromatogramPeak peak) {
+            if (!isIncludeMslevel1 && ms2DecResult.Spectrum.Count == 0) return;
+            if (isIncludeMslevel1) {
                 var tqRatio = 99;
                 if (isUseMs1LevelForQuant) tqRatio = 100;
                 if (tqRatio == 100 && !isUseMs1LevelForQuant) tqRatio = 99; // 100 is used just once for the target (quantified) m/z trace. Otherwise, non-100 value should be used.
-                writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, precursorMz, rt, tqRatio, rtBegin, rtEnd, ms1Tolerrance, ms2Tolerance, 1, "NA");
+                WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, precursorMz, rt, tqRatio, rtBegin, rtEnd, ms1Tolerrance, ms2Tolerance, 1, "NA");
             }
 
             if (topN == 1 && isIncludeMslevel1) return;
-            if (ms2DecResult.MassSpectra == null || ms2DecResult.MassSpectra.Count == 0) return;
+            if (ms2DecResult.Spectrum is null || ms2DecResult.Spectrum.Count == 0) return;
 
-            var massSpec = ms2DecResult.MassSpectra.OrderByDescending(n => n[1]).ToList();
+            var massSpec = ms2DecResult.Spectrum.OrderByDescending(p => p.Intensity).ToList();
             var baseIntensity = 0.0;
 
-            if (isUseMs1LevelForQuant) baseIntensity = ms2DecResult.Ms1PeakHeight;
-            else baseIntensity = massSpec[0][1];
+            if (isUseMs1LevelForQuant) baseIntensity = peak.Intensity;
+            else baseIntensity = massSpec[0].Intensity;
 
-            for (int i = 0; i < massSpec.Count; i++)
-            {
+            for (int i = 0; i < massSpec.Count; i++) {
                 if (i > topN - 1) break;
-                var productMz = Math.Round(massSpec[i][0], 5);
-                var tqRatio = Math.Round(massSpec[i][1] / baseIntensity * 100, 0);
+                var productMz = Math.Round(massSpec[i].Mass, 5);
+                var tqRatio = Math.Round(massSpec[i].Intensity / baseIntensity * 100, 0);
                 if (isUseMs1LevelForQuant && i == 0) tqRatio = 99;
                 else if (!isUseMs1LevelForQuant && i == 0) tqRatio = 100;
                 else if (i != 0 && tqRatio == 100) tqRatio = 99;  // 100 is used just once for the target (quantified) m/z trace. Otherwise, non-100 value should be used.
-
                 if (tqRatio == 0) tqRatio = 1;
 
-                writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, productMz, rt, tqRatio, rtBegin, rtEnd, ms1Tolerrance, ms2Tolerance, 2, "NA");
+                WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, productMz, rt, tqRatio, rtBegin, rtEnd, ms1Tolerrance, ms2Tolerance, 2, "NA");
             }
+        }
+
+        private static void WriteFieldsAsMrmprobsReferenceFormat(
+            StreamWriter sw,
+            string name,
+            double precursorMz,
+            double productMz,
+            double rt,
+            double tqRatio,
+            double rtBegin,
+            double rtEnd,
+            double ms1Tolerance,
+            double ms2Tolerance,
+            int msLevel,
+            string compoundClass)
+        {
+            sw.Write(name + "\t");
+            sw.Write(precursorMz + "\t");
+            sw.Write(productMz + "\t");
+            sw.Write(rt + "\t");
+            sw.Write(tqRatio + "\t");
+            sw.Write(rtBegin + "\t");
+            sw.Write(rtEnd + "\t");
+            sw.Write(ms1Tolerance + "\t");
+            sw.Write(ms2Tolerance + "\t");
+            sw.Write(msLevel + "\t");
+            sw.WriteLine(compoundClass);
         }
     }
 
