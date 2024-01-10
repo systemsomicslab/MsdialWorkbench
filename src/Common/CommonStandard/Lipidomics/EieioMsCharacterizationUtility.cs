@@ -267,6 +267,8 @@ namespace CompMs.Common.Lipidomics
             double threshold,
             double minimumIntensity,
             double minimumIntensityFactor) {
+            var internaladhoc_threshold = 12;
+            if (minimumIntensityFactor == 0) internaladhoc_threshold = 0;
             for (int i = 0; i < spectrum.Count; i++) {
                 var mz = spectrum[i].Mass;
                 var relative_intensity = spectrum[i].Resolution; // should be normalized by max intensity to 100
@@ -274,7 +276,7 @@ namespace CompMs.Common.Lipidomics
 
                 if (relative_intensity > threshold &&
                     relative_intensity > minimumIntensity * minimumIntensityFactor &&
-                    original_intensity > 12 &&
+                    original_intensity > internaladhoc_threshold &&
                     Math.Abs(mz - diagnosticMz) < mzTolerance) {
                     return true;
                 }
@@ -466,23 +468,31 @@ namespace CompMs.Common.Lipidomics
             //   .Select(n => new DiagnosticIon() { Mz = n.Mass, IonAbundanceCutOff = 0.0000001, MzTolerance = tolerance })
             //   .ToList();
 
+            //var doublebondLowIons =
+            //    ref_spectrum
+            //    .Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_low))
+            //    .Select(n => new DiagnosticIon() { Mz = n.Mass, IonAbundanceCutOff = 0.0000001, MzTolerance = tolerance })
+            //    .ToList();
+
             var isDoublebondAdvancedFilter = StandardMsCharacterizationUtility.IsDiagnosticFragmentsExist(doublebondIons_matched, doublebondHighIons, minimumPeakIntensity, minimumPeakIntensityFactor);
-            //var isDoublebondAdvancedFilter = StandardMsCharacterizationUtility.IsDiagnosticFragmentsExist(doublebondIons_matched, doublebondHighAndLowIons);
+            //var isDoublebondAdvancedFilter = StandardMsCharacterizationUtility.IsDiagnosticFragmentsExist(doublebondIons_matched, doublebondHighAndLowIons, minimumPeakIntensity, minimumPeakIntensityFactor);
+            //var isDoublebondAdvancedFilter_low = StandardMsCharacterizationUtility.IsDiagnosticFragmentsExist(doublebondIons_matched, doublebondLowIons, 0, 0);
+            //isDoublebondAdvancedFilter = isDoublebondAdvancedFilter && isDoublebondAdvancedFilter_low;
             //var isDoublebondAdvancedFilter = StandardMsCharacterizationUtility.IsDiagnosticFragmentsExist(doublebondIons_matched, dIons4db);
             var matchedCount = doublebondIons_matched.Count;
             var matchedPercent = matchedCount / (doublebondIons.Count + 1e-10);
             var matchedCoefficient = StandardMsCharacterizationUtility.GetMatchedCoefficient(doublebondIons_matched);
 
-            //var doublebondIons_matched_high_array = doublebondIons_matched.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_high)).ToList();
-            //var doublebondIons_matched_low_array = doublebondIons_matched.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_low)).ToList();
-            //var doublebondIons_matched_high = doublebondIons_matched_high_array.Count() > 0 ? doublebondIons_matched_high_array.Average(n => n.Resolution) : 0;
-            //var doublebondIons_matched_low = doublebondIons_matched_low_array.Count() > 0 ? doublebondIons_matched_low_array.Average(n => n.Resolution) : 0;
-            //var high_low_bonus = doublebondIons_matched_high > doublebondIons_matched_low * 2.0 ? 0.5 : 0;
+            var doublebondIons_matched_high_array = doublebondIons_matched.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_high)).ToList();
+            var doublebondIons_matched_low_array = doublebondIons_matched.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_low)).ToList();
+            var doublebondIons_matched_high = doublebondIons_matched_high_array.Count() > 0 ? doublebondIons_matched_high_array.Average(n => n.Resolution) : 0;
+            var doublebondIons_matched_low = doublebondIons_matched_low_array.Count() > 0 ? doublebondIons_matched_low_array.Average(n => n.Resolution) : 0;
+            var high_low_bonus = doublebondIons_matched_high > doublebondIons_matched_low * 1.5 ? 0.5 : 0;
 
-            var isDoubleBondIdentified = isDoublebondAdvancedFilter && matchedPercent > doublebondIonCutoff * 0.5 ? true : false;
-
+            var isDoubleBondIdentified = isDoublebondAdvancedFilter && matchedPercent > doublebondIonCutoff ? true : false;
+            var isHGrainGeneratedPufaExist = doublebondIons.Count(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_high) && n.Comment.Contains("+H_p3")) > 0;
             var hGrainBonusForPufa = false;
-            if (doublebondIons.Count(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_high) && n.Comment.Contains("+H_p3")) > 0) {
+            if (isHGrainGeneratedPufaExist) {
                 var hGrainFragments = doublebondIons.Where(n => n.Comment.Contains("+H_p3")).ToList();
                 // the peaks are sorted by "oder by decessing with mz"
                 var count = 0;
@@ -512,7 +522,8 @@ namespace CompMs.Common.Lipidomics
             result.DoubleBondIonScore = isDoubleBondIdentified ? matchedCoefficient + matchedPercent : 0;
             //result.DoubleBondIonScore = isDoubleBondIdentified ? matchedCoefficient + matchedPercent + high_low_bonus : 0;
             //result.DoubleBondIonScore = isDoubleBondIdentified ? matchedCoefficient : 0;
-            if (hGrainBonusForPufa) result.DoubleBondIonScore += 0.5;
+            if (!isHGrainGeneratedPufaExist && isDoubleBondIdentified) result.DoubleBondIonScore += high_low_bonus;
+            if (hGrainBonusForPufa && isDoubleBondIdentified) result.DoubleBondIonScore += 0.5;
 
             // total score
 
