@@ -7,9 +7,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Parser;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -29,8 +27,7 @@ namespace CompMs.MsdialCore.Export
 
         public void ExportReferenceMsmsAsMrmprobsFormat(
             string filepath,
-            Stream fs,
-            List<long> seekpoints,
+            MSDecLoader msdecLoader,
             AlignmentSpotProperty alignedSpot,
             MrmprobsExportBaseParameter parameter,
             IAnnotationQueryFactory<MsScanMatchResult> queryFactory,
@@ -55,14 +52,14 @@ namespace CompMs.MsdialCore.Export
                 WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, reference, parameter);
 
                 if (parameter.MpIsExportOtherCandidates) {
-                    var ms2Dec = MsdecResultsReader.ReadMSDecResult(fs, seekpoints[alignedSpot.MSDecResultIdUsed], 1, false);
+                    var ms2Dec = msdecLoader.LoadMSDecResult(alignedSpot.MSDecResultIdUsed);
                     var spectrum = ms2Dec.Spectrum;
                     if (spectrum != null && spectrum.Count > 0) {
                         spectrum = spectrum.OrderBy(n => n.Mass).ToList();
                     }
 
                     var query = queryFactory.Create(alignedSpot, ms2Dec, alignedSpot.IsotopicPeaks.Select(p => new RawPeakElement { Mz = p.Mass, Intensity = p.AbsoluteAbundance }).ToArray(), alignedSpot.PeakCharacter, searchParameter);
-                    var candidates = query.FindCandidates().ToArray();
+                    var candidates = query.FindCandidates();
 
                     foreach (var candidate in candidates) {
                         var r = _refer.Refer(candidate);
@@ -84,8 +81,7 @@ namespace CompMs.MsdialCore.Export
 
         public void ExportReferenceMsmsAsMrmprobsFormat(
             string filepath,
-            Stream fs,
-            List<long> seekpoints,
+            MSDecLoader msdecLoader,
             ObservableCollection<AlignmentSpotProperty> alignedSpots,
             MrmprobsExportBaseParameter parameter,
             IAnnotationQueryFactory<MsScanMatchResult> queryFactory,
@@ -112,14 +108,14 @@ namespace CompMs.MsdialCore.Export
                     WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, reference, parameter);
 
                     if (parameter.MpIsExportOtherCandidates) {
-                        var ms2Dec = MsdecResultsReader.ReadMSDecResult(fs, seekpoints[spot.MSDecResultIdUsed], 1, false);
+                        var ms2Dec = msdecLoader.LoadMSDecResult(spot.MSDecResultIdUsed);
                         var spectrum = ms2Dec.Spectrum;
                         if (spectrum != null && spectrum.Count > 0) {
                             spectrum = spectrum.OrderBy(n => n.Mass).ToList();
                         }
 
                         var query = queryFactory.Create(spot, ms2Dec, spot.IsotopicPeaks.Select(p => new RawPeakElement { Mz = p.Mass, Intensity = p.AbsoluteAbundance }).ToArray(), spot.PeakCharacter, searchParameter);
-                        var candidates = query.FindCandidates().ToArray();
+                        var candidates = query.FindCandidates();
 
                         foreach (var candidate in candidates) {
                             var r = _refer.Refer(candidate);
@@ -162,15 +158,14 @@ namespace CompMs.MsdialCore.Export
         public void ExportExperimentalMsmsAsMrmprobsFormat(
             string filepath,
             ObservableCollection<AlignmentSpotProperty> alignmentSpots,
-            Stream fs,
-            List<long> seekpoints,
+            MSDecLoader msdecLoader,
             MrmprobsExportBaseParameter parameter)
         {
             using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
                 WriteHeaderAsMrmprobsReferenceFormat(sw);
 
                 foreach (var spot in alignmentSpots) {
-                    var ms2Dec = MsdecResultsReader.ReadMSDecResult(fs, seekpoints[spot.MSDecResultIdUsed], 1, false);
+                    var ms2Dec = msdecLoader.LoadMSDecResult(spot.MSDecResultIdUsed);
 
                     var name = StringReplaceForWindowsAcceptableCharacters(spot.Name + "_" + spot.MasterAlignmentID);
                     var precursorMz = Math.Round(spot.MassCenter, 5);
@@ -185,8 +180,7 @@ namespace CompMs.MsdialCore.Export
 
         public void ExportReferenceMsmsAsMrmprobsFormat(
             string filepath,
-            Stream fs,
-            List<long> seekpoints,
+            MSDecLoader msdecLoader,
             ChromatogramPeakFeature peakSpot,
             MrmprobsExportBaseParameter parameter,
             IAnnotationQueryFactory<MsScanMatchResult> queryFactory,
@@ -211,14 +205,14 @@ namespace CompMs.MsdialCore.Export
                 WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, reference, parameter);
 
                 if (parameter.MpIsExportOtherCandidates) {
-                    var ms2Dec = MsdecResultsReader.ReadMSDecResult(fs, seekpoints[peakSpot.MSDecResultIdUsed], 1, false);
+                    var ms2Dec = msdecLoader.LoadMSDecResult(peakSpot.MSDecResultIdUsed);
                     var spectrum = ms2Dec.Spectrum;
                     if (spectrum != null && spectrum.Count > 0) {
                         spectrum = spectrum.OrderBy(n => n.Mass).ToList();
                     }
 
                     var query = queryFactory.Create(peakSpot, ms2Dec, Array.Empty<RawPeakElement>(), peakSpot.PeakCharacter, searchParameter);
-                    var candidates = query.FindCandidates().ToArray();
+                    var candidates = query.FindCandidates();
 
                     foreach (var candidate in candidates) {
                         var r = _refer.Refer(candidate);
@@ -240,8 +234,7 @@ namespace CompMs.MsdialCore.Export
 
         public void ExportReferenceMsmsAsMrmprobsFormat(
             string filepath,
-            Stream fs,
-            List<long> seekpoints,
+            MSDecLoader msdecLoader,
             ObservableCollection<ChromatogramPeakFeature> peakSpots,
             MrmprobsExportBaseParameter parameter,
             IAnnotationQueryFactory<MsScanMatchResult> queryFactory,
@@ -266,7 +259,7 @@ namespace CompMs.MsdialCore.Export
                     WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, reference, parameter);
 
                     if (parameter.MpIsExportOtherCandidates) {
-                        var ms2Dec = MsdecResultsReader.ReadMSDecResult(fs, seekpoints[peak.MSDecResultIdUsed], 1, false);
+                        var ms2Dec = msdecLoader.LoadMSDecResult(peak.MSDecResultIdUsed);
                         var spectrum = ms2Dec.Spectrum;
                         if (spectrum != null && spectrum.Count > 0) {
                             spectrum = spectrum.OrderBy(n => n.Mass).ToList();
@@ -317,15 +310,14 @@ namespace CompMs.MsdialCore.Export
         public static void ExportExperimentalMsmsAsMrmprobsFormat(
             string filepath,
             ObservableCollection<ChromatogramPeakFeature> peakSpots,
-            Stream fs,
-            List<long> seekpoints,
+            MSDecLoader loader,
             MrmprobsExportBaseParameter parameter)
         {
             using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
                 WriteHeaderAsMrmprobsReferenceFormat(sw);
 
                 foreach (var peak in peakSpots) {
-                    var ms2Dec = MsdecResultsReader.ReadMSDecResult(fs, seekpoints[peak.MSDecResultIdUsed], 1, false);
+                    var ms2Dec = loader.LoadMSDecResult(peak.MSDecResultIdUsed);
 
                     var name = StringReplaceForWindowsAcceptableCharacters(peak.Name + "_" + peak.MasterPeakID);
                     var precursorMz = Math.Round(peak.PrecursorMz, 5);
