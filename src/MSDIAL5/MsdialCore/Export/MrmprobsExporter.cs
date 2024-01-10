@@ -37,8 +37,8 @@ namespace CompMs.MsdialCore.Export
                 searchParameter.TotalScoreCutoff = parameter.MpIdentificationScoreCutOff;
             }
 
-            using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
-                WriteHeaderAsMrmprobsReferenceFormat(sw);
+            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+                writer.WriteHeader();
 
                 if (!alignedSpot.MatchResults.IsReferenceMatched(_evaluator)) return;
 
@@ -49,7 +49,7 @@ namespace CompMs.MsdialCore.Export
                 var rtEnd = Math.Round(alignedSpot.TimesCenter.RT.Value + (float)parameter.MpRtTolerance, 2);
                 var rt = Math.Round(alignedSpot.TimesCenter.RT.Value, 2);
 
-                WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, reference, parameter);
+                writer.WriteFieldsBasedOnReference(name, precursorMz, rt, rtBegin, rtEnd, reference, parameter);
 
                 if (parameter.MpIsExportOtherCandidates) {
                     var ms2Dec = msdecLoader.LoadMSDecResult(alignedSpot.MSDecResultIdUsed);
@@ -70,7 +70,7 @@ namespace CompMs.MsdialCore.Export
                         name = StringReplaceForWindowsAcceptableCharacters(r.Name + "_" + alignedSpot.MasterAlignmentID);
                         precursorMz = Math.Round(r.PrecursorMz, 5);
 
-                        WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, r, parameter);
+                        writer.WriteFieldsBasedOnReference(name, precursorMz, rt, rtBegin, rtEnd, r, parameter);
                     }
                 }
             }
@@ -88,8 +88,8 @@ namespace CompMs.MsdialCore.Export
                 searchParameter.TotalScoreCutoff = parameter.MpIdentificationScoreCutOff;
             }
 
-            using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
-                WriteHeaderAsMrmprobsReferenceFormat(sw);
+            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+                writer.WriteHeader();
 
                 foreach (var spot in alignedSpots) {
                     if (!spot.MatchResults.IsReferenceMatched(_evaluator)) continue;
@@ -102,7 +102,7 @@ namespace CompMs.MsdialCore.Export
                     var rtEnd = Math.Round(spot.TimesCenter.RT.Value + (float)parameter.MpRtTolerance, 2);
                     var rt = Math.Round(spot.TimesCenter.RT.Value, 2);
 
-                    WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, reference, parameter);
+                    writer.WriteFieldsBasedOnReference(name, precursorMz, rt, rtBegin, rtEnd, reference, parameter);
 
                     if (parameter.MpIsExportOtherCandidates) {
                         var ms2Dec = msdecLoader.LoadMSDecResult(spot.MSDecResultIdUsed);
@@ -122,7 +122,7 @@ namespace CompMs.MsdialCore.Export
 
                             name = StringReplaceForWindowsAcceptableCharacters(r.Name + "_" + spot.MasterAlignmentID);
                             precursorMz = Math.Round(r.PrecursorMz, 5);
-                            WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, r, parameter);
+                            writer.WriteFieldsBasedOnReference(name, precursorMz, rt, rtBegin, rtEnd, r, parameter);
                         }
                     }
                 }
@@ -135,8 +135,8 @@ namespace CompMs.MsdialCore.Export
             AlignmentSpotProperty spotProp,
             MrmprobsExportBaseParameter parameter) {
 
-            using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
-                WriteHeaderAsMrmprobsReferenceFormat(sw);
+            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+                writer.WriteHeader();
 
                 var name = StringReplaceForWindowsAcceptableCharacters(spotProp.Name + "_" + spotProp.MasterAlignmentID);
                 var precursorMz = Math.Round(spotProp.MassCenter, 5);
@@ -144,7 +144,7 @@ namespace CompMs.MsdialCore.Export
                 var rtEnd = Math.Round(spotProp.TimesCenter.RT.Value + (float)parameter.MpRtTolerance, 2);
                 var rt = Math.Round(spotProp.TimesCenter.RT.Value, 2);
 
-                WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms2DecResult, spotProp, parameter);
+                writer.WriteFieldsBasedOnExperiment(name, precursorMz, rt, rtBegin, rtEnd, ms2DecResult, spotProp, parameter);
             }
         }
 
@@ -154,8 +154,8 @@ namespace CompMs.MsdialCore.Export
             MSDecLoader msdecLoader,
             MrmprobsExportBaseParameter parameter)
         {
-            using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
-                WriteHeaderAsMrmprobsReferenceFormat(sw);
+            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+                writer.WriteHeader();
 
                 foreach (var spot in alignmentSpots) {
                     var ms2Dec = msdecLoader.LoadMSDecResult(spot.MSDecResultIdUsed);
@@ -166,7 +166,7 @@ namespace CompMs.MsdialCore.Export
                     var rtEnd = Math.Round(spot.TimesCenter.RT.Value + (float)parameter.MpRtTolerance, 2);
                     var rt = Math.Round(spot.TimesCenter.RT.Value, 2);
 
-                    WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms2Dec, spot, parameter);
+                    writer.WriteFieldsBasedOnExperiment(name, precursorMz, rt, rtBegin, rtEnd, ms2Dec, spot, parameter);
                 }
             }
         }
@@ -183,8 +183,8 @@ namespace CompMs.MsdialCore.Export
                 searchParameter.TotalScoreCutoff = parameter.MpIdentificationScoreCutOff;
             }
 
-            using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
-                WriteHeaderAsMrmprobsReferenceFormat(sw);
+            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+                writer.WriteHeader();
 
                 if (!peakSpot.MatchResults.IsReferenceMatched(_evaluator)) return;
 
@@ -195,7 +195,7 @@ namespace CompMs.MsdialCore.Export
                 var rtEnd = Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value + (float)parameter.MpRtTolerance, 2);
                 var rt = Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value, 2);
 
-                WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, reference, parameter);
+                writer.WriteFieldsBasedOnReference(name, precursorMz, rt, rtBegin, rtEnd, reference, parameter);
 
                 if (parameter.MpIsExportOtherCandidates) {
                     var ms2Dec = msdecLoader.LoadMSDecResult(peakSpot.MSDecResultIdUsed);
@@ -216,7 +216,7 @@ namespace CompMs.MsdialCore.Export
                         name = StringReplaceForWindowsAcceptableCharacters(r.Name + "_" + peakSpot.MasterPeakID);
                         precursorMz = Math.Round(r.PrecursorMz, 5);
 
-                        WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, r, parameter);
+                        writer.WriteFieldsBasedOnReference(name, precursorMz, rt, rtBegin, rtEnd, r, parameter);
                     }
                 }
             }
@@ -233,8 +233,8 @@ namespace CompMs.MsdialCore.Export
             if (parameter.MpIsExportOtherCandidates) {
                 searchParameter.TotalScoreCutoff = parameter.MpIdentificationScoreCutOff;
             }
-            using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
-                WriteHeaderAsMrmprobsReferenceFormat(sw);
+            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+                writer.WriteHeader();
 
                 foreach (var peak in peakSpots) {
                     if (!peak.MatchResults.IsReferenceMatched(_evaluator)) continue;
@@ -246,7 +246,7 @@ namespace CompMs.MsdialCore.Export
                     var rtEnd = Math.Round(peak.PeakFeature.ChromXsTop.RT.Value + (float)parameter.MpRtTolerance, 2);
                     var rt = Math.Round(peak.PeakFeature.ChromXsTop.RT.Value, 2);
 
-                    WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, reference, parameter);
+                    writer.WriteFieldsBasedOnReference(name, precursorMz, rt, rtBegin, rtEnd, reference, parameter);
 
                     if (parameter.MpIsExportOtherCandidates) {
                         var ms2Dec = msdecLoader.LoadMSDecResult(peak.MSDecResultIdUsed);
@@ -267,7 +267,7 @@ namespace CompMs.MsdialCore.Export
                             name = StringReplaceForWindowsAcceptableCharacters(r.Name + "_" + peak.MasterPeakID);
                             precursorMz = Math.Round(r.PrecursorMz, 5);
 
-                            WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, r, parameter);
+                            writer.WriteFieldsBasedOnReference(name, precursorMz, rt, rtBegin, rtEnd, r, parameter);
                         }
                     }
                 }
@@ -281,8 +281,8 @@ namespace CompMs.MsdialCore.Export
             ChromatogramPeakFeature peakSpot,
             MrmprobsExportBaseParameter parameter)
         {
-            using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
-                WriteHeaderAsMrmprobsReferenceFormat(sw);
+            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+                writer.WriteHeader();
 
                 var name = StringReplaceForWindowsAcceptableCharacters(peakSpot.Name + "_" + peakSpot.MasterPeakID);
                 var precursorMz = Math.Round(peakSpot.PrecursorMz, 5);
@@ -290,7 +290,7 @@ namespace CompMs.MsdialCore.Export
                 var rtEnd = Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value + (float)parameter.MpRtTolerance, 2);
                 var rt = Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value, 2);
 
-                WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms2DecResult, peakSpot, parameter);
+                writer.WriteFieldsBasedOnExperiment(name, precursorMz, rt, rtBegin, rtEnd, ms2DecResult, peakSpot, parameter);
             }
         }
 
@@ -300,8 +300,8 @@ namespace CompMs.MsdialCore.Export
             MSDecLoader loader,
             MrmprobsExportBaseParameter parameter)
         {
-            using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
-                WriteHeaderAsMrmprobsReferenceFormat(sw);
+            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+                writer.WriteHeader();
 
                 foreach (var peak in peakSpots) {
                     var ms2Dec = loader.LoadMSDecResult(peak.MSDecResultIdUsed);
@@ -312,132 +312,14 @@ namespace CompMs.MsdialCore.Export
                     var rtEnd = Math.Round(peak.PeakFeature.ChromXsTop.RT.Value + (float)parameter.MpRtTolerance, 2);
                     var rt = Math.Round(peak.PeakFeature.ChromXsTop.RT.Value, 2);
 
-                    WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms2Dec, peak, parameter);
+                    writer.WriteFieldsBasedOnExperiment(name, precursorMz, rt, rtBegin, rtEnd, ms2Dec, peak, parameter);
                 }
             }
-        }
-
-        private static void WriteHeaderAsMrmprobsReferenceFormat(StreamWriter sw) {
-            sw.WriteLine("Compound name\tPrecursor mz\tProduct mz\tRT min\tTQ Ratio\tRT begin\tRT end\tMS1 tolerance\tMS2 tolerance\tMS level\tClass");
         }
 
         private static string StringReplaceForWindowsAcceptableCharacters(string name) {
             var chars = Path.GetInvalidFileNameChars();
             return new string(name.Select(c => chars.Contains(c) ? '_' : c).ToArray());
-        }
-
-        private static void WriteFieldsAsMrmprobsReferenceFormat(
-            StreamWriter sw,
-            string name,
-            double precursorMz,
-            double rt,
-            double rtBegin,
-            double rtEnd,
-            MoleculeMsReference mspQuery,
-            MrmprobsExportBaseParameter parameter) {
-
-            if ((!parameter.MpIsIncludeMsLevel1 || parameter.MpIsUseMs1LevelForQuant) && mspQuery.Spectrum.Count == 0) {
-                return;
-            }
-
-            var massSpec = mspQuery.Spectrum.OrderByDescending(p => p.Intensity).ToList();
-            var compClass = mspQuery.CompoundClass;
-            if (string.IsNullOrEmpty(compClass)) {
-                compClass = "NA";
-            }
-
-            if (parameter.MpIsIncludeMsLevel1) {
-                var tqRatio = 100;
-                if (!parameter.MpIsUseMs1LevelForQuant) tqRatio = 150;
-                // Since we cannot calculate the real QT ratio from the reference DB and the real MS1 value (actually I can calculate them from the raw data with the m/z matching),
-                //currently the ad hoc value 150 is used.
-
-                WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, precursorMz, rt, tqRatio, rtBegin, rtEnd, 1, compClass, parameter);
-            }
-
-            if (parameter.MpTopN == 1 && parameter.MpIsIncludeMsLevel1) return;
-            if (mspQuery.Spectrum.Count == 0) return;
-            var basePeak = massSpec[0].Intensity;
-            for (int i = 0; i < massSpec.Count; i++)
-            {
-                if (i > parameter.MpTopN - 1) break;
-                var productMz = Math.Round(massSpec[i].Mass, 5);
-                var tqRatio = Math.Round(massSpec[i].Intensity / basePeak * 100, 0);
-                if (parameter.MpIsUseMs1LevelForQuant && i == 0) tqRatio = 99;
-                else if (!parameter.MpIsUseMs1LevelForQuant && i == 0) tqRatio = 100;
-                else if (i != 0 && tqRatio == 100) tqRatio = 99;  // 100 is used just once for the target (quantified) m/z trace. Otherwise, non-100 value should be used.
-
-                if (tqRatio == 0) tqRatio = 1;
-
-                WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, productMz, rt, tqRatio, rtBegin, rtEnd, 2, compClass, parameter);
-            }
-        }
-
-        private static void WriteFieldsAsMrmprobsReferenceFormat(
-            StreamWriter sw,
-            string name,
-            double precursorMz,
-            double rt,
-            double rtBegin,
-            double rtEnd,
-            MSDecResult ms2DecResult,
-            IChromatogramPeak peak,
-            MrmprobsExportBaseParameter parameter) {
-
-            if (!parameter.MpIsIncludeMsLevel1 && ms2DecResult.Spectrum.Count == 0) return;
-            if (parameter.MpIsIncludeMsLevel1) {
-                var tqRatio = 99;
-                if (parameter.MpIsUseMs1LevelForQuant) tqRatio = 100;
-                if (tqRatio == 100 && !parameter.MpIsUseMs1LevelForQuant) tqRatio = 99; // 100 is used just once for the target (quantified) m/z trace. Otherwise, non-100 value should be used.
-
-                WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, precursorMz, rt, tqRatio, rtBegin, rtEnd, 1, "NA", parameter);
-            }
-
-            if (parameter.MpTopN == 1 && parameter.MpIsIncludeMsLevel1) return;
-            if (ms2DecResult.Spectrum is null || ms2DecResult.Spectrum.Count == 0) return;
-
-            var massSpec = ms2DecResult.Spectrum.OrderByDescending(p => p.Intensity).ToList();
-            var baseIntensity = 0.0;
-
-            if (parameter.MpIsUseMs1LevelForQuant) baseIntensity = peak.Intensity;
-            else baseIntensity = massSpec[0].Intensity;
-
-            for (int i = 0; i < massSpec.Count; i++) {
-                if (i > parameter.MpTopN - 1) break;
-                var productMz = Math.Round(massSpec[i].Mass, 5);
-                var tqRatio = Math.Round(massSpec[i].Intensity / baseIntensity * 100, 0);
-                if (parameter.MpIsUseMs1LevelForQuant && i == 0) tqRatio = 99;
-                else if (!parameter.MpIsUseMs1LevelForQuant && i == 0) tqRatio = 100;
-                else if (i != 0 && tqRatio == 100) tqRatio = 99;  // 100 is used just once for the target (quantified) m/z trace. Otherwise, non-100 value should be used.
-                if (tqRatio == 0) tqRatio = 1;
-
-                WriteFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, productMz, rt, tqRatio, rtBegin, rtEnd, 2, "NA", parameter);
-            }
-        }
-
-        private static void WriteFieldsAsMrmprobsReferenceFormat(
-            StreamWriter sw,
-            string name,
-            double precursorMz,
-            double productMz,
-            double rt,
-            double tqRatio,
-            double rtBegin,
-            double rtEnd,
-            int msLevel,
-            string compoundClass,
-            MrmprobsExportBaseParameter parameter) {
-            sw.Write(name + "\t");
-            sw.Write(precursorMz + "\t");
-            sw.Write(productMz + "\t");
-            sw.Write(rt + "\t");
-            sw.Write(tqRatio + "\t");
-            sw.Write(rtBegin + "\t");
-            sw.Write(rtEnd + "\t");
-            sw.Write(parameter.MpMs1Tolerance + "\t");
-            sw.Write(parameter.MpMs2Tolerance + "\t");
-            sw.Write(msLevel + "\t");
-            sw.WriteLine(compoundClass);
         }
     }
 
