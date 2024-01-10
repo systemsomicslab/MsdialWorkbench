@@ -362,28 +362,31 @@ namespace CompMs.MsdialCore.Export
             }
         }
 
-        public static void ExportExperimentalMsmsAsMrmprobsFormat(string filepath, ObservableCollection<PeakAreaBean> peakSpots, FileStream fs, List<long> seekpoints,
-            double rtTolerance, double ms1Tolerance, double ms2Tolerance, int topN = 5, bool isIncludeMslevel1 = true, bool isUseMs1LevelForQuant = true)
+        public static void ExportExperimentalMsmsAsMrmprobsFormat(
+            string filepath,
+            ObservableCollection<PeakAreaBean> peakSpots,
+            Stream fs,
+            List<long> seekpoints,
+            double rtTolerance,
+            double ms1Tolerance,
+            double ms2Tolerance,
+            int topN,
+            bool isIncludeMslevel1,
+            bool isUseMs1LevelForQuant)
         {
-            using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII))
-            {
-
+            using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
                 writeHeaderAsMrmprobsReferenceFormat(sw);
 
-                foreach (var peak in peakSpots)
-                {
-                    //if (peak.LibraryID < 0 && peak.PostIdentificationLibraryId < 0) continue;
+                foreach (var peak in peakSpots) {
+                    var ms2Dec = SpectralDeconvolution.ReadMSDecResult(fs, seekpoints[peak.MSDecResultIdUsed], 1, false);
 
-                    var ms2DecResult = SpectralDeconvolution.ReadMS2DecResult(fs, seekpoints, peak.PeakID);
+                    var name = stringReplaceForWindowsAcceptableCharacters(peak.Name + "_" + peak.MasterPeakID);
+                    var precursorMz = Math.Round(peak.PrecursorMz, 5);
+                    var rtBegin = Math.Max(Math.Round(peak.PeakFeature.ChromXsTop.RT.Value - rtTolerance, 2), 0);
+                    var rtEnd = Math.Round(peak.PeakFeature.ChromXsTop.RT.Value + rtTolerance, 2);
+                    var rt = Math.Round(peak.PeakFeature.ChromXsTop.RT.Value, 2);
 
-                    var name = stringReplaceForWindowsAcceptableCharacters(peak.MetaboliteName + "_" + peak.PeakID);
-                    var precursorMz = Math.Round(peak.AccurateMass, 5);
-                    var rtBegin = Math.Max(Math.Round(peak.RtAtPeakTop - rtTolerance, 2), 0);
-                    var rtEnd = Math.Round(peak.RtAtPeakTop + rtTolerance, 2);
-                    var rt = Math.Round(peak.RtAtPeakTop, 2);
-
-                    writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd,
-                        ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, ms2DecResult);
+                    writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, rt, rtBegin, rtEnd, ms1Tolerance, ms2Tolerance, topN, isIncludeMslevel1, isUseMs1LevelForQuant, ms2Dec);
                 }
             }
         }
