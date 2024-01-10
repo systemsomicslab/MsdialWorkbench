@@ -1,7 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -9,9 +8,7 @@ using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Text;
 
 
 namespace CompMs.MsdialCore.Export
@@ -43,13 +40,7 @@ namespace CompMs.MsdialCore.Export
                 if (!alignedSpot.MatchResults.IsReferenceMatched(_evaluator)) return;
 
                 MoleculeMsReference reference = _refer.Refer(alignedSpot.MatchResults.Representative);
-                var name = StringReplaceForWindowsAcceptableCharacters(reference.Name + "_" + alignedSpot.MasterAlignmentID);
-                var precursorMz = Math.Round(reference.PrecursorMz, 5);
-                var rtBegin = Math.Max(Math.Round(alignedSpot.TimesCenter.RT.Value - (float)parameter.MpRtTolerance, 2), 0);
-                var rtEnd = Math.Round(alignedSpot.TimesCenter.RT.Value + (float)parameter.MpRtTolerance, 2);
-                var rt = Math.Round(alignedSpot.TimesCenter.RT.Value, 2);
-
-                writer.WriteFieldsBasedOnReference(name, precursorMz, rt, rtBegin, rtEnd, reference, parameter);
+                writer.WriteFieldsBasedOnReference(alignedSpot, reference, parameter);
 
                 if (parameter.MpIsExportOtherCandidates) {
                     var ms2Dec = msdecLoader.LoadMSDecResult(alignedSpot.MSDecResultIdUsed);
@@ -66,11 +57,7 @@ namespace CompMs.MsdialCore.Export
                         if (r == reference) {
                             continue;
                         }
-
-                        name = StringReplaceForWindowsAcceptableCharacters(r.Name + "_" + alignedSpot.MasterAlignmentID);
-                        precursorMz = Math.Round(r.PrecursorMz, 5);
-
-                        writer.WriteFieldsBasedOnReference(name, precursorMz, rt, rtBegin, rtEnd, r, parameter);
+                        writer.WriteFieldsBasedOnReference(alignedSpot, r, parameter);
                     }
                 }
             }
@@ -96,13 +83,7 @@ namespace CompMs.MsdialCore.Export
                     if (!string.IsNullOrEmpty(spot.Comment) && spot.Comment.IndexOf("unk", StringComparison.OrdinalIgnoreCase) >= 0) continue;
 
                     MoleculeMsReference reference = _refer.Refer(spot.MatchResults.Representative);
-                    var name = StringReplaceForWindowsAcceptableCharacters(reference.Name + "_" + spot.MasterAlignmentID);
-                    var precursorMz = Math.Round(reference.PrecursorMz, 5);
-                    var rtBegin = Math.Max(Math.Round(spot.TimesCenter.RT.Value - (float)parameter.MpRtTolerance, 2), 0);
-                    var rtEnd = Math.Round(spot.TimesCenter.RT.Value + (float)parameter.MpRtTolerance, 2);
-                    var rt = Math.Round(spot.TimesCenter.RT.Value, 2);
-
-                    writer.WriteFieldsBasedOnReference(name, precursorMz, rt, rtBegin, rtEnd, reference, parameter);
+                    writer.WriteFieldsBasedOnReference(spot, reference, parameter);
 
                     if (parameter.MpIsExportOtherCandidates) {
                         var ms2Dec = msdecLoader.LoadMSDecResult(spot.MSDecResultIdUsed);
@@ -119,10 +100,7 @@ namespace CompMs.MsdialCore.Export
                             if (r == reference) {
                                 continue;
                             }
-
-                            name = StringReplaceForWindowsAcceptableCharacters(r.Name + "_" + spot.MasterAlignmentID);
-                            precursorMz = Math.Round(r.PrecursorMz, 5);
-                            writer.WriteFieldsBasedOnReference(name, precursorMz, rt, rtBegin, rtEnd, r, parameter);
+                            writer.WriteFieldsBasedOnReference(spot, r, parameter);
                         }
                     }
                 }
@@ -137,14 +115,7 @@ namespace CompMs.MsdialCore.Export
 
             using (var writer = new MrmprobsReferenceWriter(filepath)) {
                 writer.WriteHeader();
-
-                var name = StringReplaceForWindowsAcceptableCharacters(spotProp.Name + "_" + spotProp.MasterAlignmentID);
-                var precursorMz = Math.Round(spotProp.MassCenter, 5);
-                var rtBegin = Math.Max(Math.Round(spotProp.TimesCenter.RT.Value - (float)parameter.MpRtTolerance, 2), 0);
-                var rtEnd = Math.Round(spotProp.TimesCenter.RT.Value + (float)parameter.MpRtTolerance, 2);
-                var rt = Math.Round(spotProp.TimesCenter.RT.Value, 2);
-
-                writer.WriteFieldsBasedOnExperiment(name, precursorMz, rt, rtBegin, rtEnd, ms2DecResult, spotProp, parameter);
+                writer.WriteFieldsBasedOnExperiment(spotProp, ms2DecResult, parameter);
             }
         }
 
@@ -156,17 +127,9 @@ namespace CompMs.MsdialCore.Export
         {
             using (var writer = new MrmprobsReferenceWriter(filepath)) {
                 writer.WriteHeader();
-
                 foreach (var spot in alignmentSpots) {
                     var ms2Dec = msdecLoader.LoadMSDecResult(spot.MSDecResultIdUsed);
-
-                    var name = StringReplaceForWindowsAcceptableCharacters(spot.Name + "_" + spot.MasterAlignmentID);
-                    var precursorMz = Math.Round(spot.MassCenter, 5);
-                    var rtBegin = Math.Max(Math.Round(spot.TimesCenter.RT.Value - (float)parameter.MpRtTolerance, 2), 0);
-                    var rtEnd = Math.Round(spot.TimesCenter.RT.Value + (float)parameter.MpRtTolerance, 2);
-                    var rt = Math.Round(spot.TimesCenter.RT.Value, 2);
-
-                    writer.WriteFieldsBasedOnExperiment(name, precursorMz, rt, rtBegin, rtEnd, ms2Dec, spot, parameter);
+                    writer.WriteFieldsBasedOnExperiment(spot, ms2Dec, parameter);
                 }
             }
         }
@@ -189,13 +152,7 @@ namespace CompMs.MsdialCore.Export
                 if (!peakSpot.MatchResults.IsReferenceMatched(_evaluator)) return;
 
                 MoleculeMsReference reference = _refer.Refer(peakSpot.MatchResults.Representative);
-                var name = StringReplaceForWindowsAcceptableCharacters(reference.Name + "_" + peakSpot.MasterPeakID);
-                var precursorMz = Math.Round(reference.PrecursorMz, 5);
-                var rtBegin = Math.Max(Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value - (float)parameter.MpRtTolerance, 2), 0);
-                var rtEnd = Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value + (float)parameter.MpRtTolerance, 2);
-                var rt = Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value, 2);
-
-                writer.WriteFieldsBasedOnReference(name, precursorMz, rt, rtBegin, rtEnd, reference, parameter);
+                writer.WriteFieldsBasedOnReference(peakSpot, reference, parameter);
 
                 if (parameter.MpIsExportOtherCandidates) {
                     var ms2Dec = msdecLoader.LoadMSDecResult(peakSpot.MSDecResultIdUsed);
@@ -213,10 +170,7 @@ namespace CompMs.MsdialCore.Export
                             continue;
                         }
 
-                        name = StringReplaceForWindowsAcceptableCharacters(r.Name + "_" + peakSpot.MasterPeakID);
-                        precursorMz = Math.Round(r.PrecursorMz, 5);
-
-                        writer.WriteFieldsBasedOnReference(name, precursorMz, rt, rtBegin, rtEnd, r, parameter);
+                        writer.WriteFieldsBasedOnReference(peakSpot, r, parameter);
                     }
                 }
             }
@@ -240,13 +194,7 @@ namespace CompMs.MsdialCore.Export
                     if (!peak.MatchResults.IsReferenceMatched(_evaluator)) continue;
 
                     MoleculeMsReference reference = _refer.Refer(peak.MatchResults.Representative);
-                    var name = StringReplaceForWindowsAcceptableCharacters(reference.Name + "_" + peak.MasterPeakID);
-                    var precursorMz = Math.Round(reference.PrecursorMz, 5);
-                    var rtBegin = Math.Max(Math.Round(peak.PeakFeature.ChromXsTop.RT.Value - (float)parameter.MpRtTolerance, 2), 0);
-                    var rtEnd = Math.Round(peak.PeakFeature.ChromXsTop.RT.Value + (float)parameter.MpRtTolerance, 2);
-                    var rt = Math.Round(peak.PeakFeature.ChromXsTop.RT.Value, 2);
-
-                    writer.WriteFieldsBasedOnReference(name, precursorMz, rt, rtBegin, rtEnd, reference, parameter);
+                    writer.WriteFieldsBasedOnReference(peak, reference, parameter);
 
                     if (parameter.MpIsExportOtherCandidates) {
                         var ms2Dec = msdecLoader.LoadMSDecResult(peak.MSDecResultIdUsed);
@@ -256,18 +204,13 @@ namespace CompMs.MsdialCore.Export
                         }
 
                         var query = queryFactory.Create(peak, ms2Dec, Array.Empty<RawPeakElement>(), peak.PeakCharacter, searchParameter);
-                        var candidates = query.FindCandidates().ToArray();
-
+                        var candidates = query.FindCandidates();
                         foreach (var candidate in candidates) {
                             var r = _refer.Refer(candidate);
                             if (r == reference) {
                                 continue;
                             }
-
-                            name = StringReplaceForWindowsAcceptableCharacters(r.Name + "_" + peak.MasterPeakID);
-                            precursorMz = Math.Round(r.PrecursorMz, 5);
-
-                            writer.WriteFieldsBasedOnReference(name, precursorMz, rt, rtBegin, rtEnd, r, parameter);
+                            writer.WriteFieldsBasedOnReference(peak, r, parameter);
                         }
                     }
                 }
@@ -283,14 +226,7 @@ namespace CompMs.MsdialCore.Export
         {
             using (var writer = new MrmprobsReferenceWriter(filepath)) {
                 writer.WriteHeader();
-
-                var name = StringReplaceForWindowsAcceptableCharacters(peakSpot.Name + "_" + peakSpot.MasterPeakID);
-                var precursorMz = Math.Round(peakSpot.PrecursorMz, 5);
-                var rtBegin = Math.Max(Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value - (float)parameter.MpRtTolerance, 2), 0);
-                var rtEnd = Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value + (float)parameter.MpRtTolerance, 2);
-                var rt = Math.Round(peakSpot.PeakFeature.ChromXsTop.RT.Value, 2);
-
-                writer.WriteFieldsBasedOnExperiment(name, precursorMz, rt, rtBegin, rtEnd, ms2DecResult, peakSpot, parameter);
+                writer.WriteFieldsBasedOnExperiment(peakSpot, ms2DecResult, parameter);
             }
         }
 
@@ -302,24 +238,11 @@ namespace CompMs.MsdialCore.Export
         {
             using (var writer = new MrmprobsReferenceWriter(filepath)) {
                 writer.WriteHeader();
-
                 foreach (var peak in peakSpots) {
                     var ms2Dec = loader.LoadMSDecResult(peak.MSDecResultIdUsed);
-
-                    var name = StringReplaceForWindowsAcceptableCharacters(peak.Name + "_" + peak.MasterPeakID);
-                    var precursorMz = Math.Round(peak.PrecursorMz, 5);
-                    var rtBegin = Math.Max(Math.Round(peak.PeakFeature.ChromXsTop.RT.Value - (float)parameter.MpRtTolerance, 2), 0);
-                    var rtEnd = Math.Round(peak.PeakFeature.ChromXsTop.RT.Value + (float)parameter.MpRtTolerance, 2);
-                    var rt = Math.Round(peak.PeakFeature.ChromXsTop.RT.Value, 2);
-
-                    writer.WriteFieldsBasedOnExperiment(name, precursorMz, rt, rtBegin, rtEnd, ms2Dec, peak, parameter);
+                    writer.WriteFieldsBasedOnExperiment(peak, ms2Dec, parameter);
                 }
             }
-        }
-
-        private static string StringReplaceForWindowsAcceptableCharacters(string name) {
-            var chars = Path.GetInvalidFileNameChars();
-            return new string(name.Select(c => chars.Contains(c) ? '_' : c).ToArray());
         }
     }
 

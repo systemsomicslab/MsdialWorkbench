@@ -24,14 +24,12 @@ namespace CompMs.MsdialCore.Export
             _writer.WriteLine(header);
         }
 
-        public void WriteFieldsBasedOnReference(
-            string name,
-            double precursorMz,
-            double rt,
-            double rtBegin,
-            double rtEnd,
-            MoleculeMsReference mspQuery,
-            MrmprobsExportBaseParameter parameter) {
+        public void WriteFieldsBasedOnReference(IChromatogramPeak peak, MoleculeMsReference mspQuery, MrmprobsExportBaseParameter parameter) {
+            var name = StringReplaceForWindowsAcceptableCharacters(mspQuery.Name + "_" + peak.ID);
+            var precursorMz = Math.Round(mspQuery.PrecursorMz, 5);
+            var rtBegin = Math.Max(Math.Round(peak.ChromXs.RT.Value - (float)parameter.MpRtTolerance, 2), 0);
+            var rtEnd = Math.Round(peak.ChromXs.RT.Value + (float)parameter.MpRtTolerance, 2);
+            var rt = Math.Round(peak.ChromXs.RT.Value, 2);
 
             if ((!parameter.MpIsIncludeMsLevel1 || parameter.MpIsUseMs1LevelForQuant) && mspQuery.Spectrum.Count == 0) {
                 return;
@@ -70,15 +68,12 @@ namespace CompMs.MsdialCore.Export
             }
         }
 
-        public void WriteFieldsBasedOnExperiment(
-            string name,
-            double precursorMz,
-            double rt,
-            double rtBegin,
-            double rtEnd,
-            MSDecResult ms2DecResult,
-            IChromatogramPeak peak,
-            MrmprobsExportBaseParameter parameter) {
+        public void WriteFieldsBasedOnExperiment<T>(T peak, MSDecResult ms2DecResult, MrmprobsExportBaseParameter parameter) where T: IChromatogramPeak, IMoleculeProperty {
+            var name = StringReplaceForWindowsAcceptableCharacters(peak.Name + "_" + peak.ID);
+            var precursorMz = Math.Round(peak.Mass, 5);
+            var rtBegin = Math.Max(Math.Round(peak.ChromXs.RT.Value - (float)parameter.MpRtTolerance, 2), 0);
+            var rtEnd = Math.Round(peak.ChromXs.RT.Value + (float)parameter.MpRtTolerance, 2);
+            var rt = Math.Round(peak.ChromXs.RT.Value, 2);
 
             if (!parameter.MpIsIncludeMsLevel1 && ms2DecResult.Spectrum.Count == 0) return;
             if (parameter.MpIsIncludeMsLevel1) {
@@ -136,151 +131,14 @@ namespace CompMs.MsdialCore.Export
             sw.WriteLine(compoundClass);
         }
 
-        public void Dispose() {
-            ((IDisposable)_writer)?.Dispose();
-            _writer = null;
-        }
-    }
-
-    //TODO: Implement this after the development of GCMS is complete
-/*
-    internal sealed class EiMrmprobsExporter {
-        public void ExportSpectraAsMrmprobsFormat(
-            string filepath,
-            List<MSDecResult> ms1DecResults,
-            int focusedMs1DecID,
-            double rtTolerance,
-            double ms1Tolerance,
-            List<MoleculeMsReference> mspDB,
-            int topN,
-            bool isReferenceBase) {
-            using (StreamWriter sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
-                WriteHeaderAsMrmprobsReferenceFormat(sw);
-
-                if (isReferenceBase) {
-                    if (mspDB == null || mspDB.Count == 0) return;
-                    if (focusedMs1DecID == -1) { // it means all of identified spots will be exported.
-                        foreach (var result in ms1DecResults) {
-                            if (result.MspDbID < 0) continue;
-
-                            var compName = MspDataRetrieve.GetCompoundName(result.MspDbID, mspDB);
-                            var probsName = stringReplaceForWindowsAcceptableCharacters(compName + "_" + result.Ms1DecID);
-                            var rtBegin = Math.Max(Math.Round(result.RetentionTime - rtTolerance, 2), 0);
-                            var rtEnd = Math.Round(result.RetentionTime + rtTolerance, 2);
-                            var rt = Math.Round(result.RetentionTime, 2);
-
-                            WriteFieldsAsMrmprobsReferenceFormat(sw, probsName, rt, rtBegin, rtEnd, ms1Tolerance, topN, mspDB[result.MspDbID]);
-                        }
-                    }
-                    else {
-                        var result = ms1DecResults[focusedMs1DecID];
-                        if (result.MspDbID < 0) return;
-                        var compName = MspDataRetrieve.GetCompoundName(result.MspDbID, mspDB);
-                        var probsName = stringReplaceForWindowsAcceptableCharacters(compName + "_" + result.Ms1DecID);
-                        var rtBegin = Math.Max(Math.Round(result.RetentionTime - rtTolerance, 2), 0);
-                        var rtEnd = Math.Round(result.RetentionTime + rtTolerance, 2);
-                        var rt = Math.Round(result.RetentionTime, 2);
-
-                        WriteFieldsAsMrmprobsReferenceFormat(sw, probsName, rt, rtBegin, rtEnd, ms1Tolerance, topN, mspDB[result.MspDbID]);
-                    }
-                }
-                else {
-                    if (focusedMs1DecID == -1) { // it means all of identified spots will be exported.
-                        foreach (var result in ms1DecResults) {
-                            //if (result.MspDbID < 0) continue;
-
-                            var compName = MspDataRetrieve.GetCompoundName(result.MspDbID, mspDB);
-                            var probsName = stringReplaceForWindowsAcceptableCharacters(compName + "_" + result.Ms1DecID);
-                            var rtBegin = Math.Max(Math.Round(result.RetentionTime - rtTolerance, 2), 0);
-                            var rtEnd = Math.Round(result.RetentionTime + rtTolerance, 2);
-                            var rt = Math.Round(result.RetentionTime, 2);
-
-                            WriteFieldsAsMrmprobsReferenceFormat(sw, probsName, rt, rtBegin, rtEnd, ms1Tolerance, topN, result);
-                        }
-                    }
-                    else {
-                        var result = ms1DecResults[focusedMs1DecID];
-                        var compName = MspDataRetrieve.GetCompoundName(result.MspDbID, mspDB);
-                        var probsName = stringReplaceForWindowsAcceptableCharacters(compName + "_" + result.Ms1DecID);
-                        var rtBegin = Math.Max(Math.Round(result.RetentionTime - rtTolerance, 2), 0);
-                        var rtEnd = Math.Round(result.RetentionTime + rtTolerance, 2);
-                        var rt = Math.Round(result.RetentionTime, 2);
-
-                        WriteFieldsAsMrmprobsReferenceFormat(sw, probsName, rt, rtBegin, rtEnd, ms1Tolerance, topN, result);
-                    }
-                }
-            }
-        }
-
-        private static void WriteHeaderAsMrmprobsReferenceFormat(StreamWriter sw) {
-            sw.WriteLine("Compound name\tPrecursor mz\tProduct mz\tRT min\tTQ Ratio\tRT begin\tRT end\tMS1 tolerance\tMS2 tolerance\tMS level\tClass");
-        }
-
         private static string StringReplaceForWindowsAcceptableCharacters(string name) {
             var chars = Path.GetInvalidFileNameChars();
             return new string(name.Select(c => chars.Contains(c) ? '_' : c).ToArray());
         }
 
-        private static void WriteFieldsAsMrmprobsReferenceFormat(
-            StreamWriter sw,
-            string name,
-            double rt,
-            double rtBegin,
-            double rtEnd,
-            double ms1Tolerance,
-            int topN,
-            MoleculeMsReference mspLib)
-        {
-            if (mspLib.Spectrum.Count == 0) return;
-            var massSpec = mspLib.Spectrum.OrderByDescending(n => n.Intensity).ToList();
-
-            var quantMass = Math.Round(massSpec[0].Mass, 4);
-            var quantIntensity = massSpec[0].Intensity;
-
-            WriteAsMrmprobsReferenceFormat(sw, name, quantMass, quantMass, rt, 100, rtBegin, rtEnd, ms1Tolerance, ms1Tolerance, 1, "NA");
-
-            for (int i = 1; i < massSpec.Count; i++) {
-
-                if (i > topN - 1) break;
-
-                var mass = Math.Round(massSpec[i].Mass, 4);
-                var intensity = massSpec[i].Intensity;
-
-                if (Math.Abs(mass - quantMass) < ms1Tolerance) continue;
-
-                var tqRatio = Math.Round(intensity / quantIntensity * 100, 0);
-                if (tqRatio < 0.5) tqRatio = 1;
-                if (tqRatio == 100) tqRatio = 99; // 100 is used just once for the target (quantified) m/z trace. Otherwise, non-100 value should be used.
-                WriteAsMrmprobsReferenceFormat(sw, name, mass, mass, rt, tqRatio, rtBegin, rtEnd, ms1Tolerance, ms1Tolerance, 1, "NA");
-            }
-        }
-
-        private static void WriteAsMrmprobsReferenceFormat(
-            StreamWriter sw,
-            string name,
-            double precursorMz,
-            double productMz,
-            double rt,
-            double tqRatio,
-            double rtBegin,
-            double rtEnd,
-            double ms1Tolerance,
-            double ms2Tolerance,
-            int msLevel,
-            string compoundClass)
-        {
-            sw.Write(name + "\t");
-            sw.Write(precursorMz + "\t");
-            sw.Write(productMz + "\t");
-            sw.Write(rt + "\t");
-            sw.Write(tqRatio + "\t");
-            sw.Write(rtBegin + "\t");
-            sw.Write(rtEnd + "\t");
-            sw.Write(ms1Tolerance + "\t");
-            sw.Write(ms2Tolerance + "\t");
-            sw.Write(msLevel + "\t");
-            sw.WriteLine(compoundClass);
+        public void Dispose() {
+            ((IDisposable)_writer)?.Dispose();
+            _writer = null;
         }
     }
-*/
 }
