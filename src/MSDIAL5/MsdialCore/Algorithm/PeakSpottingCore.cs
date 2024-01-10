@@ -77,6 +77,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 _parameter.MassSliceWidth = .5f;
                 startMass = (float)Math.Floor(startMass);
                 endMass = (float)Math.Ceiling(endMass);
+                focusedMass = startMass;
             }
             var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, file.AcquisitionType);
             var detector = new PeakDetection(_parameter.MinimumDatapoints, _parameter.MinimumAmplitude);
@@ -115,6 +116,8 @@ namespace CompMs.MsdialCore.Algorithm {
             if (_parameter.AccuracyType == AccuracyType.IsNominal) {
                 massStep = 1.0F;
                 _parameter.MassSliceWidth = .5f;
+                startMass = (float)Math.Floor(startMass);
+                endMass = (float)Math.Ceiling(endMass);
                 mzRange = ((float)Math.Floor(mzRange.Min), (float)Math.Ceiling(mzRange.Max));
             }
 
