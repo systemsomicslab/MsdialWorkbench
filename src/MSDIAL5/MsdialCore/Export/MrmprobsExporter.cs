@@ -18,10 +18,16 @@ namespace CompMs.MsdialCore.Export
 
     }
 
-    internal sealed class EsiMrmprobsExporter
+    public sealed class EsiMrmprobsExporter
     {
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+
+        public EsiMrmprobsExporter(IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer)
+        {
+            _evaluator = evaluator;
+            _refer = refer;
+        }
 
         public void ExportReferenceMsms<T>(string filepath, T peakSpot, MrmprobsExportBaseParameter parameter) where T: IChromatogramPeak, IAnnotatedObject {
             using (var writer = new MrmprobsReferenceWriter(filepath)) {
