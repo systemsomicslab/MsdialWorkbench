@@ -42,26 +42,26 @@
             <TextBox Text="{Binding ExportFilePath.Value}" VerticalContentAlignment="Center" Margin="4"/>
         </DockPanel>
 
-        <GroupBox DataContext="{Binding ExportParameter}" BorderThickness="0" Padding="8" Grid.Row="1">
+        <GroupBox BorderThickness="0" Padding="8" Grid.Row="1">
             <GroupBox.Header>
                 <Italic>Export parameters:</Italic>
             </GroupBox.Header>
 
             <StackPanel>
                 <ui:LabeledContent PrependLabel="MS1 mass tolerance:" AppendLabel="Da">
-                    <TextBox Text="{Binding Ms1Tolerance.Value}"/>
+                    <TextBox Text="{Binding ExportParameter.Ms1Tolerance.Value}"/>
                 </ui:LabeledContent>
                 <ui:LabeledContent PrependLabel="MS2 mass tolerance:" AppendLabel="Da">
-                    <TextBox Text="{Binding Ms2Tolerance.Value}"/>
+                    <TextBox Text="{Binding ExportParameter.Ms2Tolerance.Value}"/>
                 </ui:LabeledContent>
                 <ui:LabeledContent PrependLabel="Retention time tolerance:" AppendLabel="min">
-                    <TextBox Text="{Binding RtTolerance.Value}"/>
+                    <TextBox Text="{Binding ExportParameter.RtTolerance.Value}"/>
                 </ui:LabeledContent>
                 <ui:LabeledContent PrependLabel="Top N peaks export:">
-                    <TextBox Text="{Binding TopN.Value}"/>
+                    <TextBox Text="{Binding ExportParameter.TopN.Value}"/>
                 </ui:LabeledContent>
                 <ui:LabeledContent PrependLabel="Export other significant candidates:">
-                    <CheckBox IsChecked="{Binding ExportOtherCandidates.Value}" VerticalContentAlignment="Center"/>
+                    <CheckBox IsChecked="{Binding ExportParameter.ExportOtherCandidates.Value}" VerticalContentAlignment="Center"/>
                     <ui:LabeledContent.ToolTip>
                         <TextBlock>
                             If checked, all other candidates having more than an identification score are exported.<LineBreak />
@@ -69,9 +69,14 @@
                         </TextBlock>
                     </ui:LabeledContent.ToolTip>
                 </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="Identification method"
+                                   IsEnabled="{Binding ExportParameter.ExportOtherCandidates.Value}">
+                    <ComboBox ItemsSource="{Binding ExportUsecase.CompoundSearchers.Items}"
+                              SelectedItem="{Binding ExportUsecase.SelectedCompoundSearcher}"/>
+                </ui:LabeledContent>
                 <ui:LabeledContent PrependLabel="Identification score cut off (%)"
-                                   IsEnabled="{Binding ExportOtherCandidates.Value}">
-                    <TextBox Text="{Binding IdentificationScoreCutOff.Value}"/>
+                                   IsEnabled="{Binding ExportParameter.ExportOtherCandidates.Value}">
+                    <TextBox Text="{Binding ExportParameter.IdentificationScoreCutOff.Value}"/>
                 </ui:LabeledContent>
             </StackPanel>
         </GroupBox>

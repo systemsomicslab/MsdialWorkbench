@@ -38,6 +38,8 @@ namespace CompMs.App.Msdial.ViewModel.Export
 
         public MrmprobsExportParameterViewModel ExportParameter { get; }
 
+        public IExportMrmprobsUsecase ExportUsecase => _model.ExportUsecase;
+
         public override ICommand FinishCommand => _exportCommand;
     }
 }
