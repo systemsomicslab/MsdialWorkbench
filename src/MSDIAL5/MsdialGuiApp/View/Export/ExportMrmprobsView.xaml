@@ -4,10 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Export"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Export"
              xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
              mc:Ignorable="d" 
              d:Background="White"
-             d:DesignHeight="480" d:DesignWidth="560">
+             d:DesignHeight="480" d:DesignWidth="560"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:ExportMrmprobsViewModel}}">
     <UserControl.Resources>
         <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml">
             <Style TargetType="{x:Type ui:LabeledContent}" BasedOn="{StaticResource AlignedContent}">
@@ -26,32 +28,37 @@
             <RowDefinition Height="Auto" MaxHeight="160"/>
         </Grid.RowDefinitions>
 
-        <ui:ExecutableBar Label="Save as:" LabelWidth="64"
-                          ButtonContent="Browse"
-                          Margin="8,0" Grid.Row="0">
-            <TextBox Margin="4"/>
-        </ui:ExecutableBar>
+        <DockPanel IsEnabled="{Binding Copy.Value, Converter={StaticResource NegativeConverter}}"
+                   Margin="8,0" Grid.Row="0">
+            <TextBlock Text="Save as:" FontSize="14"
+                       Width="64" VerticalAlignment="Center"
+                       DockPanel.Dock="Left"/>
+            <Button Content="Browse"
+                    Width="64" Height="32" VerticalAlignment="Center"
+                    DockPanel.Dock="Right"/>
+            <TextBox Text="{Binding ExportFilePath.Value}" VerticalContentAlignment="Center" Margin="4"/>
+        </DockPanel>
 
-        <GroupBox BorderThickness="0" Padding="8" Grid.Row="1">
+        <GroupBox DataContext="{Binding ExportParameter}" BorderThickness="0" Padding="8" Grid.Row="1">
             <GroupBox.Header>
                 <Italic>Export parameters:</Italic>
             </GroupBox.Header>
 
             <StackPanel>
                 <ui:LabeledContent PrependLabel="MS1 mass tolerance:" AppendLabel="Da">
-                    <TextBox/>
+                    <TextBox Text="{Binding Ms1Tolerance.Value}"/>
                 </ui:LabeledContent>
                 <ui:LabeledContent PrependLabel="MS2 mass tolerance:" AppendLabel="Da">
-                    <TextBox/>
+                    <TextBox Text="{Binding Ms2Tolerance.Value}"/>
                 </ui:LabeledContent>
                 <ui:LabeledContent PrependLabel="Retention time tolerance:" AppendLabel="min">
-                    <TextBox/>
+                    <TextBox Text="{Binding RtTolerance.Value}"/>
                 </ui:LabeledContent>
                 <ui:LabeledContent PrependLabel="Top N peaks export:">
-                    <TextBox/>
+                    <TextBox Text="{Binding TopN.Value}"/>
                 </ui:LabeledContent>
                 <ui:LabeledContent PrependLabel="Export other significant candidates:">
-                    <CheckBox/>
+                    <CheckBox IsChecked="{Binding ExportOtherCandidates.Value}"/>
                     <ui:LabeledContent.ToolTip>
                         <TextBlock>
                             If checked, all other candidates having more than an identification score are exported.<LineBreak />
@@ -59,25 +66,30 @@
                         </TextBlock>
                     </ui:LabeledContent.ToolTip>
                 </ui:LabeledContent>
-                <ui:LabeledContent PrependLabel="Identification score cut off (%)">
-                    <TextBox/>
+                <ui:LabeledContent PrependLabel="Identification score cut off (%)"
+                                   IsEnabled="{Binding ExportOtherCandidates.Value}">
+                    <TextBox Text="{Binding IdentificationScoreCutOff.Value}"/>
                 </ui:LabeledContent>
             </StackPanel>
         </GroupBox>
 
-        <GroupBox BorderThickness="0" Padding="8" Grid.Row="2">
+        <GroupBox DataContext="{Binding ExportParameter}" BorderThickness="0" Padding="8" Grid.Row="2">
             <GroupBox.Header>
                 <Italic>Options:</Italic>
             </GroupBox.Header>
 
             <StackPanel>
                 <CheckBox Content="Include MS1 sequence as the reference output"
+                          IsChecked="{Binding IncludeMsLevel1.Value}"
                           ToolTip="MS1 information will be also included in this output."/>
                 <CheckBox Content="Use MS1 sequence as the quant mass of target metabolite"
+                          IsChecked="{Binding UseMs1LevelForQuant.Value}"
                           ToolTip="Ion abundance of MS1 information will be set as the quant mass in reference."/>
                 <CheckBox Content="Export the focused (target) peak spot"
+                          IsChecked="{Binding FocusedSpotOutput.Value}"
                           ToolTip="If unchecked, all of identified spots are exported."/>
                 <CheckBox Content="Use reference spectrum to make MRMPROBS library"
+                          IsChecked="{Binding ReferenceBaseOutput.Value}"
                           ToolTip="If unchecked, the experimental spectrum is used as the output."/>
             </StackPanel>
         </GroupBox>
