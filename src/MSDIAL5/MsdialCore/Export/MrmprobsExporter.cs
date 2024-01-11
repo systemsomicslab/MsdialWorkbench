@@ -8,7 +8,8 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 
@@ -29,8 +30,8 @@ namespace CompMs.MsdialCore.Export
             _refer = refer;
         }
 
-        public void ExportReferenceMsms<T>(string filepath, T peakSpot, MrmprobsExportBaseParameter parameter) where T: IChromatogramPeak, IAnnotatedObject {
-            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+        public void ExportReferenceMsms<T>(Stream stream, T peakSpot, MrmprobsExportBaseParameter parameter) where T: IChromatogramPeak, IAnnotatedObject {
+            using (var writer = new MrmprobsReferenceWriter(stream, leaveOpen: true)) {
                 writer.WriteHeader();
                 if (!peakSpot.MatchResults.IsReferenceMatched(_evaluator)) {
                     return;
@@ -40,8 +41,8 @@ namespace CompMs.MsdialCore.Export
             }
         }
 
-        public void ExportReferenceMsms(string filepath, ObservableCollection<AlignmentSpotProperty> alignedSpots, MrmprobsExportBaseParameter parameter) {
-            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+        public void ExportReferenceMsms(Stream stream, IReadOnlyList<AlignmentSpotProperty> alignedSpots, MrmprobsExportBaseParameter parameter) {
+            using (var writer = new MrmprobsReferenceWriter(stream, leaveOpen: true)) {
                 writer.WriteHeader();
                 foreach (var spot in alignedSpots) {
                     if (!string.IsNullOrEmpty(spot.Comment) && spot.Comment.IndexOf("unk", StringComparison.OrdinalIgnoreCase) >= 0) {
@@ -56,8 +57,8 @@ namespace CompMs.MsdialCore.Export
             }
         }
 
-        public void ExportReferenceMsms(string filepath, ObservableCollection<ChromatogramPeakFeature> peakSpots, MrmprobsExportBaseParameter parameter) {
-            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+        public void ExportReferenceMsms(Stream stream, IReadOnlyList<ChromatogramPeakFeature> peakSpots, MrmprobsExportBaseParameter parameter) {
+            using (var writer = new MrmprobsReferenceWriter(stream, leaveOpen: true)) {
                 writer.WriteHeader();
                 foreach (var peak in peakSpots) {
                     if (!peak.MatchResults.IsReferenceMatched(_evaluator)) {
@@ -70,7 +71,7 @@ namespace CompMs.MsdialCore.Export
         }
 
         public void ExportReferenceMsms(
-            string filepath,
+            Stream stream,
             AlignmentSpotProperty alignedSpot,
             MrmprobsExportBaseParameter parameter,
             IAnnotationQueryFactory<MsScanMatchResult> queryFactory,
@@ -81,7 +82,7 @@ namespace CompMs.MsdialCore.Export
                 searchParameter.TotalScoreCutoff = parameter.MpIdentificationScoreCutOff;
             }
 
-            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+            using (var writer = new MrmprobsReferenceWriter(stream, leaveOpen: true)) {
                 writer.WriteHeader();
                 if (!alignedSpot.MatchResults.IsReferenceMatched(_evaluator)) return;
 
@@ -110,7 +111,7 @@ namespace CompMs.MsdialCore.Export
         }
 
         public void ExportReferenceMsms(
-            string filepath,
+            Stream stream,
             ChromatogramPeakFeature peakSpot,
             MrmprobsExportBaseParameter parameter,
             IAnnotationQueryFactory<MsScanMatchResult> queryFactory,
@@ -121,7 +122,7 @@ namespace CompMs.MsdialCore.Export
                 searchParameter.TotalScoreCutoff = parameter.MpIdentificationScoreCutOff;
             }
 
-            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+            using (var writer = new MrmprobsReferenceWriter(stream, leaveOpen: true)) {
                 writer.WriteHeader();
 
                 if (!peakSpot.MatchResults.IsReferenceMatched(_evaluator)) return;
@@ -152,8 +153,8 @@ namespace CompMs.MsdialCore.Export
         }
 
         public void ExportReferenceMsms(
-            string filepath,
-            ObservableCollection<AlignmentSpotProperty> alignedSpots,
+            Stream stream,
+            IReadOnlyList<AlignmentSpotProperty> alignedSpots,
             MrmprobsExportBaseParameter parameter,
             IAnnotationQueryFactory<MsScanMatchResult> queryFactory,
             MSDecLoader msdecLoader,
@@ -163,7 +164,7 @@ namespace CompMs.MsdialCore.Export
                 searchParameter.TotalScoreCutoff = parameter.MpIdentificationScoreCutOff;
             }
 
-            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+            using (var writer = new MrmprobsReferenceWriter(stream, leaveOpen: true)) {
                 writer.WriteHeader();
 
                 foreach (var spot in alignedSpots) {
@@ -196,8 +197,8 @@ namespace CompMs.MsdialCore.Export
         }
 
         public void ExportReferenceMsms(
-            string filepath,
-            ObservableCollection<ChromatogramPeakFeature> peakSpots,
+            Stream stream,
+            IReadOnlyList<ChromatogramPeakFeature> peakSpots,
             MrmprobsExportBaseParameter parameter,
             IAnnotationQueryFactory<MsScanMatchResult> queryFactory,
             MSDecLoader msdecLoader,
@@ -206,7 +207,7 @@ namespace CompMs.MsdialCore.Export
             if (parameter.MpIsExportOtherCandidates) {
                 searchParameter.TotalScoreCutoff = parameter.MpIdentificationScoreCutOff;
             }
-            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+            using (var writer = new MrmprobsReferenceWriter(stream, leaveOpen: true)) {
                 writer.WriteHeader();
 
                 foreach (var peak in peakSpots) {
@@ -237,36 +238,36 @@ namespace CompMs.MsdialCore.Export
         }
 
         public void ExportExperimentalMsms(
-            string filepath,
+            Stream stream,
             AlignmentSpotProperty spotProp,
             MSDecResult ms2DecResult,
             MrmprobsExportBaseParameter parameter) {
 
-            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+            using (var writer = new MrmprobsReferenceWriter(stream, leaveOpen: true)) {
                 writer.WriteHeader();
                 writer.WriteFieldsBasedOnExperiment(spotProp, ms2DecResult, parameter);
             }
         }
 
         public void ExportExperimentalMsms(
-            string filepath,
+            Stream stream,
             ChromatogramPeakFeature peakSpot,
             MSDecResult ms2DecResult,
             MrmprobsExportBaseParameter parameter)
         {
-            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+            using (var writer = new MrmprobsReferenceWriter(stream, leaveOpen: true)) {
                 writer.WriteHeader();
                 writer.WriteFieldsBasedOnExperiment(peakSpot, ms2DecResult, parameter);
             }
         }
 
         public void ExportExperimentalMsms(
-            string filepath,
-            ObservableCollection<AlignmentSpotProperty> alignmentSpots,
+            Stream stream,
+            IReadOnlyList<AlignmentSpotProperty> alignmentSpots,
             MSDecLoader msdecLoader,
             MrmprobsExportBaseParameter parameter)
         {
-            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+            using (var writer = new MrmprobsReferenceWriter(stream, leaveOpen: true)) {
                 writer.WriteHeader();
                 foreach (var spot in alignmentSpots) {
                     var ms2Dec = msdecLoader.LoadMSDecResult(spot.MSDecResultIdUsed);
@@ -275,13 +276,13 @@ namespace CompMs.MsdialCore.Export
             }
         }
 
-        public static void ExportExperimentalMsms(
-            string filepath,
-            ObservableCollection<ChromatogramPeakFeature> peakSpots,
+        public void ExportExperimentalMsms(
+            Stream stream,
+            IReadOnlyList<ChromatogramPeakFeature> peakSpots,
             MSDecLoader loader,
             MrmprobsExportBaseParameter parameter)
         {
-            using (var writer = new MrmprobsReferenceWriter(filepath)) {
+            using (var writer = new MrmprobsReferenceWriter(stream, leaveOpen: true)) {
                 writer.WriteHeader();
                 foreach (var peak in peakSpots) {
                     var ms2Dec = loader.LoadMSDecResult(peak.MSDecResultIdUsed);

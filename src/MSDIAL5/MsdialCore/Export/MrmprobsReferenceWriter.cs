@@ -19,6 +19,11 @@ namespace CompMs.MsdialCore.Export
             _writer = new StreamWriter(file, false, Encoding.ASCII);
         }
 
+        public MrmprobsReferenceWriter(Stream stream, bool leaveOpen)
+        {
+            _writer = new StreamWriter(stream, Encoding.ASCII, 4096, leaveOpen);
+        }
+
         public void WriteHeader() {
             const string header = "Compound name\tPrecursor mz\tProduct mz\tRT min\tTQ Ratio\tRT begin\tRT end\tMS1 tolerance\tMS2 tolerance\tMS level\tClass";
             _writer.WriteLine(header);
