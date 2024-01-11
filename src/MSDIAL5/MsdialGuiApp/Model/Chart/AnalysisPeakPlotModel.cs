@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Export;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Base;
@@ -107,5 +108,14 @@ namespace CompMs.App.Msdial.Model.Chart
         public ObservableCollection<SpotAnnotator> Annotations => _peakLinkModel.Annotations;
         public IBrushMapper<ISpotLinker> LinkerBrush => _peakLinkModel.LinkerBrush;
         public IBrushMapper<SpotAnnotator> SpotLabelBrush => _peakLinkModel.SpotLabelBrush;
+
+        public IExportMrmprobsUsecase ExportMrmprobs { get; set; }
+
+        public ExportMrmprobsModel ExportMrmprobsModel() {
+            if (ExportMrmprobs is null) {
+                return null;
+            }
+            return new ExportMrmprobsModel(ExportMrmprobs);
+        }
     }
 }

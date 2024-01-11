@@ -109,6 +109,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildSettingDialog<ProjectPropertySettingView>("Project property setting", height: 400, width: 400));
             broker.ToObservable<ICompoundSearchViewModel>()
                 .Subscribe(ShowChildDialog<CompoundSearchWindow>);
+            broker.ToObservable<ExportMrmprobsViewModel>()
+                .Subscribe(ShowChildSettingDialog<ExportMrmprobsView>("MRMPROBS reference library export", height: 560, width: 560, finishCommandContent: "Export"));
             /*
             broker.ToObservable<PeakSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<AlignmentSpotTable>);
@@ -181,7 +183,8 @@ namespace CompMs.App.Msdial.View.Core
             view.ShowDialog();
         }
 
-        private Action<object> ShowChildSettingDialog<TView>(string title, double height, double width) where TView: FrameworkElement, new() {
+        private Action<object> ShowChildSettingDialog<TView>(string title, double height, double width, object finishCommandContent = null)
+            where TView: FrameworkElement, new() {
             void InnerShowDialog(object viewmodel) {
                 var dialog = new SettingDialog
                 {
@@ -192,6 +195,9 @@ namespace CompMs.App.Msdial.View.Core
                     DataContext = viewmodel,
                     Content = new TView(),
                 };
+                if (finishCommandContent != null) {
+                    dialog.FinishCommandContent = finishCommandContent;
+                }
                 dialog.ShowDialog();
             }
             return InnerShowDialog;

@@ -42,10 +42,10 @@ namespace CompMs.App.Msdial.Model.Export
             if (Copy) {
                 var stream = new MemoryStream();
                 if (ExportParameter.MpIsFocusedSpotOutput) {
-                    await _exportUsecase.ExportAsync(stream, token).ConfigureAwait(false);
+                    await _exportUsecase.ExportAsync(stream, token);
                 }
                 else {
-                    await _exportUsecase.BatchExportAsync(stream, token).ConfigureAwait(false);
+                    await _exportUsecase.BatchExportAsync(stream, token);
                 }
                 Clipboard.SetText(Encoding.ASCII.GetString(stream.ToArray()), TextDataFormat.Text);
             }
@@ -111,7 +111,7 @@ namespace CompMs.App.Msdial.Model.Export
             else if (ExportParameter.MpIsExportOtherCandidates && SelectedCompoundSearcher != null) {
                 var queryFactory = SelectedCompoundSearcher.QueryFactory;
                 var searchParameter = queryFactory.PrepareParameter();
-                searchParameter.TotalScoreCutoff = ExportParameter.MpIdentificationScoreCutOff;
+                searchParameter.TotalScoreCutoff = ExportParameter.MpIdentificationScoreCutOff / 100;
                 await Task.Run(() => _exporter.ExportReferenceMsms(stream, spots, ExportParameter, queryFactory, loader, searchParameter), token).ConfigureAwait(false);
             }
             else {
@@ -128,7 +128,7 @@ namespace CompMs.App.Msdial.Model.Export
             else if (ExportParameter.MpIsExportOtherCandidates && SelectedCompoundSearcher != null) {
                 var queryFactory = SelectedCompoundSearcher.QueryFactory;
                 var searchParameter = queryFactory.PrepareParameter();
-                searchParameter.TotalScoreCutoff = ExportParameter.MpIdentificationScoreCutOff;
+                searchParameter.TotalScoreCutoff = ExportParameter.MpIdentificationScoreCutOff / 100;
                 await Task.Run(() => _exporter.ExportReferenceMsms(stream, _target.Value.innerModel, ExportParameter, queryFactory, loader, searchParameter), token).ConfigureAwait(false);
             }
             else {

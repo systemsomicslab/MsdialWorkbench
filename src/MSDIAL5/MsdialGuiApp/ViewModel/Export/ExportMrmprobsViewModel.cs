@@ -19,14 +19,14 @@ namespace CompMs.App.Msdial.ViewModel.Export
 
             Copy = model.ObserveProperty(m => m.Copy).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             ExportFilePath = model.ToReactivePropertyAsSynchronized(m => m.ExportFilePath)
-                .SetValidateNotifyError(f => Directory.GetParent(f).Exists ? null : "This folder does not exist")
+                .SetValidateNotifyError(f => f != null && Directory.GetParent(f).Exists ? null : "This folder does not exist")
                 .AddTo(Disposables);
             ExportParameter = new MrmprobsExportParameterViewModel(model.ExportParameter).AddTo(Disposables);
 
             var ok = new[]
             {
-                ExportFilePath.ObserveHasErrors,
-                Copy.Select(p => p ? Observable.Return(false) : ExportParameter.ObserveHasErrors).Switch(),
+                ExportParameter.ObserveHasErrors,
+                Copy.Select(p => p ? Observable.Return(false) : ExportFilePath.ObserveHasErrors).Switch(),
             }.CombineLatestValuesAreAllFalse();
 
             _exportCommand = ok.ToAsyncReactiveCommand().WithSubscribe(() => model.ExportAsync(default)).AddTo(Disposables);

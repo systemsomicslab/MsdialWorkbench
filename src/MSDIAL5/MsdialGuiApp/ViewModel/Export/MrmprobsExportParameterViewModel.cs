@@ -42,8 +42,8 @@ namespace CompMs.App.Msdial.ViewModel.Export
             ExportOtherCandidates = model.ToReactivePropertySlimAsSynchronized(m => m.MpIsExportOtherCandidates).AddTo(Disposables);
             IdentificationScoreCutOff = model.ToReactivePropertyAsSynchronized(
                 m => m.MpIdentificationScoreCutOff,
-                op => op.Select(p => (p * 100f).ToString()),
-                op => op.Select(p => float.Parse(p) / 100f),
+                op => op.Select(p => p.ToString()),
+                op => op.Select(p => float.Parse(p)),
                 ignoreValidationErrorValue: true)
                 .SetValidateAttribute(() => IdentificationScoreCutOff)
                 .AddTo(Disposables);

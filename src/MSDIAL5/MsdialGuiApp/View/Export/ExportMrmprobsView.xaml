@@ -11,7 +11,10 @@
              d:DesignHeight="480" d:DesignWidth="560"
              d:DataContext="{d:DesignInstance Type={x:Type vm:ExportMrmprobsViewModel}}">
     <UserControl.Resources>
-        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml">
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
             <Style TargetType="{x:Type ui:LabeledContent}" BasedOn="{StaticResource AlignedContent}">
                 <Setter Property="Height" Value="32"/>
             </Style>
@@ -58,7 +61,7 @@
                     <TextBox Text="{Binding TopN.Value}"/>
                 </ui:LabeledContent>
                 <ui:LabeledContent PrependLabel="Export other significant candidates:">
-                    <CheckBox IsChecked="{Binding ExportOtherCandidates.Value}"/>
+                    <CheckBox IsChecked="{Binding ExportOtherCandidates.Value}" VerticalContentAlignment="Center"/>
                     <ui:LabeledContent.ToolTip>
                         <TextBlock>
                             If checked, all other candidates having more than an identification score are exported.<LineBreak />
