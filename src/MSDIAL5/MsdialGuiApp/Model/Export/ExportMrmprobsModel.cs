@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -8,6 +7,7 @@ using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +20,7 @@ namespace CompMs.App.Msdial.Model.Export
 
         public ExportMrmprobsModel(IExportMrmprobsUsecase exportUsecase) {
             _exportUsecase = exportUsecase;
+            ExportParameter = new MrmprobsExportParameterModel(exportUsecase.ExportParameter);
         }
 
         public bool Copy {
@@ -73,7 +74,6 @@ namespace CompMs.App.Msdial.Model.Export
         private readonly AlignmentSpotSource _spots;
         private readonly AlignmentFileBeanModel _alignmentFile;
         private readonly IAnnotationQueryFactory<MsScanMatchResult> _queryFactory;
-        private readonly IReadOnlyList<CompoundSearcher> _compoundSearchers;
         private readonly EsiMrmprobsExporter _exporter;
         private readonly IReadOnlyReactiveProperty<AlignmentSpotPropertyModel> _target;
 
@@ -95,28 +95,101 @@ namespace CompMs.App.Msdial.Model.Export
 
         public MrmprobsExportBaseParameter ExportParameter { get; }
 
-        public Task BatchExportAsync(Stream stream, CancellationToken token) {
-            throw new System.NotImplementedException();
-        }
-
-        public Task ExportAsync(Stream stream, CancellationToken token) {
+        public async Task BatchExportAsync(Stream stream, CancellationToken token) {
             var loader = _alignmentFile.CreateTemporaryMSDecLoader();
+            var spots = _spots.Spots.Items.Select(s => s.innerModel).ToArray();
             if (ExportParameter.MpIsFocusedSpotOutput) {
-                var msdec = loader.LoadMSDecResult(_target.Value.innerModel.MSDecResultIdUsed);
-                _exporter.ExportExperimentalMsms(string.Empty, _target.Value.innerModel, msdec, ExportParameter);
+                await Task.Run(() => _exporter.ExportExperimentalMsms(stream, spots, loader, ExportParameter), token).ConfigureAwait(false);
             }
             else if (ExportParameter.MpIsExportOtherCandidates) {
                 var searchParameter = _queryFactory.PrepareParameter();
                 searchParameter.TotalScoreCutoff = ExportParameter.MpIdentificationScoreCutOff;
-                _exporter.ExportReferenceMsms(string.Empty, _target.Value.innerModel, ExportParameter, _queryFactory, loader, searchParameter);
+                await Task.Run(() => _exporter.ExportReferenceMsms(stream, spots, ExportParameter, _queryFactory, loader, searchParameter), token).ConfigureAwait(false);
             }
             else {
                 var searchParameter = _queryFactory.PrepareParameter();
                 searchParameter.TotalScoreCutoff = ExportParameter.MpIdentificationScoreCutOff;
-                _exporter.ExportReferenceMsms(string.Empty, _target.Value.innerModel, ExportParameter, _queryFactory, loader, searchParameter);
-
+                await Task.Run(() => _exporter.ExportReferenceMsms(stream, spots, ExportParameter), token).ConfigureAwait(false);
             }
-            return Task.CompletedTask;
+        }
+
+        public async Task ExportAsync(Stream stream, CancellationToken token) {
+            var loader = _alignmentFile.CreateTemporaryMSDecLoader();
+            if (ExportParameter.MpIsFocusedSpotOutput) {
+                var msdec = loader.LoadMSDecResult(_target.Value.innerModel.MSDecResultIdUsed);
+                await Task.Run(() => _exporter.ExportExperimentalMsms(stream, _target.Value.innerModel, msdec, ExportParameter), token).ConfigureAwait(false);
+            }
+            else if (ExportParameter.MpIsExportOtherCandidates) {
+                var searchParameter = _queryFactory.PrepareParameter();
+                searchParameter.TotalScoreCutoff = ExportParameter.MpIdentificationScoreCutOff;
+                await Task.Run(() => _exporter.ExportReferenceMsms(stream, _target.Value.innerModel, ExportParameter, _queryFactory, loader, searchParameter), token).ConfigureAwait(false);
+            }
+            else {
+                var searchParameter = _queryFactory.PrepareParameter();
+                searchParameter.TotalScoreCutoff = ExportParameter.MpIdentificationScoreCutOff;
+                await Task.Run(() => _exporter.ExportReferenceMsms(stream, _target.Value.innerModel, ExportParameter), token).ConfigureAwait(false);
+            }
+        }
+    }
+
+    internal sealed class ChromatogramPeakExportMrmprobsUsecase : IExportMrmprobsUsecase
+    {
+        private readonly IReadOnlyList<ChromatogramPeakFeatureModel> _peaks;
+        private readonly AnalysisFileBeanModel _analysisFile;
+        private readonly IAnnotationQueryFactory<MsScanMatchResult> _queryFactory;
+        private readonly EsiMrmprobsExporter _exporter;
+        private readonly IReadOnlyReactiveProperty<ChromatogramPeakFeatureModel> _target;
+
+        public ChromatogramPeakExportMrmprobsUsecase(
+            MrmprobsExportBaseParameter parameter,
+            IReadOnlyList<ChromatogramPeakFeatureModel> peaks,
+            AnalysisFileBeanModel analysisFile,
+            IAnnotationQueryFactory<MsScanMatchResult> queryFactory,
+            EsiMrmprobsExporter exporter,
+            IReadOnlyReactiveProperty<ChromatogramPeakFeatureModel> target)
+        {
+            ExportParameter = parameter;
+            _peaks = peaks;
+            _analysisFile = analysisFile;
+            _queryFactory = queryFactory;
+            _exporter = exporter;
+            _target = target;
+        }
+
+        public MrmprobsExportBaseParameter ExportParameter { get; }
+
+        public async Task BatchExportAsync(Stream stream, CancellationToken token) {
+            var spots = _peaks.Select(s => s.InnerModel).ToArray();
+            if (ExportParameter.MpIsFocusedSpotOutput) {
+                await Task.Run(() => _exporter.ExportExperimentalMsms(stream, spots, _analysisFile.MSDecLoader, ExportParameter), token).ConfigureAwait(false);
+            }
+            else if (ExportParameter.MpIsExportOtherCandidates) {
+                var searchParameter = _queryFactory.PrepareParameter();
+                searchParameter.TotalScoreCutoff = ExportParameter.MpIdentificationScoreCutOff;
+                await Task.Run(() => _exporter.ExportReferenceMsms(stream, spots, ExportParameter, _queryFactory, _analysisFile.MSDecLoader, searchParameter), token).ConfigureAwait(false);
+            }
+            else {
+                var searchParameter = _queryFactory.PrepareParameter();
+                searchParameter.TotalScoreCutoff = ExportParameter.MpIdentificationScoreCutOff;
+                await Task.Run(() => _exporter.ExportReferenceMsms(stream, spots, ExportParameter), token).ConfigureAwait(false);
+            }
+        }
+
+        public async Task ExportAsync(Stream stream, CancellationToken token) {
+            if (ExportParameter.MpIsFocusedSpotOutput) {
+                var msdec = _analysisFile.MSDecLoader.LoadMSDecResult(_target.Value.InnerModel.MSDecResultIdUsed);
+                await Task.Run(() => _exporter.ExportExperimentalMsms(stream, _target.Value.InnerModel, msdec, ExportParameter), token).ConfigureAwait(false);
+            }
+            else if (ExportParameter.MpIsExportOtherCandidates) {
+                var searchParameter = _queryFactory.PrepareParameter();
+                searchParameter.TotalScoreCutoff = ExportParameter.MpIdentificationScoreCutOff;
+                await Task.Run(() => _exporter.ExportReferenceMsms(stream, _target.Value.InnerModel, ExportParameter, _queryFactory, _analysisFile.MSDecLoader, searchParameter), token).ConfigureAwait(false);
+            }
+            else {
+                var searchParameter = _queryFactory.PrepareParameter();
+                searchParameter.TotalScoreCutoff = ExportParameter.MpIdentificationScoreCutOff;
+                await Task.Run(() => _exporter.ExportReferenceMsms(stream, _target.Value.InnerModel, ExportParameter), token).ConfigureAwait(false);
+            }
         }
     }
 }
