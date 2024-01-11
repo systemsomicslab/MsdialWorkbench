@@ -37,9 +37,11 @@
                        Width="64" VerticalAlignment="Center"
                        DockPanel.Dock="Left"/>
             <Button Content="Browse"
+                    Click="BrowseFile"
                     Width="64" Height="32" VerticalAlignment="Center"
                     DockPanel.Dock="Right"/>
-            <TextBox Text="{Binding ExportFilePath.Value}" VerticalContentAlignment="Center" Margin="4"/>
+            <TextBox x:Name="ExportFilePath" Text="{Binding ExportFilePath.Value, UpdateSourceTrigger=PropertyChanged}"
+                     VerticalContentAlignment="Center" Margin="4"/>
         </DockPanel>
 
         <GroupBox BorderThickness="0" Padding="8" Grid.Row="1">

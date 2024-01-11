@@ -19,7 +19,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
 
             Copy = model.ObserveProperty(m => m.Copy).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             ExportFilePath = model.ToReactivePropertyAsSynchronized(m => m.ExportFilePath)
-                .SetValidateNotifyError(f => f != null && Directory.GetParent(f).Exists ? null : "This folder does not exist")
+                .SetValidateNotifyError(f => !string.IsNullOrWhiteSpace(f) && Directory.GetParent(f).Exists ? null : "This folder does not exist")
                 .AddTo(Disposables);
             ExportParameter = new MrmprobsExportParameterViewModel(model.ExportParameter).AddTo(Disposables);
 
