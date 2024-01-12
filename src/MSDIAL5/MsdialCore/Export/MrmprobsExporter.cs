@@ -33,10 +33,10 @@ namespace CompMs.MsdialCore.Export
         public void ExportReferenceMsms<T>(Stream stream, T peakSpot, MrmprobsExportBaseParameter parameter) where T: IChromatogramPeak, IAnnotatedObject {
             using (var writer = new MrmprobsReferenceWriter(stream, leaveOpen: true)) {
                 writer.WriteHeader();
-                if (!peakSpot.MatchResults.IsReferenceMatched(_evaluator)) {
+                MoleculeMsReference reference = _refer.Refer(peakSpot.MatchResults.Representative);
+                if (!peakSpot.MatchResults.IsReferenceMatched(_evaluator) || reference is null || reference.Spectrum.Count == 0) {
                     return;
                 }
-                MoleculeMsReference reference = _refer.Refer(peakSpot.MatchResults.Representative);
                 writer.WriteFieldsBasedOnReference(peakSpot, reference, parameter);
             }
         }
@@ -48,10 +48,10 @@ namespace CompMs.MsdialCore.Export
                     if (!string.IsNullOrEmpty(spot.Comment) && spot.Comment.IndexOf("unk", StringComparison.OrdinalIgnoreCase) >= 0) {
                         continue;
                     }
-                    if (!spot.MatchResults.IsReferenceMatched(_evaluator)) {
+                    MoleculeMsReference reference = _refer.Refer(spot.MatchResults.Representative);
+                    if (!spot.MatchResults.IsReferenceMatched(_evaluator) || reference is null || reference.Spectrum.Count == 0) {
                         continue;
                     }
-                    MoleculeMsReference reference = _refer.Refer(spot.MatchResults.Representative);
                     writer.WriteFieldsBasedOnReference(spot, reference, parameter);
                 }
             }
@@ -61,10 +61,10 @@ namespace CompMs.MsdialCore.Export
             using (var writer = new MrmprobsReferenceWriter(stream, leaveOpen: true)) {
                 writer.WriteHeader();
                 foreach (var peak in peakSpots) {
-                    if (!peak.MatchResults.IsReferenceMatched(_evaluator)) {
+                    MoleculeMsReference reference = _refer.Refer(peak.MatchResults.Representative);
+                    if (!peak.MatchResults.IsReferenceMatched(_evaluator) || reference is null || reference.Spectrum.Count == 0) {
                         continue;
                     }
-                    MoleculeMsReference reference = _refer.Refer(peak.MatchResults.Representative);
                     writer.WriteFieldsBasedOnReference(peak, reference, parameter);
                 }
             }
@@ -84,9 +84,9 @@ namespace CompMs.MsdialCore.Export
 
             using (var writer = new MrmprobsReferenceWriter(stream, leaveOpen: true)) {
                 writer.WriteHeader();
-                if (!alignedSpot.MatchResults.IsReferenceMatched(_evaluator)) return;
-
                 MoleculeMsReference reference = _refer.Refer(alignedSpot.MatchResults.Representative);
+                if (!alignedSpot.MatchResults.IsReferenceMatched(_evaluator) || reference is null || reference.Spectrum.Count == 0) return;
+
                 writer.WriteFieldsBasedOnReference(alignedSpot, reference, parameter);
 
                 if (parameter.MpIsExportOtherCandidates) {
@@ -125,9 +125,9 @@ namespace CompMs.MsdialCore.Export
             using (var writer = new MrmprobsReferenceWriter(stream, leaveOpen: true)) {
                 writer.WriteHeader();
 
-                if (!peakSpot.MatchResults.IsReferenceMatched(_evaluator)) return;
-
                 MoleculeMsReference reference = _refer.Refer(peakSpot.MatchResults.Representative);
+                if (!peakSpot.MatchResults.IsReferenceMatched(_evaluator) || reference is null || reference.Spectrum.Count == 0) return;
+
                 writer.WriteFieldsBasedOnReference(peakSpot, reference, parameter);
 
                 if (parameter.MpIsExportOtherCandidates) {
@@ -168,10 +168,10 @@ namespace CompMs.MsdialCore.Export
                 writer.WriteHeader();
 
                 foreach (var spot in alignedSpots) {
-                    if (!spot.MatchResults.IsReferenceMatched(_evaluator)) continue;
                     if (!string.IsNullOrEmpty(spot.Comment) && spot.Comment.IndexOf("unk", StringComparison.OrdinalIgnoreCase) >= 0) continue;
-
                     MoleculeMsReference reference = _refer.Refer(spot.MatchResults.Representative);
+                    if (!spot.MatchResults.IsReferenceMatched(_evaluator) || reference is null || reference.Spectrum.Count == 0) continue;
+
                     writer.WriteFieldsBasedOnReference(spot, reference, parameter);
 
                     if (parameter.MpIsExportOtherCandidates) {
@@ -211,9 +211,9 @@ namespace CompMs.MsdialCore.Export
                 writer.WriteHeader();
 
                 foreach (var peak in peakSpots) {
-                    if (!peak.MatchResults.IsReferenceMatched(_evaluator)) continue;
-
                     MoleculeMsReference reference = _refer.Refer(peak.MatchResults.Representative);
+                    if (!peak.MatchResults.IsReferenceMatched(_evaluator) || reference is null || reference.Spectrum.Count == 0) continue;
+
                     writer.WriteFieldsBasedOnReference(peak, reference, parameter);
 
                     if (parameter.MpIsExportOtherCandidates) {
