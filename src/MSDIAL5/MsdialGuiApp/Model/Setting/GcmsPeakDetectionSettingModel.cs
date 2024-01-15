@@ -32,6 +32,7 @@ namespace CompMs.App.Msdial.Model.Setting
             _chromDecBaseParameter.AccuracyType = AccuracyType;
             if (AccuracyType == AccuracyType.IsNominal) {
                 PeakPickSettingModel.MassSliceWidth = .5f;
+                PeakPickSettingModel.CentroidMs1Tolerance = .5f;
             }
             PeakPickSettingModel.Commit();
         }
