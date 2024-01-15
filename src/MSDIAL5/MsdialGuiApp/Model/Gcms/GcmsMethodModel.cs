@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
@@ -8,16 +9,20 @@ using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialGcMsApi.Algorithm;
 using CompMs.MsdialGcMsApi.Algorithm.Alignment;
+using CompMs.MsdialGcMsApi.Export;
 using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialGcMsApi.Process;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,6 +32,7 @@ namespace CompMs.App.Msdial.Model.Gcms
     {
         private readonly IMsdialDataStorage<MsdialGcmsParameter> _storage;
         private readonly FilePropertiesModel _projectBaseParameter;
+        private readonly StudyContextModel _studyContext;
         private readonly FacadeMatchResultEvaluator _evaluator;
         private readonly IMessageBroker _broker;
         private readonly StandardDataProviderFactory _providerFactory;
@@ -35,9 +41,10 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly List<CalculateMatchScore> _calculateMatchScores;
         private readonly ChromatogramSerializer<ChromatogramSpotInfo> _chromatogramSpotSerializer;
 
-        public GcmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFiles, IMsdialDataStorage<MsdialGcmsParameter> storage, FilePropertiesModel projectBaseParameter, IMessageBroker broker) : base(analysisFileBeanModelCollection, alignmentFiles, projectBaseParameter) {
+        public GcmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFiles, IMsdialDataStorage<MsdialGcmsParameter> storage, FilePropertiesModel projectBaseParameter, StudyContextModel studyContext, IMessageBroker broker) : base(analysisFileBeanModelCollection, alignmentFiles, projectBaseParameter) {
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _projectBaseParameter = projectBaseParameter;
+            _studyContext = studyContext;
             _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             _broker = broker;
             _providerFactory = new StandardDataProviderFactory(retry: 5, isGuiProcess: true);
@@ -61,6 +68,53 @@ namespace CompMs.App.Msdial.Model.Gcms
                     _chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RI);
                     break;
             }
+
+            var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Dt & ~FilterEnableStatus.Protein & ~FilterEnableStatus.Adduct;
+            var filter = _peakSpotFiltering.CreateFilter(_peakFilterModel, _evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), filterEnabled);
+            var currentAlignmentResult = this.ObserveProperty(m => m.SelectedAlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            AlignmentFilesForExport alignmentFilesForExport = new AlignmentFilesForExport(alignmentFiles.Files, this.ObserveProperty(m => m.AlignmentFile)).AddTo(Disposables);
+            var isNormalized = alignmentFilesForExport.CanExportNormalizedData(currentAlignmentResult.Select(r => r?.NormalizationSetModel.IsNormalized ?? Observable.Return(false)).Switch()).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(currentAlignmentResult, filter);
+            var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
+            var metadataAccessorFactory = new GcmsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter);
+            var peakGroup = new AlignmentExportGroupModel(
+                "Peaks",
+                new ExportMethod(
+                    analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File).ToArray(),
+                    metadataAccessorFactory,
+                    ExportFormat.Tsv,
+                    ExportFormat.Csv
+                ),
+                new[]
+                {
+                    new ExportType("Raw data (Height)", new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, true),
+                    new ExportType("Raw data (Area)", new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", stats),
+                    //new ExportType("Normalized data (Height)", new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", stats, isNormalized),
+                    //new ExportType("Normalized data (Area)", new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", stats, isNormalized),
+                    new ExportType("Peak ID", new LegacyQuantValueAccessor("ID", storage.Parameter), "PeakID"),
+                    new ExportType("Quant mass", new LegacyQuantValueAccessor("MZ", storage.Parameter), "Quant mass"),
+                    new ExportType("Retention time", new LegacyQuantValueAccessor("RT", storage.Parameter), "Rt"),
+                    new ExportType("Retention index", new LegacyQuantValueAccessor("RI", storage.Parameter), "Ri"),
+                    new ExportType("S/N", new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
+                    //new ExportType("Identification method", new AnnotationMethodAccessor(), "IdentificationMethod"),
+                },
+                new[]
+                {
+                    ExportspectraType.deconvoluted,
+                },
+                peakSpotSupplyer);
+            var spectraGroup = new AlignmentSpectraExportGroupModel(
+                new[]
+                {
+                    ExportspectraType.deconvoluted,
+                },
+                peakSpotSupplyer,
+                new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
+                new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
+                new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
+            var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, };
+
+            AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam);
         }
 
         public GcmsAnalysisModel SelectedAnalysisModel {
@@ -198,5 +252,6 @@ namespace CompMs.App.Msdial.Model.Gcms
             model.Update();
             return model;
         }
+        public AlignmentResultExportModel AlignmentResultExportModel { get; }
     }
 }

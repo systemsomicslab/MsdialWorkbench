@@ -62,7 +62,7 @@ namespace CompMs.App.Msdial.Model.Setting
                     factoryImpl = new DimsMethodSettingModelFactory(analysisFileBeanModelCollection, alignmentFileModelCollection, dimsStorage, fileProperties, studyContext, process, messageBroker);
                     break;
                 case IMsdialDataStorage<MsdialGcmsParameter> gcmsStorage:
-                    factoryImpl = new GcmsMethodSettingModelFactory(analysisFileBeanModelCollection, alignmentFileModelCollection, gcmsStorage, fileProperties, process, messageBroker);
+                    factoryImpl = new GcmsMethodSettingModelFactory(analysisFileBeanModelCollection, alignmentFileModelCollection, gcmsStorage, fileProperties, studyContext, process, messageBroker);
                     break;
                 default:
                     throw new ArgumentException(nameof(storage));
@@ -548,6 +548,7 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly AlignmentFileBeanModelCollection _alignmentFileBeanModelCollection;
         private readonly IMsdialDataStorage<MsdialGcmsParameter> storage;
         private readonly FilePropertiesModel _projectBaseParameter;
+        private readonly StudyContextModel _studyContext;
         private readonly ProcessOption process;
         private readonly IMessageBroker _broker;
 
@@ -556,12 +557,14 @@ namespace CompMs.App.Msdial.Model.Setting
             AlignmentFileBeanModelCollection alignmentFileBeanModelCollection,
             IMsdialDataStorage<MsdialGcmsParameter> storage,
             FilePropertiesModel projectBaseParameter,
+            StudyContextModel studyContext,
             ProcessOption process,
             IMessageBroker broker) {
             _analysisFileBeanModelCollection = analysisFileBeanModelCollection;
             _alignmentFileBeanModelCollection = alignmentFileBeanModelCollection;
             this.storage = storage;
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
+            _studyContext = studyContext;
             this.process = process;
             _broker = broker;
             if (this.storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
@@ -603,7 +606,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            return new GcmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, _projectBaseParameter, _broker);
+            return new GcmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, _projectBaseParameter, _studyContext, _broker);
         }
     }
 }

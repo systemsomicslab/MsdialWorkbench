@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
+using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
@@ -44,6 +45,14 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
                 return Task.CompletedTask;
             }
             return _model.LoadAnalysisFileAsync(analysisFile.File, token);
+        }
+
+        public DelegateCommand ExportAlignmentResultCommand => _exportAlignmentResultCommand ??= new DelegateCommand(ExportAlignment);
+        private DelegateCommand _exportAlignmentResultCommand;
+
+        private void ExportAlignment() {
+            using var vm = new AlignmentResultExportViewModel(_model.AlignmentResultExportModel, _broker);
+            _broker.Publish(vm);
         }
 
         public DelegateCommand ShowTicCommand => _showTicCommand ??= new DelegateCommand(ShowChromatograms(tic: true));
