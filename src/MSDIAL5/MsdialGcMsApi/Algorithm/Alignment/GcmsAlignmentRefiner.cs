@@ -60,17 +60,24 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             return cSpots;
         }
 
-        protected override void PostProcess(List<AlignmentSpotProperty> alignments) {
+        protected override List<int> SetAlignmentID(List<AlignmentSpotProperty> alignments) {
             var param = _param as MsdialGcmsParameter;
-            if (param.AlignmentIndexType == AlignmentIndexType.RT)
-                alignments.Sort((a, b) => (a.TimesCenter.RT.Value, a.QuantMass).CompareTo((b.TimesCenter.RT.Value, b.QuantMass)));
-            else
-                alignments.Sort((a, b) => (a.TimesCenter.RI.Value, a.QuantMass).CompareTo((b.TimesCenter.RI.Value, b.QuantMass)));
-            for (int i = 0; i < alignments.Count; i++) {
-                alignments[i].AlignmentID = i;
-                alignments[i].MasterAlignmentID = i;
+            if (param.AlignmentIndexType == AlignmentIndexType.RT) {
+                alignments.Sort((a, b) => (a.TimesCenter.RT, a.QuantMass).CompareTo((b.TimesCenter.RT, b.QuantMass)));
             }
+            else {
+                alignments.Sort((a, b) => (a.TimesCenter.RI, a.QuantMass).CompareTo((b.TimesCenter.RI, b.QuantMass)));
+            }
+
+            var ids = new List<int>(alignments.Count);
+            for (int i = 0; i < alignments.Count; i++) {
+                ids.Add(alignments[i].MasterAlignmentID);
+                alignments[i].MasterAlignmentID = alignments[i].AlignmentID = i;
+            }
+            return ids;
         }
+
+        protected override void PostProcess(List<AlignmentSpotProperty> alignments) { }
 
         protected override void SetLinks(List<AlignmentSpotProperty> alignments) { }
     }

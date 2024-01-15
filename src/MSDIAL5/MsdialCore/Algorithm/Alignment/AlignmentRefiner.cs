@@ -75,7 +75,14 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             return alignments;
         }
 
-        protected virtual List<int> SetAlignmentID(List<AlignmentSpotProperty> alignments) { return alignments.Select(align => align.MasterAlignmentID).ToList(); }
+        protected virtual List<int> SetAlignmentID(List<AlignmentSpotProperty> alignments) {
+            var ids = new List<int>(alignments.Count);
+            for (int i = 0; i < alignments.Count; i++) {
+                ids.Add(alignments[i].MasterAlignmentID);
+                alignments[i].MasterAlignmentID = alignments[i].AlignmentID = i;
+            }
+            return ids;
+        }
 
         private void IsotopeAnalysis(IReadOnlyList<AlignmentSpotProperty> alignmentSpots) {
             foreach (var spot in alignmentSpots) {
