@@ -347,7 +347,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             };
             var spectraFormats = new List<SpectraFormat>
             {
-                new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
+                new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter("\t")),
             };
 
             var models = new IMsdialAnalysisExport[]

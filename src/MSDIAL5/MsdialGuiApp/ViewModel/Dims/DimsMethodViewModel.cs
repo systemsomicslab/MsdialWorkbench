@@ -88,7 +88,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             };
             var spectraFormats = new List<SpectraFormat>
             {
-                new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
+                new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter("\t")),
             };
 
             var models = new IMsdialAnalysisExport[]

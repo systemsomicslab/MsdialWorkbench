@@ -84,7 +84,7 @@ namespace CompMs.App.MsdialConsole.Process
 
             IAnalysisExporter<ChromatogramPeakFeatureCollection> peak_MspExporter = new AnalysisMspExporter(storage.DataBaseMapper, storage.Parameter);
             var peak_accessor = new LcmsAnalysisMetadataAccessor(storage.DataBaseMapper, storage.Parameter, ExportspectraType.deconvoluted);
-            var peak_Exporter = new AnalysisCSVExporter();
+            var peak_Exporter = new AnalysisCSVExporter("\t");
             var sem = new SemaphoreSlim(Environment.ProcessorCount / 2);
             foreach ((var file, var idx) in files.WithIndex()) {
                 tasks[idx] = Task.Run(async () => {
