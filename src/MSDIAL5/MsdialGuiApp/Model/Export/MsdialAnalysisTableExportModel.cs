@@ -14,12 +14,7 @@ namespace CompMs.App.Msdial.Model.Export
 {
     internal sealed class MsdialAnalysisTableExportModel : BindableBase, IMsdialAnalysisExport
     {
-        private readonly IDataProviderFactory<AnalysisFileBeanModel> _providerFactory;
-
-        public MsdialAnalysisTableExportModel(
-            IEnumerable<SpectraType> spectraTypes,
-            IEnumerable<SpectraFormat> spectraFormats,
-            IDataProviderFactory<AnalysisFileBeanModel> providerFactory) {
+        public MsdialAnalysisTableExportModel(IEnumerable<ISpectraType> spectraTypes, IEnumerable<SpectraFormat> spectraFormats) {
 
             if (spectraTypes is null) {
                 throw new ArgumentNullException(nameof(spectraTypes));
@@ -29,13 +24,7 @@ namespace CompMs.App.Msdial.Model.Export
                 throw new ArgumentNullException(nameof(spectraFormats));
             }
 
-            if (providerFactory is null) {
-                throw new ArgumentNullException(nameof(providerFactory));
-            }
-
-            _providerFactory = providerFactory;
-
-            ExportSpectraTypes = new ObservableCollection<SpectraType>(spectraTypes);
+            ExportSpectraTypes = new ObservableCollection<ISpectraType>(spectraTypes);
             SelectedSpectraType = ExportSpectraTypes.FirstOrDefault();
 
             ExportSpectraFileFormats = new ObservableCollection<SpectraFormat>(spectraFormats);
@@ -48,12 +37,12 @@ namespace CompMs.App.Msdial.Model.Export
         }
         private bool _shoudlExport = true;
 
-        public ObservableCollection<SpectraType> ExportSpectraTypes { get; }
-        public SpectraType SelectedSpectraType {
+        public ObservableCollection<ISpectraType> ExportSpectraTypes { get; }
+        public ISpectraType SelectedSpectraType {
             get => _selectedSpectraType;
             set => SetProperty(ref _selectedSpectraType, value);
         }
-        private SpectraType _selectedSpectraType;
+        private ISpectraType _selectedSpectraType;
         public ObservableCollection<SpectraFormat> ExportSpectraFileFormats { get; }
         public SpectraFormat SelectedFileFormat {
             get => _selectedFileFormat;
@@ -72,39 +61,44 @@ namespace CompMs.App.Msdial.Model.Export
                 return;
             }
             var filename = Path.Combine(destinationFolder, fileBeanModel.AnalysisFileName + "." + SelectedFileFormat.Format);
-            using (var stream = File.Open(filename, FileMode.Create, FileAccess.Write)) {
-                var provider = _providerFactory.Create(fileBeanModel);
-                var features = ChromatogramPeakFeatureCollection.LoadAsync(fileBeanModel.PeakAreaBeanInformationFilePath).Result;
-                SelectedFileFormat.Export(stream, features.Items, provider, SelectedSpectraType, fileBeanModel);
-            }
+            using var stream = File.Open(filename, FileMode.Create, FileAccess.Write);
+            SelectedSpectraType.Export(stream, fileBeanModel.File, SelectedFileFormat.ExporterFactory);
         }
     }
 
     internal sealed class SpectraFormat
     {
-        private readonly AnalysisCSVExporterFactory _exporterFactory;
-
         public SpectraFormat(ExportSpectraFileFormat format, AnalysisCSVExporterFactory exporterFactory) {
             Format = format;
-            _exporterFactory = exporterFactory;
+            ExporterFactory = exporterFactory;
         }
 
         public ExportSpectraFileFormat Format { get; }
 
-        public void Export(Stream stream, IReadOnlyList<ChromatogramPeakFeature> features, IDataProvider provider, SpectraType spectraType, AnalysisFileBeanModel fileBeanModel) {
-            _exporterFactory.CreateExporter(provider.AsFactory(), spectraType.Accessor).Export(stream, fileBeanModel.File, new ChromatogramPeakFeatureCollection(features.ToList()));
-        }
+        public AnalysisCSVExporterFactory ExporterFactory { get; }
     }
 
-    internal sealed class SpectraType
+    interface ISpectraType {
+        void Export(Stream stream, AnalysisFileBean file, AnalysisCSVExporterFactory exporterFactory);
+    }
+
+    internal sealed class SpectraType : ISpectraType
     {
-        public SpectraType(ExportspectraType type, IAnalysisMetadataAccessor accessor) {
+        private readonly IDataProviderFactory<AnalysisFileBean> _providerFactory;
+
+        public SpectraType(ExportspectraType type, IAnalysisMetadataAccessor accessor, IDataProviderFactory<AnalysisFileBean> providerFactory) {
             Type = type;
             Accessor = accessor;
+            _providerFactory = providerFactory;
         }
 
-        public ExportspectraType Type { get; } // TODO: change spectra source
+        public ExportspectraType Type { get; } // TODO: Account this property for spectra source
         public IAnalysisMetadataAccessor Accessor { get; }
+
+        public void Export(Stream stream, AnalysisFileBean file, AnalysisCSVExporterFactory exporterFactory) {
+            var peaks = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath).Result;
+            exporterFactory.CreateExporter(_providerFactory, Accessor).Export(stream, file, peaks);
+        }
 
         //public IReadOnlyList<MSDecResult> GetSpectra(AnalysisFileBeanModel file) {
         //    switch (Type) {
@@ -115,5 +109,24 @@ namespace CompMs.App.Msdial.Model.Export
         //            return file.MSDecLoader.LoadMSDecResults();
         //    }
         //}
+    }
+
+    internal sealed class SpectraType<T> : ISpectraType
+    {
+        private readonly Func<AnalysisFileBean, IReadOnlyList<T>> _dataLoader;
+
+        public SpectraType(ExportspectraType type, IAnalysisMetadataAccessor<T> accessor, Func<AnalysisFileBean, IReadOnlyList<T>> dataLoader) {
+            Type = type;
+            Accessor = accessor;
+            _dataLoader = dataLoader;
+        }
+
+        public ExportspectraType Type { get; } // TODO: Account this property for spectra source
+        public IAnalysisMetadataAccessor<T> Accessor { get; }
+
+        public void Export(Stream stream, AnalysisFileBean file, AnalysisCSVExporterFactory exporterFactory) {
+            var data = _dataLoader.Invoke(file);
+            exporterFactory.CreateExporter(Accessor).Export(stream, file, data);
+        }
     }
 }

@@ -254,11 +254,12 @@ namespace CompMs.App.Msdial.Model.Gcms
         }
 
         public AnalysisResultExportModel ExportAnalysis() {
-            var spectraTypes = new List<SpectraType>
+            var spectraTypes = new ISpectraType[]
             {
-                //new SpectraType(
-                //    ExportspectraType.deconvoluted,
-                //    new GcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.deconvoluted)),
+                new SpectraType<SpectrumFeature>(
+                    ExportspectraType.deconvoluted,
+                    new GcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, TODO),
+                    TODO),
                 //new SpectraType(
                 //    ExportspectraType.centroid,
                 //    new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.centroid)),
@@ -266,14 +267,14 @@ namespace CompMs.App.Msdial.Model.Gcms
                 //    ExportspectraType.profile,
                 //    new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.profile)),
             };
-            var spectraFormats = new List<SpectraFormat>
+            var spectraFormats = new[]
             {
                 new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporterFactory(separator: "\t")),
             };
 
             var models = new IMsdialAnalysisExport[]
             {
-                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, _providerFactory.ContraMap((AnalysisFileBeanModel file) => file.File)),
+                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats),
                 new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
                     [ExportspectraType.deconvoluted] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter),
                     [ExportspectraType.centroid] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter, file => new CentroidMsScanPropertyLoader(_providerFactory.Create(file), _storage.Parameter.MS2DataType)),
