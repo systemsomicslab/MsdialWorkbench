@@ -4,8 +4,6 @@ using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
-using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Parser;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -84,17 +82,17 @@ namespace CompMs.App.Msdial.Model.Export
 
     internal sealed class SpectraFormat
     {
-        public SpectraFormat(ExportSpectraFileFormat format, ILegacyAnalysisExporter exporter) {
+        private readonly AnalysisCSVExporterFactory _exporterFactory;
+
+        public SpectraFormat(ExportSpectraFileFormat format, AnalysisCSVExporterFactory exporterFactory) {
             Format = format;
-            Exporter = exporter;
+            _exporterFactory = exporterFactory;
         }
 
         public ExportSpectraFileFormat Format { get; }
-        public ILegacyAnalysisExporter Exporter { get; }
 
         public void Export(Stream stream, IReadOnlyList<ChromatogramPeakFeature> features, IDataProvider provider, SpectraType spectraType, AnalysisFileBeanModel fileBeanModel) {
-            var msdecs = spectraType.GetSpectra(fileBeanModel);
-            Exporter.Export(stream, features, msdecs, provider, spectraType.Accessor, fileBeanModel.File);
+            _exporterFactory.CreateExporter(provider.AsFactory(), spectraType.Accessor).Export(stream, fileBeanModel.File, new ChromatogramPeakFeatureCollection(features.ToList()));
         }
     }
 
@@ -105,17 +103,17 @@ namespace CompMs.App.Msdial.Model.Export
             Accessor = accessor;
         }
 
-        public ExportspectraType Type { get; }
+        public ExportspectraType Type { get; } // TODO: change spectra source
         public IAnalysisMetadataAccessor Accessor { get; }
 
-        public IReadOnlyList<MSDecResult> GetSpectra(AnalysisFileBeanModel file) {
-            switch (Type) {
-                //case ExportspectraType.centroid:
-                //case ExportspectraType.profile:
-                case ExportspectraType.deconvoluted:
-                default:
-                    return file.MSDecLoader.LoadMSDecResults();
-            }
-        }
+        //public IReadOnlyList<MSDecResult> GetSpectra(AnalysisFileBeanModel file) {
+        //    switch (Type) {
+        //        //case ExportspectraType.centroid:
+        //        //case ExportspectraType.profile:
+        //        case ExportspectraType.deconvoluted:
+        //        default:
+        //            return file.MSDecLoader.LoadMSDecResults();
+        //    }
+        //}
     }
 }

@@ -20,8 +20,8 @@ namespace CompMs.MsdialCore.Export.Tests
     {
         [TestMethod()]
         public void ContainsDelimiterInFieldTest() {
-            var exporter = new AnalysisCSVExporter(",");
-            var spots = new List<ChromatogramPeakFeature>
+            var exporterFactory = new AnalysisCSVExporterFactory(",");
+            var spots = new ChromatogramPeakFeatureCollection(new List<ChromatogramPeakFeature>
             {
                 new ChromatogramPeakFeature(new BaseChromatogramPeakFeature() {
                     PeakHeightTop = 400,
@@ -30,18 +30,24 @@ namespace CompMs.MsdialCore.Export.Tests
                     MasterPeakID = 0,
                     Name = "Metabolite 1,2",
                 },
-            };
-            var msdecs = new List<MSDecResult> { null, };
+            });
             var file = new AnalysisFileBean { AnalysisFileName = "File 1", AnalysisFileClass = "A", AnalysisFileType = AnalysisFileType.Sample, AnalysisFileAnalyticalOrder = 1, AnalysisBatch = 1, };
 
             var memory = new MemoryStream();
-            exporter.Export(memory, spots, msdecs, new FakeProvider(), new FakeMetaAccessor(), file);
+            exporterFactory.CreateExporter(new FakeProviderFactory(), new FakeMetaAccessor()).Export(memory, file, spots);
 
             var newline = Environment.NewLine;
             Assert.AreEqual(
                 "Id,Name" + newline +
                 "0,\"Metabolite 1,2\"" + newline,
                 Encoding.ASCII.GetString(memory.ToArray()));
+        }
+
+        class FakeProviderFactory : IDataProviderFactory<AnalysisFileBean>
+        {
+            public IDataProvider Create(AnalysisFileBean source) {
+                return new FakeProvider();
+            }
         }
 
         class FakeProvider : IDataProvider

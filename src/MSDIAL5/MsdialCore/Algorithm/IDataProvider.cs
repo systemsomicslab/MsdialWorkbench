@@ -76,6 +76,14 @@ namespace CompMs.MsdialCore.Algorithm
         public static List<double> LoadCollisionEnergyTargets(this IDataProvider provider) {
             return SpectrumParser.LoadCollisionEnergyTargets(provider.LoadMsSpectrums());
         }
+
+        public static IDataProviderFactory<object> AsFactory(this IDataProvider provider) {
+            return new IdentityFactory<object>(provider);
+        }
+
+        class IdentityFactory<T>(IDataProvider provider) : IDataProviderFactory<T> {
+            public IDataProvider Create(T source) => provider;
+        }
     }
 
     public static class DataProvider {

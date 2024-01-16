@@ -118,7 +118,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             };
             var spectraFormats = new[]
             {
-                new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter(separator: "\t")),
+                new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporterFactory(separator: "\t")),
             };
             var models = new IMsdialAnalysisExport[]
             {
