@@ -258,8 +258,8 @@ namespace CompMs.App.Msdial.Model.Gcms
             {
                 new SpectraType<SpectrumFeature>(
                     ExportspectraType.deconvoluted,
-                    new GcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, TODO),
-                    TODO),
+                    new GcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, new DelegateMsScanPropertyLoader<SpectrumFeature>(spectrum => spectrum.AnnotatedMSDecResult.MSDecResult)),
+                    f => f.LoadSpectrumFeatures().Items),
                 //new SpectraType(
                 //    ExportspectraType.centroid,
                 //    new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.centroid)),
