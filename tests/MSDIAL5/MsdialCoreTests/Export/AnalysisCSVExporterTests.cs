@@ -34,20 +34,13 @@ namespace CompMs.MsdialCore.Export.Tests
             var file = new AnalysisFileBean { AnalysisFileName = "File 1", AnalysisFileClass = "A", AnalysisFileType = AnalysisFileType.Sample, AnalysisFileAnalyticalOrder = 1, AnalysisBatch = 1, };
 
             var memory = new MemoryStream();
-            exporterFactory.CreateExporter(new FakeProviderFactory(), new FakeMetaAccessor()).Export(memory, file, spots);
+            exporterFactory.CreateExporter(new FakeMetaAccessor()).Export(memory, file, spots.Items);
 
             var newline = Environment.NewLine;
             Assert.AreEqual(
                 "Id,Name" + newline +
                 "0,\"Metabolite 1,2\"" + newline,
                 Encoding.ASCII.GetString(memory.ToArray()));
-        }
-
-        class FakeProviderFactory : IDataProviderFactory<AnalysisFileBean>
-        {
-            public IDataProvider Create(AnalysisFileBean source) {
-                return new FakeProvider();
-            }
         }
 
         class FakeProvider : IDataProvider
@@ -77,9 +70,17 @@ namespace CompMs.MsdialCore.Export.Tests
             }
         }
 
-        class FakeMetaAccessor : IAnalysisMetadataAccessor
+        class FakeMetaAccessor : IAnalysisMetadataAccessor, IAnalysisMetadataAccessor<ChromatogramPeakFeature>
         {
             public Dictionary<string, string> GetContent(ChromatogramPeakFeature feature, MSDecResult msdec, IDataProvider provider, AnalysisFileBean analysisFile) {
+                return new Dictionary<string, string>
+                {
+                    ["Id"] = feature.MasterPeakID.ToString(),
+                    ["Name"] = feature.Name,
+                };
+            }
+
+            public Dictionary<string, string> GetContent(ChromatogramPeakFeature feature) {
                 return new Dictionary<string, string>
                 {
                     ["Id"] = feature.MasterPeakID.ToString(),

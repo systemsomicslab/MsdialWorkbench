@@ -256,9 +256,9 @@ namespace CompMs.App.Msdial.Model.Gcms
         public AnalysisResultExportModel ExportAnalysis() {
             var spectraTypes = new List<SpectraType>
             {
-                new SpectraType(
-                    ExportspectraType.deconvoluted,
-                    new GcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.deconvoluted)),
+                //new SpectraType(
+                //    ExportspectraType.deconvoluted,
+                //    new GcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.deconvoluted)),
                 //new SpectraType(
                 //    ExportspectraType.centroid,
                 //    new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.centroid)),

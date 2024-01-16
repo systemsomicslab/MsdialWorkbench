@@ -14,6 +14,12 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Export
 {
+    public interface IAnalysisMetadataAccessor<T>
+    {
+        string[] GetHeaders();
+        Dictionary<string, string> GetContent(T feature);
+    }
+
     public interface IAnalysisMetadataAccessor
     {
         string[] GetHeaders();
@@ -48,7 +54,7 @@ namespace CompMs.MsdialCore.Export
                 // "m/z left", "m/z", "m/z right",
                 "Height",
                 "Area",
-                "Model masses",
+                // "Model masses",
                 "Adduct",
                 "Isotope",
                 "Comment",
@@ -98,7 +104,7 @@ namespace CompMs.MsdialCore.Export
                 // "m/z left", "m/z", "m/z right",
                 { "Height", string.Format("{0:0}", feature.PeakHeightTop) },
                 { "Area", string.Format("{0:0}", feature.PeakAreaAboveZero) },
-                { "Model masses", string.Join(" ", msdec.ModelMasses) },
+                //{ "Model masses", string.Join(" ", msdec.ModelMasses) },
                 { "Adduct",  feature.AdductType?.AdductIonName ?? "null" },
                 { "Isotope",  feature.PeakCharacter.IsotopeWeightNumber.ToString() },
                 { "Comment",  comment},

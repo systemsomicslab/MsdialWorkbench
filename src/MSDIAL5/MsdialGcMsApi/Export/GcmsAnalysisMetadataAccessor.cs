@@ -1,23 +1,27 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Enum;
+using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Parser;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CompMs.MsdialGcMsApi.Export
 {
-    public sealed class GcmsAnalysisMetadataAccessor : BaseAnalysisMetadataAccessor
+    public sealed class GcmsAnalysisMetadataAccessor : IAnalysisMetadataAccessor<SpectrumFeature>
     {
-        public GcmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, ExportspectraType type) : base(refer, parameter, type) {
+        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+        private readonly IMsScanPropertyLoader<SpectrumFeature> _loader;
 
+        public GcmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IMsScanPropertyLoader<SpectrumFeature> loader) {
+            _refer = refer;
+            _loader = loader;
         }
 
-        protected override string[] GetHeadersCore() {
+        public string[] GetHeaders() {
             return new string[] {
                 "Name",
                 "Scan",
@@ -40,19 +44,44 @@ namespace CompMs.MsdialGcMsApi.Export
             };
         }
 
-        protected override Dictionary<string, string> GetContentCore(ChromatogramPeakFeature feature, MSDecResult msdec, MoleculeMsReference reference, MsScanMatchResult matchResult, IReadOnlyList<RawSpectrum> spectrumList, AnalysisFileBean analysisFile) {
-            var content = base.GetContentCore(feature, msdec, reference, matchResult, spectrumList, analysisFile);
-            content["Retention index"] = msdec.ChromXs.RI.Value != -1
-                ?  string.Format("{0:F2}", msdec.ChromXs.RI.Value)
-                : string.Empty;
-            content["Model Masses"] = "[" + string.Join(",", msdec.ModelMasses) + "]";
-            content["Model ion mz"] = feature.PeakFeature.Mass.ToString();
-            content["Model ion height"] = msdec.ModelPeakHeight.ToString();
-            content["Model ion area"] = msdec.ModelPeakArea.ToString();
-            content["Integrated height"] = msdec.IntegratedHeight.ToString();
-            content["Integrated area"] = msdec.IntegratedArea.ToString();
-            content["Spectrum"] = content["MSMS spectrum"];
-            return content;
+        public Dictionary<string, string> GetContent(SpectrumFeature feature) {
+            var scan = _loader.Load(feature);
+            MSDecResult msdec = feature.AnnotatedMSDecResult.MSDecResult;
+            var matchResult = NullIfUnknown(feature.AnnotatedMSDecResult.MatchResults.Representative);
+            var reference = _refer.Refer(matchResult);
+            return new Dictionary<string, string>
+            {
+                ["Name"] = UnknownIfEmpty(feature.AnnotatedMSDecResult.Molecule.Name),
+                ["Scan"] = msdec.RawSpectrumID.ToString(),
+                ["RT (min)"] = msdec.ChromXs.RT.Value.ToString("F3"),
+                ["Retention index"] = EmptyIfNegative(msdec.ChromXs.RI.Value, "F2"),
+                ["Model Masses"] = "[" + string.Join(",", msdec.ModelMasses) + "]",
+                ["Model ion mz"] = feature.QuantifiedChromatogramPeak.PeakFeature.Mass.ToString(),
+                ["Model ion height"] = feature.QuantifiedChromatogramPeak.PeakFeature.PeakHeightTop.ToString(),
+                ["Model ion area"] = feature.QuantifiedChromatogramPeak.PeakFeature.PeakAreaAboveZero.ToString(),
+                ["Integrated height"] = msdec.IntegratedHeight.ToString(),
+                ["Integrated area"] = msdec.IntegratedArea.ToString(),
+                ["SMILES"] = reference?.SMILES ?? "null",
+                ["InChIKey"] = reference?.InChIKey ?? "null",
+                ["Simple dot product"] = ValueOrNull(matchResult?.SimpleDotProduct, "F2"),
+                ["Weighted dot product"] = ValueOrNull(matchResult?.WeightedDotProduct, "F2"),
+                ["Reverse dot product"] = ValueOrNull(matchResult?.ReverseDotProduct, "F2"),
+                ["Matched peaks percentage"] = ValueOrNull(matchResult?.MatchedPeaksPercentage, "F2"),
+                ["Total score"] = ValueOrNull(matchResult?.TotalScore, "F2"),
+                ["MSMS spectrum"] = EncodeSpectrum(scan),
+            };
         }
+
+        private string EncodeSpectrum(IMSScanProperty scan) {
+            if (scan.Spectrum is null) {
+                return "null";
+            }
+            return string.Join(";", scan.Spectrum.Select(peak => string.Format("{0:F5} {1:F0}", peak.Mass, peak.Intensity)));
+        }
+
+        private static string EmptyIfNegative(double value, string format) => value < 0 ? string.Empty : value.ToString(format);
+        private static string UnknownIfEmpty(string value) => string.IsNullOrEmpty(value) ? "Unknown" : value;
+        private static string ValueOrNull(double? value, string format) => value?.ToString(format) ?? "null";
+        private static MsScanMatchResult NullIfUnknown(MsScanMatchResult result) => result.IsUnknown ? null : result;
     }
 }
