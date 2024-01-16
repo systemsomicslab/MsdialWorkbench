@@ -82,7 +82,7 @@ namespace CompMs.App.MsdialConsole.Process
             var providerFactory = new StandardDataProviderFactory(5, false);
             var process = new FileProcess(providerFactory, storage, annotationProcess, evaluator);
 
-            IAnalysisExporter peak_MspExporter = new AnalysisMspExporter(storage.DataBaseMapper, storage.Parameter);
+            IAnalysisExporter<ChromatogramPeakFeatureCollection> peak_MspExporter = new AnalysisMspExporter(storage.DataBaseMapper, storage.Parameter);
             var peak_accessor = new LcmsAnalysisMetadataAccessor(storage.DataBaseMapper, storage.Parameter, ExportspectraType.deconvoluted);
             var peak_Exporter = new AnalysisCSVExporter();
             var sem = new SemaphoreSlim(Environment.ProcessorCount / 2);

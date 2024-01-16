@@ -12,6 +12,7 @@ using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore.Export;
@@ -93,7 +94,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             var models = new IMsdialAnalysisExport[]
             {
                 new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, _model.ProviderFactory.ContraMap((AnalysisFileBeanModel file) => file.File)),
-                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter> {
+                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
                     [ExportspectraType.deconvoluted] = new AnalysisMspExporter(container.DataBaseMapper, container.Parameter),
                     [ExportspectraType.centroid] = new AnalysisMspExporter(container.DataBaseMapper, container.Parameter, file => new CentroidMsScanPropertyLoader(_model.ProviderFactory.Create(file), container.Parameter.MS2DataType))
                 })

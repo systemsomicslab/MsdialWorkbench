@@ -37,7 +37,7 @@ namespace CompMs.MsdialCore.Export
         protected abstract void WriteContent(StreamWriter sw, ChromatogramPeakFeature features, MSDecResult result, IDataProvider provider, IReadOnlyList<string> headers, IAnalysisMetadataAccessor metaAccessor, AnalysisFileBean analysisFile);
     }
 
-    public interface IAnalysisExporter {
-        void Export(Stream stream, AnalysisFileBean analysisFile, ChromatogramPeakFeatureCollection peakFeatureCollection);
+    public interface IAnalysisExporter<T> {
+        void Export(Stream stream, AnalysisFileBean analysisFile, T data);
     }
 }
