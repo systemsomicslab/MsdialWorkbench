@@ -41,13 +41,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
             var (rtmzPeakFocusAction, rtmzPeakFocused) = focusControlManager.Request();
             var brush = Observable.Return(model.Brush);
-            RtMzPlotViewModel = new AnalysisPeakPlotViewModel(model.RtMzPlotModel, rtmzPeakFocusAction, rtmzPeakFocused).AddTo(Disposables);
+            RtMzPlotViewModel = new AnalysisPeakPlotViewModel(model.RtMzPlotModel, rtmzPeakFocusAction, rtmzPeakFocused, broker).AddTo(Disposables);
             RtEicViewModel = new EicViewModel(
                 model.RtEicModel,
                 horizontalAxis: RtMzPlotViewModel.HorizontalAxis).AddTo(Disposables);
 
             var (dtmzPeakFocusAction, dtmzPeakFocused) = focusControlManager.Request();
-            DtMzPlotViewModel = new AnalysisPeakPlotViewModel(model.DtMzPlotModel, dtmzPeakFocusAction, dtmzPeakFocused).AddTo(Disposables);
+            DtMzPlotViewModel = new AnalysisPeakPlotViewModel(model.DtMzPlotModel, dtmzPeakFocusAction, dtmzPeakFocused, broker).AddTo(Disposables);
             DtEicViewModel = new EicViewModel(
                 model.DtEicModel,
                 horizontalAxis: DtMzPlotViewModel.HorizontalAxis).AddTo(Disposables);

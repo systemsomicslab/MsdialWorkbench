@@ -52,7 +52,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
 
             var (focusAction, focused) = focusControlManager.Request();
-            PlotViewModel = new AlignmentPeakPlotViewModel(model.PlotModel, focusAction, focused).AddTo(Disposables);
+            PlotViewModel = new AlignmentPeakPlotViewModel(model.PlotModel, focusAction, focused, broker).AddTo(Disposables);
 
             var (msSpectrumViewFocusAction, msSpectrumViewFocused) = focusControlManager.Request();
             Ms2SpectrumViewModel = new AlignmentMs2SpectrumViewModel(model.Ms2SpectrumModel, broker, focusAction: msSpectrumViewFocusAction, isFocused: msSpectrumViewFocused).AddTo(Disposables);

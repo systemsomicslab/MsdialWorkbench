@@ -21,10 +21,11 @@ namespace CompMs.App.Msdial.Model.Search
             _queryFactory = queryFactory ?? throw new ArgumentNullException(nameof(queryFactory));
             _refer = refer ?? throw new ArgumentNullException(nameof(refer));
             MsRefSearchParameter = queryFactory.PrepareParameter();
-            Id = queryFactory.AnnotatorId;
         }
 
-        public string Id { get; }
+        public string Id => _queryFactory.AnnotatorId;
+
+        public IAnnotationQueryFactory<MsScanMatchResult> QueryFactory => _queryFactory;
 
         public MsRefSearchParameterBase MsRefSearchParameter { get; }
 
