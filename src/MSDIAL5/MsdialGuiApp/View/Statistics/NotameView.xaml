@@ -46,7 +46,7 @@
             Grid.Row="6">
             <Button Content="Export"
             Click="ExportButton_Click"
-            Command="{Binding ExportCommand, Mode=OneTime}"
+            Command="{Binding FinishCommand, Mode=OneTime}"
             Width="64" Margin="8,0"/>
             <Button Content="Cancel"
             Click="CancelButton_Click"
