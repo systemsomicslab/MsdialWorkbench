@@ -6,47 +6,51 @@
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Statistics"
              mc:Ignorable="d" 
              d:Background="White"
-             d:DataContext="{d:DesignInstance Type={x:Type vm:NotameViewModel}}"
-             d:DesignHeight="600" d:DesignWidth="800">
-	<UserControl.Resources>
-		<Style TargetType="TextBlock">
-			<Setter Property="Margin" Value="0,4"/>
-		</Style>
-		<Style TargetType="TextBox">
-			<Setter Property="Margin" Value="0,4"/>
-			<Setter Property="VerticalContentAlignment" Value="Center"/>
-		</Style>
-	</UserControl.Resources>
-	<Grid>
+             d:DataContext="{d:DesignInstance Type={x:Type vm:NotameViewModel}}" 
+             d:DesignWidth="500" Height="100">
+    <UserControl.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,4"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="0,4"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="32"/>
-            <RowDefinition Height="32"/>
-            <RowDefinition Height="32"/>
-            <RowDefinition Height="32"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="128"/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
+        <Grid Margin="8" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-        <TextBlock Text="File path:" Grid.Row="0" Grid.Column="0"/>
-        <TextBox Text="{Binding Path.Value}"
-                 ToolTip="Sample data file path (For example: c:/src/)"
-                 Grid.Row="0" Grid.Column="1"/>
-
-        <TextBlock Text="File name:" Grid.Row="1" Grid.Column="0"/>
-        <TextBox Text="{Binding FileName.Value}"
-                 ToolTip="File name (For example: Hilic_pos.xlsx)"
-                 Grid.Row="1" Grid.Column="1"/>
-
-        <TextBlock Text="Ion mode:" Grid.Row="2" Grid.Column="0"/>
-        <TextBox Text="{Binding IonMode.Value}"
-                 ToolTip="Ion Mode (For example: HILIC_pos)" 
-                 Grid.Row="2" Grid.Column="1"/>
-
-        <TextBlock Text ="Grouping name:" Grid.Row="3" Grid.Column="0"/>
-        <TextBox Text="{Binding GroupingName.Value}" 
-                 ToolTip="Grouping name (For example: Group)" 
-                 Grid.Row="3" Grid.Column="1"/>
+            <TextBlock Text="Directory:"
+                       VerticalAlignment="Center"
+                       Grid.Column="0"/>
+            <TextBox Text="{Binding ExportDirectory, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                     HorizontalAlignment="Stretch" VerticalContentAlignment="Center"
+                     Margin="5,0"
+                     Grid.Column="1"/>
+            <Button Content="Browse"
+                    Command="{Binding BrowseDirectoryCommand}"
+                    Grid.Column="2"/>
+        </Grid>
+        <StackPanel Orientation="Horizontal"
+            VerticalAlignment="Center" HorizontalAlignment="Right"
+            Height="30" Margin="8, 16"
+            Grid.Row="6">
+            <Button Content="Export"
+            Click="ExportButton_Click"
+            Command="{Binding ExportCommand, Mode=OneTime}"
+            Width="64" Margin="8,0"/>
+            <Button Content="Cancel"
+            Click="CancelButton_Click"
+            Width="64" Margin="8,0"/>
+        </StackPanel>
     </Grid>
 </UserControl>
