@@ -167,6 +167,10 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                 msdecResult.ChromXs = chromPeakFeature.ChromXs;
                 msdecResult.RawSpectrumID = targetSpecID;
                 msdecResult.PrecursorMz = precursorMz;
+
+                foreach (var chrom in sMs2Chromatograms) {
+                    chrom.Dispose();
+                }
                 return msdecResult;
             }
 

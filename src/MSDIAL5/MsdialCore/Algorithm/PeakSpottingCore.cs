@@ -144,10 +144,9 @@ namespace CompMs.MsdialCore.Algorithm {
             return Task.Run(() =>
             {
                 foreach (var (chromatogram, index) in bc.GetConsumingEnumerable(token)) {
-                    chromPeakFeaturesArray[index] = GetChromatogramPeakFeatures_Temp2(provider, detector, chromatogram, type);
-                    report?.Invoke();
-                    if (chromatogram is RentalChromatogram rent) {
-                        rent.Return();
+                    using (chromatogram) {
+                        chromPeakFeaturesArray[index] = GetChromatogramPeakFeatures_Temp2(provider, detector, chromatogram, type);
+                        report?.Invoke();
                     }
                 }
             });
@@ -347,7 +346,7 @@ namespace CompMs.MsdialCore.Algorithm {
         }
 
         public List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(Chromatogram_temp2 chromatogram, PeakDetection detector) {
-            Chromatogram_temp2 smoothedChromatogram = chromatogram.ChromatogramSmoothing(_parameter.SmoothingMethod, _parameter.SmoothingLevel);
+            using Chromatogram_temp2 smoothedChromatogram = chromatogram.ChromatogramSmoothing(_parameter.SmoothingMethod, _parameter.SmoothingLevel);
             var detectedPeaks = detector.PeakDetectionVS1(smoothedChromatogram);
             if (detectedPeaks == null || detectedPeaks.Count == 0) return null;
 

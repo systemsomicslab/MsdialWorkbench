@@ -57,7 +57,7 @@ namespace CompMs.Common.Algorithm.PeakPick
             var minNoiseWindowSize = 10;
             var minNoiseLevel = 0d;
             var noiseFactor = 3d;
-            var chroChroChromatogram = chromatogram.GetChroChroChromatogram(noiseEstimateBin, minNoiseWindowSize, minNoiseLevel, noiseFactor);
+            using var chroChroChromatogram = chromatogram.GetChroChroChromatogram(noiseEstimateBin, minNoiseWindowSize, minNoiseLevel, noiseFactor);
 
             var averagePeakWidth = 20;
             var amplitudeNoiseFoldCriteria = 4d;

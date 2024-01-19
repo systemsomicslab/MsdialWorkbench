@@ -82,7 +82,8 @@ namespace CompMs.MsdialCore.DataObj
         public Chromatogram_temp2 GetMs1ExtractedChromatogram_temp2(double mz, double tolerance, double start, double end) {
             var startIndex = _spectra.LowerBound(start, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
             var endIndex = _spectra.UpperBound(end, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
-            var results = new ValuePeak[_ms1Counts[endIndex] - _ms1Counts[startIndex]];
+            var arrayPool = ArrayPool<ValuePeak>.Shared;
+            var results = arrayPool.Rent(_ms1Counts[endIndex] - _ms1Counts[startIndex]);
             var idc = 0;
             for (int i = startIndex; i < endIndex; i++) {
                 if (_spectra[i].MsLevel != 1 ||
@@ -93,7 +94,7 @@ namespace CompMs.MsdialCore.DataObj
                 var (basePeakMz, _, summedIntensity) = spectrum.RetrieveBin(mz, tolerance);
                 results[idc++] = new ValuePeak(_spectra[i].Index, _idToRetentionTime[i].Value, basePeakMz, summedIntensity);
             }
-            return new Chromatogram_temp2(results, ChromXType.RT, _unit);
+            return new Chromatogram_temp2(results, idc, ChromXType.RT, _unit, arrayPool);
         }
 
         public IEnumerable<Chromatogram_temp2> GetMs1ExtractedChromatograms_temp2(IEnumerable<double> mzs, double tolerance, double start, double end) {
@@ -120,7 +121,7 @@ namespace CompMs.MsdialCore.DataObj
                 for (int i = 0; i < indexs.Length; i++) {
                     peaks2[i] = new ValuePeak(indexs[i], times[i], peaks[i].Item1, peaks[i].Item3);
                 }
-                yield return new RentalChromatogram(peaks2, indexs.Length, ChromXType.RT, _unit, ArrayPool<ValuePeak>.Shared);
+                yield return new Chromatogram_temp2(peaks2, indexs.Length, ChromXType.RT, _unit, ArrayPool<ValuePeak>.Shared);
                 //yield return new Chromatogram_temp2(peaks2, ChromXType.RT, _unit);
             }
         }

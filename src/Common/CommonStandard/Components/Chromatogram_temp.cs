@@ -8,31 +8,12 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.Common.Components {
-    public class RentalChromatogram : Chromatogram_temp2 {
-        private ArrayPool<ValuePeak> _arrayPool;
-
-        public RentalChromatogram(ValuePeak[] peaks, int size, ChromXType type, ChromXUnit unit, ArrayPool<ValuePeak> arrayPool)
-            : base(peaks, size, type, unit, new Algorithm.ChromSmoothing.Smoothing())
-        {
-            _peaks = peaks;
-            _arrayPool = arrayPool;
-        }
-
-        public void Return() {
-            if (_arrayPool is null) {
-                return;
-            }
-            _arrayPool.Return((ValuePeak[])_peaks);
-            _peaks = null;
-            _arrayPool = null;
-        }
-    }
-
-    public class Chromatogram_temp2 {
-        protected IReadOnlyList<ValuePeak> _peaks;
+    public sealed class Chromatogram_temp2 : IDisposable {
+        private IReadOnlyList<ValuePeak> _peaks;
         private readonly int _size;
         private readonly ChromXType _type;
         private readonly ChromXUnit _unit;
+        private ArrayPool<ValuePeak> _arrayPool;
         private readonly Algorithm.ChromSmoothing.Smoothing _smoother;
 
         public Chromatogram_temp2(IEnumerable<ValuePeak> peaks, ChromXType type, ChromXUnit unit) {
@@ -43,20 +24,13 @@ namespace CompMs.Common.Components {
             _smoother = new Algorithm.ChromSmoothing.Smoothing();
         }
 
-        private Chromatogram_temp2(ValuePeak[] peaks, ChromXType type, ChromXUnit unit, Algorithm.ChromSmoothing.Smoothing smoother) {
-            _peaks = peaks;
-            _size = peaks.Length;
-            _type = type;
-            _unit = unit;
-            _smoother = smoother;
-        }
-
-        protected Chromatogram_temp2(ValuePeak[] peaks, int size, ChromXType type, ChromXUnit unit, Algorithm.ChromSmoothing.Smoothing smoother) {
+        public Chromatogram_temp2(ValuePeak[] peaks, int size, ChromXType type, ChromXUnit unit, ArrayPool<ValuePeak> arrayPool) {
             _peaks = peaks;
             _size = size;
             _type = type;
             _unit = unit;
-            _smoother = smoother;
+            _arrayPool = arrayPool;
+            _smoother = new Algorithm.ChromSmoothing.Smoothing();
         }
 
         public bool IsEmpty => _size == 0;
@@ -259,15 +233,24 @@ namespace CompMs.Common.Components {
         public Chromatogram_temp2 Difference(Chromatogram_temp2 other) {
             System.Diagnostics.Debug.Assert(_type == other._type);
             System.Diagnostics.Debug.Assert(_unit == other._unit);
-            var peaks = new ValuePeak[_size];
-            for (int i = 0; i < peaks.Length; i++) {
+            System.Diagnostics.Debug.Assert(_size == other._size);
+            var arrayPool = _arrayPool ?? ArrayPool<ValuePeak>.Shared;
+            var peaks = arrayPool.Rent(_size);
+            for (int i = 0; i < _size; i++) {
                 peaks[i] = new ValuePeak(_peaks[i].Id, _peaks[i].Time, _peaks[i].Mz, Math.Max(0, _peaks[i].Intensity - other._peaks[i].Intensity));
             }
-            return new Chromatogram_temp2(peaks, _type, _unit, _smoother);
+            return new Chromatogram_temp2(peaks, _size, _type, _unit, arrayPool);
         }
 
         public Chromatogram_temp2 ChromatogramSmoothing(SmoothingMethod method, int level) {
-            var peaks = _peaks.Take(_size).ToArray();
+            ValuePeak[] peaks = null;
+            if (method == SmoothingMethod.LinearWeightedMovingAverage) {
+                peaks = _peaks as ValuePeak[];
+            }
+            if (peaks is null) {
+                peaks = _peaks.Take(_size).ToArray();
+            }
+
             switch (method) {
                 case SmoothingMethod.SimpleMovingAverage:
                     return new Chromatogram_temp2(Algorithm.ChromSmoothing.Smoothing.SimpleMovingAverage(peaks, level), _type, _unit);
@@ -281,7 +264,10 @@ namespace CompMs.Common.Components {
                     return new Chromatogram_temp2(Algorithm.ChromSmoothing.Smoothing.LoessFilter(peaks, level), _type, _unit);
                 case SmoothingMethod.LinearWeightedMovingAverage:
                 default:
-                    return new Chromatogram_temp2(_smoother.LinearWeightedMovingAverage(peaks, level), _type, _unit, _smoother);
+                    var arrayPool = _arrayPool ?? ArrayPool<ValuePeak>.Shared;
+                    var smoothed = arrayPool.Rent(_size);
+                    _smoother.LinearWeightedMovingAverage(peaks, smoothed, _size, level);
+                    return new Chromatogram_temp2(smoothed, _size, _type, _unit, arrayPool);
             }
         }
 
@@ -305,7 +291,8 @@ namespace CompMs.Common.Components {
         }
 
         public ChromatogramGlobalProperty_temp2 GetProperty(int noiseEstimateBin, int minNoiseWindowSize, double minNoiseLevel, double noiseFactor) {
-            var ssChromatogram = ChromatogramSmoothing(SmoothingMethod.LinearWeightedMovingAverage, 1).ChromatogramSmoothing(SmoothingMethod.LinearWeightedMovingAverage, 1);
+            using var sChromatogram = ChromatogramSmoothing(SmoothingMethod.LinearWeightedMovingAverage, 1);
+            var ssChromatogram = sChromatogram.ChromatogramSmoothing(SmoothingMethod.LinearWeightedMovingAverage, 1);
             var baselineChromatogram = ChromatogramSmoothing(SmoothingMethod.LinearWeightedMovingAverage, 20);
             var baselineCorrectedChromatogram = ssChromatogram.Difference(baselineChromatogram);
             var noise = baselineCorrectedChromatogram.GetMinimumNoiseLevel(noiseEstimateBin, minNoiseWindowSize, minNoiseLevel) * noiseFactor;
@@ -318,7 +305,7 @@ namespace CompMs.Common.Components {
             return new ChromatogramGlobalProperty_temp2(maxChromIntensity, minChromIntensity, baselineMedian, noise, isHighBaseline, ssChromatogram, baselineChromatogram, baselineCorrectedChromatogram);
         }
 
-        public ChroChroChromatogram GetChroChroChromatogram(int noiseEstimateBin, int minNoiseWindowSize, double minNoiseLevel, double noiseFactor) {
+        internal ChroChroChromatogram GetChroChroChromatogram(int noiseEstimateBin, int minNoiseWindowSize, double minNoiseLevel, double noiseFactor) {
             // 'chromatogram' properties
             var globalProperty = GetProperty(noiseEstimateBin, minNoiseWindowSize, minNoiseLevel, noiseFactor);
 
@@ -329,6 +316,15 @@ namespace CompMs.Common.Components {
             var noises = globalProperty.CalculateSlopeNoises(differencialCoefficients);
 
             return new ChroChroChromatogram(this, globalProperty, differencialCoefficients, noises);
+        }
+
+        public void Dispose() {
+            if (_arrayPool is null) {
+                return;
+            }
+            _arrayPool.Return((ValuePeak[])_peaks);
+            _peaks = null;
+            _arrayPool = null;
         }
     }
 }

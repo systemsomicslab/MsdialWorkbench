@@ -281,7 +281,8 @@ namespace CompMs.MsdialCore.MSDec {
                 startRt - offset < spectra.StartRt ? spectra.StartRt : startRt - offset,
                 endRt + offset > spectra.EndRt ? spectra.EndRt : endRt + offset,
                 ChromXType.RT, ChromXUnit.Min);
-            var chrom = spectra.GetMs1ExtractedChromatogram_temp2(targetMz, param.MassSliceWidth, chromatogramRange).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
+            using Chromatogram_temp2 temp = spectra.GetMs1ExtractedChromatogram_temp2(targetMz, param.MassSliceWidth, chromatogramRange);
+            var chrom = temp.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
             var peakResult = chrom.GetPeakDetectionResultFromRange(startID, endID);
             return peakResult;
         }
