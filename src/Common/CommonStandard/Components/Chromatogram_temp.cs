@@ -1,22 +1,43 @@
-﻿using Accord.Diagnostics;
-using Accord.Math.Distances;
-using CompMs.Common.Algorithm.PeakPick;
+﻿using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Mathematics.Basic;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.Common.Components {
-    public sealed class Chromatogram_temp2 {
-        private readonly IReadOnlyList<ValuePeak> _peaks;
+    public class RentalChromatogram : Chromatogram_temp2 {
+        private ArrayPool<ValuePeak> _arrayPool;
+
+        public RentalChromatogram(ValuePeak[] peaks, int size, ChromXType type, ChromXUnit unit, ArrayPool<ValuePeak> arrayPool)
+            : base(peaks, size, type, unit, new Algorithm.ChromSmoothing.Smoothing())
+        {
+            _peaks = peaks;
+            _arrayPool = arrayPool;
+        }
+
+        public void Return() {
+            if (_arrayPool is null) {
+                return;
+            }
+            _arrayPool.Return((ValuePeak[])_peaks);
+            _peaks = null;
+            _arrayPool = null;
+        }
+    }
+
+    public class Chromatogram_temp2 {
+        protected IReadOnlyList<ValuePeak> _peaks;
+        private readonly int _size;
         private readonly ChromXType _type;
         private readonly ChromXUnit _unit;
         private readonly Algorithm.ChromSmoothing.Smoothing _smoother;
 
         public Chromatogram_temp2(IEnumerable<ValuePeak> peaks, ChromXType type, ChromXUnit unit) {
             _peaks = peaks as IReadOnlyList<ValuePeak> ?? peaks?.ToArray() ?? throw new ArgumentNullException(nameof(peaks));
+            _size = _peaks.Count;
             _type = type;
             _unit = unit;
             _smoother = new Algorithm.ChromSmoothing.Smoothing();
@@ -24,18 +45,33 @@ namespace CompMs.Common.Components {
 
         private Chromatogram_temp2(ValuePeak[] peaks, ChromXType type, ChromXUnit unit, Algorithm.ChromSmoothing.Smoothing smoother) {
             _peaks = peaks;
+            _size = peaks.Length;
             _type = type;
             _unit = unit;
             _smoother = smoother;
         }
 
-        [Obsolete]
-        public IReadOnlyList<ValuePeak> Peaks => _peaks;
-        public bool IsEmpty => _peaks.Count == 0;
-        public int Length => _peaks.Count;
+        protected Chromatogram_temp2(ValuePeak[] peaks, int size, ChromXType type, ChromXUnit unit, Algorithm.ChromSmoothing.Smoothing smoother) {
+            _peaks = peaks;
+            _size = size;
+            _type = type;
+            _unit = unit;
+            _smoother = smoother;
+        }
+
+        public bool IsEmpty => _size == 0;
+        public int Length => _size;
 
         public ValuePeak[] AsPeakArray() {
-            return _peaks.ToArray();
+            var dest = new ValuePeak[_size];
+            if (_peaks is ValuePeak[] array) {
+                Array.Copy(array, dest, _size);
+                return dest;
+            }
+            for (int i = 0; i < dest.Length; i++) {
+                dest[i] = _peaks[i];
+            }
+            return dest;
         }
 
         public double Time(int index) {
@@ -128,13 +164,13 @@ namespace CompMs.Common.Components {
         }
 
         public bool IsValidPeakTop(int topId) {
-            return topId - 1 >= 0 && topId + 1 <= _peaks.Count - 1
+            return topId - 1 >= 0 && topId + 1 <= _size - 1
                 && _peaks[topId - 1].Intensity > 0 && _peaks[topId + 1].Intensity > 0;
         }
 
         public int CountSpikes(int leftId, int rightId, double threshold) {
             var leftBound = Math.Max(leftId, 1);
-            var rightBound = Math.Min(rightId, _peaks.Count - 2);
+            var rightBound = Math.Min(rightId, _size - 2);
 
             var counter = 0;
             double? spikeMax = null, spikeMin = null;
@@ -193,19 +229,20 @@ namespace CompMs.Common.Components {
         }
 
         public double GetIntensityMedian() {
-            return BasicMathematics.InplaceSortMedian(_peaks.Select(peak => peak.Intensity).ToArray());
+            return BasicMathematics.InplaceSortMedian(_peaks.Take(_size).Select(peak => peak.Intensity).ToArray());
         }
 
         public double GetMaximumIntensity() {
-            return _peaks.Select(peak => peak.Intensity).DefaultIfEmpty().Max();
+            return _peaks.Take(_size).Select(peak => peak.Intensity).DefaultIfEmpty().Max();
         }
 
         public double GetMinimumIntensity() {
-            return _peaks.Select(peak => peak.Intensity).DefaultIfEmpty().Min();
+            return _peaks.Take(_size).Select(peak => peak.Intensity).DefaultIfEmpty().Min();
         }
 
         public double GetMinimumNoiseLevel(int binSize, int minWindowSize, double minNoiseLevel) {
             var amplitudeDiffs = _peaks
+                .Take(_size)
                 .Chunk(binSize)
                 .Where(bin => bin.Length >= 1)
                 .Select(bin => bin.Max(peak => peak.Intensity) - bin.Min(peak => peak.Intensity))
@@ -220,9 +257,9 @@ namespace CompMs.Common.Components {
         }
 
         public Chromatogram_temp2 Difference(Chromatogram_temp2 other) {
-            Debug.Assert(_type == other._type);
-            Debug.Assert(_unit == other._unit);
-            var peaks = new ValuePeak[_peaks.Count];
+            System.Diagnostics.Debug.Assert(_type == other._type);
+            System.Diagnostics.Debug.Assert(_unit == other._unit);
+            var peaks = new ValuePeak[_size];
             for (int i = 0; i < peaks.Length; i++) {
                 peaks[i] = new ValuePeak(_peaks[i].Id, _peaks[i].Time, _peaks[i].Mz, Math.Max(0, _peaks[i].Intensity - other._peaks[i].Intensity));
             }
@@ -230,20 +267,21 @@ namespace CompMs.Common.Components {
         }
 
         public Chromatogram_temp2 ChromatogramSmoothing(SmoothingMethod method, int level) {
+            var peaks = _peaks.Take(_size).ToArray();
             switch (method) {
                 case SmoothingMethod.SimpleMovingAverage:
-                    return new Chromatogram_temp2(Algorithm.ChromSmoothing.Smoothing.SimpleMovingAverage(_peaks, level), _type, _unit);
+                    return new Chromatogram_temp2(Algorithm.ChromSmoothing.Smoothing.SimpleMovingAverage(peaks, level), _type, _unit);
                 case SmoothingMethod.SavitzkyGolayFilter:
-                    return new Chromatogram_temp2(Algorithm.ChromSmoothing.Smoothing.SavitxkyGolayFilter(_peaks, level), _type, _unit);
+                    return new Chromatogram_temp2(Algorithm.ChromSmoothing.Smoothing.SavitxkyGolayFilter(peaks, level), _type, _unit);
                 case SmoothingMethod.BinomialFilter:
-                    return new Chromatogram_temp2(Algorithm.ChromSmoothing.Smoothing.BinomialFilter(_peaks, level), _type, _unit);
+                    return new Chromatogram_temp2(Algorithm.ChromSmoothing.Smoothing.BinomialFilter(peaks, level), _type, _unit);
                 case SmoothingMethod.LowessFilter:
-                    return new Chromatogram_temp2(Algorithm.ChromSmoothing.Smoothing.LowessFilter(_peaks, level), _type, _unit);
+                    return new Chromatogram_temp2(Algorithm.ChromSmoothing.Smoothing.LowessFilter(peaks, level), _type, _unit);
                 case SmoothingMethod.LoessFilter:
-                    return new Chromatogram_temp2(Algorithm.ChromSmoothing.Smoothing.LoessFilter(_peaks, level), _type, _unit);
+                    return new Chromatogram_temp2(Algorithm.ChromSmoothing.Smoothing.LoessFilter(peaks, level), _type, _unit);
                 case SmoothingMethod.LinearWeightedMovingAverage:
                 default:
-                    return new Chromatogram_temp2(_smoother.LinearWeightedMovingAverage(_peaks, level), _type, _unit, _smoother);
+                    return new Chromatogram_temp2(_smoother.LinearWeightedMovingAverage(peaks, level), _type, _unit, _smoother);
             }
         }
 
@@ -251,7 +289,7 @@ namespace CompMs.Common.Components {
             var peakTopID = 0;
             var datapoints = new List<double[]>();
             var peaktopIntensity = double.MinValue;
-            for (int i = 0; i < _peaks.Count; i++) {
+            for (int i = 0; i < _size; i++) {
                 var peak = _peaks[i];
                 if (peak.Id >= startID && peak.Id <= endID) {
                     datapoints.Add(new double[] { peak.Id, peak.Time, peak.Mz, peak.Intensity });

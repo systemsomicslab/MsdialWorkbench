@@ -112,8 +112,8 @@ namespace CompMs.MsdialCore.Algorithm {
             var targetMasses = GetFocusedMassList(startMass, endMass, massStep, _parameter.MassRangeBegin, _parameter.MassRangeEnd);
             var chromPeakFeaturesArray = new List<ChromatogramPeakFeature>[targetMasses.Count];
 
-            using (var bc = new BlockingCollection<(Chromatogram_temp2, int)>()) {
-                numThreads = Math.Max(2, numThreads);
+            numThreads = Math.Max(2, numThreads);
+            using (var bc = new BlockingCollection<(Chromatogram_temp2, int)>(numThreads * 4)) {
                 var counter = 0;
                 var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, file.AcquisitionType);
                 var tasks = new Task[numThreads];
@@ -146,25 +146,11 @@ namespace CompMs.MsdialCore.Algorithm {
                 foreach (var (chromatogram, index) in bc.GetConsumingEnumerable(token)) {
                     chromPeakFeaturesArray[index] = GetChromatogramPeakFeatures_Temp2(provider, detector, chromatogram, type);
                     report?.Invoke();
+                    if (chromatogram is RentalChromatogram rent) {
+                        rent.Return();
+                    }
                 }
             });
-        }
-
-        private void ConsumeQueue(
-            RawSpectra rawSpectra, 
-            IDataProvider provider, 
-            ChromatogramRange range, 
-            PeakDetection detector, 
-            Action report, 
-            List<ChromatogramPeakFeature>[] chromPeakFeaturesArray, 
-            ConcurrentQueue<(float, int)> queue) {
-            while (queue.TryDequeue(out var pair)) {
-                var (targetMass, index) = pair;
-                Chromatogram_temp2 chromatogram = GetChromatogram(rawSpectra, targetMass, range);
-                var chromPeakFeatures = GetChromatogramPeakFeatures_Temp2(provider, detector, chromatogram, rawSpectra.AcquisitionType);
-                chromPeakFeaturesArray[index] = chromPeakFeatures;
-                report?.Invoke();
-            }
         }
 
         public List<ChromatogramPeakFeature> FinalizePeakSpottingResult(List<ChromatogramPeakFeature>[] chromPeakFeaturesArray, float massStep, IDataProvider provider, AcquisitionType type) {

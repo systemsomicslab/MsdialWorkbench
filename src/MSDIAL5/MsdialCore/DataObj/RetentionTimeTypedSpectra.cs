@@ -4,6 +4,7 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Utility;
 using System;
+using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -114,9 +115,14 @@ namespace CompMs.MsdialCore.DataObj
                 times[idc] = _idToRetentionTime[i].Value;
                 ++idc;
             }
-            return enumerables.Sequence()
-                .Select(peaks => peaks.Zip(indexs, times, (peak, index, time) => new ValuePeak(index, time, peak.Item1, peak.Item3)))
-                .Select(peaks => new Chromatogram_temp2(peaks, ChromXType.RT, _unit));
+            foreach (var peaks in enumerables.Sequence()) {
+                var peaks2 = ArrayPool<ValuePeak>.Shared.Rent(indexs.Length);
+                for (int i = 0; i < indexs.Length; i++) {
+                    peaks2[i] = new ValuePeak(indexs[i], times[i], peaks[i].Item1, peaks[i].Item3);
+                }
+                yield return new RentalChromatogram(peaks2, indexs.Length, ChromXType.RT, _unit, ArrayPool<ValuePeak>.Shared);
+                //yield return new Chromatogram_temp2(peaks2, ChromXType.RT, _unit);
+            }
         }
 
         public Chromatogram GetMs1TotalIonChromatogram(double start, double end) {
