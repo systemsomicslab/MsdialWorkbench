@@ -62,7 +62,6 @@ namespace CompMs.App.Msdial.Model.Statistics
                 # 20231110
                 # Overall view of notame preprocessing and quality metrics
 
-                # Load libraries
                 # library(notame)
                 # library(doParallel)
                 # library(dplyr)
@@ -180,43 +179,14 @@ namespace CompMs.App.Msdial.Model.Statistics
                     return(list(exprs = quantval_tbl, pheno_data = pData, feature_data = fData))
                 }
 
+                grouping_name <- ""Class""
 
-                # set up path
-                path <- """" # path can be set
-
-                # either ion_mod or split_col should exist
-                # They are needed in metaboset construction
-                ion_mod <- ""pos"" # name the mode
-
-                file_name <- ""Height_0_2023_11_28_17_10_23.txt"" # name of possible excel file
-                grouping_name <- ""Class"" # set the name of group that exist MS-dial
-                # Test parameters
-                # file_name <- ""Height_0_2023_11_28_17_10_23.txt""
-                # grouping_name <- ""Class""
-
-                # # Optional logging
-                # 
-                # notame::init_log(log_file = paste0(path, ""log.txt""))
-                # #> Logging started: ~/test_project/log.txt.
-                # # Check logging state
-                # log_state()
-                # #> Current log file: ~/test_project/log.txt
-
-
-                # this can be omitted. Depending if the data is read from excel or else where
-                # Read data from excel file
                 # (note: as we use split_by here assumption is that the data contains signals from two or more modes)
                 # One of split_by and name are needed. Depending of the number of modes.
                 if(ion_mod != """"){
                     data <- read_MSDIAL(paste0(path, file_name), ion_mod = ion_mod)
                     # data <- notame::read_from_excel(file = paste0(path, file_name), sheet = 1, name = ion_mod)
                 }
-
-                # # if data have more modes
-                # if(split_col =! """"){
-                #   data <- notame::read_from_excel(file = paste0(path, """"), sheet = 1, split_by = split_col)
-                # }
-
 
                 # Some adaptations can be done
                 # Replace spaces with underscores if necessary
@@ -231,16 +201,6 @@ namespace CompMs.App.Msdial.Model.Statistics
                                                             feature_data = data$feature_data,
                                                             group_col = grouping_name, split_data = F)
 
-                # # Same can be done without group information
-                # modes <- notame::construct_metabosets(exprs = data$exprs, pheno_data = data$pheno_data,
-                #                               feature_data = data$feature_data)
-
-
-                # Preprocessing of ONE mode
-                # (NB: visualizations disabled here for saving computational time,
-                # remove the hashtags to enable them.
-                # Also, create a folder called figures in the working folder if you create visualizations)
-
                 # first check that there is QC samples.
                 # The who process is dependent on QC samples
                 if(""QC"" %in% metaboset$QC ){
@@ -249,15 +209,9 @@ namespace CompMs.App.Msdial.Model.Statistics
                     cl <- parallel::makeCluster(num_cores)
                     doParallel::registerDoParallel(cl)
     
-    
                     # Set all zero abundances to NA and asses the detection rate and flag based on that
                     metaboset <- notame::mark_nas(metaboset, value = 0)
                     metaboset <- notame::flag_detection(metaboset)
-    
-                    # Set the name for visualization and do visualization
-                    # Commented here!
-                    # name <- """"
-                    # visualizations(metaboset, prefix = paste0(path, ""figures/"", name, ""_ORIG""))
     
                     # Correct the possible drift
                     corrected <- notame::correct_drift(metaboset)
@@ -279,7 +233,6 @@ namespace CompMs.App.Msdial.Model.Statistics
                     set.seed(1234567)
                     imputed <- notame::impute_rf(merged_no_qc)
                     imputed <- notame::impute_rf(imputed, all_features = TRUE)
-    
     
                     #Stop using several cores (releases them for other use)
                     parallel::stopCluster(cl)
