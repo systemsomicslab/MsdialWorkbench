@@ -40,24 +40,7 @@ namespace CompMs.App.Msdial.Model.Statistics
 
         public void Run()
         {
-            SaveParametersAsJson();
             SendParametersToNotame();
-        }
-
-        private void SaveParametersAsJson()
-        {
-            Dictionary<string, string> parameters = new Dictionary<string, string>
-            {
-                { "path", Path },
-                { "file_name", FileName },
-                { "ion_mod", IonMode },
-                { "grouping_name", GroupingName }
-            };
-
-            string jsonParameter = JsonConvert.SerializeObject(parameters, Formatting.Indented);
-            string filePath = "C:/src/NotameParameters.json";
-            File.WriteAllText(filePath, jsonParameter);
-            MessageBox.Show("Parameters saved to the JSON file.");
         }
 
         private void SendParametersToNotame()
