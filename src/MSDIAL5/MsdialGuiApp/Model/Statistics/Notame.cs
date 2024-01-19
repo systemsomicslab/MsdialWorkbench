@@ -32,12 +32,6 @@ namespace CompMs.App.Msdial.Model.Statistics
         }
         private string _ionMode = string.Empty;
 
-        public string GroupingName {
-            get => _groupingName;
-            set => SetProperty(ref _groupingName, value);
-        }
-        private string _groupingName = string.Empty;
-
         public void Run()
         {
             SendParametersToNotame();
