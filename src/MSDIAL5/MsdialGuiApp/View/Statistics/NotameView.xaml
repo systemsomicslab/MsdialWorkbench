@@ -31,7 +31,7 @@
         <TextBlock Text="Directory:"
                    VerticalAlignment="Center"
                    Grid.Column="0"/>
-        <TextBox Text="{Binding ExportDirectory, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+        <TextBox Text="{Binding Path, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                  HorizontalAlignment="Stretch" VerticalContentAlignment="Center"
                  Margin="5,0"
                  Grid.Column="1"/>
