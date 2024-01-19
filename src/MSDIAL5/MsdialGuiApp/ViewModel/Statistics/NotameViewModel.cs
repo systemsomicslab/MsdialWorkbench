@@ -1,9 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.Statistics;
 using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.Validator;
 using CompMs.Graphics.UI;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
+using System.ComponentModel.DataAnnotations;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Statistics
@@ -18,20 +20,48 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             _broker = broker;
             RunNotameCommand = new DelegateCommand(RunNotame);
             ShowSettingViewCommand = new DelegateCommand(ShowSettingView);
+            ExportCommand = new DelegateCommand(ExportAlignmentResultCommand);
+            Path = notame.Path;
+        }
+        
+        [Required(ErrorMessage = "Please enter the folder which the results will be exported.")]
+        [PathExists(ErrorMessage = "This folder does not exist.", IsDirectory = true)]
+        public string Path { 
+            get => _path; 
+            set
+            {
+                if (SetProperty(ref _path, value))
+                {
+                    if (!ContainsError(nameof(Path)))
+                    {
+                        _notame.Path = _path;
+                    }
+                }
+            }
+        }
+        private string _path;
 
-            Path = notame.ToReactivePropertyAsSynchronized(m => m.Path).AddTo(Disposables);
-            FileName = notame.ToReactivePropertyAsSynchronized(m => m.FileName).AddTo(Disposables);
-            IonMode = notame.ToReactivePropertyAsSynchronized(m => m.IonMode).AddTo(Disposables);
-            GroupingName = notame.ToReactivePropertyAsSynchronized(m => m.GroupingName).AddTo(Disposables);
+        public DelegateCommand BrowseDirectoryCommand => _browseDirectoryCommand ?? (_browseDirectoryCommand = new DelegateCommand(BrowseDirectory));
+        private DelegateCommand _browseDirectoryCommand;
+
+        private void BrowseDirectory()
+        {
+            var win = new Graphics.Window.SelectFolderDialog
+            {
+                Title = "Chose a export folder.",
+            };
+
+            if (win.ShowDialog() == Graphics.Window.DialogResult.OK)
+            {
+                Path = win.SelectedPath;
+            }
         }
 
-        public ReactiveProperty<string> Path { get; }
+        public DelegateCommand ExportCommand { get; }
 
-        public ReactiveProperty<string> FileName { get; }
-
-        public ReactiveProperty<string> IonMode { get; }
-
-        public ReactiveProperty<string> GroupingName { get; }
+        private void ExportAlignmentResultCommand() {
+            _notame.ExportAlignmentResult();
+        }
 
         public DelegateCommand RunNotameCommand { get; }
 
