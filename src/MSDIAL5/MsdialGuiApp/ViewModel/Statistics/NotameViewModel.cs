@@ -20,11 +20,10 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             _broker = broker;
             RunNotameCommand = new DelegateCommand(RunNotame);
             ShowSettingViewCommand = new DelegateCommand(ShowSettingView);
-            ExportCommand = new DelegateCommand(ExportAlignmentResultCommand);
             Path = notame.Path;
         }
         
-        [Required(ErrorMessage = "Please enter the folder which the results will be exported.")]
+        [Required(ErrorMessage = "Please browse a folder for result export.")]
         [PathExists(ErrorMessage = "This folder does not exist.", IsDirectory = true)]
         public string Path { 
             get => _path; 
@@ -48,19 +47,13 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         {
             var win = new Graphics.Window.SelectFolderDialog
             {
-                Title = "Chose a export folder.",
+                Title = "Choose an export folder.",
             };
 
             if (win.ShowDialog() == Graphics.Window.DialogResult.OK)
             {
                 Path = win.SelectedPath;
             }
-        }
-
-        public DelegateCommand ExportCommand { get; }
-
-        private void ExportAlignmentResultCommand() {
-            _notame.ExportAlignmentResult();
         }
 
         public DelegateCommand RunNotameCommand { get; }
