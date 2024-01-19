@@ -1,3 +1,4 @@
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.CommonMVVM;
 using Newtonsoft.Json;
 using RDotNet;
@@ -5,15 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.IO;
-using System.IO.Pipes;
-using System.Text;
 using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Statistics
 {
     public sealed class Notame : BindableBase
     {
+        private DatasetParameterSettingModel dataset;
         public string Path {
             get => _path;
             set => SetProperty(ref _path, value);
@@ -27,7 +26,7 @@ namespace CompMs.App.Msdial.Model.Statistics
         private string _fileName = string.Empty;
 
         public string IonMode {
-            get => _ionMode;
+            get => dataset.IonMode.ToString();
             set => SetProperty(ref _ionMode, value);
         }
         private string _ionMode = string.Empty;
