@@ -6,8 +6,8 @@
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Statistics"
              mc:Ignorable="d" 
              d:Background="White"
-             d:DataContext="{d:DesignInstance Type={x:Type vm:NotameViewModel}}" 
-             d:DesignWidth="500" Height="100">
+             d:DataContext="{d:DesignInstance Type={x:Type vm:NotameViewModel}}"
+             d:DesignHeight="80" d:DesignWidth="300">
     <UserControl.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="Margin" Value="0,4"/>
@@ -22,35 +22,21 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Grid Margin="8" Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
 
-            <TextBlock Text="Directory:"
-                       VerticalAlignment="Center"
-                       Grid.Column="0"/>
-            <TextBox Text="{Binding ExportDirectory, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                     HorizontalAlignment="Stretch" VerticalContentAlignment="Center"
-                     Margin="5,0"
-                     Grid.Column="1"/>
-            <Button Content="Browse"
-                    Command="{Binding BrowseDirectoryCommand}"
-                    Grid.Column="2"/>
-        </Grid>
-        <StackPanel Orientation="Horizontal"
-            VerticalAlignment="Center" HorizontalAlignment="Right"
-            Height="30" Margin="8, 16"
-            Grid.Row="6">
-            <Button Content="Export"
-            Click="ExportButton_Click"
-            Command="{Binding FinishCommand, Mode=OneTime}"
-            Width="64" Margin="8,0"/>
-            <Button Content="Cancel"
-            Click="CancelButton_Click"
-            Width="64" Margin="8,0"/>
-        </StackPanel>
+        <TextBlock Text="Directory:"
+                   VerticalAlignment="Center"
+                   Grid.Column="0"/>
+        <TextBox Text="{Binding ExportDirectory, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                 HorizontalAlignment="Stretch" VerticalContentAlignment="Center"
+                 Margin="5,0"
+                 Grid.Column="1"/>
+        <Button Content="Browse"
+                Command="{Binding BrowseDirectoryCommand}"
+                Grid.Column="2"/>
     </Grid>
 </UserControl>
