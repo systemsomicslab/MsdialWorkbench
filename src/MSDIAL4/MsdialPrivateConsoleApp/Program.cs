@@ -25,9 +25,18 @@ namespace MsdialPrivateConsoleApp {
             //    @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\StandardMix\KE14_output\AlignmentResult_2024_01_07_09_08_59.xml",
             //    @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\StandardMix\KE14_output\pairfile.txt");
 
-            LipidomicsResultCuration.EadValidationResultExport(
-               @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\LightSplash\result\annotation\AlignmentResult_2024_01_07_19_12_06.xml",
-               @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\LightSplash\result\annotation\pairfile.txt");
+            //LipidomicsResultCuration.EadValidationResultExport(
+            //   @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\LightSplash\result\annotation\AlignmentResult_2024_01_07_19_12_06.xml",
+            //   @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\LightSplash\result\annotation\pairfile.txt");
+
+            //MspManager.ExactMassChecker(@"E:\6_Projects\PAPERWORK_MSDIAL5\Materials\repositorydata\mspformat_65lipidstandards",
+            //    @"E:\6_Projects\PAPERWORK_MSDIAL5\Materials\repositorydata\tablefile.txt",
+            //    @"E:\6_Projects\PAPERWORK_MSDIAL5\Materials\repositorydata\tablefile-checked.txt");
+
+
+            MspManager.AddMetadata2Msp(@"E:\6_Projects\PAPERWORK_MSDIAL5\Materials\repositorydata\mspformat_65lipidstandards",
+                @"E:\6_Projects\PAPERWORK_MSDIAL5\Materials\repositorydata\tablefile.txt",
+                @"E:\6_Projects\PAPERWORK_MSDIAL5\Materials\repositorydata\mspformat_65lipidstandards_v2");
 
             //var mspfile = @"D:\9_Spectral library curations\Distributed MSPs\MSMS-RIKEN-Pos-VS15.msp";
             //var inchikeytable = @"D:\9_Spectral library curations\Distributed MSPs\inchikey_classyfire_table.txt";
