@@ -1,35 +1,74 @@
-using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.Model.Export;
 using CompMs.CommonMVVM;
-using Newtonsoft.Json;
+using CompMs.Common.Enum;
+using CompMs.MsdialCore.Parameter;
 using RDotNet;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Windows;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Threading;
+using Reactive.Bindings.Notifiers;
+using Reactive.Bindings;
 
 namespace CompMs.App.Msdial.Model.Statistics
 {
-    public sealed class Notame : BindableBase
+    internal sealed class Notame : BindableBase
     {
-        private DatasetParameterSettingModel dataset;
-        public string Path {
-            get => _path;
-            set => SetProperty(ref _path, value);
+        private readonly DataExportBaseParameter _dataExportParameter;
+
+        public Notame(IEnumerable<IAlignmentResultExportModel> exportGroups, AlignmentFilesForExport alignmentFilesForExport, AlignmentPeakSpotSupplyer peakSpotSupplyer, DataExportBaseParameter dataExportParameter) {
+            AlignmentFilesForExport = alignmentFilesForExport;
+            PeakSpotSupplyer = peakSpotSupplyer ?? throw new ArgumentNullException(nameof(peakSpotSupplyer));
+            _dataExportParameter = dataExportParameter;
+            var groups = new ObservableCollection<IAlignmentResultExportModel>(exportGroups);
+            Groups = new ReadOnlyObservableCollection<IAlignmentResultExportModel>(groups);
+            ExportDirectory = dataExportParameter.ExportFolderPath;
         }
-        private string _path = string.Empty;
+
+        public string ExportDirectory {
+            get => _exportDirectory;
+            set => SetProperty(ref _exportDirectory, value);
+        }
+        private string _exportDirectory;
+        
+        public AlignmentFilesForExport AlignmentFilesForExport { get; }
+
+        public AlignmentPeakSpotSupplyer PeakSpotSupplyer { get; }
+        public ReadOnlyObservableCollection<IAlignmentResultExportModel> Groups { get; }
+
+        public Task ExportAlignmentResultAsync(IMessageBroker broker) {
+            return Task.Run(() => {
+                var task = TaskNotification.Start($"Exporting {AlignmentFilesForExport.SelectedFile.FileName}");
+                broker.Publish(task);
+
+                var numExportFile = (double)Groups.Sum(group => group.CountExportFiles(AlignmentFilesForExport.SelectedFile));
+                var count = 0;
+                void notify(string file) {
+                    broker.Publish(task.Progress(Interlocked.Increment(ref count) / numExportFile, file));
+                }
+                foreach (var group in Groups) {
+                    group.Export(AlignmentFilesForExport.SelectedFile, ExportDirectory, notify);
+                }
+                _dataExportParameter.ExportFolderPath = ExportDirectory;
+
+                broker.Publish(task.End());
+            });
+        }
 
         public string FileName {
-            get => _fileName;
+            get => AlignmentFilesForExport.SelectedFile.FileName;
             set => SetProperty(ref _fileName, value);
         }
-        private string _fileName = string.Empty;
+        private string _fileName;
 
-        public string IonMode {
-            get => dataset.IonMode.ToString();
-            set => SetProperty(ref _ionMode, value);
+        public IonMode IonMode {
+            get => ionMode;
+            set => SetProperty(ref ionMode, value);
         }
-        private string _ionMode = string.Empty;
+        private IonMode ionMode = IonMode.Positive;
 
         public void Run()
         {
@@ -46,9 +85,9 @@ namespace CompMs.App.Msdial.Model.Statistics
             engine.Evaluate("library(doParallel)");
             engine.Evaluate("library(dplyr)");
             engine.Evaluate("library(openxlsx)");
-            engine.SetSymbol("path", engine.CreateCharacter(Path));
+            engine.SetSymbol("path", engine.CreateCharacter(ExportDirectory));
             engine.SetSymbol("file_name", engine.CreateCharacter(FileName));
-            engine.SetSymbol("ion_mod", engine.CreateCharacter(IonMode));
+            engine.SetSymbol("ion_mod", engine.CreateCharacter(IonMode.ToString())) ;
 
             string rScript = @"
                 # RHaikonen
