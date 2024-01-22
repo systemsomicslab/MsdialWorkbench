@@ -91,6 +91,8 @@ namespace CompMs.App.Msdial.Model.Core
 
         public async Task SaveAsync() {
             // TODO: implement process when project save failed.
+            Storage.Parameter.ProjectParam.MsdialVersionNumber = Properties.Resources.VERSION;
+            Storage.Parameter.ProjectParam.FinalSavedDate = DateTime.Now;
             using (var streamManager = new DirectoryTreeStreamManager(Storage.Parameter.ProjectFolderPath)) {
                 await Task.WhenAll(new[]
                 {
