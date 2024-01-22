@@ -111,7 +111,7 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<ProcessSettingViewModel>()
                 .Subscribe(ShowChildDialog<ProjectSettingDialog>);
             broker.ToObservable<NotameViewModel>()
-                .Subscribe(ShowChildSettingDialog<NotameView>("Insert Parameters", height: 240, width: 300));
+                .Subscribe(ShowChildSettingDialog<NotameView>("Insert Parameters", height: 520, width: 450));
             /*
             broker.ToObservable<CompoundSearchVM>()
                 .Subscribe(ShowChildDialog<CompoundSearchWindow>);
