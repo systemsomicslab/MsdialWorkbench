@@ -41,8 +41,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
 
             var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
-            PlotViewModel = new AnalysisPeakPlotViewModel(_model.PlotModel, peakPlotAction, peakPlotFocused).AddTo(Disposables);
-            EicViewModel = new EicViewModel(_model.EicModel, horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
+            PlotViewModel = new AnalysisPeakPlotViewModel(_model.PlotModel, peakPlotAction, peakPlotFocused, broker).AddTo(Disposables);
+            EicViewModel = new EicViewModel(
+                _model.EicModel,
+                horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
 
 
             var (rawDecSpectraViewFocusAction, rawDecSpectraViewFocused) = focusControlManager.Request();

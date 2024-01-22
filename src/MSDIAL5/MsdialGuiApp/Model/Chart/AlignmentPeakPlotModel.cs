@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Export;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
@@ -134,6 +135,15 @@ namespace CompMs.App.Msdial.Model.Chart
                 return Task.CompletedTask;
             }
             return _spotsSource.DuplicateSpotAsync(spot);
+        }
+
+        public IExportMrmprobsUsecase ExportMrmprobs { get; set; }
+
+        public ExportMrmprobsModel ExportMrmprobsModel() {
+            if (ExportMrmprobs is null) {
+                return null;
+            }
+            return new ExportMrmprobsModel(ExportMrmprobs);
         }
     }
 }

@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
@@ -56,10 +57,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                 throw new ArgumentNullException(nameof(provider));
             }
 
-            if (mapper is null) {
-                throw new ArgumentNullException(nameof(mapper));
-            }
-
             if (evaluator is null) {
                 throw new ArgumentNullException(nameof(evaluator));
             }
@@ -69,7 +66,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
 
             _provider = provider;
-            DataBaseMapper = mapper;
+            DataBaseMapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _parameter = parameter;
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper);
             _undoManager = new UndoManager().AddTo(Disposables);
@@ -104,6 +101,9 @@ namespace CompMs.App.Msdial.Model.Lcms
                         : $" Spot ID: {t.MasterPeakID} Scan: {t.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5}"))
                 .Subscribe(title => PlotModel.GraphTitle = title)
                 .AddTo(Disposables);
+            var mrmprobsExporter = new EsiMrmprobsExporter(evaluator, mapper);
+            var usecase = new ChromatogramPeakExportMrmprobsUsecase(parameter.MrmprobsExportBaseParam, Ms1Peaks, analysisFileModel, _compoundSearchers, mrmprobsExporter, Target);
+            PlotModel.ExportMrmprobs = usecase;
 
             // Eic chart
             var eicLoader = EicLoader.BuildForAllRange(analysisFileModel.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
@@ -333,8 +333,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                 DataBaseMapper,
                 _parameter);
         }
-
-        
 
         public void Undo() => _undoManager.Undo();
         public void Redo() => _undoManager.Redo();
