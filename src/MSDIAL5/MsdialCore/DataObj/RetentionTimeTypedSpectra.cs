@@ -1,7 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
-using CompMs.Common.Extension;
 using CompMs.Common.Utility;
 using System;
 using System.Buffers;
@@ -23,17 +22,12 @@ namespace CompMs.MsdialCore.DataObj
         public RetentionTimeTypedSpectra(IReadOnlyList<RawSpectrum> spectra, ChromXUnit unit, IonMode ionMode) {
             _unit = unit;
 
-            switch (ionMode) {
-                case IonMode.Positive:
-                    _polarity = ScanPolarity.Positive;
-                    break;
-                case IonMode.Negative:
-                    _polarity = ScanPolarity.Negative;
-                    break;
-                default:
-                    throw new ArgumentException($"IonMode {ionMode} is not supported.");
-            }
-
+            _polarity = ionMode switch
+            {
+                IonMode.Positive => ScanPolarity.Positive,
+                IonMode.Negative => ScanPolarity.Negative,
+                _ => throw new ArgumentException($"IonMode {ionMode} is not supported."),
+            };
             _spectra = spectra?.OrderBy(spectrum => spectrum.ScanStartTime).ToList() ?? throw new ArgumentNullException(nameof(spectra));
             _idToRetentionTime = new RetentionTime[_spectra.Count];
             _ms1Counts = new int[_spectra.Count + 1];
@@ -100,7 +94,7 @@ namespace CompMs.MsdialCore.DataObj
         public IEnumerable<Chromatogram_temp2> GetMs1ExtractedChromatograms_temp2(IEnumerable<double> mzs, double tolerance, double start, double end) {
             var startIndex = _spectra.LowerBound(start, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
             var endIndex = _spectra.UpperBound(end, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
-            var enumerables = new IEnumerable<(double, double, double)>[_ms1Counts[endIndex] - _ms1Counts[startIndex]];
+            var enumerators = new IEnumerator<Spectrum.SummarizedSpectrum>[_ms1Counts[endIndex] - _ms1Counts[startIndex]];
             var indexs = new int[_ms1Counts[endIndex] - _ms1Counts[startIndex]];
             var times = new double[_ms1Counts[endIndex] - _ms1Counts[startIndex]];
             var idc = 0;
@@ -111,18 +105,22 @@ namespace CompMs.MsdialCore.DataObj
                     continue;
                 }
                 var spectrum = _lazySpectra.GetOrAdd(i, index => new Lazy<Spectrum>(() => new Spectrum(_spectra[index].Spectrum))).Value;
-                enumerables[idc] = spectrum.RetrieveBins(mzs_, tolerance);
+                enumerators[idc] = spectrum.RetrieveBins(mzs_, tolerance).GetEnumerator();
                 indexs[idc] = _spectra[i].Index;
                 times[idc] = _idToRetentionTime[i].Value;
                 ++idc;
             }
-            foreach (var peaks in enumerables.Sequence()) {
-                var peaks2 = ArrayPool<ValuePeak>.Shared.Rent(indexs.Length);
+            while (true) {
+                var peaks = ArrayPool<ValuePeak>.Shared.Rent(indexs.Length);
                 for (int i = 0; i < indexs.Length; i++) {
-                    peaks2[i] = new ValuePeak(indexs[i], times[i], peaks[i].Item1, peaks[i].Item3);
+                    if (!enumerators[i].MoveNext()) {
+                        ArrayPool<ValuePeak>.Shared.Return(peaks);
+                        yield break;
+                    }
+                    var peak = enumerators[i].Current;
+                    peaks[i] = new ValuePeak(indexs[i], times[i], peak.BasePeakMz, peak.SummedIntensity);
                 }
-                yield return new Chromatogram_temp2(peaks2, indexs.Length, ChromXType.RT, _unit, ArrayPool<ValuePeak>.Shared);
-                //yield return new Chromatogram_temp2(peaks2, ChromXType.RT, _unit);
+                yield return new Chromatogram_temp2(peaks, indexs.Length, ChromXType.RT, _unit, ArrayPool<ValuePeak>.Shared);
             }
         }
 

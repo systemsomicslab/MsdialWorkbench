@@ -151,6 +151,15 @@ namespace CompMs.Common.Mathematics.Basic {
             return array[midArrayNumber];
         }
 
+        public static double InplaceSortMedian(double[] array, int size)
+        {
+            if (array is null || size == 0) {
+                return 0;
+            }
+            Array.Sort(array, 0, size);
+            return array[size / 2];
+        }
+
         public static void BoxPlotProperties(double[] array, out double minvalue, out double twentyfive, 
             out double median, out double seventyfive, out double maxvalue) {
             if (array == null) {

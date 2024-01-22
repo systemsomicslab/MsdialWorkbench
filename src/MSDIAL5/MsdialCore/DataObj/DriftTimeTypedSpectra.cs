@@ -86,7 +86,7 @@ namespace CompMs.MsdialCore.DataObj
         public IEnumerable<Chromatogram_temp2> GetMs1ExtractedChromatograms_temp2(IEnumerable<double> mzs, double tolerance, double start, double end) {
             var startIndex = _spectra.LowerBound(start, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
             var endIndex = _spectra.UpperBound(end, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
-            var enumerables = new List<IEnumerable<(double, double, double)>>();
+            var enumerables = new List<IEnumerable<Spectrum.SummarizedSpectrum>>();
             var indexs = new List<int>();
             var times = new List<double>();
             var mzs_ = mzs.ToList();
@@ -101,7 +101,7 @@ namespace CompMs.MsdialCore.DataObj
                 times.Add(time.Value.Value);
             }
             return enumerables.Sequence()
-                .Select(peaks => peaks.Zip(indexs, times, (peak, index, time) => new ValuePeak(index, time, peak.Item1, peak.Item3)).ToArray())
+                .Select(peaks => peaks.Zip(indexs, times, (peak, index, time) => new ValuePeak(index, time, peak.BasePeakMz, peak.SummedIntensity)).ToArray())
                 .Select(peaks => new Chromatogram_temp2(peaks, ChromXType.Drift, _unit));
         }
 

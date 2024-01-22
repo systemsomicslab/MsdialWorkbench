@@ -41,25 +41,23 @@ namespace CompMs.MsdialCore.DataObj
             return (basepeakMz, basepeakIntensity, summedIntensity);
         }
 
-        public IEnumerable<(double BasePeakMz, double BasePeakIntensity, double SummedIntensity)> RetrieveBins(IEnumerable<double> mzs, double tolerance) {
-            var elements = _elements;
+        internal IEnumerable<SummarizedSpectrum> RetrieveBins(IEnumerable<double> mzs, double tolerance) {
             var lo = 0;
             var hi = 0;
-            var n = elements.Length;
             foreach (var mz in mzs) {
                 var inf = mz - tolerance;
-                while (lo < n && elements[lo].Mz < inf) {
+                while (lo < _elements.Length && _elements[lo].Mz < inf) {
                     lo++;
                 }
                 if (hi < lo) {
                     hi = lo;
                 }
                 var sup = mz + tolerance;
-                while (hi < n && elements[hi].Mz <= sup) {
+                while (hi < _elements.Length && _elements[hi].Mz <= sup) {
                     hi++;
                 }
                 if (lo == hi) {
-                    yield return (mz, 0d, 0d);
+                    yield return new SummarizedSpectrum(mz, 0d, 0d);
                 }
                 else {
                     yield return SummarizeBin(lo, hi, mz);
@@ -67,19 +65,18 @@ namespace CompMs.MsdialCore.DataObj
             }
         }
 
-        private (double, double, double) SummarizeBin(int lo, int hi, double mz) {
-            var elements = _elements;
+        private SummarizedSpectrum SummarizeBin(int lo, int hi, double mz) {
             var summedIntensity = 0d;
             var basePeakIntensity = 0d;
             var basePeakMz = mz;
             for (int i = lo; i < hi; i++) {
-                summedIntensity += elements[i].Intensity;
-                if (basePeakIntensity < elements[i].Intensity) {
-                    basePeakIntensity = elements[i].Intensity;
-                    basePeakMz = elements[i].Mz;
+                summedIntensity += _elements[i].Intensity;
+                if (basePeakIntensity < _elements[i].Intensity) {
+                    basePeakIntensity = _elements[i].Intensity;
+                    basePeakMz = _elements[i].Mz;
                 }
             }
-            return (basePeakMz, basePeakIntensity, summedIntensity);
+            return new SummarizedSpectrum(basePeakMz, basePeakIntensity, summedIntensity);
         }
 
         public (double BasePeakMz, double BasePeakIntensity, double SummedIntensity) RetrieveTotalIntensity() {
@@ -94,6 +91,18 @@ namespace CompMs.MsdialCore.DataObj
                 }
             }
             return (basepeakMz, basepeakIntensity, summedIntensity);
+        }
+
+        internal readonly struct SummarizedSpectrum {
+            public SummarizedSpectrum(double basePeakMz, double basePeakIntensity, double summedIntensity)
+            {
+                BasePeakMz = basePeakMz;
+                BasePeakIntensity = basePeakIntensity;
+                SummedIntensity = summedIntensity;
+            }
+            public double BasePeakMz { get; }
+            public double BasePeakIntensity { get; }
+            public double SummedIntensity { get; }
         }
     }
 }

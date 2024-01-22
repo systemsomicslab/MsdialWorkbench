@@ -18,8 +18,6 @@ namespace CompMs.Common.Algorithm.ChromSmoothing
     /// The second argument of all smoothing methods is the number of data points which are used for the smoothing.
     /// </summary>
     public sealed class Smoothing {
-        private readonly List<double> intensitiesBuffer = new List<double>();
-
         public Smoothing() {
 
         }

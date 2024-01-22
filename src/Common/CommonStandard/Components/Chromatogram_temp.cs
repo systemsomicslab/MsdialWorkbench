@@ -215,18 +215,29 @@ namespace CompMs.Common.Components {
         }
 
         public double GetMinimumNoiseLevel(int binSize, int minWindowSize, double minNoiseLevel) {
-            var amplitudeDiffs = _peaks
-                .Take(_size)
-                .Chunk(binSize)
-                .Where(bin => bin.Length >= 1)
-                .Select(bin => bin.Max(peak => peak.Intensity) - bin.Min(peak => peak.Intensity))
-                .Where(diff => diff > 0)
-                .ToArray();
-            if (amplitudeDiffs.Length >= minWindowSize) {
-                return BasicMathematics.InplaceSortMedian(amplitudeDiffs);
+            var buffer = ArrayPool<double>.Shared.Rent((_size + binSize - 1) / binSize);
+            try {
+                var size = 0;
+                int i = 0;
+                while(i < _size) {
+                    var (min, max) = (double.MaxValue, double.MinValue);
+                    for (int j = 0; j < binSize; j++) {
+                        min = Math.Min(min, _peaks[i].Intensity);
+                        max = Math.Max(max, _peaks[i].Intensity);
+                        if (++i == _size) {
+                            break;
+                        }
+                    }
+                    if (min < max) {
+                        buffer[size++] = max - min;
+                    }
+                }
+                return size >= minWindowSize
+                    ? BasicMathematics.InplaceSortMedian(buffer, size)
+                    : minNoiseLevel;
             }
-            else {
-                return minNoiseLevel;
+            finally {
+                ArrayPool<double>.Shared.Return(buffer);
             }
         }
 
