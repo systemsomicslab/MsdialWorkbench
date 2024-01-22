@@ -125,7 +125,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             ParameterExportModel = new ParameterExportModel(storage.DataBases, storage.Parameter, broker);
 
-            Notame = new Notame();
+            Notame = new Notame(exportGroups, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam);
         }
 
         public PeakFilterModel PeakFilterModel { get; }
