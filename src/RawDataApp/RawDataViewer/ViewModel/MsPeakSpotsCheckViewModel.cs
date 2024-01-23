@@ -19,10 +19,14 @@ namespace CompMs.App.RawDataViewer.ViewModel
             Summary = model.ObserveProperty(m => m.Summary)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+            Distribution = model.ObserveProperty(m => m.Distribution)
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
         }
 
         public ReadOnlyReactivePropertySlim<AnalysisFileBean> AnalysisFile { get; }
         public ReadOnlyReactivePropertySlim<MachineCategory> MachineCategory { get; }
         public ReadOnlyReactivePropertySlim<MsPeakSpotsSummary> Summary { get; }
+        public ReadOnlyReactivePropertySlim<MsSnDistribution> Distribution { get; }
     }
 }
