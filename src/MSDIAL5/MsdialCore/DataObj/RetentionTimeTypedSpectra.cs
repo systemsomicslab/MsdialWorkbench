@@ -73,7 +73,7 @@ namespace CompMs.MsdialCore.DataObj
             return new Chromatogram(results, ChromXType.RT, _unit);
         }
 
-        public Chromatogram_temp2 GetMs1ExtractedChromatogram_temp2(double mz, double tolerance, double start, double end) {
+        public ExtractedIonChromatogram GetMs1ExtractedChromatogram_temp2(double mz, double tolerance, double start, double end) {
             var startIndex = _spectra.LowerBound(start, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
             var endIndex = _spectra.UpperBound(end, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
             var arrayPool = ArrayPool<ValuePeak>.Shared;
@@ -88,10 +88,10 @@ namespace CompMs.MsdialCore.DataObj
                 var (basePeakMz, _, summedIntensity) = spectrum.RetrieveBin(mz, tolerance);
                 results[idc++] = new ValuePeak(_spectra[i].Index, _idToRetentionTime[i].Value, basePeakMz, summedIntensity);
             }
-            return new Chromatogram_temp2(results, idc, ChromXType.RT, _unit, arrayPool);
+            return new ExtractedIonChromatogram(results, idc, ChromXType.RT, _unit, mz, arrayPool);
         }
 
-        public IEnumerable<Chromatogram_temp2> GetMs1ExtractedChromatograms_temp2(IEnumerable<double> mzs, double tolerance, double start, double end) {
+        public IEnumerable<ExtractedIonChromatogram> GetMs1ExtractedChromatograms_temp2(IEnumerable<double> mzs, double tolerance, double start, double end) {
             var startIndex = _spectra.LowerBound(start, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
             var endIndex = _spectra.UpperBound(end, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
             var enumerators = new IEnumerator<Spectrum.SummarizedSpectrum>[_ms1Counts[endIndex] - _ms1Counts[startIndex]];
@@ -110,6 +110,7 @@ namespace CompMs.MsdialCore.DataObj
                 times[idc] = _idToRetentionTime[i].Value;
                 ++idc;
             }
+            var counter = 0;
             while (true) {
                 var peaks = ArrayPool<ValuePeak>.Shared.Rent(indexs.Length);
                 for (int i = 0; i < indexs.Length; i++) {
@@ -120,7 +121,7 @@ namespace CompMs.MsdialCore.DataObj
                     var peak = enumerators[i].Current;
                     peaks[i] = new ValuePeak(indexs[i], times[i], peak.BasePeakMz, peak.SummedIntensity);
                 }
-                yield return new Chromatogram_temp2(peaks, indexs.Length, ChromXType.RT, _unit, ArrayPool<ValuePeak>.Shared);
+                yield return new ExtractedIonChromatogram(peaks, indexs.Length, ChromXType.RT, _unit, mzs_[counter++], ArrayPool<ValuePeak>.Shared);
             }
         }
 

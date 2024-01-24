@@ -20,7 +20,13 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public class AlignmentParameterSettingModel : BindableBase
+    public interface IAlignmentParameterSettingModel {
+        bool ShouldRunAlignment { get; }
+        bool TryCommit();
+        void LoadParameter(ParameterBase parameter);
+    }
+
+    public sealed class AlignmentParameterSettingModel : BindableBase, IAlignmentParameterSettingModel
     {
         public AlignmentParameterSettingModel(ParameterBase parameter, DateTime now, List<AnalysisFileBean> files, AlignmentFileBeanModelCollection alignmentFiles, ProcessOption process) {
             IsReadOnly = (process & ProcessOption.Alignment) == 0;
@@ -155,7 +161,7 @@ namespace CompMs.App.Msdial.Model.Setting
             var projectFolder = parameter.ProjectParam.ProjectFolderPath;
             _alignmentFiles.Add(new AlignmentFileBean
             {
-                FileID = _alignmentFiles.Files.DefaultIfEmpty().Max(file => ((IFileBean)file)?.FileID) ?? 0,
+                FileID = _alignmentFiles.Files.Select(file => ((IFileBean)file).FileID).DefaultIfEmpty(0).Max() + 1,
                 FileName = alignmentResultFileName,
                 FilePath = Path.Combine(projectFolder, alignmentResultFileName + "." + MsdialDataStorageFormat.arf),
                 EicFilePath = Path.Combine(projectFolder, alignmentResultFileName + ".EIC.aef"),
@@ -184,9 +190,8 @@ namespace CompMs.App.Msdial.Model.Setting
             if (IsReadOnly) {
                 return;
             }
-            EqualityParameterSettings.Clear();
-            foreach (var s in PrepareEqualityParameterSettings(parameter)) {
-                EqualityParameterSettings.Add(s);
+            foreach (var s in EqualityParameterSettings) {
+                s.Update(parameter);
             }
             PeakCountFilter = parameter.PostProcessBaseParam.PeakCountFilter;
             NPercentDetectedInOneGroup = parameter.PostProcessBaseParam.NPercentDetectedInOneGroup;

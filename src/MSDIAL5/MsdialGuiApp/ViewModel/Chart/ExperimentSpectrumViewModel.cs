@@ -4,7 +4,6 @@ using CompMs.App.Msdial.ViewModel.MsResult;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
-using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -15,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    public class ExperimentSpectrumViewModel : ViewModelBase
+    internal class ExperimentSpectrumViewModel : ViewModelBase
     {
         public ExperimentSpectrumViewModel(ExperimentSpectrumModel model) {
             this.model = model;

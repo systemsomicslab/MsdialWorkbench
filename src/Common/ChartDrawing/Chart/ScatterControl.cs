@@ -1,12 +1,12 @@
 ﻿using CompMs.Common.Extension;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
+using CompMs.Graphics.Helper;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -16,8 +16,8 @@ namespace CompMs.Graphics.Chart
 {
     public class ScatterControl : ChartBaseControl
     {
-        public ScatterControl() {
-            ClipToBounds = true;
+        static ScatterControl() {
+            ClipToBoundsProperty.OverrideMetadata(typeof(ScatterControl), new PropertyMetadata(true));
         }
 
         public static readonly DependencyProperty ItemsSourceProperty =
@@ -37,9 +37,9 @@ namespace CompMs.Graphics.Chart
             if (chart == null) return;
 
             chart.dataType = null;
-            chart.hPropertyReflection = null;
-            chart.vPropertyReflection = null;
-            chart.pPropertyReflection = null;
+            chart._hGetter = null;
+            chart._vGetter = null;
+            chart._pGetter = null;
 
             if (chart.cv != null) {
                 chart.cv.CurrentChanged -= chart.OnCurrentChanged;
@@ -91,12 +91,18 @@ namespace CompMs.Graphics.Chart
             if ((dataType = newItem.GetType()) is null) {
                 return;
             }
-            if (HorizontalPropertyName != null)
-                hPropertyReflection = dataType.GetProperty(HorizontalPropertyName);
-            if (VerticalPropertyName != null)
-                vPropertyReflection = dataType.GetProperty(VerticalPropertyName);
-            if (EachPlotBrushName != null)
-                pPropertyReflection = dataType.GetProperty(EachPlotBrushName);
+            if (HorizontalPropertyName != null) {
+                var getter = ExpressionHelper.GetConvertToAxisValueExpression(dataType, HorizontalPropertyName);
+                _hGetter = new Lazy<Func<object, IAxisManager, AxisValue>>(getter.Compile);
+            }
+            if (VerticalPropertyName != null) {
+                var getter = ExpressionHelper.GetConvertToAxisValueExpression(dataType, VerticalPropertyName);
+                _vGetter = new Lazy<Func<object, IAxisManager, AxisValue>>(getter.Compile);
+            }
+            if (EachPlotBrushName != null) {
+                var getter = ExpressionHelper.GetPropertyGetterExpression(dataType, EachPlotBrushName);
+                _pGetter = new Lazy<Func<object, object>>(getter.Compile);
+            }
         }
 
         void OnCurrentChanged(object obj, EventArgs e) {
@@ -108,10 +114,8 @@ namespace CompMs.Graphics.Chart
                 SelectedPoint = null;
                 return;
             }
-            var x = hPropertyReflection.GetValue(item);
-            var y = vPropertyReflection.GetValue(item);
-            double xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX, ActualWidth);
-            double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY, ActualHeight);
+            double xx = HorizontalAxis.TranslateToRenderPoint(_hGetter.Value.Invoke(item, HorizontalAxis), FlippedX, ActualWidth);
+            double yy = VerticalAxis.TranslateToRenderPoint(_vGetter.Value.Invoke(item, VerticalAxis) , FlippedY, ActualHeight);
             var pos = new Point(xx, yy);
             select = visualChildren.OfType<AnnotatedDrawingVisual>().Argmin(dv => (dv.Center - pos).Length);
             SelectedPoint = select.Center;
@@ -133,13 +137,15 @@ namespace CompMs.Graphics.Chart
             var chart = d as ScatterControl;
             if (chart == null) return;
 
-            if (chart.dataType != null)
-                chart.hPropertyReflection = chart.dataType.GetProperty((string)e.NewValue);
+            if (chart.dataType != null) {
+                var getter = ExpressionHelper.GetConvertToAxisValueExpression(chart.dataType, (string)e.NewValue);
+                chart._hGetter = new Lazy<Func<object, IAxisManager, AxisValue>>(getter.Compile);
+            }
 
             chart.Update();
         }
 
-        private PropertyInfo hPropertyReflection;
+        private Lazy<Func<object, IAxisManager, AxisValue>> _hGetter;
 
         public static readonly DependencyProperty VerticalPropertyNameProperty =
             DependencyProperty.Register(
@@ -157,13 +163,15 @@ namespace CompMs.Graphics.Chart
             var chart = d as ScatterControl;
             if (chart == null) return;
 
-            if (chart.dataType != null)
-                chart.vPropertyReflection = chart.dataType.GetProperty((string)e.NewValue);
+            if (chart.dataType != null) {
+                var getter = ExpressionHelper.GetConvertToAxisValueExpression(chart.dataType, (string)e.NewValue);
+                chart._vGetter = new Lazy<Func<object, IAxisManager, AxisValue>>(getter.Compile);
+            }
 
             chart.Update();
         }
 
-        private PropertyInfo vPropertyReflection;
+        private Lazy<Func<object, IAxisManager, AxisValue>> _vGetter;
 
         public static readonly DependencyProperty PointGeometryProperty =
             DependencyProperty.Register(
@@ -224,14 +232,15 @@ namespace CompMs.Graphics.Chart
             if (chart == null) return;
 
             if (chart.dataType != null) {
-                chart.pPropertyReflection = chart.dataType.GetProperty((string)e.NewValue);
+                var getter = ExpressionHelper.GetPropertyGetterExpression(chart.dataType, (string)e.NewValue);
+                chart._pGetter = new Lazy<Func<object, object>>(getter.Compile);
                 chart.Generator.UpdateBrush(chart);
             }
 
             chart.Update();
         }
 
-        private PropertyInfo pPropertyReflection;
+        private Lazy<Func<object, object>> _pGetter;
 
         public static readonly DependencyProperty BrushMapperProperty =
             DependencyProperty.Register(
@@ -259,8 +268,9 @@ namespace CompMs.Graphics.Chart
         public static readonly DependencyProperty SelectedItemProperty =
             DependencyProperty.Register(
                 nameof(SelectedItem), typeof(object), typeof(ScatterControl),
-                new PropertyMetadata(
+                new FrameworkPropertyMetadata(
                     null,
+                    FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
                     OnSelectedItemChanged));
 
         public object SelectedItem {
@@ -358,15 +368,25 @@ namespace CompMs.Graphics.Chart
             remove => RemoveHandler(FocusChangedEvent, value);
         }
 
-        //protected override void OnMouseMove(MouseEventArgs e) {
-        //    base.OnMouseMove(e);
-        //    var pt = e.GetPosition(this);
+        protected override void OnMouseMove(MouseEventArgs e) {
+            base.OnMouseMove(e);
+            var pt = e.GetPosition(this);
 
-        //    VisualTreeHelper.HitTest(this,
-        //        new HitTestFilterCallback(VisualHitTestFilter),
-        //        new HitTestResultCallback(VisualFocusHitTest),
-        //        new PointHitTestParameters(pt));
-        //}
+            VisualTreeHelper.HitTest(this,
+                new HitTestFilterCallback(VisualHitTestFilter),
+                new HitTestResultCallback(VisualFocusHitTest),
+                new PointHitTestParameters(pt));
+        }
+
+        protected override void OnMouseLeave(MouseEventArgs e) {
+            base.OnMouseLeave(e);
+            if (focus != null) {
+                focus = null;
+                FocusedPoint = null;
+                FocusedItem = null;
+                RaiseEvent(FocusChangedEventArgs);
+            }
+        }
 
         HitTestResultBehavior VisualFocusHitTest(HitTestResult result) {
             var dv = (AnnotatedDrawingVisual)result.VisualHit;
@@ -401,11 +421,11 @@ namespace CompMs.Graphics.Chart
 
         protected override void Update() {
             base.Update();
-            if (hPropertyReflection == null
-               || vPropertyReflection == null
-               || HorizontalAxis == null
-               || VerticalAxis == null
-               || PointBrush == null
+            if (_hGetter is null
+               || _vGetter is null
+               || HorizontalAxis is null
+               || VerticalAxis is null
+               || PointBrush is null
                )
                 return;
 
@@ -414,8 +434,8 @@ namespace CompMs.Graphics.Chart
             foreach (var visual in visualChildren) {
                 if (!(visual is AnnotatedDrawingVisual dv)) continue;
                 var o = dv.Annotation;
-                var x = hPropertyReflection.GetValue(o);
-                var y = vPropertyReflection.GetValue(o);
+                var x = _hGetter.Value.Invoke(o, HorizontalAxis);
+                var y = _vGetter.Value.Invoke(o, VerticalAxis);
 
                 double xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX, actualWidth);
                 double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY, actualHeight);
@@ -447,7 +467,7 @@ namespace CompMs.Graphics.Chart
             // 2. pPropertyReflection
             // 3. BrushMapper
             // 4. PointBrush
-            private PropertyInfo pPropertyInfo;
+            private Lazy<Func<object, object>> _pGetter;
             private IBrushMapper mapper;
             private Brush pointBrush;
             private Geometry geometry;
@@ -458,12 +478,12 @@ namespace CompMs.Graphics.Chart
                     return cache[o];
                 }
                 Brush brush;
-                if (pPropertyInfo != null && mapper != null) {
-                    var v = pPropertyInfo.GetValue(o);
+                if (_pGetter != null && mapper != null) {
+                    var v = _pGetter.Value.Invoke(o);
                     brush = mapper.Map(v);
                 }
-                else if (pPropertyInfo != null) {
-                    brush = (Brush)pPropertyInfo.GetValue(o);
+                else if (_pGetter != null) {
+                    brush = (Brush)_pGetter.Value.Invoke(o);
                 }
                 else if (mapper != null) {
                     brush = mapper.Map(o);
@@ -479,7 +499,7 @@ namespace CompMs.Graphics.Chart
             }
 
             internal void UpdateBrush(ScatterControl scatter) {
-                pPropertyInfo = scatter.pPropertyReflection;
+                _pGetter = scatter._pGetter;
                 mapper = scatter.BrushMapper;
                 pointBrush = scatter.PointBrush;
                 geometry = scatter.PointGeometry;

@@ -39,6 +39,24 @@ namespace CompMs.Common.Algorithm.PeakPick
             var peakheightFromEdge = IntensityAtPeakTop - edgeIntensity;
             return IntensityAtPeakTop <= 0 || peakheightFromEdge < maxIntensityAtPeaks * INTENSITY_FOLDCHANGE_THREASHOLD;
         }
+
+        public BaseChromatogramPeakFeature ConvertToPeakFeature(ExtractedIonChromatogram chromatogram, double mz) {
+            return new BaseChromatogramPeakFeature
+            {
+                ChromScanIdLeft = ScanNumAtLeftPeakEdge,
+                ChromScanIdTop = ScanNumAtPeakTop,
+                ChromScanIdRight = ScanNumAtRightPeakEdge,
+                ChromXsLeft = new ChromXs(new RetentionTime(chromatogram.Time(ScanNumAtLeftPeakEdge), ChromXUnit.Min)),
+                ChromXsTop = new ChromXs(new RetentionTime(chromatogram.Time(ScanNumAtPeakTop), ChromXUnit.Min)),
+                ChromXsRight = new ChromXs(new RetentionTime(chromatogram.Time(ScanNumAtRightPeakEdge), ChromXUnit.Min)),
+                PeakHeightLeft = IntensityAtLeftPeakEdge,
+                PeakHeightTop = IntensityAtPeakTop,
+                PeakHeightRight = IntensityAtRightPeakEdge,
+                PeakAreaAboveZero = AreaAboveZero,
+                PeakAreaAboveBaseline = AreaAboveBaseline,
+                Mass = mz,
+            };
+        }
     }
 
     public sealed partial class PeakDetection {
@@ -51,7 +69,7 @@ namespace CompMs.Common.Algorithm.PeakPick
             _minimumAmplitudeCriteria = minimumAmplitudeCriteria;
         }
 
-        public List<PeakDetectionResult> PeakDetectionVS1(Chromatogram_temp2 chromatogram) {
+        public List<PeakDetectionResult> PeakDetectionVS1(ExtractedIonChromatogram chromatogram) {
             // global parameter
             var noiseEstimateBin = 50;
             var minNoiseWindowSize = 10;

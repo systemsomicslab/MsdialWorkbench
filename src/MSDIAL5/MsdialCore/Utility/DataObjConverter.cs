@@ -1,45 +1,51 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.MSDec;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.MsdialCore.Utility
 {
-    public class DataObjConverter
-    {
+    public static class DataObjConverter {
+        public static void SetAlignmentChromPeakFeatureFromSpectrumFeature(AlignmentChromPeakFeature alignmentPeak, SpectrumFeature spectrum, ChromXType mainType) {
+            var scan = spectrum.AnnotatedMSDecResult.MSDecResult;
+            var peak = spectrum.QuantifiedChromatogramPeak;
+            var molecule = spectrum.AnnotatedMSDecResult.Molecule;
+            alignmentPeak.MasterPeakID = scan.ScanID;
+            alignmentPeak.PeakID = scan.ScanID;
+            alignmentPeak.SeekPointToDCLFile = scan.SeekPoint;
+            alignmentPeak.MS1RawSpectrumID = scan.RawSpectrumID;
+            alignmentPeak.MS1RawSpectrumIdTop = peak.MS1RawSpectrumIdTop;
+            alignmentPeak.MS1RawSpectrumIdLeft = peak.MS1RawSpectrumIdLeft;
+            alignmentPeak.MS1RawSpectrumIdRight = peak.MS1RawSpectrumIdRight;
+            alignmentPeak.ChromXsTop = peak.PeakFeature.ChromXsTop;
+            alignmentPeak.ChromXsTop.MainType = mainType;
+            alignmentPeak.ChromXsLeft = peak.PeakFeature.ChromXsLeft;
+            alignmentPeak.ChromXsLeft.MainType = mainType;
+            alignmentPeak.ChromXsRight = peak.PeakFeature.ChromXsRight;
+            alignmentPeak.ChromXsRight.MainType = mainType;
+            alignmentPeak.PeakHeightTop = peak.PeakFeature.PeakHeightTop;
+            alignmentPeak.PeakHeightLeft = peak.PeakFeature.PeakHeightLeft;
+            alignmentPeak.PeakHeightRight = peak.PeakFeature.PeakHeightRight;
+            alignmentPeak.PeakAreaAboveZero = peak.PeakFeature.PeakAreaAboveZero;
+            alignmentPeak.PeakAreaAboveBaseline = peak.PeakFeature.PeakAreaAboveBaseline;
+            alignmentPeak.PeakShape = peak.PeakShape;
+            alignmentPeak.Mass = spectrum.AnnotatedMSDecResult.QuantMass;
+            alignmentPeak.IonMode = scan.IonMode;
+            alignmentPeak.Name = molecule.Name;
+            alignmentPeak.Formula = molecule.Formula;
+            alignmentPeak.Ontology = molecule.Ontology;
+            alignmentPeak.SMILES = molecule.SMILES;
+            alignmentPeak.InChIKey = molecule.InChIKey;
+            alignmentPeak.MSDecResultIdUsed = scan.ScanID;
 
-        public static AlignmentChromPeakFeature ConvertToAlignmentChromPeakFeature(IMSScanProperty peakobj, MachineCategory category) {
-            var result = new AlignmentChromPeakFeature();
-            SetAlignmentChromPeakFeature(result, peakobj, category);
-            return result;
-        }
-            
-        public static void SetAlignmentChromPeakFeatureFromMSDecResult(AlignmentChromPeakFeature alignmentPeak, MSDecResult peak) {
-            alignmentPeak.MasterPeakID = peak.ScanID;
-            alignmentPeak.PeakID = peak.ScanID;
-            alignmentPeak.SeekPointToDCLFile = peak.SeekPoint;
-            alignmentPeak.MS1RawSpectrumID = peak.RawSpectrumID;
-            alignmentPeak.MS1RawSpectrumIdTop = peak.RawSpectrumID;
-            alignmentPeak.ChromXsTop = peak.ChromXs;
-            alignmentPeak.ChromXsLeft = peak.ModelPeakChromatogram[0].ChromXs;
-            alignmentPeak.ChromXsRight = peak.ModelPeakChromatogram[peak.ModelPeakChromatogram.Count - 1].ChromXs;
-            alignmentPeak.PeakHeightTop = peak.ModelPeakHeight;
-            alignmentPeak.PeakAreaAboveZero = peak.ModelPeakArea;
-            alignmentPeak.Mass = peak.ModelPeakMz;
-            alignmentPeak.IonMode = peak.IonMode;
-            alignmentPeak.MSRawID2MspIDs = new Dictionary<int, List<int>>() { { peak.RawSpectrumID, peak.MspIDs } };
-            alignmentPeak.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>() { { peak.RawSpectrumID, peak.MspBasedMatchResult } };
-            alignmentPeak.MatchResults.AddMspResult(peak.RawSpectrumID, peak.MspBasedMatchResult);
-            alignmentPeak.PeakShape = new ChromatogramPeakShape()
-            {
-                EstimatedNoise = peak.EstimatedNoise, SignalToNoise = peak.SignalNoiseRatio, AmplitudeScoreValue = peak.AmplitudeScore,
-                PeakPureValue = peak.ModelPeakPurity, IdealSlopeValue = peak.ModelPeakQuality
-            };
+            alignmentPeak.MatchResults.ClearResults();
+            alignmentPeak.MatchResults.ClearMspResults();
+            alignmentPeak.MatchResults.ClearTextDbResults();
+            alignmentPeak.MSRawID2MspIDs = new Dictionary<int, List<int>> { [scan.RawSpectrumID] = scan.MspIDs };
+            alignmentPeak.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult> { [scan.RawSpectrumID] = scan.MspBasedMatchResult };
+            alignmentPeak.MatchResults.MergeContainers(spectrum.AnnotatedMSDecResult.MatchResults);
         }
 
         public static void SetAlignmentChromPeakFeatureFromChromatogramPeakFeature(AlignmentChromPeakFeature alignmentPeak, ChromatogramPeakFeature peak) {
@@ -95,17 +101,6 @@ namespace CompMs.MsdialCore.Utility
             //    Console.WriteLine(peak.Name + "\t" + peak.PeakCharacter.AdductType.AdductIonName + "\t" + peak.AdductType.AdductIonName);
             //}
            // Console.WriteLine(alignmentPeak.Name + "\t" + alignmentPeak.PeakCharacter.AdductType.AdductIonName);
-        }
-
-        public static void SetAlignmentChromPeakFeature(AlignmentChromPeakFeature alignmentPeak, IMSScanProperty peakobj, MachineCategory category) {
-            if (category == MachineCategory.GCMS) {
-                var peak = (MSDecResult)peakobj;
-                SetAlignmentChromPeakFeatureFromMSDecResult(alignmentPeak, peak);
-            }
-            else {
-                var peak = (ChromatogramPeakFeature)peakobj;
-                SetAlignmentChromPeakFeatureFromChromatogramPeakFeature(alignmentPeak, peak);
-            }
         }
 
         public static void SetRepresentativeProperty(AlignmentSpotProperty spot) {
@@ -166,6 +161,7 @@ namespace CompMs.MsdialCore.Utility
             spot.MassCenter = alignedPeaks.Argmax(peak => peak.PeakHeightTop).Mass;
             spot.MassMin = (float)alignedPeaks.Min(peak => peak.Mass);
             spot.MassMax = (float)alignedPeaks.Max(peak => peak.Mass);
+            spot.QuantMass = representative.Mass;
 
             spot.FillParcentage = (float)alignedPeaks.Length / alignment.Count;
             spot.MonoIsotopicPercentage = alignedPeaks.Count(peak => peak.PeakCharacter.IsotopeWeightNumber == 0) / (float)alignedPeaks.Length;

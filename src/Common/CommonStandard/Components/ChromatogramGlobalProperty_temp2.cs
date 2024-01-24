@@ -7,12 +7,12 @@ using System.Linq;
 namespace CompMs.Common.Components
 {
     internal sealed class ChroChroChromatogram : IDisposable {
-        private readonly Chromatogram_temp2 _chromatogram;
+        private readonly ExtractedIonChromatogram _chromatogram;
         private ChromatogramGlobalProperty_temp2 _globalProperty;
         private readonly DifferencialCoefficients _differencialCoefficients;
         private readonly ChromatogramNoises _noises;
 
-        internal ChroChroChromatogram(Chromatogram_temp2 chromatogram, ChromatogramGlobalProperty_temp2 globalProperty, DifferencialCoefficients differencialCoefficients, ChromatogramNoises noises) {
+        internal ChroChroChromatogram(ExtractedIonChromatogram chromatogram, ChromatogramGlobalProperty_temp2 globalProperty, DifferencialCoefficients differencialCoefficients, ChromatogramNoises noises) {
             _chromatogram = chromatogram;
             _globalProperty = globalProperty;
             _differencialCoefficients = differencialCoefficients;
@@ -274,11 +274,11 @@ namespace CompMs.Common.Components
         private readonly static double[] FIRST_DIFF_COEFF = new double[] { -0.2, -0.1, 0, 0.1, 0.2 };
         private readonly static double[] SECOND_DIFF_COEFF = new double[] { 0.14285714, -0.07142857, -0.1428571, -0.07142857, 0.14285714 };
 
-        private Chromatogram_temp2 _baselineChromatogram;
-        private Chromatogram_temp2 _baselineCorrectedChromatogram;
+        private ExtractedIonChromatogram _baselineChromatogram;
+        private ExtractedIonChromatogram _baselineCorrectedChromatogram;
 
         internal ChromatogramGlobalProperty_temp2(double maxIntensity, double minIntensity, double baselineMedian, double noise, bool isHighBaseline,
-            Chromatogram_temp2 smoothedPeakList, Chromatogram_temp2 baseline, Chromatogram_temp2 baselineCorrectedPeakList) {
+            ExtractedIonChromatogram smoothedPeakList, ExtractedIonChromatogram baseline, ExtractedIonChromatogram baselineCorrectedPeakList) {
             MaxIntensity = maxIntensity;
             MinIntensity = minIntensity;
             BaselineMedian = baselineMedian;
@@ -294,7 +294,7 @@ namespace CompMs.Common.Components
         public double BaselineMedian { get; }
         public double Noise { get; }
         public bool IsHighBaseline { get; }
-        internal Chromatogram_temp2 SmoothedChromatogram { get; private set; }
+        internal ExtractedIonChromatogram SmoothedChromatogram { get; private set; }
 
         public DifferencialCoefficients GenerateDifferencialCoefficients() {
 

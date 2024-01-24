@@ -718,10 +718,10 @@ namespace CompMs.MsdialCore.Utility {
             return peaks;
         }
 
-        public static List<ValuePeak[]> GetAccumulatedMs2PeakListList(IDataProvider provider,
+        public static List<(ValuePeak[], double)> GetAccumulatedMs2PeakListList(IDataProvider provider,
              ChromatogramPeakFeature rtChromPeakFeature, List<SpectrumPeak> curatedSpectrum, double minDriftTime, double maxDriftTime, IonMode ionMode) {
             // var ms2peaklistlist = new List<List<ChromatogramPeak>>();
-            var ms2peaklistlist = new List<ValuePeak[]>();
+            var ms2peaklistlist = new List<(ValuePeak[], double)>();
             var scanPolarity = ionMode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
 
             var rt = rtChromPeakFeature.ChromXsTop.Value;
@@ -859,7 +859,7 @@ namespace CompMs.MsdialCore.Utility {
                 for (int i = 0; i < sortedPeaklist.Count; i++) {
                     ms2peaklist[i] = new ValuePeak(i, sortedPeaklist[i][1], sortedPeaklist[i][2], sortedPeaklist[i][3]);
                 }
-                ms2peaklistlist.Add(ms2peaklist);
+                ms2peaklistlist.Add((ms2peaklist, targetMz));
 
                 //foreach (var peaks in sortedPeaklist) {
                 //    ms2peaklist.Add(new ChromatogramPeak(counter, peaks[2], peaks[3], new ChromXs(peaks[1], ChromXType.Drift, ChromXUnit.Msec)));

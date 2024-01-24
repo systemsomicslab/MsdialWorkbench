@@ -10,7 +10,7 @@ namespace CompMs.App.Msdial.Model.Chart
     {
         private List<SpectrumPeak> _spectrum;
         
-        public MsSpectrum(List<SpectrumPeak> spectrum) {
+        public MsSpectrum(IReadOnlyList<SpectrumPeak> spectrum) {
             _spectrum = spectrum?.OrderBy(peak => peak.Mass).ToList() ?? new List<SpectrumPeak>(0);
         }
 

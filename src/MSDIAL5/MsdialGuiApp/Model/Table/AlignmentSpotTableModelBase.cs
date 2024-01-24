@@ -50,13 +50,13 @@ namespace CompMs.App.Msdial.Model.Table
             }
         }
 
-        public void MarkAllAsConfirmed() {
+        public override void MarkAllAsConfirmed() {
             foreach (var peak in PeakSpots) {
                 peak.Confirmed = true;
             }
         }
 
-        public void SwitchTag(PeakSpotTag tag) {
+        public override void SwitchTag(PeakSpotTag tag) {
             if (_target.Value is null) {
                 return;
             }

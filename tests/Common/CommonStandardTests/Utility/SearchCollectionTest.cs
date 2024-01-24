@@ -1,4 +1,6 @@
-﻿using CompMs.Common.Utility;
+﻿#if NETSTANDARD
+using CompMs.Common.Extension;
+#endif
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

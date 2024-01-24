@@ -1,14 +1,14 @@
 ﻿using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Enum;
-using CompMs.Common.Extension;
 using CompMs.Common.Mathematics.Basic;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CompMs.Common.Components {
-    public sealed class Chromatogram_temp2 : IDisposable {
+namespace CompMs.Common.Components
+{
+    public sealed class ExtractedIonChromatogram : IDisposable {
         private IReadOnlyList<ValuePeak> _peaks;
         private readonly int _size;
         private readonly ChromXType _type;
@@ -16,22 +16,26 @@ namespace CompMs.Common.Components {
         private ArrayPool<ValuePeak> _arrayPool;
         private readonly Algorithm.ChromSmoothing.Smoothing _smoother;
 
-        public Chromatogram_temp2(IEnumerable<ValuePeak> peaks, ChromXType type, ChromXUnit unit) {
+        public ExtractedIonChromatogram(IEnumerable<ValuePeak> peaks, ChromXType type, ChromXUnit unit, double extractedMz) {
             _peaks = peaks as IReadOnlyList<ValuePeak> ?? peaks?.ToArray() ?? throw new ArgumentNullException(nameof(peaks));
             _size = _peaks.Count;
             _type = type;
             _unit = unit;
             _smoother = new Algorithm.ChromSmoothing.Smoothing();
+            ExtractedMz = extractedMz;
         }
 
-        public Chromatogram_temp2(ValuePeak[] peaks, int size, ChromXType type, ChromXUnit unit, ArrayPool<ValuePeak> arrayPool) {
+        public ExtractedIonChromatogram(ValuePeak[] peaks, int size, ChromXType type, ChromXUnit unit, double extractedMz, ArrayPool<ValuePeak> arrayPool) {
             _peaks = peaks;
             _size = size;
             _type = type;
             _unit = unit;
             _arrayPool = arrayPool;
             _smoother = new Algorithm.ChromSmoothing.Smoothing();
+            ExtractedMz = extractedMz;
         }
+
+        public double ExtractedMz { get; }
 
         public bool IsEmpty => _size == 0;
         public int Length => _size;
@@ -241,7 +245,7 @@ namespace CompMs.Common.Components {
             }
         }
 
-        public Chromatogram_temp2 Difference(Chromatogram_temp2 other) {
+        public ExtractedIonChromatogram Difference(ExtractedIonChromatogram other) {
             System.Diagnostics.Debug.Assert(_type == other._type);
             System.Diagnostics.Debug.Assert(_unit == other._unit);
             System.Diagnostics.Debug.Assert(_size == other._size);
@@ -250,10 +254,10 @@ namespace CompMs.Common.Components {
             for (int i = 0; i < _size; i++) {
                 peaks[i] = new ValuePeak(_peaks[i].Id, _peaks[i].Time, _peaks[i].Mz, Math.Max(0, _peaks[i].Intensity - other._peaks[i].Intensity));
             }
-            return new Chromatogram_temp2(peaks, _size, _type, _unit, arrayPool);
+            return new ExtractedIonChromatogram(peaks, _size, _type, _unit, ExtractedMz, arrayPool);
         }
 
-        public Chromatogram_temp2 ChromatogramSmoothing(SmoothingMethod method, int level) {
+        public ExtractedIonChromatogram ChromatogramSmoothing(SmoothingMethod method, int level) {
             ValuePeak[] peaks = null;
             if (method == SmoothingMethod.LinearWeightedMovingAverage) {
                 peaks = _peaks as ValuePeak[];
@@ -264,41 +268,39 @@ namespace CompMs.Common.Components {
 
             switch (method) {
                 case SmoothingMethod.SimpleMovingAverage:
-                    return new Chromatogram_temp2(Algorithm.ChromSmoothing.Smoothing.SimpleMovingAverage(peaks, level), _type, _unit);
+                    return new ExtractedIonChromatogram(Algorithm.ChromSmoothing.Smoothing.SimpleMovingAverage(peaks, level), _type, _unit, ExtractedMz);
                 case SmoothingMethod.SavitzkyGolayFilter:
-                    return new Chromatogram_temp2(Algorithm.ChromSmoothing.Smoothing.SavitxkyGolayFilter(peaks, level), _type, _unit);
+                    return new ExtractedIonChromatogram(Algorithm.ChromSmoothing.Smoothing.SavitxkyGolayFilter(peaks, level), _type, _unit, ExtractedMz);
                 case SmoothingMethod.BinomialFilter:
-                    return new Chromatogram_temp2(Algorithm.ChromSmoothing.Smoothing.BinomialFilter(peaks, level), _type, _unit);
+                    return new ExtractedIonChromatogram(Algorithm.ChromSmoothing.Smoothing.BinomialFilter(peaks, level), _type, _unit, ExtractedMz);
                 case SmoothingMethod.LowessFilter:
-                    return new Chromatogram_temp2(Algorithm.ChromSmoothing.Smoothing.LowessFilter(peaks, level), _type, _unit);
+                    return new ExtractedIonChromatogram(Algorithm.ChromSmoothing.Smoothing.LowessFilter(peaks, level), _type, _unit, ExtractedMz);
                 case SmoothingMethod.LoessFilter:
-                    return new Chromatogram_temp2(Algorithm.ChromSmoothing.Smoothing.LoessFilter(peaks, level), _type, _unit);
+                    return new ExtractedIonChromatogram(Algorithm.ChromSmoothing.Smoothing.LoessFilter(peaks, level), _type, _unit, ExtractedMz);
                 case SmoothingMethod.LinearWeightedMovingAverage:
                 default:
                     var arrayPool = _arrayPool ?? ArrayPool<ValuePeak>.Shared;
                     var smoothed = arrayPool.Rent(_size);
                     _smoother.LinearWeightedMovingAverage(peaks, smoothed, _size, level);
-                    return new Chromatogram_temp2(smoothed, _size, _type, _unit, arrayPool);
+                    return new ExtractedIonChromatogram(smoothed, _size, _type, _unit, ExtractedMz, arrayPool);
             }
         }
 
         public PeakDetectionResult GetPeakDetectionResultFromRange(int startID, int endID) {
-            var peakTopID = 0;
             var datapoints = new List<double[]>();
+            var datapointsPeakTopIndex = 0;
             var peaktopIntensity = double.MinValue;
             for (int i = 0; i < _size; i++) {
                 var peak = _peaks[i];
                 if (peak.Id >= startID && peak.Id <= endID) {
-                    datapoints.Add(new double[] { peak.Id, peak.Time, peak.Mz, peak.Intensity });
+                    datapoints.Add(new double[] { i, peak.Time, peak.Mz, peak.Intensity });
                     if (peak.Intensity > peaktopIntensity) {
                         peaktopIntensity = peak.Intensity;
-                        peakTopID = i;
+                        datapointsPeakTopIndex = datapoints.Count - 1;
                     }
                 }
             }
-
-            var result = PeakDetection.GetPeakDetectionResult(datapoints, peakTopID);
-            return result;
+            return PeakDetection.GetPeakDetectionResult(datapoints, datapointsPeakTopIndex);
         }
 
         public ChromatogramGlobalProperty_temp2 GetProperty(int noiseEstimateBin, int minNoiseWindowSize, double minNoiseLevel, double noiseFactor) {

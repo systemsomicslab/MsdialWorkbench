@@ -67,7 +67,7 @@ namespace CompMs.Common.Algorithm.Function
                     Mz = spot.Mass.ToString(),
                     Method = "MSMS",
                     Property = $"RT {Math.Round(spot.ChromXs.RT.Value, 3)}_m/z {Math.Round(spot.Mass, 5)}",
-                    Formula = spot.Formula.FormulaString,
+                    Formula = spot.Formula?.FormulaString??string.Empty,
                     InChiKey = spot.InChIKey,
                     Ontology = spot.Ontology,
                     Smiles = spot.SMILES,

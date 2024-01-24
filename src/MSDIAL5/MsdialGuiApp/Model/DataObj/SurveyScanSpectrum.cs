@@ -26,7 +26,31 @@ namespace CompMs.App.Msdial.Model.DataObj
             .AddTo(Disposables);
         }
 
+        private SurveyScanSpectrum(ReadOnlyReactivePropertySlim<List<SpectrumPeakWrapper>> spectrum, ReadOnlyReactivePropertySlim<bool> loaded) {
+            Spectrum = spectrum;
+            Loaded = loaded;
+        }
+
         public ReadOnlyReactivePropertySlim<List<SpectrumPeakWrapper>> Spectrum { get; }
         public ReadOnlyReactivePropertySlim<bool> Loaded { get; }
+
+        public static SurveyScanSpectrum Create<T>(IObservable<T> selectedFeature, Func<T, IObservable<List<SpectrumPeakWrapper>>> loadSpectrum) {
+            var Spectrum = selectedFeature
+                .SelectSwitch(loadSpectrum)
+                .ToReadOnlyReactivePropertySlim();
+
+            var Loaded = new[]
+            {
+                selectedFeature.ToConstant(false),
+                Spectrum.Delay(TimeSpan.FromSeconds(.1d)).ToConstant(true),
+            }.Merge()
+            .Throttle(TimeSpan.FromSeconds(.3d))
+            .ToReadOnlyReactivePropertySlim();
+
+            var result = new SurveyScanSpectrum(Spectrum, Loaded);
+            result.Disposables.Add(Spectrum);
+            result.Disposables.Add(Loaded);
+            return result;
+        }
     }
 }

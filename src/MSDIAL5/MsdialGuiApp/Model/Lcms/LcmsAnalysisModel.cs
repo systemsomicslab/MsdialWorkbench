@@ -26,6 +26,7 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -118,7 +119,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             ExperimentSpectrumModel = EicModel.Chromatogram
                 .Select(chromatogram => chromatogram.ConvertToDisplayChromatogram())
-                .Select(chromatogram => new ChromatogramsModel("Experiment chromatogram", chromatogram))
+                .Select(chromatogram => new ChromatogramsModel("Experiment chromatogram", new ObservableCollection<DisplayChromatogram>(new[] { chromatogram }), string.Empty, string.Empty, string.Empty))
                 .DisposePreviousValue()
                 .Select(chromatogram => new RangeSelectableChromatogramModel(chromatogram))
                 .DisposePreviousValue()
@@ -177,16 +178,11 @@ namespace CompMs.App.Msdial.Model.Lcms
                 return Observable.FromAsync(provider.LoadMsSpectrumsAsync)
                     .Select(spectrums =>
                         {
-                            var spectra = DataAccess.GetCentroidMassSpectra(
-                                spectrums[t.MS1RawSpectrumIdTop],
-                                msdataType, 0, float.MinValue, float.MaxValue);
+                            var spectra = DataAccess.GetCentroidMassSpectra(spectrums[t.MS1RawSpectrumIdTop], msdataType, 0, float.MinValue, float.MaxValue);
                             return spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
                         });
             }).AddTo(Disposables);
-            SurveyScanModel = new SurveyScanModel(
-                surveyScanSpectrum,
-                spec => spec.Mass,
-                spec => spec.Intensity).AddTo(Disposables);
+            SurveyScanModel = new SurveyScanModel(surveyScanSpectrum, spec => spec.Mass, spec => spec.Intensity).AddTo(Disposables);
             SurveyScanModel.Elements.VerticalTitle = "Abundance";
             SurveyScanModel.Elements.HorizontalProperty = nameof(SpectrumPeakWrapper.Mass);
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
@@ -263,13 +259,13 @@ namespace CompMs.App.Msdial.Model.Lcms
             return new LoadChromatogramsUsecase(_ticLoader, _bpcLoader, EicLoader, Ms1Peaks, _parameter.PeakPickBaseParam);
         }
 
-        public CompoundSearchModel CreateCompoundSearchModel() {
+        public CompoundSearchModel<PeakSpotModel> CreateCompoundSearchModel() {
             if (Target.Value?.InnerModel is null || MsdecResult.Value is null) {
                 return null;
             }
 
             PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(MsdecResult.Value);
-            var compoundSearch = new CompoundSearchModel(
+            var compoundSearch = new CompoundSearchModel<PeakSpotModel>(
                 AnalysisFileModel,
                 new PeakSpotModel(Target.Value, MsdecResult.Value),
                 new LcmsCompoundSearchUsecase(_compoundSearchers.Items),

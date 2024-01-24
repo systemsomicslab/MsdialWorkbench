@@ -26,7 +26,6 @@ namespace CompMs.MsdialCore.Export.Tests
             "Scan",
             "Height",
             "Area",
-            "Model masses",
             "Adduct",
             "Isotope",
             "Comment",
@@ -90,7 +89,6 @@ namespace CompMs.MsdialCore.Export.Tests
             feature.PeakShape.SignalToNoise = 6.78f;
             var msdec = new MSDecResult
             {
-                ModelMasses = new List<double> { 700.001, 600.2, 100.00001, },
                 RawSpectrumID = 1,
                 Spectrum = new List<SpectrumPeak>
                 {
@@ -107,7 +105,6 @@ namespace CompMs.MsdialCore.Export.Tests
             Assert.AreEqual("2", content["Scan"]);
             Assert.AreEqual("1000", content["Height"]);
             Assert.AreEqual("900", content["Area"]);
-            Assert.AreEqual("700.001 600.2 100.00001", content["Model masses"]);
             Assert.AreEqual("[M+H]+", content["Adduct"]);
             Assert.AreEqual("1", content["Isotope"]);
             Assert.AreEqual($"nice comment; Annotation method: {matchResult.AnnotatorID}", content["Comment"]);

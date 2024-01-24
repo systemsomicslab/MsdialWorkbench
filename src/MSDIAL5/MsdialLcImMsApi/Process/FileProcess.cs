@@ -84,7 +84,7 @@ namespace CompMs.MsdialLcImMsApi.Process
             var rawObj = LoadMeasurement(file, isGuiProcess);
             var spectrumProvider = spectrumProviderFactory.Create(rawObj);
             var accSpectrumProvider = accSpectrumProviderFactory.Create(rawObj);
-            var peakTask = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath, token);
+            var peakTask = file.LoadChromatogramPeakFeatureCollectionAsync(token);
             var resultsTask = Task.WhenAll(MSDecResultCollection.DeserializeAsync(file, token));
 
             // annotations

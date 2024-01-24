@@ -1,10 +1,12 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.Dims;
+using CompMs.App.Msdial.Model.Gcms;
 using CompMs.App.Msdial.Model.ImagingImms;
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Lcimms;
 using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.Dims;
+using CompMs.App.Msdial.ViewModel.Gcms;
 using CompMs.App.Msdial.ViewModel.ImagingImms;
 using CompMs.App.Msdial.ViewModel.Imms;
 using CompMs.App.Msdial.ViewModel.Lcimms;
@@ -87,7 +89,8 @@ namespace CompMs.App.Msdial.ViewModel.Core
                     return DimsMethodViewModel.Create(di, peakSpotTableService, _messageBroker);
                 case LcimmsMethodModel lcim:
                     return LcimmsMethodViewModel.Create(lcim, peakSpotTableService, _messageBroker);
-                // case GcmsMethodModel _:
+                case GcmsMethodModel gc:
+                    return GcmsMethodViewModel.Create(gc, peakSpotTableService, _messageBroker);
                 case ImagingImmsMethodModel iim:
                     return new ImagingImmsMainViewModel(iim, _messageBroker, peakSpotTableService);
                 default:

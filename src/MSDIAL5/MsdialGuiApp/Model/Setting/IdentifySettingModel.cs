@@ -14,7 +14,13 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public class IdentifySettingModel : BindableBase
+    public interface IIdentificationSettingModel {
+        bool IsReadOnly { get; }
+        DataBaseStorage Create(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer);
+        void LoadParameter(ParameterBase parameter);
+    }
+
+    public class IdentifySettingModel : BindableBase, IIdentificationSettingModel
     {
         public IdentifySettingModel(ParameterBase parameter, IAnnotatorSettingModelFactory annotatorFactory, ProcessOption process, IMessageBroker broker, DataBaseStorage dataBaseStorage = null) {
             this.parameter = parameter ?? throw new System.ArgumentNullException(nameof(parameter));
@@ -251,6 +257,10 @@ namespace CompMs.App.Msdial.Model.Setting
                     await Task.WhenAll(tasks).ConfigureAwait(false);
                 });
             _broker.Publish(request);
+        }
+
+        void IIdentificationSettingModel.LoadParameter(ParameterBase parameter) {
+
         }
     }
 }

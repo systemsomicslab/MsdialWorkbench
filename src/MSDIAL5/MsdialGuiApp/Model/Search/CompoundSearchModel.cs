@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
-using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Algorithm.Scoring;
@@ -29,9 +28,9 @@ namespace CompMs.App.Msdial.Model.Search
         
         IFileBean File { get; }
 
-        IPeakSpotModel PeakSpot { get; }
-
         ICompoundResult SelectedCompoundResult { get; set; }
+
+        IReadOnlyList<ICompoundResult> CompoundResults { get; }
 
         MsSpectrumModel MsSpectrumModel { get; }
 
@@ -42,15 +41,15 @@ namespace CompMs.App.Msdial.Model.Search
         void SetUnknown();
     }
 
-    internal class CompoundSearchModel : DisposableModelBase, ICompoundSearchModel
+    internal class CompoundSearchModel<T> : DisposableModelBase, ICompoundSearchModel
     {
         private readonly SetAnnotationUsecase _setAnnotationService;
         private readonly PlotComparedMsSpectrumUsecase _plotService;
-        private readonly ICompoundSearchUsecase<ICompoundResult, PeakSpotModel> _compoundSearchService;
-        private readonly PeakSpotModel _peakSpot;
+        private readonly ICompoundSearchUsecase<ICompoundResult, T> _compoundSearchService;
+        private readonly T _peakSpot;
         private readonly BusyNotifier _isBusy;
 
-        public CompoundSearchModel(IFileBean fileBean, PeakSpotModel peakSpot, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel> compoundSearchService, PlotComparedMsSpectrumUsecase plotComparedMsSpectrumService, SetAnnotationUsecase setAnnotationService) {
+        public CompoundSearchModel(IFileBean fileBean, T peakSpot, ICompoundSearchUsecase<ICompoundResult, T> compoundSearchService, PlotComparedMsSpectrumUsecase plotComparedMsSpectrumService, SetAnnotationUsecase setAnnotationService) {
             File = fileBean ?? throw new ArgumentNullException(nameof(fileBean));
             _peakSpot = peakSpot;
             _compoundSearchService = compoundSearchService;
@@ -86,7 +85,7 @@ namespace CompMs.App.Msdial.Model.Search
         
         public IFileBean File { get; }
 
-        public IPeakSpotModel PeakSpot => _peakSpot.PeakSpot;
+        public T PeakSpot => _peakSpot;
 
         public MsSpectrumModel MsSpectrumModel => _plotService.MsSpectrumModel;
 
