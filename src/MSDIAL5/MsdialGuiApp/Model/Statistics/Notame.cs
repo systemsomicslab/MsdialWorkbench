@@ -57,7 +57,7 @@ namespace CompMs.App.Msdial.Model.Statistics
                 broker.Publish(task.End());
             });
         }
-
+        
         public string GetFileName(string fileName)
         {
             var files = new DirectoryInfo(ExportDirectory).GetFiles();
@@ -68,21 +68,33 @@ namespace CompMs.App.Msdial.Model.Statistics
                 {
                     lastUpdated = file.LastWriteTime;
                     fileName = file.Name;
-        }
+                }
             }
             return fileName;
         }
         private string FileName {  get; set; }
 
-        public IonMode IonMode {
-            get => ionMode;
-            set => SetProperty(ref ionMode, value);
+        private IonMode IonMode { get; }
+        private string NotameIonMode;
+
+        public string GetIonMode(string ionMode)
+        {
+            ionMode = IonMode.ToString();
+            if (ionMode == "Positive")
+            {
+                ionMode = "pos";
+            }
+            else if (ionMode == "Negative")
+            {
+                ionMode = "neg";
+            }
+            return ionMode;
         }
-        private IonMode ionMode = IonMode.Positive;
 
         public void Run()
         {
             FileName = GetFileName(FileName);
+            NotameIonMode = GetIonMode(NotameIonMode);
             SendParametersToNotame();
         }
 
@@ -98,7 +110,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             engine.Evaluate("library(openxlsx)");
             engine.SetSymbol("path", engine.CreateCharacter(ExportDirectory));
             engine.SetSymbol("file_name", engine.CreateCharacter(FileName));
-            engine.SetSymbol("ion_mod", engine.CreateCharacter(IonMode.ToString())) ;
+            engine.SetSymbol("ion_mod", engine.CreateCharacter(NotameIonMode));
 
             string rScript = @"
                 # RHaikonen
