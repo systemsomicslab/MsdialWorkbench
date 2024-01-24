@@ -7,6 +7,7 @@
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:converter="clr-namespace:CompMs.Graphics.Converter;assembly=ChartDrawing"
              xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
+             xmlns:design="clr-namespace:CompMs.Graphics.Design;assembly=ChartDrawing"
              xmlns:dataobj="clr-namespace:CompMs.MsdialCore.DataObj;assembly=MsdialCore"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type={x:Type vm:MsPeakSpotsCheckViewModel}}"
@@ -72,12 +73,12 @@
             </TabItem>
             <TabItem Header="Heght vs. S/N">
                 <chart:MultiChart HorizontalAxis="{Binding Distribution.Value.HorizontalAxis}"
-                                          VerticalAxis="{Binding Distribution.Value.VerticalAxis}"
-                                          HorizontalTitle="S/N"
-                                          VerticalTitle="Height"
-                                          GraphTitle="Height vs. S/N"
-                                          BorderBrush="Black"
-                                          Background="WhiteSmoke">
+                                  VerticalAxis="{Binding Distribution.Value.VerticalAxis}"
+                                  HorizontalTitle="S/N"
+                                  VerticalTitle="Height"
+                                  GraphTitle="Height vs. S/N"
+                                  BorderBrush="Black"
+                                  Background="WhiteSmoke">
                     <chart:MultiChart.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Save image as..">
@@ -104,6 +105,7 @@
                                               VerticalProperty="PeakFeature.PeakHeightTop"
                                               DataType="{x:Type dataobj:ChromatogramPeakFeature}"
                                               PointBrush="{Binding Distribution.Value.Brush}"
+                                              SelectedItem="{Binding SelectedPeak.Value, Mode=OneWayToSource}">
                         <chart:ScatterControlSlim.ToolTip>
                             <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                                 <TextBlock>
