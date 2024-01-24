@@ -14,6 +14,7 @@ using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -31,20 +32,20 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             var vms = new ISettingViewModel[]
             {
-                new DataCollectionSettingViewModel(model.DataCollectionSettingModel, isEnabled).AddTo(Disposables),
-                new PeakDetectionSettingViewModel(model.PeakDetectionSettingModel, isEnabled).AddTo(Disposables),
-                new DeconvolutionSettingViewModel(model.DeconvolutionSettingModel, isEnabled).AddTo(Disposables),
-                new IdentifySettingViewModel(model.IdentifySettingModel, CreateAnnotatorViewModelFactory(Model.Storage), isEnabled).AddTo(Disposables),
-                new AdductIonSettingViewModel(model.AdductIonSettingModel, isEnabled).AddTo(Disposables),
-                new AlignmentParameterSettingViewModel(model.AlignmentParameterSettingModel, isEnabled).AddTo(Disposables),
+                CreateDataCollectionSettingViewModel(model.DataCollectionSettingModel, isEnabled).AddTo(Disposables),
+                CreatePeakDetectionSettingViewModel(model.PeakDetectionSettingModel, isEnabled).AddTo(Disposables),
+                CreateDeconvolutionSettingViewModel(model.DeconvolutionSettingModel, model.Storage.Parameter.ProjectParam.MachineCategory, isEnabled).AddTo(Disposables),
+                CreateIdentificationSettingViewModel(model.IdentifySettingModel, model.Storage, MessageBroker.Default, isEnabled).AddTo(Disposables),
+                model.AdductIonSettingModel is null ? null : new AdductIonSettingViewModel(model.AdductIonSettingModel, isEnabled).AddTo(Disposables),
+                CreateAlignmentParameterSettingViewModel(model.AlignmentParameterSettingModel, isEnabled).AddTo(Disposables),
                 model.MobilitySettingModel is null ? null : new MobilitySettingViewModel(model.MobilitySettingModel, isEnabled).AddTo(Disposables),
-                new IsotopeTrackSettingViewModel(model.IsotopeTrackSettingModel, isEnabled).AddTo(Disposables),
+                model.IsotopeTrackSettingModel is null ? null : new IsotopeTrackSettingViewModel(model.IsotopeTrackSettingModel, isEnabled).AddTo(Disposables),
             };
             SettingViewModels = new ObservableCollection<ISettingViewModel>(vms.Where(vm => vm != null));
 
-            IsReadOnlyPeakPickParameter = Model.IsReadOnlyPeakPickParameter;
-            IsReadOnlyAnnotationParameter = Model.IsReadOnlyAnnotationParameter;
-            IsReadOnlyAlignmentParameter = Model.IsReadOnlyAlignmentParameter;
+            IsReadOnlyPeakPickParameter = model.IsReadOnlyPeakPickParameter;
+            IsReadOnlyAnnotationParameter = model.IsReadOnlyAnnotationParameter;
+            IsReadOnlyAlignmentParameter = model.IsReadOnlyAlignmentParameter;
 
             ObserveChanges = SettingViewModels.ObserveElementObservableProperty(vm => vm.ObserveChanges).Select(pack => pack.Value);
 
@@ -113,7 +114,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             return SettingViewModels.OfType<AlignmentParameterSettingViewModel>().FirstOrDefault();
         }
 
-        // TODO: delete method
         private static IAnnotatorSettingViewModelFactory CreateAnnotatorViewModelFactory(IMsdialDataStorage<ParameterBase> storage) {
             switch (storage) {
                 case IMsdialDataStorage<MsdialLcImMsParameter> _:
@@ -124,8 +124,63 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                     return new DimsAnnotatorSettingViewModelFactory();
                 case IMsdialDataStorage<MsdialImmsParameter> _:
                     return new ImmsAnnotatorSettingViewModelFactory();
+                //case IMsdialDataStorage<MsdialGcmsParameter> _:
+                //    return new GcmsAnnotatorSettingViewModelFactory();
             }
             throw new NotImplementedException("unknown method acquired.");
+        }
+
+        private static ISettingViewModel CreateDataCollectionSettingViewModel(IDataCollectionSettingModel model, IObservable<bool> isEnabled) {
+            switch (model) {
+                case DataCollectionSettingModel dc:
+                    return new DataCollectionSettingViewModel(dc, isEnabled);
+                case GcmsDataCollectionSettingModel gdc:
+                    return new GcmsDataCollectionSettingViewModel(gdc, isEnabled);
+                default:
+                    return null;
+            }
+        }
+
+        private static ISettingViewModel CreatePeakDetectionSettingViewModel(IPeakDetectionSettingModel model, IObservable<bool> isEnabled) {
+            switch (model) {
+                case PeakDetectionSettingModel dc:
+                    return new PeakDetectionSettingViewModel(dc, isEnabled);
+                case GcmsPeakDetectionSettingModel gdc:
+                    return new GcmsPeakDetectionSettingViewModel(gdc, isEnabled);
+                default:
+                    return null;
+            }
+        }
+
+        private static ISettingViewModel CreateDeconvolutionSettingViewModel(DeconvolutionSettingModel model, MachineCategory category, IObservable<bool> isEnabled) {
+            switch (category) {
+                case MachineCategory.GCMS:
+                    return new GcmsDeconvolutionSettingViewModel(model, isEnabled);
+                default:
+                    return new DeconvolutionSettingViewModel(model, isEnabled);
+            }
+        }
+
+        private static ISettingViewModel CreateIdentificationSettingViewModel(IIdentificationSettingModel model, IMsdialDataStorage<ParameterBase> storage, IMessageBroker broker, IObservable<bool> isEnabled) {
+            switch (model) {
+                case GcmsIdentificationSettingModel gism:
+                    return new GcmsIdentificationSettingViewModel(gism, broker, isEnabled);
+                case IdentifySettingModel ism:
+                    return new IdentifySettingViewModel(ism, CreateAnnotatorViewModelFactory(storage), isEnabled);
+                default:
+                    return null;
+            }
+        }
+
+        private static ISettingViewModel CreateAlignmentParameterSettingViewModel(IAlignmentParameterSettingModel model, IObservable<bool> isEnabled) {
+            switch (model) {
+                case GcmsAlignmentParameterSettingModel gasm:
+                    return new GcmsAlignmentParameterSettingViewModel(gasm, isEnabled);
+                case AlignmentParameterSettingModel apsm:
+                    return new AlignmentParameterSettingViewModel(apsm, isEnabled);
+                default:
+                    return null;
+            }
         }
     }
 }

@@ -22,6 +22,9 @@
 		<HighEntropyVA>false</HighEntropyVA>
 		<SignAssembly>False</SignAssembly>
 	</PropertyGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
 	<ItemGroup>
 		<None Remove="App.xaml" />
 		<None Remove="Resources\BinVestigate.ico" />

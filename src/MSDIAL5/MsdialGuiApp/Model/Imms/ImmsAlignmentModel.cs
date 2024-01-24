@@ -76,7 +76,7 @@ namespace CompMs.App.Msdial.Model.Imms
             Brushes = brushMapDataSelector.Brushes.ToList();
             SelectedBrush = brushMapDataSelector.SelectedBrush;
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
-            CurrentRepresentativeFile = Target.Select(t => t is null ? null : fileCollection.GetById(t.RepresentativeFileID)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            CurrentRepresentativeFile = Target.Select(t => t is null ? null : fileCollection.FindByID(t.RepresentativeFileID)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(Ms1Spots, peakSpotFiltering).AddTo(Disposables);
             PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
@@ -97,8 +97,10 @@ namespace CompMs.App.Msdial.Model.Imms
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
             IMsSpectrumLoader<AlignmentSpotPropertyModel> decLoader = new AlignmentMSDecSpectrumLoader(_alignmentFile);
-            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             var spectraExporter = new NistSpectraExporter<AlignmentSpotProperty>(Target.Select(t => t?.innerModel), mapper, parameter).AddTo(Disposables);
+            GraphLabels ms2GraphLabels = new GraphLabels("Representation vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
+            ChartHueItem deconvolutedSpectrumHueItem = new ChartHueItem(projectBaseParameter, Colors.Blue);
+            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             AlignmentSpotSpectraLoader spectraLoader = new AlignmentSpotSpectraLoader(fileCollection, refLoader, _compoundSearchers, fileCollection);
             Ms2SpectrumModel = new AlignmentMs2SpectrumModel(
                 Target, MatchResultCandidatesModel.SelectedCandidate, fileCollection,
@@ -223,13 +225,13 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
 
-        public CompoundSearchModel CreateCompoundSearchModel() {
+        public CompoundSearchModel<PeakSpotModel> CreateCompoundSearchModel() {
             if (Target.Value?.innerModel is null || MsdecResult.Value is null) {
                 return null;
             }
 
             PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(MsdecResult.Value);
-            var compoundSearchModel = new CompoundSearchModel(
+            var compoundSearchModel = new CompoundSearchModel<PeakSpotModel>(
                 _files[Target.Value.RepresentativeFileID],
                 new PeakSpotModel(Target.Value, MsdecResult.Value),
                 new ImmsCompoundSearchUsecase(_compoundSearchers.Items),

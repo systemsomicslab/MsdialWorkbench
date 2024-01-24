@@ -15,6 +15,7 @@ namespace CompMs.App.Msdial.Model.Setting
         float AccumulatedRange { get; set; }
 
         void Commit();
+        void Update(ParameterBase parameter);
     }
 
     public abstract class DataCollectionRangeSetting : BindableBase
@@ -67,6 +68,14 @@ namespace CompMs.App.Msdial.Model.Setting
                 lcImMsParameter.AccumulatedRtRange = AccumulatedRange;
             }
         }
+
+        public void Update(ParameterBase parameter) {
+            Begin = parameter.PeakPickBaseParam.RetentionTimeBegin;
+            End = parameter.PeakPickBaseParam.RetentionTimeEnd;
+            if (parameter is MsdialLcImMsParameter p) {
+                AccumulatedRange = p.AccumulatedRtRange;
+            }
+        }
     }
 
     public class DriftTimeCollectionRangeSetting : DataCollectionRangeSetting, IDataCollectionRangeSetting
@@ -96,6 +105,19 @@ namespace CompMs.App.Msdial.Model.Setting
                 immsParameter.DriftTimeEnd = End;
             }
         }
+
+        public void Update(ParameterBase parameter) {
+            switch (parameter) {
+                case MsdialImmsParameter imms:
+                    Begin = imms.DriftTimeBegin;
+                    End = imms.DriftTimeEnd;
+                    break;
+                case MsdialLcImMsParameter lcimms:
+                    Begin = lcimms.DriftTimeBegin;
+                    End = lcimms.DriftTimeEnd;
+                    break;
+            }
+        }
     }
 
     public class Ms1CollectionRangeSetting : DataCollectionRangeSetting, IDataCollectionRangeSetting
@@ -112,6 +134,11 @@ namespace CompMs.App.Msdial.Model.Setting
             parameter.MassRangeBegin = Begin;
             parameter.MassRangeEnd = End;
         }
+
+        public void Update(ParameterBase parameter) {
+            Begin = parameter.PeakPickBaseParam.MassRangeBegin;
+            End = parameter.PeakPickBaseParam.MassRangeEnd;
+        }
     }
 
     public class Ms2CollectionRangeSetting : DataCollectionRangeSetting, IDataCollectionRangeSetting
@@ -127,6 +154,11 @@ namespace CompMs.App.Msdial.Model.Setting
         public void Commit() {
             parameter.Ms2MassRangeBegin = Begin;
             parameter.Ms2MassRangeEnd = End;
+        }
+
+        public void Update(ParameterBase parameter) {
+            Begin = parameter.PeakPickBaseParam.Ms2MassRangeBegin;
+            End = parameter.PeakPickBaseParam.Ms2MassRangeEnd;
         }
     }
 }

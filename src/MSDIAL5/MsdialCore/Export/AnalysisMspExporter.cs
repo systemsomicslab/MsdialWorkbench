@@ -10,7 +10,7 @@ using System.IO;
 
 namespace CompMs.MsdialCore.Export
 {
-    public sealed class AnalysisMspExporter : IAnalysisExporter
+    public sealed class AnalysisMspExporter : IAnalysisExporter<ChromatogramPeakFeatureCollection>
     {
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
         private readonly ParameterBase _parameter;
@@ -28,7 +28,7 @@ namespace CompMs.MsdialCore.Export
             _loaderFactory = loaderFuctory ?? throw new ArgumentNullException(nameof(loaderFuctory));
         }
 
-        void IAnalysisExporter.Export(Stream stream, AnalysisFileBean analysisFile, ChromatogramPeakFeatureCollection peakFeatureCollection) {
+        void IAnalysisExporter<ChromatogramPeakFeatureCollection>.Export(Stream stream, AnalysisFileBean analysisFile, ChromatogramPeakFeatureCollection peakFeatureCollection) {
             var loader = _loaderFactory(analysisFile);
             foreach (var peak in peakFeatureCollection.Items) {
                 SpectraExport.SaveSpectraTableAsNistFormat(stream, peak, loader.Load(peak).Spectrum, _refer, _parameter);

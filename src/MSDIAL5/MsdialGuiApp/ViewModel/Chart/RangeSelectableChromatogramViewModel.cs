@@ -8,7 +8,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    public class RangeSelectableChromatogramViewModel : ViewModelBase
+    internal class RangeSelectableChromatogramViewModel : ViewModelBase
     {
         public RangeSelectableChromatogramViewModel(RangeSelectableChromatogramModel model) {
             Model = model;

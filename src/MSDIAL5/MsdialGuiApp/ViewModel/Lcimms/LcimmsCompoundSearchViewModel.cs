@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Search;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Search;
 using Reactive.Bindings;
@@ -10,9 +11,9 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
-    internal sealed class LcimmsCompoundSearchViewModel : CompoundSearchVM
+    internal sealed class LcimmsCompoundSearchViewModel : CompoundSearchVM<PeakSpotModel>
     {
-        public LcimmsCompoundSearchViewModel(CompoundSearchModel model) : base(model) {
+        public LcimmsCompoundSearchViewModel(CompoundSearchModel<PeakSpotModel> model) : base(model) {
             ParameterHasErrors = ParameterViewModel.SelectSwitch(parameter =>
                 parameter is null
                     ? Observable.Return(true)

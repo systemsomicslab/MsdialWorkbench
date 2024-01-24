@@ -24,17 +24,18 @@ namespace CompMs.App.Msdial.Model.Chart
 
             Name = name;
             GraphTitle = graphTitle;
-            HorizontalTitle = horizontalTitle;
-            VerticalTitle = verticalTitle;
 
             HorizontalProperty = nameof(PeakItem.Time);
             VerticalProperty = nameof(PeakItem.Intensity);
 
-            AbundanceAxis = new ContinuousAxisManager<double>(0d, chromatograms.DefaultIfEmpty().Max(chromatogram => chromatogram?.MaxIntensity) ?? 1d, new ConstantMargin(0, 10d), new Range(0d, 0d))
+            var abundanceAxis = new ContinuousAxisManager<double>(0d, chromatograms.DefaultIfEmpty().Max(chromatogram => chromatogram?.MaxIntensity) ?? 1d, new ConstantMargin(0, 10d), new Range(0d, 0d))
             {
                 LabelType = LabelType.Order,
             }.AddTo(Disposables);
-            ChromAxis = new ContinuousAxisManager<double>(chromatograms.Aggregate<DisplayChromatogram, Range>(null, (acc, chromatogram) => chromatogram.ChromXRange.Union(acc)) ?? new Range(0d, 1d)).AddTo(Disposables);
+            var chromAxis = new ContinuousAxisManager<double>(chromatograms.Aggregate<DisplayChromatogram, Range>(null, (acc, chromatogram) => chromatogram.ChromXRange.Union(acc)) ?? new Range(0d, 1d)).AddTo(Disposables);
+
+            AbundanceAxisItemSelector = new AxisItemSelector<double>(new AxisItemModel<double>(verticalTitle, abundanceAxis, verticalTitle)).AddTo(Disposables);
+            ChromAxisItemSelector = new AxisItemSelector<double>(new AxisItemModel<double>(horizontalTitle, chromAxis, horizontalTitle)).AddTo(Disposables);
         }
 
         public ChromatogramsModel(string name, DisplayChromatogram chromatogram, string graphTitle, string horizontalTitle, string verticalTitle)
@@ -54,18 +55,16 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public ReadOnlyObservableCollection<DisplayChromatogram> DisplayChromatograms { get; }
 
-        public IAxisManager<double> AbundanceAxis { get; }
-        public IAxisManager<double> ChromAxis { get; }
+        public AxisItemSelector<double> AbundanceAxisItemSelector { get; }
+        public AxisItemSelector<double> ChromAxisItemSelector { get; }
 
         public string Name { get; }
-        public string HorizontalTitle { get; }
-        public string VerticalTitle { get; }
         public string GraphTitle { get; }
         public string HorizontalProperty { get; }
         public string VerticalProperty { get; }
 
         public ChromatogramsModel Merge(ChromatogramsModel other) {
-            return new ChromatogramsModel($"{Name} and {other.Name}", new ObservableCollection<DisplayChromatogram>(DisplayChromatograms.Concat(other.DisplayChromatograms)), $"{GraphTitle} and {other.GraphTitle}", HorizontalTitle, VerticalTitle);
+            return new ChromatogramsModel($"{Name} and {other.Name}", new ObservableCollection<DisplayChromatogram>(DisplayChromatograms.Concat(other.DisplayChromatograms)), $"{GraphTitle} and {other.GraphTitle}", ChromAxisItemSelector.SelectedAxisItem.GraphLabel, AbundanceAxisItemSelector.SelectedAxisItem.GraphLabel);
         }
 
         public async Task ExportAsync(Stream stream, string separator) {

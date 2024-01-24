@@ -1,5 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Information;
-using CompMs.Common.DataObj.Property;
+using CompMs.App.Msdial.Utility;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -21,11 +21,13 @@ namespace CompMs.App.Msdial.ViewModel.Information
             InChIKey = model.ObserveProperty(m => m.InChIKey).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             Comment = model.ObserveProperty(m => m.Comment).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             PeakPoints = model.ObserveProperty(m => m.PeakPoints)
+                .SkipNull()
                 .Select(ps => ps.ToReadOnlyReactiveCollection(m => new PeakPointViewModel(m)))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             PeakAmounts = model.ObserveProperty(m => m.PeakAmounts)
+                .SkipNull()
                 .Select(ps => ps.ToReadOnlyReactiveCollection(m => new PeakAmountViewModel(m)))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()

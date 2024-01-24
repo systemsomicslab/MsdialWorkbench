@@ -115,6 +115,19 @@ namespace CompMs.App.Msdial.Model.Information
         public string Score => Math.Round(_score * 1000).ToString("F0");
     }
 
+    internal sealed class RiSimilarity : BindableBase, ISimilarity
+    {
+        private const string RISIMILARITY_LABEL = "RI similarity";
+        private readonly double _score;
+
+        public RiSimilarity(double score) {
+            _score = score;
+        }
+
+        public string Label => RISIMILARITY_LABEL;
+        public string Score => Math.Round(_score * 1000).ToString("F0");
+    }
+
     internal sealed class CcsSimilarity : BindableBase, ISimilarity
     {
         private const string CCSSIMILARITY_LABEL = "Ccs similarity";

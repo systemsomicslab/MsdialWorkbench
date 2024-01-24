@@ -32,8 +32,7 @@ namespace CompMs.App.Msdial.Model.Loader
             return loader.LoadSpectrumAsObservable(target).Select(s => new MsSpectrum(s));
         }
 
-        class ContramapImplLoader<T, U> : IMsSpectrumLoader<U>
-        {
+        class ContramapImplLoader<T, U> : IMsSpectrumLoader<U> {
             private readonly IMsSpectrumLoader<T> _loader;
             private readonly Func<U, IObservable<T>> _map;
 

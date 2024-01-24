@@ -58,12 +58,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
-            ContinueCommand = SelectedParentSettingViewModel
+            ContinueCommand = SelectedSettingViewModel
                 .SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(true))
                 .Inverse()
                 .ToReactiveCommand()
+                .WithSubscribe(Next)
                 .AddTo(Disposables);
-            ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
             CanRun = SelectedParentSettingViewModel
                 .SelectSwitch(vm => vm is MethodSettingViewModel
@@ -126,12 +126,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
-            ContinueCommand = SelectedParentSettingViewModel
+            ContinueCommand = SelectedSettingViewModel
                 .SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(true))
                 .Inverse()
                 .ToReactiveCommand()
+                .WithSubscribe(Next)
                 .AddTo(Disposables);
-            ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
             CanRun = SelectedParentSettingViewModel
                 .SelectSwitch(vm => vm is MethodSettingViewModel
@@ -194,12 +194,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
-            ContinueCommand = SelectedParentSettingViewModel
+            ContinueCommand = SelectedSettingViewModel
                 .SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(true))
                 .Inverse()
                 .ToReactiveCommand()
-                .AddTo(Disposables);
-            ContinueCommand.Subscribe(Next)
+                .WithSubscribe(Next)
                 .AddTo(Disposables);
 
             CanRun = SelectedParentSettingViewModel
@@ -261,12 +260,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
-            ContinueCommand = SelectedParentSettingViewModel
+            ContinueCommand = SelectedSettingViewModel
                 .SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(true))
                 .Inverse()
                 .ToReactiveCommand()
+                .WithSubscribe(Next)
                 .AddTo(Disposables);
-            ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
             CanRun = SelectedParentSettingViewModel
                 .SelectSwitch(vm => vm is MethodSettingViewModel
@@ -324,12 +323,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
-            ContinueCommand = SelectedParentSettingViewModel
+            ContinueCommand = SelectedSettingViewModel
                 .SelectSwitch(vm => vm?.ObserveHasErrors ?? Observable.Return(true))
                 .Inverse()
                 .ToReactiveCommand()
+                .WithSubscribe(Next)
                 .AddTo(Disposables);
-            ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
             CanRun = SelectedParentSettingViewModel
                 .SelectSwitch(vm => vm is MethodSettingViewModel

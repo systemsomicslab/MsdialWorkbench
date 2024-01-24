@@ -7,9 +7,9 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Loader
 {
-    internal sealed class MultiMsRawSpectrumLoaderViewModel : ViewModelBase
+    internal sealed class MultiMsmsRawSpectrumLoaderViewModel : ViewModelBase
     {
-        public MultiMsRawSpectrumLoaderViewModel(MultiMsmsRawSpectrumLoader loader) {
+        public MultiMsmsRawSpectrumLoaderViewModel(MultiMsmsRawSpectrumLoader loader) {
             if (loader is null) {
                 Ms2IdList = Observable.Return(new List<MsSelectionItem>(0)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
                 SelectedMs2Id = new ReactivePropertySlim<MsSelectionItem>().AddTo(Disposables);

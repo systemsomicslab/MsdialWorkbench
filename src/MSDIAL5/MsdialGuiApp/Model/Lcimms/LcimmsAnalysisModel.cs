@@ -246,13 +246,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             // Raw vs Purified spectrum model
             RawPurifiedSpectrumsModel = new RawPurifiedSpectrumsModel(Ms2SpectrumModel.RawRefSpectrumModels.UpperSpectrumModel, Ms2SpectrumModel.DecRefSpectrumModels.UpperSpectrumModel).AddTo(Disposables);
 
-            var surveyScanSpectrum = new SurveyScanSpectrum(target, t => Observable.FromAsync(token => LoadMsSpectrumAsync(t, token)))
-                .AddTo(Disposables);
-            SurveyScanModel = new SurveyScanModel(
-                surveyScanSpectrum,
-                spec => spec.Mass,
-                spec => spec.Intensity
-            ).AddTo(Disposables);
+            var surveyScanSpectrum = SurveyScanSpectrum.Create(target, t => Observable.FromAsync(token => LoadMsSpectrumAsync(t, token))).AddTo(Disposables);
+            SurveyScanModel = new SurveyScanModel(surveyScanSpectrum, spec => spec.Mass, spec => spec.Intensity).AddTo(Disposables);
             SurveyScanModel.Elements.VerticalTitle = "Abundance";
             SurveyScanModel.Elements.HorizontalProperty = nameof(SpectrumPeakWrapper.Mass);
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
@@ -326,16 +321,16 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public MoleculeStructureModel MoleculeStructureModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
-        public ReadOnlyReactivePropertySlim<CompoundSearchModel> CompoundSearchModel { get; }
+        public ReadOnlyReactivePropertySlim<CompoundSearchModel<PeakSpotModel>> CompoundSearchModel { get; }
         public IObservable<bool> CanSearchCompound { get; }
 
-        private CompoundSearchModel CreateCompoundearchModel(ChromatogramPeakFeatureModel peak, MSDecResult msdec, CompoundSearcherCollection compoundSearchers) {
+        private CompoundSearchModel<PeakSpotModel> CreateCompoundearchModel(ChromatogramPeakFeatureModel peak, MSDecResult msdec, CompoundSearcherCollection compoundSearchers) {
             if (peak is null || msdec is null) {
                 return null;
             }
 
             PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(msdec);
-            var compoundSearchModel = new CompoundSearchModel(
+            var compoundSearchModel = new CompoundSearchModel<PeakSpotModel>(
                 _analysisFileModel,
                 new PeakSpotModel(peak, msdec),
                 new LcimmsCompoundSearchUsecase(compoundSearchers.Items),

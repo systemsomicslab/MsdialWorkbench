@@ -90,6 +90,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public ReactiveCommand SearchCompoundCommand { get; }
         private void SearchCompound() {
             using var model = _model.BuildCompoundSearchModel();
+            if (model is null) {
+                return;
+            }
             using var vm = new DimsCompoundSearchViewModel(model);
             _broker.Publish<ICompoundSearchViewModel>(vm);
         }

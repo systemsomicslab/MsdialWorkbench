@@ -15,7 +15,13 @@ using System.Collections.ObjectModel;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public class DataCollectionSettingModel : BindableBase {
+    public interface IDataCollectionSettingModel {
+        bool IsReadOnly { get; }
+        void LoadParameter(ParameterBase parameter);
+        bool TryCommit();
+    }
+
+    public sealed class DataCollectionSettingModel : BindableBase, IDataCollectionSettingModel {
         private readonly ParameterBase parameter;
         private readonly IReadOnlyList<AnalysisFileBean> analysisFiles;
 
@@ -123,9 +129,8 @@ namespace CompMs.App.Msdial.Model.Setting
             IsBrClConsideredForIsotopes = parameter.PeakPickBaseParam.IsBrClConsideredForIsotopes;
             NumberOfThreads = parameter.ProcessBaseParam.NumThreads;
             ExcuteRtCorrection = parameter.AdvancedProcessOptionBaseParam.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection;
-            DataCollectionRangeSettings.Clear();
-            foreach (var s in PrepareRangeSettings(parameter)) {
-                DataCollectionRangeSettings.Add(s);
+            foreach (var s in DataCollectionRangeSettings) {
+                s.Update(parameter);
             }
             if (DimsProviderFactoryParameter != null) {
                 DimsProviderFactoryParameter?.LoadParameter(((MsdialDimsParameter)parameter).ProviderFactoryParameter);

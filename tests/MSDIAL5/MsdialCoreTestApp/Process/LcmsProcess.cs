@@ -82,9 +82,10 @@ namespace CompMs.App.MsdialConsole.Process
             var providerFactory = new StandardDataProviderFactory(5, false);
             var process = new FileProcess(providerFactory, storage, annotationProcess, evaluator);
 
-            IAnalysisExporter peak_MspExporter = new AnalysisMspExporter(storage.DataBaseMapper, storage.Parameter);
+            IAnalysisExporter<ChromatogramPeakFeatureCollection> peak_MspExporter = new AnalysisMspExporter(storage.DataBaseMapper, storage.Parameter);
             var peak_accessor = new LcmsAnalysisMetadataAccessor(storage.DataBaseMapper, storage.Parameter, ExportspectraType.deconvoluted);
-            var peak_Exporter = new AnalysisCSVExporter();
+            var peak_Exporter = new AnalysisCSVExporter("\t");
+            var peakExporterFactory = new AnalysisCSVExporterFactory("\t");
             var sem = new SemaphoreSlim(Environment.ProcessorCount / 2);
             foreach ((var file, var idx) in files.WithIndex()) {
                 tasks[idx] = Task.Run(async () => {
@@ -99,8 +100,7 @@ namespace CompMs.App.MsdialConsole.Process
                         using (var mspstream = File.Open(peak_outputmspfile, FileMode.Create, FileAccess.Write)) { 
                             var peak_container = await ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath).ConfigureAwait(false);
                             var peak_decResults = MsdecResultsReader.ReadMSDecResults(file.DeconvolutionFilePath, out _, out _);
-                            peak_Exporter.Export(stream, peak_container.Items, peak_decResults, provider, peak_accessor, file);
-
+                            peakExporterFactory.CreateExporter(provider.AsFactory(), peak_accessor).Export(stream, file, peak_container);
                             peak_MspExporter.Export(mspstream, file, peak_container);
                         }
                     }

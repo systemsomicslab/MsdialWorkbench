@@ -7,12 +7,12 @@ using System.Linq;
 namespace CompMs.Common.Components
 {
     public sealed class ChroChroChromatogram {
-        private readonly Chromatogram_temp2 _chromatogram;
+        private readonly ExtractedIonChromatogram _chromatogram;
         private readonly ChromatogramGlobalProperty_temp2 _globalProperty;
         private readonly DifferencialCoefficients _differencialCoefficients;
         private readonly ChromatogramNoises _noises;
 
-        internal ChroChroChromatogram(Chromatogram_temp2 chromatogram, ChromatogramGlobalProperty_temp2 globalProperty, DifferencialCoefficients differencialCoefficients, ChromatogramNoises noises) {
+        internal ChroChroChromatogram(ExtractedIonChromatogram chromatogram, ChromatogramGlobalProperty_temp2 globalProperty, DifferencialCoefficients differencialCoefficients, ChromatogramNoises noises) {
             _chromatogram = chromatogram;
             _globalProperty = globalProperty;
             _differencialCoefficients = differencialCoefficients;
@@ -270,7 +270,7 @@ namespace CompMs.Common.Components
         private readonly static double[] SECOND_DIFF_COEFF = new double[] { 0.14285714, -0.07142857, -0.1428571, -0.07142857, 0.14285714 };
 
         internal ChromatogramGlobalProperty_temp2(double maxIntensity, double minIntensity, double baselineMedian, double noise, bool isHighBaseline,
-            Chromatogram_temp2 smoothedPeakList, Chromatogram_temp2 baseline, Chromatogram_temp2 baselineCorrectedPeakList) {
+            ExtractedIonChromatogram smoothedPeakList, ExtractedIonChromatogram baseline, ExtractedIonChromatogram baselineCorrectedPeakList) {
             MaxIntensity = maxIntensity;
             MinIntensity = minIntensity;
             BaselineMedian = baselineMedian;
@@ -286,9 +286,9 @@ namespace CompMs.Common.Components
         public double BaselineMedian { get; }
         public double Noise { get; }
         public bool IsHighBaseline { get; }
-        public Chromatogram_temp2 SmoothedChromatogram { get; }
-        public Chromatogram_temp2 BaselineChromatogram { get; }
-        public Chromatogram_temp2 BaselineCorrectedChromatogram { get; }
+        public ExtractedIonChromatogram SmoothedChromatogram { get; }
+        public ExtractedIonChromatogram BaselineChromatogram { get; }
+        public ExtractedIonChromatogram BaselineCorrectedChromatogram { get; }
 
         public DifferencialCoefficients GenerateDifferencialCoefficients() {
 
