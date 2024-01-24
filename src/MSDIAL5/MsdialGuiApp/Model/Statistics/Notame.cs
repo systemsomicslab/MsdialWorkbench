@@ -4,14 +4,14 @@ using CompMs.CommonMVVM;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.Parameter;
 using RDotNet;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
-using Reactive.Bindings.Notifiers;
-using Reactive.Bindings;
+using System.IO;
 
 namespace CompMs.App.Msdial.Model.Statistics
 {
@@ -58,11 +58,21 @@ namespace CompMs.App.Msdial.Model.Statistics
             });
         }
 
-        public string FileName {
-            get => AlignmentFilesForExport.SelectedFile.FileName;
-            set => SetProperty(ref _fileName, value);
+        public string GetFileName(string fileName)
+        {
+            var files = new DirectoryInfo(ExportDirectory).GetFiles();
+            DateTime lastUpdated = DateTime.MinValue;
+            foreach (FileInfo file in files)
+            {
+                if (file.LastWriteTime > lastUpdated)
+                {
+                    lastUpdated = file.LastWriteTime;
+                    fileName = file.Name;
         }
-        private string _fileName;
+            }
+            return fileName;
+        }
+        private string FileName {  get; set; }
 
         public IonMode IonMode {
             get => ionMode;
@@ -72,6 +82,7 @@ namespace CompMs.App.Msdial.Model.Statistics
 
         public void Run()
         {
+            FileName = GetFileName(FileName);
             SendParametersToNotame();
         }
 
