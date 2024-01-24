@@ -66,8 +66,8 @@
                   Margin="0,8,0,0"/>
         </StackPanel>
 
-        <ItemsControl ItemsSource="{Binding Groups}" Margin="8" Grid.Row="2" Grid.RowSpan="4">
-            <ItemsControl.Resources>
+        <ContentControl Content="{Binding Group}" Margin="8" Grid.Row="2" Grid.RowSpan="4">
+            <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type v:AlignmentExportGroupViewModel}">
                     <Expander Header="{Binding Label, Mode=OneTime}" IsExpanded="{Binding IsExpanded, Mode=TwoWay}"
                           d:IsExpanded="True">
@@ -219,7 +219,7 @@
                         </Grid>
                     </Expander>
                 </DataTemplate>
-            </ItemsControl.Resources>
-        </ItemsControl>
+            </ContentControl.Resources>
+        </ContentControl>
     </Grid>
 </UserControl>

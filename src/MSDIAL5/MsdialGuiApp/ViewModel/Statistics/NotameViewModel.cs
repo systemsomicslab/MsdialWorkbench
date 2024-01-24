@@ -34,15 +34,12 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
                 AlignmentFiles.MoveCurrentTo(notame.AlignmentFilesForExport.SelectedFile);
             }
 
-            Groups = notame.Groups.ToReadOnlyReactiveCollection(MapToViewModel).AddTo(Disposables);
-            if (Groups.Any())
-            {
-                Groups.First().IsExpanded = true;
-            }
+            Group = MapToViewModel(notame.Group);
 
-            ExportCommand = Groups.Select(g => (IObservable<bool>)g.CanExport).Append(
-                this.ErrorsChangedAsObservable().Select(_ => !HasValidationErrors).Prepend(!HasValidationErrors)
-            ).CombineLatestValuesAreAllTrue()
+            ExportCommand = new IObservable<bool>[] {
+                Group.CanExport,
+                this.ErrorsChangedAsObservable().Select(_ => !HasValidationErrors).Prepend(!HasValidationErrors),
+            }.CombineLatestValuesAreAllTrue()
             .ToAsyncReactiveCommand()
             .WithSubscribe(ExportAlignmentResultAsync)
             .AddTo(Disposables);
@@ -90,7 +87,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
         public ICollectionView AlignmentFiles { get; }
 
-        public ReadOnlyReactiveCollection<IAlignmentResultExportViewModel> Groups { get; }
+        public IAlignmentResultExportViewModel Group { get; }
 
         public bool UseFilter
         {
