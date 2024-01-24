@@ -91,7 +91,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                 massStep = 1.0F;
             }
 
-            var targetMasses = _peakSpottingCore.GetFocusedMassList(startMass, endMass, massStep, _parameter.MassRangeBegin, _parameter.MassRangeEnd);
+            var targetMasses = _peakSpottingCore.GetFocusedMassList(startMass, endMass, massStep);
             var rawSpectra = new RawSpectra(spectrumProvider, _parameter.IonMode, file.AcquisitionType);
             var accSpectra = new RawSpectra(accSpectrumProvider, _parameter.IonMode, file.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(_parameter.RetentionTimeBegin, _parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);

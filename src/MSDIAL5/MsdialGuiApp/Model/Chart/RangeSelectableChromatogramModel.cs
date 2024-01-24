@@ -5,7 +5,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    public class RangeSelectableChromatogramModel : BindableBase
+    internal class RangeSelectableChromatogramModel : BindableBase
     {
         public RangeSelectableChromatogramModel(ChromatogramsModel chromatogramModel) {
             ChromatogramModel = chromatogramModel;

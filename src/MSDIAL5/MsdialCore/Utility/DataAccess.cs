@@ -718,10 +718,10 @@ namespace CompMs.MsdialCore.Utility {
             return peaks;
         }
 
-        public static List<ValuePeak[]> GetAccumulatedMs2PeakListList(IDataProvider provider,
+        public static List<(ValuePeak[], double)> GetAccumulatedMs2PeakListList(IDataProvider provider,
              ChromatogramPeakFeature rtChromPeakFeature, List<SpectrumPeak> curatedSpectrum, double minDriftTime, double maxDriftTime, IonMode ionMode) {
             // var ms2peaklistlist = new List<List<ChromatogramPeak>>();
-            var ms2peaklistlist = new List<ValuePeak[]>();
+            var ms2peaklistlist = new List<(ValuePeak[], double)>();
             var scanPolarity = ionMode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
 
             var rt = rtChromPeakFeature.ChromXsTop.Value;
@@ -859,7 +859,7 @@ namespace CompMs.MsdialCore.Utility {
                 for (int i = 0; i < sortedPeaklist.Count; i++) {
                     ms2peaklist[i] = new ValuePeak(i, sortedPeaklist[i][1], sortedPeaklist[i][2], sortedPeaklist[i][3]);
                 }
-                ms2peaklistlist.Add(ms2peaklist);
+                ms2peaklistlist.Add((ms2peaklist, targetMz));
 
                 //foreach (var peaks in sortedPeaklist) {
                 //    ms2peaklist.Add(new ChromatogramPeak(counter, peaks[2], peaks[3], new ChromXs(peaks[1], ChromXType.Drift, ChromXUnit.Msec)));
@@ -1199,13 +1199,19 @@ namespace CompMs.MsdialCore.Utility {
         public static void SetMoleculeMsPropertyAsSuggested(ChromatogramPeakFeature feature, MoleculeMsReference reference, MsScanMatchResult result) {
             SetMoleculePropertyCore(feature, reference);
             feature.SetAdductType(reference.AdductType);
-            feature.Name = "w/o MS2: " + result.Name;
+            if (feature.MS2RawSpectrumID < 0) {
+                feature.Name = "no MS2: " + result.Name;
+            }
+            else {
+                feature.Name = "low score: " + result.Name;
+            }
         }
 
-        public static void SetMoleculeMsPropertyAsConfidence<T>(T feature, MoleculeMsReference reference)
-            where T: IMoleculeProperty, IIonProperty {
+        public static void SetMoleculeMsPropertyAsConfidence(IMoleculeProperty feature, MoleculeMsReference reference) {
             SetMoleculePropertyCore(feature, reference);
-            feature.SetAdductType(reference.AdductType);
+            if (feature is IIonProperty ionProperty) {
+                ionProperty.SetAdductType(reference.AdductType);
+            }
 
             if (!reference.CompoundClass.IsEmptyOrNull()) { // meaning lipidomics
                 feature.Name = MsScanMatching.GetLipidNameFromReference(reference);
@@ -1215,10 +1221,11 @@ namespace CompMs.MsdialCore.Utility {
             }
         }
 
-        public static void SetMoleculeMsPropertyAsUnsettled<T>(T feature, MoleculeMsReference reference)
-            where T: IMoleculeProperty, IIonProperty {
+        public static void SetMoleculeMsPropertyAsUnsettled(IMoleculeProperty feature, MoleculeMsReference reference) {
             SetMoleculePropertyCore(feature, reference);
-            feature.SetAdductType(reference.AdductType);
+            if (feature is IIonProperty ionProperty) {
+                ionProperty.SetAdductType(reference.AdductType);
+            }
             feature.Name = $"Unsettled: {reference.Name}";
         }
 

@@ -64,6 +64,9 @@ namespace CompMs.MsdialImmsCore.Process
             Console.WriteLine("Annotation started");
             _peakAnnotationProcess.Annotate(file, provider, chromPeakFeatures.Items, mSDecResultCollections, reportAction, token);
 
+            var _elements = chromPeakFeatures.Items.Select(item => new Raw2DElement(item.PeakFeature.Mass, item.PeakFeature.ChromXsTop.Drift.Value)).ToList();
+            var pixels = RetrieveRawSpectraOnPixels(file, _elements, true);
+
             // file save
             await SaveToFileAsync(file, chromPeakFeatures, mSDecResultCollections).ConfigureAwait(false);
 
@@ -84,7 +87,7 @@ namespace CompMs.MsdialImmsCore.Process
             Console.WriteLine("Annotation started");
             _peakAnnotationProcess.Annotate(file, provider, chromPeakFeatures.Items, mSDecResultCollections, reportAction, token);
             var _elements = chromPeakFeatures.Items.Select(item => new Raw2DElement(item.PeakFeature.Mass, item.PeakFeature.ChromXsTop.Drift.Value)).ToList();
-            var pixels = RetrieveRawSpectraOnPixels(file, _elements);
+            var pixels = RetrieveRawSpectraOnPixels(file, _elements, true);
 
             foreach (var element in pixels.PixelPeakFeaturesList) {
                 if (Math.Abs(element.Mz - 885.5472) < 0.01) {
@@ -102,15 +105,16 @@ namespace CompMs.MsdialImmsCore.Process
             reportAction?.Invoke(100);
         }
 
-        public RawSpectraOnPixels RetrieveRawSpectraOnPixels(AnalysisFileBean file, List<Raw2DElement> targetElements) {
-            using (RawDataAccess rawDataAccess = new RawDataAccess(file.AnalysisFilePath, 0, true, true, true)) {
-                return rawDataAccess.GetRawPixelFeatures(targetElements, file.GetMaldiFrames())
+        public RawSpectraOnPixels RetrieveRawSpectraOnPixels(AnalysisFileBean file, List<Raw2DElement> targetElements, bool isNewFileProcess) {
+            if (targetElements.IsEmptyOrNull()) return null;
+            using (RawDataAccess rawDataAccess = new RawDataAccess(file.AnalysisFilePath, 0, true, true, true, 10, 0.02, 0.015)) {
+                return rawDataAccess.GetRawPixelFeatures(targetElements, file.GetMaldiFrames(), isNewFileProcess)
                     ?? new RawSpectraOnPixels { PixelPeakFeaturesList = new List<RawPixelFeatures>(0), XYFrames = new List<MaldiFrameInfo>(0), };
             }
         }
 
         public async Task AnnotateAsync(AnalysisFileBean file, IDataProvider provider, Action<int> reportAction = null, CancellationToken token = default) {
-            var peakTask = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath);
+            var peakTask = file.LoadChromatogramPeakFeatureCollectionAsync();
             var resultsTask = Task.WhenAll(MSDecResultCollection.DeserializeAsync(file));
 
             var chromPeakFeatures = await peakTask.ConfigureAwait(false);

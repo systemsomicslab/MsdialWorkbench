@@ -98,6 +98,16 @@
                               IsChecked="{Binding ShouldExport.Value}"
                               Margin="4"/>
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:MsdialAnalysisMassBankRecordExportViewModel}">
+                    <StackPanel Margin="4">
+                        <CheckBox Content="{Binding Label, Mode=OneTime}"
+                                  IsChecked="{Binding ShouldExport.Value}"/>
+                        <StackPanel Orientation="Horizontal" Margin="16,0,0,0">
+                            <TextBlock Text="ContributorID:" Margin="0,0,4,0"/>
+                            <TextBox Text="{Binding ContributorID.Value}" Width="128"/>
+                        </StackPanel>
+                    </StackPanel>
+                </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:SpectraTypeSelectableMsdialAnalysisExportViewModel}">
                     <CheckBox IsChecked="{Binding ShouldExport.Value}"
                               Margin="4">

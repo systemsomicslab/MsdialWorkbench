@@ -167,7 +167,7 @@ namespace CompMs.App.Msdial.Model.Chart
             public TargetSpectraManager(IReadOnlyReactiveProperty<AlignmentSpotPropertyModel> target, AnalysisFileBeanModelCollection files, IObservable<MsScanMatchResult> matchResult, AlignmentSpotSpectraLoader loader) {
                 _files = files ?? throw new ArgumentNullException(nameof(files));
 
-                SelectedFile = target.Select(t => t != null && files.GetById(t.RepresentativeFileID) is AnalysisFileBeanModel repFile ? repFile : files.AnalysisFiles[0]).ToReactiveProperty().AddTo(_disposables);
+                SelectedFile = target.Select(t => t != null && files.FindByID(t.RepresentativeFileID) is AnalysisFileBeanModel repFile ? repFile : files.AnalysisFiles[0]).ToReactiveProperty().AddTo(_disposables);
                 MsSpectrum emptySpectrum = new MsSpectrum(new List<SpectrumPeak>(0));
                 ReferenceSpectrum = matchResult.DefaultIfNull(loader.LoadReferenceSpectrumAsObservable, Observable.Return(emptySpectrum)).Switch().ToReadOnlyReactivePropertySlim(emptySpectrum).AddTo(_disposables);
                 var dictionary = loader.LoadSpectraAsObservable(files, target);

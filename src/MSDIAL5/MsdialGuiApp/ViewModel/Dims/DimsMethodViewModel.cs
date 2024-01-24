@@ -12,6 +12,7 @@ using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore.Export;
@@ -77,7 +78,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             {
                 new SpectraType(
                     ExportspectraType.deconvoluted,
-                    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.deconvoluted)),
+                    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.deconvoluted),
+                    _model.ProviderFactory),
                 //new SpectraType(
                 //    ExportspectraType.centroid,
                 //    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.centroid)),
@@ -85,15 +87,15 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 //    ExportspectraType.profile,
                 //    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.profile)),
             };
-            var spectraFormats = new List<SpectraFormat>
+            var spectraFormats = new[]
             {
-                new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
+                new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporterFactory(separator: "\t")),
             };
 
             var models = new IMsdialAnalysisExport[]
             {
-                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, _model.ProviderFactory.ContraMap((AnalysisFileBeanModel file) => file.File)),
-                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter> {
+                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats),
+                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
                     [ExportspectraType.deconvoluted] = new AnalysisMspExporter(container.DataBaseMapper, container.Parameter),
                     [ExportspectraType.centroid] = new AnalysisMspExporter(container.DataBaseMapper, container.Parameter, file => new CentroidMsScanPropertyLoader(_model.ProviderFactory.Create(file), container.Parameter.MS2DataType))
                 })
@@ -102,6 +104,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                     FileSuffix = "msp",
                     Label = "Nist format (*.msp)"
                 },
+                new MsdialAnalysisMassBankRecordExportModel(container.Parameter.ProjectParam, _model.StudyContext),
             };
             var model = new AnalysisResultExportModel(_model.AnalysisFileModelCollection, _model.Storage.Parameter.ProjectParam.ProjectFolderPath, models);
             using (var vm = new AnalysisResultExportViewModel(model)) {
@@ -120,20 +123,16 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         private static IReadOnlyReactiveProperty<DimsAnalysisViewModel> ConvertToAnalysisViewModel(
             DimsMethodModel method,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IMessageBroker broker,
             FocusControlManager focusControlManager) {
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
             ReadOnlyReactivePropertySlim<DimsAnalysisViewModel> result;
             using (var subject = new Subject<DimsAnalysisModel>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AnalysisModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
-                    .Select(m => m is null ? null : new DimsAnalysisViewModel(m, compoundSearchService, peakSpotTableService, broker, focusControlManager))
+                    .Select(m => m is null ? null : new DimsAnalysisViewModel(m, peakSpotTableService, broker, focusControlManager))
                     .DisposePreviousValue()
                     .ToReadOnlyReactivePropertySlim();
                 subject.OnNext(method.AnalysisModel);
@@ -144,13 +143,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         private static IReadOnlyReactiveProperty<DimsAlignmentViewModel> ConvertToAlignmentViewModel(
             DimsMethodModel method,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IMessageBroker broker,
             FocusControlManager focusControlManager) {
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
@@ -161,19 +156,18 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             return method.ObserveProperty(m => m.AlignmentModel)
                 .SkipNull()
-                .Select(m => new DimsAlignmentViewModel(m, compoundSearchService, peakSpotTableService, broker, focusControlManager))
+                .Select(m => new DimsAlignmentViewModel(m, peakSpotTableService, broker, focusControlManager))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim();
         }
 
         public static DimsMethodViewModel Create(
             DimsMethodModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IMessageBroker broker) {
             var focusControlManager = new FocusControlManager();
-            var analysisVM = ConvertToAnalysisViewModel(model, compoundSearchService, peakSpotTableService, broker, focusControlManager);
-            var alignmentVM = ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService, broker, focusControlManager);
+            var analysisVM = ConvertToAnalysisViewModel(model, peakSpotTableService, broker, focusControlManager);
+            var alignmentVM = ConvertToAlignmentViewModel(model, peakSpotTableService, broker, focusControlManager);
             var chromvms = PrepareChromatogramViewModels(analysisVM, alignmentVM);
             var msvms = PrepareMassSpectrumViewModels(analysisVM, alignmentVM);
             return new DimsMethodViewModel(model, broker, analysisVM, alignmentVM, chromvms, msvms, focusControlManager);

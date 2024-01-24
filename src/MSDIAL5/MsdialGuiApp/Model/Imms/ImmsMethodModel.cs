@@ -1,10 +1,10 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
-using CompMs.Common.Extension;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -15,6 +15,7 @@ using CompMs.MsdialImmsCore.Algorithm.Alignment;
 using CompMs.MsdialImmsCore.Export;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Process;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
@@ -22,11 +23,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Media;
-using CompMs.App.Msdial.Model.Export;
-using CompMs.App.Msdial.Model.Setting;
-using Reactive.Bindings;
 using System.Reactive.Linq;
+using CompMs.App.Msdial.Model.Loader;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
@@ -39,14 +37,15 @@ namespace CompMs.App.Msdial.Model.Imms
 
         private readonly IMessageBroker _broker;
         private readonly IMsdialDataStorage<MsdialImmsParameter> _storage;
-        private readonly ProjectBaseParameterModel _projectBaseParameter;
+        private readonly FilePropertiesModel _projectBaseParameter;
         private readonly FacadeMatchResultEvaluator _matchResultEvaluator;
         private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _peakSpotFiltering;
 
-        public ImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker)
+        public ImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, FilePropertiesModel projectBaseParameter, StudyContextModel studyContext, IMessageBroker broker)
             : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, projectBaseParameter) {
             _storage = storage;
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
+            StudyContext = studyContext;
             _broker = broker;
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
 
@@ -139,6 +138,7 @@ namespace CompMs.App.Msdial.Model.Imms
         public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; }
         public AlignmentResultExportModel AlignmentResultExportModel { get; }
         public ParameterExportModel ParameterExportModel { get; }
+        public StudyContextModel StudyContext { get; }
 
         public override Task RunAsync(ProcessOption option, CancellationToken token) {
             // Run PeakPick and Identification
@@ -268,7 +268,8 @@ namespace CompMs.App.Msdial.Model.Imms
             {
                 new SpectraType(
                     ExportspectraType.deconvoluted,
-                    new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.deconvoluted)),
+                    new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.deconvoluted),
+                    ProviderFactory),
                 //new SpectraType(
                 //    ExportspectraType.centroid,
                 //    new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.centroid)),
@@ -276,14 +277,14 @@ namespace CompMs.App.Msdial.Model.Imms
                 //    ExportspectraType.profile,
                 //    new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.profile)),
             };
-            var spectraFormats = new List<SpectraFormat>
+            var spectraFormats = new[]
             {
-                new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
+                new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporterFactory(separator: "\t")),
             };
             var models = new IMsdialAnalysisExport[]
             {
-                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, ProviderFactory.ContraMap((AnalysisFileBeanModel file) => file.File)),
-                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter> {
+                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats),
+                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
                     [ExportspectraType.deconvoluted] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter),
                     [ExportspectraType.centroid] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter, file => new CentroidMsScanPropertyLoader(ProviderFactory.Create(file), _storage.Parameter.MS2DataType)),
                 })
@@ -292,66 +293,24 @@ namespace CompMs.App.Msdial.Model.Imms
                     FileSuffix = "msp",
                     Label = "Nist format (*.msp)"
                 },
+                new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam, StudyContext),
             };
             return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, models);
         }
 
-        public ChromatogramsModel PrepareTIC() {
+        public CheckChromatogramsModel PrepareChromatograms(bool tic, bool bpc, bool highestEic) {
             var analysisModel = AnalysisModel;
             if (analysisModel is null) {
                 return null;
             }
 
-            var tic = analysisModel.EicLoader.LoadTic();
-            Pen pen = new Pen(Brushes.Black, 1.0);
-            pen.Freeze();
-            return new ChromatogramsModel("Total ion chromatogram", new DisplayChromatogram(tic, pen, "TIC"), "Total ion chromatogram", "Mobility", "Absolute ion abundance");
-        }
-
-        public ChromatogramsModel PrepareBPC() {
-            var analysisModel = AnalysisModel;
-            if (analysisModel is null) {
-                return null;
-            }
-
-            var bpc = analysisModel.EicLoader.LoadBpc();
-            Pen pen = new Pen(Brushes.Red, 1.0);
-            pen.Freeze();
-            return new ChromatogramsModel("Base peak chromatogram", new DisplayChromatogram(bpc, pen, "BPC"), "Base peak chromatogram", "Mobility", "Absolute ion abundance");
-        }
-
-        public DisplayEicSettingModel PrepareEicSetting() {
-            var analysisModel = AnalysisModel;
-            if (analysisModel is null) {
-                return null;
-            }
-            return new DisplayEicSettingModel(analysisModel.EicLoader, _storage.Parameter);
-        }
-
-        public ChromatogramsModel PrepareTicBpcRepEIC() {
-            var analysisModel = AnalysisModel;
-            if (analysisModel is null) {
-                return null;
-            }
-
-            var tic = analysisModel.EicLoader.LoadTic();
-            var bpc = analysisModel.EicLoader.LoadBpc();
-            var eic = analysisModel.EicLoader.LoadHighestEicTrace(analysisModel.Ms1Peaks.ToList());
-
-            var maxPeakMz = analysisModel.Ms1Peaks.Argmax(n => n.Intensity).Mass;
-            Pen ticPen = new Pen(Brushes.Black, 1.0);
-            ticPen.Freeze();
-            Pen bpcPen = new Pen(Brushes.Red, 1.0);
-            bpcPen.Freeze();
-            Pen eicPen = new Pen(Brushes.Blue, 1.0);
-            eicPen.Freeze();
-            var displayChroms = new List<DisplayChromatogram>() {
-                new DisplayChromatogram(tic, ticPen, "TIC"),
-                new DisplayChromatogram(bpc, bpcPen, "BPC"),
-                new DisplayChromatogram(eic, eicPen, "EIC of m/z " + Math.Round(maxPeakMz, 5).ToString())
-            };
-
-            return new ChromatogramsModel("TIC, BPC, and highest peak m/z's EIC", displayChroms, "TIC, BPC, and highest peak m/z's EIC", "Mobility", "Absolute ion abundance");
+            var loadChromatogramsUsecase = analysisModel.LoadChromatogramsUsecase();
+            loadChromatogramsUsecase.InsertTic = tic;
+            loadChromatogramsUsecase.InsertBpc = bpc;
+            loadChromatogramsUsecase.InsertHighestEic = highestEic;
+            var model = new CheckChromatogramsModel(loadChromatogramsUsecase, _storage.Parameter.AdvancedProcessOptionBaseParam);
+            model.Update();
+            return model;
         }
     }
 }

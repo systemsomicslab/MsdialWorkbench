@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Loader
 {
-    public interface IChromatogramLoader
+    public interface IChromatogramLoader<T>
     {
-        Task<Chromatogram> LoadChromatogramAsync(ChromatogramPeakFeatureModel target, CancellationToken token);
+        Task<PeakChromatogram> LoadChromatogramAsync(T target, CancellationToken token);
     }
 }

@@ -2,8 +2,11 @@
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parser;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
@@ -137,6 +140,18 @@ namespace CompMs.App.Msdial.Model.DataObj
             var loader = _mSDecLoader;
             _mSDecLoader = null;
             loader?.Dispose();
+        }
+
+        public Ms1BasedSpectrumFeatureCollection LoadMs1BasedSpectrumFeatureCollection() {
+            var collection = _file.LoadSpectrumFeatures();
+            return new Ms1BasedSpectrumFeatureCollection(collection);
+        }
+
+        public ObservableCollection<ChromatogramPeakFeatureModel> LoadChromatogramPeakFeatureModels() {
+            var peaks = _file.LoadChromatogramPeakFeatureCollectionAsync().Result;
+            return new ObservableCollection<ChromatogramPeakFeatureModel>(
+                peaks.Items.Select(peak => new ChromatogramPeakFeatureModel(peak))
+            );
         }
 
         int IFileBean.FileID => AnalysisFileId;

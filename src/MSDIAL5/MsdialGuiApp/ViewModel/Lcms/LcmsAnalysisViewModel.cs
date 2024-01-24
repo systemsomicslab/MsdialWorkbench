@@ -8,7 +8,6 @@ using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
-using CompMs.CommonMVVM.WindowService;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -23,34 +22,26 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     internal sealed class LcmsAnalysisViewModel : ViewModelBase, IAnalysisResultViewModel
     {
         private readonly LcmsAnalysisModel _model;
-        private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
         private readonly IMessageBroker _broker;
 
         public LcmsAnalysisViewModel(
             LcmsAnalysisModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IMessageBroker broker,
             FocusControlManager focusControlManager) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
-
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
-
             if (focusControlManager is null) {
                 throw new ArgumentNullException(nameof(focusControlManager));
             }
 
             _model = model;
-            _compoundSearchService = compoundSearchService;
             _broker = broker;
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
             UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
 
             var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
-            PlotViewModel = new AnalysisPeakPlotViewModel(_model.PlotModel, peakPlotAction, peakPlotFocused).AddTo(Disposables);
+            PlotViewModel = new AnalysisPeakPlotViewModel(_model.PlotModel, peakPlotAction, peakPlotFocused, broker).AddTo(Disposables);
             EicViewModel = new EicViewModel(
                 _model.EicModel,
                 horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
@@ -64,9 +55,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             var (ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused) = focusControlManager.Request();
             Ms2ChromatogramsViewModel = new Ms2ChromatogramsViewModel(model.Ms2ChromatogramsModel, ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused).AddTo(Disposables);
 
-            SurveyScanViewModel = new SurveyScanViewModel(
-                model.SurveyScanModel,
-                horizontalAxis: PlotViewModel.VerticalAxis).AddTo(Disposables);
+            SurveyScanViewModel = new SurveyScanViewModel(model.SurveyScanModel, horizontalAxis: PlotViewModel.VerticalAxis).AddTo(Disposables);
 
             SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
 
@@ -127,14 +116,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public ReactiveCommand SearchCompoundCommand { get; }
 
         private void SearchCompound() {
-            using (var csm = _model.CreateCompoundSearchModel()) {
-                if (csm is null) {
-                    return;
-                }
-                using (var vm = new LcmsCompoundSearchViewModel(csm, SetUnknownCommand)) {
-                    _compoundSearchService.ShowDialog(vm);
-                }
+            using var csm = _model.CreateCompoundSearchModel();
+            if (csm is null) {
+                return;
             }
+            using var vm = new LcmsCompoundSearchViewModel(csm);
+            _broker.Publish<ICompoundSearchViewModel>(vm);
         }
 
         public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));

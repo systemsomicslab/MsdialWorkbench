@@ -1,4 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿#if NETSTANDARD
+using CompMs.Common.Extension;
+#endif
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,11 +68,22 @@ namespace CompMs.Common.Lipidomics.Tests
                 };
                 yield return new object[] {
                     new IChain[] {
+                        new AcylChain(18, DoubleBond.CreateFromPosition( 2,  4), new Oxidized(0)),
+                        new AcylChain(18, DoubleBond.CreateFromPosition( 9, 11), new Oxidized(0)),
                         new AcylChain(18, DoubleBond.CreateFromPosition(12, 15), new Oxidized(0)),
                         new AcylChain(18, DoubleBond.CreateFromPosition( 9, 12), new Oxidized(0)),
                         new AcylChain(18, DoubleBond.CreateFromPosition( 6,  9), new Oxidized(0)),
                     },
                     new AcylChain(18, new DoubleBond(2), new Oxidized(0)),
+                };
+                yield return new object[] {
+                    new IChain[] {
+                        new AcylChain(18, DoubleBond.CreateFromPosition( 9, 11), new Oxidized(0)),
+                        new AcylChain(18, DoubleBond.CreateFromPosition( 9, 15), new Oxidized(0)),
+                        new AcylChain(18, DoubleBond.CreateFromPosition( 9, 12), new Oxidized(0)),
+                        new AcylChain(18, DoubleBond.CreateFromPosition( 6,  9), new Oxidized(0)),
+                    },
+                    new AcylChain(18, new DoubleBond(2, DoubleBondInfo.Create(9)), new Oxidized(0)),
                 };
                 yield return new object[] {
                     new IChain[] {

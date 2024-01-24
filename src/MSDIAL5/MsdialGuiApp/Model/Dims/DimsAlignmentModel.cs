@@ -34,7 +34,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
-    internal class DimsAlignmentModel : AlignmentModelBase
+    internal sealed class DimsAlignmentModel : AlignmentModelBase
     {
         static DimsAlignmentModel() {
             CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Mz);
@@ -59,7 +59,7 @@ namespace CompMs.App.Msdial.Model.Dims
             DataBaseStorage databaseStorage,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseMapper mapper,
-            ProjectBaseParameterModel projectBaseParameter,
+            FilePropertiesModel projectBaseParameter,
             ParameterBase parameter,
             List<AnalysisFileBean> files,
             AnalysisFileBeanModelCollection fileCollection,
@@ -93,7 +93,7 @@ namespace CompMs.App.Msdial.Model.Dims
             var brushMapDataSelector = BrushMapDataSelectorFactory.CreateAlignmentSpotBrushes(parameter.TargetOmics);
             var target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
             Target = target;
-            CurrentRepresentativeFile = Target.Select(t => t is null ? null : fileCollection.GetById(t.RepresentativeFileID)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            CurrentRepresentativeFile = Target.Select(t => t is null ? null : fileCollection.FindByID(t.RepresentativeFileID)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -111,8 +111,11 @@ namespace CompMs.App.Msdial.Model.Dims
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
             IMsSpectrumLoader<AlignmentSpotPropertyModel> decSpecLoader = new AlignmentMSDecSpectrumLoader(_alignmentFile);
-            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             var spectraExporter = new NistSpectraExporter<AlignmentSpotProperty>(Target.Select(t => t?.innerModel), mapper, parameter).AddTo(Disposables);
+            GraphLabels ms2GraphLabels = new GraphLabels("Representation vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
+            ChartHueItem upperSpectrumHueItem = new ChartHueItem(projectBaseParameter, Colors.Blue);
+            ObservableMsSpectrum upperObservableMsSpectrum = ObservableMsSpectrum.Create(Target, decSpecLoader, spectraExporter).AddTo(Disposables);
+            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             AlignmentSpotSpectraLoader spectraLoader = new AlignmentSpotSpectraLoader(fileCollection, refLoader, _compoundSearchers, fileCollection);
             Ms2SpectrumModel = new AlignmentMs2SpectrumModel(
                 Target, MatchResultCandidatesModel.SelectedCandidate, fileCollection,
@@ -236,8 +239,16 @@ namespace CompMs.App.Msdial.Model.Dims
         public MoleculeStructureModel MoleculeStructureModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
-        public ICompoundSearchModel BuildCompoundSearchModel() {
-            return new CompoundSearchModel(_files[Target.Value.RepresentativeFileID], Target.Value, _msdecResult.Value, _compoundSearchers, _undoManager);
+        public CompoundSearchModel<PeakSpotModel> BuildCompoundSearchModel() {
+            var plotService = new PlotComparedMsSpectrumUsecase(_msdecResult.Value);
+            var compoundSearchModel = new CompoundSearchModel<PeakSpotModel>(
+                _files[Target.Value.RepresentativeFileID],
+                new PeakSpotModel(Target.Value, _msdecResult.Value),
+                new DimsCompoundSearchUsecase(_compoundSearchers.Items),
+                plotService,
+                new SetAnnotationUsecase(Target.Value, Target.Value.MatchResultsModel, _undoManager));
+            compoundSearchModel.Disposables.Add(plotService);
+            return compoundSearchModel;
         }
 
         public InternalStandardSetModel InternalStandardSetModel { get; }

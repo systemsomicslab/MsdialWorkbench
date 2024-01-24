@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
@@ -25,6 +26,7 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -37,6 +39,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         private readonly IDataProvider _provider;
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly ParameterBase _parameter;
+        private readonly TicLoader _ticLoader;
+        private readonly BpcLoader _bpcLoader;
 
         public LcmsAnalysisModel(
             AnalysisFileBeanModel analysisFileModel,
@@ -46,15 +50,11 @@ namespace CompMs.App.Msdial.Model.Lcms
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             ParameterBase parameter,
             PeakFilterModel peakFilterModel,
-            ProjectBaseParameterModel projectBaseParameterModel,
+            FilePropertiesModel projectBaseParameterModel,
             IMessageBroker broker)
             : base(analysisFileModel, parameter.MolecularSpectrumNetworkingBaseParam, broker) {
             if (provider is null) {
                 throw new ArgumentNullException(nameof(provider));
-            }
-
-            if (mapper is null) {
-                throw new ArgumentNullException(nameof(mapper));
             }
 
             if (evaluator is null) {
@@ -66,7 +66,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
 
             _provider = provider;
-            DataBaseMapper = mapper;
+            DataBaseMapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _parameter = parameter;
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper);
             _undoManager = new UndoManager().AddTo(Disposables);
@@ -101,10 +101,17 @@ namespace CompMs.App.Msdial.Model.Lcms
                         : $" Spot ID: {t.MasterPeakID} Scan: {t.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5}"))
                 .Subscribe(title => PlotModel.GraphTitle = title)
                 .AddTo(Disposables);
+            var mrmprobsExporter = new EsiMrmprobsExporter(evaluator, mapper);
+            var usecase = new ChromatogramPeakExportMrmprobsUsecase(parameter.MrmprobsExportBaseParam, Ms1Peaks, analysisFileModel, _compoundSearchers, mrmprobsExporter, Target);
+            PlotModel.ExportMrmprobs = usecase;
 
             // Eic chart
             var eicLoader = EicLoader.BuildForAllRange(analysisFileModel.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
             EicLoader = EicLoader.BuildForPeakRange(analysisFileModel.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
+            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), parameter.IonMode, analysisFileModel.File.AcquisitionType);
+            ChromatogramRange chromatogramRange = new ChromatogramRange(parameter.RetentionTimeBegin, parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
+            _ticLoader = new TicLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
+            _bpcLoader = new BpcLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
             EicModel = new EicModel(Target, eicLoader) {
                 HorizontalTitle = PlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
@@ -112,7 +119,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             ExperimentSpectrumModel = EicModel.Chromatogram
                 .Select(chromatogram => chromatogram.ConvertToDisplayChromatogram())
-                .Select(chromatogram => new ChromatogramsModel("Experiment chromatogram", chromatogram))
+                .Select(chromatogram => new ChromatogramsModel("Experiment chromatogram", new ObservableCollection<DisplayChromatogram>(new[] { chromatogram }), string.Empty, string.Empty, string.Empty))
                 .DisposePreviousValue()
                 .Select(chromatogram => new RangeSelectableChromatogramModel(chromatogram))
                 .DisposePreviousValue()
@@ -171,16 +178,11 @@ namespace CompMs.App.Msdial.Model.Lcms
                 return Observable.FromAsync(provider.LoadMsSpectrumsAsync)
                     .Select(spectrums =>
                         {
-                            var spectra = DataAccess.GetCentroidMassSpectra(
-                                spectrums[t.MS1RawSpectrumIdTop],
-                                msdataType, 0, float.MinValue, float.MaxValue);
+                            var spectra = DataAccess.GetCentroidMassSpectra(spectrums[t.MS1RawSpectrumIdTop], msdataType, 0, float.MinValue, float.MaxValue);
                             return spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
                         });
             }).AddTo(Disposables);
-            SurveyScanModel = new SurveyScanModel(
-                surveyScanSpectrum,
-                spec => spec.Mass,
-                spec => spec.Intensity).AddTo(Disposables);
+            SurveyScanModel = new SurveyScanModel(surveyScanSpectrum, spec => spec.Mass, spec => spec.Intensity).AddTo(Disposables);
             SurveyScanModel.Elements.VerticalTitle = "Abundance";
             SurveyScanModel.Elements.HorizontalProperty = nameof(SpectrumPeakWrapper.Mass);
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
@@ -253,12 +255,24 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
 
-        public ICompoundSearchModel CreateCompoundSearchModel() {
+        public LoadChromatogramsUsecase LoadChromatogramsUsecase() {
+            return new LoadChromatogramsUsecase(_ticLoader, _bpcLoader, EicLoader, Ms1Peaks, _parameter.PeakPickBaseParam);
+        }
+
+        public CompoundSearchModel<PeakSpotModel> CreateCompoundSearchModel() {
             if (Target.Value?.InnerModel is null || MsdecResult.Value is null) {
                 return null;
             }
 
-            return new LcmsCompoundSearchModel(AnalysisFileModel, Target.Value, MsdecResult.Value, _compoundSearchers.Items, _undoManager);
+            PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(MsdecResult.Value);
+            var compoundSearch = new CompoundSearchModel<PeakSpotModel>(
+                AnalysisFileModel,
+                new PeakSpotModel(Target.Value, MsdecResult.Value),
+                new LcmsCompoundSearchUsecase(_compoundSearchers.Items),
+                plotService,
+                new SetAnnotationUsecase(Target.Value, Target.Value.MatchResultsModel, _undoManager));
+            compoundSearch.Disposables.Add(plotService);
+            return compoundSearch;
         }
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
@@ -319,8 +333,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                 DataBaseMapper,
                 _parameter);
         }
-
-        
 
         public void Undo() => _undoManager.Undo();
         public void Redo() => _undoManager.Redo();

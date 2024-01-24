@@ -55,7 +55,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseStorage databases,
             DataBaseMapper mapper,
-            ProjectBaseParameterModel projectBaseParameter,
+            FilePropertiesModel projectBaseParameter,
             MsdialLcImMsParameter parameter,
             List<AnalysisFileBean> files,
             PeakSpotFiltering<AlignmentSpotPropertyModel> peakSpotFiltering,
@@ -109,7 +109,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 .ToReactiveProperty()
                 .AddTo(Disposables);
             Target = target;
-            CurrentRepresentativeFile = Target.Select(t => t is null ? null : fileCollection.GetById(t.RepresentativeFileID)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            CurrentRepresentativeFile = Target.Select(t => t is null ? null : fileCollection.FindByID(t.RepresentativeFileID)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             var accumulatedPropModels = new ObservableCollection<AlignmentSpotPropertyModel>(orderedProps);
             var propModels = new ReactiveCollection<AlignmentSpotPropertyModel>(UIDispatcherScheduler.Default).AddTo(Disposables);
@@ -205,8 +205,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
             IMsSpectrumLoader<AlignmentSpotPropertyModel> decLoader = new AlignmentMSDecSpectrumLoader(_alignmentFileBean);
-            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             var spectraExporter = new NistSpectraExporter<AlignmentSpotProperty>(Target.Select(t => t?.innerModel), mapper, parameter).AddTo(Disposables);
+            GraphLabels ms2GraphLabels = new GraphLabels("Representation vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
+            ChartHueItem deconvolutedSpectrumHueItem = new ChartHueItem(projectBaseParameter, Colors.Blue);
+            ObservableMsSpectrum upperObservableMsSpectrum = ObservableMsSpectrum.Create(Target, decLoader, spectraExporter).AddTo(Disposables);
+            var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
             AlignmentSpotSpectraLoader spectraLoader = new AlignmentSpotSpectraLoader(fileCollection, refLoader, searcherCollection, fileCollection);
             Ms2SpectrumModel = new AlignmentMs2SpectrumModel(
                 Target, MatchResultCandidatesModel.SelectedCandidate, fileCollection,
@@ -288,7 +291,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
 
             CompoundSearchModel = target
-                .CombineLatest(MsdecResult, (t, r) => t is null || r is null ? null : new LcimmsCompoundSearchModel(_files[t.RepresentativeFileID], t, r, searcherCollection.Items, _undoManager))
+                .CombineLatest(MsdecResult, (t, r) => CreateCompundSearchModel(t, r, searcherCollection))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -339,7 +342,22 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
-        public ReadOnlyReactivePropertySlim<LcimmsCompoundSearchModel> CompoundSearchModel { get; }
+        public ReadOnlyReactivePropertySlim<CompoundSearchModel<PeakSpotModel>> CompoundSearchModel { get; }
+
+        private CompoundSearchModel<PeakSpotModel> CreateCompundSearchModel(AlignmentSpotPropertyModel spot, MSDecResult msdec, CompoundSearcherCollection searcherCollection) {
+            if (spot is null || msdec is null) {
+                return null;
+            }
+            var plotService = new PlotComparedMsSpectrumUsecase(msdec);
+            var compoundSearchModel = new CompoundSearchModel<PeakSpotModel>(
+                _files[spot.RepresentativeFileID],
+                new PeakSpotModel(spot, msdec),
+                new LcimmsCompoundSearchUsecase(searcherCollection.Items),
+                plotService,
+                new SetAnnotationUsecase(spot, spot.MatchResultsModel, _undoManager));
+            compoundSearchModel.Disposables.Add(plotService);
+            return compoundSearchModel;
+        }
 
         public override void SearchFragment() {
             using (var decLoader = _alignmentFileBean.CreateTemporaryMSDecLoader()) {

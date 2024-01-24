@@ -7,7 +7,7 @@
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type={x:Type vm:ProcessSettingViewModel}}"
-        Title="Setting project parameters" Height="450" Width="800">
+        Title="Setting project parameters" Height="600" Width="1000">
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Close"
                         Executed="Close_Executed"/>
@@ -53,19 +53,34 @@
                 <DataTemplate DataType="{x:Type vm:DataCollectionSettingViewModel}">
                     <Label Content="Data collection" IsEnabled="{Binding IsEnabled.Value}"/>
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:GcmsDataCollectionSettingViewModel}">
+                    <Label Content="Data collection" IsEnabled="{Binding IsEnabled.Value}"/>
+                </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:PeakDetectionSettingViewModel}">
+                    <Label Content="Peak detection" IsEnabled="{Binding IsEnabled.Value}"/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:GcmsPeakDetectionSettingViewModel}">
                     <Label Content="Peak detection" IsEnabled="{Binding IsEnabled.Value}"/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:DeconvolutionSettingViewModel}">
                     <Label Content="Spectrum deconvolution" IsEnabled="{Binding IsEnabled.Value}"/>
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:GcmsDeconvolutionSettingViewModel}">
+                    <Label Content="Spectrum deconvolution" IsEnabled="{Binding IsEnabled.Value}"/>
+                </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:IdentifySettingViewModel}">
+                    <Label Content="Identification" IsEnabled="{Binding IsEnabled.Value}"/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:GcmsIdentificationSettingViewModel}">
                     <Label Content="Identification" IsEnabled="{Binding IsEnabled.Value}"/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:AdductIonSettingViewModel}">
                     <Label Content="Adduct ion" IsEnabled="{Binding IsEnabled.Value}"/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:AlignmentParameterSettingViewModel}">
+                    <Label Content="Alignment parameters" IsEnabled="{Binding IsEnabled.Value}"/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:GcmsAlignmentParameterSettingViewModel}">
                     <Label Content="Alignment parameters" IsEnabled="{Binding IsEnabled.Value}"/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:MobilitySettingViewModel}">
@@ -109,62 +124,89 @@
                 <Button Content="Run" Command="{Binding RunCommand, Mode=OneTime}" Click="RunButton_Click"/>
                 <Button Content="Cancel" Command="ApplicationCommands.Close"/>
             </StackPanel>
-            <ContentControl Content="{Binding /, Source={StaticResource SettingViewModels}}"
-                            IsTabStop="False">
-                <ContentControl.Resources>
-                    <DataTemplate DataType="{x:Type vm:ProjectParameterSettingViewModel}">
-                        <ScrollViewer>
-                            <local:ProjectParameterSettingView/>
-                        </ScrollViewer>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type vm:DatasetFileSettingViewModel}">
-                        <local:DatasetFileSettingView IsEnabled="{Binding IsEnabled.Value}"/>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type vm:DatasetParameterSettingViewModel}">
-                        <ScrollViewer>
-                            <local:DatasetParameterSettingView IsEnabled="{Binding IsEnabled.Value}"/>
-                        </ScrollViewer>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type vm:DataCollectionSettingViewModel}">
-                        <ScrollViewer IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
-                            <local:DataCollectionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
-                        </ScrollViewer>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type vm:PeakDetectionSettingViewModel}">
-                        <ScrollViewer IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
-                            <local:PeakDetectionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
-                        </ScrollViewer>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type vm:DeconvolutionSettingViewModel}">
-                        <ScrollViewer IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
-                            <local:DeconvolutionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
-                        </ScrollViewer>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type vm:IdentifySettingViewModel}">
-                        <ContentControl IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
-                            <local:IdentifySettingView IsEnabled="{Binding IsEnabled.Value}"/>
-                        </ContentControl>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type vm:AdductIonSettingViewModel}">
-                        <ContentControl IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
-                            <local:AdductIonSettingView IsEnabled="{Binding IsEnabled.Value}"/>
-                        </ContentControl>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type vm:AlignmentParameterSettingViewModel}">
-                        <ScrollViewer>
-                            <local:AlignmentParameterSettingView IsEnabled="{Binding IsEnabled.Value}"/>
-                        </ScrollViewer>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type vm:MobilitySettingViewModel}">
-                        <local:MobilitySettingView IsEnabled="{Binding IsEnabled.Value}"/>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type vm:IsotopeTrackSettingViewModel}">
-                        <ScrollViewer>
-                            <local:IsotopeTrackSettingView IsEnabled="{Binding IsEnabled.Value}"/>
-                        </ScrollViewer>
-                    </DataTemplate>
-                </ContentControl.Resources>
-            </ContentControl>
+            <Border BorderBrush="LightGray" BorderThickness=".5" Margin="4,0">
+                <ContentControl Content="{Binding /, Source={StaticResource SettingViewModels}}"
+                                IsTabStop="False">
+                    <ContentControl.Resources>
+                        <DataTemplate DataType="{x:Type vm:ProjectParameterSettingViewModel}">
+                            <ScrollViewer>
+                                <local:ProjectParameterSettingView/>
+                            </ScrollViewer>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:DatasetFileSettingViewModel}">
+                            <local:DatasetFileSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:DatasetParameterSettingViewModel}">
+                            <ScrollViewer>
+                                <local:DatasetParameterSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                            </ScrollViewer>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:DataCollectionSettingViewModel}">
+                            <ScrollViewer IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                                <local:DataCollectionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                            </ScrollViewer>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:GcmsDataCollectionSettingViewModel}">
+                            <ScrollViewer IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                                <local:GcmsDataCollectionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                            </ScrollViewer>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:PeakDetectionSettingViewModel}">
+                            <ScrollViewer IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                                <local:PeakDetectionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                            </ScrollViewer>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:GcmsPeakDetectionSettingViewModel}">
+                            <ScrollViewer IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                                <local:GcmsPeakDetectionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                            </ScrollViewer>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:DeconvolutionSettingViewModel}">
+                            <ScrollViewer IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                                <local:DeconvolutionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                            </ScrollViewer>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:GcmsDeconvolutionSettingViewModel}">
+                            <ScrollViewer IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                                <local:GcmsDeconvolutionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                            </ScrollViewer>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:IdentifySettingViewModel}">
+                            <ContentControl IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                                <local:IdentifySettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                            </ContentControl>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:GcmsIdentificationSettingViewModel}">
+                            <ContentControl IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                                <local:GcmsIdentificationSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                            </ContentControl>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:AdductIonSettingViewModel}">
+                            <ContentControl IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                                <local:AdductIonSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                            </ContentControl>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:AlignmentParameterSettingViewModel}">
+                            <ScrollViewer>
+                                <local:AlignmentParameterSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                            </ScrollViewer>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:GcmsAlignmentParameterSettingViewModel}">
+                            <ScrollViewer>
+                                <local:GcmsAlignmentParameterSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                            </ScrollViewer>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:MobilitySettingViewModel}">
+                            <local:MobilitySettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:IsotopeTrackSettingViewModel}">
+                            <ScrollViewer>
+                                <local:IsotopeTrackSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                            </ScrollViewer>
+                        </DataTemplate>
+                    </ContentControl.Resources>
+                </ContentControl>
+            </Border>
         </DockPanel>
     </Grid>
 </Window>

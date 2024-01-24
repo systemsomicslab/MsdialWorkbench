@@ -1,4 +1,5 @@
 ﻿using CompMs.Graphics.Base;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -41,7 +42,12 @@ namespace CompMs.Graphics.Behavior
             if (sender is DataGrid grid) {
                 var addedItems = e.AddedItems;
                 if (addedItems.Count > 0 && addedItems[0] != null) {
-                    grid.ScrollIntoView(addedItems[0]);
+                    try {
+                        grid.ScrollIntoView(addedItems[0]);
+                    }
+                    catch (InvalidOperationException) {
+                        // Ignore
+                    }
                 }
             }
 

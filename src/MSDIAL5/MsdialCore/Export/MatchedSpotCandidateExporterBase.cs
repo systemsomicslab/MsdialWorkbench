@@ -37,6 +37,7 @@ namespace CompMs.MsdialCore.Export
             result.Add(new XElement("SimilarByMz", candidate.IsSimilarByMz));
             result.Add(new XElement("SimilarByTime", candidate.IsSimilarByTime));
             result.Add(new XElement("StrongerThanThreshold", candidate.IsStrongerThanThreshold));
+            result.Add(new XElement("TotalScore", candidate.Spot.MatchResults.Representative.TotalScore));
             return result;
         }
 

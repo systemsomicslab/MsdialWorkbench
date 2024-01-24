@@ -20,19 +20,14 @@ namespace CompMs.App.Msdial.ViewModel.Dims
     internal sealed class DimsAnalysisViewModel : ViewModelBase, IAnalysisResultViewModel
     {
         private readonly DimsAnalysisModel _model;
-        private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
         private readonly IMessageBroker _broker;
 
         public DimsAnalysisViewModel(
             DimsAnalysisModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IMessageBroker broker,
             FocusControlManager focusControlManager) {
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
@@ -42,7 +37,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             }
 
             _model = model;
-            _compoundSearchService = compoundSearchService;
             _peakSpotTableService = peakSpotTableService;
             _broker = broker ?? throw new ArgumentNullException(nameof(broker));
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
@@ -50,7 +44,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
 
             var (focusAction, focused) = focusControlManager.Request();
-            PlotViewModel = new AnalysisPeakPlotViewModel(_model.PlotModel, focusAction, focused).AddTo(Disposables);
+            PlotViewModel = new AnalysisPeakPlotViewModel(_model.PlotModel, focusAction, focused, broker).AddTo(Disposables);
             EicViewModel = new EicViewModel(_model.EicModel, horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
             
             var (rawDecSpectraViewFocusAction, rawDecSpectraViewFocused) = focusControlManager.Request();
@@ -95,10 +89,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public ICommand SetUnknownCommand { get; }
         public ReactiveCommand SearchCompoundCommand { get; }
         private void SearchCompound() {
-            using (var model = _model.BuildCompoundSearchModel())
-            using (var vm = new DimsCompoundSearchViewModel(model, SetUnknownCommand)) {
-                _compoundSearchService.ShowDialog(vm);
+            using var model = _model.BuildCompoundSearchModel();
+            if (model is null) {
+                return;
             }
+            using var vm = new DimsCompoundSearchViewModel(model);
+            _broker.Publish<ICompoundSearchViewModel>(vm);
         }
 
         public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));

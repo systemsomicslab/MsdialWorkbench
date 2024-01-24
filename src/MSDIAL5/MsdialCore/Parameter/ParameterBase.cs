@@ -7,6 +7,7 @@ using CompMs.Common.Parser;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.Common.Proteomics.Parser;
 using CompMs.Common.Query;
+using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Properties;
 using MessagePack;
@@ -737,6 +738,39 @@ namespace CompMs.MsdialCore.Parameter
         public string DictionaryFilePath { get; set; } = string.Empty;
         [Key(1)]
         public Dictionary<int, float> RiDictionary { get; set; } = new Dictionary<int, float>(); // int: carbon number, float: retention time
+
+        [IgnoreMember]
+        public bool IsIncorrectFormat => RiDictionary is null || RiDictionary.Count == 0;
+
+        [IgnoreMember]
+        public bool IsFamesContents {
+            get {
+                var fiehnFamesDictionary = RetentionIndexHandler.GetFiehnFamesDictionary();
+                if (RiDictionary is null || fiehnFamesDictionary.Count != RiDictionary.Count) {
+                    return false;
+                }
+                return fiehnFamesDictionary.Keys.All(RiDictionary.ContainsKey);
+            }
+        }
+
+        [IgnoreMember]
+        public bool IsSequentialCarbonRtOrdering {
+            get {
+                return RiDictionary?.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value)
+                    .Aggregate((acc: true, rt: float.MinValue), (prev, rt) => (prev.acc && prev.rt < rt, rt)).acc
+                    ?? false;
+            }
+        }
+
+        public static RiDictionaryInfo FromDictionaryFile(string filePath) {
+            return new RiDictionaryInfo
+            {
+                DictionaryFilePath = filePath,
+                RiDictionary = File.Exists(filePath)
+                    ? RetentionIndexHandler.GetRiDictionary(filePath)
+                    : new Dictionary<int, float>(0),
+            };
+        }
     }
 
     [MessagePackObject]

@@ -167,7 +167,7 @@ namespace CompMs.Common.Parser
         public static List<MoleculeMsReference> ReadSerializedLbmLibrary(string file, List<LbmQuery> queries,
             IonMode ionMode, SolventType solventType, CollisionType collisionType) {
             var tQueries = getTrueQueryStrings(queries);
-            if (tQueries.Count == 0) return null;
+            if (tQueries.Count == 0) return new List<MoleculeMsReference>();
 
             var usedMspDB = new List<MoleculeMsReference>();
             var mspDB = ReadSerializedMspObject(file);
@@ -260,7 +260,7 @@ namespace CompMs.Common.Parser
 
                 case "formula": 
                     mspObj.Formula = FormulaStringParcer.OrganicElementsReader(fieldValue); 
-                    if (mspObj.Formula != null) {
+                    if (mspObj.Formula != null && mspObj.Formula.IsCorrectlyImported) {
                         mspObj.Formula.M1IsotopicAbundance = SevenGoldenRulesCheck.GetM1IsotopicAbundance(mspObj.Formula);
                         mspObj.Formula.M2IsotopicAbundance = SevenGoldenRulesCheck.GetM2IsotopicAbundance(mspObj.Formula);
 

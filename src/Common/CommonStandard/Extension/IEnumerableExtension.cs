@@ -19,9 +19,11 @@ namespace CompMs.Common.Extension {
             yield return value;
         }
 
+#if NETSTANDARD || NETFRAMEWORK
         public static IEnumerable<(T1, T2)> Zip<T1, T2>(this IEnumerable<T1> xs, IEnumerable<T2> ys) {
             return xs.Zip(ys, (x, y) => (x, y));
         }
+#endif
 
         public static IEnumerable<T4> Zip<T1, T2, T3, T4>(this IEnumerable<T1> xs, IEnumerable<T2> ys, IEnumerable<T3> zs, Func<T1, T2, T3, T4> func) {
             var xys = xs.Zip(ys, Tuple.Create);

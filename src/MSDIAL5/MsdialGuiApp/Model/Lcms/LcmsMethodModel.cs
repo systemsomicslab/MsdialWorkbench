@@ -7,7 +7,6 @@ using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
-using CompMs.Common.Extension;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -26,7 +25,6 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
@@ -40,7 +38,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         private readonly IDataProviderFactory<AnalysisFileBean> _providerFactory;
-        private readonly ProjectBaseParameterModel _projectBaseParameter;
+        private readonly FilePropertiesModel _projectBaseParameter;
+        private readonly StudyContextModel _studyContext;
         private readonly IMessageBroker _broker;
         private readonly IMsdialDataStorage<MsdialLcmsParameter> _storage;
         private readonly FacadeMatchResultEvaluator _matchResultEvaluator;
@@ -51,7 +50,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentFileBeanModelCollection alignmentFileBeanModelCollection,
             IMsdialDataStorage<MsdialLcmsParameter> storage,
             IDataProviderFactory<AnalysisFileBean> providerFactory,
-            ProjectBaseParameterModel projectBaseParameter,
+            FilePropertiesModel projectBaseParameter,
+            StudyContextModel studyContext,
             IMessageBroker broker)
             : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, projectBaseParameter) {
 
@@ -59,6 +59,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             _providerFactory = providerFactory ?? throw new ArgumentNullException(nameof(providerFactory));
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
+            _studyContext = studyContext;
             _broker = broker;
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
             CanShowProteinGroupTable = Observable.Return(storage.Parameter.TargetOmics == TargetOmics.Proteomics);
@@ -112,7 +113,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
-            var massBank = new AlignmentResultMassBankRecordExportModel(peakSpotSupplyer, _matchResultEvaluator, storage.DataBaseMapper, storage.Parameter.ProjectParam);
+            var massBank = new AlignmentResultMassBankRecordExportModel(peakSpotSupplyer, storage.Parameter.ProjectParam, studyContext);
             var spectraAndReference = new AlignmentMatchedSpectraExportModel(peakSpotSupplyer, storage.DataBaseMapper, analysisFileBeanModelCollection.IncludedAnalysisFiles, CompoundSearcherCollection.BuildSearchers(storage.DataBases, storage.DataBaseMapper));
             var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, massBank, spectraAndReference, };
             if (storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
@@ -340,7 +341,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             {
                 new SpectraType(
                     ExportspectraType.deconvoluted,
-                    new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.deconvoluted)),
+                    new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.deconvoluted),
+                    _providerFactory),
                 //new SpectraType(
                 //    ExportspectraType.centroid,
                 //    new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.centroid)),
@@ -348,15 +350,15 @@ namespace CompMs.App.Msdial.Model.Lcms
                 //    ExportspectraType.profile,
                 //    new LcmsAnalysisMetadataAccessor(_storage.DataBaseMapper, _storage.Parameter, ExportspectraType.profile)),
             };
-            var spectraFormats = new List<SpectraFormat>
+            var spectraFormats = new[]
             {
-                new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
+                new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporterFactory(separator: "\t")),
             };
 
             var models = new IMsdialAnalysisExport[]
             {
-                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, _providerFactory.ContraMap((AnalysisFileBeanModel file) => file.File)),
-                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter> {
+                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats),
+                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
                     [ExportspectraType.deconvoluted] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter),
                     [ExportspectraType.centroid] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter, file => new CentroidMsScanPropertyLoader(_providerFactory.Create(file), _storage.Parameter.MS2DataType)),
                 })
@@ -365,61 +367,26 @@ namespace CompMs.App.Msdial.Model.Lcms
                     FileSuffix = "msp",
                     Label = "Nist format (*.msp)"
                 },
+                new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam, _studyContext),
             };
             return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, models);
         }
 
-        public ChromatogramsModel ShowTIC() {
+        public CheckChromatogramsModel ShowChromatograms(bool tic = false, bool bpc = false, bool highestEic = false) {
             var analysisModel = AnalysisModel;
             if (analysisModel is null) {
                 return null;
             }
 
-            var tic = analysisModel.EicLoader.LoadTic();
-            var chromatogram = new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC");
-            return new ChromatogramsModel("Total ion chromatogram", chromatogram, "Total ion chromatogram", "Retention time", "Absolute ion abundance");
+            var loadChromatogramsUsecase = analysisModel.LoadChromatogramsUsecase();
+            loadChromatogramsUsecase.InsertTic = tic;
+            loadChromatogramsUsecase.InsertBpc = bpc;
+            loadChromatogramsUsecase.InsertHighestEic = highestEic;
+            var model = new CheckChromatogramsModel(loadChromatogramsUsecase, _storage.Parameter.AdvancedProcessOptionBaseParam);
+            model.Update();
+            return model;
         }
 
-        public ChromatogramsModel ShowBPC() {
-            var analysisModel = AnalysisModel;
-            if (analysisModel is null) {
-                return null;
-            }
-            var bpc = analysisModel.EicLoader.LoadBpc();
-            var chromatogram = new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC");
-            return new ChromatogramsModel("Base peak chromatogram", chromatogram, "Base peak chromatogram", "Retention time", "Absolute ion abundance");
-        }
-
-        public DisplayEicSettingModel ShowEIC() {
-            if (AnalysisModel is null) {
-                return null;
-            }
-            return new DisplayEicSettingModel(AnalysisModel.EicLoader, _storage.Parameter);
-        }
-
-        public ChromatogramsModel ShowTicBpcRepEIC()
-        {
-            var container = _storage;
-            var analysisModel = AnalysisModel;
-            if (analysisModel is null)
-            {
-                return null;
-            }
-
-            var tic = analysisModel.EicLoader.LoadTic();
-            var bpc = analysisModel.EicLoader.LoadBpc();
-            var eic = analysisModel.EicLoader.LoadHighestEicTrace(analysisModel.Ms1Peaks.ToList());
-
-            var maxPeakMz = analysisModel.Ms1Peaks.Argmax(n => n.Intensity).Mass;
-
-            var displayChroms = new List<DisplayChromatogram>() {
-                new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC"),
-                new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC"),
-                new DisplayChromatogram(eic, new Pen(Brushes.Blue, 1.0), "EIC of m/z " + Math.Round(maxPeakMz, 5).ToString())
-            };
-
-            return new ChromatogramsModel("TIC, BPC, and highest peak m/z's EIC", displayChroms, "TIC, BPC, and highest peak m/z's EIC", "Retention time [min]", "Absolute ion abundance");
-        } 
 
         public Notame Notame {  get; }
 

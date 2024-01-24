@@ -6,7 +6,7 @@ using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +14,7 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    public sealed class ChromatogramsViewModel : ViewModelBase {
+    internal sealed class ChromatogramsViewModel : ViewModelBase {
         private readonly ChromatogramsModel _model;
         private readonly IMessageBroker _broker;
 
@@ -25,15 +25,15 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             SaveAsTableCommand = new AsyncReactiveCommand().WithSubscribe(SaveAsTableAsync).AddTo(Disposables);
         }
 
-        public List<DisplayChromatogram> DisplayChromatograms => _model.DisplayChromatograms;
+        public ReadOnlyObservableCollection<DisplayChromatogram> DisplayChromatograms => _model.DisplayChromatograms;
 
-        public IAxisManager<double> HorizontalAxis => _model.ChromAxis;
-        public IAxisManager<double> VerticalAxis => _model.AbundanceAxis;
+        public IAxisManager<double> HorizontalAxis => _model.ChromAxisItemSelector.SelectedAxisItem.AxisManager;
+        public IAxisManager<double> VerticalAxis => _model.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager;
 
         public string GraphTitle => _model.GraphTitle;
 
-        public string HorizontalTitle => _model.HorizontalTitle;
-        public string VerticalTitle => _model.VerticalTitle;
+        public string HorizontalTitle => _model.ChromAxisItemSelector.SelectedAxisItem.GraphLabel;
+        public string VerticalTitle => _model.AbundanceAxisItemSelector.SelectedAxisItem.GraphLabel;
 
         public string HorizontalProperty => _model.HorizontalProperty;
         public string VerticalProperty => _model.VerticalProperty;

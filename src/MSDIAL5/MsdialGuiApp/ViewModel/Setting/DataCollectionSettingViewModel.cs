@@ -6,7 +6,6 @@ using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reactive;
@@ -15,55 +14,55 @@ using System.Reactive.Subjects;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    public class DataCollectionSettingViewModel : ViewModelBase, ISettingViewModel
+    public sealed class DataCollectionSettingViewModel : ViewModelBase, ISettingViewModel
     {
         public DataCollectionSettingViewModel(DataCollectionSettingModel model, IObservable<bool> isEnabled) {
             Model = model ?? throw new ArgumentNullException(nameof(model));
 
             IsReadOnly = model.IsReadOnly;
 
-            Ms1Tolerance = Model.ToReactivePropertyAsSynchronized(
+            Ms1Tolerance = model.ToReactivePropertyAsSynchronized(
                 m => m.Ms1Tolerance,
                 m => m.ToString(),
                 vm => float.Parse(vm),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => Ms1Tolerance).AddTo(Disposables);
 
-            Ms2Tolerance = Model.ToReactivePropertyAsSynchronized(
+            Ms2Tolerance = model.ToReactivePropertyAsSynchronized(
                 m => m.Ms2Tolerance,
                 m => m.ToString(),
                 vm => float.Parse(vm),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => Ms2Tolerance).AddTo(Disposables);
 
-            MaxChargeNumber = Model.ToReactivePropertyAsSynchronized(
+            MaxChargeNumber = model.ToReactivePropertyAsSynchronized(
                 m => m.MaxChargeNumber,
                 m => m.ToString(),
                 vm => int.Parse(vm),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MaxChargeNumber).AddTo(Disposables);
 
-            IsBrClConsideredForIsotopes = Model.ToReactivePropertySlimAsSynchronized(m => m.IsBrClConsideredForIsotopes).AddTo(Disposables);
+            IsBrClConsideredForIsotopes = model.ToReactivePropertySlimAsSynchronized(m => m.IsBrClConsideredForIsotopes).AddTo(Disposables);
 
-            NumberOfThreads = Model.ToReactivePropertyAsSynchronized(
+            NumberOfThreads = model.ToReactivePropertyAsSynchronized(
                 m => m.NumberOfThreads,
                 m => m.ToString(),
                 vm => Math.Max(1, Math.Min(Environment.ProcessorCount, int.Parse(vm))),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => NumberOfThreads).AddTo(Disposables);
 
-            ExcuteRtCorrection = Model.ToReactivePropertySlimAsSynchronized(m => m.ExcuteRtCorrection).AddTo(Disposables);
+            ExcuteRtCorrection = model.ToReactivePropertySlimAsSynchronized(m => m.ExcuteRtCorrection).AddTo(Disposables);
 
-            DataCollectionRangeSettings = Model.DataCollectionRangeSettings.ToReadOnlyReactiveCollection(DataCollectionRangeSettingViewModelFactory.Create).AddTo(Disposables); // TODO: change to readonlyreactivecollection
+            DataCollectionRangeSettings = model.DataCollectionRangeSettings.ToReadOnlyReactiveCollection(DataCollectionRangeSettingViewModelFactory.Create).AddTo(Disposables);
 
-            DimsDataCollectionSettingViewModel = Model.DimsProviderFactoryParameter is null
+            DimsDataCollectionSettingViewModel = model.DimsProviderFactoryParameter is null
                 ? null
-                : new DimsDataCollectionSettingViewModel(Model.DimsProviderFactoryParameter).AddTo(Disposables);
+                : new DimsDataCollectionSettingViewModel(model.DimsProviderFactoryParameter).AddTo(Disposables);
             CanSetDimsDataCollectionSettingViewModel = DimsDataCollectionSettingViewModel != null;
 
-            ImmsDataCollectionSettingViewModel = Model.ImmsProviderFactoryParameter is null
+            ImmsDataCollectionSettingViewModel = model.ImmsProviderFactoryParameter is null
                 ? null
-                : new ImmsDataCollectionSettingViewModel(Model.ImmsProviderFactoryParameter).AddTo(Disposables);
+                : new ImmsDataCollectionSettingViewModel(model.ImmsProviderFactoryParameter).AddTo(Disposables);
             CanSetImmsDataCollectionSettingViewModel = ImmsDataCollectionSettingViewModel != null;
 
             IsEnabled = isEnabled.ToReadOnlyReactivePropertySlim().AddTo(Disposables);

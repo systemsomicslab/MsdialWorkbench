@@ -1,5 +1,6 @@
 ﻿using CompMs.App.MsdialConsole.Casmi;
 using CompMs.App.MsdialConsole.DataObjTest;
+using CompMs.App.MsdialConsole.EadSpectraAnalysis;
 using CompMs.App.MsdialConsole.Export;
 using CompMs.App.MsdialConsole.MolecularNetwork;
 using CompMs.App.MsdialConsole.MspCuration;
@@ -99,7 +100,17 @@ namespace CompMs.App.MsdialConsole {
 
             //MoleculerSpectrumNetworkingTest.MergeNodeFiles(@"E:\6_Projects\PROJECT_MsMachineLearning\data\MTBKS157\peakpick\neg", @"E:\6_Projects\PROJECT_MsMachineLearning\msn\cytoscape_test\node.txt");
             //MoleculerSpectrumNetworkingTest.MergeEdgeFiles(@"E:\6_Projects\PROJECT_MsMachineLearning\msn\result-2309271138", @"E:\6_Projects\PROJECT_MsMachineLearning\msn\cytoscape_test\edge.txt");
+            //EadAnnotationTest.Run(
+            //    @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\LightSplash\result\annotation\pairfile.txt",
+            //    @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\LightSplash\result\annotation\annofile.txt",
+            //    @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\LightSplash\result\annotation\peaknamefile.txt",
+            //    @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\LightSplash\result\annotation\resultexport.txt");
 
+            //EadAnnotationTest.Run(
+            //    @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\StandardMix\KE14_output\pairfile.txt",
+            //    @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\StandardMix\KE14_output\annofile.txt",
+            //    @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\StandardMix\KE14_output\peaknamefile.txt",
+            //    @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\StandardMix\KE14_output\resultexport.txt");
             MainProcess.Run(args);
         }
     }

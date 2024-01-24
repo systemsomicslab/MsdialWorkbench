@@ -48,7 +48,7 @@ namespace CompMs.App.Msdial.Model.Dims
             DataBaseMapper mapper,
             ParameterBase parameter,
             PeakFilterModel peakFilterModel,
-            ProjectBaseParameterModel projectBaseParameterModel,
+            FilePropertiesModel projectBaseParameterModel,
             IMessageBroker broker)
             : base(analysisFileModel, parameter.MolecularSpectrumNetworkingBaseParam, broker) {
             if (evaluator is null) {
@@ -176,8 +176,16 @@ namespace CompMs.App.Msdial.Model.Dims
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
         public FocusNavigatorModel FocusNavigatorModel { get; }
 
-        public ICompoundSearchModel BuildCompoundSearchModel() {
-            return new CompoundSearchModel(AnalysisFileModel, Target.Value, MsdecResult.Value, _compoundSearchers, _undoManager);
+        public CompoundSearchModel<PeakSpotModel> BuildCompoundSearchModel() {
+            PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(MsdecResult.Value);
+            var compoundSearchModel = new CompoundSearchModel<PeakSpotModel>(
+                AnalysisFileModel,
+                new PeakSpotModel(Target.Value, MsdecResult.Value),
+                new DimsCompoundSearchUsecase(_compoundSearchers.Items),
+                plotService,
+                new SetAnnotationUsecase(Target.Value, Target.Value.MatchResultsModel, _undoManager));
+            compoundSearchModel.Disposables.Add(plotService);
+            return compoundSearchModel;
         }
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));

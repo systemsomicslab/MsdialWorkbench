@@ -67,6 +67,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 ReferenceFile.ObserveHasErrors,
                 EqualityParameterSettings.Select(vm => vm.ObserveHasErrors).CombineLatestValuesAreAnyTrue(),
                 PeakCountFilter.ObserveHasErrors,
+                NPercentDetectedInOneGroup.ObserveHasErrors,
                 FoldChangeForBlankFiltering.ObserveHasErrors,
             }.CombineLatestValuesAreAnyTrue()
             .ToReadOnlyReactivePropertySlim()
@@ -78,6 +79,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 ReferenceFile.ToUnit(),
                 EqualityParameterSettings.Select(vm => vm.ObserveChanges).Merge(),
                 PeakCountFilter.ToUnit(),
+                NPercentDetectedInOneGroup.ToUnit(),
                 IsRemoveFeatureBasedOnBlankPeakHeightFoldChange.ToUnit(),
                 BlankFiltering.ToUnit(),
                 FoldChangeForBlankFiltering.ToUnit(),

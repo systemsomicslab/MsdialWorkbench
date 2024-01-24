@@ -33,7 +33,7 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> CHROMATOGRAM_SPOT_SERIALIZER;
-        private readonly ProjectBaseParameterModel _projectBaseParameter;
+        private readonly FilePropertiesModel _projectBaseParameter;
         private readonly IMessageBroker _broker;
         private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _peakSpotFiltering;
         private IAnnotationProcess _annotationProcess;
@@ -43,11 +43,13 @@ namespace CompMs.App.Msdial.Model.Dims
             IMsdialDataStorage<MsdialDimsParameter> storage,
             AnalysisFileBeanModelCollection analysisFileBeanModelCollection,
             AlignmentFileBeanModelCollection alignmentFiles,
-            ProjectBaseParameterModel projectBaseParameter,
+            FilePropertiesModel projectBaseParameter,
+            StudyContextModel studyContext,
             IMessageBroker broker)
             : base(analysisFileBeanModelCollection, alignmentFiles, projectBaseParameter) {
             Storage = storage;
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
+            StudyContext = studyContext;
             _broker = broker;
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
@@ -108,6 +110,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public PeakFilterModel PeakFilterModel { get; }
         public IMsdialDataStorage<MsdialDimsParameter> Storage { get; }
+        public StudyContextModel StudyContext { get; }
 
         public DimsAnalysisModel AnalysisModel {
             get => _analysisModel;

@@ -4,6 +4,7 @@
                     xmlns:control="clr-namespace:CompMs.Graphics.Controls"
                     xmlns:ui="clr-namespace:CompMs.Graphics.UI"
                     xmlns:template="clr-namespace:CompMs.Graphics.Template"
+                    xmlns:converter="clr-namespace:CompMs.Graphics.Converter" 
                     xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior">
 
     <!--FileOpenControl-->
@@ -328,139 +329,6 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type ui:ColorPicker}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ui:ColorPicker}">
-                    <ControlTemplate.Resources>
-                        <DataTemplate x:Key="SelectedItemTemplate">
-                            <Border x:Name="SelectedBorder"
-                                    Margin="0" MinWidth="14" MinHeight="14" 
-                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                                    BorderThickness="1" BorderBrush="LightGray"
-                                    DataContext="{Binding SelectedColor, RelativeSource={RelativeSource AncestorType={x:Type ui:ColorPicker}}}"
-                                    ToolTip="{Binding}">
-                                <Border.Background>
-                                    <SolidColorBrush Color="{Binding Path=DataContext, FallbackValue={x:Static Colors.White}, ElementName=SelectedBorder}"/>
-                                </Border.Background>
-                            </Border>
-                        </DataTemplate>
-                        <DataTemplate x:Key="DropDownItemTemplate">
-                            <Border x:Name="DropDownBorder"
-                                    Margin="0" MinWidth="14" MinHeight="14" 
-                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                                    BorderThickness="1" BorderBrush="LightGray"
-                                    ToolTip="{Binding Color}">
-                                <Border.Background>
-                                    <SolidColorBrush Color="{Binding Path=DataContext.Color, FallbackValue={x:Static Colors.White}, ElementName=DropDownBorder}"/>
-                                </Border.Background>
-                            </Border>
-                        </DataTemplate>
-                        <template:ComboBoxItemTemplateSelector x:Key="ItemTemplateSelector"
-                                                               DropDownTemplate="{StaticResource DropDownItemTemplate}"
-                                                               SelectedTemplate="{StaticResource SelectedItemTemplate}"/>
-                        <Style x:Key="ColorPickerStyle" TargetType="ComboBox">
-                        <!--<Style x:Key="ColorPickerStyle" TargetType="ListBox">-->
-                            <Style.Triggers>
-                                <Trigger Property="IsEditable" Value="False">
-                                    <Setter Property="Background" Value="White"/>
-                                </Trigger>
-                            </Style.Triggers>
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
-                            <Setter Property="ItemsPanel">
-                                <Setter.Value>
-                                    <ItemsPanelTemplate>
-                                        <UniformGrid Columns="12" Margin="0,0,4,0"/>
-                                    </ItemsPanelTemplate>
-                                </Setter.Value>
-                            </Setter>
-                            <Setter Property="ItemContainerStyle">
-                                <Setter.Value>
-                                    <Style TargetType="{x:Type ComboBoxItem}">
-                                    <!--<Style TargetType="{x:Type ListBoxItem}">-->
-                                        <Setter Property="Margin" Value="0"/>
-                                        <Setter Property="Padding" Value="1"/>
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="{x:Type ComboBoxItem}">
-                                                <!--<ControlTemplate TargetType="{x:Type ListBoxItem}">-->
-                                                    <Border x:Name="Border"
-                                                            Padding="2"
-                                                            SnapsToDevicePixels="true"
-                                                            Background="{TemplateBinding Background}">
-                                                        <ContentPresenter/>
-                                                    </Border>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                        <Style.Triggers>
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter Property="Background" Value="LightGray"/>
-                                            </Trigger>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="Cyan"/>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Setter.Value>
-                            </Setter>
-
-                            <Setter Property="ItemTemplateSelector" Value="{StaticResource ItemTemplateSelector}"/>
-                            <!--
-                            <Setter Property="ItemTemplate" Value="{StaticResource DropDownItemTemplate}"/>
-                            <Setter Property="ItemTemplate" Value="{StaticResource SelectedItemTemplate}"/>
-                            -->
-                        </Style>
-                        <DataTemplate x:Key="ColorPickerHeaderTemplate">
-                            <Border Margin="0,4,0,0"/>
-                        </DataTemplate>
-                        <CollectionViewSource x:Key="ColorPickerItems" Source="{Binding ColorPickerItems, RelativeSource={RelativeSource TemplatedParent}}"/>
-                    </ControlTemplate.Resources>
-                    <ComboBox ItemsSource="{Binding ColorPickerItems, RelativeSource={RelativeSource TemplatedParent}}"
-                              SelectedValue="{Binding SelectedColor, RelativeSource={RelativeSource TemplatedParent}, TargetNullValue={x:Static Colors.White}}"
-                              SelectedValuePath="Color"
-                              Style="{StaticResource ColorPickerStyle}">
-                        <ComboBox.GroupStyle>
-                            <GroupStyle HeaderTemplate="{StaticResource ColorPickerHeaderTemplate}"/>
-                        </ComboBox.GroupStyle>
-                    </ComboBox>
-                    <!--
-                    <Grid>
-                        <ToggleButton x:Name="presenter"
-                                      IsChecked="{Binding IsOpen, ElementName=palette}">
-                            <ToggleButton.Style>
-                                <Style TargetType="ToggleButton">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ElementName=palette, Path=IsOpen}" Value="True">
-                                            <Setter Property="IsHitTestVisible" Value="False"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ToggleButton.Style>
-                            <Rectangle>
-                                <Rectangle.Fill>
-                                    <SolidColorBrush Color="{Binding SelectedColor, RelativeSource={RelativeSource TemplatedParent}}"/>
-                                </Rectangle.Fill>
-                            </Rectangle>
-                        </ToggleButton>
-                        <Popup x:Name="palette"
-                               PlacementTarget="{Binding ElementName=presenter}"
-                               StaysOpen="False">
-                            <ListBox ItemsSource="{Binding ColorPickerItems, RelativeSource={RelativeSource TemplatedParent}}"
-                                     Style="{StaticResource ColorPickerStyle}">
-                                <ListBox.GroupStyle>
-                                    <GroupStyle HeaderTemplate="{StaticResource ColorPickerHeaderTemplate}"/>
-                                </ListBox.GroupStyle>
-                            </ListBox>
-                        </Popup>
-                    </Grid>
-                    -->
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
 <!--
     <Style TargetType="{x:Type ui:AreaSelector}">
         <Setter Property="Template">
@@ -505,6 +373,432 @@
                                           Grid.Row="1" Grid.Column="1"/>
                         </Grid>   
                     </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type ui:BaseColorPicker}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ui:BaseColorPicker}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type ui:ListColorPicker}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ui:ListColorPicker}">
+                    <ControlTemplate.Resources>
+                        <converter:ColorToBrushConverter x:Key="BrushConverter"/>
+                        <DataTemplate x:Key="SelectedItemTemplate" DataType="{x:Type ui:IColorPickerItem}">
+                            <Border Margin="0" MinWidth="14" MinHeight="14" 
+                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                                    BorderThickness="1" BorderBrush="LightGray"
+                                    Background="{Binding Color, Converter={StaticResource BrushConverter}, FallbackValue={x:Static Colors.White}, Mode=OneWay}"
+                                    ToolTip="{Binding Color}"/>
+                        </DataTemplate>
+                        <DataTemplate x:Key="DropDownItemTemplate" DataType="{x:Type ui:IColorPickerItem}">
+                            <Border Margin="0" MinWidth="14" MinHeight="14" 
+                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                                    BorderThickness="1" BorderBrush="LightGray"
+                                    Background="{Binding Color, Converter={StaticResource BrushConverter}, FallbackValue={x:Static Colors.White}, Mode=OneWay}"
+                                    ToolTip="{Binding Color}"/>
+                        </DataTemplate>
+                        <Style x:Key="ColorPickerStyle" TargetType="ListBox">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                            <Setter Property="ItemsPanel">
+                                <Setter.Value>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="12" Margin="0,0,4,0"/>
+                                    </ItemsPanelTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="ItemContainerStyle">
+                                <Setter.Value>
+                                    <Style TargetType="{x:Type ListBoxItem}">
+                                        <Setter Property="Margin" Value="0"/>
+                                        <Setter Property="Padding" Value="1"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                                    <Border x:Name="Border"
+                                                            Padding="2"
+                                                            SnapsToDevicePixels="true"
+                                                            Background="{TemplateBinding Background}">
+                                                        <ContentPresenter/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="LightGray"/>
+                                            </Trigger>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="Cyan"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="ItemTemplate" Value="{StaticResource DropDownItemTemplate}"/>
+                        </Style>
+                        <DataTemplate x:Key="ColorPickerHeaderTemplate">
+                            <Border Margin="0,4,0,0"/>
+                        </DataTemplate>
+                    </ControlTemplate.Resources>
+                    <ListBox ItemsSource="{Binding ColorPickerItems, RelativeSource={RelativeSource TemplatedParent}, Mode=OneTime}"
+                             SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                             Style="{StaticResource ColorPickerStyle}">
+                        <ListBox.GroupStyle>
+                            <GroupStyle HeaderTemplate="{StaticResource ColorPickerHeaderTemplate}"/>
+                        </ListBox.GroupStyle>
+                    </ListBox>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type ui:HsvColorPicker}">
+        <Setter Property="MinHeight" Value="128"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ui:HsvColorPicker}">
+                    <ControlTemplate.Resources>
+                        <converter:MultiplyConverter x:Key="By360" By="360"/>
+                        <converter:MultiplyConverter x:Key="By100" By="100"/>
+                        <converter:ColorToBrushConverter x:Key="BrushConverter"/>
+                        <LinearGradientBrush x:Key="HueBrush" StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#FF0000" Offset="0"/>
+                            <GradientStop Color="#FF8000" Offset=".083"/>
+                            <GradientStop Color="#FFFF00" Offset=".166"/>
+                            <GradientStop Color="#80FF00" Offset=".25"/>
+                            <GradientStop Color="#00FF00" Offset=".333"/>
+                            <GradientStop Color="#00FF80" Offset=".416"/>
+                            <GradientStop Color="#00FFFF" Offset=".5"/>
+                            <GradientStop Color="#0080FF" Offset=".583"/>
+                            <GradientStop Color="#0000FF" Offset=".666"/>
+                            <GradientStop Color="#8000FF" Offset=".75"/>
+                            <GradientStop Color="#FF00FF" Offset=".833"/>
+                            <GradientStop Color="#FF0080" Offset=".916"/>
+                            <GradientStop Color="#FF0000" Offset="1"/>
+                        </LinearGradientBrush>
+                        <Style TargetType="Thumb" x:Key="ColorSelectThumb">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Thumb">
+                                        <Grid Height="12" Width="12">
+                                            <Ellipse Stroke="Black" StrokeThickness="1" SnapsToDevicePixels="True"/>
+                                            <Ellipse Stroke="White" StrokeThickness="1" SnapsToDevicePixels="True" Margin="1"
+                                                     Fill="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                        <Style TargetType="Slider">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Slider">
+                                        <Grid>
+                                            <Rectangle Fill="{StaticResource HueBrush}"
+                                                       Height="12"/>
+                                            <Track x:Name="PART_Track">
+                                                <Track.Thumb>
+                                                    <Thumb Background="{TemplateBinding Background}"
+                                                           Style="{StaticResource ColorSelectThumb}"/>
+                                                </Track.Thumb>
+                                            </Track>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Margin" Value="0,0,8,0"/>
+                        </Style>
+                        <Style TargetType="{x:Type ui:NumericUpDown}">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type ui:NumericUpDown}">
+                                        <Border BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="16"/>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="16"/>
+                                                </Grid.ColumnDefinitions>
+                                                <RepeatButton x:Name="PART_DownButton"
+                                                              Content="&#xEDD9;"
+                                                              FontFamily="Segoe MDL2 Assets"
+                                                              FontSize="{TemplateBinding FontSize}"
+                                                              Grid.Column="0"/>
+                                                <TextBox Text="{Binding Value, RelativeSource={RelativeSource TemplatedParent}, StringFormat=F0}"
+                                                         TextAlignment="Right"
+                                                         VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                         Grid.Column="1"/>
+                                                <RepeatButton x:Name="PART_UpButton"
+                                                              Content="&#xEDDA;"
+                                                              FontFamily="Segoe MDL2 Assets"
+                                                              FontSize="{TemplateBinding FontSize}"
+                                                              Grid.Column="2"/>
+                                            </Grid>   
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ControlTemplate.Resources>
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Rectangle IsHitTestVisible="False" Grid.Row="0">
+                            <Rectangle.Fill>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="White" Offset="0"/>
+                                    <GradientStop Color="{Binding HueColor, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}, FallbackValue={x:Static Colors.Red}}" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                        <Canvas Grid.Row="0">
+                            <Canvas.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Color="#000000FF" Offset="0"/>
+                                    <GradientStop Color="#000000" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Canvas.Background>
+                            <Thumb x:Name="PART_SVThumb"
+                                   Background="{Binding SelectedColor, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BrushConverter}}"
+                                   Style="{StaticResource ColorSelectThumb}"
+                                   Canvas.Top="0" Canvas.Left="0"/>
+                        </Canvas>
+                        <Slider Minimum="0" Maximum="1" Value="{Binding Hue, RelativeSource={RelativeSource TemplatedParent}}"
+                                Background="{Binding HueColor, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BrushConverter}}"
+                                IsMoveToPointEnabled="True"
+                                Margin="0,4"
+                                Grid.Row="1"/>
+                        <Grid Grid.Row="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Hue" Grid.Row="0" Grid.Column="0"/>
+                            <ui:NumericUpDown Value="{Binding Hue, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource By360}}"
+                                              Grid.Row="0" Grid.Column="1"/>
+                            <TextBlock Text="Saturation" Grid.Row="1" Grid.Column="0"/>
+                            <ui:NumericUpDown Value="{Binding Saturation, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource By100}}"
+                                              Grid.Row="1" Grid.Column="1"/>
+                            <TextBlock Text="Value" Grid.Row="2" Grid.Column="0"/>
+                            <ui:NumericUpDown Value="{Binding Value, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource By100}}"
+                                              Grid.Row="2" Grid.Column="1"/>
+                        </Grid>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type ui:CompositeColorPicker}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ui:CompositeColorPicker}">
+                    <ControlTemplate.Resources>
+                        <converter:ColorToBrushConverter x:Key="BrushConverter"/>
+                    </ControlTemplate.Resources>
+                    <ToggleButton HorizontalContentAlignment="Stretch"
+                                  VerticalContentAlignment="Center">
+                        <ToggleButton.Style>
+                            <Style TargetType="ToggleButton">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=IsOpen, ElementName=popUp}" Value="True">
+                                        <Setter Property="IsHitTestVisible" Value="False"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ToggleButton.Style>
+                        <Grid>
+                            <Popup x:Name="popUp"
+                                   IsOpen="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}}"
+                                   PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=ToggleButton}}"
+                                   Placement="Bottom"
+                                   StaysOpen="False"
+                                   PopupAnimation="Slide"
+                                   AllowsTransparency="True"
+                                   Width="{Binding ContentWidth, RelativeSource={RelativeSource TemplatedParent}}"
+                                   Height="{Binding ContentHeight, RelativeSource={RelativeSource TemplatedParent}}">
+                                <TabControl ItemsSource="{Binding Pickers, RelativeSource={RelativeSource TemplatedParent}}"
+                                            DisplayMemberPath="Label">
+                                    <TabControl.ContentTemplate>
+                                        <DataTemplate DataType="{x:Type ui:CompositeColorPickerItem}">
+                                            <ContentPresenter Content="{Binding Picker, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </TabControl.ContentTemplate>
+                                </TabControl>
+                            </Popup>
+                            <Label Padding="4,2"
+                                   HorizontalContentAlignment="Stretch">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                        <Border Margin="0" MinWidth="14" MinHeight="14" 
+                                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                                                BorderThickness="1" BorderBrush="LightGray"
+                                                DataContext="{Binding SelectedColor, RelativeSource={RelativeSource TemplatedParent}}"
+                                                Background="{Binding Converter={StaticResource BrushConverter}, FallbackValue={x:Static Colors.White}, Mode=OneWay}"
+                                                ToolTip="{Binding}"/>
+                                        <TextBlock Text="&#xE70D;"
+                                                   VerticalAlignment="Center"
+                                                   Margin="8,0,0,0"
+                                                   FontFamily="Segoe MDL2 Assets"
+                                                   Grid.Column="1"/>
+                                </Grid>
+                            </Label>
+                        </Grid>
+                    </ToggleButton>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type ui:RgbColorPicker}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ui:RgbColorPicker}">
+                    <ControlTemplate.Resources>
+                        <converter:ColorToBrushConverter x:Key="BrushConverter"/>
+                        <LinearGradientBrush x:Key="RBrush" StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#000000" Offset="0"/>
+                            <GradientStop Color="#FF0000" Offset="1"/>
+                        </LinearGradientBrush>
+                        <LinearGradientBrush x:Key="GBrush" StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#000000" Offset="0"/>
+                            <GradientStop Color="#00FF00" Offset="1"/>
+                        </LinearGradientBrush>
+                        <LinearGradientBrush x:Key="BBrush" StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#000000" Offset="0"/>
+                            <GradientStop Color="#0000FF" Offset="1"/>
+                        </LinearGradientBrush>
+                        <LinearGradientBrush x:Key="ABrush" StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#00000000" Offset="0"/>
+                            <GradientStop Color="#FF000000" Offset="1"/>
+                        </LinearGradientBrush>
+                        <Style TargetType="Thumb" x:Key="ColorSelectThumb">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Thumb">
+                                        <Grid Height="12" Width="12">
+                                            <Ellipse Stroke="Black" StrokeThickness="1" SnapsToDevicePixels="True"/>
+                                            <Ellipse Stroke="White" StrokeThickness="1" SnapsToDevicePixels="True" Margin="1"
+                                                     Fill="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                        <Style TargetType="Slider">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Slider">
+                                        <Grid>
+                                            <Rectangle Fill="{Binding Path=Background, RelativeSource={RelativeSource TemplatedParent}}"
+                                                       Height="12"/>
+                                            <Track x:Name="PART_Track">
+                                                <Track.Thumb>
+                                                    <Thumb Background="{TemplateBinding Foreground}"
+                                                           Style="{StaticResource ColorSelectThumb}"/>
+                                                </Track.Thumb>
+                                            </Track>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                        <Style TargetType="TextBox">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                        </Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                        </Style>
+                    </ControlTemplate.Resources>
+
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Row="0">
+                            <Rectangle Fill="{Binding SelectedColor, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BrushConverter}}"
+                                       Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                                       VerticalAlignment="Stretch"/>
+                            <TextBox Text="{Binding ColorText, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/>
+                        </StackPanel>
+
+                        <Grid Grid.Row="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="32"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="32"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Red" Grid.Row="0" Grid.Column="0"/>
+                            <Slider Minimum="0" Maximum="255" Value="{Binding Red, RelativeSource={RelativeSource TemplatedParent}}"
+                                    Foreground="Transparent"
+                                    Background="{StaticResource RBrush}"
+                                    IsMoveToPointEnabled="True"
+                                    Margin="0,4"
+                                    Grid.Row="0" Grid.Column="1"/>
+                            <TextBox Text="{Binding Red, RelativeSource={RelativeSource TemplatedParent}}" Grid.Row="0" Grid.Column="2"/>
+
+                            <TextBlock Text="Green" Grid.Row="1" Grid.Column="0"/>
+                            <Slider Minimum="0" Maximum="255" Value="{Binding Green, RelativeSource={RelativeSource TemplatedParent}}"
+                                    Foreground="Transparent"
+                                    Background="{StaticResource GBrush}"
+                                    IsMoveToPointEnabled="True"
+                                    Margin="0,4"
+                                    Grid.Row="1" Grid.Column="1"/>
+                            <TextBox Text="{Binding Green, RelativeSource={RelativeSource TemplatedParent}}" Grid.Row="1" Grid.Column="2"/>
+
+                            <TextBlock Text="Blue" Grid.Row="2" Grid.Column="0"/>
+                            <Slider Minimum="0" Maximum="255" Value="{Binding Blue, RelativeSource={RelativeSource TemplatedParent}}"
+                                    Foreground="Transparent"
+                                    Background="{StaticResource BBrush}"
+                                    IsMoveToPointEnabled="True"
+                                    Margin="0,4"
+                                    Grid.Row="2" Grid.Column="1"/>
+                            <TextBox Text="{Binding Blue, RelativeSource={RelativeSource TemplatedParent}}" Grid.Row="2" Grid.Column="2"/>
+
+                            <TextBlock Text="Alpha" Grid.Row="3" Grid.Column="0"/>
+                            <Slider Minimum="0" Maximum="255" Value="{Binding Alpha, RelativeSource={RelativeSource TemplatedParent}}"
+                                    Foreground="Transparent"
+                                    Background="{StaticResource ABrush}"
+                                    IsMoveToPointEnabled="True"
+                                    Margin="0,4"
+                                    Grid.Row="3" Grid.Column="1"/>
+                            <TextBox Text="{Binding Alpha, RelativeSource={RelativeSource TemplatedParent}}" Grid.Row="3" Grid.Column="2"/>
+                        </Grid>
+                    </StackPanel>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

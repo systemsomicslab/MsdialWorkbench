@@ -23,7 +23,7 @@ namespace CompMs.App.SpectrumViewer.Model
             Scans = new ObservableCollection<IMSScanProperty>();
 
             lipidParser = FacadeLipidParser.Default;
-            lipidGenerator = new LipidGenerator(new TotalChainVariationGenerator(new Omega3nChainGenerator(), 6));
+            lipidGenerator = new DGTSLipidGeneratorDecorator(new LipidGenerator(new TotalChainVariationGenerator(new Omega3nChainGenerator(), 6)));
             spectrumGenerator = FacadeLipidSpectrumGenerator.Default;
         }
 
@@ -49,7 +49,7 @@ namespace CompMs.App.SpectrumViewer.Model
 
         public ObservableCollection<IMSScanProperty> Scans { get; }
 
-        private readonly LipidGenerator lipidGenerator;
+        private readonly ILipidGenerator lipidGenerator;
         private readonly ILipidSpectrumGenerator spectrumGenerator;
         private readonly ILipidParser lipidParser;
 
@@ -63,15 +63,8 @@ namespace CompMs.App.SpectrumViewer.Model
             if (Lipid == null) {
                 return;
             }
-            foreach (var lipid in GenerateLipid(Lipid, lipidGenerator)) {
+            foreach (var lipid in lipidGenerator.GenerateUntil(Lipid, _ => true).Prepend(Lipid)) {
                 Scans.Add(lipid.GenerateSpectrum(spectrumGenerator, Adduct));
-            }
-        }
-
-        private static IEnumerable<ILipid> GenerateLipid(ILipid lipid, ILipidGenerator generator) {
-            yield return lipid;
-            foreach (var lipid_ in lipid.Generate(generator).SelectMany(l => GenerateLipid(l, generator))) {
-                yield return lipid_;
             }
         }
     }

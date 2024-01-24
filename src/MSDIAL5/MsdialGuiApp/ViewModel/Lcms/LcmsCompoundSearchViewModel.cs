@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Search;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Search;
 using Reactive.Bindings;
@@ -7,14 +8,13 @@ using System;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    internal sealed class LcmsCompoundSearchViewModel : CompoundSearchVM
+    internal sealed class LcmsCompoundSearchViewModel : CompoundSearchVM<PeakSpotModel>
     {
-        public LcmsCompoundSearchViewModel(ICompoundSearchModel model, ICommand setUnknownCommand) : base(model, setUnknownCommand) {
-            ParameterHasErrors = ParameterVM.SelectSwitch(parameter =>
+        public LcmsCompoundSearchViewModel(CompoundSearchModel<PeakSpotModel> model) : base(model) {
+            ParameterHasErrors = ParameterViewModel.SelectSwitch(parameter =>
                 parameter is null
                     ? Observable.Return(true)
                     : new[]
@@ -29,12 +29,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             SearchCommand = new IObservable<bool>[]
             {
-                IsBusy,
+                model.IsBusy,
                 ParameterHasErrors,
             }.CombineLatestValuesAreAllFalse()
             .ToReactiveCommand().AddTo(Disposables);
 
-            Compounds = ParameterVM.SelectSwitch(parameter =>
+            ParameterViewModel.SelectSwitch(parameter =>
                 parameter is null
                     ? Observable.Never<Unit>()
                     : new[]
@@ -42,13 +42,18 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                         parameter.Ms1Tolerance.ToUnit(),
                         parameter.Ms2Tolerance.ToUnit(),
                         parameter.RtTolerance.ToUnit(),
-                    }.Merge())
+                    }.Merge().StartWith(Unit.Default))
                 .Where(_ => !ParameterHasErrors.Value)
-                .SelectSwitch(_ => Observable.FromAsync(SearchAsync))
-                .ToReadOnlyReactivePropertySlim()
+                .Select(_ => Observable.FromAsync(model.SearchAsync))
+                .Switch()
+                .Subscribe()
                 .AddTo(Disposables);
 
-            SearchCommand.Execute();
+            _ = model.SearchAsync(default);
         }
+
+        public ReactiveCommand SearchCommand { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> ParameterHasErrors { get; }
     }
 }

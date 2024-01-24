@@ -1,0 +1,136 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Chart.SpectrumFeaturePlotView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
+             xmlns:axis="clr-namespace:CompMs.Graphics.AxisManager.Generic;assembly=ChartDrawing"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
+             Name="PeakPairPlot"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:SpectrumFeaturePlotViewModel}}"
+             d:Background="White"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <StreamGeometry x:Key="SpectrumFocusMark">M -1,-1 H 1 L 0,1 Z</StreamGeometry>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.Resources>
+            <Style TargetType="Canvas">
+                <Setter Property="Visibility" Value="Visible"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Resources>
+        <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis, Mode=OneWay}"
+                          VerticalAxis="{Binding VerticalAxis, Mode=OneWay}"
+                          HorizontalTitle="{Binding HorizontalLabel.Value, Mode=OneWay}"
+                          VerticalTitle="{Binding VerticalLabel.Value, Mode=OneWay}"
+                          GraphTitle="{Binding Title.Value, Mode=OneWay}"
+                          Background="WhiteSmoke" BorderBrush="Black"
+                          Style="{StaticResource OverlapChart}">
+            <chart:MultiChart.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Save image using dialog"
+                              Command="{x:Static graphio:SaveImageAsWithDialogCommand.Instance}"
+                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    <MenuItem Header="Save image as...">
+                        <MenuItem Header="Save as emf"
+                                  Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Save as png"
+                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                    <MenuItem Header="Copy image using dialog"
+                              Command="{x:Static graphio:CopyImageAsWithDialogCommand.Instance}"
+                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    <MenuItem Header="Copy image as...">
+                        <MenuItem Header="Copy as emf"
+                                  Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Copy as png"
+                                  Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                </ContextMenu>
+            </chart:MultiChart.ContextMenu>
+            <chart:ScatterControlSlim x:Name="peakSelector"
+                                      ItemsSource="{Binding ChromatogramPeaks, Mode=OneWay}"
+                                      SelectedItem="{Binding SelectedChromatogramPeak.Value, Mode=TwoWay}"
+                                      DataType="{x:Type do:ChromatogramPeakFeatureModel}"
+                                      HorizontalProperty="{Binding HorizontalProperty, Mode=OneWay}"
+                                      VerticalProperty="{Binding VerticalProperty, Mode=OneWay}"
+                                      PointBrush="{Binding BrushMapDataSelector.SelectedBrush.Mapper}"
+                                      Radius="5.5">
+                <chart:ScatterControlSlim.ToolTip>
+                    <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="{Binding Path=(chart:ScatterControlSlim.FocusedItem).(do:ChromatogramPeakFeatureModel.MasterPeakID), StringFormat=ID: {0}}"/>
+                            <TextBlock Text="{Binding Path=(chart:ScatterControlSlim.FocusedItem).(do:ChromatogramPeakFeatureModel.Name), StringFormat=Name: {0}}"/>
+                            <TextBlock Text="{Binding Path=(chart:ScatterControlSlim.FocusedItem).(do:ChromatogramPeakFeatureModel.AdductIonName), StringFormat=Ionform: {0}}"/>
+                            <TextBlock Text="{Binding Path=(chart:ScatterControlSlim.FocusedItem).(do:ChromatogramPeakFeatureModel.ChromXValue), StringFormat=Time: {0:F3}}"/>
+                            <TextBlock Text="{Binding Path=(chart:ScatterControlSlim.FocusedItem).(do:ChromatogramPeakFeatureModel.Mass), StringFormat=m/z: {0:F4}}"/>
+                            <TextBlock Text="{Binding Path=(chart:ScatterControlSlim.FocusedItem).(do:ChromatogramPeakFeatureModel.Intensity), StringFormat=Height: {0:F0}}"/>
+                            <TextBlock Text="{Binding Path=(chart:ScatterControlSlim.FocusedItem).(do:ChromatogramPeakFeatureModel.PeakArea), StringFormat=Area: {0:F0}}"/>
+                        </StackPanel>
+                    </ToolTip>
+                </chart:ScatterControlSlim.ToolTip>
+            </chart:ScatterControlSlim>
+            <chart:Annotator ItemsSource="{Binding ChromatogramPeaks, Mode=OneWay}"
+                             HorizontalPropertyName="{Binding HorizontalProperty, Mode=OneWay}"
+                             VerticalPropertyName="{Binding VerticalProperty, Mode=OneWay}"
+                             LabelPropertyName="{Binding LabelProperty.Value, Mode=OneWay}"/>
+            <chart:ScatterControl x:Name="spectrumSelector"
+                                  ItemsSource="{Binding Spectra, Mode=OneWay}"
+                                  SelectedItem="{Binding SelectedSpectrum.Value}"
+                                  HorizontalPropertyName="Scan.ChromXs.RT.Value"
+                                  VerticalPropertyName="Scan.ChromXs.RT.Value"
+                                  VerticalAxis="{x:Static axis:ConstantAxisManager.Instance}"
+                                  PointGeometry="{StaticResource SpectrumFocusMark}"
+                                  PointBrush="Gray"
+                                  Radius="8"
+                                  Height="16"
+                                  VerticalAlignment="Top"/>
+            <Canvas DataContext="{Binding SelectedPoint, ElementName=peakSelector}" ClipToBounds="True">
+                <Rectangle Fill="Red" VerticalAlignment="Stretch" IsHitTestVisible="False"
+                           Width="1" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Canvas}}"
+                           Canvas.Left="{Binding X}"/>
+                <Rectangle Fill="Red" HorizontalAlignment="Stretch" IsHitTestVisible="False"
+                           Height="1" Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Canvas}}"
+                           Canvas.Top="{Binding Y}"/>
+            </Canvas>
+            <Canvas DataContext="{Binding SelectedPoint, ElementName=spectrumSelector}" ClipToBounds="True">
+                <Rectangle Fill="Blue" VerticalAlignment="Stretch" IsHitTestVisible="False"
+                           Width="1" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Canvas}}"
+                           Canvas.Left="{Binding X}"/>
+                <Path Data="{StaticResource SpectrumFocusMark}" Fill="Red" Stretch="Uniform" Canvas.Left="{Binding X}" Height="16" Width="16"
+                      IsHitTestVisible="False">
+                    <Path.RenderTransform>
+                        <TranslateTransform X="-8"/>
+                    </Path.RenderTransform>
+                </Path>
+            </Canvas>
+            <Canvas DataContext="{Binding FocusedPoint, ElementName=spectrumSelector}" ClipToBounds="True">
+                <Path Data="{StaticResource SpectrumFocusMark}" Fill="Blue" Stretch="Uniform" Canvas.Left="{Binding X}" Height="16" Width="16"
+                      IsHitTestVisible="False">
+                    <Path.RenderTransform>
+                        <TranslateTransform X="-8"/>
+                    </Path.RenderTransform>
+                </Path>
+            </Canvas>
+        </chart:MultiChart>
+    </Grid>
+</UserControl>

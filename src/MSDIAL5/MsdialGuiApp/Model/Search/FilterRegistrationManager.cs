@@ -15,7 +15,7 @@ namespace CompMs.App.Msdial.Model.Search
 
         public FilterRegistrationManager(IReadOnlyList<T> spots, PeakSpotFiltering<T> peakSpotFiltering) {
             PeakSpotFiltering = peakSpotFiltering;
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel((IReadOnlyList<IFilterable>)spots, peakSpotFiltering.ValueFilterManagers.Select(pair => pair.Filter).ToArray(), peakSpotFiltering.KeywordFilterManagers.Select(pair => pair.Filter).ToArray(), peakSpotFiltering.AmplitudeFilterModel, peakSpotFiltering.TagSearchQueryBuilder);
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(spots, peakSpotFiltering.ValueFilterManagers.Select(pair => pair.Filter).ToArray(), peakSpotFiltering.KeywordFilterManagers.Select(pair => pair.Filter).ToArray(), peakSpotFiltering.AmplitudeFilterModel, peakSpotFiltering.TagSearchQueryBuilder);
         }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
