@@ -529,7 +529,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 //if (spec.ExperimentID != 6) continue;
 
                 if (spec.MsLevel == 2 && spec.Precursor != null && scanPolarity == spec.ScanPolarity) {
-                    if (IsInMassWindow(mass, spec, ms2Tol, type)) {
+                    if (IsInMassWindow(mass, spec, ms2Tol, type) && spec.Spectrum.Length > 0) {
                         var ce = spec.CollisionEnergy;
 
                         if (type == AcquisitionType.AIF) {

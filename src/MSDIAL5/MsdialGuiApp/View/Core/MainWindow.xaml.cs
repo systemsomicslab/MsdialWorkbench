@@ -42,15 +42,10 @@ namespace CompMs.App.Msdial.View.Core
         public MainWindow() {
             InitializeComponent();
 
-            var compoundSearchService = new DialogService<CompoundSearchWindow, CompoundSearchVM>(this);
             var peakSpotTableService = new DialogService<AlignmentSpotTable, PeakSpotTableViewModelBase>(this);
-            var proteomicsTableService = new DialogService<AlignmentSpotTable, PeakSpotTableViewModelBase>(this);
-            DataContext = new MainWindowVM(
-                compoundSearchService,
-                peakSpotTableService,
-                proteomicsTableService);
+            DataContext = new MainWindowVM(peakSpotTableService);
 
-            broker = MessageBroker.Default;
+            var broker = MessageBroker.Default;
 
             broker.ToObservable<ProgressBarMultiContainerRequest>()
                 .Subscribe(ShowMultiProgressBarWindow);
@@ -84,8 +79,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildView<ProteinGroupTable>);
             broker.ToObservable<ChromatogramsViewModel>()
                 .Subscribe(ShowChildView<DisplayChromatogramsView>);
-            broker.ToObservable<DisplayEicSettingViewModel>()
-                .Subscribe(ShowChildDialog<EICDisplaySettingView>);
+            broker.ToObservable<CheckChromatogramsViewModel>()
+                .Subscribe(ShowChildViewWithDispose<CheckChromatogramsView>("Display chromatograms", height: 400, width: 1000));
             broker.ToObservable<NormalizationSetViewModel>()
                 .Subscribe(ShowChildDialog<NormalizationSetView>);
             broker.ToObservable<MultivariateAnalysisSettingViewModel>()
@@ -112,9 +107,11 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildDialog<ProjectSettingDialog>);
             broker.ToObservable<ProjectPropertySettingViewModel>()
                 .Subscribe(ShowChildSettingDialog<ProjectPropertySettingView>("Project property setting", height: 400, width: 400));
-            /*
-            broker.ToObservable<CompoundSearchVM>()
+            broker.ToObservable<ICompoundSearchViewModel>()
                 .Subscribe(ShowChildDialog<CompoundSearchWindow>);
+            broker.ToObservable<ExportMrmprobsViewModel>()
+                .Subscribe(ShowChildSettingDialog<ExportMrmprobsView>("MRMPROBS reference library export", height: 560, width: 560, finishCommandContent: "Export"));
+            /*
             broker.ToObservable<PeakSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<AlignmentSpotTable>);
             broker.ToObservable<PeakSpotTableViewModelBase>()
@@ -126,8 +123,6 @@ namespace CompMs.App.Msdial.View.Core
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Warning;
 #endif
         }
-
-        private readonly IMessageBroker broker;
 
         public void CloseOwnedWindows() {
             Dispatcher.Invoke(() =>
@@ -151,7 +146,7 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void ShowChildViewWithDispose<TView>(object viewmodel) where TView : Window, new() {
-            var view = new TView()
+            Window view = new TView()
             {
                 DataContext = viewmodel,
                 Owner = this,
@@ -159,6 +154,23 @@ namespace CompMs.App.Msdial.View.Core
             };
             DataContextCleanupBehavior.SetIsEnabled(view, true);
             view.Show();
+        }
+
+        private Action<object> ShowChildViewWithDispose<TView>(string title, double height, double width) where TView: FrameworkElement, new() {
+            void InnerShowDialog(object viewmodel) {
+                var view = new Window
+                {
+                    Height = height, Width = width,
+                    Title = title,
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    DataContext = viewmodel,
+                    Content = new TView(),
+                };
+                DataContextCleanupBehavior.SetIsEnabled(view, true);
+                view.Show();
+            }
+            return InnerShowDialog;
         }
 
         private void ShowChildDialog<TView>(object viewmodel) where TView : Window, new() {
@@ -171,7 +183,8 @@ namespace CompMs.App.Msdial.View.Core
             view.ShowDialog();
         }
 
-        private Action<object> ShowChildSettingDialog<TView>(string title, double height, double width) where TView: FrameworkElement, new() {
+        private Action<object> ShowChildSettingDialog<TView>(string title, double height, double width, object finishCommandContent = null)
+            where TView: FrameworkElement, new() {
             void InnerShowDialog(object viewmodel) {
                 var dialog = new SettingDialog
                 {
@@ -182,6 +195,9 @@ namespace CompMs.App.Msdial.View.Core
                     DataContext = viewmodel,
                     Content = new TView(),
                 };
+                if (finishCommandContent != null) {
+                    dialog.FinishCommandContent = finishCommandContent;
+                }
                 dialog.ShowDialog();
             }
             return InnerShowDialog;

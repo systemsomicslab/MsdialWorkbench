@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
@@ -74,6 +75,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             AnalysisFileBeanModelCollection fileCollection,
             IMessageBroker messageBroker)
             : base(alignmentFileBean, messageBroker) {
+            if (evaluator is null) {
+                throw new ArgumentNullException(nameof(evaluator));
+            }
+
             if (databases is null) {
                 throw new ArgumentNullException(nameof(databases));
             }
@@ -92,6 +97,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             _messageBroker = messageBroker;
 
             var spotsSource = new AlignmentSpotSource(alignmentFileBean, Container, CHROMATOGRAM_SPOT_SERIALIZER).AddTo(Disposables);
+            _spotsSource = spotsSource;
             Ms1Spots = spotsSource.Spots.Items;
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
             CurrentRepresentativeFile = Target.Select(t => t is null ? null : fileCollection.GetById(t.RepresentativeFileID)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -128,6 +134,9 @@ namespace CompMs.App.Msdial.Model.Lcms
                 HorizontalTitle = "Retention time [min]",
                 VerticalTitle = "m/z",
             }.AddTo(Disposables);
+            var mrmprobsExporter = new EsiMrmprobsExporter(evaluator, mapper);
+            var usecase = new AlignmentSpotExportMrmprobsUsecase(parameter.MrmprobsExportBaseParam, spotsSource, alignmentFileBean, _compoundSearchers, mrmprobsExporter, Target);
+            PlotModel.ExportMrmprobs = usecase;
 
             // Ms2 spectrum
             MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
@@ -242,6 +251,8 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public ParameterBase Parameter { get; }
 
+        private readonly AlignmentSpotSource _spotsSource;
+
         public ReadOnlyObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
         public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel> CurrentRepresentativeFile { get; }
@@ -266,8 +277,16 @@ namespace CompMs.App.Msdial.Model.Lcms
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
-        public ICompoundSearchModel CreateCompoundSearchModel() {
-            return new LcmsCompoundSearchModel(_files[Target.Value.RepresentativeFileID], Target.Value, _msdecResult.Value, _compoundSearchers.Items, _undoManager);
+        public CompoundSearchModel CreateCompoundSearchModel() {
+            PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(_msdecResult.Value);
+            var compoundSearch =  new CompoundSearchModel(
+                _files[Target.Value.RepresentativeFileID],
+                new PeakSpotModel(Target.Value, _msdecResult.Value),
+                new LcmsCompoundSearchUsecase(_compoundSearchers.Items),
+                plotService,
+                new SetAnnotationUsecase(Target.Value, Target.Value.MatchResultsModel, _undoManager));
+            compoundSearch.Disposables.Add(plotService);
+            return compoundSearch;
         }
 
         public void SaveSpectra(string filename) {

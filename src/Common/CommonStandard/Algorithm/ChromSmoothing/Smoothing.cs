@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Mathematics.Basic;
 using CompMs.Common.Mathematics.Matrix;
@@ -70,6 +71,43 @@ namespace CompMs.Common.Algorithm.ChromSmoothing
                 return smoothedPeaklist;
             }
         }
+
+        public static RawPeakElement[] LinearWeightedMovingAverage(RawPeakElement[] peaklist, int smoothingLevel) {
+            var n = peaklist.Length;
+            var intensities = new double[n + smoothingLevel * 2 + 2];
+            int normalizationValue = (smoothingLevel + 1) * (smoothingLevel + 1);
+
+            for (int i = 0; i < n; i++) {
+                intensities[i] += peaklist[i].Intensity;
+                intensities[i + smoothingLevel + 1] -= peaklist[i].Intensity * 2;
+                intensities[i + smoothingLevel * 2 + 2] += peaklist[i].Intensity;
+            }
+
+            for (int i = 1; i < intensities.Length; i++) {
+                intensities[i] += intensities[i - 1];
+            }
+
+            for (int i = 1; i < intensities.Length; i++) {
+                intensities[i] += intensities[i - 1];
+            }
+
+            for (int i = 0; i < Math.Min(smoothingLevel, n); i++) {
+                intensities[i + smoothingLevel] += peaklist[i].Intensity * ((smoothingLevel - i + 1) * (smoothingLevel - i) / 2);
+            }
+
+            for (int i = 0; i < Math.Min(smoothingLevel, n); i++) {
+                intensities[n - 1 - i + smoothingLevel] += peaklist[n - 1 - i].Intensity * ((smoothingLevel - i + 1) * (smoothingLevel - i) / 2);
+            }
+
+            var smoothedPeaklist = new RawPeakElement[n];
+            for (int i = 0; i < n; i++) {
+                smoothedPeaklist[i].Mz = peaklist[i].Mz;
+                smoothedPeaklist[i].Intensity = intensities[i + smoothingLevel] / normalizationValue;
+            }
+
+            return smoothedPeaklist;
+        }
+
 
         // imos method
         public static List<ChromatogramPeak> LinearWeightedMovingAverage(IReadOnlyList<IChromatogramPeak> peaklist, int smoothingLevel) {

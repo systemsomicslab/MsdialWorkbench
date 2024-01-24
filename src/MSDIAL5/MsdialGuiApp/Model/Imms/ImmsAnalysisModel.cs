@@ -41,6 +41,8 @@ namespace CompMs.App.Msdial.Model.Imms
         private readonly IDataProvider _provider;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly CompoundSearcherCollection _compoundSearchers;
+        private readonly TicLoader _ticLoader;
+        private readonly BpcLoader _bpcLoader;
 
         public ImmsAnalysisModel(
             AnalysisFileBeanModel analysisFileModel,
@@ -89,6 +91,10 @@ namespace CompMs.App.Msdial.Model.Imms
 
             var eicLoader = EicLoader.BuildForAllRange(analysisFileModel.File, provider, parameter, ChromXType.Drift, ChromXUnit.Msec, parameter.DriftTimeBegin, parameter.DriftTimeEnd);
             EicLoader = EicLoader.BuildForPeakRange(analysisFileModel.File, provider, parameter, ChromXType.Drift, ChromXUnit.Msec, parameter.DriftTimeBegin, parameter.DriftTimeEnd);
+            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), parameter.IonMode, analysisFileModel.File.AcquisitionType);
+            ChromatogramRange chromatogramRange = new ChromatogramRange(parameter.DriftTimeBegin, parameter.DriftTimeEnd, ChromXType.Drift, ChromXUnit.Msec);
+            _ticLoader = new TicLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
+            _bpcLoader = new BpcLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
             EicModel = new EicModel(Target, eicLoader)
             {
                 HorizontalTitle = PlotModel.HorizontalTitle,
@@ -195,6 +201,10 @@ namespace CompMs.App.Msdial.Model.Imms
         public MoleculeStructureModel MoleculeStructureModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
+        public LoadChromatogramsUsecase LoadChromatogramsUsecase() {
+            return new LoadChromatogramsUsecase(_ticLoader, _bpcLoader, EicLoader, Ms1Peaks, _parameter.PeakPickBaseParam);
+        }
+
         private Task<List<SpectrumPeakWrapper>> LoadMsSpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             if (target is null || target.MS1RawSpectrumIdTop < 0) {
                 return Task.FromResult(new List<SpectrumPeakWrapper>(0));
@@ -210,17 +220,20 @@ namespace CompMs.App.Msdial.Model.Imms
             }, token);
         }
 
-        public ImmsCompoundSearchModel CreateCompoundSearchModel() {
+        public CompoundSearchModel CreateCompoundSearchModel() {
             if (Target.Value?.InnerModel is null || MsdecResult.Value is null) {
                 return null;
             }
 
-            return new ImmsCompoundSearchModel(
+            PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(MsdecResult.Value);
+            var compoundSearchModel = new CompoundSearchModel(
                 AnalysisFileModel,
-                Target.Value,
-                MsdecResult.Value,
-                _compoundSearchers.Items,
-                _undoManager);
+                new PeakSpotModel(Target.Value, MsdecResult.Value),
+                new ImmsCompoundSearchUsecase(_compoundSearchers.Items),
+                plotService,
+                new SetAnnotationUsecase(Target.Value, Target.Value.MatchResultsModel, _undoManager));
+            compoundSearchModel.Disposables.Add(plotService);
+            return compoundSearchModel;
         }
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));

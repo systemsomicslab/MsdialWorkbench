@@ -3,9 +3,7 @@ using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
-using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
-using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -70,76 +68,42 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             }
         }
 
-        public DelegateCommand ShowTicCommand => _showTicCommand ?? (_showTicCommand = new DelegateCommand(ShowTIC));
+        public DelegateCommand ShowTicCommand => _showTicCommand ??= new DelegateCommand(ShowChromatograms(tic: true));
         private DelegateCommand _showTicCommand;
 
-        private void ShowTIC() {
-            var model = _model.PrepareTIC();
-            if (model is null) {
-                return;
-            }
-            var vm = new ChromatogramsViewModel(model, _broker);
-            _broker.Publish(vm);
-        }
-
-        public DelegateCommand ShowBpcCommand => _showBpcCommand ?? (_showBpcCommand = new DelegateCommand(ShowBPC));
+        public DelegateCommand ShowBpcCommand => _showBpcCommand ??= new DelegateCommand(ShowChromatograms(bpc: true));
         private DelegateCommand _showBpcCommand;
 
-        private void ShowBPC() {
-            var model = _model.PrepareBPC();
-            if (model is null) {
-                return;
-            }
-            var vm = new ChromatogramsViewModel(model, _broker);
-            _broker.Publish(vm);
-        }
-
-        public DelegateCommand ShowTicBpcRepEICCommand => _showTicBpcRepEIC ?? (_showTicBpcRepEIC = new DelegateCommand(ShowTicBpcRepEIC));
+        public DelegateCommand ShowTicBpcRepEICCommand => _showTicBpcRepEIC ??= new DelegateCommand(ShowChromatograms(tic: true, bpc: true, highestEic: true));
         private DelegateCommand _showTicBpcRepEIC;
 
-        private void ShowTicBpcRepEIC() {
-            var model = _model.PrepareTicBpcRepEIC();
-            if (model is null) {
-                return;
-            }
-            var vm = new ChromatogramsViewModel(model, _broker);
-            _broker.Publish(vm);
-        }
-
-        public DelegateCommand ShowEicCommand => _showEicCommand ?? (_showEicCommand = new DelegateCommand(ShowEIC));
+        public DelegateCommand ShowEicCommand => _showEicCommand ??= new DelegateCommand(ShowChromatograms());
         private DelegateCommand _showEicCommand;
 
-        public void ShowEIC() {
-            var model = _model.PrepareEicSetting();
-            using (var settingvm = new DisplayEicSettingViewModel(model)){
-                _broker.Publish(settingvm);
-                if (!settingvm.DialogResult) {
+        private Action ShowChromatograms(bool tic = false, bool bpc = false, bool highestEic = false) {
+            void InnerShowChromatograms() {
+                var m = _model.PrepareChromatograms(tic, bpc, highestEic);
+                if (m is null) {
                     return;
                 }
+                var vm = new CheckChromatogramsViewModel(m, _broker);
+                _broker.Publish(vm);
             }
-            var chromatograms = model.PrepareChromatograms();
-            if (chromatograms is null) {
-                return;
-            }
-            var vm = new ChromatogramsViewModel(chromatograms, _broker);
-            _broker.Publish(vm);
+            return InnerShowChromatograms;
         }
 
         private static IReadOnlyReactiveProperty<LcimmsAnalysisViewModel> ConvertToAnalysisViewModel(
             LcimmsMethodModel method,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            FocusControlManager focusControlManager) {
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
+            FocusControlManager focusControlManager,
+            IMessageBroker broker) {
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
             ReadOnlyReactivePropertySlim<LcimmsAnalysisViewModel> result;
             using (var subject = new Subject<LcimmsAnalysisModel>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AnalysisModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
-                    .Select(m => m is null ? null : new LcimmsAnalysisViewModel(m, compoundSearchService, peakSpotTableService, focusControlManager))
+                    .Select(m => m is null ? null : new LcimmsAnalysisViewModel(m, peakSpotTableService, focusControlManager, broker))
                     .DisposePreviousValue()
                     .ToReadOnlyReactivePropertySlim();
                 subject.OnNext(method.AnalysisModel);
@@ -150,20 +114,16 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
         private static IReadOnlyReactiveProperty<LcimmsAlignmentViewModel> ConvertToAlignmentViewModel(
             LcimmsMethodModel method,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             FocusControlManager focusControlManager,
             IMessageBroker broker) {
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
             ReadOnlyReactivePropertySlim<LcimmsAlignmentViewModel> result;
             using (var subject = new Subject<LcimmsAlignmentModel>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AlignmentModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
-                    .Select(m => m is null ? null : new LcimmsAlignmentViewModel(m, compoundSearchService, peakSpotTableService, focusControlManager, broker))
+                    .Select(m => m is null ? null : new LcimmsAlignmentViewModel(m, peakSpotTableService, focusControlManager, broker))
                     .DisposePreviousValue()
                     .ToReadOnlyReactivePropertySlim();
                 subject.OnNext(method.AlignmentModel);
@@ -172,10 +132,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             return result;
         }
 
-        public static LcimmsMethodViewModel Create(LcimmsMethodModel model, IWindowService<CompoundSearchVM> compoundSearchService, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, IMessageBroker broker) {
+        public static LcimmsMethodViewModel Create(LcimmsMethodModel model, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, IMessageBroker broker) {
             var focusControlManager = new FocusControlManager();
-            var analysisViewModelAsObservable = ConvertToAnalysisViewModel(model, compoundSearchService, peakSpotTableService, focusControlManager);
-            var alignmentViewModelAsObservable = ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService, focusControlManager, broker);
+            var analysisViewModelAsObservable = ConvertToAnalysisViewModel(model, peakSpotTableService, focusControlManager, broker);
+            var alignmentViewModelAsObservable = ConvertToAlignmentViewModel(model, peakSpotTableService, focusControlManager, broker);
 
             return new LcimmsMethodViewModel(
                 model,

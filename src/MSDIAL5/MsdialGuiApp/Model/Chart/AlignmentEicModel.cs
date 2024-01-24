@@ -19,7 +19,7 @@ namespace CompMs.App.Msdial.Model.Chart
     {
         public AlignmentEicModel(
             IObservable<AlignmentSpotPropertyModel> model,
-            IObservable<List<Chromatogram>> chromatoramSource,
+            IObservable<List<PeakChromatogram>> chromatoramSource,
             List<AnalysisFileBean> analysisFiles,
             ParameterBase parameter,
             Func<PeakItem, double> horizontalSelector,
@@ -86,7 +86,7 @@ namespace CompMs.App.Msdial.Model.Chart
         public IObservable<bool> IsSelected { get; }
         public IObservable<bool> IsPeakLoaded { get; }
 
-        public ReadOnlyReactivePropertySlim<List<Chromatogram>> EicChromatograms { get; }
+        public ReadOnlyReactivePropertySlim<List<PeakChromatogram>> EicChromatograms { get; }
         public ReadOnlyReactivePropertySlim<Range> HorizontalRange { get; }
         public ReadOnlyReactivePropertySlim<Range> VerticalRange { get; }
 

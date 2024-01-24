@@ -3,10 +3,8 @@ using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Search;
-using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
-using CompMs.Common.Extension;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -25,8 +23,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Media;
 using System.Reactive.Linq;
+using CompMs.App.Msdial.Model.Loader;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
@@ -299,62 +297,19 @@ namespace CompMs.App.Msdial.Model.Imms
             return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, models);
         }
 
-        public ChromatogramsModel PrepareTIC() {
+        public CheckChromatogramsModel PrepareChromatograms(bool tic, bool bpc, bool highestEic) {
             var analysisModel = AnalysisModel;
             if (analysisModel is null) {
                 return null;
             }
 
-            var tic = analysisModel.EicLoader.LoadTic();
-            Pen pen = new Pen(Brushes.Black, 1.0);
-            pen.Freeze();
-            return new ChromatogramsModel("Total ion chromatogram", new DisplayChromatogram(tic, pen, "TIC"), "Total ion chromatogram", "Mobility", "Absolute ion abundance");
-        }
-
-        public ChromatogramsModel PrepareBPC() {
-            var analysisModel = AnalysisModel;
-            if (analysisModel is null) {
-                return null;
-            }
-
-            var bpc = analysisModel.EicLoader.LoadBpc();
-            Pen pen = new Pen(Brushes.Red, 1.0);
-            pen.Freeze();
-            return new ChromatogramsModel("Base peak chromatogram", new DisplayChromatogram(bpc, pen, "BPC"), "Base peak chromatogram", "Mobility", "Absolute ion abundance");
-        }
-
-        public DisplayEicSettingModel PrepareEicSetting() {
-            var analysisModel = AnalysisModel;
-            if (analysisModel is null) {
-                return null;
-            }
-            return new DisplayEicSettingModel(analysisModel.EicLoader, _storage.Parameter.AdvancedProcessOptionBaseParam);
-        }
-
-        public ChromatogramsModel PrepareTicBpcRepEIC() {
-            var analysisModel = AnalysisModel;
-            if (analysisModel is null) {
-                return null;
-            }
-
-            var tic = analysisModel.EicLoader.LoadTic();
-            var bpc = analysisModel.EicLoader.LoadBpc();
-            var eic = analysisModel.EicLoader.LoadHighestEicTrace(analysisModel.Ms1Peaks.ToList());
-
-            var maxPeakMz = analysisModel.Ms1Peaks.Argmax(n => n.Intensity).Mass;
-            Pen ticPen = new Pen(Brushes.Black, 1.0);
-            ticPen.Freeze();
-            Pen bpcPen = new Pen(Brushes.Red, 1.0);
-            bpcPen.Freeze();
-            Pen eicPen = new Pen(Brushes.Blue, 1.0);
-            eicPen.Freeze();
-            var displayChroms = new List<DisplayChromatogram>() {
-                new DisplayChromatogram(tic, ticPen, "TIC"),
-                new DisplayChromatogram(bpc, bpcPen, "BPC"),
-                new DisplayChromatogram(eic, eicPen, "EIC of m/z " + Math.Round(maxPeakMz, 5).ToString())
-            };
-
-            return new ChromatogramsModel("TIC, BPC, and highest peak m/z's EIC", displayChroms, "TIC, BPC, and highest peak m/z's EIC", "Mobility", "Absolute ion abundance");
+            var loadChromatogramsUsecase = analysisModel.LoadChromatogramsUsecase();
+            loadChromatogramsUsecase.InsertTic = tic;
+            loadChromatogramsUsecase.InsertBpc = bpc;
+            loadChromatogramsUsecase.InsertHighestEic = highestEic;
+            var model = new CheckChromatogramsModel(loadChromatogramsUsecase, _storage.Parameter.AdvancedProcessOptionBaseParam);
+            model.Update();
+            return model;
         }
     }
 }

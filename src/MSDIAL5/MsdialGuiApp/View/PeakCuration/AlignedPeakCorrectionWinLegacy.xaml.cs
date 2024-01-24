@@ -37,14 +37,14 @@ namespace CompMs.App.Msdial.View.PeakCuration
         public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> ObservableModel { get; }
         public ReactiveProperty<bool> IsRI { get; }
         public ReactiveProperty<bool> IsDrift { get; }
-        public List<Model.DataObj.Chromatogram> Chromatograms { get; }
-        public IObservable<List<Model.DataObj.Chromatogram>> ObservableChromatograms { get; }
+        public List<PeakChromatogram> Chromatograms { get; }
+        public IObservable<List<PeakChromatogram>> ObservableChromatograms { get; }
         public List<AnalysisFileBean> Files { get; }
         public ReadOnlyReactivePropertySlim<PeakPropertiesLegacy> ObservablePeakProperties { get; }
 
         public AlignedChromatogramModificationModelLegacy(
             IObservable<AlignmentSpotPropertyModel> model,
-            IObservable<List<Model.DataObj.Chromatogram>> chromatoramSource,
+            IObservable<List<PeakChromatogram>> chromatoramSource,
             List<AnalysisFileBean> files, 
             ParameterBase parameter) {
             if (model is null) {
@@ -77,7 +77,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
        
         public static IObservable<PeakPropertiesLegacy> LoadPeakProperty(
             IObservable<AlignmentSpotPropertyModel> model,
-            IObservable<List<Model.DataObj.Chromatogram>> chromatogramSource,
+            IObservable<List<PeakChromatogram>> chromatogramSource,
             List<AnalysisFileBean> files,
             ParameterBase parameter) {
             var classnameToBytes = parameter.ClassnameToColorBytes;
@@ -87,7 +87,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
                 var observablePeaks = spot?.AlignedPeakPropertiesModelProperty ?? Observable.Never<ReadOnlyCollection<AlignmentChromPeakFeatureModel>>();
                 return observablePeaks.CombineLatest(chromatogramSource, (peaks, chromatograms) =>
                 {
-                    var chromatograms_ = chromatograms ?? Enumerable.Empty<Model.DataObj.Chromatogram>();
+                    var chromatograms_ = chromatograms ?? Enumerable.Empty<PeakChromatogram>();
                     var peaks_ = peaks ?? Enumerable.Empty<AlignmentChromPeakFeatureModel>();
                     var peakPropArr = files.Zip(peaks_).Where(pair => pair.Item1.AnalysisFileIncluded)
                         .Zip(chromatograms_, (pair, chromatogram) =>

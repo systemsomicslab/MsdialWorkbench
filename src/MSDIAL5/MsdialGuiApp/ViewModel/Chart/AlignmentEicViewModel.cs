@@ -65,7 +65,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            Brush = new DelegateBrushMapper<Chromatogram>(chromatogram => chromatogram.Color);
+            Brush = new DelegateBrushMapper<PeakChromatogram>(chromatogram => chromatogram.Color);
             IsPeakLoaded = model.IsPeakLoaded.ToReadOnlyReactivePropertySlim(initialValue: false).AddTo(Disposables);
 
             ShowPeakCurationWinByOverlayEICsCommand = model.CanShow.ToReactiveCommand()
@@ -84,13 +84,13 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .AddTo(Disposables);
         }
 
-        public ReadOnlyReactivePropertySlim<List<Chromatogram>> EicChromatograms { get; }
+        public ReadOnlyReactivePropertySlim<List<PeakChromatogram>> EicChromatograms { get; }
 
         public IAxisManager<double> HorizontalAxis { get; }
 
         public IAxisManager<double> VerticalAxis { get; }
 
-        public IBrushMapper<Chromatogram> Brush { get; }
+        public IBrushMapper<PeakChromatogram> Brush { get; }
 
         public ReadOnlyReactivePropertySlim<string> GraphTitle { get; }
 

@@ -1,10 +1,12 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -15,11 +17,13 @@ namespace CompMs.App.Msdial.ViewModel.Chart
     internal sealed class AlignmentPeakPlotViewModel : ViewModelBase
     {
         private readonly AlignmentPeakPlotModel _model;
+        private readonly IMessageBroker _broker;
 
-        public AlignmentPeakPlotViewModel(AlignmentPeakPlotModel model, Action focus, IObservable<bool> isFocused) {
+        public AlignmentPeakPlotViewModel(AlignmentPeakPlotModel model, Action focus, IObservable<bool> isFocused, IMessageBroker broker) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
 
             Focus = focus;
+            _broker = broker;
             IsFocused = isFocused.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             Spots = model.Spots;
@@ -92,5 +96,21 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<string> LabelProperty { get; }
 
         public AsyncReactiveCommand DuplicatesCommand { get; }
+
+        public DelegateCommand SaveMrmprobsCommand => _saveMrmprobsCommand ??= new DelegateCommand(() => ExportMrmprobs(false), () => _model.ExportMrmprobs != null);
+        private DelegateCommand _saveMrmprobsCommand;
+
+        public DelegateCommand CopyMrmprobsCommand => _copyMrmprobsCommand ??= new DelegateCommand(() => ExportMrmprobs(true), () => _model.ExportMrmprobs != null);
+        private DelegateCommand _copyMrmprobsCommand;
+
+        private void ExportMrmprobs(bool copy) {
+            var m = _model.ExportMrmprobsModel();
+            if (m is null) {
+                return;
+            }
+            m.Copy = copy;
+            using var vm = new ExportMrmprobsViewModel(m);
+            _broker.Publish(vm);
+        }
     }
 }

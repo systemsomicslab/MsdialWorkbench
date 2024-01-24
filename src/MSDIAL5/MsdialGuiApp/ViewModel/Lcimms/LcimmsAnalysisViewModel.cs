@@ -10,6 +10,7 @@ using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Reactive.Linq;
 using System.Windows.Input;
@@ -23,13 +24,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
         public LcimmsAnalysisViewModel(
             LcimmsAnalysisModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            FocusControlManager focusControlManager) {
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
-
+            FocusControlManager focusControlManager,
+            IMessageBroker broker) {
             if (focusControlManager is null) {
                 throw new ArgumentNullException(nameof(focusControlManager));
             }
@@ -44,13 +41,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
             var (rtmzPeakFocusAction, rtmzPeakFocused) = focusControlManager.Request();
             var brush = Observable.Return(model.Brush);
-            RtMzPlotViewModel = new AnalysisPeakPlotViewModel(model.RtMzPlotModel, rtmzPeakFocusAction, rtmzPeakFocused).AddTo(Disposables);
+            RtMzPlotViewModel = new AnalysisPeakPlotViewModel(model.RtMzPlotModel, rtmzPeakFocusAction, rtmzPeakFocused, broker).AddTo(Disposables);
             RtEicViewModel = new EicViewModel(
                 model.RtEicModel,
                 horizontalAxis: RtMzPlotViewModel.HorizontalAxis).AddTo(Disposables);
 
             var (dtmzPeakFocusAction, dtmzPeakFocused) = focusControlManager.Request();
-            DtMzPlotViewModel = new AnalysisPeakPlotViewModel(model.DtMzPlotModel, dtmzPeakFocusAction, dtmzPeakFocused).AddTo(Disposables);
+            DtMzPlotViewModel = new AnalysisPeakPlotViewModel(model.DtMzPlotModel, dtmzPeakFocusAction, dtmzPeakFocused, broker).AddTo(Disposables);
             DtEicViewModel = new EicViewModel(
                 model.DtEicModel,
                 horizontalAxis: DtMzPlotViewModel.HorizontalAxis).AddTo(Disposables);
@@ -68,7 +65,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 horizontalAxis: RtMzPlotViewModel.VerticalAxis).AddTo(Disposables);
             PeakTableViewModel = new LcimmsAnalysisPeakTableViewModel(
                 model.PeakTableModel,
-                Observable.Return(model.EicLoader),
+                Observable.Return(model.DtEicLoader),
                 PeakSpotNavigatorViewModel,
                 SetUnknownCommand,
                 UndoManagerViewModel)
@@ -78,9 +75,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 .ToReactiveCommand()
                 .WithSubscribe(() =>
                 {
-                    using (var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value, null)) {
-                        compoundSearchService.ShowDialog(vm);
-                    }
+                    using var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value);
+                    broker.Publish<ICompoundSearchViewModel>(vm);
                 }).AddTo(Disposables);
 
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);

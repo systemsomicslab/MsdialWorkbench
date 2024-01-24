@@ -322,21 +322,6 @@ namespace CompMs.App.Msdial.Model.DataObj
         // IPeakSpotModel
         IMSIonProperty IPeakSpotModel.MSIon => innerModel;
         IMoleculeProperty IPeakSpotModel.Molecule => innerModel;
-
-        public void SetConfidence(MoleculeMsReference reference, MsScanMatchResult result) {
-            DataAccess.SetMoleculeMsPropertyAsConfidence(innerModel, reference);
-            MatchResultsModel.RemoveManuallyResults();
-            MatchResultsModel.AddResult(result);
-            OnPropertyChanged(string.Empty);
-        }
-
-        public void SetUnsettled(MoleculeMsReference reference, MsScanMatchResult result) {
-            DataAccess.SetMoleculeMsPropertyAsUnsettled(innerModel, reference);
-            MatchResultsModel.RemoveManuallyResults();
-            MatchResultsModel.AddResult(result);
-            OnPropertyChanged(string.Empty);
-        }
-
         public void SetUnknown(UndoManager undoManager) {
             IDoCommand command = new SetUnknownDoCommand(this, MatchResultsModel);
             command.Do();

@@ -26,18 +26,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
     internal sealed class LcimmsAlignmentViewModel : ViewModelBase, IAlignmentResultViewModel
     {
         private readonly LcimmsAlignmentModel _model;
-        private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
 
         public LcimmsAlignmentViewModel(
             LcimmsAlignmentModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             FocusControlManager focusControlManager,
             IMessageBroker broker) {
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
@@ -47,7 +42,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             }
 
             _model = model;
-            _compoundSearchService = compoundSearchService;
             _peakSpotTableService = peakSpotTableService;
 
             UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
@@ -63,8 +57,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             Ms1Spots = CollectionViewSource.GetDefaultView(_model.Ms1Spots);
 
             var (peakPlotFocusAction, peakPlotFocused) = focusControlManager.Request();
-            RtMzPlotViewModel = new AlignmentPeakPlotViewModel(model.RtMzPlotModel, peakPlotFocusAction, peakPlotFocused).AddTo(Disposables);
-            DtMzPlotViewModel = new AlignmentPeakPlotViewModel(model.DtMzPlotModel, peakPlotFocusAction, peakPlotFocused).AddTo(Disposables);
+            RtMzPlotViewModel = new AlignmentPeakPlotViewModel(model.RtMzPlotModel, peakPlotFocusAction, peakPlotFocused, broker).AddTo(Disposables);
+            DtMzPlotViewModel = new AlignmentPeakPlotViewModel(model.DtMzPlotModel, peakPlotFocusAction, peakPlotFocused, broker).AddTo(Disposables);
 
             var (msSpectrumViewFocusAction, msSpectrumViewFocused) = focusControlManager.Request();
             Ms2SpectrumViewModel = new AlignmentMs2SpectrumViewModel(model.Ms2SpectrumModel, broker, focusAction: msSpectrumViewFocusAction, isFocused: msSpectrumViewFocused).AddTo(Disposables);
@@ -92,9 +86,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             }.CombineLatestValuesAreAllFalse()
             .ToReactiveCommand()
             .WithSubscribe(() => {
-                using (var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value, SetUnknownCommand)) {
-                    compoundSearchService.ShowDialog(vm);
-                }
+                using var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value);
+                broker.Publish<ICompoundSearchViewModel>(vm);
             })
             .AddTo(Disposables);
 
