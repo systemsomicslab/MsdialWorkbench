@@ -71,14 +71,14 @@
                 </chart:MultiChart>
             </TabItem>
             <TabItem Header="Heght vs. S/N">
-                <chart:SimpleChartControl HorizontalAxis="{Binding Distribution.Value.HorizontalAxis}"
+                <chart:MultiChart HorizontalAxis="{Binding Distribution.Value.HorizontalAxis}"
                                           VerticalAxis="{Binding Distribution.Value.VerticalAxis}"
                                           HorizontalTitle="S/N"
                                           VerticalTitle="Height"
                                           GraphTitle="Height vs. S/N"
                                           BorderBrush="Black"
                                           Background="WhiteSmoke">
-                    <chart:SimpleChartControl.ContextMenu>
+                    <chart:MultiChart.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Save image as..">
                                 <MenuItem Header="Save as emf"
@@ -97,18 +97,19 @@
                                           CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                             </MenuItem>
                         </ContextMenu>
-                    </chart:SimpleChartControl.ContextMenu>
+                    </chart:MultiChart.ContextMenu>
 
                     <chart:ScatterControlSlim ItemsSource="{Binding Distribution.Value.Peaks}"
                                               HorizontalProperty="PeakShape.SignalToNoise"
                                               VerticalProperty="PeakFeature.PeakHeightTop"
                                               DataType="{x:Type dataobj:ChromatogramPeakFeature}"
-                                              PointBrush="{Binding Distribution.Value.Brush}">
+                                              PointBrush="{Binding Distribution.Value.Brush}"
                         <chart:ScatterControlSlim.ToolTip>
                             <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                                 <TextBlock>
                                     <TextBlock.Text>
-                                        <MultiBinding StringFormat="m/z: {0}, Rt: {1}">
+                                        <MultiBinding StringFormat="Spectrum ID: {0}, m/z: {1}, RT: {2}">
+                                            <Binding  Path="FocusedItem.MS1RawSpectrumIdTop"/>
                                             <Binding  Path="FocusedItem.PeakFeature.Mass"/>
                                             <Binding  Path="FocusedItem.PeakFeature.ChromXsTop.RT.Value"/>
                                         </MultiBinding>
@@ -117,7 +118,23 @@
                             </ToolTip>
                         </chart:ScatterControlSlim.ToolTip>
                     </chart:ScatterControlSlim>
-                </chart:SimpleChartControl>
+
+                    <chart:HorizontalLine Item="{Binding Distribution.Value.NoiseMax}"
+                                          VerticalProperty="PeakFeature.PeakHeightTop"
+                                          DataType="{x:Type dataobj:ChromatogramPeakFeature}">
+                        <chart:HorizontalLine.LineBrush>
+                            <design:ConstantBrushMapper Brush="Lime"/>
+                        </chart:HorizontalLine.LineBrush>
+                    </chart:HorizontalLine>
+
+                    <chart:HorizontalLine Item="{Binding Distribution.Value.PeakMin}"
+                                          VerticalProperty="PeakFeature.PeakHeightTop"
+                                          DataType="{x:Type dataobj:ChromatogramPeakFeature}">
+                        <chart:HorizontalLine.LineBrush>
+                            <design:ConstantBrushMapper Brush="Orange"/>
+                        </chart:HorizontalLine.LineBrush>
+                    </chart:HorizontalLine>
+                </chart:MultiChart>
             </TabItem>
         </TabControl>
     </Grid>

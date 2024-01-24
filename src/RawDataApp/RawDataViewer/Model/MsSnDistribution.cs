@@ -16,8 +16,8 @@ namespace CompMs.App.RawDataViewer.Model
         public MsSnDistribution(IReadOnlyList<ChromatogramPeakFeature> peaks) {
             Peaks = (peaks as IList<ChromatogramPeakFeature>) ?? peaks.ToArray();
 
-            NoiseMax = peaks.Where(peak => peak.PeakShape.SignalToNoise < 10d).DefaultIfEmpty().Max(item => item?.PeakShape.SignalToNoise) ?? -1;
-            PeakMin = peaks.Where(peak => peak.PeakShape.SignalToNoise >= 10d).DefaultIfEmpty().Min(item => item?.PeakShape.SignalToNoise) ?? -1;
+            NoiseMax = peaks.Where(peak => peak.PeakShape.SignalToNoise < 10d).OrderByDescending(item => item?.PeakFeature.PeakHeightTop).FirstOrDefault();
+            PeakMin = peaks.Where(peak => peak.PeakShape.SignalToNoise >= 10d).OrderBy(item => item?.PeakFeature.PeakHeightTop).FirstOrDefault();
 
             HorizontalAxis = new LogScaleAxisManager<double>(peaks.Select(peak => (double)peak.PeakShape.SignalToNoise).ToArray(), new ConstantMargin(30), base_: 10).AddTo(Disposables);
             VerticalAxis = new LogScaleAxisManager<double>(peaks.Select(peak => peak.PeakFeature.PeakHeightTop).ToArray(), new ConstantMargin(30), base_: 10).AddTo(Disposables);
@@ -31,7 +31,7 @@ namespace CompMs.App.RawDataViewer.Model
 
         public IBrushMapper<ChromatogramPeakFeature> Brush { get; }
 
-        public double NoiseMax { get; }
-        public double PeakMin { get; }
+        public ChromatogramPeakFeature NoiseMax { get; }
+        public ChromatogramPeakFeature PeakMin { get; }
     }
 }
