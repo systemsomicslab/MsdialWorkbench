@@ -1,7 +1,7 @@
 ﻿using CompMs.App.Msdial.Dto;
 using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Properties;
 using CompMs.App.Msdial.Utility;
-using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
@@ -170,21 +170,21 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public AsyncReactiveCommand SaveProjectCommand { get; }
         public AsyncReactiveCommand SaveAsProjectCommand { get; }
 
-        public DelegateCommand GoToTutorialCommand => _goToTutorialCommand ?? (_goToTutorialCommand = new DelegateCommand(GoToTutorial));
+        public DelegateCommand GoToTutorialCommand => _goToTutorialCommand ??= new DelegateCommand(GoToTutorial);
         private DelegateCommand _goToTutorialCommand;
 
         private void GoToTutorial() {
-            System.Diagnostics.Process.Start("https://mtbinfo-team.github.io/mtbinfo.github.io/MS-DIAL/tutorial.html");
+            System.Diagnostics.Process.Start(Resources.TUTORIAL_URI);
         }
 
-        public DelegateCommand GoToLicenceCommand => _goToLicenceCommand ?? (_goToLicenceCommand = new DelegateCommand(GoToLicence));
+        public DelegateCommand GoToLicenceCommand => _goToLicenceCommand ??= new DelegateCommand(GoToLicence);
         private DelegateCommand _goToLicenceCommand;
 
         private void GoToLicence() {
             System.Diagnostics.Process.Start("http://prime.psc.riken.jp/compms/licence/main.html");
         }
 
-        public DelegateCommand ShowAboutCommand => _showAboutCommand ?? (_showAboutCommand = new DelegateCommand(ShowAbout));
+        public DelegateCommand ShowAboutCommand => _showAboutCommand ??= new DelegateCommand(ShowAbout);
         private DelegateCommand _showAboutCommand;
 
         private void ShowAbout() {
