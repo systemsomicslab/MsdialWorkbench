@@ -8,6 +8,12 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+    paths-ignore:
+      - .gitignore
+      - CODE_OF_CONDUCT.md
+      - LGPL.txt
+      - README.md
+      - THIRD-PARTY-LICENSE-README.md
 
 jobs:
   setup:
