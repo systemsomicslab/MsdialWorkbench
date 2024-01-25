@@ -14,7 +14,7 @@ namespace CompMs.App.Msdial.Model.Imaging
 {
     internal sealed class ImagingRoiModel : DisposableModelBase
     {
-        public ImagingRoiModel(string id, RoiModel roi, RawSpectraOnPixels rawSpectraOnPixels, IEnumerable<ChromatogramPeakFeatureModel> peaks, IObservable<ChromatogramPeakFeatureModel> selectedPeak) {
+        public ImagingRoiModel(string id, RoiModel roi, RawSpectraOnPixels rawSpectraOnPixels, IEnumerable<ChromatogramPeakFeatureModel> peaks, IObservable<ChromatogramPeakFeatureModel?> selectedPeak) {
             Id = id;
             Roi = roi ?? throw new ArgumentNullException(nameof(roi));
 

@@ -14,7 +14,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
 
         public AlignmentExportGroupViewModel(AlignmentExportGroupModel model) {
             _model = model ?? throw new System.ArgumentNullException(nameof(model));
-            Format = model.ExportMethod.Format;
+            _format = model.ExportMethod.Format;
             SpectraType = model.SpectraType;
             IsLongFormat = model.ExportMethod.IsLongFormat;
             TrimContentToExcelLimit = model.ExportMethod.TrimToExcelLimit;

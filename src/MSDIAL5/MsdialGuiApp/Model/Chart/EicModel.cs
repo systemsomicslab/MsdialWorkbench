@@ -15,7 +15,7 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class EicModel : DisposableModelBase
     {
-        private EicModel(IReadOnlyReactiveProperty<PeakChromatogram> chromatogram_, ReadOnlyReactivePropertySlim<bool> itemLoaded, string graphTitle, string horizontalTitle, string verticalTitle) {
+        private EicModel(IReadOnlyReactiveProperty<PeakChromatogram?> chromatogram_, ReadOnlyReactivePropertySlim<bool> itemLoaded, string graphTitle, string horizontalTitle, string verticalTitle) {
             GraphTitle = graphTitle;
             HorizontalTitle = horizontalTitle;
             VerticalTitle = verticalTitle;
@@ -25,10 +25,10 @@ namespace CompMs.App.Msdial.Model.Chart
             Chromatogram = chromatogram_;
             ItemLoaded = itemLoaded;
             ChromRangeSource = chromatogram_.Select(chromatogram => chromatogram?.GetTimeRange() ?? new Range(0d, 1d))
-                .ToReadOnlyReactivePropertySlim()
+                .ToReadOnlyReactivePropertySlim(new Range(0d, 1d))
                 .AddTo(Disposables);
             AbundanceRangeSource = chromatogram_.Select(chromatogram => chromatogram?.GetAbundanceRange() ?? new Range(0d, 1d))
-                .ToReadOnlyReactivePropertySlim()
+                .ToReadOnlyReactivePropertySlim(new Range(0d, 1d))
                 .AddTo(Disposables);
             chromatogram_.Subscribe(chromatogram => GraphTitle = chromatogram?.Description ?? string.Empty).AddTo(Disposables);
         }
@@ -42,7 +42,7 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalProperty = nameof(PeakItem.Time);
             VerticalProperty = nameof(PeakItem.Intensity);
 
-            var sources = targetSource.SelectSwitch(t => Observable.FromAsync(token => loader.LoadChromatogramAsync(t, token)));
+            var sources = targetSource.DefaultIfNull(t => Observable.FromAsync(token => loader.LoadChromatogramAsync(t, token)), Observable.Never<PeakChromatogram>()).Switch();
             ReactiveProperty<PeakChromatogram> chromatogram_ = sources
                 .ToReactiveProperty(loader.EmptyChromatogram)
                 .AddTo(Disposables);
@@ -57,10 +57,10 @@ namespace CompMs.App.Msdial.Model.Chart
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            ChromRangeSource = Chromatogram.Select(chromatogram => chromatogram.GetTimeRange())
+            ChromRangeSource = Chromatogram.Select(chromatogram => chromatogram?.GetTimeRange() ?? new Range(0d, 1d))
                 .ToReadOnlyReactivePropertySlim(new Range(0d, 1d))
                 .AddTo(Disposables);
-            AbundanceRangeSource = Chromatogram.Select(chromatogram => chromatogram.GetAbundanceRange())
+            AbundanceRangeSource = Chromatogram.Select(chromatogram => chromatogram?.GetAbundanceRange() ?? new Range(0d, 1d))
                 .ToReadOnlyReactivePropertySlim(new Range(0d, 1d))
                 .AddTo(Disposables);
 
@@ -74,7 +74,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public ReadOnlyReactivePropertySlim<bool> ItemLoaded { get; }
 
-        public IReadOnlyReactiveProperty<PeakChromatogram> Chromatogram { get; }
+        public IReadOnlyReactiveProperty<PeakChromatogram?> Chromatogram { get; }
 
         public IObservable<Range> ChromRangeSource { get; }
         public IObservable<Range> AbundanceRangeSource { get; }
@@ -115,18 +115,18 @@ namespace CompMs.App.Msdial.Model.Chart
 
         internal class Builder {
             private readonly string _graphTitle, _horizontalTitle, _verticalTitle;
-            private readonly List<IConnectableObservable<(PeakChromatogram Chromatogram, bool Loaded)>> _sources; 
+            private readonly List<IConnectableObservable<(PeakChromatogram? Chromatogram, bool Loaded)>> _sources; 
 
             public Builder(string graphTitle, string horizontalTitle, string verticalTitle)
             {
                 _graphTitle = graphTitle;
                 _horizontalTitle = horizontalTitle;
                 _verticalTitle = verticalTitle;
-                _sources = new List<IConnectableObservable<(PeakChromatogram, bool)>>();
+                _sources = new List<IConnectableObservable<(PeakChromatogram?, bool)>>();
             }
 
             public Builder Append<T>(IObservable<T> targetSource, IChromatogramLoader<T> loader) {
-                var source = targetSource.SelectSwitch(t => Observable.FromAsync(token => loader.LoadChromatogramAsync(t, token)).Select(c => (c, true)).StartWith((null, false))).Publish();
+                var source = targetSource.SelectSwitch(t => Observable.FromAsync(token => loader.LoadChromatogramAsync(t, token)).Select(c => ((PeakChromatogram?)c, true)).StartWith((null, false))).Publish();
                 _sources.Add(source);
                 return this;
             }

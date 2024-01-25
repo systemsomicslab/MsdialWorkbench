@@ -68,7 +68,7 @@ namespace CompMs.App.Msdial.Model.Export
         MrmprobsExportBaseParameter ExportParameter { get; }
 
         CompoundSearcherCollection CompoundSearchers { get; }
-        CompoundSearcher SelectedCompoundSearcher { get; set; }
+        CompoundSearcher? SelectedCompoundSearcher { get; set; }
     }
 
     internal sealed class AlignmentSpotExportMrmprobsUsecase : BindableBase, IExportMrmprobsUsecase
@@ -76,7 +76,7 @@ namespace CompMs.App.Msdial.Model.Export
         private readonly AlignmentSpotSource _spots;
         private readonly AlignmentFileBeanModel _alignmentFile;
         private readonly EsiMrmprobsExporter _exporter;
-        private readonly IReadOnlyReactiveProperty<AlignmentSpotPropertyModel> _target;
+        private readonly IReadOnlyReactiveProperty<AlignmentSpotPropertyModel?> _target;
 
         public AlignmentSpotExportMrmprobsUsecase(
             MrmprobsExportBaseParameter parameter,
@@ -84,13 +84,13 @@ namespace CompMs.App.Msdial.Model.Export
             AlignmentFileBeanModel alignmentFile,
             CompoundSearcherCollection compoundSearchers,
             EsiMrmprobsExporter exporter,
-            IReadOnlyReactiveProperty<AlignmentSpotPropertyModel> target)
+            IReadOnlyReactiveProperty<AlignmentSpotPropertyModel?> target)
         {
             ExportParameter = parameter;
             _spots = spots;
             _alignmentFile = alignmentFile;
             CompoundSearchers = compoundSearchers;
-            SelectedCompoundSearcher = compoundSearchers.Items.FirstOrDefault();
+            _selectedCompoundSearcher = compoundSearchers.Items.FirstOrDefault();
             _exporter = exporter;
             _target = target;
         }
@@ -99,11 +99,11 @@ namespace CompMs.App.Msdial.Model.Export
 
         public CompoundSearcherCollection CompoundSearchers { get; }
 
-        public CompoundSearcher SelectedCompoundSearcher {
+        public CompoundSearcher? SelectedCompoundSearcher {
             get => _selectedCompoundSearcher;
             set => SetProperty(ref _selectedCompoundSearcher, value);
         }
-        private CompoundSearcher _selectedCompoundSearcher;
+        private CompoundSearcher? _selectedCompoundSearcher;
 
         public async Task BatchExportAsync(Stream stream, CancellationToken token) {
             var loader = _alignmentFile.CreateTemporaryMSDecLoader();
@@ -145,7 +145,7 @@ namespace CompMs.App.Msdial.Model.Export
         private readonly IReadOnlyList<ChromatogramPeakFeatureModel> _peaks;
         private readonly AnalysisFileBeanModel _analysisFile;
         private readonly EsiMrmprobsExporter _exporter;
-        private readonly IReadOnlyReactiveProperty<ChromatogramPeakFeatureModel> _target;
+        private readonly IReadOnlyReactiveProperty<ChromatogramPeakFeatureModel?> _target;
 
         public ChromatogramPeakExportMrmprobsUsecase(
             MrmprobsExportBaseParameter parameter,
@@ -153,7 +153,7 @@ namespace CompMs.App.Msdial.Model.Export
             AnalysisFileBeanModel analysisFile,
             CompoundSearcherCollection compoundSearchers,
             EsiMrmprobsExporter exporter,
-            IReadOnlyReactiveProperty<ChromatogramPeakFeatureModel> target)
+            IReadOnlyReactiveProperty<ChromatogramPeakFeatureModel?> target)
         {
             ExportParameter = parameter;
             _peaks = peaks;
@@ -168,11 +168,11 @@ namespace CompMs.App.Msdial.Model.Export
 
         public CompoundSearcherCollection CompoundSearchers { get; }
 
-        public CompoundSearcher SelectedCompoundSearcher {
+        public CompoundSearcher? SelectedCompoundSearcher {
             get => _selectedCompoundSearcher;
             set => SetProperty(ref _selectedCompoundSearcher, value);
         }
-        private CompoundSearcher _selectedCompoundSearcher;
+        private CompoundSearcher? _selectedCompoundSearcher;
 
         public async Task BatchExportAsync(Stream stream, CancellationToken token) {
             var spots = _peaks.Select(s => s.InnerModel).ToArray();

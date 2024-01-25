@@ -23,7 +23,7 @@ namespace CompMs.App.Msdial.Model.Imms
     {
         public ImmsAlignmentSpotTableModel(
             IReadOnlyList<AlignmentSpotPropertyModel> spots,
-            IReactiveProperty<AlignmentSpotPropertyModel> target,
+            IReactiveProperty<AlignmentSpotPropertyModel?> target,
             IObservable<IBrushMapper<BarItem>> classBrush,
             FileClassPropertiesModel classProperties,
             IObservable<IBarItemsLoader> barItemsLoader,
@@ -45,7 +45,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
     internal sealed class ImmsAnalysisPeakTableModel : AnalysisPeakSpotTableModelBase, IImmsPeakSpotTableModel
     {
-        public ImmsAnalysisPeakTableModel(IReadOnlyList<ChromatogramPeakFeatureModel> peaks, IReactiveProperty<ChromatogramPeakFeatureModel> target, PeakSpotNavigatorModel peakSpotNavigatorModel)
+        public ImmsAnalysisPeakTableModel(IReadOnlyList<ChromatogramPeakFeatureModel> peaks, IReactiveProperty<ChromatogramPeakFeatureModel?> target, PeakSpotNavigatorModel peakSpotNavigatorModel)
             : base(peaks, target, peakSpotNavigatorModel) {
             MassMin = peaks.Select(s => s.Mass).DefaultIfEmpty().Min();
             MassMax = peaks.Select(s => s.Mass).DefaultIfEmpty().Max();

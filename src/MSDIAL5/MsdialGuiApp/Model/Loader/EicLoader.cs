@@ -147,7 +147,7 @@ namespace CompMs.App.Msdial.Model.Loader
 
         protected virtual List<PeakItem> LoadEicFocusedCore(ChromatogramPeakFeatureModel target, List<PeakItem> eic) {
             return new List<PeakItem> {
-                eic.Argmin(peak => Math.Abs(target.ChromXValue.Value - peak.Time))
+                eic.Argmin(peak => Math.Abs((target.ChromXValue ?? double.MaxValue) - peak.Time))
             };
         }
 

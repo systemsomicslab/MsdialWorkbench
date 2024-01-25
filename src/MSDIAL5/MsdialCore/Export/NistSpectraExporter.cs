@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Export
 {
-    public class NistSpectraExporter<T> : ISpectraExporter, IDisposable, IObserver<T> where T: IMoleculeProperty, IChromatogramPeak, IIonProperty, IAnnotatedObject
+    public sealed class NistSpectraExporter<T> : ISpectraExporter, IDisposable, IObserver<T> where T: IMoleculeProperty, IChromatogramPeak, IIonProperty, IAnnotatedObject
     {
         private IDisposable _unsubscriber;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;

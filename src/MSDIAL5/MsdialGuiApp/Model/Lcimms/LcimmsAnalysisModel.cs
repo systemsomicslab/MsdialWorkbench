@@ -109,7 +109,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     peakRanges[orderedPeak] = (j, k);
                 }
             }
-            var accumulatedTarget = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
+            var accumulatedTarget = new ReactivePropertySlim<ChromatogramPeakFeatureModel?>().AddTo(Disposables);
             var target = accumulatedTarget.SkipNull()
                 .Delay(TimeSpan.FromSeconds(.05d))
                 .Select(t => {
