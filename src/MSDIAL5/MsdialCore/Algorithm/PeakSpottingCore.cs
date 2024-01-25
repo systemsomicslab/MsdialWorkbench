@@ -123,8 +123,8 @@ namespace CompMs.MsdialCore.Algorithm {
             var targetMasses = GetFocusedMassList(startMass, endMass, massStep);
             var chromPeakFeaturesArray = new List<ChromatogramPeakFeature>[targetMasses.Count];
 
-            using (var bc = new BlockingCollection<(ExtractedIonChromatogram, int)>()) {
-                numThreads = Math.Max(2, numThreads);
+            numThreads = Math.Max(2, numThreads);
+            using (var bc = new BlockingCollection<(ExtractedIonChromatogram, int)>(numThreads * 4)) {
                 var counter = 0;
                 var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, file.AcquisitionType);
                 var tasks = new Task[numThreads];
@@ -154,8 +154,10 @@ namespace CompMs.MsdialCore.Algorithm {
             return Task.Run(() =>
             {
                 foreach (var (chromatogram, index) in bc.GetConsumingEnumerable(token)) {
-                    chromPeakFeaturesArray[index] = GetChromatogramPeakFeatures_Temp2(provider, detector, chromatogram, type);
-                    report?.Invoke();
+                    using (chromatogram) {
+                        chromPeakFeaturesArray[index] = GetChromatogramPeakFeatures_Temp2(provider, detector, chromatogram, type);
+                        report?.Invoke();
+                    }
                 }
             });
         }
@@ -351,7 +353,7 @@ namespace CompMs.MsdialCore.Algorithm {
         }
 
         public List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(ExtractedIonChromatogram chromatogram, PeakDetection detector) {
-            ExtractedIonChromatogram smoothedChromatogram = chromatogram.ChromatogramSmoothing(_parameter.SmoothingMethod, _parameter.SmoothingLevel);
+            using ExtractedIonChromatogram smoothedChromatogram = chromatogram.ChromatogramSmoothing(_parameter.SmoothingMethod, _parameter.SmoothingLevel);
             var detectedPeaks = detector.PeakDetectionVS1(smoothedChromatogram);
             if (detectedPeaks == null || detectedPeaks.Count == 0) return null;
 

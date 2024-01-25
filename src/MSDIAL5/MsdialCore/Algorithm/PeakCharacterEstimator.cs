@@ -398,10 +398,9 @@ namespace CompMs.MsdialCore.Algorithm
                 var leftRt = feature.ChromXsLeft.RT.Value;
                 var rightRt = feature.ChromXsRight.RT.Value;
                 var chromatogramRange = new ChromatogramRange(leftRt, rightRt, ChromXType.RT, ChromXUnit.Min);
-                var peaks = rawSpectra.GetMs1ExtractedChromatogram_temp2(feature.Mass, param.CentroidMs1Tolerance, chromatogramRange);
-                var sPeaks = peaks.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel).AsPeakArray();
-
-                tempFeatures.Add(new ChromFeatureTemp() { Feature = feature, Peaks = sPeaks });
+                using var peaks = rawSpectra.GetMs1ExtractedChromatogram_temp2(feature.Mass, param.CentroidMs1Tolerance, chromatogramRange);
+                using var sChrom = peaks.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
+                tempFeatures.Add(new ChromFeatureTemp() { Feature = feature, Peaks = sChrom.AsPeakArray() });
             }
 
             for (int i = 0; i < tempFeatures.Count; i++) {

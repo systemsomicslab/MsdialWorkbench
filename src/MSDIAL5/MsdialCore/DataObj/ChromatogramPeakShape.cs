@@ -11,16 +11,16 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         public ChromatogramPeakShape(ChromatogramPeakShape peakShape) {
-            EstimatedNoise = EstimatedNoise;
-            SignalToNoise = SignalToNoise;
-            PeakPureValue = PeakPureValue;
-            ShapenessValue = ShapenessValue;
-            GaussianSimilarityValue = GaussianSimilarityValue;
-            IdealSlopeValue = IdealSlopeValue;
-            BasePeakValue = BasePeakValue;
-            SymmetryValue = SymmetryValue;
-            AmplitudeOrderValue = AmplitudeOrderValue;
-            AmplitudeScoreValue = AmplitudeScoreValue;
+            EstimatedNoise = peakShape.EstimatedNoise;
+            SignalToNoise = peakShape.SignalToNoise;
+            PeakPureValue = peakShape.PeakPureValue;
+            ShapenessValue = peakShape.ShapenessValue;
+            GaussianSimilarityValue = peakShape.GaussianSimilarityValue;
+            IdealSlopeValue = peakShape.IdealSlopeValue;
+            BasePeakValue = peakShape.BasePeakValue;
+            SymmetryValue = peakShape.SymmetryValue;
+            AmplitudeOrderValue = peakShape.AmplitudeOrderValue;
+            AmplitudeScoreValue = peakShape.AmplitudeScoreValue;
         }
 
 
