@@ -36,18 +36,16 @@ namespace CompMs.App.Msdial.Model.Statistics
 
         public Task ExportAlignmentResultAsync(IMessageBroker broker) {
             return Task.Run(() => {
-                var task = TaskNotification.Start($"Exporting {AlignmentFilesForExport.SelectedFile.FileName}");
-                broker.Publish(task);
-
+                var publisher = new TaskProgressPublisher(broker, $"Exporting {AlignmentFilesForExport.SelectedFile.FileName}");
+                using (publisher.Start()) {
                 var numExportFile = (double)Group.CountExportFiles(AlignmentFilesForExport.SelectedFile);
                 var count = 0;
                 void notify(string file) {
-                    broker.Publish(task.Progress(Interlocked.Increment(ref count) / numExportFile, file));
+                        publisher.Progress(Interlocked.Increment(ref count) / numExportFile, file);
                 }
                 Group.Export(AlignmentFilesForExport.SelectedFile, ExportDirectory, notify);
                 _dataExportParameter.ExportFolderPath = ExportDirectory;
-
-                broker.Publish(task.End());
+                }
             });
         }
         
