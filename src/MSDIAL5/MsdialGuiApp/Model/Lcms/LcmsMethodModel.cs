@@ -126,7 +126,26 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             ParameterExportModel = new ParameterExportModel(storage.DataBases, storage.Parameter, broker);
 
-            Notame = new Notame(peakGroup, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam);
+            var peakGroupNotame = new AlignmentExportGroupModel(
+                "Peaks",
+                new ExportMethod(analysisFiles, metadataAccessorFactory, ExportFormat.Tsv)
+                {
+                    IsLongFormat = false,
+                    TrimToExcelLimit = true,
+                },
+                new[]
+                {
+                    new ExportType("Raw data (Height)", new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, true),
+                    new ExportType("Raw data (Area)", new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", stats),
+                    new ExportType("Normalized data (Height)", new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", stats, isNormalized),
+                    new ExportType("Normalized data (Area)", new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", stats, isNormalized),
+                },
+                new[]
+                {
+                    ExportspectraType.deconvoluted,
+                },
+                peakSpotSupplyer);
+            Notame = new Notame(peakGroupNotame, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam);
         }
 
         public PeakFilterModel PeakFilterModel { get; }
