@@ -7,19 +7,20 @@ using RDotNet;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Threading.Tasks;
-using System.Threading;
 using System.IO;
+using CompMs.MsdialCore.DataObj;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Statistics
 {
     internal sealed class Notame : BindableBase
     {
-        public Notame(AlignmentExportGroupModel exportGroup, AlignmentFilesForExport alignmentFilesForExport, AlignmentPeakSpotSupplyer peakSpotSupplyer, DataExportBaseParameter dataExportParameter) {
-
-        public Notame(IAlignmentResultExportModel exportGroup, AlignmentFilesForExport alignmentFilesForExport, AlignmentPeakSpotSupplyer peakSpotSupplyer, DataExportBaseParameter dataExportParameter) {
+        public Notame(ExportMethod exportMethod, ExportType[] exportTypes, AlignmentFilesForExport alignmentFilesForExport, AlignmentPeakSpotSupplyer peakSpotSupplyer, DataExportBaseParameter dataExportParameter) {
             AlignmentFilesForExport = alignmentFilesForExport;
             PeakSpotSupplyer = peakSpotSupplyer ?? throw new ArgumentNullException(nameof(peakSpotSupplyer));
-            Group = exportGroup;
+            ExportMethod = exportMethod;
+            ExportTypes = exportTypes;
             ExportDirectory = dataExportParameter.ExportFolderPath;
         }
 
@@ -31,18 +32,23 @@ namespace CompMs.App.Msdial.Model.Statistics
         
         public AlignmentFilesForExport AlignmentFilesForExport { get; }
         public AlignmentPeakSpotSupplyer PeakSpotSupplyer { get; }
-        public IAlignmentResultExportModel Group { get; }
+        public ExportMethod ExportMethod { get; }
+        public ExportType[] ExportTypes { get; }
 
         public Task ExportAlignmentResultAsync(IMessageBroker broker) {
             return Task.Run(() => {
                 var publisher = new TaskProgressPublisher(broker, $"Exporting {AlignmentFilesForExport.SelectedFile.FileName}");
                 using (publisher.Start()) {
-                var numExportFile = (double)Group.CountExportFiles(AlignmentFilesForExport.SelectedFile);
-                var count = 0;
-                void notify(string file) {
-                        publisher.Progress(Interlocked.Increment(ref count) / numExportFile, file);
-                }
-                Group.Export(AlignmentFilesForExport.SelectedFile, ExportDirectory, notify);
+                    var alignmentFile = AlignmentFilesForExport.SelectedFile;
+                    var type = ExportTypes.FirstOrDefault(type => type.IsSelected);
+                    if (type is null) {
+                        throw new Exception("Export type (Height, Area, ...) is not selected.");
+                    }
+                    var fileName = $"{type.TargetLabel}_{((IFileBean)alignmentFile).FileID}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}";
+                    var msdecResults = alignmentFile.LoadMSDecResults();
+                    var lazyPeakSpot = new Lazy<IReadOnlyList<AlignmentSpotProperty>>(() => PeakSpotSupplyer.Supply(alignmentFile, default));
+                    ExportMethod.Export(fileName, ExportDirectory, lazyPeakSpot, msdecResults, null, new[] { type });
+                    FileName = fileName;
                 }
             });
         }

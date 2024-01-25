@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Statistics;
-using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Validator;
 using CompMs.Graphics.UI;
@@ -15,7 +14,6 @@ using System.Reactive.Linq;
 using System.ComponentModel;
 using CompMs.App.Msdial.Model.DataObj;
 using System.Threading.Tasks;
-using System;
 
 namespace CompMs.App.Msdial.ViewModel.Statistics
 {
@@ -34,15 +32,13 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
                 AlignmentFiles.MoveCurrentTo(notame.AlignmentFilesForExport.SelectedFile);
             }
 
-            Group = MapToViewModel(notame.Group);
+            ExportMethod = notame.ExportMethod;
+            ExportTypes = notame.ExportTypes;
 
-            ExportCommand = new IObservable<bool>[] {
-                Group.CanExport,
-                this.ErrorsChangedAsObservable().Select(_ => !HasValidationErrors).Prepend(!HasValidationErrors),
-            }.CombineLatestValuesAreAllTrue()
-            .ToAsyncReactiveCommand()
-            .WithSubscribe(ExportAlignmentResultAsync)
-            .AddTo(Disposables);
+            ExportCommand = this.ErrorsChangedAsObservable().Select(_ => !HasValidationErrors).Prepend(!HasValidationErrors)
+                .ToAsyncReactiveCommand()
+                .WithSubscribe(ExportAlignmentResultAsync)
+                .AddTo(Disposables);
 
             RunNotameCommand = new DelegateCommand(RunNotame);
             ShowSettingViewCommand = new DelegateCommand(ShowSettingView);
@@ -87,7 +83,8 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
         public ICollectionView AlignmentFiles { get; }
 
-        public IAlignmentResultExportViewModel Group { get; }
+        public ExportMethod ExportMethod { get; }
+        public ExportType[] ExportTypes { get; }
 
         public bool UseFilter
         {
@@ -120,25 +117,6 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         private Task ExportAlignmentResultAsync()
         {
             return _notame.ExportAlignmentResultAsync(_broker);
-        }
-
-        private static IAlignmentResultExportViewModel MapToViewModel(IAlignmentResultExportModel model)
-        {
-            switch (model)
-            {
-                case AlignmentExportGroupModel m:
-                    return new AlignmentExportGroupViewModel(m);
-                case ProteinGroupExportModel m:
-                    return new ProteinGroupExportViewModel(m);
-                case AlignmentSpectraExportGroupModel m:
-                    return new AlignmentSpectraExportGroupViewModel(m);
-                case AlignmentMatchedSpectraExportModel m:
-                    return new AlignmentMatchedSpectraExportViewModel(m);
-                case AlignmentResultMassBankRecordExportModel m:
-                    return new AlignmentResultMassBankRecordExportViewModel(m);
-                default:
-                    throw new NotSupportedException(model.GetType().FullName);
-            }
         }
 
         public DelegateCommand RunNotameCommand { get; }
