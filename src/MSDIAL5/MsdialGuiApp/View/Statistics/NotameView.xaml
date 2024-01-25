@@ -25,10 +25,6 @@
             <RowDefinition Height="40"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <Grid Margin="8" Grid.Row="0">
@@ -69,114 +65,49 @@
         <ContentControl Content="{Binding Group}" Margin="8" Grid.Row="2" Grid.RowSpan="4">
             <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type v:AlignmentExportGroupViewModel}">
-                    <Expander Header="{Binding Label, Mode=OneTime}" IsExpanded="{Binding IsExpanded, Mode=TwoWay}"
-                          d:IsExpanded="True">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <ItemsControl ItemsSource="{Binding Types}"
-                                      Margin="8" Grid.Row="0">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <WrapPanel/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <CheckBox Content="{Binding Label}"
-                                              IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                              IsEnabled="{Binding Enabled.Value}"
-                                              HorizontalAlignment="Left" VerticalAlignment="Center"
-                                              Margin="8,8,0,0" Width="180"/>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <ItemsControl ItemsSource="{Binding Types}"
+                                  Margin="8" Grid.Row="0">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <RadioButton Content="{Binding Label}"
+                                                 IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                 IsEnabled="{Binding Enabled.Value}"
+                                                 HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                 Margin="8,8,0,0" Width="180"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Bottom"
+                                Margin="8"
+                                Height="30"
+                                Grid.Row="1">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Export format:"
+                                       VerticalAlignment="Center"
+                                       Margin="8,0,0,0"/>
+                                <ComboBox ItemsSource="{Binding Formats, Mode=OneTime}"
+                                      DisplayMemberPath="Label"
+                                      SelectedValue="{Binding Format, Mode=OneWayToSource}"
+                                      SelectedIndex="0"
+                                      VerticalContentAlignment="Center"
+                                      Width="100" Margin="8,0,0,0"/>
+                            </StackPanel>
 
                             <StackPanel Orientation="Horizontal"
-                                    VerticalAlignment="Bottom"
-                                    Margin="8"
-                                    Height="30"
-                                    Grid.Row="1">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Export format:"
-                                           VerticalAlignment="Center"
-                                           Margin="8,0,0,0"/>
-                                    <ComboBox ItemsSource="{Binding Formats, Mode=OneTime}"
-                                          DisplayMemberPath="Label"
-                                          SelectedValue="{Binding Format, Mode=OneWayToSource}"
-                                          SelectedIndex="0"
-                                          VerticalContentAlignment="Center"
-                                          Width="100" Margin="8,0,0,0"/>
-                                </StackPanel>
-
-                                <StackPanel Orientation="Horizontal"
-                                        Margin="8,0,0,0">
-                                    <TextBlock Text="Spectra type:"
-                                           VerticalAlignment="Center"
-                                           Margin="8,0,0,0"/>
-                                    <ComboBox ItemsSource="{Binding SpectraTypes, Mode=OneTime}"
-                                          SelectedValue="{Binding SpectraType, Mode=OneWayToSource}"
-                                          SelectedIndex="0"
-                                          VerticalContentAlignment="Center"
-                                          Width="100" Margin="8,0,0,0"/>
-                                </StackPanel>
-                            </StackPanel>
-                            <StackPanel VerticalAlignment="Bottom"
-                                    Margin="8"
-                                    Height="30"
-                                    Grid.Row="2">
-                                <CheckBox Content="Long format" IsChecked="{Binding IsLongFormat, Mode=TwoWay}"
-                                      ToolTip="Output in Long Format, which is easy to read in R and other tools."/>
-                                <CheckBox Content="Trim content for excel"
-                                      IsChecked="{Binding TrimContentToExcelLimit, Mode=TwoWay}"
-                                      ToolTip="Trim the FIELD value to the 32767 characters that can be written in an Excel cell."/>
-                            </StackPanel>
-                        </Grid>
-                    </Expander>
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type v:ProteinGroupExportViewModel}">
-                    <Expander Header="Proteins" IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
-                        <Grid>
-                            <CheckBox Content="Protein assembled"
-                                  IsChecked="{Binding IsSelected.Value, Mode=TwoWay}"
-                                  HorizontalAlignment="Left" VerticalAlignment="Center"
-                                  Margin="8,8,0,0" Width="180"/>
-                        </Grid>
-                    </Expander>
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type v:AlignmentSpectraExportGroupViewModel}">
-                    <Expander Header="Spectra" IsExpanded="{Binding IsExpanded, Mode=TwoWay}" d:IsExpanded="True">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <ItemsControl ItemsSource="{Binding Formats}"
-                                      Margin="8">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <WrapPanel/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate DataType="{x:Type m:AlignmentSpectraExportFormat}">
-                                        <CheckBox Content="{Binding Label}"
-                                              ContentStringFormat="MS/MS spectra ({0})"
-                                              IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                              HorizontalAlignment="Left" VerticalAlignment="Center"
-                                              Margin="8,8,0,0" Width="180"/>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                            <StackPanel Orientation="Horizontal"
-                                    VerticalAlignment="Bottom"
-                                    Margin="8"
-                                    Height="30"
-                                    Grid.Row="1">
+                                    Margin="8,0,0,0">
                                 <TextBlock Text="Spectra type:"
                                        VerticalAlignment="Center"
                                        Margin="8,0,0,0"/>
@@ -186,38 +117,8 @@
                                       VerticalContentAlignment="Center"
                                       Width="100" Margin="8,0,0,0"/>
                             </StackPanel>
-                            <CheckBox Content="Export peaks individually" IsChecked="{Binding ExportIndividually.Value}"
-                                  Margin="16,8,8,8" Height="30" Grid.Row="2"/>
-                        </Grid>
-                    </Expander>
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type v:AlignmentMatchedSpectraExportViewModel}">
-                    <Expander Header="Deconvoluted spectra and reference" IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
-                        <Grid>
-                            <CheckBox Content="XML"
-                                  IsChecked="{Binding IsSelected.Value, Mode=TwoWay}"
-                                  HorizontalAlignment="Left" VerticalAlignment="Center"
-                                  Margin="8,8,0,0" Width="180"/>
-                        </Grid>
-                    </Expander>
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type v:AlignmentResultMassBankRecordExportViewModel}">
-                    <Expander Header="MassBank" IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <CheckBox Content="Record"
-                                  IsChecked="{Binding IsSelected.Value, Mode=TwoWay}"
-                                  HorizontalAlignment="Left" VerticalAlignment="Center"
-                                  Margin="8,8,0,0" Width="180"/>
-                            <StackPanel Orientation="Horizontal" Grid.Row="1">
-                                <TextBlock Text="ContributorID:" Margin="8,0"/>
-                                <TextBox Text="{Binding ContributorID.Value}" Width="120"/>
-                            </StackPanel>
-                        </Grid>
-                    </Expander>
+                        </StackPanel>
+                    </Grid>
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>
