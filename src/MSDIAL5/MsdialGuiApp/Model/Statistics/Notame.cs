@@ -14,12 +14,11 @@ namespace CompMs.App.Msdial.Model.Statistics
 {
     internal sealed class Notame : BindableBase
     {
-        private readonly DataExportBaseParameter _dataExportParameter;
+        public Notame(AlignmentExportGroupModel exportGroup, AlignmentFilesForExport alignmentFilesForExport, AlignmentPeakSpotSupplyer peakSpotSupplyer, DataExportBaseParameter dataExportParameter) {
 
         public Notame(IAlignmentResultExportModel exportGroup, AlignmentFilesForExport alignmentFilesForExport, AlignmentPeakSpotSupplyer peakSpotSupplyer, DataExportBaseParameter dataExportParameter) {
             AlignmentFilesForExport = alignmentFilesForExport;
             PeakSpotSupplyer = peakSpotSupplyer ?? throw new ArgumentNullException(nameof(peakSpotSupplyer));
-            _dataExportParameter = dataExportParameter;
             Group = exportGroup;
             ExportDirectory = dataExportParameter.ExportFolderPath;
         }
@@ -44,7 +43,6 @@ namespace CompMs.App.Msdial.Model.Statistics
                         publisher.Progress(Interlocked.Increment(ref count) / numExportFile, file);
                 }
                 Group.Export(AlignmentFilesForExport.SelectedFile, ExportDirectory, notify);
-                _dataExportParameter.ExportFolderPath = ExportDirectory;
                 }
             });
         }
