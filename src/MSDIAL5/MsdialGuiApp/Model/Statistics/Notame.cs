@@ -2,15 +2,15 @@ using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.CommonMVVM;
 using CompMs.Common.Enum;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using RDotNet;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.Threading.Tasks;
-using System.IO;
-using CompMs.MsdialCore.DataObj;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Statistics
 {

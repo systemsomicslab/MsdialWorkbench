@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Export;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Validator;
@@ -6,14 +7,13 @@ using CompMs.Graphics.UI;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Windows.Input;
-using System.Windows.Data;
 using System.Linq;
 using System.Reactive.Linq;
-using System.ComponentModel;
-using CompMs.App.Msdial.Model.DataObj;
 using System.Threading.Tasks;
+using System.Windows.Data;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Statistics
 {
