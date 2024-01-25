@@ -54,7 +54,7 @@ namespace CompMs.MsdialCore.Export
                 // "m/z left", "m/z", "m/z right",
                 "Height",
                 "Area",
-                // "Model masses",
+                "Model masses",
                 "Adduct",
                 "Isotope",
                 "Comment",
@@ -104,7 +104,7 @@ namespace CompMs.MsdialCore.Export
                 // "m/z left", "m/z", "m/z right",
                 { "Height", string.Format("{0:0}", feature.PeakHeightTop) },
                 { "Area", string.Format("{0:0}", feature.PeakAreaAboveZero) },
-                //{ "Model masses", string.Join(" ", msdec.ModelMasses) },
+                { "Model masses", string.Join(" ", msdec.ModelMasses) },
                 { "Adduct",  feature.AdductType?.AdductIonName ?? "null" },
                 { "Isotope",  feature.PeakCharacter.IsotopeWeightNumber.ToString() },
                 { "Comment",  comment},
@@ -146,7 +146,18 @@ namespace CompMs.MsdialCore.Export
             if (spectrum.IsEmptyOrNull()) {
                 return "null";
             }
-            return string.Join(";", spectrum.Select(peak => string.Format("{0:F5} {1:F0}", peak.Mass, peak.Intensity)));
+            var strSpectrum = string.Join(";", spectrum.Select(peak => string.Format("{0:F5} {1:F0}", peak.Mass, peak.Intensity)));
+            if (strSpectrum.Length < ExportConstants.EXCEL_CELL_SIZE_LIMIT) {
+                return strSpectrum;
+            }
+            var builder = new System.Text.StringBuilder();
+            foreach (var peak in spectrum) {
+                if (builder.Length > ExportConstants.EXCEL_CELL_SIZE_LIMIT) {
+                    break;
+                }
+                builder.Append(string.Format("{0:F5}:{1:F0} ", peak.Mass, peak.Intensity));
+            }
+            return builder.ToString();
         }
 
         protected static string UnknownIfEmpty(string value) => string.IsNullOrEmpty(value) ? "Unknown" : value;
