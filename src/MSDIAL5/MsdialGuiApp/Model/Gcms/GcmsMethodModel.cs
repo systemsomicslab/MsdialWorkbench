@@ -114,7 +114,8 @@ namespace CompMs.App.Msdial.Model.Gcms
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
             var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, };
 
-            AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam);
+
+            AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam, broker);
         }
 
         public GcmsAnalysisModel SelectedAnalysisModel {

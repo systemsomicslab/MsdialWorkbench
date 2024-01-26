@@ -44,9 +44,8 @@ namespace CompMs.App.Msdial.Model.Table
             peaks = _peakSpotFilter.FilterAnnotatedPeaks(peaks);
             foreach (var peak in peaks) {
                 var spectra = await _spectraLoader.GetMatchedSpectraMatrixsAsync(peak, peak.ScanMatchResult).ConfigureAwait(false);
-                using (var stream = File.Open(Path.Combine(directory, $"AlignmentID{peak.MasterAlignmentID:D6}.txt"), FileMode.Create, FileAccess.Write)) {
-                    spectra.Export(stream);
-                }
+                using var stream = File.Open(Path.Combine(directory, $"AlignmentID{peak.MasterAlignmentID:D6}.txt"), FileMode.Create, FileAccess.Write);
+                spectra?.Export(stream);
             }
         }
 

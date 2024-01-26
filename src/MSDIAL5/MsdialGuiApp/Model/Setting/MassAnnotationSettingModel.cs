@@ -11,10 +11,6 @@ using System.Collections.Generic;
 namespace CompMs.App.Msdial.Model.Setting
 {
     sealed class MassAnnotationSettingModel : DataBaseAnnotationSettingModelBase, IAnnotationSettingModel {
-        public MassAnnotationSettingModel() {
-
-        }
-
         public MassAnnotationSettingModel(DataBaseAnnotationSettingModelBase other)
             : base(other) {
             

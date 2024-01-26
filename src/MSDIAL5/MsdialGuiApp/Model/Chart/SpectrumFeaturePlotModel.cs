@@ -30,12 +30,12 @@ namespace CompMs.App.Msdial.Model.Chart
 
             Title = new[]
             {
-                spectra.SelectedSpectrum.Where(s => s != null)
-                    .Select(s => $"Scan: {s.Scan.ScanID} RT: {s.Scan.ChromXs.RT.Value} min Quant mass: m/z {s.QuantifiedChromatogramPeak.PeakFeature.Mass}"),
-                SelectedChromatogramPeak.Where(p => p != null)
+                spectra.SelectedSpectrum.Where(s => s is not null)
+                    .Select(s => $"Scan: {s!.Scan.ScanID} RT: {s.Scan.ChromXs.RT.Value} min Quant mass: m/z {s.QuantifiedChromatogramPeak.PeakFeature.Mass}"),
+                SelectedChromatogramPeak.Where(p => p is not null)
                     .Select(p => $"ID: {p.MasterPeakID} Scan: {p.MS1RawSpectrumIdTop} RT: {p.RT.Value} min Mass: m/z {p.Mass}"),
             }.Merge()
-            .ToReadOnlyReactivePropertySlim()
+            .ToReadOnlyReactivePropertySlim(string.Empty)
             .AddTo(Disposables);
 
             HorizontalAxis = peaks.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default).Throttle(TimeSpan.FromSeconds(.01d))
@@ -48,7 +48,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 .AddTo(Disposables);
         }
 
-        public ReactivePropertySlim<Ms1BasedSpectrumFeature> SelectedSpectrum { get; }
+        public ReactivePropertySlim<Ms1BasedSpectrumFeature?> SelectedSpectrum { get; }
         public ReadOnlyObservableCollection<Ms1BasedSpectrumFeature> Spectra { get; }
         public ReactivePropertySlim<ChromatogramPeakFeatureModel> SelectedChromatogramPeak { get; }
         public ReadOnlyObservableCollection<ChromatogramPeakFeatureModel> ChromatogramPeaks { get; }

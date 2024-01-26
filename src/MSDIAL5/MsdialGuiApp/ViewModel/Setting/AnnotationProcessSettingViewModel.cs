@@ -78,9 +78,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ICommand AddNewAnnotationCommand { get; }
 
-        public DelegateCommand RemoveAnnotationCommand =>
-            removeAnnotationCommand ?? (removeAnnotationCommand = new DelegateCommand(RemoveAnnotation));
-        private DelegateCommand removeAnnotationCommand;
+        public DelegateCommand RemoveAnnotationCommand => removeAnnotationCommand ??= new DelegateCommand(RemoveAnnotation);
+        private DelegateCommand? removeAnnotationCommand;
 
         private void RemoveAnnotation() {
             if(!(SelectedAnnotation is null) && Annotations.Contains(SelectedAnnotation)) {

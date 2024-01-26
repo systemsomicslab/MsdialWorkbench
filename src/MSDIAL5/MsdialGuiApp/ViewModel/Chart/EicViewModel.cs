@@ -13,8 +13,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
     {
         public EicViewModel(
             EicModel model,
-            IAxisManager<double> horizontalAxis = null,
-            IAxisManager<double> verticalAxis = null) {
+            IAxisManager<double>? horizontalAxis = null,
+            IAxisManager<double>? verticalAxis = null) {
 
             ItemLoaded = model.ItemLoaded;
 

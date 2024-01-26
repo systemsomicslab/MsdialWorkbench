@@ -66,15 +66,15 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
 
-        public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
-        private DelegateCommand _showIonTableCommand;
+        public ICommand ShowIonTableCommand => _showIonTableCommand ??= new DelegateCommand(ShowIonTable);
+        private DelegateCommand? _showIonTableCommand;
 
         private void ShowIonTable() {
             _peakSpotTableService.Show(PeakTableViewModel);
         }
 
         public ICommand SearchCompoundCommand => _searchCompoundCommand ??= new DelegateCommand(ShowSearchCompound);
-        private DelegateCommand _searchCompoundCommand;
+        private DelegateCommand? _searchCompoundCommand;
 
         private void ShowSearchCompound() {
             using var csm = _model.CreateCompoundSearchModel();
@@ -92,6 +92,6 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         public GcmsAnalysisPeakTableViewModel PeakTableViewModel { get; }
 
         public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??= new DelegateCommand(((IResultModel)_model).InvokeMsfinder);
-        private DelegateCommand _goToMsfinderCommand = null;
+        private DelegateCommand? _goToMsfinderCommand;
     }
 }

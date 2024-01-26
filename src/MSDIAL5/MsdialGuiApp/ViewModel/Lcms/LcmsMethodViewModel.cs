@@ -227,7 +227,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
 
             ReadOnlyReactivePropertySlim<LcmsAnalysisViewModel?>? result;
-            using (var subject = new Subject<LcmsAnalysisModel>()) {
+            using (var subject = new Subject<LcmsAnalysisModel?>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AnalysisModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
                     .Select(m => m is null ? null : new LcmsAnalysisViewModel(m, broker, focusManager))
                     .DisposePreviousValue()

@@ -1,27 +1,18 @@
-﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
+﻿using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
-using CompMs.MsdialCore.Algorithm.Annotation;
-using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Utility;
-using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
 
     public abstract class DataBaseAnnotationSettingModelBase : BindableBase
     {
-        public DataBaseAnnotationSettingModelBase() {
-
-        }
-
         public DataBaseAnnotationSettingModelBase(DataBaseAnnotationSettingModelBase model) {
             DataBasePath = model.DataBasePath;
             DataBaseID = model.DataBaseID;
             DBSource = model.DBSource;
             AnnotationSource = model.AnnotationSource;
-            AnnotatorID = model.AnnotatorID;
+            annotatorID = model.AnnotatorID;
             Parameter = model.Parameter;
         }
 

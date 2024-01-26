@@ -12,11 +12,6 @@ using System.Collections.Generic;
 namespace CompMs.App.Msdial.Model.Setting
 {
     public abstract class LbmAnnotationSettingModel : DataBaseAnnotationSettingModelBase, IAnnotationSettingModel {
-        public LbmAnnotationSettingModel()
-            : base() {
-
-        }
-
         public LbmAnnotationSettingModel(DataBaseAnnotationSettingModelBase model, ParameterBase parameter)
             : base(model) {
 

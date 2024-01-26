@@ -23,21 +23,21 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         private readonly CheckChromatogramsModel _model;
         private readonly IMessageBroker _broker;
 
-        public CheckChromatogramsViewModel(CheckChromatogramsModel model, IMessageBroker broker = null) {
+        public CheckChromatogramsViewModel(CheckChromatogramsModel model, IMessageBroker? broker = null) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _broker = broker ?? MessageBroker.Default;
 
-            var chromatograms = model.ObserveProperty(m => m.Chromatograms).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var chromatograms = model.ObserveProperty(m => m.Chromatograms).ToReadOnlyReactivePropertySlim<ChromatogramsModel>().AddTo(Disposables);
             DisplayChromatograms = chromatograms.Select(c => c.DisplayChromatograms).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             var horizontalItem = chromatograms.Select(c => c.ChromAxisItemSelector.ObserveProperty(s => s.SelectedAxisItem)).Switch();
             var verticalItem = chromatograms.Select(c => c.AbundanceAxisItemSelector.ObserveProperty(s => s.SelectedAxisItem)).Switch();
-            HorizontalAxis = horizontalItem.Select(item => item.AxisManager).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            VerticalAxis = verticalItem.Select(item => item.AxisManager).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            GraphTitle = chromatograms.Select(c => c.GraphTitle).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            HorizontalTitle = horizontalItem.Select(item => item.GraphLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            VerticalTitle = verticalItem.Select(item => item.GraphLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            HorizontalProperty = chromatograms.Select(c => c.HorizontalProperty).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            VerticalProperty = chromatograms.Select(c => c.VerticalProperty).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            HorizontalAxis = horizontalItem.Select(item => item.AxisManager).ToReadOnlyReactivePropertySlim<IAxisManager<double>>().AddTo(Disposables);
+            VerticalAxis = verticalItem.Select(item => item.AxisManager).ToReadOnlyReactivePropertySlim<IAxisManager<double>>().AddTo(Disposables);
+            GraphTitle = chromatograms.Select(c => c.GraphTitle).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposables);
+            HorizontalTitle = horizontalItem.Select(item => item.GraphLabel).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposables);
+            VerticalTitle = verticalItem.Select(item => item.GraphLabel).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposables);
+            HorizontalProperty = chromatograms.Select(c => c.HorizontalProperty).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposables);
+            VerticalProperty = chromatograms.Select(c => c.VerticalProperty).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposables);
 
             InsertTic = model.LoadChromatogramsUsecase.ToReactivePropertySlimAsSynchronized(m => m.InsertTic).AddTo(Disposables);
             InsertBpc = model.LoadChromatogramsUsecase.ToReactivePropertySlimAsSynchronized(m => m.InsertBpc).AddTo(Disposables);

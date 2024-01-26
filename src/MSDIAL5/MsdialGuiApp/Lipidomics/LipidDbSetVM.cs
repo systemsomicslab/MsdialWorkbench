@@ -2,8 +2,6 @@
 using CompMs.Common.Enum;
 using CompMs.Common.Query;
 using CompMs.CommonMVVM;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -34,14 +32,14 @@ namespace CompMs.App.Msdial.Lipidomics
             IonMode = ionMode;
 
             queryBean.IonMode = IonMode;
-            QueryVM = new LipidQueryBeanVM(queryBean);
+            queryVM = new LipidQueryBeanVM(queryBean);
 
             lbmQueryVMs = new ObservableCollection<LbmQueryVM>(queryBean.LbmQueries.Select(query => new LbmQueryVM(query)));
 
-            LbmQueryView = CollectionViewSource.GetDefaultView(lbmQueryVMs);
-            LbmQueryView.Filter += QueryFilter;
+            lbmQueryView = CollectionViewSource.GetDefaultView(lbmQueryVMs);
+            lbmQueryView.Filter += QueryFilter;
 
-            QueryVM.PropertyChanged += (s, e) => LbmQueryView.Refresh();
+            queryVM.PropertyChanged += (s, e) => LbmQueryView.Refresh();
         }
 
         private bool QueryFilter(object obj) {
@@ -60,10 +58,8 @@ namespace CompMs.App.Msdial.Lipidomics
         }
 
         #region Command
-        public DelegateCommand<Window> ContinueProcessCommand {
-            get => continueProcessCommand ?? (continueProcessCommand = new DelegateCommand<Window>(ContinueProcess, ValidateLipidDbSetWindow));
-        }
-        private DelegateCommand<Window> continueProcessCommand;
+        public DelegateCommand<Window> ContinueProcessCommand => continueProcessCommand ??= new DelegateCommand<Window>(ContinueProcess, ValidateLipidDbSetWindow);
+        private DelegateCommand<Window>? continueProcessCommand;
 
         private void ContinueProcess(Window window) {
             if (ClosingMethod()) {
@@ -82,20 +78,16 @@ namespace CompMs.App.Msdial.Lipidomics
             return true;
         }
 
-        public DelegateCommand<Window> CancelProcessCommand {
-            get => cancelProcessCommand ?? (cancelProcessCommand = new DelegateCommand<Window>(CancelProcess));
-        }
-        private DelegateCommand<Window> cancelProcessCommand;
+        public DelegateCommand<Window> CancelProcessCommand => cancelProcessCommand ??= new DelegateCommand<Window>(CancelProcess);
+        private DelegateCommand<Window>? cancelProcessCommand;
 
         private void CancelProcess(Window window) {
             window.DialogResult = false;
             window.Close();
         }
 
-        public DelegateCommand CheckAllCommand {
-            get => checkAllCommand ?? (checkAllCommand = new DelegateCommand(CheckAllProcess));
-        }
-        private DelegateCommand checkAllCommand;
+        public DelegateCommand CheckAllCommand => checkAllCommand ??= new DelegateCommand(CheckAllProcess);
+        private DelegateCommand? checkAllCommand;
 
         private void CheckAllProcess() {
             foreach (var obj in LbmQueryView) {
@@ -103,10 +95,8 @@ namespace CompMs.App.Msdial.Lipidomics
             }
         }
 
-        public DelegateCommand RemoveAllCommand { 
-            get => removeAllCommand ?? (removeAllCommand = new DelegateCommand(RemoveAllProcess));
-        }
-        private DelegateCommand removeAllCommand;
+        public DelegateCommand RemoveAllCommand => removeAllCommand ??= new DelegateCommand(RemoveAllProcess);
+        private DelegateCommand? removeAllCommand;
 
         private void RemoveAllProcess() {
             foreach (var obj in LbmQueryView) {

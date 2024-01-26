@@ -12,7 +12,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 {
     internal sealed class EiChromatogramsViewModel : ViewModelBase
     {
-        public EiChromatogramsViewModel(EiChromatogramsModel model, ReactivePropertySlim<int> numberOfEIChromatograms, MultiMsmsRawSpectrumLoaderViewModel loader, Action focusAction, IObservable<bool> isFocused) {
+        public EiChromatogramsViewModel(EiChromatogramsModel model, ReactivePropertySlim<int> numberOfEIChromatograms, MultiMsmsRawSpectrumLoaderViewModel? loader, Action focusAction, IObservable<bool> isFocused) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
@@ -58,7 +58,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<bool> IsFocused { get; }
 
         public ReactivePropertySlim<int> NumberOfEIChromatograms { get; }
-        public MultiMsmsRawSpectrumLoaderViewModel MultiMsRawSpectrumLoaderViewModel { get; }
+        public MultiMsmsRawSpectrumLoaderViewModel? MultiMsRawSpectrumLoaderViewModel { get; }
 
         [RegularExpression(@"\d+", ErrorMessage = "Invalid character is entered.")]
         [Range(0, int.MaxValue, ErrorMessage = "Invalid value is requested.")]

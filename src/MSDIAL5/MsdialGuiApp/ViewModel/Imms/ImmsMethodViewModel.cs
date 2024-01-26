@@ -49,8 +49,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             return model.LoadAlignmentFileAsync(alignmentFile.File, token);
         }
 
-        public DelegateCommand ExportAnalysisResultCommand => _exportAnalysisResultCommand ?? (_exportAnalysisResultCommand = new DelegateCommand(ExportAnalysis));
-        private DelegateCommand _exportAnalysisResultCommand;
+        public DelegateCommand ExportAnalysisResultCommand => _exportAnalysisResultCommand ??= new DelegateCommand(ExportAnalysis);
+        private DelegateCommand? _exportAnalysisResultCommand;
 
         private void ExportAnalysis() {
             using (var vm = new AnalysisResultExportViewModel(model.CreateExportAnalysisResult())) {
@@ -59,8 +59,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
         
 
-        public DelegateCommand ExportAlignmentResultCommand => _exportAlignmentResultCommand ?? (_exportAlignmentResultCommand = new DelegateCommand(ExportAlignment));
-        private DelegateCommand _exportAlignmentResultCommand;
+        public DelegateCommand ExportAlignmentResultCommand => _exportAlignmentResultCommand ??= new DelegateCommand(ExportAlignment);
+        private DelegateCommand? _exportAlignmentResultCommand;
 
         private void ExportAlignment() {
             using (var vm = new AlignmentResultExportViewModel(model.AlignmentResultExportModel, _broker)) {
@@ -69,16 +69,16 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
 
         public DelegateCommand ShowTicCommand => _showTicCommand ??= new DelegateCommand(ShowChromatograms(tic: true));
-        private DelegateCommand _showTicCommand;
+        private DelegateCommand? _showTicCommand;
 
         public DelegateCommand ShowBpcCommand => _showBpcCommand ??= new DelegateCommand(ShowChromatograms(bpc: true));
-        private DelegateCommand _showBpcCommand;
+        private DelegateCommand? _showBpcCommand;
 
         public DelegateCommand ShowTicBpcRepEICCommand => _showTicBpcRepEIC ??= new DelegateCommand(ShowChromatograms(tic: true, bpc: true, highestEic: true));
-        private DelegateCommand _showTicBpcRepEIC;
+        private DelegateCommand? _showTicBpcRepEIC;
 
         public DelegateCommand ShowEicCommand => _showEicCommand ??= new DelegateCommand(ShowChromatograms());
-        private DelegateCommand _showEicCommand;
+        private DelegateCommand? _showEicCommand;
 
         private Action ShowChromatograms(bool tic = false, bool bpc = false, bool highestEic = false) {
             void InnerShowChromatograms() {

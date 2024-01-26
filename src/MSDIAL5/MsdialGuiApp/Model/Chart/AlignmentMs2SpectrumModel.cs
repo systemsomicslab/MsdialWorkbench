@@ -134,7 +134,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 throw new Exception("Peak spot is not selected.");
             }
             var spectra =_loader.GetMatchedSpectraMatrixsAsync(_target.Value, _matchResult.Value).Result;
-            spectra.Export(stream);
+            spectra?.Export(stream);
         }
 
         public IObservable<bool> CanSaveUpperSpectrum => _upperSpectrumModel.CanSave;

@@ -112,7 +112,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => broker.Publish(TaskNotification.End(notification)));
         }
 
-        public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel> CurrentRepresentativeFile => _model.CurrentRepresentativeFile;
+        public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel?> CurrentRepresentativeFile => _model.CurrentRepresentativeFile;
         public UndoManagerViewModel UndoManagerViewModel { get; }
         public AlignmentPeakPlotViewModel RtMzPlotViewModel { get; }
         public AlignmentPeakPlotViewModel DtMzPlotViewModel { get; }
@@ -131,7 +131,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
         public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel?> Target { get; }
 
-        public ReactivePropertySlim<BrushMapData<AlignmentSpotPropertyModel>> SelectedBrush { get; }
+        public ReactivePropertySlim<BrushMapData<AlignmentSpotPropertyModel>?> SelectedBrush { get; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 

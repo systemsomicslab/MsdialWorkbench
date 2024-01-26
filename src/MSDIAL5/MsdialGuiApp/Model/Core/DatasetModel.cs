@@ -40,12 +40,12 @@ namespace CompMs.App.Msdial.Model.Core
             AnalysisFilePropertyResetModel = new AnalysisFilePropertyResetModel(files, _projectBaseParameter);
             FileClassSetModel = new FileClassSetModel(_projectBaseParameter);
 
-            AllProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, files, _alignmentFileBeanModelCollection, storage, HandlerAsync, _projectBaseParameter, StudyContext, broker);
-            IdentificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, files, _alignmentFileBeanModelCollection, storage, HandlerAsync, _projectBaseParameter, StudyContext, broker);
-            AlignmentProcessMethodSettingModel = new MethodSettingModel(ProcessOption.Alignment, files, _alignmentFileBeanModelCollection, storage, HandlerAsync, _projectBaseParameter, StudyContext, broker);
+            allProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, files, _alignmentFileBeanModelCollection, storage, HandlerAsync, _projectBaseParameter, StudyContext, broker);
+            identificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, files, _alignmentFileBeanModelCollection, storage, HandlerAsync, _projectBaseParameter, StudyContext, broker);
+            alignmentProcessMethodSettingModel = new MethodSettingModel(ProcessOption.Alignment, files, _alignmentFileBeanModelCollection, storage, HandlerAsync, _projectBaseParameter, StudyContext, broker);
         }
 
-        public IMethodModel Method {
+        public IMethodModel? Method {
             get => method;
             private set {
                 var prev = method;
@@ -54,7 +54,7 @@ namespace CompMs.App.Msdial.Model.Core
                 }
             }
         }
-        private IMethodModel method;
+        private IMethodModel? method;
 
         public IMsdialDataStorage<ParameterBase> Storage { get; }
 

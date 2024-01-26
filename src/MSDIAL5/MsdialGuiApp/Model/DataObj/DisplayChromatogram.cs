@@ -8,7 +8,7 @@ using System.Windows.Media;
 namespace CompMs.App.Msdial.Model.DataObj
 {
     public sealed class DisplayChromatogram : BindableBase {
-        public DisplayChromatogram(List<PeakItem> peaks, Pen linePen = null, string title = "na") {
+        public DisplayChromatogram(List<PeakItem> peaks, Pen? linePen = null, string title = "na") {
             ChromatogramPeaks = peaks ?? throw new System.ArgumentNullException(nameof(peaks));
             if (linePen is null) {
                 linePen = new Pen(Brushes.Black, 1.0);
@@ -18,7 +18,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             Name = title;
         }
 
-        public DisplayChromatogram(IEnumerable<ChromatogramPeak> peaks, Pen linePen = null, string title = "na")
+        public DisplayChromatogram(IEnumerable<ChromatogramPeak> peaks, Pen? linePen = null, string title = "na")
             : this(peaks.Select(peak => new PeakItem(peak)).ToList(), linePen, title) {
 
         }
