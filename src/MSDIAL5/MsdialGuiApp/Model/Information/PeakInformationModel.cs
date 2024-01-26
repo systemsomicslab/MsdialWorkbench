@@ -287,7 +287,7 @@ namespace CompMs.App.Msdial.Model.Information
         }
         private string _comment = string.Empty;
 
-        ReadOnlyObservableCollection<IPeakPoint> IPeakInformationModel.PeakPoints => _peakPoints;
+        ReadOnlyObservableCollection<IPeakPoint>? IPeakInformationModel.PeakPoints => _peakPoints;
         public ReadOnlyReactiveCollection<IPeakPoint>? PeakPoints {
             get => _peakPoints;
             private set => SetProperty(ref _peakPoints, value);
@@ -295,21 +295,21 @@ namespace CompMs.App.Msdial.Model.Information
         private ReadOnlyReactiveCollection<IPeakPoint>? _peakPoints;
         private readonly ObservableCollection<Func<Ms1BasedSpectrumFeature?, IPeakPoint>> _peakPointMaps;
 
-        public void Add(params Func<Ms1BasedSpectrumFeature, IPeakPoint>[] maps) {
+        public void Add(params Func<Ms1BasedSpectrumFeature?, IPeakPoint>[] maps) {
             foreach (var map in maps) {
                 _peakPointMaps.Add(map);
             }
         }
 
-        ReadOnlyObservableCollection<IPeakAmount> IPeakInformationModel.PeakAmounts => _peakAmounts;
-        public ReadOnlyReactiveCollection<IPeakAmount> PeakAmounts {
+        ReadOnlyObservableCollection<IPeakAmount>? IPeakInformationModel.PeakAmounts => _peakAmounts;
+        public ReadOnlyReactiveCollection<IPeakAmount>? PeakAmounts {
             get => _peakAmounts;
             private set => SetProperty(ref _peakAmounts, value);
         }
-        private ReadOnlyReactiveCollection<IPeakAmount> _peakAmounts;
+        private ReadOnlyReactiveCollection<IPeakAmount>? _peakAmounts;
         private readonly ObservableCollection<Func<Ms1BasedSpectrumFeature?, IPeakAmount>> _peakAmountMaps;
 
-        public void Add(params Func<Ms1BasedSpectrumFeature, IPeakAmount>[] maps) {
+        public void Add(params Func<Ms1BasedSpectrumFeature?, IPeakAmount>[] maps) {
             foreach (var map in maps) {
                 _peakAmountMaps.Add(map);
             }

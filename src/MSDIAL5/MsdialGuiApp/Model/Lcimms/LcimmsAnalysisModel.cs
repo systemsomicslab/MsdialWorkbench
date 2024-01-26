@@ -51,7 +51,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly MsdialLcImMsParameter _parameter;
         private readonly UndoManager _undoManager;
         private readonly MSDecLoader _decLoader;
-        private readonly ReadOnlyReactivePropertySlim<MSDecResult> _msdecResult;
+        private readonly ReadOnlyReactivePropertySlim<MSDecResult?> _msdecResult;
         private readonly TicLoader _ticLoader;
         private readonly BpcLoader _bpcLoader;
         private readonly ObservableCollection<ChromatogramPeakFeatureModel> _accumulatedPeakModels;
@@ -204,8 +204,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var spectraExporter = new NistSpectraExporter<ChromatogramPeakFeature?>(target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
             var decLoader = analysisFileModel.MSDecLoader;
             _decLoader = decLoader;
-            var msdecResult = target.SkipNull()
-                .Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation))
+            var msdecResult = target
+                .DefaultIfNull(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             _msdecResult = msdecResult;
@@ -364,7 +364,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         // IAnalysisModel
         public ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks { get; }
 
-        public IReactiveProperty<ChromatogramPeakFeatureModel> Target { get; }
+        public IReactiveProperty<ChromatogramPeakFeatureModel?> Target { get; }
 
         public LcimmsAnalysisPeakTableModel PeakTableModel { get; }
 

@@ -239,16 +239,19 @@ namespace CompMs.App.Msdial.Model.Dims
         public MoleculeStructureModel MoleculeStructureModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
-        public CompoundSearchModel<PeakSpotModel> BuildCompoundSearchModel() {
-            var plotService = new PlotComparedMsSpectrumUsecase(_msdecResult.Value);
-            var compoundSearchModel = new CompoundSearchModel<PeakSpotModel>(
-                _files[Target.Value.RepresentativeFileID],
-                new PeakSpotModel(Target.Value, _msdecResult.Value),
-                new DimsCompoundSearchUsecase(_compoundSearchers.Items),
-                plotService,
-                new SetAnnotationUsecase(Target.Value, Target.Value.MatchResultsModel, _undoManager));
-            compoundSearchModel.Disposables.Add(plotService);
-            return compoundSearchModel;
+        public CompoundSearchModel<PeakSpotModel>? BuildCompoundSearchModel() {
+            if (Target.Value is AlignmentSpotPropertyModel spot) {
+                var plotService = new PlotComparedMsSpectrumUsecase(_msdecResult.Value);
+                var compoundSearchModel = new CompoundSearchModel<PeakSpotModel>(
+                    _files[spot.RepresentativeFileID],
+                    new PeakSpotModel(spot, _msdecResult.Value),
+                    new DimsCompoundSearchUsecase(_compoundSearchers.Items),
+                    plotService,
+                    new SetAnnotationUsecase(spot, spot.MatchResultsModel, _undoManager));
+                compoundSearchModel.Disposables.Add(plotService);
+                return compoundSearchModel;
+            }
+            return null;
         }
 
         public InternalStandardSetModel InternalStandardSetModel { get; }
@@ -258,16 +261,12 @@ namespace CompMs.App.Msdial.Model.Dims
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
-        public bool CanSaveSpectra() => Target.Value.innerModel != null && _msdecResult.Value != null;
+        public bool CanSaveSpectra() => Target.Value?.innerModel != null && _msdecResult.Value != null;
 
         public void SaveSpectra(Stream stream, ExportSpectraFileFormat format) {
-            SpectraExport.SaveSpectraTable(
-                format,
-                stream,
-                Target.Value.innerModel,
-                _msdecResult.Value,
-                _dataBaseMapper,
-                _parameter);
+            if (Target.Value is AlignmentSpotPropertyModel spot) {
+                SpectraExport.SaveSpectraTable(format, stream, spot.innerModel, _msdecResult.Value, _dataBaseMapper, _parameter);
+            }
         }
 
         public void SaveSpectra(string filename) {

@@ -29,14 +29,14 @@ namespace CompMs.App.Msdial.Model.Setting
 {
     internal interface IMethodSettingModelFactory
     {
-        IDataCollectionSettingModel CreateDataCollectionSetting();
-        IPeakDetectionSettingModel CreatePeakDetectionSetting();
-        DeconvolutionSettingModel CreateDeconvolutionSetting();
-        IIdentificationSettingModel CreateIdentifySetting();
-        AdductIonSettingModel CreateAdductIonSetting();
-        IAlignmentParameterSettingModel CreateAlignmentParameterSetting();
-        MobilitySettingModel CreateMobilitySetting();
-        IsotopeTrackSettingModel CreateIsotopeTrackSetting();
+        IDataCollectionSettingModel? CreateDataCollectionSetting();
+        IPeakDetectionSettingModel? CreatePeakDetectionSetting();
+        DeconvolutionSettingModel? CreateDeconvolutionSetting();
+        IIdentificationSettingModel? CreateIdentifySetting();
+        AdductIonSettingModel? CreateAdductIonSetting();
+        IAlignmentParameterSettingModel? CreateAlignmentParameterSetting();
+        MobilitySettingModel? CreateMobilitySetting();
+        IsotopeTrackSettingModel? CreateIsotopeTrackSetting();
         IMethodModel BuildMethod();
     }
 

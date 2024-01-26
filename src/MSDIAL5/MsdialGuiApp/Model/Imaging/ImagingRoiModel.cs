@@ -27,11 +27,11 @@ namespace CompMs.App.Msdial.Model.Imaging
         public RoiModel Roi { get; }
         public ObservableCollection<RoiPeakSummaryModel> RoiPeakSummaries { get; }
 
-        public RoiPeakSummaryModel SelectedRoiPeakSummary {
+        public RoiPeakSummaryModel? SelectedRoiPeakSummary {
             get => _selectedRoiPeakSummary;
             set => SetProperty(ref _selectedRoiPeakSummary, value);
         }
-        private RoiPeakSummaryModel _selectedRoiPeakSummary;
+        private RoiPeakSummaryModel? _selectedRoiPeakSummary;
 
         public bool IsSelected {
             get => _isSelected;

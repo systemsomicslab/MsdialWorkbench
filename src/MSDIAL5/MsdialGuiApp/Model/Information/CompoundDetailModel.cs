@@ -4,7 +4,6 @@ using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -14,15 +13,15 @@ namespace CompMs.App.Msdial.Model.Information
 {
     internal sealed class CompoundDetailModel : DisposableModelBase
     {
-        public CompoundDetailModel(IObservable<MsScanMatchResult> result, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+        public CompoundDetailModel(IObservable<MsScanMatchResult?> result, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             _annotation = string.Empty;
             _compoundSimilarities = new ReadOnlyObservableCollection<ISimilarity>(new ObservableCollection<ISimilarity>());
             _annotatorId = string.Empty;
 
             result.Subscribe(result_ => {
-                Annotation = result_.Name;
-                AnnotatorId = result_.AnnotatorID;
-                var reference_ = refer.Refer(result_);
+                Annotation = result_?.Name ?? string.Empty;
+                AnnotatorId = result_?.AnnotatorID ?? string.Empty;
+                var reference_ = result_ is not null ? refer.Refer(result_) : null;
                 Formula = reference_?.Formula?.FormulaString;
                 Ontology = reference_?.Ontology ?? reference_?.CompoundClass;
                 Smiles = reference_?.SMILES;

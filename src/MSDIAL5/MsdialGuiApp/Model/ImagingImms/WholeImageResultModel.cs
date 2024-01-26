@@ -52,16 +52,16 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         public ImmsAnalysisModel AnalysisModel => _analysisModel;
         public ObservableCollection<ChromatogramPeakFeatureModel> Peaks => _analysisModel.Ms1Peaks;
         public AnalysisPeakPlotModel PeakPlotModel => _analysisModel.PlotModel;
-        public ReactivePropertySlim<ChromatogramPeakFeatureModel> Target => _analysisModel.Target;
+        public ReactivePropertySlim<ChromatogramPeakFeatureModel?> Target => _analysisModel.Target;
 
         public ImagingRoiModel ImagingRoiModel { get; }
         public ReadOnlyObservableCollection<IntensityImageModel> Intensities { get; }
-        public IntensityImageModel SelectedPeakIntensities
+        public IntensityImageModel? SelectedPeakIntensities
         {
             get => _selectedPeakIntensities;
             set => SetProperty(ref _selectedPeakIntensities, value);
         }
-        private IntensityImageModel _selectedPeakIntensities;
+        private IntensityImageModel? _selectedPeakIntensities;
 
         public async Task<ImagingRoiModel> CreateImagingRoiModelAsync(RoiModel roi)
         {

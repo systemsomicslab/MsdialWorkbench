@@ -23,7 +23,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         private readonly IMessageBroker _broker;
         private readonly FocusControlManager _focusControl;
 
-        public GcmsMethodViewModel(GcmsMethodModel model, ReadOnlyReactivePropertySlim<GcmsAnalysisViewModel> analysisFileViewModel, ReadOnlyReactivePropertySlim<GcmsAlignmentViewModel> alignmentFileViewModel, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels, IMessageBroker broker, FocusControlManager focusControl)
+        public GcmsMethodViewModel(GcmsMethodModel model, ReadOnlyReactivePropertySlim<GcmsAnalysisViewModel?> analysisFileViewModel, ReadOnlyReactivePropertySlim<GcmsAlignmentViewModel?> alignmentFileViewModel, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels, IMessageBroker broker, FocusControlManager focusControl)
             : base(model, analysisFileViewModel, alignmentFileViewModel, chromatogramViewModels, massSpectrumViewModels) {
             _model = model;
             _broker = broker;
@@ -48,7 +48,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         }
 
         public DelegateCommand ExportAnalysisResultCommand => _exportAnalysisResultCommand ??= new DelegateCommand(ExportAnalysis);
-        private DelegateCommand _exportAnalysisResultCommand;
+        private DelegateCommand? _exportAnalysisResultCommand;
 
         private void ExportAnalysis() {
             var m = _model.ExportAnalysis();
@@ -57,7 +57,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         }
 
         public DelegateCommand ExportAlignmentResultCommand => _exportAlignmentResultCommand ??= new DelegateCommand(ExportAlignment);
-        private DelegateCommand _exportAlignmentResultCommand;
+        private DelegateCommand? _exportAlignmentResultCommand;
 
         private void ExportAlignment() {
             using var vm = new AlignmentResultExportViewModel(_model.AlignmentResultExportModel, _broker);
@@ -65,16 +65,16 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         }
 
         public DelegateCommand ShowTicCommand => _showTicCommand ??= new DelegateCommand(ShowChromatograms(tic: true));
-        private DelegateCommand _showTicCommand;
+        private DelegateCommand? _showTicCommand;
 
         public DelegateCommand ShowBpcCommand => _showBpcCommand ??= new DelegateCommand(ShowChromatograms(bpc: true));
-        private DelegateCommand _showBpcCommand;
+        private DelegateCommand? _showBpcCommand;
 
         public DelegateCommand ShowEicCommand => _showEicCommand ??= new DelegateCommand(ShowChromatograms());
-        private DelegateCommand _showEicCommand;
+        private DelegateCommand? _showEicCommand;
 
         public DelegateCommand ShowTicBpcRepEICCommand => _showTicBpcRepEIC ??= new DelegateCommand(ShowChromatograms(tic: true, bpc: true, highestEic: true));
-        private DelegateCommand _showTicBpcRepEIC;
+        private DelegateCommand? _showTicBpcRepEIC;
 
         private Action ShowChromatograms(bool tic = false, bool bpc = false, bool highestEic = false) {
             void InnerShowChromatorams() {
@@ -106,7 +106,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             var eic = analysisAsObservable.Select(vm => vm?.EicViewModel);
             var bar = alignmentAsObservable.Select(vm => vm?.BarChartViewModel);
             var alignmentEic = alignmentAsObservable.Select(vm => vm?.AlignmentEicViewModel);
-            var chromatogramSwitcher = new ViewModelSwitcher(eic, bar, new IObservable<ViewModelBase>[] { eic, bar, alignmentEic});
+            var chromatogramSwitcher = new ViewModelSwitcher(eic, bar, new IObservable<ViewModelBase?>[] { eic, bar, alignmentEic});
             var rawdec = analysisAsObservable.Select(m => m?.RawDecSpectrumsViewModel);
             var productscan = analysisAsObservable.Select(m => (m?.EiChromatogramsViewModel));
             var rawpurified = analysisAsObservable.Select(m => (m?.RawPurifiedSpectrumsViewModel));

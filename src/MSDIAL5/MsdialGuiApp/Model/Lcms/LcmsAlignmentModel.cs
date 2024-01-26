@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.ExternalApp;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.ExternalApp;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
@@ -37,7 +38,6 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcms
@@ -98,7 +98,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             _messageBroker = messageBroker;
 
             var spotsSource = new AlignmentSpotSource(alignmentFileBean, Container, CHROMATOGRAM_SPOT_SERIALIZER).AddTo(Disposables);
-            _spotsSource = spotsSource;
             Ms1Spots = spotsSource.Spots.Items;
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel?>().AddTo(Disposables);
             CurrentRepresentativeFile = Target.Select(t => t is null ? null : fileCollection.FindByID(t.RepresentativeFileID)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -136,7 +135,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 VerticalTitle = "m/z",
             }.AddTo(Disposables);
             var mrmprobsExporter = new EsiMrmprobsExporter(evaluator, mapper);
-            var usecase = new AlignmentSpotExportMrmprobsUsecase(parameter.MrmprobsExportBaseParam, spotsSource, alignmentFileBean, _compoundSearchers, mrmprobsExporter, Target);
+            var usecase = new AlignmentSpotExportMrmprobsUsecase(parameter.MrmprobsExportBaseParam, spotsSource, alignmentFileBean, _compoundSearchers, mrmprobsExporter, Target, messageBroker);
             PlotModel.ExportMrmprobs = usecase;
 
             // Ms2 spectrum
@@ -145,7 +144,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
             IMsSpectrumLoader<AlignmentSpotPropertyModel> msDecSpectrumLoader = new AlignmentMSDecSpectrumLoader(_alignmentFile);
-            var spectraExporter = new NistSpectraExporter<AlignmentSpotProperty?>(Target.Select(t => t?.innerModel), mapper, Parameter).AddTo(Disposables);
+            var spectraExporter = new NistSpectraExporter<AlignmentSpotProperty?>(Target.Select(t => t?.innerModel), mapper, parameter).AddTo(Disposables);
             GraphLabels ms2GraphLabels = new GraphLabels("Representative vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
             ChartHueItem deconvolutedSpectrumHueItem = new ChartHueItem(projectBaseParameter, Colors.Blue);
             ObservableMsSpectrum deconvolutedObservableMsSpectrum = ObservableMsSpectrum.Create(Target, msDecSpectrumLoader, spectraExporter).AddTo(Disposables);
@@ -253,10 +252,6 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public UndoManager UndoManager => _undoManager;
 
-        public ParameterBase Parameter { get; }
-
-        private readonly AlignmentSpotSource _spotsSource;
-
         public ReadOnlyObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
         public ReactivePropertySlim<AlignmentSpotPropertyModel?> Target { get; }
         public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel?> CurrentRepresentativeFile { get; }
@@ -274,38 +269,45 @@ namespace CompMs.App.Msdial.Model.Lcms
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
         public PeakInformationAlignmentModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
-        public MoleculeStructureModel MoleculeStructureModel { get; }
+        public MoleculeStructureModel? MoleculeStructureModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
-        public ProteinResultContainerModel ProteinResultContainerModel { get; }
+        public ProteinResultContainerModel? ProteinResultContainerModel { get; }
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
-        public CompoundSearchModel<PeakSpotModel> CreateCompoundSearchModel() {
-            PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(_msdecResult.Value);
+        public CompoundSearchModel<PeakSpotModel>? CreateCompoundSearchModel() {
+            if (Target.Value is not AlignmentSpotPropertyModel spot || _msdecResult.Value is not MSDecResult decResult) {
+                _messageBroker.Publish(new ShortMessageRequest(MessageHelper.NoPeakSelected));
+                return null;
+            }
+            PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(decResult);
             var compoundSearch =  new CompoundSearchModel<PeakSpotModel>(
-                _files[Target.Value.RepresentativeFileID],
-                new PeakSpotModel(Target.Value, _msdecResult.Value),
+                _files[spot.RepresentativeFileID],
+                new PeakSpotModel(spot, _msdecResult.Value),
                 new LcmsCompoundSearchUsecase(_compoundSearchers.Items),
                 plotService,
-                new SetAnnotationUsecase(Target.Value, Target.Value.MatchResultsModel, _undoManager));
+                new SetAnnotationUsecase(spot, spot.MatchResultsModel, _undoManager));
             compoundSearch.Disposables.Add(plotService);
             return compoundSearch;
         }
 
         public void SaveSpectra(string filename) {
-            using (var file = File.Open(filename, FileMode.Create)) {
-                SpectraExport.SaveSpectraTable(
-                    (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
-                    file,
-                    Target.Value.innerModel,
-                    _msdecResult.Value,
-                    _dataBaseMapper,
-                    _parameter);
+            if (Target.Value is not AlignmentSpotPropertyModel spot || _msdecResult.Value is not MSDecResult decResult) {
+                _messageBroker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
+                return;
             }
+            using var file = File.Open(filename, FileMode.Create);
+            SpectraExport.SaveSpectraTable(
+                (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
+                file,
+                spot.innerModel,
+                decResult,
+                _dataBaseMapper,
+                _parameter);
         }
 
-        public bool CanSaveSpectra() => Target.Value.innerModel != null && _msdecResult.Value != null;
+        public bool CanSaveSpectra() => Target.Value?.innerModel != null && _msdecResult.Value != null;
 
         public override void SearchFragment() {
             using (var decLoader = _alignmentFile.CreateTemporaryMSDecLoader()) {

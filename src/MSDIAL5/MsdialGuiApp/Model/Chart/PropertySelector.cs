@@ -1,7 +1,4 @@
-﻿using CompMs.Common.Components;
-using CompMs.Graphics.AxisManager.Generic;
-using CompMs.Graphics.Core.Base;
-using System;
+﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -10,7 +7,7 @@ namespace CompMs.App.Msdial.Model.Chart
     interface IPropertySelector<TProperty> {
         string Property { get; }
 
-        TProperty Select<T>(T subject);
+        TProperty? Select<T>(T subject);
     }
 
     public class PropertySelector<TSubject, TProperty> : IPropertySelector<TProperty>

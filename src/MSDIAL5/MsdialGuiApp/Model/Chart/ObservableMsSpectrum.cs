@@ -94,7 +94,7 @@ namespace CompMs.App.Msdial.Model.Chart
             return propertySelectors;
         }
 
-        public static ObservableMsSpectrum Create<T>(IObservable<T?> targetSource, IMsSpectrumLoader<T> loader, ISpectraExporter spectraExporter) where T: class {
+        public static ObservableMsSpectrum Create<T>(IObservable<T?> targetSource, IMsSpectrumLoader<T> loader, ISpectraExporter? spectraExporter) where T: class {
             var disposables = new CompositeDisposable();
             IConnectableObservable<(MsSpectrum? spectrum, bool loaded)> pairs = targetSource.DefaultIfNull(t => loader.LoadMsSpectrumAsObservable(t).Select(s => ((MsSpectrum?)s, true)).StartWith((null, false)), Observable.Return<(MsSpectrum?, bool)>((null, true))).Switch().Publish();
             var msSpectrum = pairs.Select(p => p.spectrum).ToReadOnlyReactivePropertySlim().AddTo(disposables);

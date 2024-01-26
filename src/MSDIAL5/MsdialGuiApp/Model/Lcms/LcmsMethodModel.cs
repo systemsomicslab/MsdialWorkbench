@@ -129,17 +129,17 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public IObservable<bool> CanShowProteinGroupTable { get; }
 
-        public LcmsAnalysisModel AnalysisModel {
+        public LcmsAnalysisModel? AnalysisModel {
             get => _analysisModel;
             private set => SetProperty(ref _analysisModel, value);
         }
-        private LcmsAnalysisModel _analysisModel;
+        private LcmsAnalysisModel? _analysisModel;
 
-        public LcmsAlignmentModel AlignmentModel {
+        public LcmsAlignmentModel? AlignmentModel {
             get => _alignmentModel;
             set => SetProperty(ref _alignmentModel, value);
         }
-        private LcmsAlignmentModel _alignmentModel;
+        private LcmsAlignmentModel? _alignmentModel;
 
         public AlignmentResultExportModel AlignmentResultExportModel { get; }
         public MolecularNetworkingSettingModel MolecularNetworkingSettingModel { get; }
