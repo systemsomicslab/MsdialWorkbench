@@ -9,7 +9,7 @@ namespace CompMs.App.Msdial.Model.Core
 {
     internal interface IDatasetModel : INotifyPropertyChanged
     {
-        IMethodModel Method { get; }
+        IMethodModel? Method { get; }
 
         IMsdialDataStorage<ParameterBase> Storage { get; }
 

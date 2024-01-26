@@ -12,7 +12,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 {
     internal sealed class SmallClassBarChartViewModel : ViewModelBase
     {
-        public SmallClassBarChartViewModel(SpotBarItemCollection collection, FileClassPropertiesModel fileClasses = null) {
+        public SmallClassBarChartViewModel(SpotBarItemCollection collection, FileClassPropertiesModel? fileClasses = null) {
             Collection = collection;
             var collectionChanged = Collection
                 .CollectionChangedAsObservable()

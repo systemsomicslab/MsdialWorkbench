@@ -18,12 +18,12 @@ namespace CompMs.App.Msdial.Model.Gcms
         public GcmsAlignmentCompoundSearchUsecase(CalculateMatchScore calculateMatchScore)
         {
             _calculateMatchScore = calculateMatchScore;
-            SearchParameter = calculateMatchScore?.SearchParameter;
+            SearchParameter = calculateMatchScore.SearchParameter;
         }
 
         public IList SearchMethods => Array.Empty<object>();
 
-        public object SearchMethod {
+        public object? SearchMethod {
             get => _searchMethod;
             set {
                 if (SearchMethod != value && SearchMethods.Contains(value)) {
@@ -32,7 +32,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 }
             }
         }
-        private object _searchMethod = null;
+        private object? _searchMethod = null;
 
         public MsRefSearchParameterBase SearchParameter { get; }
 

@@ -113,6 +113,10 @@ namespace CompMs.App.Msdial.Model.Export
 
         public async Task BatchExportAsync(Stream stream, CancellationToken token) {
             var loader = _alignmentFile.CreateTemporaryMSDecLoader();
+            if (_spots.Spots is null) {
+                _broker.Publish(new ShortMessageRequest("Failed to get peak spots."));
+                return;
+            }
             var spots = _spots.Spots.Items.Select(s => s.innerModel).ToArray();
             if (!ExportParameter.MpIsReferenceBaseOutput) {
                 await Task.Run(() => _exporter.ExportExperimentalMsms(stream, spots, loader, ExportParameter), token).ConfigureAwait(false);

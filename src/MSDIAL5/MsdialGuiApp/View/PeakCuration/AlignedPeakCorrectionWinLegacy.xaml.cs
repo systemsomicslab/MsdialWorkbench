@@ -7,6 +7,7 @@ using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -33,7 +34,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
         }
     }
 
-    public sealed class AlignedChromatogramModificationModelLegacy : BindableBase {
+    public sealed class AlignedChromatogramModificationModelLegacy : DisposableModelBase {
         public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel?> ObservableModel { get; }
         public ReactiveProperty<bool> IsRI { get; }
         public ReactiveProperty<bool> IsDrift { get; }
@@ -59,12 +60,12 @@ namespace CompMs.App.Msdial.View.PeakCuration
                 throw new ArgumentNullException(nameof(files));
             }
 
-            ObservableModel = model.ToReadOnlyReactivePropertySlim();
-            IsRI = model.Select(m => m?.ChromXType == ChromXType.RI).ToReactiveProperty();
-            IsDrift = model.Select(m => m?.ChromXType == ChromXType.Drift).ToReactiveProperty();
+            ObservableModel = model.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            IsRI = model.Select(m => m?.ChromXType == ChromXType.RI).ToReactiveProperty().AddTo(Disposables);
+            IsDrift = model.Select(m => m?.ChromXType == ChromXType.Drift).ToReactiveProperty().AddTo(Disposables);
             ObservableChromatograms = chromatoramSource;
             Files = files;
-            ObservablePeakProperties = LoadPeakProperty(model, chromatoramSource, files, parameter).ToReadOnlyReactivePropertySlim();
+            ObservablePeakProperties = LoadPeakProperty(model, chromatoramSource, files, parameter).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
 
         public void UpdatePeakInfo() {

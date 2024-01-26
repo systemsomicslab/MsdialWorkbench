@@ -18,7 +18,7 @@ namespace CompMs.App.Msdial.ViewModel.Information
             ReactiveProperty<MoleculeImage?> current = model.ObserveProperty(m => m.Current).SkipNull().ToReactiveProperty().AddTo(Disposables);
             Image = new[]
             {
-                current.TakeNull().ToConstant((BitmapSource)null),
+                current.TakeNull().ToConstant((BitmapSource?)null),
                 current.SkipNull().Select(c => c.Image).Switch(),
             }.Merge()
             .ToReadOnlyReactivePropertySlim()

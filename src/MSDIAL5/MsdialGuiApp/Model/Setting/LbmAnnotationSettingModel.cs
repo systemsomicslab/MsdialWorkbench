@@ -12,10 +12,8 @@ using System.Collections.Generic;
 namespace CompMs.App.Msdial.Model.Setting
 {
     public abstract class LbmAnnotationSettingModel : DataBaseAnnotationSettingModelBase, IAnnotationSettingModel {
-        public LbmAnnotationSettingModel(DataBaseAnnotationSettingModelBase model, ParameterBase parameter)
-            : base(model) {
-
-            LipidQueryContainer = parameter.LipidQueryContainer;
+        public LbmAnnotationSettingModel(DataBaseAnnotationSettingModelBase model, ParameterBase parameter) : base(model) {
+            lipidQueryContainer = parameter.LipidQueryContainer;
             IonMode = parameter.IonMode;
         }
 
@@ -31,7 +29,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private IonMode ionMode;
 
-        private MoleculeDataBase db;
+        private MoleculeDataBase? db;
         public ISerializableAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> Build(ParameterBase parameter) {
             if (db is null) {
                 db = LoadDataBase(DataBaseID, DataBasePath, DBSource, parameter);

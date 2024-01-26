@@ -123,14 +123,14 @@ namespace CompMs.App.Msdial.Model.Setting
             return null;
         }
 
-        public void RemoveAnnotator(IAnnotatorSettingModel annotator) {
-            if (!(annotator is null)) {
+        public void RemoveAnnotator(IAnnotatorSettingModel? annotator) {
+            if (annotator is not null) {
                 AnnotatorModels.Remove(annotator);
             }
         }
 
-        public void MoveUpAnnotator(IAnnotatorSettingModel annotator) {
-            if (!(annotator is null)) {
+        public void MoveUpAnnotator(IAnnotatorSettingModel? annotator) {
+            if (annotator is not null) {
                 var index = AnnotatorModels.IndexOf(annotator);
                 if (index <= 0 || index >= AnnotatorModels.Count) {
                     return;
@@ -139,8 +139,8 @@ namespace CompMs.App.Msdial.Model.Setting
             }
         }
 
-        public void MoveDownAnnotator(IAnnotatorSettingModel annotator) {
-            if (!(annotator is null)) {
+        public void MoveDownAnnotator(IAnnotatorSettingModel? annotator) {
+            if (annotator is not null) {
                 var index = AnnotatorModels.IndexOf(annotator);
                 if (index < 0 || index >= AnnotatorModels.Count - 1) {
                     return;

@@ -26,8 +26,8 @@ namespace CompMs.App.Msdial.View.PeakCuration
     /// Interaction logic for SampleTableViewerInAlignmentLegacy.xaml
     /// </summary>
     public partial class SampleTableViewerInAlignmentLegacy : Window {
-        private SampleTableViewerInAlignmentViewModelLegacy _sampleTableViewerInAlignmentVM;
-        private IDisposable _gcViewUnsubscriber, _driftViewUnsubscriber;
+        private SampleTableViewerInAlignmentViewModelLegacy? _sampleTableViewerInAlignmentVM;
+        private IDisposable? _gcViewUnsubscriber, _driftViewUnsubscriber;
 
         public SampleTableViewerInAlignmentLegacy() {
             InitializeComponent();
@@ -45,7 +45,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
         }
 
         private void DataGrid_RawData_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            if (DataGrid_RawData is null || _sampleTableViewerInAlignmentVM.SelectedData is null) return;
+            if (DataGrid_RawData is null || _sampleTableViewerInAlignmentVM?.SelectedData is null) return;
             // this.SampleTableViewerInAlignmentVM.PwPID = SampleTableViewerInAlignmentVM.SelectedData.PeakAreaBean.PeakID;
         }
 
@@ -59,8 +59,8 @@ namespace CompMs.App.Msdial.View.PeakCuration
         }
 
         private void DataGrid_RawData_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-            var selectedData = _sampleTableViewerInAlignmentVM.SelectedData;
-            var parameter = _sampleTableViewerInAlignmentVM.Parameter;
+            var selectedData = _sampleTableViewerInAlignmentVM?.SelectedData;
+            var parameter = _sampleTableViewerInAlignmentVM?.Parameter;
             if (selectedData is null || parameter is null) {
                 return;
             }
@@ -76,8 +76,8 @@ namespace CompMs.App.Msdial.View.PeakCuration
                 DataGrid_RawData.CommitEdit();
                 DataGrid_RawData.Items.Refresh();
                 selectedData.UpdateBackgroundColor();
-                _sampleTableViewerInAlignmentVM.UpdateCentralRetentionInformation();
-                _sampleTableViewerInAlignmentVM.RaisePropertyChanged();
+                _sampleTableViewerInAlignmentVM?.UpdateCentralRetentionInformation();
+                _sampleTableViewerInAlignmentVM?.RaisePropertyChanged();
                 DataGrid_RawData.ScrollIntoView(selectedData);
             }
         }
@@ -162,18 +162,20 @@ namespace CompMs.App.Msdial.View.PeakCuration
         Drift,
     }
 
-    internal sealed class SampleTableViewerInAlignmentModelLegacy : BindableBase {
+    internal sealed class SampleTableViewerInAlignmentModelLegacy : DisposableModelBase {
         public SampleTableViewerInAlignmentModelLegacy(
             IObservable<AlignmentSpotPropertyModel?> alignmentProp,
             IObservable<List<PeakChromatogram>> chromatoramSource,
             List<AnalysisFileBean> files,
             ParameterBase parameter) {
 
-            Source = GetSourceOfAlignedSampleTableViewer(alignmentProp, chromatoramSource, files, parameter).ToReactiveProperty();
+            Source = GetSourceOfAlignedSampleTableViewer(alignmentProp, chromatoramSource, files, parameter).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             Parameter = parameter;
             switch (parameter) {
-                case MsdialGcMsApi.Parameter.MsdialGcmsParameter _:
-                    ViewType = SampleChromatogramType.RI;
+                case MsdialGcMsApi.Parameter.MsdialGcmsParameter gcparameter:
+                    if (gcparameter.AlignmentIndexType == CompMs.Common.Enum.AlignmentIndexType.RI) {
+                        ViewType = SampleChromatogramType.RI;
+                    }
                     break;
                 case MsdialLcImMsApi.Parameter.MsdialLcImMsParameter _:
                     ViewType = SampleChromatogramType.Drift;
@@ -184,7 +186,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
             }
         }
 
-        public ReactiveProperty<SampleTableRows> Source { get; }
+        public ReadOnlyReactivePropertySlim<SampleTableRows?> Source { get; }
         public ParameterBase Parameter { get; }
         public SampleChromatogramType ViewType { get; } 
 
@@ -211,7 +213,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
                     var brushes = Enumerable.Range(0, files.Count).Select(ChartBrushes.GetChartBrush);
                     var rows = files.Zip(peaks_, brushes).Where(triple => triple.Item1.AnalysisFileIncluded)
                         .Zip(chromatograms_, (triple, chromatogram) =>
-                            GetSampleTableRow(prop, triple.Item2, chromatogram, triple.Item1, classnameToBrushes.TryGetValue(triple.Item1.AnalysisFileClass, out var b) ? b : triple.Item3, parameter.CentroidMs1Tolerance));
+                            GetSampleTableRow(prop!, triple.Item2, chromatogram, triple.Item1, classnameToBrushes.TryGetValue(triple.Item1.AnalysisFileClass, out var b) ? b : triple.Item3, parameter.CentroidMs1Tolerance));
                     return new SampleTableRows(new ObservableCollection<SampleTableRow>(rows));
                 });
             }).Switch();
@@ -266,13 +268,13 @@ namespace CompMs.App.Msdial.View.PeakCuration
         #region member variables and properties
         public ParameterBase Parameter => _model.Parameter;
 
-        public SampleTableRow SelectedData {
+        public SampleTableRow? SelectedData {
             get => _selectedData;
             set => SetProperty(ref _selectedData, value);
         }
-        private SampleTableRow _selectedData;
+        private SampleTableRow? _selectedData;
 
-        public ReadOnlyReactivePropertySlim<SampleTableRows> Source { get; }
+        public ReadOnlyReactivePropertySlim<SampleTableRows?> Source { get; }
 
         public IObservable<SampleChromatogramType> ViewType => Observable.Return(_model.ViewType);
         #endregion
@@ -336,13 +338,13 @@ namespace CompMs.App.Msdial.View.PeakCuration
         public ChromatogramXicViewModelLegacy ChromVM { get; set; }
         public string AnalysisClass { set; get; }
         public int CheckForRep { get; set; }
-        public Drawing Drawing {
+        public Drawing? Drawing {
             get => _drawing;
             set => SetProperty(ref _drawing, value);
         }
-        private Drawing _drawing;
-        public SolidColorBrush BackgroundColInt { set; get; }
-        public SolidColorBrush BackgroundColArea { set; get; }
+        private Drawing? _drawing;
+        public SolidColorBrush? BackgroundColInt { set; get; }
+        public SolidColorBrush? BackgroundColArea { set; get; }
         #endregion
         //private List<SolidColorBrush> redColorList = new List<SolidColorBrush>();
 

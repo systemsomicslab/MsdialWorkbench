@@ -71,7 +71,7 @@ namespace CompMs.App.Msdial.Model.Imms
             _undoManager = new UndoManager().AddTo(Disposables);
 
             var spotsSource = new AlignmentSpotSource(alignmentFileModel, Container, CHROMATOGRAM_SPOT_SERIALIZER).AddTo(Disposables);
-            Ms1Spots = spotsSource.Spots.Items;
+            Ms1Spots = spotsSource.Spots!.Items;
             InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Imms).AddTo(Disposables);
             NormalizationSetModel = new NormalizationSetModel(Container, _files, fileCollection, _dataBaseMapper, MatchResultEvaluator, InternalStandardSetModel, _parameter, broker).AddTo(Disposables);
 

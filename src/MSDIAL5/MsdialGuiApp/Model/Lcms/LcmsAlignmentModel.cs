@@ -98,7 +98,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             _messageBroker = messageBroker;
 
             var spotsSource = new AlignmentSpotSource(alignmentFileBean, Container, CHROMATOGRAM_SPOT_SERIALIZER).AddTo(Disposables);
-            Ms1Spots = spotsSource.Spots.Items;
+            Ms1Spots = spotsSource.Spots!.Items;
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel?>().AddTo(Disposables);
             CurrentRepresentativeFile = Target.Select(t => t is null ? null : fileCollection.FindByID(t.RepresentativeFileID)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
@@ -245,7 +245,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
             }
 
-            MultivariateAnalysisSettingModel = new MultivariateAnalysisSettingModel(parameter, Ms1Spots, evaluator, files, classBrush);
+            MultivariateAnalysisSettingModel = new MultivariateAnalysisSettingModel(parameter, Ms1Spots, evaluator, files, classBrush).AddTo(Disposables);
 
             FindTargetCompoundSpotModel = new FindTargetCompoundsSpotModel(spotsSource.Spots.Items, Target, messageBroker).AddTo(Disposables);
         }

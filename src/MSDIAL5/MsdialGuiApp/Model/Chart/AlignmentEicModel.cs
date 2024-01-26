@@ -78,8 +78,8 @@ namespace CompMs.App.Msdial.Model.Chart
                 }.CombineLatestValuesAreAllTrue().StartWith(false)
             ).Switch().ToReactiveProperty().AddTo(Disposables);
 
-            SampleTableViewerInAlignmentModelLegacy = new SampleTableViewerInAlignmentModelLegacy(model, eicChromatograms, analysisFiles, parameter);
-            AlignedChromatogramModificationModelLegacy = new AlignedChromatogramModificationModelLegacy(model, eicChromatograms, analysisFiles, parameter);
+            SampleTableViewerInAlignmentModelLegacy = new SampleTableViewerInAlignmentModelLegacy(model, eicChromatograms, analysisFiles, parameter).AddTo(Disposables);
+            AlignedChromatogramModificationModelLegacy = new AlignedChromatogramModificationModelLegacy(model, eicChromatograms, analysisFiles, parameter).AddTo(Disposables);
         }
 
         public IObservable<bool> CanShow { get; }

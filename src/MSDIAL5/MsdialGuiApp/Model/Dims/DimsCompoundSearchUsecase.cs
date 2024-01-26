@@ -14,6 +14,8 @@ namespace CompMs.App.Msdial.Model.Dims
     {
         public DimsCompoundSearchUsecase(IReadOnlyList<CompoundSearcher> compoundSearchers) {
             CompoundSearchers = compoundSearchers;
+            _selectedCompoundSearcher = compoundSearchers.First();
+            _searchParameterBase = _selectedCompoundSearcher.MsRefSearchParameter;
         }
 
         public IReadOnlyList<CompoundSearcher> CompoundSearchers { get; }
@@ -36,10 +38,10 @@ namespace CompMs.App.Msdial.Model.Dims
         }
         private MsRefSearchParameterBase _searchParameterBase;
 
-        public object SearchMethod {
+        public object? SearchMethod {
             get => SelectedCompoundSearcher;
             set {
-                if (SearchMethod != value && SearchMethods.Contains(value)) {
+                if (SearchMethod != value && value is not null && SearchMethods.Contains(value)) {
                     SelectedCompoundSearcher = (CompoundSearcher)value;
                     OnPropertyChanged(nameof(SearchMethod));
                 }

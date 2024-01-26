@@ -80,7 +80,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             _target = target;
 
             var spotsSource = new AlignmentSpotSource(alignmentFileBean, Container, chromatogramSpotSerializer).AddTo(Disposables);
-            var ms1Spots = spotsSource.Spots.Items;
+            var ms1Spots = spotsSource.Spots!.Items;
 
             InternalStandardSetModel = new InternalStandardSetModel(spotsSource.Spots.Items, TargetMsMethod.Gcms).AddTo(Disposables);
             NormalizationSetModel = new NormalizationSetModel(Container, files, fileCollection, mapper, evaluator, InternalStandardSetModel, parameter, broker).AddTo(Disposables);
