@@ -186,7 +186,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                     break;
             }
 
-            var barItemsLoaderProperty = barItemsLoaderDataProperty.SelectSwitch(data => data.ObservableLoader).ToReactiveProperty<IBarItemsLoader>().AddTo(Disposables);
+            var barItemsLoaderProperty = barItemsLoaderDataProperty.Select(data => data.Loader).ToReactiveProperty<IBarItemsLoader>().AddTo(Disposables);
             var filter = peakSpotFiltering.CreateFilter(peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), FilterEnableStatus.All);
             AlignmentSpotTableModel = new GcmsAlignmentSpotTableModel(ms1Spots, target, barBrush, projectBaseParameter.ClassProperties, barItemsLoaderProperty, filter, spectraLoader).AddTo(Disposables);
 
@@ -259,7 +259,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         public IObservable<bool> CanSetUnknown => _target.Select(t => !(t is null));
         public void SetUnknown() => _target.Value?.SetUnknown(UndoManager);
 
-        public CompoundSearchModel<PeakSpotModel> CreateCompoundSearchModel() {
+        public CompoundSearchModel<PeakSpotModel>? CreateCompoundSearchModel() {
             if (!(_target.Value is AlignmentSpotPropertyModel spot && _msdecResult.Value is MSDecResult scan)) {
                 return null;
             }

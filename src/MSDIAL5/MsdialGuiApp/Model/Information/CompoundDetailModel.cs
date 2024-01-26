@@ -28,7 +28,7 @@ namespace CompMs.App.Msdial.Model.Information
                 InChIKey = reference_?.InChIKey;
             }).AddTo(Disposables);
 
-            _compoundSimilaritiesMaps = new ObservableCollection<Func<MsScanMatchResult, ISimilarity>>();
+            _compoundSimilaritiesMaps = new ObservableCollection<Func<MsScanMatchResult?, ISimilarity>>();
             CompoundSimilarities = new ReadOnlyObservableCollection<ISimilarity>(new ObservableCollection<ISimilarity>());
             result.Select(r => _compoundSimilaritiesMaps.ToReadOnlyReactiveCollection(f => f(r)))
                 .DisposePreviousValue()
@@ -48,8 +48,8 @@ namespace CompMs.App.Msdial.Model.Information
         }
         private ReadOnlyObservableCollection<ISimilarity> _compoundSimilarities;
 
-        private readonly ObservableCollection<Func<MsScanMatchResult, ISimilarity>> _compoundSimilaritiesMaps;
-        public void Add(params Func<MsScanMatchResult, ISimilarity>[] maps) {
+        private readonly ObservableCollection<Func<MsScanMatchResult?, ISimilarity>> _compoundSimilaritiesMaps;
+        public void Add(params Func<MsScanMatchResult?, ISimilarity>[] maps) {
             foreach (var map in maps) {
                 _compoundSimilaritiesMaps.Add(map);
             }

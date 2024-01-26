@@ -29,6 +29,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
@@ -46,7 +47,7 @@ namespace CompMs.App.Msdial.Model.Dims
         private readonly AlignmentFileBeanModel _alignmentFile;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _matchResultEvaluator;
-        private readonly ReadOnlyReactivePropertySlim<MSDecResult> _msdecResult;
+        private readonly ReadOnlyReactivePropertySlim<MSDecResult?> _msdecResult;
         private readonly ParameterBase _parameter;
         private readonly List<AnalysisFileBean> _files;
         private readonly AnalysisFileBeanModelCollection _fileCollection;
@@ -173,12 +174,12 @@ namespace CompMs.App.Msdial.Model.Dims
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            var barItemsLoaderObservable = barItemsLoaderDataProperty.SkipNull().SelectSwitch(data => data.ObservableLoader);
+            var barItemsLoaderObservable = barItemsLoaderDataProperty.SkipNull().Select(data => data.Loader);
             var filter = peakSpotFiltering.CreateFilter(peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), FilterEnableStatus.All);
             AlignmentSpotTableModel = new DimsAlignmentSpotTableModel(Ms1Spots, target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderObservable, filter, spectraLoader).AddTo(Disposables);
 
-            _msdecResult = target.SkipNull()
-                .Select(t => _alignmentFile.LoadMSDecResultByIndexAsync(t.MasterAlignmentID))
+            _msdecResult = target
+                .DefaultIfNull(t => _alignmentFile.LoadMSDecResultByIndexAsync(t.MasterAlignmentID), Task.FromResult<MSDecResult?>(null))
                 .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -240,18 +241,18 @@ namespace CompMs.App.Msdial.Model.Dims
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
         public CompoundSearchModel<PeakSpotModel>? BuildCompoundSearchModel() {
-            if (Target.Value is AlignmentSpotPropertyModel spot) {
-                var plotService = new PlotComparedMsSpectrumUsecase(_msdecResult.Value);
-                var compoundSearchModel = new CompoundSearchModel<PeakSpotModel>(
-                    _files[spot.RepresentativeFileID],
-                    new PeakSpotModel(spot, _msdecResult.Value),
-                    new DimsCompoundSearchUsecase(_compoundSearchers.Items),
-                    plotService,
-                    new SetAnnotationUsecase(spot, spot.MatchResultsModel, _undoManager));
-                compoundSearchModel.Disposables.Add(plotService);
-                return compoundSearchModel;
+            if (Target.Value is not AlignmentSpotPropertyModel spot || _msdecResult.Value is not MSDecResult msdec) {
+                return null;
             }
-            return null;
+            var plotService = new PlotComparedMsSpectrumUsecase(msdec);
+            var compoundSearchModel = new CompoundSearchModel<PeakSpotModel>(
+                _files[spot.RepresentativeFileID],
+                new PeakSpotModel(spot, msdec),
+                new DimsCompoundSearchUsecase(_compoundSearchers.Items),
+                plotService,
+                new SetAnnotationUsecase(spot, spot.MatchResultsModel, _undoManager));
+            compoundSearchModel.Disposables.Add(plotService);
+            return compoundSearchModel;
         }
 
         public InternalStandardSetModel InternalStandardSetModel { get; }

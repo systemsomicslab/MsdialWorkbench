@@ -239,8 +239,8 @@ namespace CompMs.App.Msdial.Model.Gcms
             return new LoadChromatogramsUsecase(_ticLoader, _bpcLoader, _eicLoader, _peaks, _peakPickParameter);
         }
 
-        public CompoundSearchModel<Ms1BasedSpectrumFeature> CreateCompoundSearchModel() {
-            if (!(_spectrumFeatures.SelectedSpectrum.Value is Ms1BasedSpectrumFeature spectrumFeature)) {
+        public CompoundSearchModel<Ms1BasedSpectrumFeature>? CreateCompoundSearchModel() {
+            if (_spectrumFeatures.SelectedSpectrum.Value is not Ms1BasedSpectrumFeature spectrumFeature) {
                 return null;
             }
             var plotService = new PlotComparedMsSpectrumUsecase(spectrumFeature.Scan);

@@ -108,7 +108,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private DelegateCommand? _showTicCommand;
 
         public DelegateCommand ShowBpcCommand => _showBpcCommand ??= new DelegateCommand(ShowChromatograms(bpc: true));
-        private DelegateCommand _showBpcCommand;
+        private DelegateCommand? _showBpcCommand;
 
         public DelegateCommand ShowEicCommand => _showEicCommand ??= new DelegateCommand(ShowChromatograms());
         private DelegateCommand? _showEicCommand;
@@ -250,7 +250,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
 
             ReadOnlyReactivePropertySlim<LcmsAlignmentViewModel?>? result;
-            using (var subject = new Subject<LcmsAlignmentModel>()) {
+            using (var subject = new Subject<LcmsAlignmentModel?>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AlignmentModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
                     .Select(m => m is null ? null : new LcmsAlignmentViewModel(m, broker, focusControlManager))
                     .DisposePreviousValue()

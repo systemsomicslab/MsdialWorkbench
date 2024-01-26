@@ -202,7 +202,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().SelectSwitch(data => data.ObservableLoader);
+            var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().Select(data => data.Loader);
             var filter = peakSpotFiltering.CreateFilter(peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), FilterEnableStatus.All);
             AlignmentSpotTableModel = new LcmsAlignmentSpotTableModel(Ms1Spots, Target, barBrush, projectBaseParameter.ClassProperties, barItemsLoaderProperty, parameter.ProjectParam.TargetOmics, filter, spectraLoader).AddTo(Disposables);
 
@@ -330,7 +330,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private MolecularNetworkInstance GetMolecularNetworkInstance(MolecularSpectrumNetworkingBaseParameter parameter) {
             var param = _projectBaseParameter;
             var loaderProperty = _barItemsLoaderDataProperty.Value;
-            var loader = loaderProperty.ObservableLoader.ToReactiveProperty().Value;
+            var loader = loaderProperty.Loader;
             var publisher = new TaskProgressPublisher(_messageBroker, $"Exporting MN results in {parameter.ExportFolderPath}");
 
             using (publisher.Start()) {
@@ -370,7 +370,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             var param = _projectBaseParameter;
             var loaderProperty = _barItemsLoaderDataProperty.Value;
-            var loader = loaderProperty.ObservableLoader.ToReactiveProperty().Value;
+            var loader = loaderProperty.Loader;
             var publisher = new TaskProgressPublisher(_messageBroker, $"Preparing MN results");
 
             using (publisher.Start()) {

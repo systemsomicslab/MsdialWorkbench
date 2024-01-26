@@ -146,7 +146,7 @@ namespace CompMs.App.Msdial.Model.Information
             .Subscribe()
             .AddTo(Disposables);
 
-            _peakPointMaps = new ObservableCollection<Func<AlignmentSpotPropertyModel, IPeakPoint>>();
+            _peakPointMaps = new ObservableCollection<Func<AlignmentSpotPropertyModel?, IPeakPoint>>();
             _peakPoints = new ReadOnlyReactiveCollection<IPeakPoint>(Observable.Never<IPeakPoint>(), new ObservableCollection<IPeakPoint>());
             var peakPoints = model
                 .Select(m => _peakPointMaps.ToReadOnlyReactiveCollection(f => f(m)))
@@ -154,7 +154,7 @@ namespace CompMs.App.Msdial.Model.Information
                 .Subscribe(ps => PeakPoints = ps)
                 .AddTo(Disposables);
 
-            _peakAmountMaps = new ObservableCollection<Func<AlignmentSpotPropertyModel, IPeakAmount>>();
+            _peakAmountMaps = new ObservableCollection<Func<AlignmentSpotPropertyModel?, IPeakAmount>>();
             _peakAmounts = new ReadOnlyReactiveCollection<IPeakAmount>(Observable.Never<IPeakAmount>(), new ObservableCollection<IPeakAmount>());
             var peakAmounts = model
                 .Select(m => _peakAmountMaps.ToReadOnlyReactiveCollection(f => f(m)))
@@ -205,9 +205,9 @@ namespace CompMs.App.Msdial.Model.Information
             private set => SetProperty(ref _peakPoints, value);
         }
         private ReadOnlyReactiveCollection<IPeakPoint> _peakPoints;
-        private readonly ObservableCollection<Func<AlignmentSpotPropertyModel, IPeakPoint>> _peakPointMaps;
+        private readonly ObservableCollection<Func<AlignmentSpotPropertyModel?, IPeakPoint>> _peakPointMaps;
 
-        public void Add(params Func<AlignmentSpotPropertyModel, IPeakPoint>[] maps) {
+        public void Add(params Func<AlignmentSpotPropertyModel?, IPeakPoint>[] maps) {
             foreach (var map in maps) {
                 _peakPointMaps.Add(map);
             }
@@ -219,9 +219,9 @@ namespace CompMs.App.Msdial.Model.Information
             private set => SetProperty(ref _peakAmounts, value);
         }
         private ReadOnlyReactiveCollection<IPeakAmount> _peakAmounts;
-        private readonly ObservableCollection<Func<AlignmentSpotPropertyModel, IPeakAmount>> _peakAmountMaps;
+        private readonly ObservableCollection<Func<AlignmentSpotPropertyModel?, IPeakAmount>> _peakAmountMaps;
 
-        public void Add(params Func<AlignmentSpotPropertyModel, IPeakAmount>[] maps) {
+        public void Add(params Func<AlignmentSpotPropertyModel?, IPeakAmount>[] maps) {
             foreach (var map in maps) {
                 _peakAmountMaps.Add(map);
             }

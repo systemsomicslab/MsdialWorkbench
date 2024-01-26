@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Algorithm.Function;
@@ -84,6 +85,10 @@ namespace CompMs.App.Msdial.Model.Core {
 
         public void InvokeMoleculerNetworkingForTargetSpot() {
             var network = GetMolecularNetworkingInstanceForTargetSpot(_molecularSpectrumNetworkingParameter);
+            if (network is null) {
+                _broker.Publish(new ShortMessageRequest("Failed to calculate molecular network.\nPlease check selected peak spot."));
+                return;
+            }
             CytoscapejsModel.SendToCytoscapeJs(network);
         }
 
@@ -111,7 +116,10 @@ namespace CompMs.App.Msdial.Model.Core {
             }
         }
 
-        private MolecularNetworkInstance GetMolecularNetworkingInstanceForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter) {
+        private MolecularNetworkInstance? GetMolecularNetworkingInstanceForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter) {
+            if (Target.Value is not ChromatogramPeakFeatureModel targetSpot) {
+                return null;
+            }
             if (parameter.MaxEdgeNumberPerNode == 0) {
                 parameter.MinimumPeakMatch = 3;
                 parameter.MaxEdgeNumberPerNode = 6;
@@ -122,7 +130,6 @@ namespace CompMs.App.Msdial.Model.Core {
                 var spots = Ms1Peaks;
                 var peaks = AnalysisFileModel.MSDecLoader.LoadMSDecResults();
 
-                var targetSpot = Target.Value;
                 var targetPeak = peaks[targetSpot.MasterPeakID];
 
                 void notify(double progressRate) {

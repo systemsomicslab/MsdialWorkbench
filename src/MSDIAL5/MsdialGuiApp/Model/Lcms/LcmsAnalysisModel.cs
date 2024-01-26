@@ -261,7 +261,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             return new LoadChromatogramsUsecase(_ticLoader, _bpcLoader, EicLoader, Ms1Peaks, _parameter.PeakPickBaseParam);
         }
 
-        public CompoundSearchModel<PeakSpotModel> CreateCompoundSearchModel() {
+        public CompoundSearchModel<PeakSpotModel>? CreateCompoundSearchModel() {
             if (Target.Value?.InnerModel is null || MsdecResult.Value is null) {
                 return null;
             }
@@ -300,7 +300,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 _parameter);
         }
 
-        public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;
+        public bool CanSaveSpectra() => Target.Value?.InnerModel != null && MsdecResult.Value != null;
 
         public async Task SaveRawSpectra(string filename) {
             if (!(Target.Value is ChromatogramPeakFeatureModel target)) {

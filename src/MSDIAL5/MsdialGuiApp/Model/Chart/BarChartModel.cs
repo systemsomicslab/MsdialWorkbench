@@ -16,7 +16,7 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class BarChartModel : DisposableModelBase {
         public BarChartModel(IObservable<AlignmentSpotPropertyModel?> source, IReactiveProperty<BarItemsLoaderData> barItemsLoaderData, IList<BarItemsLoaderData> barItemsLoaderDatas, IObservable<IBrushMapper<BarItem>> classBrush, FilePropertiesModel projectBaseParameter, AnalysisFileBeanModelCollection fileModelCollection, FileClassPropertiesModel fileClassProperties) {
-            var barItemsLoader = barItemsLoaderData.Where(data => data != null).SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
+            var barItemsLoader = barItemsLoaderData.Where(data => data != null).Select(data => data.Loader).ToReactiveProperty().AddTo(Disposables);
             var barItemCollectionSource = source.CombineLatest(barItemsLoader,
                     (src, loader) => src is null || loader is null
                         ? new BarItemCollection()
