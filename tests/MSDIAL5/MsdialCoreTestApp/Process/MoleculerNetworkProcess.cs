@@ -3,6 +3,7 @@ using CompMs.Common.Algorithm.Function;
 using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.NodeEdge;
+using CompMs.Common.Extension;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using System;
@@ -11,6 +12,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
     public class MoleculerNetworkProcess {
@@ -26,36 +28,73 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             var param = ConfigParser.ReadForMoleculerNetworkingParameter(methodFile);
 
             var counter = 0;
+            var syncObj = new object();
+
+            Console.WriteLine("Total file count: {0}", files.Count);
             for (int i = 0; i < files.Count; i++) {
+                var masterSW = Stopwatch.StartNew();
                 var inputA = files[i];
                 var recordsA = LibraryHandler.ReadMspLibrary(inputA).Where(n => n.IonMode.ToString() == ionMode && n.Spectrum?.Count() > 0).ToList();
+                if (recordsA.Count <= 1) continue;
                 foreach (var record in recordsA) 
                     record.Spectrum = MsScanMatching.GetProcessedSpectrum(record.Spectrum, record.PrecursorMz, absoluteAbundanceCutOff: param.MnAbsoluteAbundanceCutOff, relativeAbundanceCutOff: param.MnRelativeAbundanceCutOff);
-                
-                for (int j = i; j < files.Count; j++) {
+                var progress = 0;
+                Parallel.For(i, files.Count, j => {
+                    var stopwatch = Stopwatch.StartNew();
                     var inputB = files[j];
                     var recordsB = LibraryHandler.ReadMspLibrary(inputB).Where(n => n.IonMode.ToString() == ionMode && n.Spectrum?.Count() > 0).ToList();
+                    if (recordsB.Count <= 1) return;
 
                     foreach (var record in recordsB)
                         record.Spectrum = MsScanMatching.GetProcessedSpectrum(record.Spectrum, record.PrecursorMz, absoluteAbundanceCutOff: param.MnAbsoluteAbundanceCutOff, relativeAbundanceCutOff: param.MnRelativeAbundanceCutOff);
 
                     var sameFileOffset = inputA == inputB ? 1 : 0;
 
-                    Console.WriteLine("Start {0} vs {1}", Path.GetFileNameWithoutExtension(inputA), Path.GetFileNameWithoutExtension(inputB));
-                    var stopwatch = Stopwatch.StartNew();
+                    // Console.WriteLine("Start {0} vs {1}", Path.GetFileNameWithoutExtension(inputA), Path.GetFileNameWithoutExtension(inputB));
                     var edges = MoleculerNetworkingBase.GenerateEdges(recordsA, recordsB, param.MnMassTolerance,
                         param.MinimumPeakMatch, param.MnSpectrumSimilarityCutOff, param.MaxEdgeNumberPerNode + sameFileOffset,
-                        param.MaxPrecursorDifference, param.MaxPrecursorDifferenceAsPercent, 
+                        param.MaxPrecursorDifference, param.MaxPrecursorDifferenceAsPercent,
                         param.MsmsSimilarityCalc == Common.Enum.MsmsSimilarityCalc.Bonanza ? true : false,
                         null);
-                    Console.WriteLine();
-                    Console.WriteLine("Time {0} sec", stopwatch.ElapsedMilliseconds * 0.001);
+                    // Console.WriteLine();
+                    // Console.WriteLine("Time {0} sec", stopwatch.ElapsedMilliseconds * 0.001);
 
                     var outputName = Path.GetFileNameWithoutExtension(inputA) + "_mn_" + Path.GetFileNameWithoutExtension(inputB) + ".pairs";
                     var outputPath = Path.Combine(folder, outputName);
                     ExportEdges(outputPath, edges, inputA, inputB);
-                    Console.WriteLine("Done");
-                }
+                    lock (syncObj) {
+                        progress++;
+                        Console.WriteLine("Progress {0} in {1}/{2} by time {3} sec for Query1 {4} vs Query2 {5}", outputName, progress, files.Count, stopwatch.ElapsedMilliseconds * 0.001, recordsA.Count, recordsB.Count);
+                    }
+                });
+                counter++;
+                Console.WriteLine("Done {0}/{1} by time {2} sec", counter, files.Count, masterSW.ElapsedMilliseconds * 0.001);
+
+                //for (int j = i; j < files.Count; j++) {
+                //    var inputB = files[j];
+                //    var recordsB = LibraryHandler.ReadMspLibrary(inputB).Where(n => n.IonMode.ToString() == ionMode && n.Spectrum?.Count() > 0).ToList();
+                //    if (recordsB.Count <= 1) continue;
+
+                //    foreach (var record in recordsB)
+                //        record.Spectrum = MsScanMatching.GetProcessedSpectrum(record.Spectrum, record.PrecursorMz, absoluteAbundanceCutOff: param.MnAbsoluteAbundanceCutOff, relativeAbundanceCutOff: param.MnRelativeAbundanceCutOff);
+
+                //    var sameFileOffset = inputA == inputB ? 1 : 0;
+
+                //    Console.WriteLine("Start {0} vs {1}", Path.GetFileNameWithoutExtension(inputA), Path.GetFileNameWithoutExtension(inputB));
+                //    var stopwatch = Stopwatch.StartNew();
+                //    var edges = MoleculerNetworkingBase.GenerateEdges(recordsA, recordsB, param.MnMassTolerance,
+                //        param.MinimumPeakMatch, param.MnSpectrumSimilarityCutOff, param.MaxEdgeNumberPerNode + sameFileOffset,
+                //        param.MaxPrecursorDifference, param.MaxPrecursorDifferenceAsPercent, 
+                //        param.MsmsSimilarityCalc == Common.Enum.MsmsSimilarityCalc.Bonanza ? true : false,
+                //        null);
+                //    Console.WriteLine();
+                //    Console.WriteLine("Time {0} sec", stopwatch.ElapsedMilliseconds * 0.001);
+
+                //    var outputName = Path.GetFileNameWithoutExtension(inputA) + "_mn_" + Path.GetFileNameWithoutExtension(inputB) + ".pairs";
+                //    var outputPath = Path.Combine(folder, outputName);
+                //    ExportEdges(outputPath, edges, inputA, inputB);
+                //    Console.WriteLine("Done");
+                //}
 
                 counter++;
                 Console.WriteLine("Finish processing against {0}", Path.GetFileNameWithoutExtension(inputA));
