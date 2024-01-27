@@ -42,10 +42,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             SaveAsTableCommand = new AsyncReactiveCommand().WithSubscribe(model.SaveAsTableAsync).AddTo(Disposables);
         }
 
-        public ReadOnlyReactivePropertySlim<ChromatogramsViewModel> RawChromatogramsViewModel { get; }
-        public ReadOnlyReactivePropertySlim<ChromatogramsViewModel> DeconvolutedChromatogramsViewModel { get; }
-        public ReadOnlyReactivePropertySlim<AxisItemModel<double>> HorizontalAxisItemModel { get; }
-        public ReadOnlyReactivePropertySlim<AxisItemModel<double>> VerticalAxisItemModel { get; }
+        public ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> RawChromatogramsViewModel { get; }
+        public ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> DeconvolutedChromatogramsViewModel { get; }
+        public ReadOnlyReactivePropertySlim<AxisItemModel<double>?> HorizontalAxisItemModel { get; }
+        public ReadOnlyReactivePropertySlim<AxisItemModel<double>?> VerticalAxisItemModel { get; }
 
         public ReactivePropertySlim<bool> IsRawSelected { get; }
         public ReactivePropertySlim<bool> IsDeconvolutedSelected { get; }

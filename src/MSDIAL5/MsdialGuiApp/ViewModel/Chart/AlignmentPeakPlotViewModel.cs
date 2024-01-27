@@ -75,25 +75,25 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public IAxisManager<double> VerticalAxis { get; }
 
-        public ReadOnlyReactivePropertySlim<IBrushMapper<AlignmentSpotPropertyModel>> Brush { get; }
+        public ReadOnlyReactivePropertySlim<IBrushMapper<AlignmentSpotPropertyModel>?> Brush { get; }
 
         public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes => _model.Brushes;
 
         public ReactiveProperty<BrushMapData<AlignmentSpotPropertyModel>> SelectedBrush { get; }
 
-        public IReactiveProperty<AlignmentSpotPropertyModel> Target { get; }
+        public IReactiveProperty<AlignmentSpotPropertyModel?> Target { get; }
 
-        public ReadOnlyReactivePropertySlim<string> GraphTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> GraphTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> HorizontalTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> HorizontalTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> VerticalTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> VerticalTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> HorizontalProperty { get; }
+        public ReadOnlyReactivePropertySlim<string?> HorizontalProperty { get; }
 
-        public ReadOnlyReactivePropertySlim<string> VerticalProperty { get; }
+        public ReadOnlyReactivePropertySlim<string?> VerticalProperty { get; }
 
-        public ReadOnlyReactivePropertySlim<string> LabelProperty { get; }
+        public ReadOnlyReactivePropertySlim<string?> LabelProperty { get; }
 
         public AsyncReactiveCommand DuplicatesCommand { get; }
 

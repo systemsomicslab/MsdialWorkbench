@@ -108,8 +108,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public ICollectionView Ms1Spots { get; }
         public ICollectionView PeakSpotsView => Ms1Spots;
 
-        public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
-        public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel> CurrentRepresentativeFile => _model.CurrentRepresentativeFile;
+        public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel?> Target { get; }
+        public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel?> CurrentRepresentativeFile => _model.CurrentRepresentativeFile;
 
         public AlignmentPeakPlotViewModel PlotViewModel { get; }
         public AlignmentMs2SpectrumViewModel Ms2SpectrumViewModel { get; }
@@ -119,9 +119,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
         public PeakInformationViewModel PeakInformationViewModel { get; }
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
-        public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
+        public MoleculeStructureViewModel? MoleculeStructureViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
-        public IObservable<ProteinResultContainerModel> ProteinResultContainerAsObservable { get; }
+        public IObservable<ProteinResultContainerModel?> ProteinResultContainerAsObservable { get; }
         public ICommand InternalStandardSetCommand { get; }
         public NormalizationSetViewModel NormalizationSetViewModel { get; }
         public ReactiveCommand ShowNormalizationSettingCommand { get; }

@@ -24,7 +24,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
     public interface IDataBaseSettingViewModel : INotifyPropertyChanged
     {
         DataBaseSettingModel Model { get; }
-        IReadOnlyReactiveProperty<string> DataBaseID { get; }
+        IReadOnlyReactiveProperty<string?> DataBaseID { get; }
         IReadOnlyReactiveProperty<DataBaseSource> DBSource { get; }
         IReadOnlyReactiveProperty<bool> ObserveHasErrors { get; }
     }
@@ -263,14 +263,14 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public DataBaseSettingModel Model { get; }
 
-        public ReadOnlyReactivePropertySlim<string> DataBaseID { get; }
+        public ReadOnlyReactivePropertySlim<string?> DataBaseID { get; }
 
         public ReadOnlyReactivePropertySlim<DataBaseSource> DBSource { get; }
 
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
 
         // IDataBaseSettingViewModel interface
-        IReadOnlyReactiveProperty<string> IDataBaseSettingViewModel.DataBaseID => DataBaseID;
+        IReadOnlyReactiveProperty<string?> IDataBaseSettingViewModel.DataBaseID => DataBaseID;
         IReadOnlyReactiveProperty<DataBaseSource> IDataBaseSettingViewModel.DBSource => DBSource;
         IReadOnlyReactiveProperty<bool> IDataBaseSettingViewModel.ObserveHasErrors => ObserveHasErrors;
     }

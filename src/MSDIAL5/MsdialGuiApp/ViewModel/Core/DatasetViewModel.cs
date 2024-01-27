@@ -60,7 +60,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         public ParameterBase? Parameter => Model?.Storage?.Parameter; // To show the project folder path in MainWindow title.
 
-        public ReadOnlyReactivePropertySlim<MethodViewModel> MethodViewModel { get; }
+        public ReadOnlyReactivePropertySlim<MethodViewModel?> MethodViewModel { get; }
 
         public ReactiveCommand FilePropertyResetCommand { get; }
 
@@ -79,7 +79,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public ReactiveCommand ProjectSettingCommand { get; }
         public ReactiveCommand SaveParameterAsCommand { get; }
 
-        private MethodViewModel? ConvertToViewModel(IMethodModel model) {
+        private MethodViewModel? ConvertToViewModel(IMethodModel? model) {
             switch (model) {
                 case LcmsMethodModel lc:
                     return LcmsMethodViewModel.Create(lc, _messageBroker);

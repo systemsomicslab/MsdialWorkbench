@@ -36,7 +36,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         public double RiMin { get; }
         public double RiMax { get; }
 
-        public ReadOnlyReactivePropertySlim<IChromatogramLoader<Ms1BasedSpectrumFeature>> EicLoader { get; }
+        public ReadOnlyReactivePropertySlim<IChromatogramLoader<Ms1BasedSpectrumFeature>?> EicLoader { get; }
         public ReactiveCommand MarkAllAsConfirmedCommand { get; }
     }
 }

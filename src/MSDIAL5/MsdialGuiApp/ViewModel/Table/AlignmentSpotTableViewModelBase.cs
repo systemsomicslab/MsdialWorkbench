@@ -31,7 +31,7 @@ namespace CompMs.App.Msdial.ViewModel.Table
         }
 
         public IObservable<IBarItemsLoader> BarItemsLoader { get; }
-        public ReadOnlyReactivePropertySlim<IBrushMapper<BarItem>> ClassBrush { get; }
+        public ReadOnlyReactivePropertySlim<IBrushMapper<BarItem>?> ClassBrush { get; }
         public FileClassPropertiesModel FileClassPropertiesModel { get; }
 
         public AsyncReactiveCommand ExportMatchedSpectraCommand { get; }

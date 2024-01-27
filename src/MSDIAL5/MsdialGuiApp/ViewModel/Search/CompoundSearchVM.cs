@@ -66,15 +66,15 @@ namespace CompMs.App.Msdial.ViewModel.Search
 
         public IList SearchMethods => _model.SearchMethods;
 
-        public ReactivePropertySlim<object> SearchMethod { get; }
+        public ReactivePropertySlim<object?> SearchMethod { get; }
 
         public ReadOnlyReactivePropertySlim<MsRefSearchParameterBaseViewModel?> ParameterViewModel { get; }
 
         public IFileBean File => _model.File;
 
-        public ReadOnlyReactivePropertySlim<IReadOnlyList<ICompoundResult>> Compounds { get; }
+        public ReadOnlyReactivePropertySlim<IReadOnlyList<ICompoundResult>?> Compounds { get; }
 
-        public ReactivePropertySlim<ICompoundResult> SelectedCompound { get; }
+        public ReactivePropertySlim<ICompoundResult?> SelectedCompound { get; }
 
         public ReactiveCommand SetConfidenceCommand { get; }
 

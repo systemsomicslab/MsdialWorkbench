@@ -8,7 +8,6 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
@@ -27,7 +26,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             SurveyScanLoaded = model.SurveyScanLoaded;
 
             if (horizontalAxis is null) {
-                horizontalAxis = this.model.HorizontalRangeSource
+                horizontalAxis = model.HorizontalRangeSource
                     .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                     .AddTo(Disposables);
             }
@@ -40,23 +39,23 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             }
             VerticalAxis = verticalAxis;
 
-            Spectrum = this.model.SpectrumSource
+            Spectrum = model.SpectrumSource
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            GraphTitle = this.model.Elements.ObserveProperty(m => m.GraphTitle)
+            GraphTitle = model.Elements.ObserveProperty(m => m.GraphTitle)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            HorizontalTitle = this.model.Elements.ObserveProperty(m => m.HorizontalTitle)
+            HorizontalTitle = model.Elements.ObserveProperty(m => m.HorizontalTitle)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            VerticalTitle = this.model.Elements.ObserveProperty(m => m.VerticalTitle)
+            VerticalTitle = model.Elements.ObserveProperty(m => m.VerticalTitle)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            HorizontalProperty = this.model.Elements.ObserveProperty(m => m.HorizontalProperty)
+            HorizontalProperty = model.Elements.ObserveProperty(m => m.HorizontalProperty)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            VerticalProperty = this.model.Elements.ObserveProperty(m => m.VerticalProperty)
+            VerticalProperty = model.Elements.ObserveProperty(m => m.VerticalProperty)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
         }
@@ -71,16 +70,14 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public IAxisManager<double> VerticalAxis { get; }
 
-        public ReadOnlyReactivePropertySlim<string> GraphTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> GraphTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> HorizontalTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> HorizontalTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> VerticalTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> VerticalTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> HorizontalProperty { get; }
+        public ReadOnlyReactivePropertySlim<string?> HorizontalProperty { get; }
 
-        public ReadOnlyReactivePropertySlim<string> VerticalProperty { get; }
-
-        public ReadOnlyReactivePropertySlim<double> MaxIntensity { get; }
+        public ReadOnlyReactivePropertySlim<string?> VerticalProperty { get; }
     }
 }

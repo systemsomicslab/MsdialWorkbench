@@ -64,9 +64,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             .AddTo(Disposables);
 
             RemoveCommand = this.ObserveProperty(vm => vm.SelectedQuery)
-                .Select(q => q != null)
+                .Select(q => q is not null)
                 .ToReactiveCommand()
-                .WithSubscribe(() => Model.PeakPickSettingModel.RemoveQuery(SelectedQuery.Model))
+                .WithSubscribe(() => Model.PeakPickSettingModel.RemoveQuery(SelectedQuery!.Model))
                 .AddTo(Disposables);
 
             IsEnabled = isEnabled.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -136,11 +136,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReadOnlyReactiveCollection<MzSearchQueryViewModel> ExcludedMassList { get; }
 
-        public MzSearchQueryViewModel SelectedQuery {
+        public MzSearchQueryViewModel? SelectedQuery {
             get => selectedQuery;
             set => SetProperty(ref selectedQuery, value);
         }
-        private MzSearchQueryViewModel selectedQuery;
+        private MzSearchQueryViewModel? selectedQuery;
 
         [RegularExpression(@"\d\.?\d*", ErrorMessage = "Invalid character entered.")]
         [Range(0, int.MaxValue, ErrorMessage = "Data points should be positive value.")]

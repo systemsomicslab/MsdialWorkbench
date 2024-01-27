@@ -80,7 +80,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => broker.Publish(TaskNotification.End(notification)));
         }
 
-        public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel> CurrentRepresentativeFile => _model.CurrentRepresentativeFile;
+        public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel?> CurrentRepresentativeFile => _model.CurrentRepresentativeFile;
         public UndoManagerViewModel UndoManagerViewModel { get; }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }

@@ -62,7 +62,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReactivePropertySlim<string> UserDefinedAdductName { get; }
 
-        public ReadOnlyReactivePropertySlim<AdductIon> UserDefinedAdduct { get; }
+        public ReadOnlyReactivePropertySlim<AdductIon?> UserDefinedAdduct { get; }
 
         public ReactiveCommand AddCommand { get; }
 

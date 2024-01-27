@@ -78,8 +78,8 @@ namespace CompMs.App.Msdial.Model.Setting
 
     public class DriftTimeEqualityParameterSetting : PeakEqualityParameterSetting, IPeakEqualityParameterSetting
     {
-        private readonly MsdialLcImMsParameter lcimmsParameter;
-        private readonly MsdialImmsParameter immsParameter;
+        private readonly MsdialLcImMsParameter? lcimmsParameter;
+        private readonly MsdialImmsParameter? immsParameter;
 
         public DriftTimeEqualityParameterSetting(MsdialLcImMsParameter parameter) : base(parameter.DriftTimeAlignmentTolerance, parameter.DriftTimeAlignmentFactor) {
             lcimmsParameter = parameter;

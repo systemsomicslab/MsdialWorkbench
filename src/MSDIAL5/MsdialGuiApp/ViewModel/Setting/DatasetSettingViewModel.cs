@@ -49,7 +49,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public DatasetSettingModel Model { get; }
 
-        public ReadOnlyReactivePropertySlim<MethodSettingViewModel> MethodSettingViewModel { get; }
+        public ReadOnlyReactivePropertySlim<MethodSettingViewModel?> MethodSettingViewModel { get; }
         public ObservableCollection<ISettingViewModel> SettingViewModels { get; }
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
         public ReadOnlyReactivePropertySlim<bool> ObserveChangeAfterDecision { get; }

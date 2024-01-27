@@ -70,11 +70,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
 
-        public IAnnotationSettingViewModel SelectedAnnotation {
+        public IAnnotationSettingViewModel? SelectedAnnotation {
             get => selectedAnnotation;
             set => SetProperty(ref selectedAnnotation, value);
         }
-        private IAnnotationSettingViewModel selectedAnnotation;
+        private IAnnotationSettingViewModel? selectedAnnotation;
 
         public ICommand AddNewAnnotationCommand { get; }
 

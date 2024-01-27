@@ -23,8 +23,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             var dataset = project.SelectSwitch(psvm => psvm.DatasetSettingViewModel);
             DatasetSettingViewModel = dataset.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             var method = dataset
-                .Where(dsvm => dsvm != null)
-                .SelectSwitch(dsvm => dsvm.MethodSettingViewModel);
+                .Where(dsvm => dsvm is not null)
+                .SelectSwitch(dsvm => dsvm!.MethodSettingViewModel);
             MethodSettingViewModel = method
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -90,8 +90,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             var method = dataset
-                .Where(dsvm => dsvm != null)
-                .SelectSwitch(dsvm => dsvm.MethodSettingViewModel);
+                .Where(dsvm => dsvm is not null)
+                .SelectSwitch(dsvm => dsvm!.MethodSettingViewModel);
             MethodSettingViewModel = method
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);

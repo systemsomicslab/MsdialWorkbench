@@ -45,7 +45,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             result = Task.Run(() => Model.Set());
             //SetCommand.RaiseCanExecuteChanged();
         }
-        private Task result;
+        private Task? result;
 
         private bool CanSet() {
             return result?.Status != TaskStatus.Running && !HasValidationErrors;

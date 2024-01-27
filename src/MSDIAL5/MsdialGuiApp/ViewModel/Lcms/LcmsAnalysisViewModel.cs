@@ -24,10 +24,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private readonly LcmsAnalysisModel _model;
         private readonly IMessageBroker _broker;
 
-        public LcmsAnalysisViewModel(
-            LcmsAnalysisModel model,
-            IMessageBroker broker,
-            FocusControlManager focusControlManager) {
+        public LcmsAnalysisViewModel(LcmsAnalysisModel model, IMessageBroker broker, FocusControlManager focusControlManager) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
@@ -41,9 +38,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             UndoManagerViewModel = new UndoManagerViewModel(model.UndoManager).AddTo(Disposables);
 
             var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
-            PlotViewModel = new AnalysisPeakPlotViewModel(_model.PlotModel, peakPlotAction, peakPlotFocused, broker).AddTo(Disposables);
+            PlotViewModel = new AnalysisPeakPlotViewModel(model.PlotModel, peakPlotAction, peakPlotFocused, broker).AddTo(Disposables);
             EicViewModel = new EicViewModel(
-                _model.EicModel,
+                model.EicModel,
                 horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
 
 
@@ -60,21 +57,21 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             SetUnknownCommand = model.CanSetUnknown.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
 
             PeakTableViewModel = LcmsTableViewModelHelper.CreateViewModel(
-                _model.PeakTableModel,
+                model.PeakTableModel,
                 Observable.Return(_model.EicLoader),
                 PeakSpotNavigatorViewModel,
                 SetUnknownCommand,
                 UndoManagerViewModel)
             .AddTo(Disposables);
 
-            SearchCompoundCommand = this._model.CanSearchCompound
+            SearchCompoundCommand = model.CanSearchCompound
                 .ToReactiveCommand()
                 .WithSubscribe(SearchCompound)
                 .AddTo(Disposables);
 
             ExperimentSpectrumViewModel = model.ExperimentSpectrumModel
-                .Where(model_ => model_ != null)
-                .Select(model_ => new ExperimentSpectrumViewModel(model_))
+                .Where(model_ => model_ is not null)
+                .Select(model_ => new ExperimentSpectrumViewModel(model_!))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -152,10 +149,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public AsyncReactiveCommand SaveMs2RawSpectrumCommand { get; }
         public PeakInformationViewModel PeakInformationViewModel { get; }
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
-        public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
-        public ReadOnlyReactivePropertySlim<ExperimentSpectrumViewModel> ExperimentSpectrumViewModel { get; }
+        public MoleculeStructureViewModel? MoleculeStructureViewModel { get; }
+        public ReadOnlyReactivePropertySlim<ExperimentSpectrumViewModel?> ExperimentSpectrumViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
-        public IObservable<ProteinResultContainerModel> ProteinResultContainerAsObservable { get; }
+        public IObservable<ProteinResultContainerModel?> ProteinResultContainerAsObservable { get; }
 
         private void SaveSpectra() {
             var filename = string.Empty;
