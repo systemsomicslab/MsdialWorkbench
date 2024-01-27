@@ -177,6 +177,9 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                 //Isotope
                 case "maximum charged number": if (int.TryParse(value, out i)) param.MaxChargeNumber = i; return;
 
+                // max number of CPU threads
+                case "number of threads": if (int.TryParse(value, out i)) param.NumThreads = i; Console.WriteLine("Asked for {0} threads", i); return;
+
                 //Retentiontime correction
                 case "excute rt correction": if (value.ToUpper() == "TRUE" || value.ToUpper() == "FALSE") param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection = bool.Parse(value); return;
                 case "rt correction with smoothing for rt diff": if (value.ToUpper() == "TRUE" || value.ToUpper() == "FALSE") param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.doSmoothing = bool.Parse(value); return;
