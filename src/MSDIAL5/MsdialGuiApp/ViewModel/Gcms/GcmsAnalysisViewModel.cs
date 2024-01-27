@@ -12,6 +12,7 @@ using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
+using System;
 using System.Reactive.Linq;
 using System.Windows.Input;
 
@@ -59,7 +60,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         public RawDecSpectrumsViewModel RawDecSpectrumsViewModel { get; }
         public RawPurifiedSpectrumsViewModel RawPurifiedSpectrumsViewModel { get; }
 
-        public Ms2ChromatogramsViewModel Ms2ChromatogramsViewModel => null;
+        public Ms2ChromatogramsViewModel Ms2ChromatogramsViewModel => throw new NotImplementedException();
 
         public EiChromatogramsViewModel EiChromatogramsViewModel { get; }
         public SurveyScanViewModel SurveyScanViewModel { get; }

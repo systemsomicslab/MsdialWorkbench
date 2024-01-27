@@ -24,7 +24,14 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private readonly IMessageBroker _broker;
         private readonly FocusControlManager _focusControlManager;
 
-        private ImmsMethodViewModel(ImmsMethodModel model, IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisViewModelAsObservable, IReadOnlyReactiveProperty<IAlignmentResultViewModel> alignmentViewModelAsObservable, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels, FocusControlManager focusControlmanager, IMessageBroker broker)
+        private ImmsMethodViewModel(
+            ImmsMethodModel model,
+            IReadOnlyReactiveProperty<IAnalysisResultViewModel?> analysisViewModelAsObservable,
+            IReadOnlyReactiveProperty<IAlignmentResultViewModel?> alignmentViewModelAsObservable,
+            ViewModelSwitcher chromatogramViewModels,
+            ViewModelSwitcher massSpectrumViewModels,
+            FocusControlManager focusControlmanager,
+            IMessageBroker broker)
             : base(model, analysisViewModelAsObservable, alignmentViewModelAsObservable, chromatogramViewModels, massSpectrumViewModels) {
 
             this.model = model;
@@ -92,7 +99,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             return InnerShowChromatograms;
         }
 
-        private static IReadOnlyReactiveProperty<ImmsAnalysisViewModel> ConvertToAnalysisViewModel(
+        private static IReadOnlyReactiveProperty<ImmsAnalysisViewModel?> ConvertToAnalysisViewModel(
             ImmsMethodModel method,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IMessageBroker messageBroker,
@@ -100,8 +107,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
-            ReadOnlyReactivePropertySlim<ImmsAnalysisViewModel> result;
-            using (var subject = new Subject<ImmsAnalysisModel>()) {
+            ReadOnlyReactivePropertySlim<ImmsAnalysisViewModel?> result;
+            using (var subject = new Subject<ImmsAnalysisModel?>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AnalysisModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
                     .Select(m => m is null ? null : new ImmsAnalysisViewModel(m, peakSpotTableService, messageBroker, focusControlManager))
                     .DisposePreviousValue()
@@ -112,7 +119,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             return result;
         }
 
-        private static IReadOnlyReactiveProperty<ImmsAlignmentViewModel> ConvertToAlignmentViewModel(
+        private static IReadOnlyReactiveProperty<ImmsAlignmentViewModel?> ConvertToAlignmentViewModel(
             ImmsMethodModel method,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IMessageBroker messageBroker,
@@ -120,8 +127,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
-            ReadOnlyReactivePropertySlim<ImmsAlignmentViewModel> result;
-            using (var subject = new Subject<ImmsAlignmentModel>()) {
+            ReadOnlyReactivePropertySlim<ImmsAlignmentViewModel?> result;
+            using (var subject = new Subject<ImmsAlignmentModel?>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AlignmentModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
                     .Select(m => m is null ? null : new ImmsAlignmentViewModel(m, peakSpotTableService, messageBroker, focusControlManager))
                     .DisposePreviousValue()
@@ -132,19 +139,19 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             return result;
         }
 
-        private static ViewModelSwitcher PrepareChromatogramViewModels(IObservable<ImmsAnalysisViewModel> analysisAsObservable, IObservable<ImmsAlignmentViewModel> alignmentAsObservable) {
+        private static ViewModelSwitcher PrepareChromatogramViewModels(IObservable<ImmsAnalysisViewModel?> analysisAsObservable, IObservable<ImmsAlignmentViewModel?> alignmentAsObservable) {
             var eic = analysisAsObservable.Select(vm => vm?.EicViewModel);
             var bar = alignmentAsObservable.Select(vm => vm?.BarChartViewModel);
             var alignmentEic = alignmentAsObservable.Select(vm => vm?.AlignmentEicViewModel);
-            return new ViewModelSwitcher(eic, bar, new IObservable<ViewModelBase>[] { eic, bar, alignmentEic});
+            return new ViewModelSwitcher(eic, bar, new IObservable<ViewModelBase?>[] { eic, bar, alignmentEic});
         }
 
-        private static ViewModelSwitcher PrepareMassSpectrumViewModels(IObservable<ImmsAnalysisViewModel> analysisAsObservable, IObservable<ImmsAlignmentViewModel> alignmentAsObservable) {
+        private static ViewModelSwitcher PrepareMassSpectrumViewModels(IObservable<ImmsAnalysisViewModel?> analysisAsObservable, IObservable<ImmsAlignmentViewModel?> alignmentAsObservable) {
             var rawdec = analysisAsObservable.Select(vm => vm?.RawDecSpectrumsViewModel);
-            var rawpur = Observable.Return<ViewModelBase>(null); // analysisAsObservable.Select(vm => vm?.RawPurifiedSpectrumsViewModel);
+            var rawpur = Observable.Return<ViewModelBase?>(null); // analysisAsObservable.Select(vm => vm?.RawPurifiedSpectrumsViewModel);
             var ms2chrom = analysisAsObservable.Select(vm => vm?.Ms2ChromatogramsViewModel);
             var repref = alignmentAsObservable.Select(vm => vm?.Ms2SpectrumViewModel);
-            return new ViewModelSwitcher(rawdec, repref, new IObservable<ViewModelBase>[] { rawdec, ms2chrom, rawpur, repref});
+            return new ViewModelSwitcher(rawdec, repref, new IObservable<ViewModelBase?>[] { rawdec, ms2chrom, rawpur, repref});
         }
 
         public static ImmsMethodViewModel Create(ImmsMethodModel model, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, IMessageBroker messageBroker) {

@@ -112,7 +112,7 @@ namespace CompMs.App.Msdial.Model.Imms
             ParameterExportModel = new ParameterExportModel(storage.DataBases, storage.Parameter, broker);
         }
 
-        public ImmsAnalysisModel AnalysisModel {
+        public ImmsAnalysisModel? AnalysisModel {
             get => _analysisModel;
             set {
                 var old = _analysisModel;
@@ -121,9 +121,9 @@ namespace CompMs.App.Msdial.Model.Imms
                 }
             }
         }
-        private ImmsAnalysisModel _analysisModel;
+        private ImmsAnalysisModel? _analysisModel;
 
-        public ImmsAlignmentModel AlignmentModel {
+        public ImmsAlignmentModel? AlignmentModel {
             get => _alignmentModel;
             set {
                 var old = _alignmentModel;
@@ -132,7 +132,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 }
             }
         }
-        private ImmsAlignmentModel _alignmentModel;
+        private ImmsAlignmentModel? _alignmentModel;
 
         public PeakFilterModel PeakFilterModel { get; }
 
@@ -299,7 +299,7 @@ namespace CompMs.App.Msdial.Model.Imms
             return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, models);
         }
 
-        public CheckChromatogramsModel PrepareChromatograms(bool tic, bool bpc, bool highestEic) {
+        public CheckChromatogramsModel? PrepareChromatograms(bool tic, bool bpc, bool highestEic) {
             var analysisModel = AnalysisModel;
             if (analysisModel is null) {
                 return null;

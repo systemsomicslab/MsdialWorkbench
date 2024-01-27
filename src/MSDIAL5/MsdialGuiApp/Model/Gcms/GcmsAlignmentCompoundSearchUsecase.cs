@@ -34,7 +34,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         }
         private object? _searchMethod = null;
 
-        public MsRefSearchParameterBase SearchParameter { get; }
+        public MsRefSearchParameterBase? SearchParameter { get; }
 
         public IReadOnlyList<GcmsCompoundResult> Search(PeakSpotModel target) {
             if (_calculateMatchScore is null) {

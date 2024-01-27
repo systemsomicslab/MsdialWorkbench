@@ -105,10 +105,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public IBrushMapper<SpotAnnotator> SpotLabelBrush { get; }
 
         public DelegateCommand SaveMrmprobsCommand => _saveMrmprobsCommand ??= new DelegateCommand(() => ExportMrmprobs(false), () => _model.ExportMrmprobs != null);
-        private DelegateCommand _saveMrmprobsCommand;
+        private DelegateCommand? _saveMrmprobsCommand;
 
         public DelegateCommand CopyMrmprobsCommand => _copyMrmprobsCommand ??= new DelegateCommand(() => ExportMrmprobs(true), () => _model.ExportMrmprobs != null);
-        private DelegateCommand _copyMrmprobsCommand;
+        private DelegateCommand? _copyMrmprobsCommand;
 
         private void ExportMrmprobs(bool copy) {
             var m = _model.ExportMrmprobsModel();

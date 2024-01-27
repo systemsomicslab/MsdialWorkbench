@@ -17,12 +17,12 @@ namespace CompMs.App.Msdial.Model.Chart
     internal sealed class PlotComparedMsSpectrumUsecase : IDisposable
     {
         private CompositeDisposable? _disposables = new CompositeDisposable();
-        private Subject<IMSScanProperty>? _reference;
+        private Subject<IMSScanProperty?>? _reference;
         private Subject<Ms2ScanMatching>? _matchingScorer;
 
         public PlotComparedMsSpectrumUsecase(IMSScanProperty scan)
         {
-            _reference = new Subject<IMSScanProperty>().AddTo(_disposables);
+            _reference = new Subject<IMSScanProperty?>().AddTo(_disposables);
             _matchingScorer = new Subject<Ms2ScanMatching>().AddTo(_disposables);
 
             var referenceSpectrum = _reference
@@ -58,12 +58,12 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public MsSpectrumModel MsSpectrumModel { get; }
 
-        public void UpdateReference(IMSScanProperty reference) {
+        public void UpdateReference(IMSScanProperty? reference) {
             _reference?.OnNext(reference);
         }
 
         public void UpdateMatchingScorer(Ms2ScanMatching scorer) {
-            if (!(scorer is null)) {
+            if (scorer is not null) {
                 _matchingScorer?.OnNext(scorer);
             }
         }

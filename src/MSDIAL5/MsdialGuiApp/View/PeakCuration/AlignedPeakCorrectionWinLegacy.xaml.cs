@@ -41,7 +41,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
         public List<PeakChromatogram>? Chromatograms { get; }
         public IObservable<List<PeakChromatogram>> ObservableChromatograms { get; }
         public List<AnalysisFileBean> Files { get; }
-        public ReadOnlyReactivePropertySlim<PeakPropertiesLegacy?> ObservablePeakProperties { get; }
+        public ReadOnlyReactivePropertySlim<PeakPropertiesLegacy> ObservablePeakProperties { get; }
 
         public AlignedChromatogramModificationModelLegacy(
             IObservable<AlignmentSpotPropertyModel?> model,
@@ -65,15 +65,15 @@ namespace CompMs.App.Msdial.View.PeakCuration
             IsDrift = model.Select(m => m?.ChromXType == ChromXType.Drift).ToReactiveProperty().AddTo(Disposables);
             ObservableChromatograms = chromatoramSource;
             Files = files;
-            ObservablePeakProperties = LoadPeakProperty(model, chromatoramSource, files, parameter).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            ObservablePeakProperties = LoadPeakProperty(model, chromatoramSource, files, parameter).ToReadOnlyReactivePropertySlim<PeakPropertiesLegacy>().AddTo(Disposables);
         }
 
         public void UpdatePeakInfo() {
-            ObservablePeakProperties.Value?.UpdatePeakInfo();
+            ObservablePeakProperties.Value.UpdatePeakInfo();
         }
 
         public void ClearRtAlignment() {
-            ObservablePeakProperties.Value?.ClearRtAlignment();
+            ObservablePeakProperties.Value.ClearRtAlignment();
         }
        
         public static IObservable<PeakPropertiesLegacy> LoadPeakProperty(

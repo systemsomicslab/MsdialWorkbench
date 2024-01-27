@@ -109,9 +109,9 @@ namespace CompMs.App.Msdial.Model.Chart
         public IBrushMapper<ISpotLinker> LinkerBrush => _peakLinkModel.LinkerBrush;
         public IBrushMapper<SpotAnnotator> SpotLabelBrush => _peakLinkModel.SpotLabelBrush;
 
-        public IExportMrmprobsUsecase ExportMrmprobs { get; set; }
+        public IExportMrmprobsUsecase? ExportMrmprobs { get; set; }
 
-        public ExportMrmprobsModel ExportMrmprobsModel() {
+        public ExportMrmprobsModel? ExportMrmprobsModel() {
             if (ExportMrmprobs is null) {
                 return null;
             }

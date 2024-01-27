@@ -129,10 +129,10 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
                     Loadings.AddRangeOnScheduler(_model.Loadings.Select(loading => new ComponentLoadingViewModel(loading, xy[0] - 1, xy[1] - 1, true)));
                 }).AddTo(Disposables);
                 LoadingHorizontalAxis = ComponentX.Select(i => model.LoadingAxises[i - 1].Value).ToReadOnlyReactivePropertySlim<IAxisManager<double>>().AddTo(Disposables);
-                LoadingVerticalAxis = ComponentY.Select(i => model.OLoadingAxises[i - 1].Value).ToReadOnlyReactivePropertySlim<IAxisManager<double>>().AddTo(Disposables);
+                LoadingVerticalAxis = ComponentY.Select(i => model.OLoadingAxises![i - 1].Value).ToReadOnlyReactivePropertySlim<IAxisManager<double>>().AddTo(Disposables);
 
                 PC1LoadingAbsoluteVerticalAxis = ComponentX.Select(i => model.LoadingAbsoluteAxises[i - 1].Value).ToReadOnlyReactivePropertySlim<IAxisManager<double>>().AddTo(Disposables);
-                PC2LoadingAbsoluteVerticalAxis = ComponentY.Select(i => model.OLoadingAbsoluteAxises[i - 1].Value).ToReadOnlyReactivePropertySlim<IAxisManager<double>>().AddTo(Disposables);
+                PC2LoadingAbsoluteVerticalAxis = ComponentY.Select(i => model.OLoadingAbsoluteAxises![i - 1].Value).ToReadOnlyReactivePropertySlim<IAxisManager<double>>().AddTo(Disposables);
             }
             else {
                 Observable.CombineLatest(ComponentX, ComponentY)
@@ -156,10 +156,10 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
                 }).AddTo(Disposables);
 
                 ScoreHorizontalAxis = ComponentX.Select(i => model.ScoreAxises[i - 1].Value).ToReadOnlyReactivePropertySlim<IAxisManager<double>>().AddTo(Disposables);
-                ScoreVerticalAxis = ComponentY.Select(i => model.OScoreAxises[i - 1].Value).ToReadOnlyReactivePropertySlim<IAxisManager<double>>().AddTo(Disposables);
+                ScoreVerticalAxis = ComponentY.Select(i => model.OScoreAxises![i - 1].Value).ToReadOnlyReactivePropertySlim<IAxisManager<double>>().AddTo(Disposables);
 
                 PCXLabelAxis = ComponentX.Select(x => model.PCAxises[x - 1]).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-                PCYLabelAxis = ComponentY.Select(y => model.PCOAxises[y - 1]).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+                PCYLabelAxis = ComponentY.Select(y => model.PCOAxises![y - 1]).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             }
             else {
                 Observable.CombineLatest(ComponentX, ComponentY)
@@ -199,7 +199,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public ReactiveCollection<ComponentLoadingViewModel> Loadings { get; }
         public ReactiveCollection<ComponentScoreViewModel> Scores { get; }
         public BrushMapData<ComponentLoadingViewModel> Brush { get; }
-        public IObservable<IBrushMapper<ComponentScoreViewModel>> ClassBrush { get; }
+        public IObservable<IBrushMapper<ComponentScoreViewModel>?> ClassBrush { get; }
         public IBrushMapper<ComponentLoadingViewModel> PosnegBrush { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> LoadingHorizontalAxis { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> LoadingVerticalAxis { get; }

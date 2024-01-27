@@ -132,17 +132,15 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             _peakSpotTableService.Show(AlignmentSpotTableViewModel);
         }
 
-        public DelegateCommand<Window> NormalizeCommand => _normalizeCommand ?? (_normalizeCommand = new DelegateCommand<Window>(Normalize));
-
         public ICommand InternalStandardSetCommand { get; }
 
-        private DelegateCommand<Window> _normalizeCommand;
+        public DelegateCommand NormalizeCommand => _normalizeCommand ??= new DelegateCommand(Normalize);
+        private DelegateCommand? _normalizeCommand;
 
-        private void Normalize(Window owner) {
+        private void Normalize() {
             var model = _model.NormalizationSetModel;
-            using (var vm = new NormalizationSetViewModel(model, _internalStandardSetViewModel)) {
-                _broker.Publish(vm);
-            }
+            using var vm = new NormalizationSetViewModel(model, _internalStandardSetViewModel);
+            _broker.Publish(vm);
         }
 
         public DelegateCommand SearchAlignmentSpectrumByMoleculerNetworkingCommand => _searchAlignmentSpectrumByMoleculerNetworkingCommand ??= new DelegateCommand(SearchAlignmentSpectrumByMoleculerNetworkingMethod);

@@ -36,7 +36,7 @@ namespace CompMs.App.Msdial.View.Statistics
 
     internal sealed class SelectedAndBellowRowsConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+        public object? Convert(object value, Type targetType, object parameter, CultureInfo culture) {
             var datagrid = (DataGrid)value;
             if (datagrid is null) {
                 return default;

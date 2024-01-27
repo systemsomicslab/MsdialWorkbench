@@ -118,7 +118,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam, broker);
         }
 
-        public GcmsAnalysisModel SelectedAnalysisModel {
+        public GcmsAnalysisModel? SelectedAnalysisModel {
             get => _selectedAnalysisModel;
             private set {
                 var old = _selectedAnalysisModel;
@@ -132,9 +132,9 @@ namespace CompMs.App.Msdial.Model.Gcms
                 }
             }
         }
-        private GcmsAnalysisModel _selectedAnalysisModel;
+        private GcmsAnalysisModel? _selectedAnalysisModel;
 
-        public GcmsAlignmentModel SelectedAlignmentModel {
+        public GcmsAlignmentModel? SelectedAlignmentModel {
             get => _selectedAlignmentModel;
             private set {
                 var old = _selectedAlignmentModel;
@@ -148,7 +148,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 }
             }
         }
-        private GcmsAlignmentModel _selectedAlignmentModel;
+        private GcmsAlignmentModel? _selectedAlignmentModel;
 
         public override Task RunAsync(ProcessOption option, CancellationToken token) {
             if (option.HasFlag(ProcessOption.PeakSpotting | ProcessOption.Identification)) {
@@ -239,7 +239,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             return SelectedAnalysisModel = new GcmsAnalysisModel(analysisFile, providerFactory, _storage.Parameter, _storage.DataBaseMapper, _storage.DataBases, _projectBaseParameter, _peakFilterModel, _calculateMatchScores.FirstOrDefault(), _broker);
         }
 
-        public CheckChromatogramsModel ShowChromatograms(bool tic, bool bpc, bool highestEic) {
+        public CheckChromatogramsModel? ShowChromatograms(bool tic, bool bpc, bool highestEic) {
             var analysisModel = SelectedAnalysisModel;
             if (analysisModel is null) {
                 return null;

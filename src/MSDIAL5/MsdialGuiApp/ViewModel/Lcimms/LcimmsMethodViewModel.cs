@@ -99,15 +99,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
-            ReadOnlyReactivePropertySlim<LcimmsAnalysisViewModel?>? result;
-            using (var subject = new Subject<LcimmsAnalysisModel>()) {
-                result = subject.Concat(method.ObserveProperty(m => m.AnalysisModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
-                    .Select(m => m is null ? null : new LcimmsAnalysisViewModel(m, peakSpotTableService, focusControlManager, broker))
-                    .DisposePreviousValue()
-                    .ToReadOnlyReactivePropertySlim();
-                subject.OnNext(method.AnalysisModel);
-                subject.OnCompleted();
-            }
+            using var subject = new Subject<LcimmsAnalysisModel?>();
+            var result = subject.Concat(method.ObserveProperty(m => m.AnalysisModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
+                .Select(m => m is null ? null : new LcimmsAnalysisViewModel(m, peakSpotTableService, focusControlManager, broker))
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim();
+            subject.OnNext(method.AnalysisModel);
+            subject.OnCompleted();
             return result;
         }
 
@@ -119,15 +117,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
-            ReadOnlyReactivePropertySlim<LcimmsAlignmentViewModel?>? result;
-            using (var subject = new Subject<LcimmsAlignmentModel>()) {
-                result = subject.Concat(method.ObserveProperty(m => m.AlignmentModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
-                    .Select(m => m is null ? null : new LcimmsAlignmentViewModel(m, peakSpotTableService, focusControlManager, broker))
-                    .DisposePreviousValue()
-                    .ToReadOnlyReactivePropertySlim();
-                subject.OnNext(method.AlignmentModel);
-                subject.OnCompleted();
-            }
+            using var subject = new Subject<LcimmsAlignmentModel?>();
+            var result = subject.Concat(method.ObserveProperty(m => m.AlignmentModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
+                .Select(m => m is null ? null : new LcimmsAlignmentViewModel(m, peakSpotTableService, focusControlManager, broker))
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim();
+            subject.OnNext(method.AlignmentModel);
+            subject.OnCompleted();
             return result;
         }
 

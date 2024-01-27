@@ -256,7 +256,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             AlignmentModel?.SaveProject();
         }
 
-        public CheckChromatogramsModel PrepareChromatograms(bool tic, bool bpc, bool highestEic) {
+        public CheckChromatogramsModel? PrepareChromatograms(bool tic, bool bpc, bool highestEic) {
             var analysisModel = AnalysisModel;
             if (analysisModel is null) {
                 return null;

@@ -47,22 +47,22 @@ namespace CompMs.App.Msdial.ViewModel.Export
         public ReadOnlyReactiveCollection<FileBeanSelection> SelectedFrom { get; }
         public ReadOnlyReactiveCollection<FileBeanSelection> SelectedTo { get; }
 
-        public DelegateCommand AddItemsCommand => _addItemsCommand ?? (_addItemsCommand = new DelegateCommand(AddItems));
-        private DelegateCommand _addItemsCommand;
+        public DelegateCommand AddItemsCommand => _addItemsCommand ??= new DelegateCommand(AddItems);
+        private DelegateCommand? _addItemsCommand;
 
         private void AddItems() {
             _model.Selects(SelectedFrom.Where(file => file.IsChecked).Select(file => file.File));
         }
 
-        public DelegateCommand AddAllItemsCommand => _addAllItemsCommand ?? (_addAllItemsCommand = new DelegateCommand(AddAllItems));
-        private DelegateCommand _addAllItemsCommand;
+        public DelegateCommand AddAllItemsCommand => _addAllItemsCommand ??= new DelegateCommand(AddAllItems);
+        private DelegateCommand? _addAllItemsCommand;
 
         private void AddAllItems() {
             _model.Selects(SelectedFrom.Select(file => file.File));
         }
 
-        public DelegateCommand RemoveItemsCommand => _removeItemsCommand ?? (_removeItemsCommand = new DelegateCommand(RemoveItems));
-        private DelegateCommand _removeItemsCommand;
+        public DelegateCommand RemoveItemsCommand => _removeItemsCommand ??= new DelegateCommand(RemoveItems);
+        private DelegateCommand? _removeItemsCommand;
 
         private void RemoveItems() {
             _model.UnSelects(SelectedTo.Where(file => file.IsChecked).Select(file => file.File));
