@@ -263,6 +263,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public CompoundSearchModel<PeakSpotModel>? CreateCompoundSearchModel() {
             if (Target.Value?.InnerModel is null || MsdecResult.Value is null) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.NoPeakSelected));
                 return null;
             }
 

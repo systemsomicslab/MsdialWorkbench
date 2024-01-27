@@ -48,6 +48,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly ObservableCollection<ChromatogramPeakFeatureModel> _peaks;
         private readonly AnalysisFileBeanModel _file;
         private readonly CalculateMatchScore _calculateMatchScore;
+        private readonly IMessageBroker _broker;
         private readonly IWholeChromatogramLoader _ticLoader, _bpcLoader;
         private readonly IWholeChromatogramLoader<(double, double)> _eicLoader;
 
@@ -62,6 +63,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             _peaks =  file.LoadChromatogramPeakFeatureModels();
             _file = file;
             _calculateMatchScore = calculateMatchScore;
+            _broker = broker;
             UndoManager = new UndoManager().AddTo(_disposables);
 
             var selectedSpectrum = _spectrumFeatures.SelectedSpectrum;
@@ -71,7 +73,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             var filterRegistrationManager = new SpectrumFeatureFilterRegistrationManager(_spectrumFeatures.Items, new SpectrumFeatureFiltering()).AddTo(_disposables);
             filterRegistrationManager.AttachFilter(_spectrumFeatures.Items, peakFilterModel, evaluator.Contramap<Ms1BasedSpectrumFeature, MsScanMatchResult>(spectrumFeature => spectrumFeature.MatchResults.Representative), status: filterEnabled);
             PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
-            var label = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(_disposables);
+            var label = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).Select(l => l ?? string.Empty).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(_disposables);
 
             var brushMapDataSelector = BrushMapDataSelectorFactory.CreatePeakFeatureBrushes(projectParameter.TargetOmics);
             PeakPlotModel = new SpectrumFeaturePlotModel(_spectrumFeatures, _peaks, brushMapDataSelector, label).AddTo(_disposables);
@@ -241,6 +243,7 @@ namespace CompMs.App.Msdial.Model.Gcms
 
         public CompoundSearchModel<Ms1BasedSpectrumFeature>? CreateCompoundSearchModel() {
             if (_spectrumFeatures.SelectedSpectrum.Value is not Ms1BasedSpectrumFeature spectrumFeature) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.NoPeakSelected));
                 return null;
             }
             var plotService = new PlotComparedMsSpectrumUsecase(spectrumFeature.Scan);

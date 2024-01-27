@@ -40,7 +40,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
 
             var (rtmzPeakFocusAction, rtmzPeakFocused) = focusControlManager.Request();
-            var brush = Observable.Return(model.Brush);
             RtMzPlotViewModel = new AnalysisPeakPlotViewModel(model.RtMzPlotModel, rtmzPeakFocusAction, rtmzPeakFocused, broker).AddTo(Disposables);
             RtEicViewModel = new EicViewModel(
                 model.RtEicModel,
@@ -75,6 +74,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 .ToReactiveCommand()
                 .WithSubscribe(() =>
                 {
+                    if (model.CompoundSearchModel.Value is null) {
+                        return;
+                    }
                     using var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value);
                     broker.Publish<ICompoundSearchViewModel>(vm);
                 }).AddTo(Disposables);

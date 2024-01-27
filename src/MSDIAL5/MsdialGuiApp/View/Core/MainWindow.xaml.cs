@@ -318,7 +318,7 @@ namespace CompMs.App.Msdial.View.Core
             };
 
             if (sfd.ShowDialog(this) == Graphics.Window.DialogResult.OK) {
-                request.Run(sfd.SelectedPath);
+                request.Run(sfd.SelectedPath!);
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.ExternalApp;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.ExternalApp;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
@@ -37,6 +38,7 @@ namespace CompMs.App.Msdial.Model.Imms
         private static readonly double DT_TOLELANCE = 0.01;
 
         private readonly MsdialImmsParameter _parameter;
+        private readonly IMessageBroker _broker;
         private readonly UndoManager _undoManager;
         private readonly IDataProvider _provider;
         private readonly DataBaseMapper _dataBaseMapper;
@@ -63,6 +65,7 @@ namespace CompMs.App.Msdial.Model.Imms
             _dataBaseMapper = mapper;
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper);
             _parameter = parameter;
+            _broker = broker;
             _undoManager = new UndoManager().AddTo(Disposables);
 
             var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Rt & ~FilterEnableStatus.Protein;
@@ -217,6 +220,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public CompoundSearchModel<PeakSpotModel>? CreateCompoundSearchModel() {
             if (Target.Value?.InnerModel is null || MsdecResult.Value is null) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.NoPeakSelected));
                 return null;
             }
 

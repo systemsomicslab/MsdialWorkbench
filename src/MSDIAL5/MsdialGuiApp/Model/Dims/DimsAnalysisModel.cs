@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.ExternalApp;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.ExternalApp;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
@@ -40,6 +41,7 @@ namespace CompMs.App.Msdial.Model.Dims
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly IDataProvider _provider;
         private readonly ParameterBase _parameter;
+        private readonly IMessageBroker _broker;
 
         public DimsAnalysisModel(
             AnalysisFileBeanModel analysisFileModel,
@@ -63,7 +65,7 @@ namespace CompMs.App.Msdial.Model.Dims
             _dataBaseMapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
-
+            _broker = broker;
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databaseStorage, mapper);
 
             _undoManager = new UndoManager().AddTo(Disposables);
@@ -177,14 +179,18 @@ namespace CompMs.App.Msdial.Model.Dims
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
         public FocusNavigatorModel FocusNavigatorModel { get; }
 
-        public CompoundSearchModel<PeakSpotModel> BuildCompoundSearchModel() {
-            PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(MsdecResult.Value);
+        public CompoundSearchModel<PeakSpotModel>? BuildCompoundSearchModel() {
+            if (Target.Value is not ChromatogramPeakFeatureModel peak || MsdecResult.Value is not MSDecResult msdecResult) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.NoPeakSelected));
+                return null;
+            }
+            PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(msdecResult);
             var compoundSearchModel = new CompoundSearchModel<PeakSpotModel>(
                 AnalysisFileModel,
-                new PeakSpotModel(Target.Value, MsdecResult.Value),
+                new PeakSpotModel(peak, msdecResult),
                 new DimsCompoundSearchUsecase(_compoundSearchers.Items),
                 plotService,
-                new SetAnnotationUsecase(Target.Value, Target.Value.MatchResultsModel, _undoManager));
+                new SetAnnotationUsecase(peak, peak.MatchResultsModel, _undoManager));
             compoundSearchModel.Disposables.Add(plotService);
             return compoundSearchModel;
         }

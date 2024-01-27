@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.ExternalApp;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.ExternalApp;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
@@ -242,6 +243,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public CompoundSearchModel<PeakSpotModel>? BuildCompoundSearchModel() {
             if (Target.Value is not AlignmentSpotPropertyModel spot || _msdecResult.Value is not MSDecResult msdec) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.NoPeakSelected));
                 return null;
             }
             var plotService = new PlotComparedMsSpectrumUsecase(msdec);

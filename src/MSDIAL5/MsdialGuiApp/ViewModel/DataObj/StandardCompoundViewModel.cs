@@ -25,7 +25,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         }
 
         [Required]
-        public string StandardName {
+        public string? StandardName {
             get => _standardName;
             set {
                 if (SetProperty(ref _standardName, value)) {
@@ -35,7 +35,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
                 }
             }
         }
-        private string _standardName;
+        private string? _standardName;
 
         [Range(0, double.MaxValue)]
         public double MolecularWeight {
@@ -64,7 +64,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         private double _concentration;
 
         [Required]
-        public string TargetClass {
+        public string? TargetClass {
             get => _targetClass;
             set {
                 if (SetProperty(ref _targetClass, value)) {
@@ -74,7 +74,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
                 }
             }
         }
-        private string _targetClass;
+        private string? _targetClass;
 
         [Range(0, double.MaxValue)]
         public double DilutionRate {

@@ -27,11 +27,11 @@ namespace CompMs.App.Msdial.Model.Statistics
 
         public ObservableCollection<StandardCompoundModel> Lipids { get; }
 
-        public StandardCompoundModel SelectedLipid {
+        public StandardCompoundModel? SelectedLipid {
             get => _selectedLipid;
             set => SetProperty(ref _selectedLipid, value);
         }
-        private StandardCompoundModel _selectedLipid;
+        private StandardCompoundModel? _selectedLipid;
 
         public void AddLast() {
             var compound = new StandardCompound
@@ -45,6 +45,9 @@ namespace CompMs.App.Msdial.Model.Statistics
         }
 
         public void Delete() {
+            if (SelectedLipid is null) {
+                return;
+            }
             var idx = Lipids.IndexOf(SelectedLipid);
             if (idx < 0) {
                 return;

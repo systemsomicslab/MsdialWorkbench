@@ -65,11 +65,11 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReactivePropertySlim<AxisItemModel<double>> LowerVerticalAxisItem => _model.LowerVerticalAxisItem;
         public ReadOnlyObservableCollection<AxisItemModel<double>> LowerVerticalAxisItemCollection { get; }
 
-        public ReadOnlyReactivePropertySlim<string> GraphTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> GraphTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> HorizontalTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> HorizontalTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> VerticalTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> VerticalTitle { get; }
 
         public ReactiveCommand SwitchAllSpectrumCommand { get; }
 

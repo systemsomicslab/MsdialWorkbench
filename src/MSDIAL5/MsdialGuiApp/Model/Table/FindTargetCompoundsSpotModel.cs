@@ -21,7 +21,7 @@ namespace CompMs.App.Msdial.Model.Table
         private readonly IReadOnlyList<AlignmentSpotPropertyModel> _spots;
         private readonly IMessageBroker _broker;
         private readonly AlignmentMatchedSpotCandidateExporter _exporter;
-        private ObservableCollection<MatchedSpotCandidate<AlignmentSpotPropertyModel>> _editableCandidates;
+        private ObservableCollection<MatchedSpotCandidate<AlignmentSpotPropertyModel>>? _editableCandidates;
         private MatchedSpotCandidateCalculator? _currentCalculator = null;
 
         public FindTargetCompoundsSpotModel(IReadOnlyList<AlignmentSpotPropertyModel> spots, IReactiveProperty<AlignmentSpotPropertyModel?> selectedSpot, IMessageBroker broker) {
@@ -40,11 +40,11 @@ namespace CompMs.App.Msdial.Model.Table
                 .ToReadOnlyReactivePropertySlim(empty).AddTo(Disposables);
         }
 
-        public ReadOnlyObservableCollection<MatchedSpotCandidate<AlignmentSpotPropertyModel>> Candidates {
+        public ReadOnlyObservableCollection<MatchedSpotCandidate<AlignmentSpotPropertyModel>>? Candidates {
             get => _candidates;
             private set => SetProperty(ref _candidates, value);
         }
-        private ReadOnlyObservableCollection<MatchedSpotCandidate<AlignmentSpotPropertyModel>> _candidates;
+        private ReadOnlyObservableCollection<MatchedSpotCandidate<AlignmentSpotPropertyModel>>? _candidates;
 
         public ReactivePropertySlim<MatchedSpotCandidate<AlignmentSpotPropertyModel>?> SelectedCandidate { get; }
 
@@ -54,7 +54,7 @@ namespace CompMs.App.Msdial.Model.Table
             get => _findMessage;
             private set => SetProperty(ref _findMessage, value);
         }
-        private string _findMessage;
+        private string _findMessage = string.Empty;
 
         public TargetCompoundLibrarySettingModel LibrarySettingModel { get; }
 
@@ -84,7 +84,7 @@ namespace CompMs.App.Msdial.Model.Table
             FindMessage = string.Empty;
             var candidates = new ObservableCollection<MatchedSpotCandidate<AlignmentSpotPropertyModel>>();
             var calculator = new MatchedSpotCandidateCalculator(MzTolerance, MainChromXTolerance, AmplitudeThreshold);
-            foreach (var reference in LibrarySettingModel.ReferenceMolecules) {
+            foreach (var reference in LibrarySettingModel.ReferenceMolecules!) { // LibrarySettingModel.IsLoaded is True
                 foreach (var spot in _spots) {
                     var candidate = calculator.Match(spot, reference);
                     if (candidate != null) {
@@ -103,7 +103,7 @@ namespace CompMs.App.Msdial.Model.Table
         }
 
         public void Remove(MatchedSpotCandidate<AlignmentSpotPropertyModel> spot) {
-            if (_editableCandidates.Contains(spot)) {
+            if (_editableCandidates is not null && _editableCandidates.Contains(spot)) {
                 _editableCandidates.Remove(spot);
             }
         }

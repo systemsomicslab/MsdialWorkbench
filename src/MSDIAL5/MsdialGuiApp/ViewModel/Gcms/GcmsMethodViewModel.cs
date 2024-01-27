@@ -93,14 +93,14 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             var analysisAsObservable = Observable.Create<GcmsAnalysisModel?>(observer => {
                 observer.OnNext(model.SelectedAnalysisModel);
                 return model.ObserveProperty(m => m.SelectedAnalysisModel, isPushCurrentValueAtFirst: false).Subscribe(observer);
-            }).Where(m => m != null)
-            .Select(m => new GcmsAnalysisViewModel(m, peakSpotTableService, focusControlManager, broker))
+            }).Where(m => m is not null)
+            .Select(m => new GcmsAnalysisViewModel(m!, peakSpotTableService, focusControlManager, broker))
             .ToReadOnlyReactivePropertySlim();
             var alignmentAsObservable = Observable.Create<GcmsAlignmentModel?>(observer => {
                 observer.OnNext(model.SelectedAlignmentModel);
                 return model.ObserveProperty(m => m.SelectedAlignmentModel, isPushCurrentValueAtFirst: false).Subscribe(observer);
-            }).Where(m => m != null)
-            .Select(m => new GcmsAlignmentViewModel(m, focusControlManager, broker))
+            }).Where(m => m is not null)
+            .Select(m => new GcmsAlignmentViewModel(m!, focusControlManager, broker))
             .ToReadOnlyReactivePropertySlim();
 
             var eic = analysisAsObservable.Select(vm => vm?.EicViewModel);

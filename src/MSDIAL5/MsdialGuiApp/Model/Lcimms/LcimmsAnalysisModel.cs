@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.ExternalApp;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.ExternalApp;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
@@ -49,6 +50,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly IDataProvider _spectrumProvider;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly MsdialLcImMsParameter _parameter;
+        private readonly IMessageBroker _broker;
         private readonly UndoManager _undoManager;
         private readonly MSDecLoader _decLoader;
         private readonly ReadOnlyReactivePropertySlim<MSDecResult?> _msdecResult;
@@ -81,6 +83,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _dataBaseMapper = mapper;
             _parameter = parameter;
+            _broker = broker;
             _undoManager = new UndoManager().AddTo(Disposables);
 
             var peaks = MsdialPeakSerializer.LoadChromatogramPeakFeatures(analysisFileModel.PeakAreaBeanInformationFilePath);
@@ -150,7 +153,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
             PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
 
             var brushMapDataSelector = BrushMapDataSelectorFactory.CreatePeakFeatureBrushes(parameter.TargetOmics);
-            Brush = brushMapDataSelector.SelectedBrush.Mapper;
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             RtMzPlotModel = new AnalysisPeakPlotModel(accumulatedPeakModels, peak => peak.ChromXValue ?? 0, peak => peak.Mass, accumulatedTarget, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, new PeakLinkModel(accumulatedPeakModels))
             {
@@ -304,7 +306,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public UndoManager UndoManager => _undoManager;
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
-        public IBrushMapper<ChromatogramPeakFeatureModel> Brush { get; }
         public AnalysisPeakPlotModel RtMzPlotModel { get; }
         public EicLoader RtEicLoader { get; }
         public EicModel RtEicModel { get; }
@@ -326,6 +327,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         private CompoundSearchModel<PeakSpotModel>? CreateCompoundearchModel(ChromatogramPeakFeatureModel peak, MSDecResult msdec, CompoundSearcherCollection compoundSearchers) {
             if (peak is null || msdec is null) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.NoPeakSelected));
                 return null;
             }
 

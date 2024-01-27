@@ -137,7 +137,7 @@ namespace CompMs.App.Msdial.Model.Core
         public async Task LoadProjectAsync(ProjectCrumb projectCrumb) {
             using (nowLoading.ProcessStart()) {
                 try {
-                    if (!File.Exists(projectCrumb.FilePath)) {
+                    if (projectCrumb.FilePath is null || !File.Exists(projectCrumb.FilePath)) {
                         return;
                     }
                     var loadedProject = await ProjectModel.LoadAsync(projectCrumb.FilePath, _broker).ConfigureAwait(true);

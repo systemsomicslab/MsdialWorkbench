@@ -10,6 +10,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -41,8 +42,11 @@ namespace CompMs.App.Msdial.ViewModel.Table
             {
                 Title = "Select folder to save spectra",
             };
-            _broker?.Publish(request);
-            return _model.ExportMatchedSpectraAsync(request.SelectedPath);
+            _broker.Publish(request);
+            if (request.SelectedPath is not null && Directory.Exists(request.SelectedPath)) {
+                return _model.ExportMatchedSpectraAsync(request.SelectedPath);
+            }
+            return Task.CompletedTask;
         }
     }
 }

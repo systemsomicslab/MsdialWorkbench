@@ -179,7 +179,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReadOnlyReactivePropertySlim<bool> IsIndexImported => RiDictionarySettingViewModel.IsImported;
 
         //[PathExists(ErrorMessage = "Msp file does not exist.", IsFile = true)]
-        public ReactiveProperty<string> MspFilePath { get; }
+        public ReactiveProperty<string?> MspFilePath { get; }
         public ReactiveCommand BrowseMspCommand { get; }
         public MsRefSearchParameterBaseViewModel SearchParameter { get; }
         public ReactivePropertySlim<bool> UseQuantMassesDefinedInMsp { get; }

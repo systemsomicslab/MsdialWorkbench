@@ -12,15 +12,10 @@ namespace CompMs.App.Msdial.Model.Loader
 {
     internal sealed class MsDecSpectrumLoader : IMsSpectrumLoader<object>
     {
-        public MsDecSpectrumLoader(
-            MSDecLoader loader,
-            IReadOnlyList<object> ms1Peaks) {
-
+        public MsDecSpectrumLoader(MSDecLoader loader, IReadOnlyList<object> ms1Peaks) {
             this.ms1Peaks = ms1Peaks;
             this.loader = loader;
         }
-
-        public MSDecResult Result { get; private set; }
 
         private readonly MSDecLoader loader;
         private readonly IReadOnlyList<object> ms1Peaks;
@@ -38,7 +33,6 @@ namespace CompMs.App.Msdial.Model.Loader
             if (target is ChromatogramPeakFeatureModel cpeak) {
                 var idx = cpeak.MSDecResultIDUsedForAnnotation;
                 var msdecResult = loader.LoadMSDecResult(idx);
-                Result = msdecResult;
                 return msdecResult?.Spectrum ?? new List<SpectrumPeak>(0);
             }
             else if (target is AlignmentSpotPropertyModel spot) {
@@ -46,13 +40,11 @@ namespace CompMs.App.Msdial.Model.Loader
                 //idx = peak.MSDecResultIDUsedForAnnotation;
                 var idx = spot.MasterAlignmentID;
                 var msdecResult = loader.LoadMSDecResult(idx);
-                Result = msdecResult;
                 return msdecResult?.Spectrum ?? new List<SpectrumPeak>(0);
             }
             else {
                 var idx = ms1Peaks.IndexOf(target);
                 var msdecResult = loader.LoadMSDecResult(idx);
-                Result = msdecResult;
                 return msdecResult?.Spectrum ?? new List<SpectrumPeak>(0);
             }
         }

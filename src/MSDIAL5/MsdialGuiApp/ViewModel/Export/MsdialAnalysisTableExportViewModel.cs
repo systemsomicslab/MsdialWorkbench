@@ -36,7 +36,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
         public ReadOnlyObservableCollection<ISpectraType> ExportSpectraTypes { get; }
 
         [Required(ErrorMessage = "Choose a spectra type.")]
-        public ISpectraType SelectedSpectraType {
+        public ISpectraType? SelectedSpectraType {
             get {
                 return _selectedSpectraType;
             }
@@ -49,12 +49,12 @@ namespace CompMs.App.Msdial.ViewModel.Export
                 }
             }
         }
-        private ISpectraType _selectedSpectraType;
+        private ISpectraType? _selectedSpectraType;
 
         public ReadOnlyObservableCollection<SpectraFormat> ExportSpectraFileFormats { get; }
 
         [Required(ErrorMessage = "Choose a spectra format.")]
-        public SpectraFormat SelectedFileFormat {
+        public SpectraFormat? SelectedFileFormat {
             get {
                 return _selectedFileFormat;
             }
@@ -67,7 +67,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
                 }
             }
         }
-        private SpectraFormat _selectedFileFormat;
+        private SpectraFormat? _selectedFileFormat;
 
         public int IsotopeExportMax {
             get {

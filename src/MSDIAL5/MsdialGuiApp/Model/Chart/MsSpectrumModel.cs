@@ -76,21 +76,21 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public ReactivePropertySlim<AxisItemModel<double>> UpperVerticalAxisItem { get; }
 
-        public string GraphTitle {
+        public string? GraphTitle {
             get => _graphTitle;
             set => SetProperty(ref _graphTitle, value);
         }
-        private string _graphTitle;
-        public string HorizontalTitle {
+        private string? _graphTitle;
+        public string? HorizontalTitle {
             get => _horizontalTitle;
             set => SetProperty(ref _horizontalTitle, value);
         }
-        private string _horizontalTitle;
-        public string VerticalTitle {
+        private string? _horizontalTitle;
+        public string? VerticalTitle {
             get => _verticalTitle;
             set => SetProperty(ref _verticalTitle, value);
         }
-        private string _verticalTitle;
+        private string? _verticalTitle;
 
         public IObservable<bool> CanSaveMatchedSpectrum { get; }
 
