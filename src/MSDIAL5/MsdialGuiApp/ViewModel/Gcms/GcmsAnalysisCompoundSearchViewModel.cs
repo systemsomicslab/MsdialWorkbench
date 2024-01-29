@@ -16,7 +16,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         private readonly ReadOnlyReactivePropertySlim<bool> _parameterHasErrors;
 
         public GcmsAnalysisCompoundSearchViewModel(CompoundSearchModel<Ms1BasedSpectrumFeature> model) : base(model) {
-            _parameterHasErrors = Observable.Create<MsRefSearchParameterBaseViewModel>(observer => {
+            _parameterHasErrors = Observable.Create<MsRefSearchParameterBaseViewModel?>(observer => {
                 observer.OnNext(ParameterViewModel.Value);
                 observer.OnCompleted();
                 return () => { };

@@ -41,6 +41,7 @@ namespace CompMs.App.Msdial.Model.Export
             _analysisFiles = analysisFiles ?? throw new ArgumentNullException(nameof(analysisFiles));
             _accessorFactory = accessorFactory ?? throw new ArgumentNullException(nameof(accessorFactory));
             Formats = formats;
+            _format = formats.First();
         }
 
         public ExportFormat[] Formats { get; }

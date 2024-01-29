@@ -9,13 +9,12 @@ using System;
 namespace CompMs.App.Msdial.Model.Setting
 {
     public abstract class TextDBAnnotationSettingModel : DataBaseAnnotationSettingModelBase, IAnnotationSettingModel {
-        public TextDBAnnotationSettingModel(DataBaseAnnotationSettingModelBase other)
-            : base(other) {
+        public TextDBAnnotationSettingModel(DataBaseAnnotationSettingModelBase other) : base(other) {
 
         }
 
 
-        MoleculeDataBase db;
+        MoleculeDataBase? db;
         public ISerializableAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> Build(ParameterBase parameter) {
             if (db is null) {
                 db = LoadDataBase(DataBaseID, DataBasePath, DBSource);

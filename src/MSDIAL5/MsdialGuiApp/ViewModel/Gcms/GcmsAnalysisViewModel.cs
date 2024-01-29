@@ -12,6 +12,7 @@ using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
+using System;
 using System.Reactive.Linq;
 using System.Windows.Input;
 
@@ -59,22 +60,22 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         public RawDecSpectrumsViewModel RawDecSpectrumsViewModel { get; }
         public RawPurifiedSpectrumsViewModel RawPurifiedSpectrumsViewModel { get; }
 
-        public Ms2ChromatogramsViewModel Ms2ChromatogramsViewModel => null;
+        public Ms2ChromatogramsViewModel Ms2ChromatogramsViewModel => throw new NotImplementedException();
 
         public EiChromatogramsViewModel EiChromatogramsViewModel { get; }
         public SurveyScanViewModel SurveyScanViewModel { get; }
         public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
 
-        public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
-        private DelegateCommand _showIonTableCommand;
+        public ICommand ShowIonTableCommand => _showIonTableCommand ??= new DelegateCommand(ShowIonTable);
+        private DelegateCommand? _showIonTableCommand;
 
         private void ShowIonTable() {
             _peakSpotTableService.Show(PeakTableViewModel);
         }
 
         public ICommand SearchCompoundCommand => _searchCompoundCommand ??= new DelegateCommand(ShowSearchCompound);
-        private DelegateCommand _searchCompoundCommand;
+        private DelegateCommand? _searchCompoundCommand;
 
         private void ShowSearchCompound() {
             using var csm = _model.CreateCompoundSearchModel();
@@ -92,6 +93,6 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         public GcmsAnalysisPeakTableViewModel PeakTableViewModel { get; }
 
         public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??= new DelegateCommand(((IResultModel)_model).InvokeMsfinder);
-        private DelegateCommand _goToMsfinderCommand = null;
+        private DelegateCommand? _goToMsfinderCommand;
     }
 }

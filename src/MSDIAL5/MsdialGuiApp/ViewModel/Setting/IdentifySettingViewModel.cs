@@ -20,7 +20,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             this.model = model;
             IsReadOnly = model.IsReadOnly;
 
-            var selectedAnnotator = new Subject<IAnnotatorSettingViewModel>();
+            var selectedAnnotator = new Subject<IAnnotatorSettingViewModel?>();
             var selectedDataBase = new Subject<IDataBaseSettingViewModel>();
 
             AnnotatorViewModels = this.model.AnnotatorModels.ToReadOnlyReactiveCollection(annotatorFactory.Create).AddTo(Disposables);
@@ -30,9 +30,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             {
                 addedAnnotator,
                 removedAnnotator.Select(avm => AnnotatorViewModels.LastOrDefault()),
-                selectedDataBase.Where(dvm => !(dvm is null)).Select(dvm => AnnotatorViewModels.LastOrDefault(avm => avm.Model.DataBaseSettingModel == dvm.Model)),
+                selectedDataBase.Where(dvm => dvm is not null).Select(dvm => AnnotatorViewModels.LastOrDefault(avm => avm.Model.DataBaseSettingModel == dvm.Model)),
             }.Merge()
-            .ToReactiveProperty((IAnnotatorSettingViewModel)null).AddTo(Disposables);
+            .ToReactiveProperty((IAnnotatorSettingViewModel?)null).AddTo(Disposables);
             AnnotatorViewModel.Subscribe(selectedAnnotator);
 
             var dataBaseFactory = new DataBaseSettingViewModelFactory(
@@ -47,9 +47,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             {
                 addedDataBase,
                 removedDataBase.Select(dvm => DataBaseViewModels.LastOrDefault()),
-                selectedAnnotator.Where(avm => !(avm is null)).Select(avm => DataBaseViewModels.FirstOrDefault(dvm => dvm.Model == avm.Model.DataBaseSettingModel)),
+                selectedAnnotator.Where(avm => avm is not null).Select(avm => DataBaseViewModels.FirstOrDefault(dvm => dvm.Model == avm!.Model.DataBaseSettingModel)),
             }.Merge()
-            .ToReactiveProperty((DataBaseSettingViewModel)null).AddTo(Disposables);
+            .ToReactiveProperty((DataBaseSettingViewModel?)null).AddTo(Disposables);
             DataBaseViewModel.Subscribe(selectedDataBase);
 
             // DataBase errors
@@ -159,10 +159,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .ToReactiveCommand()
                 .WithSubscribe(() => this.model.AddAnnotator(DataBaseViewModel.Value.Model))
                 .AddTo(Disposables);
-            var annotatorIsNotNull = AnnotatorViewModel.Select(m => !(m is null));
+            var annotatorIsNotNull = AnnotatorViewModel.Select(m => m is not null);
             RemoveAnnotatorCommand = annotatorIsNotNull
                 .ToReactiveCommand()
-                .WithSubscribe(() => this.model.RemoveAnnotator(AnnotatorViewModel.Value.Model))
+                .WithSubscribe(() => this.model.RemoveAnnotator(AnnotatorViewModel.Value?.Model))
                 .AddTo(Disposables);
             var moveUpTrigger = new Subject<Unit>();
             var moveDownTrigger = new Subject<Unit>();
@@ -178,7 +178,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             }.CombineLatestValuesAreAllTrue(),
             (fst, snd) => snd)
             .ToReactiveCommand()
-            .WithSubscribe(() => this.model.MoveUpAnnotator(AnnotatorViewModel.Value.Model))
+            .WithSubscribe(() => this.model.MoveUpAnnotator(AnnotatorViewModel.Value?.Model))
             .WithSubscribe(() => moveUpTrigger.OnNext(Unit.Default))
             .AddTo(Disposables);
             MoveDownAnnotatorCommand = new[]{
@@ -193,14 +193,14 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             }.CombineLatestValuesAreAllTrue(),
             (fst, snd) => snd)
             .ToReactiveCommand()
-            .WithSubscribe(() => this.model.MoveDownAnnotator(AnnotatorViewModel.Value.Model))
+            .WithSubscribe(() => this.model.MoveDownAnnotator(AnnotatorViewModel.Value?.Model))
             .WithSubscribe(() => moveDownTrigger.OnNext(Unit.Default))
             .AddTo(Disposables);
 
             DataBaseViewModels.ToObservable()
                 .Zip(Observable.Interval(TimeSpan.FromMilliseconds(100)), (a, _) => a)
                 .Concat(addedDataBase)
-                .Where(vm => !(vm is null))
+                .Where(vm => vm is not null)
                 .SelectMany(vm => dataBasesDoesnotHaveError
                     .TakeUntil(removedDataBase.Where(x => x == vm))
                     .Where(x => x)
@@ -224,7 +224,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReadOnlyReactiveCollection<IAnnotatorSettingViewModel> AnnotatorViewModels { get; }
 
-        public ReactiveProperty<IAnnotatorSettingViewModel> AnnotatorViewModel { get; }
+        public ReactiveProperty<IAnnotatorSettingViewModel?> AnnotatorViewModel { get; }
 
         public ReactiveCommand AddDataBaseCommand { get; }
         public ReactiveCommand RemoveDataBaseCommand { get; }
@@ -246,7 +246,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReadOnlyReactivePropertySlim<bool> ObserveChangeAfterDecision { get; }
         IObservable<bool> ISettingViewModel.ObserveChangeAfterDecision => ObserveChangeAfterDecision;
 
-        public ISettingViewModel Next(ISettingViewModel selected) {
+        public ISettingViewModel? Next(ISettingViewModel selected) {
             decide.OnNext(Unit.Default);
             return null;
         }

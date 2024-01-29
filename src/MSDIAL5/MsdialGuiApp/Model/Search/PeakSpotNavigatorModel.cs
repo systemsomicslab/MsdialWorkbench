@@ -31,11 +31,11 @@ namespace CompMs.App.Msdial.Model.Search
             TagSearchQueryBuilder = tagSearchQueryBuilderModel;
         }
 
-        public string SelectedAnnotationLabel {
+        public string? SelectedAnnotationLabel {
             get => _selectedAnnotationLabel;
             set => SetProperty(ref _selectedAnnotationLabel, value);
         }
-        private string _selectedAnnotationLabel;
+        private string? _selectedAnnotationLabel;
 
         public object PeakSpots { get; }
 

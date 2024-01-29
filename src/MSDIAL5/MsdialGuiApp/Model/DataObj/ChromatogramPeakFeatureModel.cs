@@ -7,7 +7,6 @@ using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Utility;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Linq;
@@ -54,7 +53,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public MsScanMatchResult MspBasedMatchResult => innerModel.MspBasedMatchResult;
         public MsScanMatchResult TextDbBasedMatchResult => innerModel.TextDbBasedMatchResult;
         public MsScanMatchResult ScanMatchResult => MatchResultsModel.Representative ?? innerModel.TextDbBasedMatchResult ?? innerModel.MspBasedMatchResult;
-        public string AdductIonName => innerModel.AdductType?.AdductIonName;
+        public string? AdductIonName => innerModel.AdductType?.AdductIonName;
         public string Name {
             get => ((IMoleculeProperty)innerModel).Name;
             set {

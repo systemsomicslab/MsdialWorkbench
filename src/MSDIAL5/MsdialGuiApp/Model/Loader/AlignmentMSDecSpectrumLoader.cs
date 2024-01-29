@@ -16,7 +16,7 @@ namespace CompMs.App.Msdial.Model.Loader
             _alignmentFile = alignmentFile;
         }
 
-        private Task<MSDecResult> LoadMSDecResultAsync(AlignmentSpotPropertyModel target) {
+        private Task<MSDecResult?> LoadMSDecResultAsync(AlignmentSpotPropertyModel target) {
             if (target is null) {
                 throw new ArgumentNullException(nameof(target));
             }
@@ -24,7 +24,7 @@ namespace CompMs.App.Msdial.Model.Loader
         }
 
         IObservable<List<SpectrumPeak>> IMsSpectrumLoader<AlignmentSpotPropertyModel>.LoadSpectrumAsObservable(AlignmentSpotPropertyModel target) {
-            return Observable.FromAsync(() => LoadMSDecResultAsync(target)).Select(r => r.Spectrum);
+            return Observable.FromAsync(() => LoadMSDecResultAsync(target)).Select(r => r?.Spectrum ?? new List<SpectrumPeak>(0));
         }
     }
 }

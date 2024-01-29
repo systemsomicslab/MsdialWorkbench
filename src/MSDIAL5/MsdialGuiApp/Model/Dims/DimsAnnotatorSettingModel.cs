@@ -1,18 +1,14 @@
 ﻿using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Enum;
 using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
-using CompMs.MsdialDimsCore.Algorithm.Annotation;
 using CompMs.MsdialDimsCore.Parser;
-using CompMs.MsdialLcMsApi.Parser;
 using System;
-using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
@@ -20,7 +16,7 @@ namespace CompMs.App.Msdial.Model.Dims
         private readonly ILoadAnnotatorVisitor _annotatorVisitor;
         private readonly Func<IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IAnnotationQueryFactoryGenerationVisitor> _createFuctory;
 
-        public DimsMetabolomicsUseMs2AnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter, ILoadAnnotatorVisitor annotatorVisitor, Func<IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IAnnotationQueryFactoryGenerationVisitor> createFuctory) {
+        public DimsMetabolomicsUseMs2AnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase? searchParameter, ILoadAnnotatorVisitor annotatorVisitor, Func<IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IAnnotationQueryFactoryGenerationVisitor> createFuctory) {
             DataBaseSettingModel = dataBaseSettingModel;
             AnnotatorID = annotatorID;
             _annotatorVisitor = annotatorVisitor;
@@ -53,7 +49,7 @@ namespace CompMs.App.Msdial.Model.Dims
             get => annotatorID;
             set => SetProperty(ref annotatorID, value);
         }
-        private string annotatorID;
+        private string annotatorID = string.Empty;
 
         public DataBaseSettingModel DataBaseSettingModel { get; }
 
@@ -71,7 +67,7 @@ namespace CompMs.App.Msdial.Model.Dims
         private readonly ILoadAnnotatorVisitor _annotatorVisitor;
         private readonly Func<IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IAnnotationQueryFactoryGenerationVisitor> _createFuctory;
 
-        public DimsMetabolomicsAnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter, ILoadAnnotatorVisitor annotatorVisitor, Func<IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IAnnotationQueryFactoryGenerationVisitor> createFuctory) {
+        public DimsMetabolomicsAnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase? searchParameter, ILoadAnnotatorVisitor annotatorVisitor, Func<IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IAnnotationQueryFactoryGenerationVisitor> createFuctory) {
             DataBaseSettingModel = dataBaseSettingModel;
             AnnotatorID = annotatorID;
             SearchParameter = searchParameter ?? new MsRefSearchParameterBase();
@@ -87,7 +83,7 @@ namespace CompMs.App.Msdial.Model.Dims
             get => annotatorID;
             set => SetProperty(ref annotatorID, value);
         }
-        private string annotatorID;
+        private string annotatorID = string.Empty;
 
         public DataBaseSettingModel DataBaseSettingModel { get; }
 
@@ -105,7 +101,7 @@ namespace CompMs.App.Msdial.Model.Dims
         private readonly ILoadAnnotatorVisitor _annotatorVisitor;
         private readonly Func<IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IAnnotationQueryFactoryGenerationVisitor> _createFuctory;
 
-        public DimsEadLipidAnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter, ILoadAnnotatorVisitor annotatorVisitor, Func<IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IAnnotationQueryFactoryGenerationVisitor> createFuctory) {
+        public DimsEadLipidAnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase? searchParameter, ILoadAnnotatorVisitor annotatorVisitor, Func<IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IAnnotationQueryFactoryGenerationVisitor> createFuctory) {
             DataBaseSettingModel = dataBaseSettingModel;
             AnnotatorID = annotatorID;
             SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
@@ -154,7 +150,7 @@ namespace CompMs.App.Msdial.Model.Dims
             return new DimsAnnotationQueryFactoryGenerationVisitor(_parameter.PeakPickBaseParam, _parameter.RefSpecMatchBaseParam, _parameter.ProteomicsParam, refer);
         }
 
-        public IAnnotatorSettingModel Create(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter = null) {
+        public IAnnotatorSettingModel Create(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase? searchParameter = null) {
             switch (dataBaseSettingModel.DBSource) {
                 case DataBaseSource.Msp:
                 case DataBaseSource.Lbm:

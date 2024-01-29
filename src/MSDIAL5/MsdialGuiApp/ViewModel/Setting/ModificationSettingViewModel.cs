@@ -3,14 +3,12 @@ using CompMs.Common.Proteomics.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Common;
 using CompMs.MsdialCore.Parameter;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace CompMs.App.Msdial.ViewModel.Setting {
+namespace CompMs.App.Msdial.ViewModel.Setting
+{
     class ModificationSettingViewModel : ViewModelBase {
         public ModificationSettingViewModel(ProteomicsParameter Parameter) : this(new ModificationSettingModel(Parameter)) {
 
@@ -40,14 +38,14 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         public ModificationSettingModel Model { get; }
 
-        public DelegateCommand SetCommand => setCommand ?? (setCommand = new DelegateCommand(SetParam, CanSet));
-        private DelegateCommand setCommand;
+        public DelegateCommand SetCommand => setCommand ??= new DelegateCommand(SetParam, CanSet);
+        private DelegateCommand? setCommand;
 
         private void SetParam() {
             result = Task.Run(() => Model.Set());
             //SetCommand.RaiseCanExecuteChanged();
         }
-        private Task result;
+        private Task? result;
 
         private bool CanSet() {
             return result?.Status != TaskStatus.Running && !HasValidationErrors;
@@ -56,29 +54,29 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         public MappedReadOnlyObservableCollection<Modification, ModificationBeanSelection> SelectedVariableModificationTo { get; }
 
-        public DelegateCommand AddVariableModItemsCommand => addVariableModItemsCommand ?? (addVariableModItemsCommand = new DelegateCommand(AddVariableModItems));
-        private DelegateCommand addVariableModItemsCommand;
+        public DelegateCommand AddVariableModItemsCommand => addVariableModItemsCommand ??= new DelegateCommand(AddVariableModItems);
+        private DelegateCommand? addVariableModItemsCommand;
 
         private void AddVariableModItems() {
             Model.SelectsVariableModifications(SelectedVariableModificationFrom.Where(modification => modification.IsChecked).Select(modification => modification.Modification).ToList());
         }
 
-        public DelegateCommand AddAllVariableModItemsCommand => addAllVariableModItemsCommand ?? (addAllVariableModItemsCommand = new DelegateCommand(AddAllVariableModItems));
-        private DelegateCommand addAllVariableModItemsCommand;
+        public DelegateCommand AddAllVariableModItemsCommand => addAllVariableModItemsCommand ??= new DelegateCommand(AddAllVariableModItems);
+        private DelegateCommand? addAllVariableModItemsCommand;
 
         private void AddAllVariableModItems() {
             Model.SelectsVariableModifications(SelectedVariableModificationFrom.Select(modification => modification.Modification).ToList());
         }
 
-        public DelegateCommand RemoveVariableModItemsCommand => removeVariableModItemsCommand ?? (removeVariableModItemsCommand = new DelegateCommand(RemoveVariableModItems));
-        private DelegateCommand removeVariableModItemsCommand;
+        public DelegateCommand RemoveVariableModItemsCommand => removeVariableModItemsCommand ??= new DelegateCommand(RemoveVariableModItems);
+        private DelegateCommand? removeVariableModItemsCommand;
 
         private void RemoveVariableModItems() {
             Model.UnSelectsVariableModifications(SelectedVariableModificationTo.Where(modification => modification.IsChecked).Select(modification => modification.Modification).ToList());
         }
 
-        public DelegateCommand RemoveAllVariableModItemsCommand => removeAllVariableModItemsCommand ?? (removeAllVariableModItemsCommand = new DelegateCommand(RemoveAllVariableModItems));
-        private DelegateCommand removeAllVariableModItemsCommand;
+        public DelegateCommand RemoveAllVariableModItemsCommand => removeAllVariableModItemsCommand ??= new DelegateCommand(RemoveAllVariableModItems);
+        private DelegateCommand? removeAllVariableModItemsCommand;
 
         private void RemoveAllVariableModItems() {
             Model.UnSelectsVariableModifications(SelectedVariableModificationTo.Select(modification => modification.Modification).ToList());
@@ -88,29 +86,29 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         public MappedReadOnlyObservableCollection<Modification, ModificationBeanSelection> SelectedFixedModificationTo { get; }
 
-        public DelegateCommand AddFixedModItemsCommand => addFixedModItemsCommand ?? (addFixedModItemsCommand = new DelegateCommand(AddFixedModItems));
-        private DelegateCommand addFixedModItemsCommand;
+        public DelegateCommand AddFixedModItemsCommand => addFixedModItemsCommand ??= new DelegateCommand(AddFixedModItems);
+        private DelegateCommand? addFixedModItemsCommand;
 
         private void AddFixedModItems() {
             Model.SelectsFixedModifications(SelectedFixedModificationFrom.Where(modification => modification.IsChecked).Select(modification => modification.Modification).ToList());
         }
 
-        public DelegateCommand AddAllFixedModItemsCommand => addAllFixedModItemsCommand ?? (addAllFixedModItemsCommand = new DelegateCommand(AddAllFixedModItems));
-        private DelegateCommand addAllFixedModItemsCommand;
+        public DelegateCommand AddAllFixedModItemsCommand => addAllFixedModItemsCommand ??= new DelegateCommand(AddAllFixedModItems);
+        private DelegateCommand? addAllFixedModItemsCommand;
 
         private void AddAllFixedModItems() {
             Model.SelectsFixedModifications(SelectedFixedModificationFrom.Select(modification => modification.Modification).ToList());
         }
 
-        public DelegateCommand RemoveFixedModItemsCommand => removeFixedModItemsCommand ?? (removeFixedModItemsCommand = new DelegateCommand(RemoveFixedModItems));
-        private DelegateCommand removeFixedModItemsCommand;
+        public DelegateCommand RemoveFixedModItemsCommand => removeFixedModItemsCommand ??= new DelegateCommand(RemoveFixedModItems);
+        private DelegateCommand? removeFixedModItemsCommand;
 
         private void RemoveFixedModItems() {
             Model.UnSelectsFixedModifications(SelectedFixedModificationTo.Where(modification => modification.IsChecked).Select(modification => modification.Modification).ToList());
         }
 
-        public DelegateCommand RemoveAllFixedModItemsCommand => removeAllFixedModItemsCommand ?? (removeAllFixedModItemsCommand = new DelegateCommand(RemoveAllFixedModItems));
-        private DelegateCommand removeAllFixedModItemsCommand;
+        public DelegateCommand RemoveAllFixedModItemsCommand => removeAllFixedModItemsCommand ??= new DelegateCommand(RemoveAllFixedModItems);
+        private DelegateCommand? removeAllFixedModItemsCommand;
 
         private void RemoveAllFixedModItems() {
             Model.UnSelectsFixedModifications(SelectedFixedModificationTo.Select(modification => modification.Modification).ToList());

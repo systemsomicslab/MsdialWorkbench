@@ -65,7 +65,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             {
                 AlignmentResultFileName.ObserveHasErrors,
                 ReferenceFile.ObserveHasErrors,
-                EqualityParameterSettings.Select(vm => vm.ObserveHasErrors).CombineLatestValuesAreAnyTrue(),
+                EqualityParameterSettings.Select(vm => vm?.ObserveHasErrors ?? Observable.Return(false)).CombineLatestValuesAreAnyTrue(),
                 PeakCountFilter.ObserveHasErrors,
                 NPercentDetectedInOneGroup.ObserveHasErrors,
                 FoldChangeForBlankFiltering.ObserveHasErrors,
@@ -77,7 +77,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             {
                 AlignmentResultFileName.ToUnit(),
                 ReferenceFile.ToUnit(),
-                EqualityParameterSettings.Select(vm => vm.ObserveChanges).Merge(),
+                EqualityParameterSettings.Select(vm => vm?.ObserveChanges ?? Observable.Never<Unit>()).Merge(),
                 PeakCountFilter.ToUnit(),
                 NPercentDetectedInOneGroup.ToUnit(),
                 IsRemoveFeatureBasedOnBlankPeakHeightFoldChange.ToUnit(),
@@ -112,7 +112,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         [Required(ErrorMessage = "Reference file is required.")]
         public ReactiveProperty<AnalysisFileBean> ReferenceFile { get; }
 
-        public ReadOnlyReactiveCollection<PeakEqualityParameterSettingViewModel> EqualityParameterSettings { get; }
+        public ReadOnlyReactiveCollection<PeakEqualityParameterSettingViewModel?> EqualityParameterSettings { get; }
 
         [Required(ErrorMessage = "Peak count filter required.")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid format.")]
@@ -154,7 +154,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReadOnlyReactivePropertySlim<bool> ObserveChangeAfterDecision { get; }
         IObservable<bool> ISettingViewModel.ObserveChangeAfterDecision => ObserveChangeAfterDecision;
 
-        public ISettingViewModel Next(ISettingViewModel selected) {
+        public ISettingViewModel? Next(ISettingViewModel selected) {
             decide.OnNext(Unit.Default);
             return null;
         }

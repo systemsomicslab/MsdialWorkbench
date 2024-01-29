@@ -61,7 +61,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 builder.AddEics(displayEICs);
             }
             builder.Build();
-            return builder.ChromatogramsModel;
+            return builder.ChromatogramsModel!;
         }
 
         class ChromatogramsBuilder {
@@ -84,7 +84,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 _peakPickParameter = peakPickParameter;
             }
 
-            public ChromatogramsModel ChromatogramsModel { get; private set; }
+            public ChromatogramsModel? ChromatogramsModel { get; private set; }
 
             public void AddTic() {
                 var tic = _ticLoader.LoadChromatogram();

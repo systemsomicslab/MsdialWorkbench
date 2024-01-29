@@ -45,32 +45,32 @@ namespace CompMs.App.Msdial.Model.ImagingImms
 
         public ObservableCollection<ImagingImmsImageModel> ImageModels { get; }
 
-        public ImagingImmsImageModel Image {
+        public ImagingImmsImageModel? Image {
             get => _image;
             set => SetProperty(ref _image, value);
         }
-        private ImagingImmsImageModel _image;
+        private ImagingImmsImageModel? _image;
 
         public ParameterExportModel ParameterExporModel { get; }
         public StudyContextModel StudyContext { get; }
 
         public override async Task RunAsync(ProcessOption option, CancellationToken token) {
+            var files = AnalysisFileModelCollection.IncludedAnalysisFiles;
             if (option.HasFlag(ProcessOption.Identification | ProcessOption.PeakSpotting)) {
-                var files = AnalysisFileModelCollection.IncludedAnalysisFiles;
                 var processor = new FileProcess(_storage, null, null, _evaluator);
-                await processor.RunAllAsync(files.Select(file => file.File), files.Select(_providerFactory.Create), Enumerable.Repeat<Action<int>>(null, files.Count), 2, null).ConfigureAwait(false);
+                await processor.RunAllAsync(files.Select(file => file.File), files.Select(_providerFactory.Create), Enumerable.Repeat<Action<int>?>(null, files.Count), 2, null).ConfigureAwait(false);
                 foreach (var file in files) {
                     ImageModels.Add(new ImagingImmsImageModel(file, _storage, _evaluator, _providerFactory, _projectBaseParameter, _broker));
                 }
             }
             else if (option.HasFlag(ProcessOption.Identification)) {
-                var files = AnalysisFileModelCollection.IncludedAnalysisFiles;
                 var processor = new FileProcess(_storage, null, null, _evaluator);
-                await processor.AnnotateAllAsync(files.Select(file => file.File), files.Select(_providerFactory.Create), Enumerable.Repeat<Action<int>>(null, files.Count), 2, null).ConfigureAwait(false);
+                await processor.AnnotateAllAsync(files.Select(file => file.File), files.Select(_providerFactory.Create), Enumerable.Repeat<Action<int>?>(null, files.Count), 2, null).ConfigureAwait(false);
                 foreach (var file in files) {
                     ImageModels.Add(new ImagingImmsImageModel(file, _storage, _evaluator, _providerFactory, _projectBaseParameter, _broker));
                 }
             }
+            await LoadAnalysisFileAsync(files.FirstOrDefault(), token).ConfigureAwait(false);
         }
 
         public override Task LoadAsync(CancellationToken token) {
@@ -84,12 +84,12 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             return Task.CompletedTask;
         }
 
-        protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
+        protected override IAnalysisModel? LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             Image = ImageModels.FirstOrDefault(image => image.File == analysisFile);
             return null;
         }
 
-        protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBeanModel alignmentFileModel) {
+        protected override IAlignmentModel? LoadAlignmentFileCore(AlignmentFileBeanModel alignmentFileModel) {
             return null;
         }
 

@@ -53,7 +53,7 @@ namespace CompMs.App.Msdial.Model.Imms
             if (parameter.ProviderFactoryParameter is null) {
                 parameter.ProviderFactoryParameter = new ImmsAverageDataProviderFactoryParameter(0.01, 0.002, 0, 100);
             }
-            ProviderFactory = parameter?.ProviderFactoryParameter.Create(5, true);
+            ProviderFactory = parameter.ProviderFactoryParameter.Create(5, true);
 
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All);
 
@@ -65,7 +65,7 @@ namespace CompMs.App.Msdial.Model.Imms
             _peakSpotFiltering = new PeakSpotFiltering<AlignmentSpotPropertyModel>(filterEnabled).AddTo(Disposables);
             var filter = _peakSpotFiltering.CreateFilter(PeakFilterModel, _matchResultEvaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), filterEnabled);
             var metadataAccessorFactory = new ImmsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter);
-            var currentAlignmentResult = this.ObserveProperty(m => m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            ReadOnlyReactivePropertySlim<ImmsAlignmentModel?> currentAlignmentResult = this.ObserveProperty(m => m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             AlignmentFilesForExport alignmentFilesForExport = new AlignmentFilesForExport(alignmentFileBeanModelCollection.Files, this.ObserveProperty(m => m.AlignmentFile)).AddTo(Disposables);
             var isNormalized = alignmentFilesForExport.CanExportNormalizedData(currentAlignmentResult.Select(r => r?.NormalizationSetModel.IsNormalized ?? Observable.Return(false)).Switch()).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(currentAlignmentResult, filter);
@@ -106,12 +106,13 @@ namespace CompMs.App.Msdial.Model.Imms
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
             var spectraAndReference = new AlignmentMatchedSpectraExportModel(peakSpotSupplyer, storage.DataBaseMapper, analysisFileBeanModelCollection.IncludedAnalysisFiles, CompoundSearcherCollection.BuildSearchers(storage.DataBases, storage.DataBaseMapper));
-            AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, spectraAndReference, }, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam);
+
+            AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, spectraAndReference, }, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam, broker);
 
             ParameterExportModel = new ParameterExportModel(storage.DataBases, storage.Parameter, broker);
         }
 
-        public ImmsAnalysisModel AnalysisModel {
+        public ImmsAnalysisModel? AnalysisModel {
             get => _analysisModel;
             set {
                 var old = _analysisModel;
@@ -120,9 +121,9 @@ namespace CompMs.App.Msdial.Model.Imms
                 }
             }
         }
-        private ImmsAnalysisModel _analysisModel;
+        private ImmsAnalysisModel? _analysisModel;
 
-        public ImmsAlignmentModel AlignmentModel {
+        public ImmsAlignmentModel? AlignmentModel {
             get => _alignmentModel;
             set {
                 var old = _alignmentModel;
@@ -131,7 +132,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 }
             }
         }
-        private ImmsAlignmentModel _alignmentModel;
+        private ImmsAlignmentModel? _alignmentModel;
 
         public PeakFilterModel PeakFilterModel { get; }
 
@@ -298,7 +299,7 @@ namespace CompMs.App.Msdial.Model.Imms
             return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, models);
         }
 
-        public CheckChromatogramsModel PrepareChromatograms(bool tic, bool bpc, bool highestEic) {
+        public CheckChromatogramsModel? PrepareChromatograms(bool tic, bool bpc, bool highestEic) {
             var analysisModel = AnalysisModel;
             if (analysisModel is null) {
                 return null;

@@ -31,8 +31,8 @@ namespace CompMs.App.Msdial.Model.Chart
             var vrox = anyspec
                 .Select(spec => new Range(spec.Min(VerticalSelector), spec.Max(VerticalSelector)));
 
-            HorizontalRangeSource = hrox.Merge(nospec.ToConstant(new Range(0, 1))).ToReactiveProperty().AddTo(Disposables);
-            VerticalRangeSource = vrox.Merge(nospec.ToConstant(new Range(0, 1))).ToReactiveProperty().AddTo(Disposables);
+            HorizontalRangeSource = hrox.Merge(nospec.ToConstant(new Range(0, 1))).ToReactiveProperty(new Range(0d, 1d)).AddTo(Disposables);
+            VerticalRangeSource = vrox.Merge(nospec.ToConstant(new Range(0, 1))).ToReactiveProperty(new Range(0d, 1d)).AddTo(Disposables);
 
             var maxIntensitySource = anyspec
                 .Select(spectrum => spectrum.Max(spec => spec?.Intensity) ?? 0d)

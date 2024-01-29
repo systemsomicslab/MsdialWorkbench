@@ -208,7 +208,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
             CommitAsObservable
                 .Select(_ => ExcludedMassList
                     .Where(query => query.IsValid)
-                    .Select(query => new MzSearchQuery { Mass = query.Mass.Value, MassTolerance = query.Tolerance.Value })
+                    .Select(query => new MzSearchQuery { Mass = query.Mass!.Value, MassTolerance = query.Tolerance!.Value })
                     .ToList())
                 .Subscribe(queries => this.model.ExcludedMassList = queries)
                 .AddTo(Disposables);

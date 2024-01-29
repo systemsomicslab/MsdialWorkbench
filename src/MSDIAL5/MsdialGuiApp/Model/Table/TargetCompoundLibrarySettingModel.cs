@@ -10,7 +10,7 @@ namespace CompMs.App.Msdial.Model.Table
 {
     internal sealed class TargetCompoundLibrarySettingModel : BindableBase
     {
-        public ReadOnlyCollection<MoleculeMsReference> ReferenceMolecules {
+        public ReadOnlyCollection<MoleculeMsReference>? ReferenceMolecules {
             get => _referenceMolecules;
             private set {
                 if (SetProperty(ref _referenceMolecules, value)) {
@@ -18,7 +18,7 @@ namespace CompMs.App.Msdial.Model.Table
                 }
             }
         }
-        private ReadOnlyCollection<MoleculeMsReference> _referenceMolecules;
+        private ReadOnlyCollection<MoleculeMsReference>? _referenceMolecules;
 
         public bool IsLoaded {
             get => _isLoaded;
@@ -30,13 +30,13 @@ namespace CompMs.App.Msdial.Model.Table
             get => _targetLibrary;
             set => SetProperty(ref _targetLibrary, value);
         }
-        private string _targetLibrary;
+        private string _targetLibrary = string.Empty;
 
         public string LoadingError {
             get => _loadingError;
             private set => SetProperty(ref _loadingError, value);
         }
-        private string _loadingError;
+        private string _loadingError = string.Empty;
 
 
         public void Load() {

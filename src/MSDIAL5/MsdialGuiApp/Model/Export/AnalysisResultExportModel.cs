@@ -59,7 +59,7 @@ namespace CompMs.App.Msdial.Model.Export
             get => _destinationFolder;
             set => SetProperty(ref _destinationFolder, value);
         }
-        private string _destinationFolder;
+        private string _destinationFolder = string.Empty;
 
         public void Export() {
             foreach (var exporter in AnalysisExports) {

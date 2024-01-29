@@ -11,9 +11,9 @@ namespace CompMs.App.Msdial.Model.Service
     {
         private readonly IMoleculeProperty _molecule;
         private readonly MsScanMatchResultContainerModel _container;
-        private List<MsScanMatchResult> _manuallyResutls;
-        private MsScanMatchResult _unknownResult;
-        private IMoleculeProperty _previousMolecule;
+        private List<MsScanMatchResult>? _manuallyResutls;
+        private MsScanMatchResult? _unknownResult;
+        private IMoleculeProperty? _previousMolecule;
 
         public SetUnknownDoCommand(IMoleculeProperty molecule, MsScanMatchResultContainerModel container)
         {

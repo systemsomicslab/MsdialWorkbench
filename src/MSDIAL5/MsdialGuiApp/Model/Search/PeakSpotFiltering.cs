@@ -167,7 +167,7 @@ namespace CompMs.App.Msdial.Model.Search
             private readonly ICollectionView _view;
             private readonly List<Predicate<T>> _enabledPredicates;
             private readonly List<Predicate<T>> _disabledPredicates;
-            private Predicate<object> _predicate;
+            private Predicate<object>? _predicate;
             private readonly CompositeDisposable _disposables;
 
             public PeakFilters(ICollectionView view) {

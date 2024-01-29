@@ -10,9 +10,9 @@ namespace CompMs.App.Msdial.Model.Gcms
 {
     internal sealed class GcmsAnalysisPeakTableModel : PeakSpotTableModelBase<Ms1BasedSpectrumFeature>
     {
-        private readonly IReactiveProperty<Ms1BasedSpectrumFeature> _target;
+        private readonly IReactiveProperty<Ms1BasedSpectrumFeature?> _target;
 
-        public GcmsAnalysisPeakTableModel(IReadOnlyList<Ms1BasedSpectrumFeature> spectrumFeature, IReactiveProperty<Ms1BasedSpectrumFeature> target, PeakSpotNavigatorModel peakSpotNavigatorModel)
+        public GcmsAnalysisPeakTableModel(IReadOnlyList<Ms1BasedSpectrumFeature> spectrumFeature, IReactiveProperty<Ms1BasedSpectrumFeature?> target, PeakSpotNavigatorModel peakSpotNavigatorModel)
             : base(spectrumFeature, target) {
             MassMin = spectrumFeature.Select(s => s.QuantifiedChromatogramPeak.PeakFeature.Mass).DefaultIfEmpty().Min();
             MassMax = spectrumFeature.Select(s => s.QuantifiedChromatogramPeak.PeakFeature.Mass).DefaultIfEmpty().Max();

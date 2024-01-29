@@ -10,9 +10,10 @@ namespace CompMs.App.Msdial.Model.DataObj
 {
     internal class SurveyScanSpectrum : DisposableModelBase
     {
-        public SurveyScanSpectrum(IObservable<ChromatogramPeakFeatureModel> selectedPeak, Func<ChromatogramPeakFeatureModel, IObservable<List<SpectrumPeakWrapper>>> loadSpectrum) {
+        public SurveyScanSpectrum(IObservable<ChromatogramPeakFeatureModel?> selectedPeak, Func<ChromatogramPeakFeatureModel, IObservable<List<SpectrumPeakWrapper>>> loadSpectrum) {
             Spectrum = selectedPeak
-                .SelectSwitch(loadSpectrum)
+                .DefaultIfNull(loadSpectrum, Observable.Return(new List<SpectrumPeakWrapper>(0)))
+                .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 

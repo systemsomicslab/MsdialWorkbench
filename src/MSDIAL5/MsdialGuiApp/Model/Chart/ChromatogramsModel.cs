@@ -32,7 +32,7 @@ namespace CompMs.App.Msdial.Model.Chart
             {
                 LabelType = LabelType.Order,
             }.AddTo(Disposables);
-            var chromAxis = new ContinuousAxisManager<double>(chromatograms.Aggregate<DisplayChromatogram, Range>(null, (acc, chromatogram) => chromatogram.ChromXRange.Union(acc)) ?? new Range(0d, 1d)).AddTo(Disposables);
+            var chromAxis = new ContinuousAxisManager<double>(chromatograms.Aggregate<DisplayChromatogram, Range?>(null, (acc, chromatogram) => chromatogram.ChromXRange.Union(acc)) ?? new Range(0d, 1d)).AddTo(Disposables);
 
             AbundanceAxisItemSelector = new AxisItemSelector<double>(new AxisItemModel<double>(verticalTitle, abundanceAxis, verticalTitle)).AddTo(Disposables);
             ChromAxisItemSelector = new AxisItemSelector<double>(new AxisItemModel<double>(horizontalTitle, chromAxis, horizontalTitle)).AddTo(Disposables);

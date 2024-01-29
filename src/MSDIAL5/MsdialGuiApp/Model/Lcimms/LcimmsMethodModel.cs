@@ -102,7 +102,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
             var spectraAndReference = new AlignmentMatchedSpectraExportModel(peakSpotSupplyer, storage.DataBaseMapper, analysisFileBeanModelCollection.IncludedAnalysisFiles, CompoundSearcherCollection.BuildSearchers(storage.DataBases, storage.DataBaseMapper));
-            AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, spectraAndReference, }, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam);
+
+            AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, spectraAndReference, }, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam, broker);
 
             ParameterExportModel = new ParameterExportModel(storage.DataBases, storage.Parameter, broker);
         }
@@ -111,19 +112,18 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public IMsdialDataStorage<MsdialLcImMsParameter> Storage { get; }
 
-        public LcimmsAnalysisModel AnalysisModel {
+        public LcimmsAnalysisModel? AnalysisModel {
             get => analysisModel;
             private set => SetProperty(ref analysisModel, value);
         }
-        private LcimmsAnalysisModel analysisModel;
+        private LcimmsAnalysisModel? analysisModel;
 
-        public LcimmsAlignmentModel AlignmentModel {
+        public LcimmsAlignmentModel? AlignmentModel {
             get => alignmentModel;
             private set => SetProperty(ref alignmentModel, value);
         }
-        private LcimmsAlignmentModel alignmentModel;
+        private LcimmsAlignmentModel? alignmentModel;
 
-        private IAnnotationProcess annotationProcess;
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
         private readonly IDataProviderFactory<RawMeasurement> providerFactory;
         private readonly IDataProviderFactory<RawMeasurement> accProviderFactory;
@@ -180,7 +180,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public override async Task RunAsync(ProcessOption processOption, CancellationToken token) {
             // Set analysis param
-            annotationProcess = BuildAnnotationProcess();
+            var annotationProcess = BuildAnnotationProcess();
 
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification)) {
@@ -256,7 +256,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             AlignmentModel?.SaveProject();
         }
 
-        public CheckChromatogramsModel PrepareChromatograms(bool tic, bool bpc, bool highestEic) {
+        public CheckChromatogramsModel? PrepareChromatograms(bool tic, bool bpc, bool highestEic) {
             var analysisModel = AnalysisModel;
             if (analysisModel is null) {
                 return null;

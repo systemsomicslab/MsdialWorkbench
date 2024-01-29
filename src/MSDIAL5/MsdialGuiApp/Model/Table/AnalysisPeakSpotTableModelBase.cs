@@ -8,9 +8,9 @@ namespace CompMs.App.Msdial.Model.Table
 {
     internal abstract class AnalysisPeakSpotTableModelBase : PeakSpotTableModelBase<ChromatogramPeakFeatureModel>
     {
-        private readonly IReactiveProperty<ChromatogramPeakFeatureModel> _target;
+        private readonly IReactiveProperty<ChromatogramPeakFeatureModel?> _target;
 
-        protected AnalysisPeakSpotTableModelBase(IReadOnlyList<ChromatogramPeakFeatureModel> peakSpots, IReactiveProperty<ChromatogramPeakFeatureModel> target, PeakSpotNavigatorModel peakSpotNavigatorModel)
+        protected AnalysisPeakSpotTableModelBase(IReadOnlyList<ChromatogramPeakFeatureModel> peakSpots, IReactiveProperty<ChromatogramPeakFeatureModel?> target, PeakSpotNavigatorModel peakSpotNavigatorModel)
             : base(peakSpots, target) {
             _target = target;
         }

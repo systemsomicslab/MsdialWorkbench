@@ -82,7 +82,7 @@ namespace CompMs.App.Msdial.Model.Search
                 return keywords.Where(keyword => !string.IsNullOrEmpty(keyword)).Select(keyword => keyword.ToLower());
             }
 
-            public bool Match(string word, List<string> keywords) {
+            public bool Match(string? word, List<string> keywords) {
                 word = word?.ToLower();
                 return keywords.All(keyword => word?.Contains(keyword) ?? false);
             }
@@ -93,7 +93,7 @@ namespace CompMs.App.Msdial.Model.Search
                 return keywords.Where(keyword => !string.IsNullOrEmpty(keyword)).Select(keyword => keyword.ToLower());
             }
 
-            public bool Match(string word, List<string> keywords) {
+            public bool Match(string? word, List<string> keywords) {
                 word = word?.ToLower();
                 return word is null || keywords.All(keyword => word.Contains(keyword));
             }

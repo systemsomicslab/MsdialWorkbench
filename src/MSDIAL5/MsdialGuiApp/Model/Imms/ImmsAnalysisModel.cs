@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.ExternalApp;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.ExternalApp;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
@@ -37,6 +38,7 @@ namespace CompMs.App.Msdial.Model.Imms
         private static readonly double DT_TOLELANCE = 0.01;
 
         private readonly MsdialImmsParameter _parameter;
+        private readonly IMessageBroker _broker;
         private readonly UndoManager _undoManager;
         private readonly IDataProvider _provider;
         private readonly DataBaseMapper _dataBaseMapper;
@@ -63,6 +65,7 @@ namespace CompMs.App.Msdial.Model.Imms
             _dataBaseMapper = mapper;
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper);
             _parameter = parameter;
+            _broker = broker;
             _undoManager = new UndoManager().AddTo(Disposables);
 
             var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Rt & ~FilterEnableStatus.Protein;
@@ -101,7 +104,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 VerticalTitle = "Abundance",
             }.AddTo(Disposables);
 
-            var spectraExporter = new NistSpectraExporter<ChromatogramPeakFeature>(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
+            var spectraExporter = new NistSpectraExporter<ChromatogramPeakFeature?>(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
             var rawLoader = new MultiMsmsRawSpectrumLoader(provider, parameter).AddTo(Disposables);
             MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
@@ -200,7 +203,7 @@ namespace CompMs.App.Msdial.Model.Imms
             return new LoadChromatogramsUsecase(_ticLoader, _bpcLoader, EicLoader, Ms1Peaks, _parameter.PeakPickBaseParam);
         }
 
-        private Task<List<SpectrumPeakWrapper>> LoadMsSpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
+        private Task<List<SpectrumPeakWrapper>> LoadMsSpectrumAsync(ChromatogramPeakFeatureModel? target, CancellationToken token) {
             if (target is null || target.MS1RawSpectrumIdTop < 0) {
                 return Task.FromResult(new List<SpectrumPeakWrapper>(0));
             }
@@ -215,8 +218,9 @@ namespace CompMs.App.Msdial.Model.Imms
             }, token);
         }
 
-        public CompoundSearchModel<PeakSpotModel> CreateCompoundSearchModel() {
+        public CompoundSearchModel<PeakSpotModel>? CreateCompoundSearchModel() {
             if (Target.Value?.InnerModel is null || MsdecResult.Value is null) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.NoPeakSelected));
                 return null;
             }
 
@@ -239,7 +243,7 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public override void InvokeMsfinder() {
-            if (Target.Value is null || (MsdecResult.Value?.Spectrum).IsEmptyOrNull()) {
+            if (Target.Value is null || MsdecResult.Value is null || MsdecResult.Value.Spectrum.IsEmptyOrNull()) {
                 return;
             }
             MsDialToExternalApps.SendToMsFinderProgram(
@@ -252,6 +256,9 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public void SaveSpectra(string filename) {
+            if (Target.Value is null) {
+                return;
+            }
             using (var file = File.Open(filename, FileMode.Create)) {
                 SpectraExport.SaveSpectraTable(
                     (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
@@ -264,7 +271,7 @@ namespace CompMs.App.Msdial.Model.Imms
             }
         }
 
-        public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;
+        public bool CanSaveSpectra() => Target.Value?.InnerModel != null && MsdecResult.Value != null;
 
         public void Undo() => _undoManager.Undo();
         public void Redo() => _undoManager.Redo();

@@ -19,17 +19,9 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public bool IsReadOnly { get; }
 
-        public Ms1CollectionRangeSetting MassRange {
-            get => _massRange;
-            private set => SetProperty(ref _massRange, value);
-        }
-        private Ms1CollectionRangeSetting _massRange;
+        public Ms1CollectionRangeSetting MassRange { get; }
 
-        public RetentionTimeCollectionRangeSetting RtRange {
-            get => _rtRange;
-            private set => SetProperty(ref _rtRange, value);
-        }
-        private RetentionTimeCollectionRangeSetting _rtRange;
+        public RetentionTimeCollectionRangeSetting RtRange { get; }
 
         public int NumberOfThreads {
             get => _numberOfThreads;

@@ -20,7 +20,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         private readonly AlignmentMs2SpectrumModel _model;
         private readonly IMessageBroker _broker;
 
-        public AlignmentMs2SpectrumViewModel(AlignmentMs2SpectrumModel model, IMessageBroker broker, Action focusAction = null, IObservable<bool> isFocused = null) {
+        public AlignmentMs2SpectrumViewModel(AlignmentMs2SpectrumModel model, IMessageBroker broker, Action? focusAction = null, IObservable<bool>? isFocused = null) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
@@ -31,25 +31,17 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             UpperSpectraViewModel = model.UpperSpectraModel.ToReadOnlyReactiveCollection(m => new SingleSpectrumViewModel(m)).AddTo(Disposables);
             LowerSpectrumViewModel = new SingleSpectrumViewModel(model.LowerSpectrumModel).AddTo(Disposables);
 
-            HorizontalAxis = model.HorizontalAxis.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            HorizontalAxis = model.HorizontalAxis.ToReadOnlyReactivePropertySlim<IAxisManager<double>>().AddTo(Disposables);
 
-            LowerVerticalAxis = model.LowerVerticalAxisItem.SkipNull().Select(item => item.AxisManager).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            LowerVerticalAxis = model.LowerVerticalAxisItem.SkipNull().Select(item => item.AxisManager).ToReadOnlyReactivePropertySlim<IAxisManager<double>>().AddTo(Disposables);
             LowerVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel<double>>(model.LowerVerticalAxisItemCollection);
 
-            UpperVerticalAxis = model.UpperVerticalAxisItem.SkipNull().Select(item => item.AxisManager).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            UpperVerticalAxis = model.UpperVerticalAxisItem.SkipNull().Select(item => item.AxisManager).ToReadOnlyReactivePropertySlim<IAxisManager<double>>().AddTo(Disposables);
             UpperVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel<double>>(model.UpperVerticalAxisItemCollection);
 
-            GraphTitle = Observable.Return(model.GraphLabels.GraphTitle)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
-            HorizontalTitle = Observable.Return(model.GraphLabels.HorizontalTitle)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
-            VerticalTitle = Observable.Return(model.GraphLabels.VerticalTitle)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
+            GraphTitle = Observable.Return(model.GraphLabels.GraphTitle).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            HorizontalTitle = Observable.Return(model.GraphLabels.HorizontalTitle).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            VerticalTitle = Observable.Return(model.GraphLabels.VerticalTitle).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             SaveMatchedSpectraCommand = model.CanSaveMatchedSpectra.ToReactiveCommand()
                 .WithSubscribe(SaveSpectrum(model.SaveMatchedSpectra,  filter: "tab separated values(*.txt)|*.txt"))
@@ -89,19 +81,19 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyObservableCollection<AxisItemModel<double>> LowerVerticalAxisItemCollection { get; }
 
         public ReadOnlyObservableCollection<AnalysisFileBeanModel> Files => _model.Files;
-        public ReactiveProperty<AnalysisFileBeanModel> SelectedFile => _model.SelectedFile;
+        public ReactiveProperty<AnalysisFileBeanModel?> SelectedFile => _model.SelectedFile;
 
-        public ReadOnlyReactivePropertySlim<string> GraphTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> GraphTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> HorizontalTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> HorizontalTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> VerticalTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> VerticalTitle { get; }
 
         public ReactiveCommand SwitchAllSpectrumCommand { get; }
 
         public ReactiveCommand SwitchCompareSpectrumCommand { get; }
 
-        public Action FocusAction { get; }
+        public Action? FocusAction { get; }
         public ReadOnlyReactivePropertySlim<bool> IsFocused { get; }
 
         public ReactiveCommand SaveMatchedSpectraCommand { get; }

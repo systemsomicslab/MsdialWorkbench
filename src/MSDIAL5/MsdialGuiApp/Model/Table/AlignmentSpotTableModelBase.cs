@@ -14,13 +14,13 @@ namespace CompMs.App.Msdial.Model.Table
 {
     internal abstract class AlignmentSpotTableModelBase : PeakSpotTableModelBase<AlignmentSpotPropertyModel>
     {
-        private readonly IReactiveProperty<AlignmentSpotPropertyModel> _target;
+        private readonly IReactiveProperty<AlignmentSpotPropertyModel?> _target;
         private readonly PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter _peakSpotFilter;
         private readonly AlignmentSpotSpectraLoader _spectraLoader;
 
         public AlignmentSpotTableModelBase(
             IReadOnlyList<AlignmentSpotPropertyModel> spots,
-            IReactiveProperty<AlignmentSpotPropertyModel> target,
+            IReactiveProperty<AlignmentSpotPropertyModel?> target,
             IObservable<IBrushMapper<BarItem>> classBrush,
             FileClassPropertiesModel classProperties,
             IObservable<IBarItemsLoader> barItemsLoader,
@@ -44,9 +44,8 @@ namespace CompMs.App.Msdial.Model.Table
             peaks = _peakSpotFilter.FilterAnnotatedPeaks(peaks);
             foreach (var peak in peaks) {
                 var spectra = await _spectraLoader.GetMatchedSpectraMatrixsAsync(peak, peak.ScanMatchResult).ConfigureAwait(false);
-                using (var stream = File.Open(Path.Combine(directory, $"AlignmentID{peak.MasterAlignmentID:D6}.txt"), FileMode.Create, FileAccess.Write)) {
-                    spectra.Export(stream);
-                }
+                using var stream = File.Open(Path.Combine(directory, $"AlignmentID{peak.MasterAlignmentID:D6}.txt"), FileMode.Create, FileAccess.Write);
+                spectra?.Export(stream);
             }
         }
 

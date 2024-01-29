@@ -12,6 +12,7 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly ParameterBase parameter;
 
         public IsotopeTrackSettingModel(ParameterBase parameter, List<AnalysisFileBean> files, ProcessOption process) {
+            System.Diagnostics.Debug.Assert(files.Count > 0);
             this.parameter = parameter;
             AnalysisFiles = files.AsReadOnly();
             IsReadOnly = (process & ProcessOption.Alignment) == 0;
@@ -34,11 +35,11 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public IsotopeTrackingDictionary IsotopeTrackingDictionary { get; }
 
-        public AnalysisFileBean NonLabeledReference {
+        public AnalysisFileBean? NonLabeledReference {
             get => nonLabeledReference;
             set => SetProperty(ref nonLabeledReference, value);
         }
-        private AnalysisFileBean nonLabeledReference;
+        private AnalysisFileBean? nonLabeledReference;
 
         public bool UseTargetFormulaLibrary {
             get => useTargetFormulaLibrary;
@@ -50,7 +51,7 @@ namespace CompMs.App.Msdial.Model.Setting
             get => isotopeTextDBFilePath;
             set => SetProperty(ref isotopeTextDBFilePath, value);
         }
-        private string isotopeTextDBFilePath;
+        private string isotopeTextDBFilePath = string.Empty;
 
         public bool SetFullyLabeledReferenceFile {
             get => setFullyLabeledReferenceFile;
@@ -58,11 +59,11 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         public bool setFullyLabeledReferenceFile;
 
-        public AnalysisFileBean FullyLabeledReference {
+        public AnalysisFileBean? FullyLabeledReference {
             get => fullyLabeledReference;
             set => SetProperty(ref fullyLabeledReference, value);
         }
-        private AnalysisFileBean fullyLabeledReference;
+        private AnalysisFileBean? fullyLabeledReference;
 
         public ReadOnlyCollection<AnalysisFileBean> AnalysisFiles { get; }
 
@@ -71,11 +72,11 @@ namespace CompMs.App.Msdial.Model.Setting
                 return;
             }
             parameter.IsotopeTrackingBaseParam.TrackingIsotopeLabels = TrackingIsotopeLabels;
-            parameter.IsotopeTrackingBaseParam.NonLabeledReferenceID = NonLabeledReference.AnalysisFileId;
+            parameter.IsotopeTrackingBaseParam.NonLabeledReferenceID = NonLabeledReference?.AnalysisFileId ?? AnalysisFiles.First().AnalysisFileId;
             parameter.IsotopeTrackingBaseParam.UseTargetFormulaLibrary = UseTargetFormulaLibrary;
             parameter.ReferenceFileParam.IsotopeTextDBFilePath = IsotopeTextDBFilePath;
             parameter.IsotopeTrackingBaseParam.SetFullyLabeledReferenceFile = SetFullyLabeledReferenceFile;
-            parameter.IsotopeTrackingBaseParam.FullyLabeledReferenceID = FullyLabeledReference.AnalysisFileId;
+            parameter.IsotopeTrackingBaseParam.FullyLabeledReferenceID = FullyLabeledReference?.AnalysisFileId ?? AnalysisFiles.First().AnalysisFileId;
         }
     }
 }
