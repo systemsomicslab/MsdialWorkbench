@@ -200,7 +200,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             MoleculeStructureModel = moleculeStructureModel;
             selectedSpectrum.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.GetCurrentSpectrumFeature().AnnotatedMSDecResult.Molecule)).AddTo(_disposables);
 
-            PeakTableModel = new GcmsAnalysisPeakTableModel(_spectrumFeatures.Items, selectedSpectrum, PeakSpotNavigatorModel);
+            PeakTableModel = new GcmsAnalysisPeakTableModel(_spectrumFeatures.Items, selectedSpectrum, PeakSpotNavigatorModel, UndoManager);
 
             var rtSpotFocus = new ChromSpotFocus(PeakPlotModel.HorizontalAxis, RT_TOL, selectedSpectrum.Select(s => s?.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(_disposables);
             var mzSpotFocus = new ChromSpotFocus(PeakPlotModel.VerticalAxis, MZ_TOL, selectedSpectrum.Select(s => s?.QuantifiedChromatogramPeak.PeakFeature.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(_disposables);

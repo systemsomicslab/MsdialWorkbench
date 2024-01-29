@@ -177,7 +177,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
             var barItemsLoaderObservable = barItemsLoaderDataProperty.SkipNull().Select(data => data.Loader);
             var filter = peakSpotFiltering.CreateFilter(peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), FilterEnableStatus.All);
-            AlignmentSpotTableModel = new DimsAlignmentSpotTableModel(Ms1Spots, target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderObservable, filter, spectraLoader).AddTo(Disposables);
+            AlignmentSpotTableModel = new DimsAlignmentSpotTableModel(Ms1Spots, target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderObservable, filter, spectraLoader, _undoManager).AddTo(Disposables);
 
             _msdecResult = target
                 .DefaultIfNull(t => _alignmentFile.LoadMSDecResultByIndexAsync(t.MasterAlignmentID), Task.FromResult<MSDecResult?>(null))

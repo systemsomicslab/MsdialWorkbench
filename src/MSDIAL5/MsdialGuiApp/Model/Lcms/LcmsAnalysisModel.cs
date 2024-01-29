@@ -190,7 +190,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
 
             // Peak table
-            PeakTableModel = new LcmsAnalysisPeakTableModel(Ms1Peaks, Target, PeakSpotNavigatorModel, parameter.ProjectParam.TargetOmics).AddTo(Disposables);
+            PeakTableModel = new LcmsAnalysisPeakTableModel(Ms1Peaks, Target, PeakSpotNavigatorModel, parameter.ProjectParam.TargetOmics, _undoManager).AddTo(Disposables);
 
             var rtSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, RtTol, Target.Select(t => t?.ChromXValue ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
             var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, MzTol, Target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
