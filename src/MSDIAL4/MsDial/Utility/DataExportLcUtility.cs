@@ -406,7 +406,8 @@ namespace Rfx.Riken.OsakaUniv
                 exportSpectra(mainWindow, exportFolderPath, alignmentFileID,
                     alignmentResult, exportSpectraFileFormat, targetAnalysisFileID, blankFilter);
 
-            if (isParamExport) {
+            if (isParamExport)
+            {
                 ParameterExport(analysisFiles, mainWindow.AnalysisParamForLC, mainWindow.ProjectProperty, paramFile);
             }
             mainWindow.PeakViewerForLcRefresh(focusedFileID);
@@ -1727,71 +1728,93 @@ namespace Rfx.Riken.OsakaUniv
                 sw.WriteLine(param.MsdialVersionNumber);
                 sw.WriteLine();
                 sw.WriteLine("#Project");
-                sw.WriteLine("MS1 Data type\t" + project.DataType);
-                sw.WriteLine("MS2 Data type\t" + project.DataTypeMS2);
-                sw.WriteLine("Ion mode\t" + project.IonMode);
-                sw.WriteLine("Target\t" + project.TargetOmics);
-                sw.WriteLine("Mode\t" + project.MethodType);
+                sw.WriteLine("ms1 data type:" + project.DataType);
+                sw.WriteLine("ms2 Data type:" + project.DataTypeMS2);
+                sw.WriteLine("ion mode:" + project.IonMode);
+                sw.WriteLine("target:" + project.TargetOmics);  // typo in public enum TargetOmics { Metablomics, Lipidomics }
+                sw.WriteLine("mode:" + project.MethodType);
+                sw.WriteLine("#Note - use command line parameter to define the mode for MsdialConsoleApp.");
                 sw.WriteLine();
 
                 sw.WriteLine("#Data collection parameters");
-                sw.WriteLine("Retention time begin\t" + param.RetentionTimeBegin);
-                sw.WriteLine("Retention time end\t" + param.RetentionTimeEnd);
-                sw.WriteLine("Mass range begin\t" + param.MassRangeBegin);
-                sw.WriteLine("Mass range end\t" + param.MassRangeEnd);
-                sw.WriteLine("MS2 mass range begin\t" + param.Ms2MassRangeBegin);
-                sw.WriteLine("MS2 mass range end\t" + param.Ms2MassRangeEnd);
+                sw.WriteLine("#Mass accuracy");
+                sw.WriteLine("ms1 tolerance for centroid:" + param.CentroidMs1Tolerance);
+                sw.WriteLine("ms2 tolerance for centroid:" + param.CentroidMs2Tolerance);
+                sw.WriteLine("retention time begin:" + param.RetentionTimeBegin);
+                sw.WriteLine("retention time end:" + param.RetentionTimeEnd);
+                sw.WriteLine("mass range begin:" + param.MassRangeBegin);
+                sw.WriteLine("mass range end:" + param.MassRangeEnd);
+                sw.WriteLine("ms2 mass range begin:" + param.Ms2MassRangeBegin);
+                sw.WriteLine("ms2 mass range end:" + param.Ms2MassRangeEnd);
                 sw.WriteLine();
 
-                sw.WriteLine("#Centroid parameters");
-                sw.WriteLine("MS1 tolerance\t" + param.CentroidMs1Tolerance);
-                sw.WriteLine("MS2 tolerance\t" + param.CentroidMs2Tolerance);
-                //sw.WriteLine("Peak detection-based\t" + param.PeakDetectionBasedCentroid.ToString());
-                sw.WriteLine();
 
                 sw.WriteLine("#Isotope recognition");
-                sw.WriteLine("Maximum charged number\t" + param.MaxChargeNumber);
+                sw.WriteLine("maximum charged number:" + param.MaxChargeNumber);
+                // sw.WriteLine("consider cl and br elements:" + param.isBrClConsideredForIsotopes);  // inaccessible
+                sw.WriteLine("#TODO - export RT corrections parameters");
+                try
+                {
+                    sw.WriteLine("excute rt correction:" + param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection);  // typo in  public bool ExcuteRtCorrection { get; set; } = false;
+                    sw.WriteLine("rt correction with smoothing for rt diff:" + param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.doSmoothing);
+                    sw.WriteLine("user setting intercept:" + param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.UserSettingIntercept);
+                    sw.WriteLine("rt diff calc method:" + param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.RtDiffCalcMethod.ToString());
+                    sw.WriteLine("interpolation method:" + param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.InterpolationMethod.ToString());
+                    sw.WriteLine("extrapolation method (begin):" + param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExtrapolationMethodBegin);
+                    sw.WriteLine("extrapolation method (end):" + param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExtrapolationMethodEnd);
+                    sw.WriteLine("istd file:" + param.RetentionTimeCorrectionCommon.StandardLibrary);
+                }
+                catch (Exception e)
+                {
+                    sw.WriteLine("#No RT correction applied.");
+                }
                 sw.WriteLine();
-
-                sw.WriteLine("#Data processing");
-                sw.WriteLine("Number of threads\t" + param.NumThreads.ToString());
+                sw.WriteLine("#Multithreading");
+                sw.WriteLine("number of threads:" + param.NumThreads.ToString());
                 sw.WriteLine();
 
                 sw.WriteLine("#Peak detection parameters");
-                sw.WriteLine("Smoothing method\t" + param.SmoothingMethod.ToString());
-                sw.WriteLine("Smoothing level\t" + param.SmoothingLevel);
-                sw.WriteLine("Minimum peak width\t" + param.MinimumDatapoints);
-                sw.WriteLine("Minimum peak height\t" + param.MinimumAmplitude);
-                sw.WriteLine();
-
-                sw.WriteLine("#Peak spotting parameters");
-                sw.WriteLine("Mass slice width\t" + param.MassSliceWidth);
+                sw.WriteLine("minimum peak height:" + param.MinimumAmplitude);
+                sw.WriteLine("mass slice width:" + param.MassSliceWidth);
+                sw.WriteLine("smoothing method:" + param.SmoothingMethod.ToString());
+                sw.WriteLine("smoothing level:" + param.SmoothingLevel);
+                sw.WriteLine("minimum peak width:" + param.MinimumDatapoints);
                 sw.WriteLine("Exclusion mass list (mass & tolerance)");
-                foreach (var mass in param.ExcludedMassList) { sw.WriteLine(mass.ExcludedMass + "\t" + mass.MassTolerance); }
+                sw.WriteLine("#TODO - test various inclusion lists for later import");
+                try
+                {
+                    foreach (var mass in param.ExcludedMassList) { sw.WriteLine(mass.ExcludedMass + "\t" + mass.MassTolerance); }
+                }
+                catch (Exception e)
+                {
+                    sw.WriteLine("#No excluded ions.");
+                }
                 sw.WriteLine();
 
                 sw.WriteLine("#Deconvolution parameters");
                 //sw.WriteLine("Peak consideration\t" + param.DeconvolutionType.ToString());
-                sw.WriteLine("Sigma window value\t" + param.SigmaWindowValue);
-                sw.WriteLine("MS2Dec amplitude cut off\t" + param.AmplitudeCutoff);
-                sw.WriteLine("Exclude after precursor\t" + param.RemoveAfterPrecursor.ToString());
-                sw.WriteLine("Keep isotope until\t" + param.KeptIsotopeRange);
-                sw.WriteLine("Keep original precursor isotopes\t" + param.KeepOriginalPrecursorIsotopes);
-
+                sw.WriteLine("sigma window value:" + param.SigmaWindowValue);
+                sw.WriteLine("msms abundance cut off:" + param.AmplitudeCutoff);
+                sw.WriteLine("exclude after precursor ion:" + param.RemoveAfterPrecursor.ToString());
+                sw.WriteLine("keep isotope until:" + param.KeptIsotopeRange);
+                sw.WriteLine("keep original precursor isotopes:" + param.KeepOriginalPrecursorIsotopes);
                 sw.WriteLine();
 
+                sw.WriteLine("#Identification");
                 sw.WriteLine("#MSP file and MS/MS identification setting");
-                sw.WriteLine("MSP file\t" + project.LibraryFilePath);
-                sw.WriteLine("Retention time tolerance\t" + param.RetentionTimeLibrarySearchTolerance);
-                sw.WriteLine("Accurate mass tolerance (MS1)\t" + param.Ms1LibrarySearchTolerance);
-                sw.WriteLine("Accurate mass tolerance (MS2)\t" + param.Ms2LibrarySearchTolerance);
-                sw.WriteLine("Identification score cut off\t" + param.IdentificationScoreCutOff);
-                sw.WriteLine("Using retention time for scoring\t" + param.IsUseRetentionInfoForIdentificationScoring);
-                sw.WriteLine("Using retention time for filtering\t" + param.IsUseRetentionInfoForIdentificationFiltering);
+                sw.WriteLine("#check the absolute path or use a relative path like ./lib/NIST20.msp in linux");
+                sw.WriteLine("msp file:" + project.LibraryFilePath);
+                sw.WriteLine("retention time tolerance for identification:" + param.RetentionTimeLibrarySearchTolerance);
+                sw.WriteLine("accurate ms1 tolerance for identification:" + param.Ms1LibrarySearchTolerance);
+                sw.WriteLine("accurate ms2 tolerance for identification:" + param.Ms2LibrarySearchTolerance);
+                sw.WriteLine("identification score cut off:" + param.IdentificationScoreCutOff);
+                sw.WriteLine("use retention information for identification scoring:" + param.IsUseRetentionInfoForIdentificationScoring);
+                sw.WriteLine("use retention information for identification filtering:" + param.IsUseRetentionInfoForIdentificationFiltering);
                 if (project.TargetOmics == TargetOmics.Lipidomics)
                 {
                     sw.WriteLine();
                     sw.WriteLine("#Selected lipid types");
+                    sw.WriteLine("#Note - not used for MsdialConsoleApp.");
                     foreach (var lQuery in param.LipidQueryBean.LbmQueries)
                     {
                         if (lQuery.IsSelected == true && lQuery.IonMode == project.IonMode)
@@ -1815,79 +1838,84 @@ namespace Rfx.Riken.OsakaUniv
                 sw.WriteLine();
 
                 sw.WriteLine("#Text file and post identification (retention time and accurate mass based) setting");
-                sw.WriteLine("Text file\t" + project.PostIdentificationLibraryFilePath);
-                sw.WriteLine("Retention time tolerance\t" + param.RetentionTimeToleranceOfPostIdentification);
-                sw.WriteLine("Accurate mass tolerance\t" + param.AccurateMassToleranceOfPostIdentification);
-                sw.WriteLine("Identification score cut off\t" + param.PostIdentificationScoreCutOff);
+                sw.WriteLine("#check the absolute path or use a relative path like ./lib/myRTmz.txt");
+                sw.WriteLine("text file:" + project.PostIdentificationLibraryFilePath);
+                sw.WriteLine("retention time tolerance for post identification:" + param.RetentionTimeToleranceOfPostIdentification);
+                sw.WriteLine("accurate ms1 tolerance for post identification:" + param.AccurateMassToleranceOfPostIdentification);
+                sw.WriteLine("post identification score cut off:" + param.PostIdentificationScoreCutOff);
                 sw.WriteLine();
-
-                sw.WriteLine("#Advanced setting for identification");
-                sw.WriteLine("Relative abundance cut off\t" + param.RelativeAbundanceCutOff);
-                sw.WriteLine("Top candidate report\t" + param.OnlyReportTopHitForPostAnnotation);
+                sw.WriteLine("#Spectrum cut off and report option");
+                sw.WriteLine("relative abundance cut off:" + param.RelativeAbundanceCutOff);
+                sw.WriteLine("top candidate report:" + param.OnlyReportTopHitForPostAnnotation);
                 sw.WriteLine();
 
                 sw.WriteLine("#Adduct ion setting");
+                sw.WriteLine("#TODO - custom adduct export > import, list separated by colon or new line");
                 foreach (var adduct in param.AdductIonInformationBeanList) { if (adduct.Included == true) sw.WriteLine(adduct.AdductName); }
                 sw.WriteLine();
 
                 sw.WriteLine("#Alignment parameters setting");
+                sw.WriteLine("#Note - for MsdialConsoleApp use an index, e.g. 0 for the first file.");
                 if (analysisFiles != null && analysisFiles.Count > 0)
-                    sw.WriteLine("Reference file\t" + analysisFiles[param.AlignmentReferenceFileID].AnalysisFilePropertyBean.AnalysisFilePath);
-                sw.WriteLine("Retention time tolerance\t" + param.RetentionTimeAlignmentTolerance);
-                sw.WriteLine("MS1 tolerance\t" + param.Ms1AlignmentTolerance);
-                sw.WriteLine("Retention time factor\t" + param.RetentionTimeAlignmentFactor);
-                sw.WriteLine("MS1 factor\t" + param.Ms1AlignmentFactor);
-                sw.WriteLine("Peak count filter\t" + param.PeakCountFilter);
-                sw.WriteLine("N% detected in at least one group\t" + param.NPercentDetectedInOneGroup);
+                {
+                    sw.WriteLine("reference file:" + analysisFiles[param.AlignmentReferenceFileID].AnalysisFilePropertyBean.AnalysisFilePath);
+                    sw.WriteLine("alignment reference file id: " + analysisFiles.IndexOf(analysisFiles[param.AlignmentReferenceFileID]));
+                }
+                sw.WriteLine("retention time tolerance for alignment:" + param.RetentionTimeAlignmentTolerance);
+                sw.WriteLine("ms1 tolerance for alignment:" + param.Ms1AlignmentTolerance);
+                sw.WriteLine("retention time factor for alignment:" + param.RetentionTimeAlignmentFactor);
+                sw.WriteLine("ms1 factor for alignment:" + param.Ms1AlignmentFactor);
+                sw.WriteLine("peak count filter:" + param.PeakCountFilter);
+                sw.WriteLine("n% detected in at least one group:" + param.NPercentDetectedInOneGroup);
                 //sw.WriteLine("QC at least filter\t" + param.QcAtLeastFilter.ToString());
-                sw.WriteLine("Remove feature based on peak height fold-change\t" + param.IsRemoveFeatureBasedOnPeakHeightFoldChange);
-                sw.WriteLine("Sample max / blank average\t" + param.SampleMaxOverBlankAverage);
-                sw.WriteLine("Sample average / blank average\t" + param.SampleAverageOverBlankAverage);
-                sw.WriteLine("Keep identified and annotated metabolites\t" + param.IsKeepIdentifiedMetaboliteFeatures);
-                sw.WriteLine("Keep removable features and assign the tag for checking\t" + param.IsKeepRemovableFeaturesAndAssignedTagForChecking);
+                sw.WriteLine("remove feature based on peak height fold-change:" + param.IsRemoveFeatureBasedOnPeakHeightFoldChange);
+                sw.WriteLine("sample max / blank average:" + param.SampleMaxOverBlankAverage);
+                sw.WriteLine("sample average / blank average:" + param.SampleAverageOverBlankAverage);
+                sw.WriteLine("keep identified and annotated metabolites:" + param.IsKeepIdentifiedMetaboliteFeatures);
+                sw.WriteLine("keep removable features and assign the tag for checking:" + param.IsKeepRemovableFeaturesAndAssignedTagForChecking);
                 //sw.WriteLine("Replace true zero values with 1/2 of minimum peak height over all samples\t" + param.IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples);
-                sw.WriteLine("Gap filling by compulsion\t" + param.IsForceInsertForGapFilling);
-
+                sw.WriteLine("gap filling by compulsion:" + param.IsForceInsertForGapFilling);
                 sw.WriteLine();
 
                 sw.WriteLine("#Tracking of isotope labels");
                 if (param.TrackingIsotopeLabels)
                 {
-                    sw.WriteLine("Tracking of isotopic labels\tTRUE");
-                    sw.WriteLine("Labeled element\t" + param.IsotopeTrackingDictionary.IsotopeElements[param.IsotopeTrackingDictionary.SelectedID].ElementName);
+                    sw.WriteLine("tracking of isotopic labels:TRUE");
+                    sw.WriteLine("labeled element:" + param.IsotopeTrackingDictionary.IsotopeElements[param.IsotopeTrackingDictionary.SelectedID].ElementName);
+                    sw.WriteLine("#Note - elements could be also assigned by index, e.g. 13C is 0");
                     if (analysisFiles != null && analysisFiles.Count > 0)
-                        sw.WriteLine("Non labeled reference file\t" + analysisFiles[param.NonLabeledReferenceID].AnalysisFilePropertyBean.AnalysisFilePath);
+                        sw.WriteLine("non labeled reference file:" + analysisFiles[param.NonLabeledReferenceID].AnalysisFilePropertyBean.AnalysisFilePath);
                     else
-                        sw.WriteLine("Non labeled reference file\tNot found");
+                        sw.WriteLine("non labeled reference file:Not found");
 
                     if (param.UseTargetFormulaLibrary)
                     {
-                        sw.WriteLine("Use target formula library\t" + param.UseTargetFormulaLibrary);
+                        sw.WriteLine("use target formula library:" + param.UseTargetFormulaLibrary);
                         if (analysisFiles != null && analysisFiles.Count > 0)
-                            sw.WriteLine("Target formula library file path\t" + project.TargetFormulaLibraryFilePath);
+                            sw.WriteLine("target compound file:" + project.TargetFormulaLibraryFilePath);
                         else
-                            sw.WriteLine("Fully labeled reference file\tNot found");
+                            sw.WriteLine("Fully labeled reference file:Not found");
                     }
                 }
                 else
                 {
-                    sw.WriteLine("Tracking of isotopic labels\tFALSE");
+                    sw.WriteLine("tracking of isotopic labels:FALSE");
                 }
                 sw.WriteLine();
 
                 sw.WriteLine("#Ion mobility");
                 if (param.IsIonMobility)
                 {
-                    sw.WriteLine("Mobility type\t" + param.IonMobilityType);
-                    sw.WriteLine("Accumulated RT ragne\t" + param.AccumulatedRtRagne);
-                    sw.WriteLine("CCS search Tolerance\t" + param.CcsSearchTolerance);
-                    sw.WriteLine("Use CCS for identification scoring\t" + param.IsUseCcsForIdentificationScoring);
-                    sw.WriteLine("Use CCS for identification filtering\t" + param.IsUseCcsForIdentificationFiltering);
-                    sw.WriteLine("Mobility axis alignment tolerance\t" + param.DriftTimeAlignmentTolerance);
+                    sw.WriteLine("mobility type:" + param.IonMobilityType);
+                    sw.WriteLine("accumulated rt ragne:" + param.AccumulatedRtRagne);  // typo in AnalysisParametersBean ragne > range
+                    sw.WriteLine("Cccs search tolerance:" + param.CcsSearchTolerance);
+                    sw.WriteLine("use ccs for identification scoring:" + param.IsUseCcsForIdentificationScoring);
+                    sw.WriteLine("use ccs for identification filtering:" + param.IsUseCcsForIdentificationFiltering);
+                    sw.WriteLine("mobility axis alignment tolerance:" + param.DriftTimeAlignmentTolerance);
                 }
                 else
                 {
-                    sw.WriteLine("Ion mobility data\tFALSE");
+                    sw.WriteLine("ion mobility data:FALSE");
                 }
             }
         }
