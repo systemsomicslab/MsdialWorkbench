@@ -118,6 +118,11 @@
                         Margin="8,0"
                         VerticalAlignment="Center" HorizontalAlignment="Left"
                         Width="128"/>
+                <Button Content="Mark all as unconfirmed"
+                        Command="{Binding MarkAllAsUnconfirmedCommand, Mode=OneTime, FallbackValue={x:Static commonmvvm:NeverCommand.Instance}}"
+                        Margin="8,0"
+                        VerticalAlignment="Center" HorizontalAlignment="Left"
+                        Width="128"/>
             </StackPanel>
         </Grid>
 
