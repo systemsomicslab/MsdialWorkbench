@@ -27,5 +27,11 @@ namespace CompMs.App.Msdial.Model.Table
                 peak.Confirmed = true;
             }
         }
+
+        public override void MarkAllAsUnconfirmed() {
+            foreach (var peak in PeakSpots) {
+                peak.Confirmed = false;
+            }
+        }
     }
 }

@@ -12,6 +12,7 @@ namespace CompMs.App.Msdial.Model.Table
 
         IReactiveProperty Target { get; }
         void MarkAllAsConfirmed();
+        void MarkAllAsUnconfirmed();
         void SwitchTag(PeakSpotTag tag);
     }
 
@@ -29,6 +30,7 @@ namespace CompMs.App.Msdial.Model.Table
         IReadOnlyList<object> IPeakSpotTableModelBase.PeakSpots => PeakSpots;
         IReactiveProperty IPeakSpotTableModelBase.Target => _target;
         public abstract void MarkAllAsConfirmed();
+        public abstract void MarkAllAsUnconfirmed();
         public abstract void SwitchTag(PeakSpotTag tag);
     }
 }

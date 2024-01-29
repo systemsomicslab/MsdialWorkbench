@@ -36,6 +36,12 @@ namespace CompMs.App.Msdial.Model.Gcms
             }
         }
 
+        public override void MarkAllAsUnconfirmed() {
+            foreach (var peak in PeakSpots) {
+                peak.Confirmed = false;
+            }
+        }
+
         public override void SwitchTag(PeakSpotTag tag) {
             if (_target.Value is null) {
                 return;

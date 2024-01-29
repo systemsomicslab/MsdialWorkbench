@@ -55,6 +55,12 @@ namespace CompMs.App.Msdial.Model.Table
             }
         }
 
+        public override void MarkAllAsUnconfirmed() {
+            foreach (var peak in PeakSpots) {
+                peak.Confirmed = false;
+            }
+        }
+
         public override void SwitchTag(PeakSpotTag tag) {
             if (_target.Value is null) {
                 return;
