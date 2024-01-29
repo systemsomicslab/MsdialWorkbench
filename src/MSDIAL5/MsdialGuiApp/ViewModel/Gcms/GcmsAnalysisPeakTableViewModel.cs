@@ -26,7 +26,6 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             RiMin = model.RiMin;
             RiMax = model.RiMax;
             EicLoader = eicLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            MarkAllAsConfirmedCommand = new ReactiveCommand().WithSubscribe(model.MarkAllAsConfirmed).AddTo(Disposables);
         }
 
         public double MassMin { get; }
@@ -36,7 +35,6 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         public double RiMin { get; }
         public double RiMax { get; }
 
-        public ReadOnlyReactivePropertySlim<IChromatogramLoader<Ms1BasedSpectrumFeature>> EicLoader { get; }
-        public ReactiveCommand MarkAllAsConfirmedCommand { get; }
+        public ReadOnlyReactivePropertySlim<IChromatogramLoader<Ms1BasedSpectrumFeature>?> EicLoader { get; }
     }
 }

@@ -15,7 +15,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Loader
 {
-    internal sealed class QuantMassEicLoader : IChromatogramLoader<Ms1BasedSpectrumFeature>
+    internal sealed class QuantMassEicLoader : IChromatogramLoader<Ms1BasedSpectrumFeature?>
     {
         private readonly PeakPickBaseParameter _peakPickParameter;
         private readonly ChromXType _chromXType;
@@ -36,7 +36,7 @@ namespace CompMs.App.Msdial.Model.Loader
 
         public double MzTolerance => _peakPickParameter.MassSliceWidth;
 
-        async Task<PeakChromatogram> IChromatogramLoader<Ms1BasedSpectrumFeature>.LoadChromatogramAsync(Ms1BasedSpectrumFeature target, CancellationToken token) {
+        async Task<PeakChromatogram> IChromatogramLoader<Ms1BasedSpectrumFeature?>.LoadChromatogramAsync(Ms1BasedSpectrumFeature? target, CancellationToken token) {
             if (target != null) {
                 var eic = await LoadEicCoreAsync(target.QuantifiedChromatogramPeak.PeakFeature, token).ConfigureAwait(false);
                 if (eic.Count == 0) {
@@ -49,7 +49,7 @@ namespace CompMs.App.Msdial.Model.Loader
                 var peakEic = peakEicTask.Result;
                 return new PeakChromatogram(eic, peakEic, focusedEicTask.Result, string.Empty, Colors.Black, _chromXType, _chromXUnit, $"EIC of {target.QuantifiedChromatogramPeak.PeakFeature.Mass:N4} tolerance [Da]: {MzTolerance:F} Max intensity: {peakEic.Max(peak => peak.Intensity):F0}");
             }
-            return new PeakChromatogram(new List<PeakItem>(), new List<PeakItem>(), null, string.Empty, Colors.Black, _chromXType, _chromXUnit);
+            return new PeakChromatogram(new List<PeakItem>(0), new List<PeakItem>(0), null, string.Empty, Colors.Black, _chromXType, _chromXUnit);
         }
 
         private async Task<List<PeakItem>> LoadEicCoreAsync(IChromatogramPeakFeature peakFeature, CancellationToken token) {
@@ -70,6 +70,8 @@ namespace CompMs.App.Msdial.Model.Loader
         private PeakItem LoadEicFocusedCore(IChromatogramPeakFeature target, List<PeakItem> eic) {
             return eic.Argmin(peak => Math.Abs(target.ChromXsTop.RT.Value - peak.Time));
         }
+
+        PeakChromatogram IChromatogramLoader<Ms1BasedSpectrumFeature?>.EmptyChromatogram  => new PeakChromatogram(new List<PeakItem>(0), new List<PeakItem>(0), null, string.Empty, Colors.Black, _chromXType, _chromXUnit);
 
         private static readonly double PEAK_WIDTH_FACTOR = 3d;
         private ChromatogramRange GetChromatogramRange(IChromatogramPeakFeature target) {

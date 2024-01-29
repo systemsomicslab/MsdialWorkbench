@@ -17,27 +17,27 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class AlignmentPeakPlotModel : DisposableModelBase
     {
-        private readonly AlignmentSpotSource _spotsSource;
+        private readonly AlignmentSpotSource? _spotsSource;
 
         public AlignmentPeakPlotModel(
             AlignmentSpotSource spotsSource,
             Func<AlignmentSpotPropertyModel, double> horizontalSelector,
             Func<AlignmentSpotPropertyModel, double> verticalSelector,
-            IReactiveProperty<AlignmentSpotPropertyModel> targetSource,
-            IObservable<string> labelSource,
+            IReactiveProperty<AlignmentSpotPropertyModel?> targetSource,
+            IObservable<string?> labelSource,
             BrushMapData<AlignmentSpotPropertyModel> selectedBrush,
             IList<BrushMapData<AlignmentSpotPropertyModel>> brushes)
-            : this(spotsSource.Spots.Items, horizontalSelector, verticalSelector, targetSource, labelSource, selectedBrush, brushes) {
+            : this(spotsSource.Spots?.Items, horizontalSelector, verticalSelector, targetSource, labelSource, selectedBrush, brushes) {
 
             _spotsSource = spotsSource;
         }
 
         public AlignmentPeakPlotModel(
-            ReadOnlyObservableCollection<AlignmentSpotPropertyModel> spots,
+            ReadOnlyObservableCollection<AlignmentSpotPropertyModel>? spots,
             Func<AlignmentSpotPropertyModel, double> horizontalSelector,
             Func<AlignmentSpotPropertyModel, double> verticalSelector,
-            IReactiveProperty<AlignmentSpotPropertyModel> targetSource,
-            IObservable<string> labelSource,
+            IReactiveProperty<AlignmentSpotPropertyModel?> targetSource,
+            IObservable<string?> labelSource,
             BrushMapData<AlignmentSpotPropertyModel> selectedBrush,
             IList<BrushMapData<AlignmentSpotPropertyModel>> brushes) {
             if (horizontalSelector is null) {
@@ -55,7 +55,7 @@ namespace CompMs.App.Msdial.Model.Chart
             Spots = spots ?? throw new ArgumentNullException(nameof(spots));
             TargetSource = targetSource ?? throw new ArgumentNullException(nameof(targetSource));
             LabelSource = labelSource ?? throw new ArgumentNullException(nameof(labelSource));
-            SelectedBrush = selectedBrush ?? throw new ArgumentNullException(nameof(selectedBrush));
+            _selectedBrush = selectedBrush ?? throw new ArgumentNullException(nameof(selectedBrush));
             Brushes = new ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>>(brushes);
 
             GraphTitle = string.Empty;
@@ -79,42 +79,42 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public ReadOnlyObservableCollection<AlignmentSpotPropertyModel> Spots { get; }
 
-        public IReactiveProperty<AlignmentSpotPropertyModel> TargetSource { get; }
+        public IReactiveProperty<AlignmentSpotPropertyModel?> TargetSource { get; }
 
         public IAxisManager<double> HorizontalAxis { get; }
         public IAxisManager<double> VerticalAxis { get; }
 
-        public string GraphTitle {
+        public string? GraphTitle {
             get => graphTitle;
             set => SetProperty(ref graphTitle, value);
         }
-        private string graphTitle;
+        private string? graphTitle;
 
-        public string HorizontalTitle {
+        public string? HorizontalTitle {
             get => horizontalTitle;
             set => SetProperty(ref horizontalTitle, value);
         }
-        private string horizontalTitle;
+        private string? horizontalTitle;
 
-        public string VerticalTitle {
+        public string? VerticalTitle {
             get => verticalTitle;
             set => SetProperty(ref verticalTitle, value);
         }
-        private string verticalTitle;
+        private string? verticalTitle;
 
-        public string HorizontalProperty {
+        public string? HorizontalProperty {
             get => horizontalProperty;
             set => SetProperty(ref horizontalProperty, value);
         }
-        private string horizontalProperty;
+        private string? horizontalProperty;
 
-        public string VerticalProperty {
+        public string? VerticalProperty {
             get => verticalProperty;
             set => SetProperty(ref verticalProperty, value);
         }
-        private string verticalProperty;
+        private string? verticalProperty;
 
-        public IObservable<string> LabelSource { get; }
+        public IObservable<string?> LabelSource { get; }
 
         public BrushMapData<AlignmentSpotPropertyModel> SelectedBrush {
             get => _selectedBrush;
@@ -137,9 +137,9 @@ namespace CompMs.App.Msdial.Model.Chart
             return _spotsSource.DuplicateSpotAsync(spot);
         }
 
-        public IExportMrmprobsUsecase ExportMrmprobs { get; set; }
+        public IExportMrmprobsUsecase? ExportMrmprobs { get; set; }
 
-        public ExportMrmprobsModel ExportMrmprobsModel() {
+        public ExportMrmprobsModel? ExportMrmprobsModel() {
             if (ExportMrmprobs is null) {
                 return null;
             }

@@ -22,15 +22,15 @@ namespace CompMs.App.Msdial.Model.Search
     interface ICompoundSearchModel : INotifyPropertyChanged, IDisposable {
         IList SearchMethods { get; }
 
-        object SearchMethod { get; set; }
+        object? SearchMethod { get; set; }
 
-        ReadOnlyReactivePropertySlim<MsRefSearchParameterBase> SearchParameter { get; }
+        ReadOnlyReactivePropertySlim<MsRefSearchParameterBase?> SearchParameter { get; }
         
         IFileBean File { get; }
 
-        ICompoundResult SelectedCompoundResult { get; set; }
+        ICompoundResult? SelectedCompoundResult { get; set; }
 
-        IReadOnlyList<ICompoundResult> CompoundResults { get; }
+        IReadOnlyList<ICompoundResult>? CompoundResults { get; }
 
         MsSpectrumModel MsSpectrumModel { get; }
 
@@ -71,7 +71,7 @@ namespace CompMs.App.Msdial.Model.Search
 
         public IList SearchMethods => _compoundSearchService.SearchMethods;
 
-        public object SearchMethod {
+        public object? SearchMethod {
             get => _compoundSearchService.SearchMethod;
             set {
                 if (_compoundSearchService.SearchMethod != value) {
@@ -81,7 +81,7 @@ namespace CompMs.App.Msdial.Model.Search
             }
         }
 
-        public ReadOnlyReactivePropertySlim<MsRefSearchParameterBase> SearchParameter { get; }
+        public ReadOnlyReactivePropertySlim<MsRefSearchParameterBase?> SearchParameter { get; }
         
         public IFileBean File { get; }
 
@@ -89,17 +89,17 @@ namespace CompMs.App.Msdial.Model.Search
 
         public MsSpectrumModel MsSpectrumModel => _plotService.MsSpectrumModel;
 
-        public ICompoundResult SelectedCompoundResult {
+        public ICompoundResult? SelectedCompoundResult {
             get => _selectedCompoundResult;
             set => SetProperty(ref _selectedCompoundResult, value);
         }
-        private ICompoundResult _selectedCompoundResult;
+        private ICompoundResult? _selectedCompoundResult;
 
-        public IReadOnlyList<ICompoundResult> CompoundResults {
+        public IReadOnlyList<ICompoundResult>? CompoundResults {
             get => _compoundResults;
             private set => SetProperty(ref _compoundResults, value);
         }
-        private IReadOnlyList<ICompoundResult> _compoundResults;
+        private IReadOnlyList<ICompoundResult>? _compoundResults;
 
         public IObservable<bool> IsBusy => _isBusy;
 
@@ -110,11 +110,15 @@ namespace CompMs.App.Msdial.Model.Search
         }
 
         public void SetConfidence() {
-            _setAnnotationService.SetConfidence(SelectedCompoundResult);
+            if (SelectedCompoundResult is ICompoundResult result) {
+                _setAnnotationService.SetConfidence(result);
+            }
         }
 
         public void SetUnsettled() {
-            _setAnnotationService.SetUnsettled(SelectedCompoundResult);
+            if (SelectedCompoundResult is ICompoundResult result) {
+                _setAnnotationService.SetUnsettled(result);
+            }
         }
 
         public void SetUnknown() {

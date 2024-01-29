@@ -15,7 +15,6 @@ namespace CompMs.App.Msdial.Model.Export
     internal sealed class MsdialAnalysisTableExportModel : BindableBase, IMsdialAnalysisExport
     {
         public MsdialAnalysisTableExportModel(IEnumerable<ISpectraType> spectraTypes, IEnumerable<SpectraFormat> spectraFormats) {
-
             if (spectraTypes is null) {
                 throw new ArgumentNullException(nameof(spectraTypes));
             }
@@ -38,17 +37,17 @@ namespace CompMs.App.Msdial.Model.Export
         private bool _shoudlExport = true;
 
         public ObservableCollection<ISpectraType> ExportSpectraTypes { get; }
-        public ISpectraType SelectedSpectraType {
+        public ISpectraType? SelectedSpectraType {
             get => _selectedSpectraType;
             set => SetProperty(ref _selectedSpectraType, value);
         }
-        private ISpectraType _selectedSpectraType;
+        private ISpectraType? _selectedSpectraType;
         public ObservableCollection<SpectraFormat> ExportSpectraFileFormats { get; }
-        public SpectraFormat SelectedFileFormat {
+        public SpectraFormat? SelectedFileFormat {
             get => _selectedFileFormat;
             set => SetProperty(ref _selectedFileFormat, value);
         }
-        private SpectraFormat _selectedFileFormat;
+        private SpectraFormat? _selectedFileFormat;
 
         public int IsotopeExportMax {
             get => _isotopeExportMax;
@@ -57,7 +56,7 @@ namespace CompMs.App.Msdial.Model.Export
         private int _isotopeExportMax = 2;
 
         public void Export(string destinationFolder, AnalysisFileBeanModel fileBeanModel) {
-            if (!ShouldExport) {
+            if (!ShouldExport || SelectedFileFormat is null || SelectedSpectraType is null) {
                 return;
             }
             var filename = Path.Combine(destinationFolder, fileBeanModel.AnalysisFileName + "." + SelectedFileFormat.Format);

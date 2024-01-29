@@ -27,13 +27,13 @@ namespace CompMs.App.Msdial.ViewModel.Information
                 .AddTo(Disposables);
         }
 
-        public ReadOnlyReactivePropertySlim<string> Annotation { get; }
+        public ReadOnlyReactivePropertySlim<string?> Annotation { get; }
         public ReadOnlyReactivePropertySlim<ReadOnlyReactiveCollection<SimilarityScoreViewModel>> CompoundSimilarities { get; }
-        public ReadOnlyReactivePropertySlim<string> Formula { get; }
-        public ReadOnlyReactivePropertySlim<string> Ontology { get; }
-        public ReadOnlyReactivePropertySlim<string> Smiles { get; }
-        public ReadOnlyReactivePropertySlim<string> InChIKey { get; }
-        public ReadOnlyReactivePropertySlim<string> AnnotatorId { get; }
+        public ReadOnlyReactivePropertySlim<string?> Formula { get; }
+        public ReadOnlyReactivePropertySlim<string?> Ontology { get; }
+        public ReadOnlyReactivePropertySlim<string?> Smiles { get; }
+        public ReadOnlyReactivePropertySlim<string?> InChIKey { get; }
+        public ReadOnlyReactivePropertySlim<string?> AnnotatorId { get; }
     }
 
     internal sealed class SimilarityScoreViewModel : ViewModelBase
@@ -46,7 +46,7 @@ namespace CompMs.App.Msdial.ViewModel.Information
             Score = similarityScore.ObserveProperty(m => m.Score).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
 
-        public ReadOnlyReactivePropertySlim<string> Label { get; }
-        public ReadOnlyReactivePropertySlim<string> Score { get; }
+        public ReadOnlyReactivePropertySlim<string?> Label { get; }
+        public ReadOnlyReactivePropertySlim<string?> Score { get; }
     }
 }

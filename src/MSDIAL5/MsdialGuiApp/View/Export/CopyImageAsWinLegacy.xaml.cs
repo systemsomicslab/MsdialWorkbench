@@ -1,26 +1,14 @@
 ﻿using CompMs.Graphics.IO;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View.Export {
+namespace CompMs.App.Msdial.View.Export
+{
     /// <summary>
     /// Interaction logic for CopyImageAsWinLegacy.xaml
     /// </summary>
     public partial class CopyImageAsWinLegacy : Window {
-        private object target;
-        private string saveImageFilePath;
+        private object? target;
+        private string? saveImageFilePath;
         private double horizontalDpi;
         private double verticalDpi;
 
@@ -74,7 +62,5 @@ namespace CompMs.App.Msdial.View.Export {
 
             this.Close();
         }
-
-
     }
 }

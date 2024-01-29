@@ -14,11 +14,11 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public ChromatogramsModel ChromatogramModel { get; }
 
-        public Range SelectedRange {
+        public Range? SelectedRange {
             get => selectedRange;
             set => SetProperty(ref selectedRange, value);
         }
-        private Range selectedRange;
+        private Range? selectedRange;
 
         public ObservableCollection<RangeSelection> SelectedRanges { get; }
 

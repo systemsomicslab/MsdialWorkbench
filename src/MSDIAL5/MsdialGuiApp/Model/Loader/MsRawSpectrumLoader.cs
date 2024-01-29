@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Loader
 {
-    internal sealed class MsRawSpectrumLoader : IMsSpectrumLoader<QuantifiedChromatogramPeak>
+    internal sealed class MsRawSpectrumLoader : IMsSpectrumLoader<QuantifiedChromatogramPeak?>
     {
         private readonly IDataProvider _provider;
         private readonly MSDataType _dataType;
@@ -25,9 +25,9 @@ namespace CompMs.App.Msdial.Model.Loader
             _chromDecParameter = chromDecParameter;
         }
 
-        public Task<List<SpectrumPeak>> LoadSpectrumAsync(QuantifiedChromatogramPeak target, CancellationToken token) {
+        public Task<List<SpectrumPeak>> LoadSpectrumAsync(QuantifiedChromatogramPeak? target, CancellationToken token) {
             return target is null
-                ? Task.FromResult(new List<SpectrumPeak>())
+                ? Task.FromResult(new List<SpectrumPeak>(0))
                 : LoadSpectrumCoreAsync(target, token);
         }
 
@@ -43,7 +43,7 @@ namespace CompMs.App.Msdial.Model.Loader
             return spectra;
         }
 
-        public IObservable<List<SpectrumPeak>> LoadSpectrumAsObservable(QuantifiedChromatogramPeak target) {
+        public IObservable<List<SpectrumPeak>> LoadSpectrumAsObservable(QuantifiedChromatogramPeak? target) {
             return Observable.FromAsync(token => LoadSpectrumAsync(target, token));
         }
     }

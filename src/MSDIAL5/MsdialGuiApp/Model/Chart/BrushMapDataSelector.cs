@@ -10,8 +10,9 @@ namespace CompMs.App.Msdial.Model.Chart
     internal sealed class BrushMapDataSelector<T> : BindableBase
     {
         public BrushMapDataSelector(params BrushMapData<T>[] brushes) {
+            System.Diagnostics.Debug.Assert(brushes.Length > 0);
             Brushes = new ObservableCollection<BrushMapData<T>>(brushes);
-            SelectedBrush = brushes.FirstOrDefault();
+            _selectedBrush = brushes.First();
         }
 
         public ObservableCollection<BrushMapData<T>> Brushes { get; }

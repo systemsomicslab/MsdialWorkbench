@@ -99,7 +99,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
     public static class DataCollectionRangeSettingViewModelFactory
     {
-        public static DataCollectionRangeSettingViewModel Create(IDataCollectionRangeSetting model) {
+        public static DataCollectionRangeSettingViewModel? Create(IDataCollectionRangeSetting model) {
             switch (model) {
                 case RetentionTimeCollectionRangeSetting m:
                     return new RetentionTimeDataCollectionRangeSettingViewModel(m);

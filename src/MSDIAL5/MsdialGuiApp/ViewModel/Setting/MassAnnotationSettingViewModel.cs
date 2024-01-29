@@ -87,7 +87,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         private readonly ReadOnlyReactivePropertySlim<bool> hasErrors;
 
         public ReactivePropertySlim<string> AnnotatorID { get; }
-        public ReadOnlyReactivePropertySlim<string> Label { get; }
+        public ReadOnlyReactivePropertySlim<string?> Label { get; }
 
         public MsRefSearchParameterBaseViewModel ParameterVM { get; }
 

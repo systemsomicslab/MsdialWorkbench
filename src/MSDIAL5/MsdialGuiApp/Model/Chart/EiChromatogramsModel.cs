@@ -16,7 +16,7 @@ namespace CompMs.App.Msdial.Model.Chart
     {
         private readonly IMessageBroker _broker;
         private readonly SelectableChromatogram _rawChromatogram, _deconvolutedChromatogram, _combinedChromatogram;
-        private readonly ReadOnlyReactivePropertySlim<ChromatogramsModel> _chromatograms;
+        private readonly ReadOnlyReactivePropertySlim<ChromatogramsModel?> _chromatograms;
 
         public EiChromatogramsModel(SelectableChromatogram rawChromatogram, SelectableChromatogram deconvolutedChromatogram, IMessageBroker broker) {
             _rawChromatogram = rawChromatogram;
@@ -29,21 +29,21 @@ namespace CompMs.App.Msdial.Model.Chart
             RawChromatogramsModel = new[]
             {
                 rawChromatogram.ObserveWhenSelected(),
-                deconvolutedChromatogram.ObserveWhenSelected().Select(_ => (SelectableChromatogram)null),
+                deconvolutedChromatogram.ObserveWhenSelected().Select(_ => (SelectableChromatogram?)null),
                 combinedChromatogram.ObserveWhenSelected(),
             }.Merge()
-            .Select(c => c is null ? Observable.Return<ChromatogramsModel>(null) : rawChromatogram.Chromatogram)
+            .Select(c => c is null ? Observable.Return<ChromatogramsModel?>(null) : rawChromatogram.Chromatogram)
             .Switch()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
             DeconvolutedChromatogramsModel = new[]
             {
-                rawChromatogram.ObserveWhenSelected().Select(_ => (SelectableChromatogram)null),
+                rawChromatogram.ObserveWhenSelected().Select(_ => (SelectableChromatogram?)null),
                 deconvolutedChromatogram.ObserveWhenSelected(),
                 combinedChromatogram.ObserveWhenSelected(),
             }.Merge()
-            .Select(c => c is null ? Observable.Return<ChromatogramsModel>(null) : deconvolutedChromatogram.Chromatogram)
+            .Select(c => c is null ? Observable.Return<ChromatogramsModel?>(null) : deconvolutedChromatogram.Chromatogram)
             .Switch()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
@@ -54,7 +54,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 deconvolutedChromatogram.ObserveWhenSelected(),
                 combinedChromatogram.ObserveWhenSelected().Select(_ => deconvolutedChromatogram),
             }.Merge()
-            .Select(c => c is null ? Observable.Return<ChromatogramsModel>(null) : c.Chromatogram)
+            .Select(c => c is null ? Observable.Return<ChromatogramsModel?>(null) : c.Chromatogram)
             .Switch()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
@@ -87,10 +87,10 @@ namespace CompMs.App.Msdial.Model.Chart
             .AddTo(Disposables);
         }
 
-        public ReadOnlyReactivePropertySlim<ChromatogramsModel> RawChromatogramsModel { get; }
-        public ReadOnlyReactivePropertySlim<ChromatogramsModel> DeconvolutedChromatogramsModel { get; }
-        public ReadOnlyReactivePropertySlim<AxisItemModel<double>> HorizontalAxisItemModel { get; }
-        public ReadOnlyReactivePropertySlim<AxisItemModel<double>> VerticalAxisItemModel { get; }
+        public ReadOnlyReactivePropertySlim<ChromatogramsModel?> RawChromatogramsModel { get; }
+        public ReadOnlyReactivePropertySlim<ChromatogramsModel?> DeconvolutedChromatogramsModel { get; }
+        public ReadOnlyReactivePropertySlim<AxisItemModel<double>?> HorizontalAxisItemModel { get; }
+        public ReadOnlyReactivePropertySlim<AxisItemModel<double>?> VerticalAxisItemModel { get; }
 
         public ReactivePropertySlim<bool> IsRawSelected => _rawChromatogram.IsSelected;
         public ReactivePropertySlim<bool> IsDeconvolutedSelected => _deconvolutedChromatogram.IsSelected;

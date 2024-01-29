@@ -9,10 +9,10 @@ namespace CompMs.App.Msdial.ViewModel.Loader
 {
     internal sealed class MultiMsmsRawSpectrumLoaderViewModel : ViewModelBase
     {
-        public MultiMsmsRawSpectrumLoaderViewModel(MultiMsmsRawSpectrumLoader loader) {
+        public MultiMsmsRawSpectrumLoaderViewModel(MultiMsmsRawSpectrumLoader? loader) {
             if (loader is null) {
                 Ms2IdList = Observable.Return(new List<MsSelectionItem>(0)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-                SelectedMs2Id = new ReactivePropertySlim<MsSelectionItem>().AddTo(Disposables);
+                SelectedMs2Id = new ReactivePropertySlim<MsSelectionItem?>().AddTo(Disposables);
             }
             else {
                 Ms2IdList = loader.Ms2List.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -21,6 +21,6 @@ namespace CompMs.App.Msdial.ViewModel.Loader
         }
 
         public ReadOnlyReactivePropertySlim<List<MsSelectionItem>> Ms2IdList { get; }
-        public ReactivePropertySlim<MsSelectionItem> SelectedMs2Id { get; }
+        public ReactivePropertySlim<MsSelectionItem?> SelectedMs2Id { get; }
     }
 }

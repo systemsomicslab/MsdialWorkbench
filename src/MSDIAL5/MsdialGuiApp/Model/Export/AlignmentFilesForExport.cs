@@ -10,9 +10,9 @@ using System.Reactive.Linq;
 namespace CompMs.App.Msdial.Model.Export
 {
     internal sealed class AlignmentFilesForExport : DisposableModelBase {
-        private readonly IObservable<AlignmentFileBeanModel> _selected;
+        private readonly IObservable<AlignmentFileBeanModel?> _selected;
 
-        public AlignmentFilesForExport(IReadOnlyList<AlignmentFileBeanModel> files, IObservable<AlignmentFileBeanModel> currentAsObservable) {
+        public AlignmentFilesForExport(IReadOnlyList<AlignmentFileBeanModel> files, IObservable<AlignmentFileBeanModel?> currentAsObservable) {
             Files = files;
             CurrentFile = currentAsObservable.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             Disposables.Add(CurrentFile.Subscribe(f => SelectedFile = f));
@@ -22,13 +22,13 @@ namespace CompMs.App.Msdial.Model.Export
         }
 
         public IReadOnlyList<AlignmentFileBeanModel> Files { get; }
-        public ReadOnlyReactivePropertySlim<AlignmentFileBeanModel> CurrentFile { get; }
+        public ReadOnlyReactivePropertySlim<AlignmentFileBeanModel?> CurrentFile { get; }
 
-        public AlignmentFileBeanModel SelectedFile {
+        public AlignmentFileBeanModel? SelectedFile {
             get => _selectedFile;
             set => SetProperty(ref _selectedFile, value);
         }
-        private AlignmentFileBeanModel _selectedFile;
+        private AlignmentFileBeanModel? _selectedFile;
 
         public IObservable<bool> CanExportNormalizedData(IObservable<bool> normalized) {
             var pair = _selected.CombineLatest(CurrentFile);

@@ -8,7 +8,7 @@ namespace CompMs.App.Msdial.Model.Core
 {
     internal interface IProjectModel : INotifyPropertyChanged
     {
-        IDatasetModel CurrentDataset { get; set; }
+        IDatasetModel? CurrentDataset { get; set; }
 
         ObservableCollection<IDatasetModel> Datasets { get; }
 

@@ -44,9 +44,9 @@ namespace CompMs.App.Msdial.ViewModel.Service
     internal class TaskProgressionNotification : ITaskNotification
     {
         private readonly double _progressRate;
-        private readonly string _label;
+        private readonly string? _label;
 
-        public TaskProgressionNotification(object identifier, double progressionRate, string label) {
+        public TaskProgressionNotification(object identifier, double progressionRate, string? label) {
             Identifier = identifier;
             _progressRate = progressionRate;
             _label = label;
@@ -55,7 +55,7 @@ namespace CompMs.App.Msdial.ViewModel.Service
         public void Update(ProgressBarVM progressBar) {
             progressBar.IsIndeterminate = false;
             progressBar.CurrentValue = (int)(_progressRate * 100);
-            if (!(_label is null)) {
+            if (_label is not null) {
                 progressBar.Label = _label;
             }
         }
@@ -67,16 +67,16 @@ namespace CompMs.App.Msdial.ViewModel.Service
 
     internal class TaskStartNotification : ITaskNotification
     {
-        private readonly string _label;
+        private readonly string? _label;
 
-        public TaskStartNotification(object identifier, string label) {
+        public TaskStartNotification(object identifier, string? label) {
             Identifier = identifier;
             _label = label;
         }
 
         public void Update(ProgressBarVM progressBar) {
             progressBar.IsIndeterminate = true;
-            if (!(_label is null)) {
+            if (_label is not null) {
                 progressBar.Label = _label;
             }
         }

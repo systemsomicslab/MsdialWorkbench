@@ -26,19 +26,19 @@ namespace CompMs.App.Msdial.Model.Core
             AlignmentFiles = alignmentFiles ?? throw new ArgumentNullException(nameof(alignmentFiles));
         }
 
-        public AnalysisFileBeanModel AnalysisFileModel {
+        public AnalysisFileBeanModel? AnalysisFileModel {
             get => analysisFileModel;
             set => SetProperty(ref analysisFileModel, value);
         }
-        private AnalysisFileBeanModel analysisFileModel;
+        private AnalysisFileBeanModel? analysisFileModel;
 
         public AnalysisFileBeanModelCollection AnalysisFileModelCollection { get; }
 
-        public IAnalysisModel AnalysisModelBase {
+        public IAnalysisModel? AnalysisModelBase {
             get => analysisModelBase;
             private set => SetProperty(ref analysisModelBase, value);
         }
-        private IAnalysisModel analysisModelBase;
+        private IAnalysisModel? analysisModelBase;
 
         public Task LoadAnalysisFileAsync(AnalysisFileBeanModel analysisFile, CancellationToken token) {
             if (AnalysisFileModel == analysisFile || analysisFile is null) {
@@ -58,20 +58,20 @@ namespace CompMs.App.Msdial.Model.Core
             return task;
         }
 
-        protected abstract IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile);
+        protected abstract IAnalysisModel? LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile);
 
-        public AlignmentFileBeanModel AlignmentFile {
+        public AlignmentFileBeanModel? AlignmentFile {
             get => _alignmentFile;
             set => SetProperty(ref _alignmentFile, value);
         }
-        private AlignmentFileBeanModel _alignmentFile;
+        private AlignmentFileBeanModel? _alignmentFile;
 
         public AlignmentFileBeanModelCollection AlignmentFiles { get; }
-        public IAlignmentModel AlignmentModelBase {
+        public IAlignmentModel? AlignmentModelBase {
             get => alignmentModelBase;
             private set => SetProperty(ref alignmentModelBase, value);
         }
-        private IAlignmentModel alignmentModelBase;
+        private IAlignmentModel? alignmentModelBase;
 
         public Task LoadAlignmentFileAsync(AlignmentFileBeanModel alignmentFileModel, CancellationToken token) {
             if (AlignmentFile == alignmentFileModel || alignmentFileModel is null) {
@@ -91,7 +91,7 @@ namespace CompMs.App.Msdial.Model.Core
             return task;
         }
 
-        protected abstract IAlignmentModel LoadAlignmentFileCore(AlignmentFileBeanModel alignmentFileModel);
+        protected abstract IAlignmentModel? LoadAlignmentFileCore(AlignmentFileBeanModel alignmentFileModel);
 
         public abstract Task RunAsync(ProcessOption option, CancellationToken token);
 

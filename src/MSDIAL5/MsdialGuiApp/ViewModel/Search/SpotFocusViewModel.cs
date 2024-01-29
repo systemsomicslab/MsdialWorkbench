@@ -47,7 +47,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
 
         public ReactiveCommand FocusCommand { get; }
 
-        private void Focus(object _) {
+        private void Focus(object? _) {
             _valueUpdated.OnNext(Unit.Default);
             _spotFocus.Focus();
         }

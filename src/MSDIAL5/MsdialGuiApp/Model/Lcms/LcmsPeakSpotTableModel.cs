@@ -24,7 +24,7 @@ namespace CompMs.App.Msdial.Model.Lcms
     {
         public LcmsAlignmentSpotTableModel(
             IReadOnlyList<AlignmentSpotPropertyModel> peakSpots,
-            IReactiveProperty<AlignmentSpotPropertyModel> target,
+            IReactiveProperty<AlignmentSpotPropertyModel?> target,
             IObservable<IBrushMapper<BarItem>> classBrush,
             FileClassPropertiesModel classProperties,
             IObservable<IBarItemsLoader> barItemsLoader,
@@ -48,7 +48,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
     internal sealed class LcmsAnalysisPeakTableModel : AnalysisPeakSpotTableModelBase, ILcmsPeakSpotTableModel
     {
-        public LcmsAnalysisPeakTableModel(IReadOnlyList<ChromatogramPeakFeatureModel> peakSpots, IReactiveProperty<ChromatogramPeakFeatureModel> target, PeakSpotNavigatorModel peakSpotNavigatorModel, TargetOmics omics)
+        public LcmsAnalysisPeakTableModel(IReadOnlyList<ChromatogramPeakFeatureModel> peakSpots, IReactiveProperty<ChromatogramPeakFeatureModel?> target, PeakSpotNavigatorModel peakSpotNavigatorModel, TargetOmics omics)
             : base(peakSpots, target, peakSpotNavigatorModel) {
             MassMin = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Min();
             MassMax = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Max();

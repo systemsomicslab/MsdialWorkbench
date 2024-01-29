@@ -18,12 +18,12 @@ namespace CompMs.App.Msdial.Model.DataObj
             _spectrumFeatures = spectrumFeatures;
             _items = new ObservableCollection<Ms1BasedSpectrumFeature>(spectrumFeatures.Items.Select(item => new Ms1BasedSpectrumFeature(item)));
             Items = new ReadOnlyObservableCollection<Ms1BasedSpectrumFeature>(_items);
-            SelectedSpectrum = new ReactivePropertySlim<Ms1BasedSpectrumFeature>();
+            SelectedSpectrum = new ReactivePropertySlim<Ms1BasedSpectrumFeature?>();
         }
 
         public ReadOnlyObservableCollection<Ms1BasedSpectrumFeature> Items { get; }
 
-        public ReactivePropertySlim<Ms1BasedSpectrumFeature> SelectedSpectrum { get; }
+        public ReactivePropertySlim<Ms1BasedSpectrumFeature?> SelectedSpectrum { get; }
 
         public Task SaveAsync(AnalysisFileBeanModel file) {
             return Task.Run(() => file.File.SaveSpectrumFeatures(_spectrumFeatures));

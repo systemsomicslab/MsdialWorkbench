@@ -12,9 +12,9 @@ namespace CompMs.App.Msdial.ViewModel.Core
     public class ViewModelSwitcher : ViewModelBase
     {
         public ViewModelSwitcher(
-            IObservable<ViewModelBase> whenAnalysis,
-            IObservable<ViewModelBase> whenAlignment,
-            params IObservable<ViewModelBase>[] viewmodels) {
+            IObservable<ViewModelBase?> whenAnalysis,
+            IObservable<ViewModelBase?> whenAlignment,
+            params IObservable<ViewModelBase?>[] viewmodels) {
 
             SelectedIndex = new ReactivePropertySlim<int>().AddTo(Disposables);
 
@@ -24,8 +24,8 @@ namespace CompMs.App.Msdial.ViewModel.Core
             ViewModels = viewmodels
                 .CombineLatest()
                 .StartWith(new ViewModelBase[0])
-                .Select(xs => new ObservableCollection<ViewModelBase>(xs))
-                .Select(xs => new ReadOnlyObservableCollection<ViewModelBase>(xs))
+                .Select(xs => new ObservableCollection<ViewModelBase?>(xs))
+                .Select(xs => new ReadOnlyObservableCollection<ViewModelBase?>(xs))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -33,16 +33,16 @@ namespace CompMs.App.Msdial.ViewModel.Core
         }
 
         public ViewModelSwitcher(
-            IObservable<ViewModelBase> whenAnalysis,
-            IObservable<ViewModelBase> whenAlignment,
-            IReadOnlyList<IObservable<ViewModelBase>> viewmodels)
+            IObservable<ViewModelBase?> whenAnalysis,
+            IObservable<ViewModelBase?> whenAlignment,
+            IReadOnlyList<IObservable<ViewModelBase?>> viewmodels)
             : this(whenAnalysis, whenAlignment, viewmodels.ToArray()) {
 
         }
 
         public ReactivePropertySlim<int> SelectedIndex { get; }
 
-        public ReadOnlyReactivePropertySlim<ReadOnlyObservableCollection<ViewModelBase>> ViewModels { get; }
+        public ReadOnlyReactivePropertySlim<ReadOnlyObservableCollection<ViewModelBase?>> ViewModels { get; }
 
         public void SelectAnalysisFile() {
             if (whenAnalysisFileSelecting >= 0 && whenAnalysisFileSelecting < ViewModels.Value.Count) {

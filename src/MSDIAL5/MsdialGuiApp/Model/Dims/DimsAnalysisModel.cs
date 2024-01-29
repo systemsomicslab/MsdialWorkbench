@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.ExternalApp;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.ExternalApp;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
@@ -18,6 +19,7 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
+using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -39,6 +41,7 @@ namespace CompMs.App.Msdial.Model.Dims
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly IDataProvider _provider;
         private readonly ParameterBase _parameter;
+        private readonly IMessageBroker _broker;
 
         public DimsAnalysisModel(
             AnalysisFileBeanModel analysisFileModel,
@@ -62,7 +65,7 @@ namespace CompMs.App.Msdial.Model.Dims
             _dataBaseMapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
-
+            _broker = broker;
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databaseStorage, mapper);
 
             _undoManager = new UndoManager().AddTo(Disposables);
@@ -102,7 +105,7 @@ namespace CompMs.App.Msdial.Model.Dims
             PropertySelector<SpectrumPeak, double> horizontalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Mass);
             PropertySelector<SpectrumPeak, double> verticalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity);
 
-            var spectraExporter = new NistSpectraExporter<ChromatogramPeakFeature>(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
+            var spectraExporter = new NistSpectraExporter<ChromatogramPeakFeature?>(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
             var rawLoader = new MultiMsmsRawSpectrumLoader(provider, parameter).AddTo(Disposables);
             var rawGraphLabels = new GraphLabels("Raw spectrum", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
             ChartHueItem measuredSpectrumHueItem = new ChartHueItem(projectBaseParameterModel, Colors.Blue);
@@ -176,14 +179,18 @@ namespace CompMs.App.Msdial.Model.Dims
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
         public FocusNavigatorModel FocusNavigatorModel { get; }
 
-        public CompoundSearchModel<PeakSpotModel> BuildCompoundSearchModel() {
-            PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(MsdecResult.Value);
+        public CompoundSearchModel<PeakSpotModel>? BuildCompoundSearchModel() {
+            if (Target.Value is not ChromatogramPeakFeatureModel peak || MsdecResult.Value is not MSDecResult msdecResult) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.NoPeakSelected));
+                return null;
+            }
+            PlotComparedMsSpectrumUsecase plotService = new PlotComparedMsSpectrumUsecase(msdecResult);
             var compoundSearchModel = new CompoundSearchModel<PeakSpotModel>(
                 AnalysisFileModel,
-                new PeakSpotModel(Target.Value, MsdecResult.Value),
+                new PeakSpotModel(peak, msdecResult),
                 new DimsCompoundSearchUsecase(_compoundSearchers.Items),
                 plotService,
-                new SetAnnotationUsecase(Target.Value, Target.Value.MatchResultsModel, _undoManager));
+                new SetAnnotationUsecase(peak, peak.MatchResultsModel, _undoManager));
             compoundSearchModel.Disposables.Add(plotService);
             return compoundSearchModel;
         }
@@ -191,8 +198,11 @@ namespace CompMs.App.Msdial.Model.Dims
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
-        public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;
+        public bool CanSaveSpectra() => Target.Value?.InnerModel != null && MsdecResult.Value != null;
         public void SaveSpectra(Stream stream, ExportSpectraFileFormat format) {
+            if (Target.Value is null) {
+                return;
+            }
             SpectraExport.SaveSpectraTable(
                 format,
                 stream,
@@ -208,13 +218,13 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         public override void InvokeMsfinder() {
-            if (Target.Value is null || (MsdecResult.Value?.Spectrum).IsEmptyOrNull()) {
+            if (Target.Value is null || MsdecResult.Value is not MSDecResult result || result.Spectrum.IsEmptyOrNull()) {
                 return;
             }
             MsDialToExternalApps.SendToMsFinderProgram(
                 AnalysisFileModel,
                 Target.Value.InnerModel,
-                MsdecResult.Value,
+                result,
                 _provider.LoadMs1Spectrums(),
                 _dataBaseMapper,
                 _parameter);

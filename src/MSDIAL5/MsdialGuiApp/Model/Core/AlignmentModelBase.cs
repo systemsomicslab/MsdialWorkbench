@@ -1,5 +1,4 @@
-﻿using Accord.Math;
-using CompMs.App.Msdial.Model.Chart;
+﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Algorithm.Function;
@@ -24,10 +23,10 @@ namespace CompMs.App.Msdial.Model.Core
         public AlignmentModelBase(AlignmentFileBeanModel alignmentFileModel, IMessageBroker broker) {
             _alignmentFileModel = alignmentFileModel ?? throw new ArgumentNullException(nameof(alignmentFileModel));
             _broker = broker;
-            Container = alignmentFileModel.LoadAlignmentResultAsync().Result;
-            if (Container == null) {
+            _container = alignmentFileModel.LoadAlignmentResultAsync().Result;
+            if (_container == null) {
                 MessageBox.Show("No aligned spot information."); // TODO: Move to view.
-                Container = new AlignmentResultContainer
+                _container = new AlignmentResultContainer
                 {
                     AlignmentSpotProperties = new ObservableCollection<AlignmentSpotProperty>(),
                 };

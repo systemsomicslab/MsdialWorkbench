@@ -32,9 +32,9 @@ namespace CompMs.App.Msdial.Model.Setting
             IsReadOnly = (process & ProcessOption.Alignment) == 0;
             _alignmentFiles = alignmentFiles;
 
-            AlignmentResultFileName = $"AlignmentResult_{now:yyyy_MM_dd_HH_mm_ss}";
+            alignmentResultFileName = $"AlignmentResult_{now:yyyy_MM_dd_HH_mm_ss}";
             AnalysisFiles = files.AsReadOnly();
-            ReferenceFile = AnalysisFiles.FirstOrDefault(f => f.AnalysisFileId == parameter.AlignmentReferenceFileID);
+            referenceFile = AnalysisFiles.FirstOrDefault(f => f.AnalysisFileId == parameter.AlignmentReferenceFileID) ?? AnalysisFiles.First();
             EqualityParameterSettings = new ObservableCollection<IPeakEqualityParameterSetting>(PrepareEqualityParameterSettings(parameter));
             PeakCountFilter = parameter.PostProcessBaseParam.PeakCountFilter;
             NPercentDetectedInOneGroup = parameter.PostProcessBaseParam.NPercentDetectedInOneGroup;

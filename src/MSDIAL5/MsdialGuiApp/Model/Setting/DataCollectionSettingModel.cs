@@ -87,8 +87,8 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private bool excuteRtCorrection;
 
-        public DimsDataCollectionSettingModel DimsProviderFactoryParameter { get; }
-        public ImmsDataCollectionSettingModel ImmsProviderFactoryParameter { get; }
+        public DimsDataCollectionSettingModel? DimsProviderFactoryParameter { get; }
+        public ImmsDataCollectionSettingModel? ImmsProviderFactoryParameter { get; }
 
         public bool TryCommit() {
             if (IsReadOnly) {
@@ -110,10 +110,14 @@ namespace CompMs.App.Msdial.Model.Setting
             }
             switch (parameter) {
                 case MsdialDimsParameter dimsParameter:
-                    dimsParameter.ProviderFactoryParameter = DimsProviderFactoryParameter.CreateDataProviderFactoryParameter();
+                    if (DimsProviderFactoryParameter is not null) {
+                        dimsParameter.ProviderFactoryParameter = DimsProviderFactoryParameter.CreateDataProviderFactoryParameter();
+                    }
                     break;
                 case MsdialImmsParameter immsParameter:
-                    immsParameter.ProviderFactoryParameter = ImmsProviderFactoryParameter.CreateDataProviderFactoryParameter();
+                    if (ImmsProviderFactoryParameter is not null) {
+                        immsParameter.ProviderFactoryParameter = ImmsProviderFactoryParameter.CreateDataProviderFactoryParameter();
+                    }
                     break;
             }
             return true;

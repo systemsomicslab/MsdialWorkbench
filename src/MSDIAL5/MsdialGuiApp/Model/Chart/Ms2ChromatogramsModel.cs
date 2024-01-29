@@ -15,6 +15,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -32,7 +33,7 @@ namespace CompMs.App.Msdial.Model.Chart
         private static readonly ReadOnlyCollection<Pen> RAW_PENS = ChartBrushes.GetSolidColorPenList(1d, DashStyles.Dash);
         private readonly IMessageBroker _broker;
 
-        public Ms2ChromatogramsModel(IObservable<ChromatogramPeakFeatureModel> peak, IObservable<MSDecResult> msScan, IMsSpectrumLoader<ChromatogramPeakFeatureModel> loader, IDataProvider provider, ParameterBase parameter, AcquisitionType acquisitionType, IMessageBroker broker) {
+        public Ms2ChromatogramsModel(IObservable<ChromatogramPeakFeatureModel?> peak, IObservable<MSDecResult?> msScan, IMsSpectrumLoader<ChromatogramPeakFeatureModel> loader, IDataProvider provider, ParameterBase parameter, AcquisitionType acquisitionType, IMessageBroker broker) {
             NumberOfChromatograms = new ReactiveProperty<int>(NUMBER_OF_CHROMATOGRAMS).AddTo(Disposables);
 
             var smoother = new Smoothing();
@@ -79,7 +80,7 @@ namespace CompMs.App.Msdial.Model.Chart
             _broker = broker;
         }
 
-        public ReadOnlyReactivePropertySlim<ChromatogramsModel> ChromatogramsModel { get; }
+        public ReadOnlyReactivePropertySlim<ChromatogramsModel?> ChromatogramsModel { get; }
 
         public ReactivePropertySlim<bool> IsRawSelected { get; }
         public ReactivePropertySlim<bool> IsDeconvolutedSelected { get; }
@@ -91,7 +92,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public ReactiveProperty<int> NumberOfChromatograms { get; }
 
-        public MultiMsmsRawSpectrumLoader Loader { get; }
+        public MultiMsmsRawSpectrumLoader? Loader { get; }
 
         public void CopyAsTable() {
             if (!(ChromatogramsModel.Value is ChromatogramsModel chromatograms)) {

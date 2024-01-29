@@ -22,7 +22,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
     public class IdentifySettingModel : BindableBase, IIdentificationSettingModel
     {
-        public IdentifySettingModel(ParameterBase parameter, IAnnotatorSettingModelFactory annotatorFactory, ProcessOption process, IMessageBroker broker, DataBaseStorage dataBaseStorage = null) {
+        public IdentifySettingModel(ParameterBase parameter, IAnnotatorSettingModelFactory annotatorFactory, ProcessOption process, IMessageBroker broker, DataBaseStorage? dataBaseStorage = null) {
             this.parameter = parameter ?? throw new System.ArgumentNullException(nameof(parameter));
             this.annotatorFactory = annotatorFactory ?? throw new System.ArgumentNullException(nameof(annotatorFactory));
             _broker = broker;
@@ -66,7 +66,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public ObservableCollection<DataBaseSettingModel> DataBaseModels { get; }
 
-        public DataBaseSettingModel DataBaseModel {
+        public DataBaseSettingModel? DataBaseModel {
             get => dataBaseModel;
             set {
                 if (SetProperty(ref dataBaseModel, value)) {
@@ -76,11 +76,11 @@ namespace CompMs.App.Msdial.Model.Setting
                 }
             }
         }
-        private DataBaseSettingModel dataBaseModel;
+        private DataBaseSettingModel? dataBaseModel;
 
         public ObservableCollection<IAnnotatorSettingModel> AnnotatorModels { get; }
 
-        public IAnnotatorSettingModel AnnotatorModel {
+        public IAnnotatorSettingModel? AnnotatorModel {
             get => annotatorModel;
             set {
                 if (SetProperty(ref annotatorModel, value)) {
@@ -90,7 +90,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 }
             }
         }
-        private IAnnotatorSettingModel annotatorModel;
+        private IAnnotatorSettingModel? annotatorModel;
 
         private readonly object Lock = new object();
         private readonly object dbLock = new object();
@@ -112,7 +112,7 @@ namespace CompMs.App.Msdial.Model.Setting
             }
         }
 
-        public IAnnotatorSettingModel AddAnnotator(DataBaseSettingModel db) {
+        public IAnnotatorSettingModel? AddAnnotator(DataBaseSettingModel db) {
             if (!(db is null)) {
                 var annotatorModel = annotatorFactory.Create(db, $"{db.DataBaseID}_{serialNumber++}", null);
                 lock (annotatorLock) {
@@ -123,14 +123,14 @@ namespace CompMs.App.Msdial.Model.Setting
             return null;
         }
 
-        public void RemoveAnnotator(IAnnotatorSettingModel annotator) {
-            if (!(annotator is null)) {
+        public void RemoveAnnotator(IAnnotatorSettingModel? annotator) {
+            if (annotator is not null) {
                 AnnotatorModels.Remove(annotator);
             }
         }
 
-        public void MoveUpAnnotator(IAnnotatorSettingModel annotator) {
-            if (!(annotator is null)) {
+        public void MoveUpAnnotator(IAnnotatorSettingModel? annotator) {
+            if (annotator is not null) {
                 var index = AnnotatorModels.IndexOf(annotator);
                 if (index <= 0 || index >= AnnotatorModels.Count) {
                     return;
@@ -139,8 +139,8 @@ namespace CompMs.App.Msdial.Model.Setting
             }
         }
 
-        public void MoveDownAnnotator(IAnnotatorSettingModel annotator) {
-            if (!(annotator is null)) {
+        public void MoveDownAnnotator(IAnnotatorSettingModel? annotator) {
+            if (annotator is not null) {
                 var index = AnnotatorModels.IndexOf(annotator);
                 if (index < 0 || index >= AnnotatorModels.Count - 1) {
                     return;
@@ -234,7 +234,7 @@ namespace CompMs.App.Msdial.Model.Setting
                         var task = Task.Run(() =>
                         {
                             var dbModel = group.Key;
-                            EadLipidDatabase db = null;
+                            EadLipidDatabase? db = null;
                             switch (dbModel.DBSource) {
                                 case DataBaseSource.OadLipid: db = dbModel.CreateOadLipidDatabase(); break;
                                 case DataBaseSource.EieioLipid: db = dbModel.CreateEieioLipidDatabase(); break;

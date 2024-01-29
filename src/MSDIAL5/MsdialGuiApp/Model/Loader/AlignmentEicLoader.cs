@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Media;
 
@@ -29,6 +30,9 @@ namespace CompMs.App.Msdial.Model.Loader
             var classToProp = projectParameter.ClassProperties.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default)
                 .Select(_ => projectParameter.ClassProperties.ToDictionary(prop => prop.Name, prop => prop)).ToReactiveProperty().AddTo(Disposables);
             _fileChromatograms = files.AnalysisFiles.Select(file => new FileChromatogram(file, classToProp)).ToList();           
+            foreach (var fileChromatogram in _fileChromatograms) {
+                Disposables.Add(fileChromatogram);
+            }
         }
 
         public IObservable<List<PeakChromatogram>> LoadEicAsObservable(AlignmentSpotPropertyModel target) {
@@ -39,27 +43,28 @@ namespace CompMs.App.Msdial.Model.Loader
                 return _fileChromatograms.Zip(ps, spotinfo.PeakInfos, (fileChromatogram, p, info) => fileChromatogram.GetChromatogram(target, p, info))
                     .CombineLatest()
                     .Throttle(TimeSpan.FromSeconds(.05d))
-                    .Select(chromatograms => chromatograms.Where(chromatogram => !(chromatogram is null)).ToList());
+                    .Select(chromatograms => chromatograms.OfType<PeakChromatogram>().ToList());
             }
             else {
                 return Observable.Return(new List<PeakChromatogram>(0));
             }
         }
 
-        class FileChromatogram {
+        class FileChromatogram : IDisposable {
             private readonly IObservable<bool> _includes;
             private readonly IObservable<string> _clss;
             private readonly IObservable<string> _name;
             private readonly IObservable<Color> _color;
+            private CompositeDisposable? _disposables = new();
 
             public FileChromatogram(AnalysisFileBeanModel file, IObservable<Dictionary<string, FileClassPropertyModel>> class2Prop) {
-                _includes = file.ObserveProperty(f => f.AnalysisFileIncluded).ToReactiveProperty();
-                _clss = file.ObserveProperty(f => f.AnalysisFileClass).ToReactiveProperty();
-                _name = file.ObserveProperty(f => f.AnalysisFileName).ToReactiveProperty();
+                _includes = file.ObserveProperty(f => f.AnalysisFileIncluded).ToReactiveProperty().AddTo(_disposables);
+                _name = file.ObserveProperty(f => f.AnalysisFileName).ToReactiveProperty(string.Empty).AddTo(_disposables);
+                _clss = file.ObserveProperty(f => f.AnalysisFileClass).ToReactiveProperty(string.Empty).AddTo(_disposables);
                 _color = class2Prop.CombineLatest(_clss, (c2p, cls) => c2p.TryGetValue(cls, out var prop) ? prop.ObserveProperty(p => p.Color) : Observable.Return(Colors.Blue)).Switch(); 
             }
 
-            public IObservable<PeakChromatogram> GetChromatogram(AlignmentSpotPropertyModel _spot, IObservable<AlignmentChromPeakFeatureModel> _peak, ChromatogramPeakInfo _peakInfo) {
+            public IObservable<PeakChromatogram?> GetChromatogram(AlignmentSpotPropertyModel _spot, IObservable<AlignmentChromPeakFeatureModel?> _peak, ChromatogramPeakInfo _peakInfo) {
                 var peaks = _peakInfo.Chromatogram.Select(peak => new PeakItem(peak)).ToList();
                 var area = new[]
                 {
@@ -67,11 +72,16 @@ namespace CompMs.App.Msdial.Model.Loader
                     _peak.TakeNull().Select(_ => new List<PeakItem>(0)),
                 }.Merge();
 
-                return new[]
+                return new IObservable<IObservable<PeakChromatogram?>>[]
                 {
                     _includes.Where(x => x).Select(_ => Observable.Return(Unit.Default).CombineLatest(_clss, _name, _color, area, (_2, clss, name, color, area_) => new PeakChromatogram(peaks, area_, clss, color, _spot.ChromXType, _spot.ChromXUnit, name))),
-                    _includes.Where(x => !x).Select(_ => Observable.Return((PeakChromatogram)null)),
+                    _includes.Where(x => !x).Select(_ => Observable.Return((PeakChromatogram?)null)),
                 }.Merge().Switch();
+            }
+
+            public void Dispose() {
+                _disposables?.Dispose();
+                _disposables = null;
             }
         }
     }

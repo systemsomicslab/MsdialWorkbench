@@ -4,13 +4,12 @@ using CompMs.MsdialCore.DataObj;
 
 namespace CompMs.App.Msdial.ViewModel.DataObj
 {
-    public sealed class CcsCalibrationInfoVS : ViewModelBase
+    public sealed class CcsCalibrationInfoVS : BindableBase
     {
-
         public CcsCalibrationInfoVS(AnalysisFileBean file, CoefficientsForCcsCalculation ccsCoef) {
-            FilePath = file.AnalysisFilePath;
+            filePath = file.AnalysisFilePath;
             FileId = file.AnalysisFileId;
-            Filename = file.AnalysisFileName;
+            filename = file.AnalysisFileName;
             this.ccsCoef = ccsCoef;
         }
 

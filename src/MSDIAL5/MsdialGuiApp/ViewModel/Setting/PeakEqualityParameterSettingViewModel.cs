@@ -93,7 +93,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
     public static class PeakEqualityParameterSettingViewModelFactory
     {
-        public static PeakEqualityParameterSettingViewModel Create(IPeakEqualityParameterSetting model) {
+        public static PeakEqualityParameterSettingViewModel? Create(IPeakEqualityParameterSetting model) {
             switch (model) {
                 case RetentionTimeEqualityParameterSetting rt:
                     return new RetentionTimeEqualityParameterSettingViewModel(rt);
