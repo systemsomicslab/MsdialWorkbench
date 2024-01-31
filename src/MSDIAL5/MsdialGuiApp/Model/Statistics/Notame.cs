@@ -79,6 +79,7 @@ namespace CompMs.App.Msdial.Model.Statistics
         public void Run() {
             NotameIonMode = GetIonMode();
             NotameExport = GetExportFolder();
+            MessageBox.Show("Please wait a moment.");
             SendParametersToNotame();
         }
 
