@@ -32,7 +32,7 @@ namespace CompMs.MsdialCore.Export
                     SaveSpectraTableAsNistFormat(exportStream, chromPeakFeature, scan.Spectrum, mapper, parameter);
                     break;
                 case ExportSpectraFileFormat.mgf:
-                    SaveSpectraTableAsMgfFormat(exportStream, chromPeakFeature, scan.Spectrum, mapper, parameter);
+                    SaveSpectraTableAsMgfFormat(exportStream, chromPeakFeature, scan.Spectrum);
                     break;
                 case ExportSpectraFileFormat.mat:
                     SaveSpectraTableAsMatFormat(exportStream, chromPeakFeature, scan.Spectrum, spectrumList, mapper, parameter);
@@ -204,9 +204,7 @@ namespace CompMs.MsdialCore.Export
         public static void SaveSpectraTableAsMgfFormat(
             Stream stream,
             ChromatogramPeakFeature chromPeakFeature,
-            IEnumerable<ISpectrumPeak> massSpectra,
-            DataBaseMapper mapper,
-            ParameterBase parameter) {
+            IEnumerable<ISpectrumPeak> massSpectra) {
             using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true)) {
                 sw.WriteLine("BEGIN IONS");
                 WriteChromPeakFeatureInfoAsMgf(sw, chromPeakFeature);
