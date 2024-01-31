@@ -14,8 +14,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Statistics
 {
-    internal sealed class Notame : BindableBase
-    {
+    internal sealed class Notame : BindableBase {
         public Notame(ExportMethod exportMethod, ExportType[] exportTypes, AlignmentFilesForExport alignmentFilesForExport, AlignmentPeakSpotSupplyer peakSpotSupplyer, DataExportBaseParameter dataExportParameter) {
             AlignmentFilesForExport = alignmentFilesForExport;
             PeakSpotSupplyer = peakSpotSupplyer ?? throw new ArgumentNullException(nameof(peakSpotSupplyer));
@@ -30,8 +29,7 @@ namespace CompMs.App.Msdial.Model.Statistics
         }
         private string _exportDirectory;
         
-        public string GetExportFolder()
-        {
+        public string GetExportFolder() {
             var folder = ExportDirectory.Replace("\\", "/");
             return folder;
         }
@@ -59,10 +57,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             });
         }
         
-        private string FileName;
-        
-        public string GetIonMode()
-        {
+        public string GetIonMode() {
             var ionMode = IonMode.ToString();
             if (ionMode == "Positive")
             {
@@ -74,19 +69,19 @@ namespace CompMs.App.Msdial.Model.Statistics
             }
             return ionMode;
         }
+
         private IonMode IonMode { get; }
         private string NotameIonMode;
         private string NotameExport;
+        private string FileName;
 
-        public void Run()
-        {
+        public void Run() {
             NotameIonMode = GetIonMode();
             NotameExport = GetExportFolder();
             SendParametersToNotame();
         }
 
-        private void SendParametersToNotame()
-        {
+        private void SendParametersToNotame() {
             REngine.SetEnvironmentVariables();
             REngine.SetEnvironmentVariables("c:/program files/r/r-4.3.2/bin/x64", "c:/program files/r/r-4.3.2");
             var engine = REngine.GetInstance();
