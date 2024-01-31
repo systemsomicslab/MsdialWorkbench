@@ -54,7 +54,7 @@ namespace CompMs.App.Msdial.Model.Statistics
                     var msdecResults = alignmentFile.LoadMSDecResults();
                     var lazyPeakSpot = new Lazy<IReadOnlyList<AlignmentSpotProperty>>(() => PeakSpotSupplyer.Supply(alignmentFile, default));
                     ExportMethod.Export(fileName, ExportDirectory, lazyPeakSpot, msdecResults, null, new[] { type });
-                    FileName = fileName;
+                    FileName = Path.ChangeExtension(fileName, "txt");
                 }
             });
         }
