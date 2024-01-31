@@ -53,22 +53,11 @@ namespace CompMs.App.Msdial.Model.Statistics
             });
         }
         
-        public string GetFileName(string fileName) {
-            var files = new DirectoryInfo(ExportDirectory).GetFiles();
-            DateTime lastUpdated = DateTime.MinValue;
-            foreach (FileInfo file in files) {
-                if (file.LastWriteTime > lastUpdated) {
-                    lastUpdated = file.LastWriteTime;
-                    fileName = file.Name;
-                }
-            }
-            return fileName;
-        }
         private string FileName;
         
-        public string GetIonMode(string ionMode)
+        public string GetIonMode()
         {
-            ionMode = IonMode.ToString();
+            var ionMode = IonMode.ToString();
             if (ionMode == "Positive")
             {
                 ionMode = "pos";
@@ -84,8 +73,7 @@ namespace CompMs.App.Msdial.Model.Statistics
 
         public void Run()
         {
-            FileName = GetFileName(FileName);
-            NotameIonMode = GetIonMode(NotameIonMode);
+            NotameIonMode = GetIonMode();
             SendParametersToNotame();
         }
 
