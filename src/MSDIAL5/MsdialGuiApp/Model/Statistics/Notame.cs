@@ -28,7 +28,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             set => SetProperty(ref _exportDirectory, value);
         }
         private string _exportDirectory;
-        
+
         public string GetExportFolder() {
             var folder = ExportDirectory.Replace("\\", "/");
             return folder;
@@ -160,12 +160,7 @@ namespace CompMs.App.Msdial.Model.Statistics
 
                 ##############################################################
                 read_MSDIAL <- function(tablefile, ion_mod){
-  
-                  tbl <- readr::read_delim(tablefile, delim = ""\t"")
-  
-                  temp <- colnames(tbl)
-                  temp <- sub(""\\.."", NA, temp)
-                  tbl <- rbind(temp, tbl)
+                  tbl <- read.delim(tablefile, header = F, quote = """")
   
                   corner_row <- which(tbl[, 1] != """")[1]
                   corner_column <- which(tbl[1, ] != """")[1]
@@ -199,7 +194,7 @@ namespace CompMs.App.Msdial.Model.Statistics
                   temp <- ifelse(temp == ""File type"", ""QC"", temp)
                   colnames(pData) <- temp # c(""Class"", ""FileType"",""InjectionOrder"", ""BatchId"", ""SampleId"")
   
-                  pData$Sample_ID <- paste0(""Sample_"", pData$Class)
+                  pData$Sample_ID <- paste0(""Sample_"", make.unique(pData$Class, sep = ""_""))
   
                   # final pData
                   pData <- as.data.frame(pData)
@@ -217,7 +212,7 @@ namespace CompMs.App.Msdial.Model.Statistics
                 }
                 
                 path <- file.path(path, ""/"")
-                grouping_name <- ""Class""
+                grouping_name <- ""Class"" 
                 # (note: as we use split_by here assumption is that the data contains signals from two or more modes)
                 # One of split_by and name are needed. Depending of the number of modes.
                 if(ion_mod != """"){
@@ -225,67 +220,70 @@ namespace CompMs.App.Msdial.Model.Statistics
                   # data <- notame::read_from_excel(file = paste0(path, file_name), sheet = 1, name = ion_mod)
                 }
 
-                # Some adaptations can be done
-                # Replace spaces with underscores if necessary
-                rownames(data$exprs) <- gsub("" "", ""_"", rownames(data$exprs))
-                rownames(data$feature_data) <- gsub("" "", ""_"", rownames(data$feature_data))
-                data$feature_data$Feature_ID <- gsub("" "", ""_"", data$feature_data$Feature_ID)
-
-                # Works with one or more modes
-                # Construct MetaboSet objects
-                # (note: assumption is that the dataset already contains group information)
-                metaboset <- notame::construct_metabosets(exprs = data$exprs, pheno_data = data$pheno_data,
-                                                          feature_data = data$feature_data,
-                                                          group_col = grouping_name, split_data = F)
-
-                # first check that there is QC samples.
-                # The who process is dependent on QC samples
-                if(""QC"" %in% metaboset$QC ){
-                  # Take several cores to speed up processing
-                  num_cores <- parallel::detectCores() - 5
-                  cl <- parallel::makeCluster(num_cores)
-                  doParallel::registerDoParallel(cl)
+                if (exists(""data"")) {
+                  # Some adaptations can be done
+                  # Replace spaces with underscores if necessary
+                  rownames(data$exprs) <- gsub("" "", ""_"", rownames(data$exprs))
+                  rownames(data$feature_data) <- gsub("" "", ""_"", rownames(data$feature_data))
+                  data$feature_data$Feature_ID <- gsub("" "", ""_"", data$feature_data$Feature_ID)
   
-                  # Set all zero abundances to NA and asses the detection rate and flag based on that
-                  metaboset <- notame::mark_nas(metaboset, value = 0)
-                  metaboset <- notame::flag_detection(metaboset)
-  
-                  # Set the name for visualization and do visualization
-                  # Commented here!
-                  # name <- """"
-                  # visualizations(metaboset, prefix = paste0(path, ""figures/"", name, ""_ORIG""))
-  
-                  # Correct the possible drift
-                  corrected <- notame::correct_drift(metaboset)
-                  # visualizations(corrected, prefix = paste0(path, ""figures/"", name, ""_DRIFT""))
-  
-                  # flag based on quality
-                  corrected <- notame::flag_quality(corrected)
-                  # visualizations(corrected, prefix = paste0(path, ""figures/"", name, ""_CLEANED""))
-  
-                  # Remove the QCs for imputation
-                  merged_no_qc <- notame::drop_qcs(corrected)
-                  #visualizations(merged_no_qc, prefix = paste0(path, ""figures/FULL_NO_QC""))
-  
-                  # Imputation
-                  # (note: may not be necessary especially if gap filling by compulsion was used in MS-DIAL)
-                  # Needs missForest package for random forest imputation
-  
-                  # Set seed number for reproducibility
-                  set.seed(1234567)
-                  imputed <- notame::impute_rf(merged_no_qc)
-                  imputed <- notame::impute_rf(imputed, all_features = TRUE)
-  
-                  #Stop using several cores (releases them for other use)
-                  parallel::stopCluster(cl)
-  
-                  # Save the merged and processed data
-                  # options to save in rds format or to excel
-                  saveRDS(imputed, file = paste0(path, ""full_data.RDS""))
-                  write_to_excel(imputed, file = paste0(path, ""full_data.xlsx""))
-                } else{
-                  saveRDS(metaboset, file = paste0(path, ""full_data.RDS""))
-                  write_to_excel(metaboset, file = paste0(path, ""full_data.xlsx""))
+                  # Works with one or more modes
+                  # Construct MetaboSet objects
+                  # (note: assumption is that the dataset already contains group information)
+                  metaboset <- notame::construct_metabosets(exprs = data$exprs, pheno_data = data$pheno_data,
+                                                            feature_data = data$feature_data,
+                                                            group_col = grouping_name, split_data = F)
+ 
+                  if(""QC"" %in% metaboset$QC ){
+                    # Take several cores to speed up processing
+                    num_cores <- parallel::detectCores() - 5
+                    cl <- parallel::makeCluster(num_cores)
+                    doParallel::registerDoParallel(cl)
+    
+                    # Set the name for visualization and do visualization
+                    # Commented here!
+                    # name <- """"
+                    # visualizations(metaboset, prefix = paste0(path, ""figures/"", name, ""_ORIG""))
+    
+                    # Correct the possible drift
+                    corrected <- notame::correct_drift(metaboset, check_quality = T)
+                    # visualizations(corrected, prefix = paste0(path, ""figures/"", name, ""_DRIFT""))
+    
+                    # flag based on quality
+                    corrected <- notame::flag_quality(corrected)
+                    # visualizations(corrected, prefix = paste0(path, ""figures/"", name, ""_CLEANED""))
+    
+                    # Remove the QCs for imputation
+                    merged_no_qc <- notame::drop_qcs(corrected)
+                    #visualizations(merged_no_qc, prefix = paste0(path, ""figures/FULL_NO_QC""))
+    
+                    # Imputation
+                    # (note: may not be necessary especially if gap filling by compulsion was used in MS-DIAL)
+                    # Needs missForest package for random forest imputation
+    
+                    # Set seed number for reproducibility
+                    set.seed(1234567)
+                    imputed <- notame::impute_rf(merged_no_qc)
+                    imputed <- notame::impute_rf(imputed, all_features = TRUE)
+    
+    
+                    #Stop using several cores (releases them for other use)
+                    parallel::stopCluster(cl)
+    
+                    # Save the merged and processed data
+                    # options to save in rds format or to excel
+                    print(""Saving imputed files"")
+                    saveRDS(imputed, file = paste0(path, ""full_data.RDS""))
+                    write_to_excel(imputed, file = paste0(path, ""full_data.xlsx""))
+                  } else{
+                    print(""No QC samples so no drift correction nor imputation was done"")
+    
+                    print(""Still saving the RDS and excel for further analysis."")
+                    saveRDS(metaboset, file = paste0(path, ""full_data.RDS""))
+                    write_to_excel(metaboset, file = paste0(path, ""full_data.xlsx""))
+                  }
+                } else {
+                  stop(""Something went wrong in data reading."")
                 }
             ";
             engine.Evaluate(rScript);
