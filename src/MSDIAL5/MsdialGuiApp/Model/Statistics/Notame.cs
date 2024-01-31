@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace CompMs.App.Msdial.Model.Statistics
 {
@@ -287,6 +288,8 @@ namespace CompMs.App.Msdial.Model.Statistics
                 }
             ";
             engine.Evaluate(rScript);
+            MessageBox.Show("Output files are successfully created.");
+            engine.Dispose();
         }
     }
 }
