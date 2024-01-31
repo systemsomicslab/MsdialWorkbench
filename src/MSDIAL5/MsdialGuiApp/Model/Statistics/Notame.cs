@@ -30,6 +30,12 @@ namespace CompMs.App.Msdial.Model.Statistics
         }
         private string _exportDirectory;
         
+        public string GetExportFolder()
+        {
+            var folder = ExportDirectory.Replace("\\", "/");
+            return folder;
+        }
+
         public AlignmentFilesForExport AlignmentFilesForExport { get; }
         public AlignmentPeakSpotSupplyer PeakSpotSupplyer { get; }
         public ExportMethod ExportMethod { get; }
@@ -70,10 +76,12 @@ namespace CompMs.App.Msdial.Model.Statistics
         }
         private IonMode IonMode { get; }
         private string NotameIonMode;
+        private string NotameExport;
 
         public void Run()
         {
             NotameIonMode = GetIonMode();
+            NotameExport = GetExportFolder();
             SendParametersToNotame();
         }
 
@@ -87,7 +95,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             engine.Evaluate("library(doParallel)");
             engine.Evaluate("library(dplyr)");
             engine.Evaluate("library(openxlsx)");
-            engine.SetSymbol("path", engine.CreateCharacter(ExportDirectory));
+            engine.SetSymbol("path", engine.CreateCharacter(NotameExport));
             engine.SetSymbol("file_name", engine.CreateCharacter(FileName));
             engine.SetSymbol("ion_mod", engine.CreateCharacter(NotameIonMode));
 
