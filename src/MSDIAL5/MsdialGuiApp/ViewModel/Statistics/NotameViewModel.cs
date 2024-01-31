@@ -27,18 +27,12 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             _broker = broker;
 
             AlignmentFiles = CollectionViewSource.GetDefaultView(notame.AlignmentFilesForExport.Files);
-            if (notame.AlignmentFilesForExport.SelectedFile != null)
-            {
+            if (notame.AlignmentFilesForExport.SelectedFile != null) {
                 AlignmentFiles.MoveCurrentTo(notame.AlignmentFilesForExport.SelectedFile);
             }
 
             ExportMethod = notame.ExportMethod;
             ExportTypes = notame.ExportTypes;
-
-            ExportCommand = this.ErrorsChangedAsObservable().Select(_ => !HasValidationErrors).Prepend(!HasValidationErrors)
-                .ToAsyncReactiveCommand()
-                .WithSubscribe(ExportAlignmentResultAsync)
-                .AddTo(Disposables);
 
             RunNotameCommand = new DelegateCommand(RunNotame);
             ShowSettingViewCommand = new DelegateCommand(ShowSettingView);
@@ -51,12 +45,9 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         [PathExists(ErrorMessage = "This folder does not exist.", IsDirectory = true)]
         public string ExportDirectory { 
             get => _exportDirectory; 
-            set
-            {
-                if (SetProperty(ref _exportDirectory, value))
-                {
-                    if (!ContainsError(nameof(_exportDirectory)))
-                    {
+            set {
+                if (SetProperty(ref _exportDirectory, value)) {
+                    if (!ContainsError(nameof(_exportDirectory))) {
                         _notame.ExportDirectory = _exportDirectory;
                     }
                 }
@@ -65,15 +56,11 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         private string _exportDirectory;
 
         [Required(ErrorMessage = "Please select alignment file.")]
-        public AlignmentFileBeanModel AlignmentFile
-        {
+        public AlignmentFileBeanModel AlignmentFile {
             get => _alignmentFile;
-            set
-            {
-                if (SetProperty(ref _alignmentFile, value))
-                {
-                    if (!ContainsError(nameof(AlignmentFile)))
-                    {
+            set {
+                if (SetProperty(ref _alignmentFile, value)) {
+                    if (!ContainsError(nameof(AlignmentFile))) {
                         _notame.AlignmentFilesForExport.SelectedFile = _alignmentFile;
                     }
                 }
@@ -86,11 +73,9 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public ExportMethod ExportMethod { get; }
         public ExportType[] ExportTypes { get; }
 
-        public bool UseFilter
-        {
+        public bool UseFilter {
             get => _notame.PeakSpotSupplyer.UseFilter;
-            set
-            {
+            set {
                 _notame.PeakSpotSupplyer.UseFilter = value;
                 OnPropertyChanged(nameof(UseFilter));
             }
@@ -99,29 +84,20 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public DelegateCommand BrowseDirectoryCommand => _browseDirectoryCommand ?? (_browseDirectoryCommand = new DelegateCommand(BrowseDirectory));
         private DelegateCommand _browseDirectoryCommand;
 
-        private void BrowseDirectory()
-        {
-            var win = new Graphics.Window.SelectFolderDialog
-            {
+        private void BrowseDirectory() {
+            var win = new Graphics.Window.SelectFolderDialog {
                 Title = "Choose an export folder.",
             };
 
-            if (win.ShowDialog() == Graphics.Window.DialogResult.OK)
-            {
+            if (win.ShowDialog() == Graphics.Window.DialogResult.OK) {
                 ExportDirectory = win.SelectedPath;
             }
-        }
-
-        public AsyncReactiveCommand ExportCommand { get; }
-
-        private Task ExportAlignmentResultAsync()
-        {
-            return _notame.ExportAlignmentResultAsync(_broker);
         }
 
         public DelegateCommand RunNotameCommand { get; }
 
         private void RunNotame() {
+            _notame.ExportAlignmentResultAsync(_broker);
             _notame.Run();
         }
 
@@ -131,7 +107,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             _broker.Publish(this);
         }
 
-        public override ICommand ApplyCommand => ExportCommand;
+        public override ICommand ApplyCommand => null;
         public override ICommand FinishCommand => RunNotameCommand;
     }
 }
