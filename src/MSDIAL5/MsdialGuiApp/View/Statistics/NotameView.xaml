@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:Background="White"
              d:DataContext="{d:DesignInstance Type={x:Type vm:NotameViewModel}}"
-             d:DesignWidth="450" d:DesignHeight="520">
+             d:DesignWidth="450" d:DesignHeight="250">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
