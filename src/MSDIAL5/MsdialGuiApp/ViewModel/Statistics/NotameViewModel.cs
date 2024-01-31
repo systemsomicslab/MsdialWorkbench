@@ -96,8 +96,8 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
         public DelegateCommand RunNotameCommand { get; }
 
-        private void RunNotame() {
-            _notame.ExportAlignmentResultAsync(_broker);
+        private async void RunNotame() {
+            await _notame.ExportAlignmentResultAsync(_broker);
             _notame.Run();
         }
 
