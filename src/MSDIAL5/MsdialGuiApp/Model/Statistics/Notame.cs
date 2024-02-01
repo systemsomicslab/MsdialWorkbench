@@ -80,10 +80,10 @@ namespace CompMs.App.Msdial.Model.Statistics
             NotameIonMode = GetIonMode();
             NotameExport = GetExportFolder();
             MessageBox.Show("Please wait a moment.");
-            SendParametersToNotame();
+            RunNotame();
         }
 
-        private void SendParametersToNotame() {
+        private void RunNotame() {
             REngine.SetEnvironmentVariables();
             REngine.SetEnvironmentVariables("c:/program files/r/r-4.3.2/bin/x64", "c:/program files/r/r-4.3.2");
             var engine = REngine.GetInstance();
