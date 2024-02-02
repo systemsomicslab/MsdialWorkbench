@@ -34,6 +34,7 @@ namespace CompMs.App.Msdial.Model.Setting
             Ms2Tolerance = parameter.PeakPickBaseParam.CentroidMs2Tolerance;
             MaxChargeNumber = parameter.PeakPickBaseParam.MaxChargeNumber;
             IsBrClConsideredForIsotopes = parameter.PeakPickBaseParam.IsBrClConsideredForIsotopes;
+            MaxIsotopesDetectedInMs1Spectrum = parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum;
             NumberOfThreads = parameter.ProcessBaseParam.NumThreads;
             ExcuteRtCorrection = parameter.AdvancedProcessOptionBaseParam.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection;
             DataCollectionRangeSettings = new ObservableCollection<IDataCollectionRangeSetting>(PrepareRangeSettings(parameter));
@@ -75,6 +76,12 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private bool isBrClConsideredForIsotopes;
 
+        public int MaxIsotopesDetectedInMs1Spectrum {
+            get => _maxIsotopesDetectedInMs1Spectrum;
+            set => SetProperty(ref _maxIsotopesDetectedInMs1Spectrum, value);
+        }
+        private int _maxIsotopesDetectedInMs1Spectrum;
+
         public int NumberOfThreads {
             get => numberOfThreads;
             set => SetProperty(ref numberOfThreads, value);
@@ -104,6 +111,7 @@ namespace CompMs.App.Msdial.Model.Setting
             parameter.PeakPickBaseParam.CentroidMs2Tolerance = Ms2Tolerance;
             parameter.PeakPickBaseParam.MaxChargeNumber = MaxChargeNumber;
             parameter.PeakPickBaseParam.IsBrClConsideredForIsotopes = IsBrClConsideredForIsotopes;
+            parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum = MaxIsotopesDetectedInMs1Spectrum;
             parameter.ProcessBaseParam.NumThreads = NumberOfThreads;
             foreach (var s in DataCollectionRangeSettings) {
                 s.Commit(); 
@@ -131,6 +139,7 @@ namespace CompMs.App.Msdial.Model.Setting
             Ms2Tolerance = parameter.PeakPickBaseParam.CentroidMs2Tolerance;
             MaxChargeNumber = parameter.PeakPickBaseParam.MaxChargeNumber;
             IsBrClConsideredForIsotopes = parameter.PeakPickBaseParam.IsBrClConsideredForIsotopes;
+            MaxIsotopesDetectedInMs1Spectrum = parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum;
             NumberOfThreads = parameter.ProcessBaseParam.NumThreads;
             ExcuteRtCorrection = parameter.AdvancedProcessOptionBaseParam.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection;
             foreach (var s in DataCollectionRangeSettings) {
