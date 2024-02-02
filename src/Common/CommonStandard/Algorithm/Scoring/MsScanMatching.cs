@@ -3586,7 +3586,10 @@ namespace CompMs.Common.Algorithm.Scoring {
         }
 
         readonly struct SummedPeak {
-            public SummedPeak(double focusedMz, double intensity) => (FocusedMz, Intensity) = (focusedMz, intensity);
+            public SummedPeak(double focusedMz, double intensity) {
+                FocusedMz = focusedMz;
+                Intensity = intensity;
+            }
 
             public readonly double FocusedMz;
             public readonly double Intensity;
