@@ -16,12 +16,13 @@ using System.Windows.Forms;
 namespace CompMs.App.Msdial.Model.Statistics
 {
     internal sealed class Notame : BindableBase {
-        public Notame(ExportMethod exportMethod, ExportType[] exportTypes, AlignmentFilesForExport alignmentFilesForExport, AlignmentPeakSpotSupplyer peakSpotSupplyer, DataExportBaseParameter dataExportParameter) {
+        public Notame(ExportMethod exportMethod, ExportType[] exportTypes, AlignmentFilesForExport alignmentFilesForExport, AlignmentPeakSpotSupplyer peakSpotSupplyer, DataExportBaseParameter dataExportParameter, ParameterBase parameterBase) {
             AlignmentFilesForExport = alignmentFilesForExport;
             PeakSpotSupplyer = peakSpotSupplyer ?? throw new ArgumentNullException(nameof(peakSpotSupplyer));
             ExportMethod = exportMethod;
             ExportTypes = exportTypes;
             ExportDirectory = dataExportParameter.ExportFolderPath;
+            IonMode = parameterBase.IonMode;
         }
 
         public string ExportDirectory {
@@ -59,19 +60,16 @@ namespace CompMs.App.Msdial.Model.Statistics
         }
         
         public string GetIonMode() {
-            var ionMode = IonMode.ToString();
-            if (ionMode == "Positive")
-            {
-                ionMode = "pos";
+            if (IonMode == IonMode.Positive) {
+                return "pos";
             }
-            else if (ionMode == "Negative")
-            {
-                ionMode = "neg";
+            else if (IonMode == IonMode.Negative) {
+                return "neg";
             }
-            return ionMode;
+            return null;
         }
 
-        private IonMode IonMode { get; }
+        private readonly IonMode IonMode;
         private string NotameIonMode;
         private string NotameExport;
         private string FileName;

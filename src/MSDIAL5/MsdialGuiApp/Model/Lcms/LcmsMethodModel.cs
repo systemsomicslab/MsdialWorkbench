@@ -137,7 +137,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new ExportType("Normalized data (Height)", new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", stats, isNormalized),
                 new ExportType("Normalized data (Area)", new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", stats, isNormalized),
             };
-            Notame = new Notame(notameExportMethod, notameExportTypes, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam);
+            Notame = new Notame(notameExportMethod, notameExportTypes, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam, storage.Parameter);
         }
 
         public PeakFilterModel PeakFilterModel { get; }
