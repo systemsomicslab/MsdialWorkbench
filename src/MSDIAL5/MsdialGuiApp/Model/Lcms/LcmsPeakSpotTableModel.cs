@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Table;
 using CompMs.Common.Enum;
@@ -30,8 +31,9 @@ namespace CompMs.App.Msdial.Model.Lcms
             IObservable<IBarItemsLoader> barItemsLoader,
             TargetOmics omics,
             PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter peakSpotFilter,
-            AlignmentSpotSpectraLoader spectraLoader)
-            : base(peakSpots, target, classBrush, classProperties, barItemsLoader, peakSpotFilter, spectraLoader) {
+            AlignmentSpotSpectraLoader spectraLoader,
+            UndoManager undoManager)
+            : base(peakSpots, target, classBrush, classProperties, barItemsLoader, peakSpotFilter, spectraLoader, undoManager) {
             MassMin = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Min();
             MassMax = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Max();
             RtMin = peakSpots.Select(s => s.RT).DefaultIfEmpty().Min();
@@ -48,8 +50,8 @@ namespace CompMs.App.Msdial.Model.Lcms
 
     internal sealed class LcmsAnalysisPeakTableModel : AnalysisPeakSpotTableModelBase, ILcmsPeakSpotTableModel
     {
-        public LcmsAnalysisPeakTableModel(IReadOnlyList<ChromatogramPeakFeatureModel> peakSpots, IReactiveProperty<ChromatogramPeakFeatureModel?> target, PeakSpotNavigatorModel peakSpotNavigatorModel, TargetOmics omics)
-            : base(peakSpots, target, peakSpotNavigatorModel) {
+        public LcmsAnalysisPeakTableModel(IReadOnlyList<ChromatogramPeakFeatureModel> peakSpots, IReactiveProperty<ChromatogramPeakFeatureModel?> target, PeakSpotNavigatorModel peakSpotNavigatorModel, TargetOmics omics, UndoManager undoManager)
+            : base(peakSpots, target, peakSpotNavigatorModel, undoManager) {
             MassMin = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Min();
             MassMax = peakSpots.Select(s => s.Mass).DefaultIfEmpty().Max();
             RtMin = peakSpots.Select(s => s.RT.Value).DefaultIfEmpty().Min();
