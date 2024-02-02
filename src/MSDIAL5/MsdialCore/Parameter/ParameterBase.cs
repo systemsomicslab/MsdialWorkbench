@@ -600,6 +600,7 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "Considering Br and Cl for isotopes", IsBrClConsideredForIsotopes.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Exclude mass list", 
                 String.Join(";", ExcludedMassList.Select(n => String.Join(" ", new string[] { n.Mass.ToString(), n.MassTolerance.ToString() })))}));
+            pStrings.Add($"Max isotopes detected in ms1 spectrum: {PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum}");
 
             pStrings.Add("\r\n");
             pStrings.Add("# Deconvolution");
@@ -1118,6 +1119,8 @@ namespace CompMs.MsdialCore.Parameter
         public bool IsBrClConsideredForIsotopes { get; set; } = false;
         [Key(15)]
         public List<MzSearchQuery> ExcludedMassList { get; set; } = new List<MzSearchQuery>();
+        [Key(16)]
+        public int MaxIsotopesDetectedInMs1Spectrum { get; set; } = 2;
 
         public bool ShouldExclude(double mass) {
             foreach (var query in ExcludedMassList) {
