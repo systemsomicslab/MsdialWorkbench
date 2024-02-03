@@ -191,7 +191,7 @@ namespace CompMs.App.Msdial.Model.Gcms
 
             var barItemsLoaderProperty = barItemsLoaderDataProperty.Select(data => data.Loader).ToReactiveProperty<IBarItemsLoader>().AddTo(Disposables);
             var filter = peakSpotFiltering.CreateFilter(peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), FilterEnableStatus.All);
-            AlignmentSpotTableModel = new GcmsAlignmentSpotTableModel(ms1Spots, target, barBrush, projectBaseParameter.ClassProperties, barItemsLoaderProperty, filter, spectraLoader).AddTo(Disposables);
+            AlignmentSpotTableModel = new GcmsAlignmentSpotTableModel(ms1Spots, target, barBrush, projectBaseParameter.ClassProperties, barItemsLoaderProperty, filter, spectraLoader, UndoManager).AddTo(Disposables);
 
             var peakInformationModel = new PeakInformationAlignmentModel(target).AddTo(Disposables);
             peakInformationModel.Add(t => new QuantMassPoint(t?.MassCenter ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.PrecursorMz));
