@@ -44,6 +44,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             IsBrClConsideredForIsotopes = model.ToReactivePropertySlimAsSynchronized(m => m.IsBrClConsideredForIsotopes).AddTo(Disposables);
 
+            MaxIsotopesDetectedInMs1Spectrum = model.ToReactivePropertyAsSynchronized(
+                m => m.MaxIsotopesDetectedInMs1Spectrum,
+                m => m.ToString(),
+                vm => int.Parse(vm),
+                ignoreValidationErrorValue: true
+            ).SetValidateAttribute(() => MaxIsotopesDetectedInMs1Spectrum).AddTo(Disposables);
+
             NumberOfThreads = model.ToReactivePropertyAsSynchronized(
                 m => m.NumberOfThreads,
                 m => m.ToString(),
@@ -121,6 +128,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReactiveProperty<string> MaxChargeNumber { get; }
 
         public ReactivePropertySlim<bool> IsBrClConsideredForIsotopes { get; }
+
+        [Required(ErrorMessage = "Max isotopes number is required.")]
+        [RegularExpression(@"\d+", ErrorMessage = "Invalid character entered.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Number of Isotopes should be positive value.")]
+        public ReactiveProperty<string> MaxIsotopesDetectedInMs1Spectrum { get; }
 
         [Required(ErrorMessage = "Number of threads is required.")]
         [RegularExpression(@"\d+", ErrorMessage = "Invalid character entered.")]

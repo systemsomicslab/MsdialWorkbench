@@ -55,7 +55,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                         spot.IsotopicPeaks = new List<IsotopicPeak>(0);
                     }
                     else {
-                        spot.IsotopicPeaks = DataAccess.GetIsotopicPeaks(spectra[index].Spectrum, (float)peak.Mass, Param.CentroidMs1Tolerance);
+                        spot.IsotopicPeaks = DataAccess.GetIsotopicPeaks(spectra[index].Spectrum, (float)peak.Mass, Param.CentroidMs1Tolerance, Param.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
                     }
                 }
 
