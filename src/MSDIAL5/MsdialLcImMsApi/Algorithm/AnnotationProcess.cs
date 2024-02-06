@@ -41,7 +41,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
 
         private void LcImMsMsMatchMethod(ChromatogramPeakFeature chromPeak, List<MSDecResult> msdecResults, List<RawSpectrum> spectrumList, List<RawSpectrum> accumulatedSpecList,
             List<MoleculeMsReference> mspDB, List<MoleculeMsReference> textDB, MsdialLcImMsParameter param) {
-            var isotopes = DataAccess.GetIsotopicPeaks(accumulatedSpecList, chromPeak.MS1AccumulatedMs1RawSpectrumIdTop, (float)chromPeak.Mass, param.CentroidMs1Tolerance);
+            var isotopes = DataAccess.GetIsotopicPeaks(accumulatedSpecList, chromPeak.MS1AccumulatedMs1RawSpectrumIdTop, (float)chromPeak.Mass, param.CentroidMs1Tolerance, param.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
 
             var maxMspMatchedDriftSpotID = -1;
             var maxMspMatchedScore = -1.0;

@@ -92,10 +92,11 @@ namespace CompMs.MsdialGcMsApi.Process
             var carbon2RtDict = analysisFile.GetRiDictionary(_riDictionaryInfo);
             var riHandler = carbon2RtDict is null ? null : new RetentionIndexHandler(_riCompoundType, carbon2RtDict);
 
+            await Task.Yield();
             Console.WriteLine("Loading spectral information");
             var provider = _providerFactory.Create(analysisFile);
             token.ThrowIfCancellationRequested();
-            var spectra = await provider.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
+            var spectraTask = provider.LoadMsSpectrumsAsync(token);
             var mSDecResults = analysisFile.LoadMsdecResultWithAnnotationInfo();
 
             // annotations
@@ -104,6 +105,7 @@ namespace CompMs.MsdialGcMsApi.Process
             var annotatedMSDecResults = _annotation.MainProcess(mSDecResults, reportAnnotation);
             token.ThrowIfCancellationRequested();
 
+            var spectra = await spectraTask.ConfigureAwait(false);
             var spectrumFeatureCollection = _ms1Deconvolution.GetSpectrumFeaturesByQuantMassInformation(analysisFile, spectra, annotatedMSDecResults);
             SetRetentionIndex(spectrumFeatureCollection, riHandler);
 

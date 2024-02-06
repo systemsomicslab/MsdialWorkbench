@@ -84,7 +84,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                 var refRetention = RetentionType == RetentionType.RT ? refQuery.ChromXs.RT.Value : refQuery.ChromXs.RI.Value;
                 System.Diagnostics.Debug.Assert(Math.Abs(rValue - refRetention) < tolerance);
                 if (Math.Abs(rValue - refRetention) < tolerance) {
-                    var result = MsScanMatching.CompareEIMSScanProperties(normMSScanProp, refQuery, _searchParameter);
+                    var result = MsScanMatching.CompareEIMSScanProperties(normMSScanProp, refQuery, _searchParameter, RetentionType == RetentionType.RI);
                     result.LibraryIDWhenOrdered = i;
                     result.AnnotatorID = _annotatorID;
                     yield return result;

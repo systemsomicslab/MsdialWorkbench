@@ -598,6 +598,15 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
             }
         }
 
+        public int MaxIsotopesDetectedInMs1Spectrum {
+            get => innerModel.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum;
+            set {
+                if (innerModel.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum == value) return;
+                innerModel.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum = value;
+                OnPropertyChanged(nameof(MaxIsotopesDetectedInMs1Spectrum));
+            }
+        }
+
         // alignment base
 
         public int AlignmentReferenceFileID {

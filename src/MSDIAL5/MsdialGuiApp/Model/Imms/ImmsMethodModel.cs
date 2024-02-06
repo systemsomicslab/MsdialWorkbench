@@ -1,7 +1,8 @@
-﻿using CompMs.App.Msdial.Model.Core;
-using CompMs.App.Msdial.Model.Chart;
+﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
@@ -10,6 +11,7 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
+using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialImmsCore.Algorithm.Alignment;
 using CompMs.MsdialImmsCore.Export;
@@ -21,10 +23,9 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Reactive.Linq;
-using CompMs.App.Msdial.Model.Loader;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
@@ -293,6 +294,15 @@ namespace CompMs.App.Msdial.Model.Imms
                     FilePrefix = "Msp",
                     FileSuffix = "msp",
                     Label = "Nist format (*.msp)"
+                },
+                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
+                    [ExportspectraType.deconvoluted] = new AnalysisMgfExporter(file => new MSDecLoader(file.DeconvolutionFilePath)),
+                    [ExportspectraType.centroid] = new AnalysisMgfExporter(file => new CentroidMsScanPropertyLoader(ProviderFactory.Create(file), _storage.Parameter.MS2DataType)),
+                })
+                {
+                    FilePrefix = "Mgf",
+                    FileSuffix = "mgf",
+                    Label = "MASCOT format (*.mgf)"
                 },
                 new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam, StudyContext),
             };
