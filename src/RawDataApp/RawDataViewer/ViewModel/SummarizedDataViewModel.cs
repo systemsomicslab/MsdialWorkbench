@@ -4,6 +4,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 
@@ -34,6 +35,13 @@ namespace CompMs.App.RawDataViewer.ViewModel
                 .Select(m => new RawMsSpectrumCheckViewModel(m))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+
+            MsPeakSpotsCheckViewModel.Where(vm => vm != null).Select(vm => vm.SelectedPeakSpectrumID).Switch()
+                .CombineLatest(RawMsSpectrumCheckViewModel.Where(vm => vm != null), (id, vm) => {
+                    var spec = vm.Spectra.FirstOrDefault(s => s.ScanNumber == id);
+                    vm.SelectedSpectrum.Value = spec;
+                    return Unit.Default;
+                }).Subscribe().AddTo(Disposables);
         }
 
         public SummarizedDataModel Model { get; }

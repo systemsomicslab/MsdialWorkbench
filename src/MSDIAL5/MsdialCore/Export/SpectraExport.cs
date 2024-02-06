@@ -32,7 +32,7 @@ namespace CompMs.MsdialCore.Export
                     SaveSpectraTableAsNistFormat(exportStream, chromPeakFeature, scan.Spectrum, mapper, parameter);
                     break;
                 case ExportSpectraFileFormat.mgf:
-                    SaveSpectraTableAsMgfFormat(exportStream, chromPeakFeature, scan.Spectrum, mapper, parameter);
+                    SaveSpectraTableAsMgfFormat(exportStream, chromPeakFeature, scan.Spectrum);
                     break;
                 case ExportSpectraFileFormat.mat:
                     SaveSpectraTableAsMatFormat(exportStream, chromPeakFeature, scan.Spectrum, spectrumList, mapper, parameter);
@@ -204,9 +204,7 @@ namespace CompMs.MsdialCore.Export
         public static void SaveSpectraTableAsMgfFormat(
             Stream stream,
             ChromatogramPeakFeature chromPeakFeature,
-            IEnumerable<ISpectrumPeak> massSpectra,
-            DataBaseMapper mapper,
-            ParameterBase parameter) {
+            IEnumerable<ISpectrumPeak> massSpectra) {
             using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true)) {
                 sw.WriteLine("BEGIN IONS");
                 WriteChromPeakFeatureInfoAsMgf(sw, chromPeakFeature);
@@ -283,8 +281,7 @@ namespace CompMs.MsdialCore.Export
                 WriteParameterInfoAsNist(sw, parameter);
                 var ms1Spectrum = spectrumList.FirstOrDefault(spec => spec.OriginalIndex == feature.MS1RawSpectrumIdTop);
                 if (ms1Spectrum != null) {
-                    var isotopes = DataAccess.GetIsotopicPeaks(
-                         ms1Spectrum.Spectrum, (float)feature.PrecursorMz, parameter.CentroidMs1Tolerance);
+                    var isotopes = DataAccess.GetIsotopicPeaks(ms1Spectrum.Spectrum, (float)feature.PrecursorMz, parameter.CentroidMs1Tolerance, parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
                     if (!isotopes.IsEmptyOrNull()) {
                         sw.WriteLine("MSTYPE: MS1");
                         WriteSpectrumPeakInfo(sw, isotopes);
@@ -450,8 +447,7 @@ namespace CompMs.MsdialCore.Export
 
                 var ms1Spectrum = spectrumList.FirstOrDefault(spec => spec.OriginalIndex == feature.MS1RawSpectrumIdTop);
                 if (ms1Spectrum != null) {
-                    var isotopes = DataAccess.GetIsotopicPeaks(
-                         ms1Spectrum.Spectrum, (float)feature.PrecursorMz, parameter.CentroidMs1Tolerance);
+                    var isotopes = DataAccess.GetIsotopicPeaks(ms1Spectrum.Spectrum, (float)feature.PrecursorMz, parameter.CentroidMs1Tolerance, parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
                     if (!isotopes.IsEmptyOrNull()) {
                         sw.WriteLine(">ms1");
                         WriteSpectrumPeakInfo(sw, isotopes);

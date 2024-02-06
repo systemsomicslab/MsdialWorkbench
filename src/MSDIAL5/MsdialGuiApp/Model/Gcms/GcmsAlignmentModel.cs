@@ -83,9 +83,8 @@ namespace CompMs.App.Msdial.Model.Gcms
             _target = target;
 
             var spotsSource = new AlignmentSpotSource(alignmentFileBean, Container, chromatogramSpotSerializer).AddTo(Disposables);
-            var ms1Spots = spotsSource.Spots!.Items;
 
-            InternalStandardSetModel = new InternalStandardSetModel(spotsSource.Spots.Items, TargetMsMethod.Gcms).AddTo(Disposables);
+            InternalStandardSetModel = new InternalStandardSetModel(spotsSource.Spots!.Items, TargetMsMethod.Gcms).AddTo(Disposables);
             NormalizationSetModel = new NormalizationSetModel(Container, files, fileCollection, mapper, evaluator, InternalStandardSetModel, parameter, broker).AddTo(Disposables);
 
             _msdecResult = target.DefaultIfNull(t => alignmentFileBean.LoadMSDecResultByIndexAsync(t.MasterAlignmentID), Task.FromResult<MSDecResult?>(null))
@@ -93,9 +92,9 @@ namespace CompMs.App.Msdial.Model.Gcms
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(ms1Spots, peakSpotFiltering).AddTo(Disposables);
+            var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(spotsSource.Spots!.Items, peakSpotFiltering).AddTo(Disposables);
             PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
-            filterRegistrationManager.AttachFilter(ms1Spots, peakFilterModel, evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: FilterEnableStatus.All & ~FilterEnableStatus.Dt);
+            filterRegistrationManager.AttachFilter(spotsSource.Spots!.Items, peakFilterModel, evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: FilterEnableStatus.All & ~FilterEnableStatus.Dt);
 
             // Peak scatter plot
             var brushMapDataSelector = BrushMapDataSelectorFactory.CreateAlignmentSpotBrushes(parameter.TargetOmics);
@@ -191,7 +190,7 @@ namespace CompMs.App.Msdial.Model.Gcms
 
             var barItemsLoaderProperty = barItemsLoaderDataProperty.Select(data => data.Loader).ToReactiveProperty<IBarItemsLoader>().AddTo(Disposables);
             var filter = peakSpotFiltering.CreateFilter(peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), FilterEnableStatus.All);
-            AlignmentSpotTableModel = new GcmsAlignmentSpotTableModel(ms1Spots, target, barBrush, projectBaseParameter.ClassProperties, barItemsLoaderProperty, filter, spectraLoader, UndoManager).AddTo(Disposables);
+            AlignmentSpotTableModel = new GcmsAlignmentSpotTableModel(spotsSource.Spots!.Items, target, barBrush, projectBaseParameter.ClassProperties, barItemsLoaderProperty, filter, spectraLoader, UndoManager).AddTo(Disposables);
 
             var peakInformationModel = new PeakInformationAlignmentModel(target).AddTo(Disposables);
             peakInformationModel.Add(t => new QuantMassPoint(t?.MassCenter ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.PrecursorMz));
@@ -236,7 +235,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, _mz_tol, target.DefaultIfNull(t => t.MassCenter), "F3", "m/z", isItalic: true).AddTo(Disposables);
             var idSpotFocus = new IdSpotFocus<AlignmentSpotPropertyModel>(
                 target,
-                id => ms1Spots.Argmin(spot => Math.Abs(spot.MasterAlignmentID - id)),
+                id => spotsSource.Spots!.Items.Argmin(spot => Math.Abs(spot.MasterAlignmentID - id)),
                 target.DefaultIfNull(t => (double)t.MasterAlignmentID),
                 "ID",
                 ((ISpotFocus, Func<AlignmentSpotPropertyModel, double>))(timeSpotFocus, spot => spot.TimesCenter),

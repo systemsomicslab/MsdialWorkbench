@@ -1,5 +1,4 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Dims;
+﻿using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Core;
@@ -11,9 +10,9 @@ using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
+using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore.Export;
 using Reactive.Bindings;
@@ -103,6 +102,15 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                     FilePrefix = "Msp",
                     FileSuffix = "msp",
                     Label = "Nist format (*.msp)"
+                },
+                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
+                    [ExportspectraType.deconvoluted] = new AnalysisMgfExporter(file => new MSDecLoader(file.DeconvolutionFilePath)),
+                    [ExportspectraType.centroid] = new AnalysisMgfExporter(file => new CentroidMsScanPropertyLoader(_model.ProviderFactory.Create(file), container.Parameter.MS2DataType))
+                })
+                {
+                    FilePrefix = "Mgf",
+                    FileSuffix = "mgf",
+                    Label = "MASCOT format (*.mgf)"
                 },
                 new MsdialAnalysisMassBankRecordExportModel(container.Parameter.ProjectParam, _model.StudyContext),
             };

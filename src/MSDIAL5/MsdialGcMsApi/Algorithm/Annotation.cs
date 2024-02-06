@@ -9,6 +9,8 @@ using CompMs.MsdialGcMsApi.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialGcMsApi.Algorithm
 {
@@ -40,12 +42,13 @@ namespace CompMs.MsdialGcMsApi.Algorithm
 
             if (_calculateMatchScore != null && !_calculateMatchScore.LibraryIsEmpty) {
                 var containers = new MsScanMatchResultContainer[ms1DecResults.Count];
-                foreach (var (decResult, index) in ms1DecResults.WithIndex()) {
+                var counter = 0;
+                Parallel.For(0, ms1DecResults.Count, index => {
                     var results = containers[index] = new MsScanMatchResultContainer();
-                    results.AddResults(_calculateMatchScore.CalculateMatches(decResult).Where(result => result.IsSpectrumMatch).OrderByDescending(r => r.TotalScore));
-                    Console.WriteLine("Done {0}/{1}", index, ms1DecResults.Count);
-                    reporter.Show(index, ms1DecResults.Count);
-                }
+                    results.AddResults(_calculateMatchScore.CalculateMatches(ms1DecResults[index]).Where(result => result.IsSpectrumMatch).OrderByDescending(r => r.TotalScore));
+                    System.Diagnostics.Debug.WriteLine("Done {0}/{1}", index, ms1DecResults.Count);
+                    reporter.Show(Interlocked.Increment(ref counter), ms1DecResults.Count);
+                });
 
                 var features = new AnnotatedMSDecResult[ms1DecResults.Count];
                 if (_parameter.OnlyReportTopHitInMspSearch) {

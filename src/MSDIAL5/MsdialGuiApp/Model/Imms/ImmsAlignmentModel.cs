@@ -72,7 +72,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             var spotsSource = new AlignmentSpotSource(alignmentFileModel, Container, CHROMATOGRAM_SPOT_SERIALIZER).AddTo(Disposables);
             Ms1Spots = spotsSource.Spots!.Items;
-            InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Imms).AddTo(Disposables);
+            InternalStandardSetModel = new InternalStandardSetModel(spotsSource.Spots!.Items, TargetMsMethod.Imms).AddTo(Disposables);
             NormalizationSetModel = new NormalizationSetModel(Container, _files, fileCollection, _dataBaseMapper, MatchResultEvaluator, InternalStandardSetModel, _parameter, broker).AddTo(Disposables);
 
             var brushMapDataSelector = BrushMapDataSelectorFactory.CreateAlignmentSpotBrushes(parameter.TargetOmics);
@@ -81,9 +81,9 @@ namespace CompMs.App.Msdial.Model.Imms
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel?>().AddTo(Disposables);
             CurrentRepresentativeFile = Target.Select(t => t is null ? null : fileCollection.FindByID(t.RepresentativeFileID)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
-            var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(Ms1Spots, peakSpotFiltering).AddTo(Disposables);
+            var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(spotsSource.Spots!.Items, peakSpotFiltering).AddTo(Disposables);
             PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
-            filterRegistrationManager.AttachFilter(Ms1Spots, peakFilterModel, evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: ~FilterEnableStatus.Rt);
+            filterRegistrationManager.AttachFilter(spotsSource.Spots!.Items, peakFilterModel, evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: ~FilterEnableStatus.Rt);
 
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel);
             PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, SelectedBrush, Brushes)
@@ -163,7 +163,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().Select(data => data.Loader);
             var filter = peakSpotFiltering.CreateFilter(peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), FilterEnableStatus.All);
-            AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(Ms1Spots, Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderProperty, filter, spectraLoader, _undoManager).AddTo(Disposables);
+            AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(spotsSource.Spots!.Items, Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderProperty, filter, spectraLoader, _undoManager).AddTo(Disposables);
 
             MsdecResult = Target
                 .DefaultIfNull(t => _alignmentFile.LoadMSDecResultByIndexAsync(t.MasterAlignmentID), Task.FromResult((MSDecResult?)null))

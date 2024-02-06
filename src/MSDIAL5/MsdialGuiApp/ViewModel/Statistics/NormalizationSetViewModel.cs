@@ -56,7 +56,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
         private void Normalize() {
             if (IsSetViewModelVisible.Value) {
-                IsSetViewModel.ApplyChangeCommand.Execute();
+                IsSetViewModel.ApplyCommand.Execute(null);
             }
             _model.Normalize();
         }
