@@ -121,21 +121,7 @@ colnames(quantval_tbl) <- rownames(pData)
 return(list(exprs = quantval_tbl, pheno_data = pData, feature_data = fData))
 }
 
-
-# set up path
-# args <- commandArgs(trailingOnly = TRUE)
-# path <- args[1]
-# file_name <- args[2]
-# ion_mod <- args[3]
-# path <- "D:\\Notame\\Notame_demo\\result"
-# path <- gsub("\\\\", "/", file.path(path, ""))
-# path <- file.path(path, "/")
-# 
-# # either ion_mod or split_col should exist
-# # They are needed in metaboset construction
-# ion_mod <- "neg" # name the mode
-# 
-# file_name <- "Height_0_2024_01_31_15_48_27.txt" # name of possible excel file
+path <- file.path(path, "/")
 grouping_name <- "Class" # set the name of group that exist MS-dial
 
 # # Optional logging
