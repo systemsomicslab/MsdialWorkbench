@@ -81,9 +81,9 @@ namespace CompMs.App.Msdial.Model.Statistics {
         }
 
         private void RunNotame() {
-            var xmlReader = new NotameXmlReader();
-            xmlReader.Read();
-            var NotameR = xmlReader.rScript;
+            var rReader = new NotameRReader();
+            rReader.Read();
+            var NotameR = rReader.rScript;
             REngine.SetEnvironmentVariables();
             REngine.SetEnvironmentVariables("c:/program files/r/r-4.3.2/bin/x64", "c:/program files/r/r-4.3.2");
             var engine = REngine.GetInstance();
