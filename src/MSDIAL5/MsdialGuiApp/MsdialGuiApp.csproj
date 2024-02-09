@@ -36,7 +36,6 @@
 		<None Remove="Resources\msfinder_icon.ico" />
 		<None Remove="Resources\notame.png" />
 		<None Remove="Resources\Notame.R" />
-		<None Remove="Resources\NotameR.xml" />
 		<None Remove="Resources\RawAndDeconvo.ico" />
 		<None Remove="Resources\RawChromatogram.ico" />
 		<None Remove="Resources\SplashLipids.xml" />
@@ -45,7 +44,6 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <EmbeddedResource Include="Resources\Notame.R" />
-	  <EmbeddedResource Include="Resources\NotameR.xml" />
 	  <EmbeddedResource Include="Resources\SplashLipids.xml" />
 	</ItemGroup>
 	<ItemGroup>
