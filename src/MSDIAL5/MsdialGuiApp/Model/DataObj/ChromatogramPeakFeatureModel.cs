@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class ChromatogramPeakFeatureModel : DisposableModelBase, IPeakSpotModel, IFilterable, IMoleculeProperty, IChromatogramPeak, IAnnotatedObject {
+    public sealed class ChromatogramPeakFeatureModel : DisposableModelBase, IPeakSpotModel, IFilterable, IMoleculeProperty, IIonProperty, IChromatogramPeak, IAnnotatedObject {
         #region Property
         public int MasterPeakID => innerModel.MasterPeakID;
         public double? ChromXValue => innerModel.ChromXs.Value;
@@ -273,6 +273,13 @@ namespace CompMs.App.Msdial.Model.DataObj
             IDoCommand command = new SetUnknownDoCommand(this, MatchResultsModel);
             command.Do();
             undoManager.Add(command);
+        }
+
+        // IIonProperty
+        void IIonProperty.SetAdductType(AdductIon adduct) {
+            innerModel.SetAdductType(adduct);
+            OnPropertyChanged(nameof(AdductType));
+            OnPropertyChanged(nameof(AdductIonName));
         }
     }
 }
