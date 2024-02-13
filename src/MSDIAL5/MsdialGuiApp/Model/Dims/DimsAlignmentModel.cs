@@ -85,8 +85,8 @@ namespace CompMs.App.Msdial.Model.Dims
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databaseStorage, mapper);
 
             var spotsSource = new AlignmentSpotSource(alignmentFileModel, Container, CHROMATOGRAM_SPOT_SERIALIZER).AddTo(Disposables);
-            Ms1Spots = spotsSource.Spots?.Items ?? new ReadOnlyObservableCollection<AlignmentSpotPropertyModel>(new ObservableCollection<AlignmentSpotPropertyModel>());
-            InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Dims).AddTo(Disposables);
+            Ms1Spots = spotsSource.Spots!.Items;
+            InternalStandardSetModel = new InternalStandardSetModel(spotsSource.Spots!.Items, TargetMsMethod.Dims).AddTo(Disposables);
             NormalizationSetModel = new NormalizationSetModel(Container, _files, _fileCollection, _dataBaseMapper, _matchResultEvaluator, InternalStandardSetModel, _parameter, _broker).AddTo(Disposables);
             var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(Ms1Spots, peakSpotFiltering).AddTo(Disposables);
             PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
