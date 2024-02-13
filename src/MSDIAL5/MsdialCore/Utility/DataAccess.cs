@@ -161,7 +161,7 @@ namespace CompMs.MsdialCore.Utility {
             var massDiffBase = MassDiffDictionary.CHNO_AverageStepSize;
             var maxIsotopeRange = (double)maxIsotopes;
             var isotopes = new List<IsotopicPeak>();
-            for (int i = 0; i < maxIsotopes; i++) {
+            for (int i = 0; i <= maxIsotopes; i++) {
                 isotopes.Add(new IsotopicPeak() {
                     Mass = targetedMz + (double)i * massDiffBase,
                     MassDifferenceFromMonoisotopicIon = (double)i * massDiffBase
