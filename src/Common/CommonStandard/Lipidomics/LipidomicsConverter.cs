@@ -3309,18 +3309,28 @@ namespace CompMs.Common.Lipidomics
             if (chainString.Contains(";"))
             { // e.g. 18:2;2O, 18:2;(2OH)
                 var chain = chainString.Split(';')[0];
-                var oxidizedmoiety = chainString.Split(';')[1]; //2O, O2
-                //modified by MT 2020/12/11 & 2021/01/12
-                var expectedOxCount = oxidizedmoiety.Replace("O", string.Empty).Replace("H", string.Empty).Replace("(", string.Empty).Replace(")", string.Empty);
-                if (expectedOxCount == string.Empty || expectedOxCount == "")
+                ////Fixed by MT 2024/2/15
+                var oxidizedmoiety = chainString.Split(';')[1].Replace("(", string.Empty).Replace(")", string.Empty); //2O, O2
+                if (oxidizedmoiety.Contains("OH"))
                 {
-                    expectedOxCount = "1";
+                    oxidizedCount = oxidizedmoiety.Split(',').Length;
                 }
-                else if (oxidizedmoiety.Contains("(2OH)") || oxidizedmoiety.Contains("(3OH)"))
+                else
                 {
-                    expectedOxCount = "1";
+                    int.TryParse(oxidizedmoiety.Replace("O", string.Empty), out oxidizedCount);
                 }
-                int.TryParse(expectedOxCount, out oxidizedCount);
+
+                ////modified by MT 2020/12/11 & 2021/01/12
+                //var expectedOxCount = oxidizedmoiety.Replace("O", string.Empty).Replace("H", string.Empty).Replace("(", string.Empty).Replace(")", string.Empty);
+                //if (expectedOxCount == string.Empty || expectedOxCount == "")
+                //{
+                //    expectedOxCount = "1";
+                //}
+                //else if (oxidizedmoiety.Contains("(2OH)") || oxidizedmoiety.Contains("(3OH)"))
+                //{
+                //    expectedOxCount = "1";
+                //}
+                //int.TryParse(expectedOxCount, out oxidizedCount);
                 chainString = chain;
             }
             else if (chainString.Contains("+"))
