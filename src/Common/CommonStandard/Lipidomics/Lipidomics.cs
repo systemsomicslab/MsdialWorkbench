@@ -359,6 +359,10 @@ namespace CompMs.Common.Lipidomics
                         result = LipidMsmsCharacterization.JudgeIfCeramideap(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
                         break;
+                    case LbmClass.Cer_ABP:
+                        result = LipidMsmsCharacterization.JudgeIfCeramideabp(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
                     case LbmClass.HexCer_AP:
                         result = LipidMsmsCharacterization.JudgeIfHexceramideap(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);

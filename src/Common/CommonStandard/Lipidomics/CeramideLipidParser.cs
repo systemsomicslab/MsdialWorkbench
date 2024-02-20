@@ -110,6 +110,9 @@ namespace CompMs.Common.Lipidomics
                     case "ADP":
                         lipidClass = LbmClass.Cer_AP;
                         break;
+                    case "ABP":
+                        lipidClass = LbmClass.Cer_ABP;
+                        break;
                     case "NP":
                     case "NDP":
                         lipidClass = LbmClass.Cer_NP;
