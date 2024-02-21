@@ -10385,7 +10385,6 @@ AdductIon adduct)
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("Cer", LbmClass.Cer_ABP, "t", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 2, candidates, 2);
-
                 }
             }
             else
@@ -10417,27 +10416,18 @@ AdductIon adduct)
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
 
-                            var sphChain_loss = diagnosticMz - ((sphCarbon - 3) * 12) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 3) * 2 - sphDouble * 2 + 1)) -
-                                     2 * MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass; // 
-                            var sphFragment = ((sphCarbon - 2) * 12) + (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2) - 1) + 2 * MassDiffDictionary.OxygenMass; // [Sph-NCC-2H2O]-
-                            var acylFragment1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) + MassDiffDictionary.OxygenMass; // FA(+OH)+ O (may be not sure)
-                            var acylFragment2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) - 12 - MassDiffDictionary.OxygenMass - 2 * MassDiffDictionary.HydrogenMass; // FA(+OH) -C -O -2H(may be not sure)
-
-                            //Console.WriteLine("d" + sphCarbon + ":" + sphDouble + "/" + acylCarbon + ":" + acylDouble + " " +
-                            //    sphChain_loss + " " + sphFragment + " " + acylFragment1 + " " + acylFragment2);
+                            var Sph = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * 4;
+                            var SphFragment = Sph + 12 * 2 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass - MassDiffDictionary.ProtonMass;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = sphChain_loss, Intensity = 1 },
-                                new SpectrumPeak() { Mass = sphFragment, Intensity = 0.1 },
-                                new SpectrumPeak() { Mass = acylFragment1, Intensity = 0.01 },
-                                new SpectrumPeak() { Mass = acylFragment2, Intensity = 0.01 }
+                                new SpectrumPeak() { Mass =SphFragment, Intensity = 10 },
                             };
 
                             var foundCount = 0;
                             var averageIntensity = 0.0;
                             LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
 
-                            if (foundCount >= 3)
+                            if (foundCount >= 1)
                             { // the diagnostic acyl ion must be observed for level 2 annotation
                                 var molecule = LipidMsmsCharacterizationUtility.getCeramideoxMoleculeObjAsLevel2("Cer", LbmClass.Cer_ABP, "t", sphCarbon, sphDouble,
                                     acylCarbon, acylDouble, 1, averageIntensity);
@@ -10450,7 +10440,6 @@ AdductIon adduct)
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("Cer", LbmClass.Cer_ABP, "t", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 1, candidates, 2);
                 }
-
             }
             return null;
         }
