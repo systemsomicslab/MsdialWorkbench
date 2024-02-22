@@ -40,7 +40,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             if (_calculateMatchScore is null) {
                 return Array.Empty<GcmsCompoundResult>();
             }
-            var compounds = _calculateMatchScore.CalculateMatches(target.MSDecResult)
+            var compounds = _calculateMatchScore.CalculateMatches(target.MsScan)
                     .OrderByDescending(r => r.TotalScore)
                     .Select(result => new GcmsCompoundResult(_calculateMatchScore.Reference(result), result))
                     .ToArray();
