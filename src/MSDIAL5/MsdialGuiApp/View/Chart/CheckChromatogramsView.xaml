@@ -57,11 +57,11 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="160" />
             </Grid.ColumnDefinitions>
-            <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis.Value}"
-                              VerticalAxis="{Binding VerticalAxis.Value}"
-                              HorizontalTitle="{Binding HorizontalTitle.Value}"
-                              GraphTitle="{Binding GraphTitle.Value}"
-                              ItemsSource="{Binding DisplayChromatograms.Value}"
+            <chart:MultiChart HorizontalAxis="{Binding ChromatogramsViewModel.Value.HorizontalSelector.SelectedAxisItem.AxisManager}"
+                              VerticalAxis="{Binding ChromatogramsViewModel.Value.VerticalSelector.SelectedAxisItem.AxisManager}"
+                              HorizontalTitle="{Binding ChromatogramsViewModel.Value.HorizontalSelector.SelectedAxisItem.GraphLabel}"
+                              GraphTitle="{Binding ChromatogramsViewModel.Value.GraphTitle}"
+                              ItemsSource="{Binding ChromatogramsViewModel.Value.DisplayChromatograms}"
                               Background="WhiteSmoke"
                               BorderBrush="Black">
                 <chart:MultiChart.Style>
@@ -70,15 +70,15 @@
                             <Setter.Value>
                                 <MultiBinding StringFormat="{}{0}({1})">
                                     <MultiBinding.Bindings>
-                                        <Binding Path="VerticalTitle"/>
-                                        <Binding Path="VerticalAxis.Value.UnitLabel"/>
+                                        <Binding Path="ChromatogramsViewModel.Value.VerticalSelector.SelectedAxisItem.GraphLabel"/>
+                                        <Binding Path="ChromatogramsViewModel.Value.VerticalSelector.SelectedAxisItem.AxisManager.UnitLabel"/>
                                     </MultiBinding.Bindings>
                                 </MultiBinding>
                             </Setter.Value>
                         </Setter>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding VerticalAxis.Value.UnitLabel, TargetNullValue=''}" Value="">
-                                <Setter Property="VerticalTitle" Value="{Binding VerticalTitle.Value}"/>
+                            <DataTrigger Binding="{Binding ChromatogramsViewModel.Value.VerticalSelector.SelectedAxisItem.AxisManager.UnitLabel, TargetNullValue=''}" Value="">
+                                <Setter Property="VerticalTitle" Value="{Binding ChromatogramsViewModel.Value.VerticalSelector.SelectedAxisItem.GraphLabel}"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -87,9 +87,9 @@
                     <DataTemplate>
                         <Grid>
                             <chart:LineChartControl ItemsSource="{Binding ChromatogramPeaks}"
-                                                   LinePen="{Binding LinePen}"
-                                                   HorizontalPropertyName="{Binding DataContext.HorizontalProperty.Value, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
-                                                   VerticalPropertyName="{Binding DataContext.VerticalProperty.Value, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"/>
+                                                    LinePen="{Binding LinePen}"
+                                                    HorizontalPropertyName="{Binding DataContext.ChromatogramsViewModel.Value.HorizontalProperty, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                                    VerticalPropertyName="{Binding DataContext.ChromatogramsViewModel.Value.VerticalProperty, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"/>
                         </Grid>
                     </DataTemplate>
                 </chart:MultiChart.ItemTemplate>
@@ -118,7 +118,7 @@
                 </chart:MultiChart.ContextMenu>
             </chart:MultiChart>
             <ItemsControl 
-                ItemsSource="{Binding DisplayChromatograms.Value}"
+                ItemsSource="{Binding ChromatogramsViewModel.Value.DisplayChromatograms}"
                 VerticalAlignment="Center"
                 Grid.Column="1">
                 <ItemsControl.ItemTemplate>

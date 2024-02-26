@@ -34,6 +34,12 @@ namespace CompMs.App.Msdial.Model.Chart
         }
         private ChromatogramsModel? _chromatograms;
 
+        public RangeSelectableChromatogramModel? RangeSelectableChromatogramModel {
+            get => _rangeSelectableChromatogramModel;
+            private set => SetProperty(ref _rangeSelectableChromatogramModel, value);
+        }
+        private RangeSelectableChromatogramModel? _rangeSelectableChromatogramModel;
+
         public ReadOnlyObservableCollection<PeakFeatureSearchValueModel> DisplayEicSettingValues { get; }
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase { get; }
@@ -51,6 +57,7 @@ namespace CompMs.App.Msdial.Model.Chart
             var displayEICs = _advancedProcessParameter.DiplayEicSettingValues;
 
             Chromatograms = LoadChromatogramsUsecase.Load(displayEICs);
+            RangeSelectableChromatogramModel = new RangeSelectableChromatogramModel(Chromatograms);
         }
 
         public void Clear() {
