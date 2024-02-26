@@ -28,11 +28,11 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalProperty = nameof(PeakItem.Time);
             VerticalProperty = nameof(PeakItem.Intensity);
 
-            var abundanceAxis = new ContinuousAxisManager<double>(0d, chromatograms.DefaultIfEmpty().Max(chromatogram => chromatogram?.MaxIntensity) ?? 1d, new ConstantMargin(0, 10d), new Range(0d, 0d))
+            var abundanceAxis = new ContinuousAxisManager<double>(0d, chromatograms.DefaultIfEmpty().Max(chromatogram => chromatogram?.MaxIntensity) ?? 1d, new ConstantMargin(0, 10d), new AxisRange(0d, 0d))
             {
                 LabelType = LabelType.Order,
             }.AddTo(Disposables);
-            var chromAxis = new ContinuousAxisManager<double>(chromatograms.Aggregate<DisplayChromatogram, Range?>(null, (acc, chromatogram) => chromatogram.ChromXRange.Union(acc)) ?? new Range(0d, 1d)).AddTo(Disposables);
+            var chromAxis = new ContinuousAxisManager<double>(chromatograms.Aggregate<DisplayChromatogram, AxisRange?>(null, (acc, chromatogram) => chromatogram.ChromXRange.Union(acc)) ?? new AxisRange(0d, 1d)).AddTo(Disposables);
 
             AbundanceAxisItemSelector = new AxisItemSelector<double>(new AxisItemModel<double>(verticalTitle, abundanceAxis, verticalTitle)).AddTo(Disposables);
             ChromAxisItemSelector = new AxisItemSelector<double>(new AxisItemModel<double>(horizontalTitle, chromAxis, horizontalTitle)).AddTo(Disposables);

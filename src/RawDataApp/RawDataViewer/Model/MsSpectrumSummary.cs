@@ -13,7 +13,7 @@ namespace CompMs.App.RawDataViewer.Model
             IntensityHistogram = intensityHistogram ?? throw new ArgumentNullException(nameof(intensityHistogram));
             AccumulateIntensityHistogram = Accumulate(intensityHistogram);
             HorizontalAxis = new LogScaleAxisManager<double>(AccumulateIntensityHistogram.Select(bin => bin.X).ToArray(), new ConstantMargin(40), base_: 2).AddTo(Disposables);
-            VerticalAxis = new ContinuousAxisManager<double>(AccumulateIntensityHistogram.Select(bin => bin.Y).ToArray(), new ConstantMargin(0, 30), new Range(0d, 0d)).AddTo(Disposables);
+            VerticalAxis = new ContinuousAxisManager<double>(AccumulateIntensityHistogram.Select(bin => bin.Y).ToArray(), new ConstantMargin(0, 30), new AxisRange(0d, 0d)).AddTo(Disposables);
 
             Title = title;
         }

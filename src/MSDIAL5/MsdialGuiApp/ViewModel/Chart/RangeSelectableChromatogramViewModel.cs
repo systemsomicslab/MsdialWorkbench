@@ -44,7 +44,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReactiveCommand RemoveRangesCommand { get; }
 
-        public ReactivePropertySlim<Range?> SelectedRange { get; }
+        public ReactivePropertySlim<AxisRange?> SelectedRange { get; }
 
         public ReadOnlyReactiveCollection<RangeSelection> SelectedRanges { get; }
 

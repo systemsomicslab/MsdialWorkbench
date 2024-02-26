@@ -64,14 +64,14 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalProperty = string.Empty;
             VerticalProperty = string.Empty;
 
-            var unitRange = new Range(0d, 1d);
+            var unitRange = new AxisRange(0d, 1d);
             var collectionChanged = spots.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default).Publish();
             HorizontalAxis = collectionChanged
-                .Select(_ => spots.Any() ? new Range(spots.Min(horizontalSelector), spots.Max(horizontalSelector)) : unitRange)
+                .Select(_ => spots.Any() ? new AxisRange(spots.Min(horizontalSelector), spots.Max(horizontalSelector)) : unitRange)
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
             VerticalAxis = collectionChanged
-                .Select(_ => spots.Any() ? new Range(spots.Min(verticalSelector), spots.Max(verticalSelector)) : unitRange)
+                .Select(_ => spots.Any() ? new AxisRange(spots.Min(verticalSelector), spots.Max(verticalSelector)) : unitRange)
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
             Disposables.Add(collectionChanged.Connect());

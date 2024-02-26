@@ -47,11 +47,11 @@ namespace CompMs.App.Msdial.Model.Chart
             VerticalProperty = string.Empty;
 
             HorizontalAxis = horizontalAxis ?? Spots.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default).Throttle(TimeSpan.FromSeconds(.01d))
-                .Select(_ => Spots.Any() ? new Range(Spots.Min(horizontalSelector), Spots.Max(horizontalSelector)) : new Range(0, 1))
+                .Select(_ => Spots.Any() ? new AxisRange(Spots.Min(horizontalSelector), Spots.Max(horizontalSelector)) : new AxisRange(0, 1))
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
             VerticalAxis = verticalAxis ?? Spots.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default).Throttle(TimeSpan.FromSeconds(.01d))
-                .Select(_ => Spots.Any() ? new Range(Spots.Min(verticalSelector), Spots.Max(verticalSelector)) : new Range(0, 1))
+                .Select(_ => Spots.Any() ? new AxisRange(Spots.Min(verticalSelector), Spots.Max(verticalSelector)) : new AxisRange(0, 1))
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
             _peakLinkModel = peakLinkModel;

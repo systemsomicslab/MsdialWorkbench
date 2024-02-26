@@ -27,12 +27,12 @@ namespace CompMs.App.Msdial.Model.Chart
             var nospec = SpectrumSource.Where(spec => !spec.Any()).Publish();
             var anyspec = SpectrumSource.Where(spec => spec.Any()).Publish();
             var hrox = anyspec
-                .Select(spec => new Range(spec.Min(HorizontalSelector), spec.Max(HorizontalSelector)));
+                .Select(spec => new AxisRange(spec.Min(HorizontalSelector), spec.Max(HorizontalSelector)));
             var vrox = anyspec
-                .Select(spec => new Range(spec.Min(VerticalSelector), spec.Max(VerticalSelector)));
+                .Select(spec => new AxisRange(spec.Min(VerticalSelector), spec.Max(VerticalSelector)));
 
-            HorizontalRangeSource = hrox.Merge(nospec.ToConstant(new Range(0, 1))).ToReactiveProperty(new Range(0d, 1d)).AddTo(Disposables);
-            VerticalRangeSource = vrox.Merge(nospec.ToConstant(new Range(0, 1))).ToReactiveProperty(new Range(0d, 1d)).AddTo(Disposables);
+            HorizontalRangeSource = hrox.Merge(nospec.ToConstant(new AxisRange(0, 1))).ToReactiveProperty(new AxisRange(0d, 1d)).AddTo(Disposables);
+            VerticalRangeSource = vrox.Merge(nospec.ToConstant(new AxisRange(0, 1))).ToReactiveProperty(new AxisRange(0d, 1d)).AddTo(Disposables);
 
             var maxIntensitySource = anyspec
                 .Select(spectrum => spectrum.Max(spec => spec?.Intensity) ?? 0d)
@@ -55,9 +55,9 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public IObservable<List<SpectrumPeakWrapper>> SpectrumSource { get; }
 
-        public IObservable<Range> HorizontalRangeSource { get; }
+        public IObservable<AxisRange> HorizontalRangeSource { get; }
 
-        public IObservable<Range> VerticalRangeSource { get; }
+        public IObservable<AxisRange> VerticalRangeSource { get; }
 
         public GraphElements Elements { get; } = new GraphElements();
 

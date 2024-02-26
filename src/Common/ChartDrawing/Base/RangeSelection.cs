@@ -5,11 +5,11 @@ namespace CompMs.Graphics.Core.Base
 {
     public class RangeSelection : BindableBase
     {
-        public RangeSelection(Range range) {
+        public RangeSelection(AxisRange range) {
             Range = range;
         }
         
-        public Range Range { get; }
+        public AxisRange Range { get; }
 
         public bool IsSelected {
             get => isSelected;

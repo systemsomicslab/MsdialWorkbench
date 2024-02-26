@@ -20,8 +20,8 @@ namespace ChartDrawingUiTest.Bar
             ClearCommand = new DelegateCommand(Clear);
             MoveCommand = new DelegateCommand(Move);
 
-            horizontalAxis = new ContinuousAxisManager<double>(new Range(-1 / 2, Number - 1 / 2), new RelativeMargin(0.05));
-            VerticalAxis = new ContinuousAxisManager<double>(new Range(0, 1d), new RelativeMargin(0, 0.05));
+            horizontalAxis = new ContinuousAxisManager<double>(new AxisRange(-1 / 2, Number - 1 / 2), new RelativeMargin(0.05));
+            VerticalAxis = new ContinuousAxisManager<double>(new AxisRange(0, 1d), new RelativeMargin(0, 0.05));
 
             Set();
         }
@@ -40,7 +40,7 @@ namespace ChartDrawingUiTest.Bar
             get => number;
             set {
                 if (SetProperty(ref number, value)) {
-                    horizontalAxis?.UpdateInitialRange(new Range(-1 / 2, Number - 1 / 2));
+                    horizontalAxis?.UpdateInitialRange(new AxisRange(-1 / 2, Number - 1 / 2));
                 }
             }
         }

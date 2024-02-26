@@ -38,11 +38,11 @@ namespace CompMs.Graphics.Chart
         public static readonly DependencyProperty SelectedRangeProperty =
             DependencyProperty.Register(
                 nameof(SelectedRange),
-                typeof(Range),
+                typeof(AxisRange),
                 typeof(RangeSelector));
 
-        public Range SelectedRange {
-            get => (Range)GetValue(SelectedRangeProperty);
+        public AxisRange SelectedRange {
+            get => (AxisRange)GetValue(SelectedRangeProperty);
             set => SetValue(SelectedRangeProperty, value);
         }
 
@@ -172,7 +172,7 @@ namespace CompMs.Graphics.Chart
                 var initial = e.GetPosition(fe);
                 InitialPoint = initial;
                 var x = HorizontalAxis.TranslateFromRenderPoint(initial.X, FlippedX, ActualWidth);
-                var adorner = new RangeSelectAdorner(fe, new Range(x, x) , SelectedColor, false) { IsClipEnabled = true, };
+                var adorner = new RangeSelectAdorner(fe, new AxisRange(x, x) , SelectedColor, false) { IsClipEnabled = true, };
                 adorner.Attach();
                 SelectedRangeAdorner = adorner;
                 fe.CaptureMouse();

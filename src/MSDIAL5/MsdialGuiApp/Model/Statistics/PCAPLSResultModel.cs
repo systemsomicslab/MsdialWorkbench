@@ -92,7 +92,7 @@ namespace CompMs.App.Msdial.Model.Statistics
                 .ToList().AsReadOnly();
 
             LoadingAbsoluteAxises = result.PPreds
-                .Select(pc_loadings => new Lazy<IAxisManager<double>>(() => new AbsoluteAxisManager(new Range(0d, pc_loadings.DefaultIfEmpty().Max(Math.Abs)), new ConstantMargin(0, 10))))
+                .Select(pc_loadings => new Lazy<IAxisManager<double>>(() => new AbsoluteAxisManager(new AxisRange(0d, pc_loadings.DefaultIfEmpty().Max(Math.Abs)), new ConstantMargin(0, 10))))
                 .ToList().AsReadOnly();
 
             ScoreAxises = result.TPreds
@@ -111,7 +111,7 @@ namespace CompMs.App.Msdial.Model.Statistics
                 .ToList().AsReadOnly();
 
                 OLoadingAbsoluteAxises = result.PoPreds
-                    .Select(pc_loadings => new Lazy<IAxisManager<double>>(() => new AbsoluteAxisManager(new Range(0d, pc_loadings.DefaultIfEmpty().Max(Math.Abs)), new ConstantMargin(0, 10))))
+                    .Select(pc_loadings => new Lazy<IAxisManager<double>>(() => new AbsoluteAxisManager(new AxisRange(0d, pc_loadings.DefaultIfEmpty().Max(Math.Abs)), new ConstantMargin(0, 10))))
                     .ToList().AsReadOnly();
 
                 OScoreAxises = result.ToPreds

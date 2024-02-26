@@ -40,6 +40,6 @@ namespace CompMs.App.Msdial.Model.DataObj
         public double MaxChromX => ChromatogramPeaks.DefaultIfEmpty().Max(chromatogramPeak => chromatogramPeak?.Time) ?? 1d;
         public double MinChromX => ChromatogramPeaks.DefaultIfEmpty().Min(chromatogramPeak => chromatogramPeak?.Time) ?? 0d;
 
-        public Range ChromXRange => new Range(MinChromX, MaxChromX);
+        public AxisRange ChromXRange => new AxisRange(MinChromX, MaxChromX);
     }
 }

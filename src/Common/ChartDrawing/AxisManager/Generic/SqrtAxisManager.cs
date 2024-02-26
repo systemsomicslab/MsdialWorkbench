@@ -6,23 +6,23 @@ namespace CompMs.Graphics.AxisManager.Generic
 {
     public sealed class SqrtAxisManager : BaseAxisManager<double>
     {
-        public SqrtAxisManager(Range range) : base(range) {
+        public SqrtAxisManager(AxisRange range) : base(range) {
 
         }
 
-        public SqrtAxisManager(Range range, Range bounds) : base(range, bounds) {
+        public SqrtAxisManager(AxisRange range, AxisRange bounds) : base(range, bounds) {
 
         }
 
-        public SqrtAxisManager(Range range, IChartMargin margin) : base(range, margin) {
+        public SqrtAxisManager(AxisRange range, IChartMargin margin) : base(range, margin) {
 
         }
 
-        public SqrtAxisManager(Range range, IChartMargin margin, Range bounds) : base(range, margin, bounds) {
+        public SqrtAxisManager(AxisRange range, IChartMargin margin, AxisRange bounds) : base(range, margin, bounds) {
 
         }
 
-        public SqrtAxisManager(Range range, IChartMargin margin, double lowBound, double highBound) : base(range, margin, ConvertToRange(lowBound, highBound)) {
+        public SqrtAxisManager(AxisRange range, IChartMargin margin, double lowBound, double highBound) : base(range, margin, ConvertToRange(lowBound, highBound)) {
 
         }
 
@@ -30,7 +30,7 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         }
 
-        public SqrtAxisManager(double low, double high, Range bounds) : this(ConvertToRange(low, high), bounds) {
+        public SqrtAxisManager(double low, double high, AxisRange bounds) : this(ConvertToRange(low, high), bounds) {
 
         }
 
@@ -38,7 +38,7 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         }
 
-        public SqrtAxisManager(double low, double high, IChartMargin margin, Range bounds) : this(ConvertToRange(low, high), margin, bounds) {
+        public SqrtAxisManager(double low, double high, IChartMargin margin, AxisRange bounds) : this(ConvertToRange(low, high), margin, bounds) {
 
         }
 
@@ -94,8 +94,8 @@ namespace CompMs.Graphics.AxisManager.Generic
             return new AxisValue(Math.Sqrt(value));
         }
 
-        private static Range ConvertToRange(double low, double high) {
-            return new Range(ConvertToAxisValue(low), ConvertToAxisValue(high));
+        private static AxisRange ConvertToRange(double low, double high) {
+            return new AxisRange(ConvertToAxisValue(low), ConvertToAxisValue(high));
         }
     }
 }

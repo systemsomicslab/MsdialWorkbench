@@ -40,18 +40,18 @@ namespace CompMs.App.Msdial.Model.DataObj
         public Color Color { get; }
         public string Description { get; }
 
-        public Range GetTimeRange() {
+        public AxisRange GetTimeRange() {
             if (Peaks.IsEmptyOrNull()) {
-                return new Range(0d, 1d);
+                return new AxisRange(0d, 1d);
             }
-            return new Range(Peaks.Min(peak => peak.Time), Peaks.Max(peak => peak.Time));
+            return new AxisRange(Peaks.Min(peak => peak.Time), Peaks.Max(peak => peak.Time));
         }
 
-        public Range GetAbundanceRange() {
+        public AxisRange GetAbundanceRange() {
             if (PeakArea.IsEmptyOrNull()) {
-                return new Range(0d, 1d);
+                return new AxisRange(0d, 1d);
             }
-            return new Range(0d, Peaks.Max(peak => peak.Intensity));
+            return new AxisRange(0d, Peaks.Max(peak => peak.Intensity));
         }
 
         public Chromatogram Convert() {

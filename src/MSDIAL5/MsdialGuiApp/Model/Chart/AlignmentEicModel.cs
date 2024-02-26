@@ -47,16 +47,16 @@ namespace CompMs.App.Msdial.Model.Chart
             var peaksox = eicChromatograms
                 .Select(chroms => chroms?.SelectMany(chrom => chrom.Peaks).ToArray() ?? new PeakItem[0]);
 
-            var nopeak = peaksox.Where(peaks => !peaks.Any()).ToConstant(new Range(0, 1));
+            var nopeak = peaksox.Where(peaks => !peaks.Any()).ToConstant(new AxisRange(0, 1));
 
             var anypeak = peaksox.Where(peaks => peaks.Any());
             var hrox = anypeak
-                .Select(peaks => new Range(peaks.Min(horizontalSelector), peaks.Max(horizontalSelector)));
+                .Select(peaks => new AxisRange(peaks.Min(horizontalSelector), peaks.Max(horizontalSelector)));
             var vrox = anypeak
-                .Select(peaks => new Range(peaks.Min(verticalSelector), peaks.Max(verticalSelector)));
+                .Select(peaks => new AxisRange(peaks.Min(verticalSelector), peaks.Max(verticalSelector)));
 
-            HorizontalRange = hrox.Merge(nopeak).ToReadOnlyReactivePropertySlim(new Range(0d, 1d)).AddTo(Disposables);
-            VerticalRange = vrox.Merge(nopeak).ToReadOnlyReactivePropertySlim(new Range(0d, 1d)).AddTo(Disposables);
+            HorizontalRange = hrox.Merge(nopeak).ToReadOnlyReactivePropertySlim(new AxisRange(0d, 1d)).AddTo(Disposables);
+            VerticalRange = vrox.Merge(nopeak).ToReadOnlyReactivePropertySlim(new AxisRange(0d, 1d)).AddTo(Disposables);
 
             var isSelected = model.Select(m => m != null).ToReactiveProperty().AddTo(Disposables);
             IsSelected = isSelected;
@@ -87,8 +87,8 @@ namespace CompMs.App.Msdial.Model.Chart
         public IObservable<bool> IsPeakLoaded { get; }
 
         public ReadOnlyReactivePropertySlim<List<PeakChromatogram>> EicChromatograms { get; }
-        public ReadOnlyReactivePropertySlim<Range> HorizontalRange { get; }
-        public ReadOnlyReactivePropertySlim<Range> VerticalRange { get; }
+        public ReadOnlyReactivePropertySlim<AxisRange> HorizontalRange { get; }
+        public ReadOnlyReactivePropertySlim<AxisRange> VerticalRange { get; }
 
         public GraphElements Elements { get; } = new GraphElements();
 
