@@ -10339,7 +10339,7 @@ AdductIon adduct)
                     var threshold = 10.0;
                     var diagnosticMz = theoreticalMz - H2O;
                     // seek -2H2O
-                    var threshold2 = 5.0;
+                    var threshold2 = 2.0;
                     var diagnosticMz2 = diagnosticMz - H2O;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
