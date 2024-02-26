@@ -32,17 +32,24 @@ namespace CompMs.Common.Lipidomics
                     {
                         if (classGroup["ab"].Success)
                         {
-                            switch (classGroup["ab"].Value)
+                            if (classGroup["h"].Value.Contains("2OH,3OH"))
                             {
-                                case "2":
-                                    classString = classString + "A";
-                                    break;
-                                case "3":
-                                    classString = classString + "B";
-                                    break;
-                                default:
-                                    classString = classString + "H";
-                                    break;
+                                classString = classString + "AB";
+                            }
+                            else
+                            {
+                                switch (classGroup["ab"].Value)
+                                {
+                                    case "2":
+                                        classString = classString + "A";
+                                        break;
+                                    case "3":
+                                        classString = classString + "B";
+                                        break;
+                                    default:
+                                        classString = classString + "H";
+                                        break;
+                                }
                             }
                         }
                         else
@@ -111,6 +118,7 @@ namespace CompMs.Common.Lipidomics
                         lipidClass = LbmClass.Cer_AP;
                         break;
                     case "ABP":
+                    case "ABDP":
                         lipidClass = LbmClass.Cer_ABP;
                         break;
                     case "NP":

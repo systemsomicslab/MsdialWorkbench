@@ -10339,7 +10339,7 @@ AdductIon adduct)
                     var threshold = 10.0;
                     var diagnosticMz = theoreticalMz - H2O;
                     // seek -2H2O
-                    var threshold2 = 10.0;
+                    var threshold2 = 5.0;
                     var diagnosticMz2 = diagnosticMz - H2O;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
@@ -10362,10 +10362,10 @@ AdductIon adduct)
                             //var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + 2 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = sph1, Intensity = 5 },
-                                new SpectrumPeak() { Mass = sph2, Intensity = 5 },
-                                new SpectrumPeak() { Mass = sph3, Intensity = 10 },
-                                new SpectrumPeak() { Mass = sph4, Intensity = 5 },
+                                new SpectrumPeak() { Mass = sph1, Intensity = 1.0 },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 1.0 },
+                                new SpectrumPeak() { Mass = sph3, Intensity = 1.0 },
+                                new SpectrumPeak() { Mass = sph4, Intensity = 1.0 },
                                 //new SpectrumPeak() { Mass = acylamide, Intensity = 0.01 }
                             };
 

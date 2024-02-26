@@ -90,6 +90,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.Cer_BDS:
                 case LbmClass.Cer_NP:
                 case LbmClass.Cer_AP:
+                case LbmClass.Cer_ABP:
                     return CeramideEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.HexCer_NS:
                     return HexCerEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
