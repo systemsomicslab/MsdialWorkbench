@@ -117,7 +117,7 @@ namespace CompMs.App.Msdial.Model.Chart
                         title += "; ";
                     }
                     title += $"[{Math.Round(set.Mass - set.MassTolerance, 4)}-{Math.Round(set.Mass + set.MassTolerance, 4)}]";
-                    var chrom = new DisplayChromatogram(eic, new Pen(ChartBrushes.GetChartBrush(counter), 1.0), title);
+                    var chrom = new DisplayExtractedIonChromatogram(eic, set.Mass, set.MassTolerance, new Pen(ChartBrushes.GetChartBrush(counter), 1.0), title);
                     counter++;
                     _displayChroms.Add(chrom);
                 }
