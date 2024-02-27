@@ -18618,7 +18618,7 @@ AdductIon adduct)
                         theoreticalMz - (MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 3) : theoreticalMz;
 
                     //  seek "[C5H12PO5]+"; // 183
-                    var threshold = 5.0;
+                    var threshold = 2.0;
                     var diagnosticMz1 = 12 * 5 + MassDiffDictionary.HydrogenMass * 11 + MassDiffDictionary.OxygenMass * 5 + MassDiffDictionary.PhosphorusMass + Proton;
                     //  C2H7PO4 Loss
                     var diagnosticMz2 = diagnosticMz - (12 * 2 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass);
