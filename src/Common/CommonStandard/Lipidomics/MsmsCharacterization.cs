@@ -10425,7 +10425,7 @@ AdductIon adduct)
                             var SphFragment = Sph + 12 * 2 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass - MassDiffDictionary.ProtonMass;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass =SphFragment, Intensity = 10 },
+                                new SpectrumPeak() { Mass =SphFragment, Intensity = 40.0 },
                             };
 
                             var foundCount = 0;
