@@ -10355,17 +10355,22 @@ AdductIon adduct)
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
 
+                            var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + 3 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
+                            if (!LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, acylamide, threshold2))
+                            {
+                                continue;
+                            }
+
                             var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * 4;
                             var sph2 = sph1 - H2O;
                             var sph3 = sph1 - 2 * H2O;
                             var sph4 = sph1 - 3 * H2O;
-                            //var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + 2 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 1.0 },
-                                new SpectrumPeak() { Mass = sph2, Intensity = 1.0 },
-                                new SpectrumPeak() { Mass = sph3, Intensity = 1.0 },
-                                new SpectrumPeak() { Mass = sph4, Intensity = 1.0 },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 5.0 },
+                                new SpectrumPeak() { Mass = sph3, Intensity = 5.0 },
+                                new SpectrumPeak() { Mass = sph4, Intensity = 5.0 },
                                 //new SpectrumPeak() { Mass = acylamide, Intensity = 0.01 }
                             };
 
@@ -10373,7 +10378,7 @@ AdductIon adduct)
                             var averageIntensity = 0.0;
                             LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
 
-                            if (foundCount >= 2)
+                            if (foundCount >= 3)
                             { // 
                                 var molecule = LipidMsmsCharacterizationUtility.getCeramideoxMoleculeObjAsLevel2("Cer", LbmClass.Cer_ABP, "t", sphCarbon, sphDouble,
                                     acylCarbon, acylDouble, 2, averageIntensity);
