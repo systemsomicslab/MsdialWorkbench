@@ -156,10 +156,10 @@
                                 Grid.Row="1" Grid.Column="2">
                             <Border x:Name="PART_ChartArea"
                                     Background="{TemplateBinding Background}"
-                                    behavior:ZoomByDragBehavior.IsEnabled="True"
-                                    behavior:ZoomByWheelBehavior.IsEnabled="True"
-                                    behavior:MoveByDragBehavior.IsEnabled="True"
-                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True">
+                                    behavior:ZoomByDragBehavior.IsEnabled="{Binding RenderAreaControlState.ZoomByDragIsEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                                    behavior:ZoomByWheelBehavior.IsEnabled="{Binding RenderAreaControlState.ZoomByWheelIsEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                                    behavior:MoveByDragBehavior.IsEnabled="{Binding RenderAreaControlState.MoveByDragIsEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="{Binding RenderAreaControlState.ResetRangeByDoubleClickIsEnabled, RelativeSource={RelativeSource TemplatedParent}}">
                                 <ContentPresenter/>
                             </Border>
                         </Border>
