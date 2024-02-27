@@ -69,7 +69,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
             Disposables.Add(needRefresh.Connect());
         }
 
-        public ReactivePropertySlim<string> SelectedAnnotationLabel { get; }
+        public ReactivePropertySlim<string?> SelectedAnnotationLabel { get; }
 
         public ICollectionView PeakSpotsView { get; }
 

@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.Graphics.Base;
 using CompMs.MsdialCore.DataObj;
@@ -14,24 +15,27 @@ namespace CompMs.App.Msdial.Model.Table
 {
     internal abstract class AlignmentSpotTableModelBase : PeakSpotTableModelBase<AlignmentSpotPropertyModel>
     {
-        private readonly IReactiveProperty<AlignmentSpotPropertyModel> _target;
+        private readonly IReactiveProperty<AlignmentSpotPropertyModel?> _target;
         private readonly PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter _peakSpotFilter;
         private readonly AlignmentSpotSpectraLoader _spectraLoader;
+        private readonly UndoManager _undoManager;
 
         public AlignmentSpotTableModelBase(
             IReadOnlyList<AlignmentSpotPropertyModel> spots,
-            IReactiveProperty<AlignmentSpotPropertyModel> target,
+            IReactiveProperty<AlignmentSpotPropertyModel?> target,
             IObservable<IBrushMapper<BarItem>> classBrush,
             FileClassPropertiesModel classProperties,
             IObservable<IBarItemsLoader> barItemsLoader,
             PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter peakSpotFilter,
-            AlignmentSpotSpectraLoader spectraLoader)
+            AlignmentSpotSpectraLoader spectraLoader,
+            UndoManager undoManager)
             : base(spots, target) {
             _target = target;
             ClassBrush = classBrush;
             BarItemsLoader = barItemsLoader;
             _peakSpotFilter = peakSpotFilter;
             _spectraLoader = spectraLoader;
+            _undoManager = undoManager;
             FileClassProperties = classProperties;
         }
 
@@ -44,23 +48,57 @@ namespace CompMs.App.Msdial.Model.Table
             peaks = _peakSpotFilter.FilterAnnotatedPeaks(peaks);
             foreach (var peak in peaks) {
                 var spectra = await _spectraLoader.GetMatchedSpectraMatrixsAsync(peak, peak.ScanMatchResult).ConfigureAwait(false);
-                using (var stream = File.Open(Path.Combine(directory, $"AlignmentID{peak.MasterAlignmentID:D6}.txt"), FileMode.Create, FileAccess.Write)) {
-                    spectra.Export(stream);
-                }
+                using var stream = File.Open(Path.Combine(directory, $"AlignmentID{peak.MasterAlignmentID:D6}.txt"), FileMode.Create, FileAccess.Write);
+                spectra?.Export(stream);
             }
         }
 
-        public void MarkAllAsConfirmed() {
-            foreach (var peak in PeakSpots) {
-                peak.Confirmed = true;
-            }
+        public override void MarkAllAsConfirmed() {
+            IDoCommand command = new MarkAllAsCommand(PeakSpots, true);
+            command.Do();
+            _undoManager.Add(command);
         }
 
-        public void SwitchTag(PeakSpotTag tag) {
+        public override void MarkAllAsUnconfirmed() {
+            IDoCommand command = new MarkAllAsCommand(PeakSpots, false);
+            command.Do();
+            _undoManager.Add(command);
+        }
+
+        public override void SwitchTag(PeakSpotTag tag) {
             if (_target.Value is null) {
                 return;
             }
             _target.Value.SwitchPeakSpotTag(tag);
+        }
+
+        sealed class MarkAllAsCommand : IDoCommand {
+            private readonly IReadOnlyList<AlignmentSpotPropertyModel> _peaks;
+            private readonly List<AlignmentSpotPropertyModel> _confirmeds;
+            private readonly bool _status;
+
+            public MarkAllAsCommand(IReadOnlyList<AlignmentSpotPropertyModel> peaks, bool status)
+            {
+                _peaks = peaks;
+                _status = status;
+                _confirmeds = new List<AlignmentSpotPropertyModel>();
+            }
+
+            void IDoCommand.Do() {
+                _confirmeds.Clear();
+                foreach (var peak in _peaks) {
+                    if (peak.Confirmed != _status) {
+                        peak.Confirmed = _status;
+                        _confirmeds.Add(peak);
+                    }
+                }
+            }
+
+            void IDoCommand.Undo() {
+                foreach (var peak in _confirmeds) {
+                    peak.Confirmed = !_status;
+                }
+            }
         }
     }
 }

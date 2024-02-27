@@ -47,21 +47,21 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private ProcessOption option;
 
-        public DataCollectionSettingModel DataCollectionSettingModel { get; }
+        public IDataCollectionSettingModel? DataCollectionSettingModel { get; }
 
-        public PeakDetectionSettingModel PeakDetectionSettingModel { get; }
+        public IPeakDetectionSettingModel? PeakDetectionSettingModel { get; }
 
-        public DeconvolutionSettingModel DeconvolutionSettingModel { get; }
+        public DeconvolutionSettingModel? DeconvolutionSettingModel { get; }
 
-        public IdentifySettingModel IdentifySettingModel { get; }
+        public IIdentificationSettingModel? IdentifySettingModel { get; }
 
-        public AdductIonSettingModel AdductIonSettingModel { get; }
+        public AdductIonSettingModel? AdductIonSettingModel { get; }
 
-        public AlignmentParameterSettingModel AlignmentParameterSettingModel { get; }
+        public IAlignmentParameterSettingModel? AlignmentParameterSettingModel { get; }
 
-        public MobilitySettingModel MobilitySettingModel { get; }
+        public MobilitySettingModel? MobilitySettingModel { get; }
 
-        public IsotopeTrackSettingModel IsotopeTrackSettingModel { get; }
+        public IsotopeTrackSettingModel? IsotopeTrackSettingModel { get; }
 
         public bool IsReadOnlyPeakPickParameter { get; }
 
@@ -71,31 +71,35 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public async Task<bool> TryRunAsync(CancellationToken token) {
             if (Option.HasFlag(ProcessOption.PeakSpotting)) {
-                if (!DataCollectionSettingModel.TryCommit()) {
+                if (DataCollectionSettingModel is null || !DataCollectionSettingModel.TryCommit()) {
                     return false;
                 }
-                PeakDetectionSettingModel.Commit();
-                DeconvolutionSettingModel.Commit();
+
+                PeakDetectionSettingModel?.Commit();
+                DeconvolutionSettingModel?.Commit();
             }
             if (Option.HasFlag(ProcessOption.Identification)) {
-                if (!IdentifySettingModel.IsReadOnly) {
-                    Storage.DataBaseMapper = new DataBaseMapper();
-                    Storage.DataBases = IdentifySettingModel.Create(Storage.DataBaseMapper);
-                    Storage.DataBases.SetDataBaseMapper(Storage.DataBaseMapper);
+                if (IdentifySettingModel != null) {
+                    if (!IdentifySettingModel.IsReadOnly ) {
+                        Storage.DataBaseMapper = new DataBaseMapper();
+                        Storage.DataBases = IdentifySettingModel.Create(Storage.DataBaseMapper);
+                        Storage.DataBases.SetDataBaseMapper(Storage.DataBaseMapper);
+                    }
                 }
-                if (!AdductIonSettingModel.TryCommit()) {
+                if (!(AdductIonSettingModel is null || AdductIonSettingModel.TryCommit())) {
                     return false;
                 }
             }
             if (Option.HasFlag(ProcessOption.Alignment)) {
-                if (!AlignmentParameterSettingModel.TryCommit()) {
+                if (AlignmentParameterSettingModel is null || !AlignmentParameterSettingModel.TryCommit()) {
                     return false;
                 }
+
                 if (!AlignmentParameterSettingModel.ShouldRunAlignment) {
                     Option &= ~ProcessOption.Alignment;
                 }
             }
-            IsotopeTrackSettingModel.Commit();
+            IsotopeTrackSettingModel?.Commit();
             if (MobilitySettingModel != null && !MobilitySettingModel.TryCommit()) {
                 return false;
             }
@@ -112,13 +116,14 @@ namespace CompMs.App.Msdial.Model.Setting
                 {
                     using (var stream = File.Open(file, FileMode.Open)) {
                         var parameter = Storage.LoadParameter(stream);
-                        DataCollectionSettingModel.LoadParameter(parameter);
-                        PeakDetectionSettingModel.LoadParameter(parameter.PeakPickBaseParam);
-                        DeconvolutionSettingModel.LoadParameter(parameter.ChromDecBaseParam);
-                        AdductIonSettingModel.LoadParameter(parameter);
-                        AlignmentParameterSettingModel.LoadParameter(parameter);
-                        // MobilitySettingModel.LoadParameter();
-                        // IsotopeTrackSettingModel.LoadParameter();
+                        DataCollectionSettingModel?.LoadParameter(parameter);
+                        PeakDetectionSettingModel?.LoadParameter(parameter.PeakPickBaseParam);
+                        DeconvolutionSettingModel?.LoadParameter(parameter.ChromDecBaseParam);
+                        IdentifySettingModel?.LoadParameter(parameter);
+                        AdductIonSettingModel?.LoadParameter(parameter);
+                        AlignmentParameterSettingModel?.LoadParameter(parameter);
+                        // MobilitySettingModel?.LoadParameter();
+                        // IsotopeTrackSettingModel?.LoadParameter();
                     }
                 })
             {

@@ -39,7 +39,7 @@ namespace CompMs.App.Msdial.Model.Export
                 return 0;
             }
             var peaks = _supplyer.Supply(alignmentFile, default);
-            var tasks = peaks.Select(peak => alignmentFile.LoadMSDecResultByIndexAsync(peak.MasterAlignmentID).ContinueWith(t => t.Result.Spectrum.Count >= 2)).ToArray();
+            var tasks = peaks.Select(peak => alignmentFile.LoadMSDecResultByIndexAsync(peak.MasterAlignmentID).ContinueWith(t => t.Result is not null && t.Result.Spectrum.Count >= 2)).ToArray();
             Task.WaitAll(tasks);
             return tasks.Count(t => t.Result);
         }

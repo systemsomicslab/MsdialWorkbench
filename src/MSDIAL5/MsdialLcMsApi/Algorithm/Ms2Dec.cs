@@ -122,10 +122,11 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             }
             int topScanNum = minimumID;
 
-            var ms2ValuePeaksList = DataAccess.GetMs2ValuePeaks(provider, precursorMz, startIndex, endIndex, curatedSpectra.Select(x => (double)x.Mass).ToList(), param, file.AcquisitionType, targetCE);
-            var sMs2Chromatograms = new List<Chromatogram_temp2>();
-            foreach (var ms2Peaks in ms2ValuePeaksList) {
-                Chromatogram_temp2 chromatogram = new Chromatogram_temp2(ms2Peaks, ChromXType.RT, ChromXUnit.Min).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
+            List<double> productMzs = curatedSpectra.Select(x => (double)x.Mass).ToList();
+            var ms2ValuePeaksList = DataAccess.GetMs2ValuePeaks(provider, precursorMz, startIndex, endIndex, productMzs, param, file.AcquisitionType, targetCE);
+            var sMs2Chromatograms = new List<ExtractedIonChromatogram>();
+            foreach (var (ms2Peaks, productMz) in ms2ValuePeaksList.Zip(productMzs)) {
+                ExtractedIonChromatogram chromatogram = new ExtractedIonChromatogram(ms2Peaks, ChromXType.RT, ChromXUnit.Min, productMz).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel);
                 sMs2Chromatograms.Add(chromatogram);
             }
 
@@ -167,6 +168,10 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                 msdecResult.ChromXs = chromPeakFeature.ChromXs;
                 msdecResult.RawSpectrumID = targetSpecID;
                 msdecResult.PrecursorMz = precursorMz;
+
+                foreach (var chrom in sMs2Chromatograms) {
+                    chrom.Dispose();
+                }
                 return msdecResult;
             }
 

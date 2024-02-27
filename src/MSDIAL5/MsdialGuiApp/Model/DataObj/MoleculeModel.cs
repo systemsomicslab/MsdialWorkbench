@@ -5,7 +5,7 @@ using CompMs.CommonMVVM;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    internal sealed class MoleculeModel : BindableBase
+    public sealed class MoleculeModel : BindableBase, IMoleculeProperty
     {
         private readonly IMoleculeProperty _molecule;
 
@@ -24,9 +24,9 @@ namespace CompMs.App.Msdial.Model.DataObj
         }
 
         public string Formula {
-            get => _molecule.Formula.FormulaString;
+            get => _molecule.Formula?.FormulaString ?? string.Empty;
             set {
-                if (_molecule.Formula.FormulaString != value && FormulaStringParcer.Convert2FormulaObjV2(value) is Formula formula) {
+                if (value != null && _molecule.Formula?.FormulaString != value && FormulaStringParcer.Convert2FormulaObjV2(value) is Formula formula) {
                     _molecule.Formula = formula;
                     OnPropertyChanged(nameof(Formula));
                 }
@@ -59,6 +59,16 @@ namespace CompMs.App.Msdial.Model.DataObj
                 if (_molecule.InChIKey != value) {
                     _molecule.InChIKey = value;
                     OnPropertyChanged(nameof(InChIKey));
+                }
+            }
+        }
+
+        Formula IMoleculeProperty.Formula {
+            get => _molecule.Formula;
+            set {
+                if (_molecule.Formula != value) {
+                    _molecule.Formula = value;
+                    OnPropertyChanged(nameof(Formula));
                 }
             }
         }

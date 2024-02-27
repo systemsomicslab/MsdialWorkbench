@@ -28,10 +28,10 @@ namespace CompMs.App.Msdial.Model.Loader
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
             _msSpectra = _provider.LoadMsSpectrumsAsync(default);
             _ms2List = new Subject<List<MsSelectionItem>>().AddTo(Disposables);
-            Ms2IdSelector = new ReactivePropertySlim<MsSelectionItem>().AddTo(Disposables);
+            Ms2IdSelector = new ReactivePropertySlim<MsSelectionItem?>().AddTo(Disposables);
         }
 
-        public ReactivePropertySlim<MsSelectionItem> Ms2IdSelector { get; }
+        public ReactivePropertySlim<MsSelectionItem?> Ms2IdSelector { get; }
 
         public IObservable<List<MsSelectionItem>> Ms2List => _ms2List;
         private readonly Subject<List<MsSelectionItem>> _ms2List;
@@ -47,7 +47,7 @@ namespace CompMs.App.Msdial.Model.Loader
             var defaultValue = items.FirstOrDefault(item => item.Id == target.MS2RawSpectrumId) ?? items.First();
             Ms2IdSelector.Value = defaultValue;
 
-            return Observable.FromAsync(() => _msSpectra).CombineLatest(Ms2IdSelector.Where(item => !(item is null)).Select(item => item.Id), (msSpectra, ms2Id) =>
+            return Observable.FromAsync(() => _msSpectra).CombineLatest(Ms2IdSelector.Where(item => item is not null).Select(item => item!.Id), (msSpectra, ms2Id) =>
             {
                 var spectra = DataAccess.GetCentroidMassSpectra(msSpectra[ms2Id], _parameter.MS2DataType, 0f, float.MinValue, float.MaxValue);
                 if (_parameter.RemoveAfterPrecursor) {

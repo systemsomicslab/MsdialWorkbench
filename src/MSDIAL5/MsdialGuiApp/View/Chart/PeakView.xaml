@@ -52,6 +52,10 @@
                                   Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
                                   CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     </MenuItem>
+                    <MenuItem Header="Export as MRMPROBS reference format">
+                        <MenuItem Header="Save as MRMPROBS reference format" Command="{Binding SaveMrmprobsCommand, Mode=OneTime}"/>
+                        <MenuItem Header="Copy as MRMPROBS reference format" Command="{Binding CopyMrmprobsCommand, Mode=OneTime}"/>
+                    </MenuItem>
                 </ContextMenu>
             </chart:MultiChart.ContextMenu>
             <chart:ScatterControlSlim x:Name="analysisScatter"

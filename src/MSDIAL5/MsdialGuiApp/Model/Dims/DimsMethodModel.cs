@@ -36,7 +36,6 @@ namespace CompMs.App.Msdial.Model.Dims
         private readonly FilePropertiesModel _projectBaseParameter;
         private readonly IMessageBroker _broker;
         private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _peakSpotFiltering;
-        private IAnnotationProcess _annotationProcess;
         private FacadeMatchResultEvaluator _matchResultEvaluator;
 
         public DimsMethodModel(
@@ -103,7 +102,8 @@ namespace CompMs.App.Msdial.Model.Dims
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
             var spectraAndReference = new AlignmentMatchedSpectraExportModel(peakSpotSupplyer, storage.DataBaseMapper, analysisFileBeanModelCollection.IncludedAnalysisFiles, CompoundSearcherCollection.BuildSearchers(storage.DataBases, storage.DataBaseMapper));
-            AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, spectraAndReference, }, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam);
+
+            AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, spectraAndReference, }, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam, broker);
 
             ParameterExportModel = new ParameterExportModel(storage.DataBases, storage.Parameter, broker);
         }
@@ -112,7 +112,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public IMsdialDataStorage<MsdialDimsParameter> Storage { get; }
         public StudyContextModel StudyContext { get; }
 
-        public DimsAnalysisModel AnalysisModel {
+        public DimsAnalysisModel? AnalysisModel {
             get => _analysisModel;
             private set {
                 var old = _analysisModel;
@@ -121,9 +121,9 @@ namespace CompMs.App.Msdial.Model.Dims
                 }
             }
         }
-        private DimsAnalysisModel _analysisModel;
+        private DimsAnalysisModel? _analysisModel;
 
-        public DimsAlignmentModel AlignmentModel {
+        public DimsAlignmentModel? AlignmentModel {
             get => _alignmentModel;
             private set {
                 var old = _alignmentModel;
@@ -132,7 +132,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 }
             }
         }
-        private DimsAlignmentModel _alignmentModel;
+        private DimsAlignmentModel? _alignmentModel;
 
         public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; }
         private IDataProviderFactory<AnalysisFileBeanModel> ProviderFactory2 => ProviderFactory.ContraMap((AnalysisFileBeanModel file) => file.File);
@@ -152,18 +152,19 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public override async Task RunAsync(ProcessOption processOption, CancellationToken token) {
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
+            IAnnotationProcess annotationProcess;
             if (Storage.Parameter.TargetOmics == TargetOmics.Lipidomics && 
                 (Storage.Parameter.CollistionType == CollisionType.EIEIO || Storage.Parameter.CollistionType == CollisionType.OAD || Storage.Parameter.CollistionType == CollisionType.EID)) {
-                _annotationProcess = BuildEadLipidomicsAnnotationProcess();
+                annotationProcess = BuildEadLipidomicsAnnotationProcess();
             }
             else {
-                _annotationProcess = BuildAnnotationProcess();
+                annotationProcess = BuildAnnotationProcess();
             }
 
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification)) {
                 var usable = Math.Max(Storage.Parameter.ProcessBaseParam.UsableNumThreads / 2, 1);
-                var processor = new ProcessFile(ProviderFactory, Storage, _annotationProcess, _matchResultEvaluator);
+                var processor = new ProcessFile(ProviderFactory, Storage, annotationProcess, _matchResultEvaluator);
                 var runner = new ProcessRunner(processor);
                 if (processOption.HasFlag(ProcessOption.PeakSpotting)) {
                     if (!RunProcessAll(Storage.AnalysisFiles, usable, runner)) {

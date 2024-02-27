@@ -1,5 +1,4 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Search;
+﻿using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.CommonMVVM;
@@ -14,12 +13,24 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Search
 {
+    internal abstract class CompoundSearchVM<T> : CompoundSearchVM {
+        private readonly CompoundSearchModel<T> _model;
+
+        public CompoundSearchVM(CompoundSearchModel<T> model) : base(model)
+        {
+            _model = model;
+        }
+
+        public T PeakSpot => _model.PeakSpot;
+    }
+
+
     internal abstract class CompoundSearchVM : ViewModelBase, ICompoundSearchViewModel
     {
         protected static readonly double MassEPS = 1e-10;
-        private readonly CompoundSearchModel _model;
+        private readonly ICompoundSearchModel _model;
 
-        public CompoundSearchVM(CompoundSearchModel model) {
+        public CompoundSearchVM(ICompoundSearchModel model) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
@@ -55,17 +66,15 @@ namespace CompMs.App.Msdial.ViewModel.Search
 
         public IList SearchMethods => _model.SearchMethods;
 
-        public ReactivePropertySlim<object> SearchMethod { get; }
+        public ReactivePropertySlim<object?> SearchMethod { get; }
 
-        public ReadOnlyReactivePropertySlim<MsRefSearchParameterBaseViewModel> ParameterViewModel { get; }
+        public ReadOnlyReactivePropertySlim<MsRefSearchParameterBaseViewModel?> ParameterViewModel { get; }
 
         public IFileBean File => _model.File;
 
-        public IPeakSpotModel PeakSpot => _model.PeakSpot;
+        public ReadOnlyReactivePropertySlim<IReadOnlyList<ICompoundResult>?> Compounds { get; }
 
-        public ReadOnlyReactivePropertySlim<IReadOnlyList<ICompoundResult>> Compounds { get; }
-
-        public ReactivePropertySlim<ICompoundResult> SelectedCompound { get; }
+        public ReactivePropertySlim<ICompoundResult?> SelectedCompound { get; }
 
         public ReactiveCommand SetConfidenceCommand { get; }
 

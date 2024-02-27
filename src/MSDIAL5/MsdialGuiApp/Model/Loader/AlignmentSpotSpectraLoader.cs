@@ -1,8 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Service;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using Reactive.Bindings;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,18 +33,21 @@ namespace CompMs.App.Msdial.Model.Loader
             _analysisFiles = analysisFiles ?? throw new ArgumentNullException(nameof(analysisFiles));
         }
 
-        public Dictionary<AnalysisFileBeanModel, ReadOnlyReactivePropertySlim<MsSpectrum>> LoadSpectraAsObservable(AnalysisFileBeanModelCollection files, IObservable<AlignmentSpotPropertyModel> target) {
+        public Dictionary<AnalysisFileBeanModel, ReadOnlyReactivePropertySlim<MsSpectrum>> LoadSpectraAsObservable(AnalysisFileBeanModelCollection files, IObservable<AlignmentSpotPropertyModel?> target) {
             return files.AnalysisFiles.ToDictionary(
                 file => file,
-                file => _loaders.GetObservableSpectrum(file, target).Select(spectrum => new MsSpectrum(spectrum)).ToReadOnlyReactivePropertySlim());
+                file => _loaders.GetObservableSpectrum(file, target).Select(spectrum => new MsSpectrum(spectrum)).ToReadOnlyReactivePropertySlim(new MsSpectrum(new List<SpectrumPeak>())));
         }
 
         public IObservable<MsSpectrum> LoadReferenceSpectrumAsObservable(MsScanMatchResult matchResult) {
             return _referenceLoader.LoadSpectrumAsObservable(matchResult).Select(s => new MsSpectrum(s));
         }
 
-        public async Task<MatchedSpectra> GetMatchedSpectraMatrixsAsync(AlignmentSpotPropertyModel target, MsScanMatchResult result) {
+        public async Task<MatchedSpectra?> GetMatchedSpectraMatrixsAsync(AlignmentSpotPropertyModel target, MsScanMatchResult result) {
             var scorer = _compoundSearchers.GetMs2ScanMatching(result);
+            if (scorer is null) {
+                return null;
+            }
             var spectraTask = _loaders.GetCurrentSpectraAsync(_analysisFiles.AnalysisFiles, target);
             var referenceTask = _referenceLoader.LoadSpectrumAsObservable(target.ScanMatchResult).FirstAsync().ToTask();
             await Task.WhenAll(spectraTask, referenceTask).ConfigureAwait(false);

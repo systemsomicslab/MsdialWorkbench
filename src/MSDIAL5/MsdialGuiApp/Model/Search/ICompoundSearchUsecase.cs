@@ -9,9 +9,9 @@ namespace CompMs.App.Msdial.Model.Search
     {
         IList SearchMethods { get; }
 
-        object SearchMethod { get; set; }
+        object? SearchMethod { get; set; }
 
-        MsRefSearchParameterBase SearchParameter { get; }
+        MsRefSearchParameterBase? SearchParameter { get; }
 
         IReadOnlyList<TCompoundResult> Search(TTarget target);
     }

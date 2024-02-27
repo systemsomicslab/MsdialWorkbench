@@ -13,7 +13,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
@@ -26,11 +25,21 @@ namespace CompMs.App.Msdial.Model.Statistics
                 throw new ArgumentNullException(nameof(spots));
             }
 
-            var spotModels = spots.Select(spot => new NormalizationSpotPropertyModel(spot));
-            Spots = new ObservableCollection<NormalizationSpotPropertyModel>(spotModels);
+            if (spots is ObservableCollection<AlignmentSpotPropertyModel> oc) {
+                Spots = oc.ToReadOnlyReactiveCollection(spot => new NormalizationSpotPropertyModel(spot)).AddTo(Disposables);
+            }
+            else if (spots is ReadOnlyObservableCollection<AlignmentSpotPropertyModel> roc) {
+                Spots = roc.ToReadOnlyReactiveCollection(spot => new NormalizationSpotPropertyModel(spot)).AddTo(Disposables);
+            }
+            else {
+                var spotModels = spots.Select(spot => new NormalizationSpotPropertyModel(spot));
+                Spots = new ReadOnlyObservableCollection<NormalizationSpotPropertyModel>(new ObservableCollection<NormalizationSpotPropertyModel>(spotModels));
+            }
             TargetMsMethod = targetMsMethod ?? throw new ArgumentNullException(nameof(targetMsMethod));
 
             var ids = Spots.Select(s => s.Id).ToHashSet();
+            Spots.ObserveAddChanged().Subscribe(m => ids.Add(m.Id)).AddTo(Disposables);
+            Spots.ObserveRemoveChanged().Subscribe(m => ids.Remove(m.Id)).AddTo(Disposables);
             var isPositive = new ConcurrentDictionary<NormalizationSpotPropertyModel, byte>();
             var someSpotSet = new Subject<bool>().AddTo(Disposables);
             Spots.ObserveElementProperty(s => s.InternalStandardId)
@@ -50,7 +59,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             SomeSpotSetInternalStandard = someSpotSet.ToReactiveProperty(false).AddTo(Disposables);
         }
 
-        public ObservableCollection<NormalizationSpotPropertyModel> Spots { get; }
+        public ReadOnlyObservableCollection<NormalizationSpotPropertyModel> Spots { get; }
         public TargetMsMethod TargetMsMethod { get; }
 
         public IObservable<bool> SomeSpotSetInternalStandard { get; }

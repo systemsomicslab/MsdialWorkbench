@@ -17,7 +17,7 @@ using System.Text;
 
 namespace CompMs.MsdialCore.Export
 {
-    public class SpectraExport
+    public static class SpectraExport
     {
         public static void SaveSpectraTable(
             ExportSpectraFileFormat spectraFormat, 
@@ -32,7 +32,7 @@ namespace CompMs.MsdialCore.Export
                     SaveSpectraTableAsNistFormat(exportStream, chromPeakFeature, scan.Spectrum, mapper, parameter);
                     break;
                 case ExportSpectraFileFormat.mgf:
-                    SaveSpectraTableAsMgfFormat(exportStream, chromPeakFeature, scan.Spectrum, mapper, parameter);
+                    SaveSpectraTableAsMgfFormat(exportStream, chromPeakFeature, scan.Spectrum);
                     break;
                 case ExportSpectraFileFormat.mat:
                     SaveSpectraTableAsMatFormat(exportStream, chromPeakFeature, scan.Spectrum, spectrumList, mapper, parameter);
@@ -204,9 +204,7 @@ namespace CompMs.MsdialCore.Export
         public static void SaveSpectraTableAsMgfFormat(
             Stream stream,
             ChromatogramPeakFeature chromPeakFeature,
-            IEnumerable<ISpectrumPeak> massSpectra,
-            DataBaseMapper mapper,
-            ParameterBase parameter) {
+            IEnumerable<ISpectrumPeak> massSpectra) {
             using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true)) {
                 sw.WriteLine("BEGIN IONS");
                 WriteChromPeakFeatureInfoAsMgf(sw, chromPeakFeature);
@@ -283,8 +281,7 @@ namespace CompMs.MsdialCore.Export
                 WriteParameterInfoAsNist(sw, parameter);
                 var ms1Spectrum = spectrumList.FirstOrDefault(spec => spec.OriginalIndex == feature.MS1RawSpectrumIdTop);
                 if (ms1Spectrum != null) {
-                    var isotopes = DataAccess.GetIsotopicPeaks(
-                         ms1Spectrum.Spectrum, (float)feature.PrecursorMz, parameter.CentroidMs1Tolerance);
+                    var isotopes = DataAccess.GetIsotopicPeaks(ms1Spectrum.Spectrum, (float)feature.PrecursorMz, parameter.CentroidMs1Tolerance, parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
                     if (!isotopes.IsEmptyOrNull()) {
                         sw.WriteLine("MSTYPE: MS1");
                         WriteSpectrumPeakInfo(sw, isotopes);
@@ -321,6 +318,82 @@ namespace CompMs.MsdialCore.Export
             }
         }
 
+        public static void SaveSpectraTableForGcmsAsMatFormat(Stream stream, IMSScanProperty scan, IMoleculeProperty molecule, IChromatogramPeakFeature peakFeature, ProjectBaseParameter projectParameter) {
+            SaveSpectraTableForGcmsAsMatFormatCore(stream, scan, molecule, peakFeature.Mass, peakFeature.PeakHeightTop, projectParameter);
+        }
+
+        public static void SaveSpectraTableForGcmsAsMatFormat(Stream stream, IMSScanProperty scan, IMoleculeProperty molecule, IChromatogramPeak peak, ProjectBaseParameter projectParameter) {
+            SaveSpectraTableForGcmsAsMatFormatCore(stream, scan, molecule, peak.Mass, peak.Intensity, projectParameter);
+        }
+
+        private static void SaveSpectraTableForGcmsAsMatFormatCore(Stream stream, IMSScanProperty scan, IMoleculeProperty molecule, double quantmass, double peakHeight, ProjectBaseParameter projectParameter) {
+            using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 4096, leaveOpen: true))
+            {
+                sw.Write("NAME: ");
+                sw.WriteLine(scan.ScanID + "-" + scan.ChromXs.RT.Value + "-" + scan.ChromXs.RI.Value + "-" + peakHeight);
+
+                sw.WriteLine("RETENTIONTIME: " + scan.ChromXs.RT.Value);
+                sw.WriteLine("RETENTIONINDEX: " + scan.ChromXs.RI.Value);
+                sw.WriteLine("QUANTMASS: " + quantmass);
+
+                var precursorMz = quantmass;
+                if (scan.Spectrum.Count > 0) {
+                    precursorMz = scan.Spectrum.Max(s => s.Mass);
+                }
+
+                sw.WriteLine("PRECURSORMZ: " + precursorMz);
+
+                sw.WriteLine("PRECURSORTYPE: " + "[M-CH3]+.");
+
+                sw.WriteLine("IONMODE: " + "Positive");
+                sw.WriteLine("SPECTRUMTYPE: Centroid");
+                sw.WriteLine("INTENSITY: " + peakHeight);
+
+                sw.WriteLine("INCHIKEY: " + molecule.InChIKey);
+                sw.WriteLine("SMILES: " + molecule.SMILES);
+                sw.WriteLine("FORMULA: " + molecule.Formula);
+
+                if (projectParameter.FinalSavedDate != default) {
+                    sw.WriteLine("DATE: " + projectParameter.FinalSavedDate.Date);
+                }
+
+                if (!string.IsNullOrEmpty(projectParameter.Authors)) {
+                    sw.WriteLine("AUTHORS: " + projectParameter.Authors);
+                }
+
+                if (!string.IsNullOrEmpty(projectParameter.License)) {
+                    sw.WriteLine("LICENSE: " + projectParameter.License);
+                }
+
+                if (!string.IsNullOrEmpty(projectParameter.CollisionEnergy)) {
+                    sw.WriteLine("COLLISIONENERGY: " + projectParameter.CollisionEnergy);
+                }
+
+                if (!string.IsNullOrEmpty(projectParameter.InstrumentType)) {
+                    sw.WriteLine("INSTRUMENTTYPE: " + projectParameter.InstrumentType);
+                }
+
+                if (!string.IsNullOrEmpty(projectParameter.Instrument)) {
+                    sw.WriteLine("INSTRUMENT: " + projectParameter.Instrument);
+                }
+
+                if (!string.IsNullOrEmpty(projectParameter.Comment)) {
+                    sw.WriteLine("COMMENT: " + projectParameter.Comment);
+                }
+
+                sw.WriteLine("MSTYPE: MS1");
+                sw.WriteLine("Num Peaks: " + scan.Spectrum.Count);
+
+                for (int i = 0; i < scan.Spectrum.Count; i++)
+                    sw.WriteLine(Math.Round(scan.Spectrum[i].Mass, 5) + "\t" + Math.Round(scan.Spectrum[i].Intensity, 0));
+
+                sw.WriteLine("MSTYPE: MS2");
+                sw.WriteLine("Num Peaks: " + scan.Spectrum.Count);
+
+                for (int i = 0; i < scan.Spectrum.Count; i++)
+                    sw.WriteLine(Math.Round(scan.Spectrum[i].Mass, 5) + "\t" + Math.Round(scan.Spectrum[i].Intensity, 0));
+            }
+        }
         private static void WriteIsotopeTrackingFeature(
             StreamWriter sw, 
             AlignmentSpotProperty feature, 
@@ -374,8 +447,7 @@ namespace CompMs.MsdialCore.Export
 
                 var ms1Spectrum = spectrumList.FirstOrDefault(spec => spec.OriginalIndex == feature.MS1RawSpectrumIdTop);
                 if (ms1Spectrum != null) {
-                    var isotopes = DataAccess.GetIsotopicPeaks(
-                         ms1Spectrum.Spectrum, (float)feature.PrecursorMz, parameter.CentroidMs1Tolerance);
+                    var isotopes = DataAccess.GetIsotopicPeaks(ms1Spectrum.Spectrum, (float)feature.PrecursorMz, parameter.CentroidMs1Tolerance, parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
                     if (!isotopes.IsEmptyOrNull()) {
                         sw.WriteLine(">ms1");
                         WriteSpectrumPeakInfo(sw, isotopes);

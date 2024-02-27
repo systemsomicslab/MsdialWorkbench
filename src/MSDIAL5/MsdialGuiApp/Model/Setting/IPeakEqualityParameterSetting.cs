@@ -1,5 +1,6 @@
 ﻿using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialLcImMsApi.Parameter;
 using System.ComponentModel;
@@ -12,6 +13,7 @@ namespace CompMs.App.Msdial.Model.Setting
         float Factor { get; set; }
 
         void Commit();
+        void Update(ParameterBase parameter);
     }
 
     public abstract class PeakEqualityParameterSetting : BindableBase
@@ -46,12 +48,38 @@ namespace CompMs.App.Msdial.Model.Setting
             parameter.RetentionTimeAlignmentTolerance = Tolerance;
             parameter.RetentionTimeAlignmentFactor = Factor;
         }
+
+        public void Update(ParameterBase parameter) {
+            Tolerance = parameter.AlignmentBaseParam.RetentionTimeAlignmentTolerance;
+            Factor = parameter.AlignmentBaseParam.RetentionTimeAlignmentFactor;
+        }
+    }
+
+    public class RetentionIndexEqualityParameterSetting : PeakEqualityParameterSetting, IPeakEqualityParameterSetting
+    {
+        private readonly MsdialGcmsParameter _parameter;
+
+        public RetentionIndexEqualityParameterSetting(MsdialGcmsParameter parameter) : base(parameter.RetentionIndexAlignmentTolerance, parameter.RetentionTimeAlignmentFactor) {
+            _parameter = parameter;
+        }
+
+        public void Commit() {
+            _parameter.RetentionIndexAlignmentTolerance = Tolerance;
+            _parameter.AlignmentBaseParam.RetentionTimeAlignmentFactor = Factor;
+        }
+
+        public void Update(ParameterBase parameter) {
+            if (parameter is MsdialGcmsParameter gcms) {
+                Tolerance = gcms.RetentionIndexAlignmentTolerance;
+                Factor = gcms.AlignmentBaseParam.RetentionTimeAlignmentFactor;
+            }
+        }
     }
 
     public class DriftTimeEqualityParameterSetting : PeakEqualityParameterSetting, IPeakEqualityParameterSetting
     {
-        private readonly MsdialLcImMsParameter lcimmsParameter;
-        private readonly MsdialImmsParameter immsParameter;
+        private readonly MsdialLcImMsParameter? lcimmsParameter;
+        private readonly MsdialImmsParameter? immsParameter;
 
         public DriftTimeEqualityParameterSetting(MsdialLcImMsParameter parameter) : base(parameter.DriftTimeAlignmentTolerance, parameter.DriftTimeAlignmentFactor) {
             lcimmsParameter = parameter;
@@ -71,6 +99,19 @@ namespace CompMs.App.Msdial.Model.Setting
                 immsParameter.DriftTimeAlignmentFactor = Factor;
             }
         }
+
+        public void Update(ParameterBase parameter) {
+            switch (parameter) {
+                case MsdialLcImMsParameter lcimms:
+                    Tolerance = lcimms.DriftTimeAlignmentTolerance;
+                    Factor = lcimms.DriftTimeAlignmentFactor;
+                    break;
+                case MsdialImmsParameter imms:
+                    Tolerance = imms.DriftTimeAlignmentTolerance;
+                    Factor = imms.DriftTimeAlignmentFactor;
+                    break;
+            }
+        }
     }
 
     public class Ms1EqualityParameterSetting : PeakEqualityParameterSetting, IPeakEqualityParameterSetting
@@ -84,6 +125,11 @@ namespace CompMs.App.Msdial.Model.Setting
         public void Commit() {
             parameter.Ms1AlignmentTolerance = Tolerance;
             parameter.Ms1AlignmentFactor = Factor;
+        }
+
+        public void Update(ParameterBase parameter) {
+            Tolerance = parameter.AlignmentBaseParam.Ms1AlignmentTolerance;
+            Factor = parameter.AlignmentBaseParam.Ms1AlignmentFactor;
         }
     }
 }

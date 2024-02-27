@@ -1,0 +1,284 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Gcms.GcmsAnalysisCompoundSearchView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Gcms"
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Gcms"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type={x:Type vm:GcmsAnalysisCompoundSearchViewModel}}"
+             d:DesignHeight="720" d:DesignWidth="1280">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <setting:AnnotatorDataTemplateSelector xmlns:setting="clr-namespace:CompMs.App.Msdial.View.Setting"
+                                                   x:Key="AnnotatorSettingTemplateSelector"/>
+            <Style TargetType="{x:Type ui:LabeledContent}" BasedOn="{StaticResource {x:Type ui:LabeledContent}}">
+                <Setter Property="KeyboardNavigation.TabNavigation" Value="None"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5*" />
+            <ColumnDefinition Width="2*" />
+        </Grid.ColumnDefinitions>
+        
+        <Grid Grid.Column="0">
+            
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Orientation="Horizontal"
+                        Margin="8,8,8,0"
+                        Grid.Row="0">
+                <StackPanel.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Width" Value="85"/>
+                        <Setter Property="Height" Value="25"/>
+                        <Setter Property="Margin" Value="8,0"/>
+                    </Style>
+                </StackPanel.Resources>
+
+                <TextBlock Text="Change annotation:"
+                           VerticalAlignment="Center"
+                           Margin="8,0"/>
+                <Button Content="Confidence" Command="{Binding SetConfidenceCommand, Mode=OneTime}" Click="Ok_Click"/>
+                <Button Content="Unsettled" Command="{Binding SetUnsettledCommand, Mode=OneTime}" Click="Ok_Click"/>
+                <Button Content="Unknown" Command="{Binding SetUnknownCommand, Mode=OneTime}" Click="Ok_Click"/>
+                <Button Content="Close" Click="Cancel_Click"/>
+
+            </StackPanel>
+
+            <StackPanel Margin="8"
+                        Grid.Row="1">
+                <!--
+                <ui:LabeledContent PrependLabel="Select annotation method:"
+                                   HorizontalAlignment="Left"
+                                   Margin="4">
+                    <ComboBox ItemsSource="{Binding CompoundSearchers}"
+                              SelectedItem="{Binding CompoundSearcher.Value}"
+                              DisplayMemberPath="Id"
+                              VerticalAlignment="Center"
+                              Width="200"/>
+                </ui:LabeledContent>
+                -->
+
+                <StackPanel Orientation="Horizontal"
+                            Margin="4">
+                    <ui:LabeledContent PrependLabel="MS1 tol. [Da]:" Height="25">
+                        <TextBox Name="TextBox_Ms1Tolerance"
+                                 DataContext="{Binding ParameterViewModel.Value}"
+                                 Text="{Binding Ms1Tolerance.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Validation.ErrorTemplate="{StaticResource BasicErrorTemplate}"
+                                 HorizontalAlignment="Left" VerticalAlignment="Center"
+                                 Width="70"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Rt tol. [min]:"
+                                       Margin="10,0,0,0"
+                                       Height="25" >
+                        <TextBox Name="TextBox_RtTolerance"
+                                 DataContext="{Binding ParameterViewModel.Value}"
+                                 Text="{Binding RtTolerance.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Validation.ErrorTemplate="{StaticResource BasicErrorTemplate}"
+                                 HorizontalAlignment="Left" VerticalAlignment="Center"
+                                 Width="70"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Ri tol.:"
+                                       Margin="10,0,0,0"
+                                       Height="25" >
+                        <TextBox Name="TextBox_RiTolerance"
+                                 DataContext="{Binding ParameterViewModel.Value}"
+                                 Text="{Binding RiTolerance.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Validation.ErrorTemplate="{StaticResource BasicErrorTemplate}"
+                                 HorizontalAlignment="Left" VerticalAlignment="Center"
+                                 Width="70"/>
+                    </ui:LabeledContent>
+
+
+                    <ToggleButton x:Name="ToggleAdvancedSetting"
+                                  VerticalAlignment="Center"
+                                  Margin="4,0">
+                        <ToggleButton.Style>
+                            <Style TargetType="ToggleButton">
+                                <Setter Property="Foreground" Value="Blue"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Foreground" Value="Red"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ToggleButton.Style>
+                        <ToggleButton.Template>
+                            <ControlTemplate TargetType="ToggleButton">
+                                <TextBlock Text="Advanced"
+                                           TextDecorations="Underline"
+                                           Foreground="{TemplateBinding Foreground}"/>
+                            </ControlTemplate>
+                        </ToggleButton.Template>
+                    </ToggleButton>
+                    <Popup IsOpen="{Binding IsChecked, ElementName=ToggleAdvancedSetting}"
+                           StaysOpen="False"
+                           Placement="Bottom"
+                           PlacementTarget="{Binding ElementName=ToggleAdvancedSetting, Mode=OneTime}">
+                        <Border Background="White" BorderBrush="Black">
+                            <Border.Resources>
+                                <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource AlignedContent}"/>
+                            </Border.Resources>
+                            <ContentControl Content="{Binding}"
+                                            ContentTemplateSelector="{StaticResource AnnotatorSettingTemplateSelector}"/>
+                        </Border>
+                    </Popup>
+                </StackPanel>
+
+                <Button Name="Button_ReAnalysis"
+                        Content="Search"
+                        Command="{Binding SearchCommand, Mode=OneTime}"
+                        Width="100" Height="25"
+                        Margin="4"
+                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <WrapPanel Orientation="Horizontal"
+                        Margin="8"
+                        Grid.Row="2">
+                <ContentControl Content="{Binding File, Mode=OneTime}"
+                                ContentTemplate="{StaticResource FileInfoTemplate}"
+                                Margin="8"/>
+                <ContentControl Content="{Binding PeakSpot, Mode=OneTime}"
+                                ContentTemplate="{StaticResource SpectrumInfoTemplate}"
+                                Margin="8"/>
+            </WrapPanel>
+
+            <Grid Margin="8" Grid.Row="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Label Content="Library information" FontStyle="Italic"
+                       HorizontalAlignment="Left" VerticalAlignment="Top"
+                       Grid.Row="0"/>
+                <DataGrid Name="DataGrid_LibraryInformation"
+                          ItemsSource="{Binding Path=Compounds.Value, IsAsync=True}"
+                          SelectedItem="{Binding SelectedCompound.Value, Mode=OneWayToSource}"
+                          IsSynchronizedWithCurrentItem="True"
+                          CanUserAddRows="False" CanUserDeleteRows="False"
+                          CanUserReorderColumns="False" CanUserSortColumns="True"
+                          SelectionUnit="FullRow" IsReadOnly="True"
+                          HeadersVisibility="All" AutoGenerateColumns="False"
+                          Grid.Row="1">
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader" >
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Library ID" Width="*" Binding="{Binding Path=LibraryID}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Name" Width="2*" Binding="{Binding Path=Name}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Rt [min]" Width="*" Binding="{Binding Path=ChromXs.RT.Value, StringFormat=F1}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Ri" Width="*" Binding="{Binding Path=ChromXs.RI.Value, StringFormat=F1}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Dot prod." Width="*" Binding="{Binding Path=WeightedDotProduct, StringFormat=F2}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Rev. prod." Width="*" Binding="{Binding Path=ReverseDotProduct, StringFormat=F2}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Presense" Width="*" Binding="{Binding Path=Presence, StringFormat=F2}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Instrument" Width="*" Binding="{Binding Path=Instrument}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Comment" Width="2*" Binding="{Binding Path=Comment}" IsReadOnly="True" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+
+        </Grid>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Margin="5,10" Grid.Row="0">
+                <StackPanel.Resources>
+                    <Style TargetType="ui:LabeledContent" x:Key="base">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ui:LabeledContent">
+                                    <Grid HorizontalAlignment="Stretch">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="240"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Label Content="{TemplateBinding PrependLabel}"
+                                               VerticalAlignment="Center" VerticalContentAlignment="Center"
+                                               Margin="0,0,10,0"
+                                               Grid.Column="0"/>
+                                        <ContentPresenter VerticalAlignment="Center"
+                                                          Grid.Column="1"/>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource base}">
+                        <Setter Property="ContentTemplate">
+                            <Setter.Value>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Path=Content, RelativeSource={RelativeSource TemplatedParent}}"
+                                             Style="{StaticResource ReadOnlyTextBox}"/>
+                                </DataTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    <Style TargetType="ui:LabeledContent" x:Key="F4" BasedOn="{StaticResource base}">
+                        <Setter Property="ContentTemplate">
+                            <Setter.Value>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Path=Content, StringFormat=F4, RelativeSource={RelativeSource TemplatedParent}}"
+                                             Style="{StaticResource ReadOnlyTextBox}"/>
+                                </DataTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+
+                </StackPanel.Resources>
+                    <ui:LabeledContent PrependLabel="Selected Library ID:"
+                                       Content="{Binding Compounds.Value/LibraryID, Mode=OneWay}"/>
+                    <ui:LabeledContent PrependLabel="Name:"
+                                       Content="{Binding Compounds.Value/Name, Mode=OneWay}"/>
+                    <ui:LabeledContent PrependLabel="EI similarity score:"
+                                       Content="{Binding Compounds.Value/WeightedDotProduct, Mode=OneWay}"
+                                       Style="{StaticResource F4}"/>
+                    <ui:LabeledContent PrependLabel="Rt similarity score:"
+                                       Content="{Binding Compounds.Value/RtSimilarity, Mode=OneWay}"
+                                       Style="{StaticResource F4}"/>
+                    <ui:LabeledContent PrependLabel="Ri similarity score:"
+                                       Content="{Binding Compounds.Value/RiSimilarity, Mode=OneWay}"
+                                       Style="{StaticResource F4}"/>
+                    <ui:LabeledContent PrependLabel="Dot product similarity score:"
+                                       Content="{Binding Compounds.Value/SimpleDotProduct, Mode=OneWay}"
+                                       Style="{StaticResource F4}"/>
+                    <ui:LabeledContent PrependLabel="Reverse dot product similarity score:"
+                                       Content="{Binding Compounds.Value/ReverseDotProduct, Mode=OneWay}"
+                                       Style="{StaticResource F4}"/>
+                    <ui:LabeledContent PrependLabel="Total score:"
+                                       Content="{Binding Compounds.Value/TotalScore, StringFormat=F4, Mode=OneWay}"
+                                       Style="{StaticResource F4}"/>
+            </StackPanel>
+
+            <chart:MsSpectrumView DataContext="{Binding MsSpectrumViewModel, Mode=OneTime}" Margin="0,0,5,0" Grid.Row="1"/>
+        </Grid>
+    </Grid>
+</UserControl>

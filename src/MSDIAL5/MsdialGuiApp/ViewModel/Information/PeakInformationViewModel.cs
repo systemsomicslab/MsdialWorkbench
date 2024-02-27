@@ -1,5 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Information;
-using CompMs.Common.DataObj.Property;
+using CompMs.App.Msdial.Utility;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -21,23 +21,25 @@ namespace CompMs.App.Msdial.ViewModel.Information
             InChIKey = model.ObserveProperty(m => m.InChIKey).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             Comment = model.ObserveProperty(m => m.Comment).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             PeakPoints = model.ObserveProperty(m => m.PeakPoints)
+                .SkipNull()
                 .Select(ps => ps.ToReadOnlyReactiveCollection(m => new PeakPointViewModel(m)))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             PeakAmounts = model.ObserveProperty(m => m.PeakAmounts)
+                .SkipNull()
                 .Select(ps => ps.ToReadOnlyReactiveCollection(m => new PeakAmountViewModel(m)))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
         }
 
-        public ReadOnlyReactivePropertySlim<string> Annotation { get; }
-        public ReadOnlyReactivePropertySlim<string> AdductIonName { get; }
-        public ReadOnlyReactivePropertySlim<string> Formula { get; }
-        public ReadOnlyReactivePropertySlim<string> Ontology { get; }
-        public ReadOnlyReactivePropertySlim<string> InChIKey { get; }
-        public ReadOnlyReactivePropertySlim<string> Comment { get; }
+        public ReadOnlyReactivePropertySlim<string?> Annotation { get; }
+        public ReadOnlyReactivePropertySlim<string?> AdductIonName { get; }
+        public ReadOnlyReactivePropertySlim<string?> Formula { get; }
+        public ReadOnlyReactivePropertySlim<string?> Ontology { get; }
+        public ReadOnlyReactivePropertySlim<string?> InChIKey { get; }
+        public ReadOnlyReactivePropertySlim<string?> Comment { get; }
         public ReadOnlyReactivePropertySlim<ReadOnlyReactiveCollection<PeakPointViewModel>> PeakPoints { get; }
         public ReadOnlyReactivePropertySlim<ReadOnlyReactiveCollection<PeakAmountViewModel>> PeakAmounts { get; }
     }
@@ -48,8 +50,8 @@ namespace CompMs.App.Msdial.ViewModel.Information
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
-            Label = model.ObserveProperty(m => m.Label).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            Point = model.ObserveProperty(m => m.Point).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            Label = model.ObserveProperty(m => m.Label).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposables);
+            Point = model.ObserveProperty(m => m.Point).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposables);
         }
 
         public ReadOnlyReactivePropertySlim<string> Label { get; }
@@ -62,7 +64,7 @@ namespace CompMs.App.Msdial.ViewModel.Information
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
-            Label = model.ObserveProperty(m => m.Label).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            Label = model.ObserveProperty(m => m.Label).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposables);
             Amount = model.ObserveProperty(m => m.Amount).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
 

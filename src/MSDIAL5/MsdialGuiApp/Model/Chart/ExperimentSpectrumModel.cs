@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    public class ExperimentSpectrumModel : BindableBase {
+    internal class ExperimentSpectrumModel : BindableBase {
         private readonly IDataProvider provider;
 
         public ExperimentSpectrumModel(
@@ -38,11 +38,11 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public RangeSelectableChromatogramModel RangeSelectableChromatogramModel { get; }
         public IFileBean AnalysisFile { get; }
-        public SummarizedSpectrumModel Ms1Spectrum {
+        public SummarizedSpectrumModel? Ms1Spectrum {
             get => ms1Spectrum;
             set => SetProperty(ref ms1Spectrum, value);
         }
-        private SummarizedSpectrumModel ms1Spectrum;
+        private SummarizedSpectrumModel? ms1Spectrum;
 
         public ObservableCollection<SummarizedSpectrumModel> Ms2Spectrums { get; }
 
@@ -76,7 +76,7 @@ namespace CompMs.App.Msdial.Model.Chart
         }
 
         public void SaveSpectrumAsNist(string mspFileName) {
-            var comment = Peak?.Comment ?? string.Empty;
+            var comment = Peak.Comment ?? string.Empty;
             using (var fs = File.Open(mspFileName, FileMode.Create, FileAccess.Write, FileShare.None)) {
                 foreach (var spectra in Ms2Spectrums) {
                     Peak.Comment = $"{comment}|ExperimentId={spectra.ExperimentId}";

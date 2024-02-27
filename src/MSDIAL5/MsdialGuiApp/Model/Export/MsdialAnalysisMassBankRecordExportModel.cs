@@ -27,11 +27,11 @@ namespace CompMs.App.Msdial.Model.Export
 
         public string Label { get; } = "MassBank record";
 
-        public string ContributorID {
+        public string? ContributorID {
             get => _contributorID;
             set => SetProperty(ref _contributorID, value);
         }
-        private string _contributorID;
+        private string? _contributorID;
 
         public bool ShouldExport {
             get => _shouldExport;

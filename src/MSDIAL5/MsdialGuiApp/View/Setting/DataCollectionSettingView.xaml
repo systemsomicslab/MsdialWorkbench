@@ -241,6 +241,10 @@
                     </GroupBox.Header>
 
                     <StackPanel>
+                        <ui:LabeledContent PrependLabel="Maximum number of isotopes:"
+                                           ToolTip="Set the maximum number of isotope peaks to be detected from the MS1 spectrum. This primarily affects the exported isotope spectra.">
+                            <TextBox Text="{Binding MaxIsotopesDetectedInMs1Spectrum.Value}" IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                        </ui:LabeledContent>
                         <ui:LabeledContent PrependLabel="Maximum charged number:">
                             <TextBox Text="{Binding MaxChargeNumber.Value}"
                                      IsReadOnly="{Binding IsReadOnly, Mode=OneTime}">

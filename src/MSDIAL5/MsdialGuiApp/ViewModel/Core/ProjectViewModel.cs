@@ -25,9 +25,9 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 .AddTo(Disposables);
         }
 
-        public ReactivePropertySlim<IDatasetModel> CurrentDataset { get; }
+        public ReactivePropertySlim<IDatasetModel?> CurrentDataset { get; }
         public ReadOnlyReactiveCollection<IDatasetModel> Datasets { get; }
 
-        public ReadOnlyReactivePropertySlim<DatasetViewModel> CurrentDatasetViewModel { get; }
+        public ReadOnlyReactivePropertySlim<DatasetViewModel?> CurrentDatasetViewModel { get; }
     }
 }

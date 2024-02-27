@@ -34,9 +34,9 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="150" />
             </Grid.ColumnDefinitions>
-            <chart:MultiChart HorizontalAxis="{Binding ChromatogramsViewModel.HorizontalAxis}"
-                              VerticalAxis="{Binding ChromatogramsViewModel.VerticalAxis}"
-                              HorizontalTitle="{Binding ChromatogramsViewModel.HorizontalTitle}"
+            <chart:MultiChart HorizontalAxis="{Binding ChromatogramsViewModel.HorizontalSelector.SelectedAxisItem.AxisManager}"
+                              VerticalAxis="{Binding ChromatogramsViewModel.VerticalSelector.SelectedAxisItem.AxisManager}"
+                              HorizontalTitle="{Binding ChromatogramsViewModel.HorizontalSelector.SelectedAxisItem.GraphLabel}"
                               GraphTitle="{Binding ChromatogramsViewModel.GraphTitle}"
                               ItemsSource="{Binding ChromatogramsViewModel.DisplayChromatograms}"
                               Background="WhiteSmoke"
@@ -47,15 +47,15 @@
                             <Setter.Value>
                                 <MultiBinding StringFormat="{}{0}({1})">
                                     <MultiBinding.Bindings>
-                                        <Binding Path="ChromatogramsViewModel.VerticalTitle"/>
-                                        <Binding Path="ChromatogramsViewModel.VerticalAxis.UnitLabel"/>
+                                        <Binding Path="ChromatogramsViewModel.VerticalSelector.SelectedAxisItem.GraphLabel"/>
+                                        <Binding Path="ChromatogramsViewModel.VerticalSelector.SelectedAxisItem.AxisManager.UnitLabel"/>
                                     </MultiBinding.Bindings>
                                 </MultiBinding>
                             </Setter.Value>
                         </Setter>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding ChromatogramsViewModel.VerticalAxis.UnitLabel, TargetNullValue=''}" Value="">
-                                <Setter Property="VerticalTitle" Value="{Binding ChromatogramsViewModel.VerticalTitle}"/>
+                            <DataTrigger Binding="{Binding ChromatogramsViewModel.VerticalSelector.SelectedAxisItem.AxisManager.UnitLabel, TargetNullValue=''}" Value="">
+                                <Setter Property="VerticalTitle" Value="{Binding ChromatogramsViewModel.VerticalSelector.SelectedAxisItem.GraphLabel}"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>

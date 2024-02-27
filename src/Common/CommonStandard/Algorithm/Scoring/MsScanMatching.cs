@@ -1,21 +1,17 @@
-﻿using Accord.Math.Random;
-using CompMs.Common.Algorithm.Function;
+﻿using CompMs.Common.Algorithm.Function;
 using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
-using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Lipidomics;
 using CompMs.Common.Parameter;
 using CompMs.Common.Proteomics.DataObj;
-using CompMs.Common.Utility;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CompMs.Common.Algorithm.Scoring {
    
@@ -472,6 +468,22 @@ namespace CompMs.Common.Algorithm.Scoring {
             }
             else {
                 result.TotalScore = (float)GetTotalSimilarity(result.RtSimilarity, msMatchedScore, param.IsUseTimeForAnnotationScoring);
+            }
+            result.IsReferenceMatched = result.IsSpectrumMatch
+                && result.TotalScore > param.TotalScoreCutoff
+                && (!param.IsUseTimeForAnnotationScoring || (isUseRetentionIndex && result.IsRiMatch) || (!isUseRetentionIndex && result.IsRtMatch));
+            return result;
+        }
+
+        public static MsScanMatchResult CompareEIMSScanProperties(IMSScanProperty scan1, IMSScanProperty scan2,
+            MsRefSearchParameterBase param, double eiFactor, double riFactor, bool isUseRetentionIndex = false) {
+            var result = CompareMSScanProperties(scan1, scan2, param, param.Ms1Tolerance, param.MassRangeBegin, param.MassRangeEnd);
+            var msMatchedScore = GetIntegratedSpectraSimilarity(result);
+            if (isUseRetentionIndex) {
+                result.TotalScore = (float)GetTotalSimilarity(result.RiSimilarity, riFactor, msMatchedScore, eiFactor);
+            }
+            else {
+                result.TotalScore = (float)GetTotalSimilarity(result.RtSimilarity, riFactor, msMatchedScore, eiFactor);
             }
             return result;
         }
@@ -2879,8 +2891,9 @@ namespace CompMs.Common.Algorithm.Scoring {
             int remaindIndexM = 0, remaindIndexL = 0;
             int counter = 0;
 
-            List<double[]> measuredMassList = new List<double[]>();
-            List<double[]> referenceMassList = new List<double[]>();
+            SummedPeak[] measuredMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
+            SummedPeak[] referenceMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
+            int size = 0;
 
             double sumMeasure = 0, sumReference = 0, baseM = double.MinValue, baseR = double.MinValue;
 
@@ -2902,38 +2915,43 @@ namespace CompMs.Common.Algorithm.Scoring {
                 }
 
                 if (sumM <= 0) {
-                    measuredMassList.Add(new double[] { focusedMz, sumM });
+                    measuredMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumM);
                     if (sumM > baseM) baseM = sumM;
 
-                    referenceMassList.Add(new double[] { focusedMz, sumL });
+                    referenceMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumL);
                     if (sumL > baseR) baseR = sumL;
                 }
                 else {
-                    measuredMassList.Add(new double[] { focusedMz, sumM });
+                    measuredMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumM);
                     if (sumM > baseM) baseM = sumM;
 
-                    referenceMassList.Add(new double[] { focusedMz, sumL });
+                    referenceMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumL);
                     if (sumL > baseR) baseR = sumL;
 
                     counter++;
                 }
+                size++;
 
                 if (focusedMz + bin > peaks2[peaks2.Count - 1].Mass) break;
                 focusedMz = peaks2[remaindIndexL].Mass;
             }
 
-            if (baseM == 0 || baseR == 0) return 0;
+            if (baseM == 0 || baseR == 0) {
+                ArrayPool<SummedPeak>.Shared.Return(measuredMassBuffer);
+                ArrayPool<SummedPeak>.Shared.Return(referenceMassBuffer);
+                return 0;
+            }
 
             var eSpectrumCounter = 0;
             var lSpectrumCounter = 0;
-            for (int i = 0; i < measuredMassList.Count; i++) {
-                measuredMassList[i][1] = measuredMassList[i][1] / baseM;
-                referenceMassList[i][1] = referenceMassList[i][1] / baseR;
-                sumMeasure += measuredMassList[i][1];
-                sumReference += referenceMassList[i][1];
+            for (int i = 0; i < size; i++) {
+                measuredMassBuffer[i] = new SummedPeak(focusedMz: measuredMassBuffer[i].FocusedMz, intensity: measuredMassBuffer[i].Intensity / baseM);
+                referenceMassBuffer[i] = new SummedPeak(focusedMz: referenceMassBuffer[i].FocusedMz, intensity: referenceMassBuffer[i].Intensity / baseR);
+                sumMeasure += measuredMassBuffer[i].Intensity;
+                sumReference += referenceMassBuffer[i].Intensity;
 
-                if (measuredMassList[i][1] > 0.1) eSpectrumCounter++;
-                if (referenceMassList[i][1] > 0.1) lSpectrumCounter++;
+                if (measuredMassBuffer[i].Intensity > 0.1) eSpectrumCounter++;
+                if (referenceMassBuffer[i].Intensity > 0.1) lSpectrumCounter++;
             }
 
             var peakCountPenalty = 1.0;
@@ -2952,19 +2970,21 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             var cutoff = 0.01;
 
-            for (int i = 0; i < measuredMassList.Count; i++) {
-                if (referenceMassList[i][1] < cutoff)
+            for (int i = 0; i < size; i++) {
+                if (referenceMassBuffer[i].Intensity < cutoff)
                     continue;
 
-                scalarM += measuredMassList[i][1] * measuredMassList[i][0];
-                scalarR += referenceMassList[i][1] * referenceMassList[i][0];
-                covariance += Math.Sqrt(measuredMassList[i][1] * referenceMassList[i][1]) * measuredMassList[i][0];
+                scalarM += measuredMassBuffer[i].Intensity * measuredMassBuffer[i].FocusedMz;
+                scalarR += referenceMassBuffer[i].Intensity * referenceMassBuffer[i].FocusedMz;
+                covariance += Math.Sqrt(measuredMassBuffer[i].Intensity * referenceMassBuffer[i].Intensity) * measuredMassBuffer[i].FocusedMz;
 
                 //scalarM += measuredMassList[i][1];
                 //scalarR += referenceMassList[i][1];
                 //covariance += Math.Sqrt(measuredMassList[i][1] * referenceMassList[i][1]);
             }
 
+            ArrayPool<SummedPeak>.Shared.Return(measuredMassBuffer);
+            ArrayPool<SummedPeak>.Shared.Return(referenceMassBuffer);
             if (scalarM == 0 || scalarR == 0) { return 0; }
             else { return Math.Pow(covariance, 2) / scalarM / scalarR * peakCountPenalty; }
         }
@@ -3005,8 +3025,9 @@ namespace CompMs.Common.Algorithm.Scoring {
             double focusedMz = minMz;
             int remaindIndexM = 0, remaindIndexL = 0;
 
-            List<double[]> measuredMassList = new List<double[]>();
-            List<double[]> referenceMassList = new List<double[]>();
+            SummedPeak[] measuredMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
+            SummedPeak[] referenceMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
+            int size = 0;
 
             double sumMeasure = 0, sumReference = 0, baseM = double.MinValue, baseR = double.MinValue;
 
@@ -3027,19 +3048,20 @@ namespace CompMs.Common.Algorithm.Scoring {
                 }
 
                 if (sumM <= 0 && sumR > 0) {
-                    measuredMassList.Add(new double[] { focusedMz, sumM });
+                    measuredMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumM);
                     if (sumM > baseM) baseM = sumM;
 
-                    referenceMassList.Add(new double[] { focusedMz, sumR });
+                    referenceMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumR);
                     if (sumR > baseR) baseR = sumR;
                 }
                 else {
-                    measuredMassList.Add(new double[] { focusedMz, sumM });
+                    measuredMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumM);
                     if (sumM > baseM) baseM = sumM;
 
-                    referenceMassList.Add(new double[] { focusedMz, sumR });
+                    referenceMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumR);
                     if (sumR > baseR) baseR = sumR;
                 }
+                size++;
 
                 if (focusedMz + bin > Math.Max(peaks1[peaks1.Count - 1].Mass, peaks2[peaks2.Count - 1].Mass)) break;
                 if (focusedMz + bin > peaks2[remaindIndexL].Mass && focusedMz + bin <= peaks1[remaindIndexM].Mass)
@@ -3050,19 +3072,22 @@ namespace CompMs.Common.Algorithm.Scoring {
                     focusedMz = Math.Min(peaks1[remaindIndexM].Mass, peaks2[remaindIndexL].Mass);
             }
 
-            if (baseM == 0 || baseR == 0) return 0;
-
+            if (baseM == 0 || baseR == 0) {
+                ArrayPool<SummedPeak>.Shared.Return(measuredMassBuffer);
+                ArrayPool<SummedPeak>.Shared.Return(referenceMassBuffer);
+                return 0;
+            }
 
             var eSpectrumCounter = 0;
             var lSpectrumCounter = 0;
-            for (int i = 0; i < measuredMassList.Count; i++) {
-                measuredMassList[i][1] = measuredMassList[i][1] / baseM;
-                referenceMassList[i][1] = referenceMassList[i][1] / baseR;
-                sumMeasure += measuredMassList[i][1];
-                sumReference += referenceMassList[i][1];
+            for (int i = 0; i < size; i++) {
+                measuredMassBuffer[i] = new SummedPeak (focusedMz: measuredMassBuffer[i].FocusedMz, intensity: measuredMassBuffer[i].Intensity / baseM);
+                referenceMassBuffer[i] = new SummedPeak (focusedMz: referenceMassBuffer[i].FocusedMz, intensity: referenceMassBuffer[i].Intensity / baseR);
+                sumMeasure += measuredMassBuffer[i].Intensity;
+                sumReference += referenceMassBuffer[i].Intensity;
 
-                if (measuredMassList[i][1] > 0.1) eSpectrumCounter++;
-                if (referenceMassList[i][1] > 0.1) lSpectrumCounter++;
+                if (measuredMassBuffer[i].Intensity > 0.1) eSpectrumCounter++;
+                if (referenceMassBuffer[i].Intensity > 0.1) lSpectrumCounter++;
             }
 
             var peakCountPenalty = 1.0;
@@ -3080,19 +3105,21 @@ namespace CompMs.Common.Algorithm.Scoring {
             else wR = 1 / (sumReference - 0.5);
 
             var cutoff = 0.01;
-            for (int i = 0; i < measuredMassList.Count; i++) {
-                if (measuredMassList[i][1] < cutoff)
+            for (int i = 0; i < size; i++) {
+                if (measuredMassBuffer[i].Intensity < cutoff)
                     continue;
 
-                scalarM += measuredMassList[i][1] * measuredMassList[i][0];
-                scalarR += referenceMassList[i][1] * referenceMassList[i][0];
-                covariance += Math.Sqrt(measuredMassList[i][1] * referenceMassList[i][1]) * measuredMassList[i][0];
+                scalarM += measuredMassBuffer[i].Intensity * measuredMassBuffer[i].FocusedMz;
+                scalarR += referenceMassBuffer[i].Intensity * referenceMassBuffer[i].FocusedMz;
+                covariance += Math.Sqrt(measuredMassBuffer[i].Intensity * referenceMassBuffer[i].Intensity) * measuredMassBuffer[i].FocusedMz;
 
                 //scalarM += measuredMassList[i][1];
                 //scalarR += referenceMassList[i][1];
                 //covariance += Math.Sqrt(measuredMassList[i][1] * referenceMassList[i][1]);
             }
 
+            ArrayPool<SummedPeak>.Shared.Return(measuredMassBuffer);
+            ArrayPool<SummedPeak>.Shared.Return(referenceMassBuffer);
             if (scalarM == 0 || scalarR == 0) { return 0; }
             else { return Math.Pow(covariance, 2) / scalarM / scalarR * peakCountPenalty; }
         }
@@ -3115,8 +3142,9 @@ namespace CompMs.Common.Algorithm.Scoring {
             if (maxMz > massEnd) maxMz = massEnd;
 
 
-            List<double[]> measuredMassList = new List<double[]>();
-            List<double[]> referenceMassList = new List<double[]>();
+            SummedPeak[] measuredMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
+            SummedPeak[] referenceMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
+            int size = 0;
 
             double sumMeasure = 0, sumReference = 0, baseM = double.MinValue, baseR = double.MinValue;
 
@@ -3136,11 +3164,12 @@ namespace CompMs.Common.Algorithm.Scoring {
                     else { remaindIndexL = i; break; }
                 }
 
-                measuredMassList.Add(new double[] { focusedMz, sumM });
+                measuredMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumM);
                 if (sumM > baseM) baseM = sumM;
 
-                referenceMassList.Add(new double[] { focusedMz, sumR });
+                referenceMassBuffer[size] = new SummedPeak(focusedMz: focusedMz, intensity: sumR);
                 if (sumR > baseR) baseR = sumR;
+                size++;
 
                 if (focusedMz + bin > Math.Max(peaks1[peaks1.Count - 1].Mass, peaks2[peaks2.Count - 1].Mass)) break;
                 if (focusedMz + bin > peaks2[remaindIndexL].Mass && focusedMz + bin <= peaks1[remaindIndexM].Mass)
@@ -3151,19 +3180,25 @@ namespace CompMs.Common.Algorithm.Scoring {
                     focusedMz = Math.Min(peaks1[remaindIndexM].Mass, peaks2[remaindIndexL].Mass);
             }
 
-            if (baseM == 0 || baseR == 0) return 0;
-
-            for (int i = 0; i < measuredMassList.Count; i++) {
-                measuredMassList[i][1] = measuredMassList[i][1] / baseM * 999;
-                referenceMassList[i][1] = referenceMassList[i][1] / baseR * 999;
+            if (baseM == 0 || baseR == 0) {
+                ArrayPool<SummedPeak>.Shared.Return(measuredMassBuffer);
+                ArrayPool<SummedPeak>.Shared.Return(referenceMassBuffer);
+                return 0;
             }
 
-            for (int i = 0; i < measuredMassList.Count; i++) {
-                scalarM += measuredMassList[i][1];
-                scalarR += referenceMassList[i][1];
-                covariance += Math.Sqrt(measuredMassList[i][1] * referenceMassList[i][1]);
+            for (int i = 0; i < size; i++) {
+                measuredMassBuffer[i] = new SummedPeak(focusedMz: measuredMassBuffer[i].FocusedMz, intensity: measuredMassBuffer[i].Intensity / baseM * 999);
+                referenceMassBuffer[i] = new SummedPeak(focusedMz: referenceMassBuffer[i].FocusedMz, intensity: referenceMassBuffer[i].Intensity / baseR * 999);
             }
 
+            for (int i = 0; i < size; i++) {
+                scalarM += measuredMassBuffer[i].Intensity;
+                scalarR += referenceMassBuffer[i].Intensity;
+                covariance += Math.Sqrt(measuredMassBuffer[i].Intensity * referenceMassBuffer[i].Intensity);
+            }
+
+            ArrayPool<SummedPeak>.Shared.Return(measuredMassBuffer);
+            ArrayPool<SummedPeak>.Shared.Return(referenceMassBuffer);
             if (scalarM == 0 || scalarR == 0) { return 0; }
             else {
                 return Math.Pow(covariance, 2) / scalarM / scalarR;
@@ -3539,6 +3574,25 @@ namespace CompMs.Common.Algorithm.Scoring {
             else {
                 return (0.6 * eiSimilarity + 0.4 * rtSimilarity);
             }
+        }
+
+        public static double GetTotalSimilarity(double rtSimilarity, double rtFactor, double eiSimilarity, double eiFactor, bool isUseRT = true) {
+            if (rtSimilarity < 0 || !isUseRT) {
+                return eiSimilarity;
+            }
+            else {
+                return eiFactor * eiSimilarity + rtFactor * rtSimilarity;
+            }
+        }
+
+        readonly struct SummedPeak {
+            public SummedPeak(double focusedMz, double intensity) {
+                FocusedMz = focusedMz;
+                Intensity = intensity;
+            }
+
+            public readonly double FocusedMz;
+            public readonly double Intensity;
         }
     }
 }

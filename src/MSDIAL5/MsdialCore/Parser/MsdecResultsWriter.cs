@@ -12,7 +12,7 @@ namespace CompMs.MsdialCore.Parser {
         public const int DCL_VERSION = 1;
 
         #region Writer
-        public static void Write(string file, List<MSDecResult> results, bool isAnnotationInfoIncluded = false) {
+        public static void Write(string file, IReadOnlyList<MSDecResult> results, bool isAnnotationInfoIncluded = false) {
             using (var fs = File.Open(file, FileMode.Create, FileAccess.ReadWrite)) {
                 var totalPeakNumber = results.Count;
                 var seekPointer = new List<long>();
@@ -29,7 +29,7 @@ namespace CompMs.MsdialCore.Parser {
             }
         }
 
-        public static void MSDecWriterVer1(FileStream fs, MSDecResult msdecResult, bool isAnnotationInfoIncluded = false) {
+        public static void MSDecWriterVer1(Stream fs, MSDecResult msdecResult, bool isAnnotationInfoIncluded = false) {
             //Scan
             SaveScanData(fs, msdecResult);
 
@@ -56,7 +56,7 @@ namespace CompMs.MsdialCore.Parser {
                 SaveAnnotationInfo(fs, msdecResult); // for gcms only
         }
 
-        private static void SaveModelMasses(FileStream fs, MSDecResult msdecResult) {
+        private static void SaveModelMasses(Stream fs, MSDecResult msdecResult) {
             msdecResult.ModelMasses.ForEach(mz => {
                 fs.Write(BitConverter.GetBytes(mz), 0, ByteConvertion.ToByteCount(mz));
             });
@@ -66,7 +66,7 @@ namespace CompMs.MsdialCore.Parser {
             return 8;
         }
 
-        private static void SaveBasePeaks(FileStream fs, MSDecResult msdecResult) {
+        private static void SaveBasePeaks(Stream fs, MSDecResult msdecResult) {
             for (int i = 0; i < msdecResult.ModelPeakChromatogram.Count; i++) {
                 var peak = msdecResult.ModelPeakChromatogram[i];
                 fs.Write(BitConverter.GetBytes(peak.ID), 0, ByteConvertion.ToByteCount(peak.ID));
@@ -81,7 +81,7 @@ namespace CompMs.MsdialCore.Parser {
         }
 
 
-        private static void SaveSpectra(FileStream fs, MSDecResult msdecResult) {
+        private static void SaveSpectra(Stream fs, MSDecResult msdecResult) {
             for (int i = 0; i < msdecResult.Spectrum.Count; i++) {
                 var peak = msdecResult.Spectrum[i];
                 fs.Write(BitConverter.GetBytes(peak.Mass), 0, ByteConvertion.ToByteCount(peak.Mass));
@@ -95,7 +95,7 @@ namespace CompMs.MsdialCore.Parser {
             return 20; // 8(double SpectrumPeak.Mass) + 8(double SpectrumPeak.Intensity) + 4(int SpectrumPeak.PeakQuality)
         }
 
-        private static void SaveCounters(FileStream fs, MSDecResult msdecResult) {
+        private static void SaveCounters(Stream fs, MSDecResult msdecResult) {
             //Spectrum
             fs.Write(BitConverter.GetBytes(msdecResult.Spectrum.Count), 0, 4);
             fs.Write(BitConverter.GetBytes(msdecResult.ModelPeakChromatogram.Count), 0, 4);
@@ -106,7 +106,7 @@ namespace CompMs.MsdialCore.Parser {
             return 12;
         }
 
-        private static void SaveScoringData(FileStream fs, MSDecResult msdecResult) {
+        private static void SaveScoringData(Stream fs, MSDecResult msdecResult) {
             fs.Write(BitConverter.GetBytes(msdecResult.AmplitudeScore), 0, ByteConvertion.ToByteCount(msdecResult.AmplitudeScore));
             fs.Write(BitConverter.GetBytes(msdecResult.ModelPeakPurity), 0, ByteConvertion.ToByteCount(msdecResult.ModelPeakPurity));
             fs.Write(BitConverter.GetBytes(msdecResult.ModelPeakQuality), 0, ByteConvertion.ToByteCount(msdecResult.ModelPeakQuality));
@@ -123,7 +123,7 @@ namespace CompMs.MsdialCore.Parser {
             return byteCount;
         }
 
-        private static void SaveScanData(FileStream fs, MSDecResult msdecResult) {
+        private static void SaveScanData(Stream fs, MSDecResult msdecResult) {
             
             fs.Write(BitConverter.GetBytes(msdecResult.SeekPoint), 0, ByteConvertion.ToByteCount(msdecResult.SeekPoint));
             fs.Write(BitConverter.GetBytes(msdecResult.ScanID), 0, ByteConvertion.ToByteCount(msdecResult.ScanID));
@@ -152,7 +152,7 @@ namespace CompMs.MsdialCore.Parser {
             return byteCount;
         }
 
-        private static void SaveQuantData(FileStream fs, MSDecResult msdecResult) {
+        private static void SaveQuantData(Stream fs, MSDecResult msdecResult) {
             fs.Write(BitConverter.GetBytes(msdecResult.ModelPeakMz), 0, ByteConvertion.ToByteCount(msdecResult.ModelPeakMz));
             fs.Write(BitConverter.GetBytes(msdecResult.ModelPeakHeight), 0, ByteConvertion.ToByteCount(msdecResult.ModelPeakHeight));
             fs.Write(BitConverter.GetBytes(msdecResult.ModelPeakArea), 0, ByteConvertion.ToByteCount(msdecResult.ModelPeakArea));
@@ -170,7 +170,7 @@ namespace CompMs.MsdialCore.Parser {
         }
 
         // for gcms project only
-        private static void SaveAnnotationInfo(FileStream fs, MSDecResult msdecResult) {
+        private static void SaveAnnotationInfo(Stream fs, MSDecResult msdecResult) {
             fs.Write(BitConverter.GetBytes(msdecResult.MspID), 0, ByteConvertion.ToByteCount(msdecResult.MspID));
             fs.Write(BitConverter.GetBytes(msdecResult.MspIDWhenOrdered), 0, ByteConvertion.ToByteCount(msdecResult.MspIDWhenOrdered));
 

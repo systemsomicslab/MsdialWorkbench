@@ -81,7 +81,7 @@ namespace CompMs.App.Msdial.Model.Setting {
             return InitializeStandardDataTable();
         }
 
-        public static List<StandardCompoundVM> ConvertTextFormatToCompoundVM(List<MoleculeMsReference> lib) {
+        public static List<StandardCompoundVM>? ConvertTextFormatToCompoundVM(List<MoleculeMsReference>? lib) {
             if (lib == null) return null;
             var stdVmList = new List<StandardCompoundVM>();
             foreach (var l in lib) {

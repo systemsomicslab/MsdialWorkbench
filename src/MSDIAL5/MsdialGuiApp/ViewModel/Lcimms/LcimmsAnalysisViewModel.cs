@@ -40,14 +40,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
 
             var (rtmzPeakFocusAction, rtmzPeakFocused) = focusControlManager.Request();
-            var brush = Observable.Return(model.Brush);
-            RtMzPlotViewModel = new AnalysisPeakPlotViewModel(model.RtMzPlotModel, rtmzPeakFocusAction, rtmzPeakFocused).AddTo(Disposables);
+            RtMzPlotViewModel = new AnalysisPeakPlotViewModel(model.RtMzPlotModel, rtmzPeakFocusAction, rtmzPeakFocused, broker).AddTo(Disposables);
             RtEicViewModel = new EicViewModel(
                 model.RtEicModel,
                 horizontalAxis: RtMzPlotViewModel.HorizontalAxis).AddTo(Disposables);
 
             var (dtmzPeakFocusAction, dtmzPeakFocused) = focusControlManager.Request();
-            DtMzPlotViewModel = new AnalysisPeakPlotViewModel(model.DtMzPlotModel, dtmzPeakFocusAction, dtmzPeakFocused).AddTo(Disposables);
+            DtMzPlotViewModel = new AnalysisPeakPlotViewModel(model.DtMzPlotModel, dtmzPeakFocusAction, dtmzPeakFocused, broker).AddTo(Disposables);
             DtEicViewModel = new EicViewModel(
                 model.DtEicModel,
                 horizontalAxis: DtMzPlotViewModel.HorizontalAxis).AddTo(Disposables);
@@ -65,7 +64,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 horizontalAxis: RtMzPlotViewModel.VerticalAxis).AddTo(Disposables);
             PeakTableViewModel = new LcimmsAnalysisPeakTableViewModel(
                 model.PeakTableModel,
-                Observable.Return(model.EicLoader),
+                Observable.Return(model.DtEicLoader),
                 PeakSpotNavigatorViewModel,
                 SetUnknownCommand,
                 UndoManagerViewModel)
@@ -75,6 +74,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 .ToReactiveCommand()
                 .WithSubscribe(() =>
                 {
+                    if (model.CompoundSearchModel.Value is null) {
+                        return;
+                    }
                     using var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value);
                     broker.Publish<ICompoundSearchViewModel>(vm);
                 }).AddTo(Disposables);
@@ -106,21 +108,21 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public ReactiveCommand SearchCompoundCommand { get; }
 
         public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
-        private DelegateCommand _showIonTableCommand;
+        private DelegateCommand? _showIonTableCommand;
 
         private void ShowIonTable() {
             _peakSpotTableService.Show(PeakTableViewModel);
         }
 
         public DelegateCommand SearchAnalysisSpectrumByMoleculerNetworkingCommand => _searchAnalysisSpectrumByMoleculerNetworkingCommand ?? (_searchAnalysisSpectrumByMoleculerNetworkingCommand = new DelegateCommand(SearchAnalysisSpectrumByMoleculerNetworkingMethod));
-        private DelegateCommand _searchAnalysisSpectrumByMoleculerNetworkingCommand;
+        private DelegateCommand? _searchAnalysisSpectrumByMoleculerNetworkingCommand;
 
         private void SearchAnalysisSpectrumByMoleculerNetworkingMethod() {
             _model.InvokeMoleculerNetworkingForTargetSpot();
         }
 
         public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ?? (_goToMsfinderCommand = new DelegateCommand(GoToMsfinderMethod));
-        private DelegateCommand _goToMsfinderCommand;
+        private DelegateCommand? _goToMsfinderCommand;
 
         private void GoToMsfinderMethod() {
             _model.InvokeMsfinder();

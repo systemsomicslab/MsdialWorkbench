@@ -1,10 +1,12 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.Dims;
+using CompMs.App.Msdial.Model.Gcms;
 using CompMs.App.Msdial.Model.ImagingImms;
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Lcimms;
 using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.Dims;
+using CompMs.App.Msdial.ViewModel.Gcms;
 using CompMs.App.Msdial.ViewModel.ImagingImms;
 using CompMs.App.Msdial.ViewModel.Imms;
 using CompMs.App.Msdial.ViewModel.Lcimms;
@@ -56,9 +58,9 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         public IDatasetModel Model { get; }
 
-        public ParameterBase Parameter => Model?.Storage?.Parameter; // To show the project folder path in MainWindow title.
+        public ParameterBase? Parameter => Model?.Storage?.Parameter; // To show the project folder path in MainWindow title.
 
-        public ReadOnlyReactivePropertySlim<MethodViewModel> MethodViewModel { get; }
+        public ReadOnlyReactivePropertySlim<MethodViewModel?> MethodViewModel { get; }
 
         public ReactiveCommand FilePropertyResetCommand { get; }
 
@@ -77,7 +79,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public ReactiveCommand ProjectSettingCommand { get; }
         public ReactiveCommand SaveParameterAsCommand { get; }
 
-        private MethodViewModel ConvertToViewModel(IMethodModel model) {
+        private MethodViewModel? ConvertToViewModel(IMethodModel? model) {
             switch (model) {
                 case LcmsMethodModel lc:
                     return LcmsMethodViewModel.Create(lc, _messageBroker);
@@ -87,7 +89,8 @@ namespace CompMs.App.Msdial.ViewModel.Core
                     return DimsMethodViewModel.Create(di, peakSpotTableService, _messageBroker);
                 case LcimmsMethodModel lcim:
                     return LcimmsMethodViewModel.Create(lcim, peakSpotTableService, _messageBroker);
-                // case GcmsMethodModel _:
+                case GcmsMethodModel gc:
+                    return GcmsMethodViewModel.Create(gc, peakSpotTableService, _messageBroker);
                 case ImagingImmsMethodModel iim:
                     return new ImagingImmsMainViewModel(iim, _messageBroker, peakSpotTableService);
                 default:

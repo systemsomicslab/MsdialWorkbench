@@ -38,6 +38,6 @@ namespace CompMs.App.Msdial.Model.Setting
 
     public interface IAnnotatorSettingModelFactory
     {
-        IAnnotatorSettingModel Create(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter);
+        IAnnotatorSettingModel Create(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase? searchParameter);
     }
 }

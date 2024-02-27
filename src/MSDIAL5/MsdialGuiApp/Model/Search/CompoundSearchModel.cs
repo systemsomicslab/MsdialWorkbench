@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
-using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Algorithm.Scoring;
@@ -23,15 +22,15 @@ namespace CompMs.App.Msdial.Model.Search
     interface ICompoundSearchModel : INotifyPropertyChanged, IDisposable {
         IList SearchMethods { get; }
 
-        object SearchMethod { get; set; }
+        object? SearchMethod { get; set; }
 
-        ReadOnlyReactivePropertySlim<MsRefSearchParameterBase> SearchParameter { get; }
+        ReadOnlyReactivePropertySlim<MsRefSearchParameterBase?> SearchParameter { get; }
         
         IFileBean File { get; }
 
-        IPeakSpotModel PeakSpot { get; }
+        ICompoundResult? SelectedCompoundResult { get; set; }
 
-        ICompoundResult SelectedCompoundResult { get; set; }
+        IReadOnlyList<ICompoundResult>? CompoundResults { get; }
 
         MsSpectrumModel MsSpectrumModel { get; }
 
@@ -42,15 +41,15 @@ namespace CompMs.App.Msdial.Model.Search
         void SetUnknown();
     }
 
-    internal class CompoundSearchModel : DisposableModelBase, ICompoundSearchModel
+    internal class CompoundSearchModel<T> : DisposableModelBase, ICompoundSearchModel
     {
         private readonly SetAnnotationUsecase _setAnnotationService;
         private readonly PlotComparedMsSpectrumUsecase _plotService;
-        private readonly ICompoundSearchUsecase<ICompoundResult, PeakSpotModel> _compoundSearchService;
-        private readonly PeakSpotModel _peakSpot;
+        private readonly ICompoundSearchUsecase<ICompoundResult, T> _compoundSearchService;
+        private readonly T _peakSpot;
         private readonly BusyNotifier _isBusy;
 
-        public CompoundSearchModel(IFileBean fileBean, PeakSpotModel peakSpot, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel> compoundSearchService, PlotComparedMsSpectrumUsecase plotComparedMsSpectrumService, SetAnnotationUsecase setAnnotationService) {
+        public CompoundSearchModel(IFileBean fileBean, T peakSpot, ICompoundSearchUsecase<ICompoundResult, T> compoundSearchService, PlotComparedMsSpectrumUsecase plotComparedMsSpectrumService, SetAnnotationUsecase setAnnotationService) {
             File = fileBean ?? throw new ArgumentNullException(nameof(fileBean));
             _peakSpot = peakSpot;
             _compoundSearchService = compoundSearchService;
@@ -72,7 +71,7 @@ namespace CompMs.App.Msdial.Model.Search
 
         public IList SearchMethods => _compoundSearchService.SearchMethods;
 
-        public object SearchMethod {
+        public object? SearchMethod {
             get => _compoundSearchService.SearchMethod;
             set {
                 if (_compoundSearchService.SearchMethod != value) {
@@ -82,25 +81,25 @@ namespace CompMs.App.Msdial.Model.Search
             }
         }
 
-        public ReadOnlyReactivePropertySlim<MsRefSearchParameterBase> SearchParameter { get; }
+        public ReadOnlyReactivePropertySlim<MsRefSearchParameterBase?> SearchParameter { get; }
         
         public IFileBean File { get; }
 
-        public IPeakSpotModel PeakSpot => _peakSpot.PeakSpot;
+        public T PeakSpot => _peakSpot;
 
         public MsSpectrumModel MsSpectrumModel => _plotService.MsSpectrumModel;
 
-        public ICompoundResult SelectedCompoundResult {
+        public ICompoundResult? SelectedCompoundResult {
             get => _selectedCompoundResult;
             set => SetProperty(ref _selectedCompoundResult, value);
         }
-        private ICompoundResult _selectedCompoundResult;
+        private ICompoundResult? _selectedCompoundResult;
 
-        public IReadOnlyList<ICompoundResult> CompoundResults {
+        public IReadOnlyList<ICompoundResult>? CompoundResults {
             get => _compoundResults;
             private set => SetProperty(ref _compoundResults, value);
         }
-        private IReadOnlyList<ICompoundResult> _compoundResults;
+        private IReadOnlyList<ICompoundResult>? _compoundResults;
 
         public IObservable<bool> IsBusy => _isBusy;
 
@@ -111,11 +110,15 @@ namespace CompMs.App.Msdial.Model.Search
         }
 
         public void SetConfidence() {
-            _setAnnotationService.SetConfidence(SelectedCompoundResult);
+            if (SelectedCompoundResult is ICompoundResult result) {
+                _setAnnotationService.SetConfidence(result);
+            }
         }
 
         public void SetUnsettled() {
-            _setAnnotationService.SetUnsettled(SelectedCompoundResult);
+            if (SelectedCompoundResult is ICompoundResult result) {
+                _setAnnotationService.SetUnsettled(result);
+            }
         }
 
         public void SetUnknown() {
