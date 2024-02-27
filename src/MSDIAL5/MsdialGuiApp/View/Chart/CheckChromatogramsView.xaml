@@ -57,15 +57,17 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="160" />
             </Grid.ColumnDefinitions>
-            <chart:MultiChart HorizontalAxis="{Binding ChromatogramsViewModel.Value.HorizontalSelector.SelectedAxisItem.AxisManager}"
-                              VerticalAxis="{Binding ChromatogramsViewModel.Value.VerticalSelector.SelectedAxisItem.AxisManager}"
-                              HorizontalTitle="{Binding ChromatogramsViewModel.Value.HorizontalSelector.SelectedAxisItem.GraphLabel}"
-                              GraphTitle="{Binding ChromatogramsViewModel.Value.GraphTitle}"
-                              ItemsSource="{Binding ChromatogramsViewModel.Value.DisplayChromatograms}"
-                              Background="WhiteSmoke"
-                              BorderBrush="Black">
-                <chart:MultiChart.Style>
-                    <Style TargetType="{x:Type chart:MultiChart}" BasedOn="{StaticResource OverlapChart}">
+            <chart:SimpleChartControl HorizontalAxis="{Binding ChromatogramsViewModel.Value.HorizontalSelector.SelectedAxisItem.AxisManager}"
+                                      VerticalAxis="{Binding ChromatogramsViewModel.Value.VerticalSelector.SelectedAxisItem.AxisManager}"
+                                      HorizontalTitle="{Binding ChromatogramsViewModel.Value.HorizontalSelector.SelectedAxisItem.GraphLabel}"
+                                      GraphTitle="{Binding ChromatogramsViewModel.Value.GraphTitle}"
+                                      Background="WhiteSmoke"
+                                      BorderBrush="Black">
+                <chart:SimpleChartControl.RenderAreaControlState>
+                    <chart:RenderAreaControlState MoveByDragIsEnabled="False"/>
+                </chart:SimpleChartControl.RenderAreaControlState>
+                <chart:SimpleChartControl.Style>
+                    <Style TargetType="{x:Type chart:SimpleChartControl}" BasedOn="{StaticResource BasicChart}">
                         <Setter Property="VerticalTitle">
                             <Setter.Value>
                                 <MultiBinding StringFormat="{}{0}({1})">
@@ -82,19 +84,47 @@
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </chart:MultiChart.Style>
-                <chart:MultiChart.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <chart:LineChartControl ItemsSource="{Binding ChromatogramPeaks}"
-                                                    LinePen="{Binding LinePen}"
-                                                    HorizontalPropertyName="{Binding DataContext.ChromatogramsViewModel.Value.HorizontalProperty, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
-                                                    VerticalPropertyName="{Binding DataContext.ChromatogramsViewModel.Value.VerticalProperty, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"/>
-                        </Grid>
-                    </DataTemplate>
-                </chart:MultiChart.ItemTemplate>
-                <chart:MultiChart.ContextMenu>
+                </chart:SimpleChartControl.Style>
+                <Grid>
+                    <ItemsControl DataContext="{Binding ChromatogramsViewModel.Value}"
+                                  ItemsSource="{Binding DisplayChromatograms}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Grid/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <chart:LineChartControl ItemsSource="{Binding ChromatogramPeaks}"
+                                                        LinePen="{Binding LinePen}"
+                                                        HorizontalPropertyName="{Binding DataContext.HorizontalProperty, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                                        VerticalPropertyName="{Binding DataContext.VerticalProperty, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <chart:RangeSelector Background="Transparent"
+                                         SelectedRange="{Binding RangeSelectableChromatogramViewModel.Value.SelectedRange.Value, Mode=TwoWay}"
+                                         DisplayRanges="{Binding RangeSelectableChromatogramViewModel.Value.SelectedRange}"
+                                         ClipToBounds="True"/>
+                </Grid>
+                <chart:SimpleChartControl.ContextMenu>
                     <ContextMenu>
+                        <MenuItem Header="Show spectrum"
+                                  ItemsSource="{Binding AppleJuice.Value}">
+                            <MenuItem.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock>
+                                        <Run FontStyle="Italic">m/z</Run>: <Run Text="{Binding Mz, Mode=OneTime}"/>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </MenuItem.ItemTemplate>
+                            <MenuItem.ItemContainerStyle>
+                                <Style TargetType="MenuItem">
+                                    <Setter Property="Command" Value="{Binding Command}"/>
+                                </Style>
+                            </MenuItem.ItemContainerStyle>
+                        </MenuItem>
+                        <Separator/>
                         <MenuItem Header="Save image as...">
                             <MenuItem Header="Save as emf"
                                       Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
@@ -115,12 +145,12 @@
                         <MenuItem Header="Copy as table" Command="{Binding CopyAsTableCommand, Mode=OneTime}"/>
                         <MenuItem Header="Save as table" Command="{Binding SaveAsTableCommand, Mode=OneTime}"/>
                     </ContextMenu>
-                </chart:MultiChart.ContextMenu>
-            </chart:MultiChart>
-            <ItemsControl 
-                ItemsSource="{Binding ChromatogramsViewModel.Value.DisplayChromatograms}"
-                VerticalAlignment="Center"
-                Grid.Column="1">
+                </chart:SimpleChartControl.ContextMenu>
+            </chart:SimpleChartControl>
+            <ItemsControl DataContext="{Binding ChromatogramsViewModel.Value}"
+                          ItemsSource="{Binding DisplayChromatograms}"
+                          VerticalAlignment="Center"
+                          Grid.Column="1">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Name}" Margin="8,0" Foreground="{Binding LineBrush}" />

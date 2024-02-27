@@ -4,12 +4,10 @@ using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -33,7 +31,11 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             ChromatogramsViewModel = RangeSelectableChromatogramViewModel.Select(vm => vm?.ChromatogramsViewModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-
+            AppleJuice = ChromatogramsViewModel.DefaultIfNull(vm => 
+                vm.DisplayChromatograms
+                    .OfType<DisplayExtractedIonChromatogram>()
+                    .Select(c => (object)new { c.Mz, Command = new DelegateCommand(() => { }) }).ToArray())
+                .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             InsertTic = model.LoadChromatogramsUsecase.ToReactivePropertySlimAsSynchronized(m => m.InsertTic).AddTo(Disposables);
             InsertBpc = model.LoadChromatogramsUsecase.ToReactivePropertySlimAsSynchronized(m => m.InsertBpc).AddTo(Disposables);
@@ -76,6 +78,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReadOnlyReactivePropertySlim<RangeSelectableChromatogramViewModel?> RangeSelectableChromatogramViewModel { get; }
         public ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> ChromatogramsViewModel { get; }
+        public ReadOnlyReactivePropertySlim<object[]?> AppleJuice { get; }
 
         public ReactiveCommand CopyAsTableCommand { get; }
 
