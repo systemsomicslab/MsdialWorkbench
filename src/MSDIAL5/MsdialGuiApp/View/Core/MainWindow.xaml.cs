@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Export;
+using CompMs.App.Msdial.View.MsResult;
 using CompMs.App.Msdial.View.PeakCuration;
 using CompMs.App.Msdial.View.Search;
 using CompMs.App.Msdial.View.Setting;
@@ -115,7 +116,7 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<ExportMrmprobsViewModel>()
                 .Subscribe(ShowChildSettingDialog<ExportMrmprobsView>("MRMPROBS reference library export", height: 560, width: 560, finishCommandContent: "Export"));
             broker.ToObservable<AccumulatedMs2SpectrumViewModel>()
-                .Subscribe(ShowChildContent<System.Windows.Controls.ContentControl>("", height: 600, width: 400));
+                .Subscribe(ShowChildContent<AccumulatedMs2SpectrumView>("", height: 600, width: 400));
             /*
             broker.ToObservable<PeakSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<AlignmentSpotTable>);

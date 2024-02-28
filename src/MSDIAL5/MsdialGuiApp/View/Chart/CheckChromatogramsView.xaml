@@ -104,7 +104,7 @@
                     </ItemsControl>
                     <chart:RangeSelector Background="Transparent"
                                          SelectedRange="{Binding RangeSelectableChromatogramViewModel.Value.SelectedRange.Value, Mode=TwoWay}"
-                                         DisplayRanges="{Binding RangeSelectableChromatogramViewModel.Value.SelectedRange}"
+                                         DisplayRanges="{Binding RangeSelectableChromatogramViewModel.Value.SelectedRanges, Mode=OneWay}"
                                          ClipToBounds="True"/>
                 </Grid>
                 <chart:SimpleChartControl.ContextMenu>
@@ -148,16 +148,24 @@
                     </ContextMenu>
                 </chart:SimpleChartControl.ContextMenu>
             </chart:SimpleChartControl>
-            <ItemsControl DataContext="{Binding ChromatogramsViewModel.Value}"
-                          ItemsSource="{Binding DisplayChromatograms}"
-                          VerticalAlignment="Center"
-                          Grid.Column="1">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Name}" Margin="8,0" Foreground="{Binding LineBrush}" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <DockPanel Grid.Column="1">
+                <StackPanel DataContext="{Binding RangeSelectableChromatogramViewModel.Value}"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Left"
+                            DockPanel.Dock="Bottom">
+                    <Button Content="+" Command="{Binding SetMainRangeCommand}" Width="32" Margin="8"/>
+                    <Button Content="-" Command="{Binding SetSubtractRangeCommand}" Width="32" Margin="8"/>
+                </StackPanel>
+                <ItemsControl DataContext="{Binding ChromatogramsViewModel.Value}"
+                              ItemsSource="{Binding DisplayChromatograms}"
+                              VerticalAlignment="Center">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" Margin="8,0" Foreground="{Binding LineBrush}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </DockPanel>
         </Grid>
 
         <Grid Grid.Column="1">
