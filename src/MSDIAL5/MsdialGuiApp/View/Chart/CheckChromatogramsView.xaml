@@ -155,6 +155,7 @@
                             DockPanel.Dock="Bottom">
                     <Button Content="+" Command="{Binding SetMainRangeCommand}" Width="32" Margin="8"/>
                     <Button Content="-" Command="{Binding SetSubtractRangeCommand}" Width="32" Margin="8"/>
+                    <Button Content="Reset" Command="{Binding RemoveRangesCommand}" Width="64" Margin="8"/>
                 </StackPanel>
                 <ItemsControl DataContext="{Binding ChromatogramsViewModel.Value}"
                               ItemsSource="{Binding DisplayChromatograms}"

@@ -53,13 +53,16 @@ namespace CompMs.App.Msdial.Model.Chart
         public ParameterBase Parameter { get; }
 
         public bool CanSetExperimentSpectrum() {
-            return RangeSelectableChromatogramModel.SelectedRanges.Count == 2;
+            return RangeSelectableChromatogramModel is { MainRange: not null, SubtractRanges: { Count: > 0 } };
         }
 
         public async Task SetExperimentSpectrumAsync(CancellationToken token) {
+            if (RangeSelectableChromatogramModel is null or { MainRange: null } or { SubtractRanges: { Count: 0 } }) {
+                return;
+            }
             var rangeModel = RangeSelectableChromatogramModel;
-            (var mainStart, var mainEnd) = rangeModel.ConvertToRt(rangeModel.SelectedRanges[1]);
-            (var subStart, var subEnd) = rangeModel.ConvertToRt(rangeModel.SelectedRanges[0]);
+            (var mainStart, var mainEnd) = rangeModel.ConvertToRt(rangeModel.MainRange);
+            (var subStart, var subEnd) = rangeModel.ConvertToRt(rangeModel.SubtractRanges[0]);
 
             var spectrum = await provider.LoadMsNSpectrumsAsync(level: 2, token).ConfigureAwait(false);
             var experiments = spectrum.Select(spec => spec.ExperimentID).Distinct().OrderBy(v => v).ToArray();
