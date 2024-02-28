@@ -11,6 +11,7 @@ using CompMs.App.Msdial.View.Table;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Export;
+using CompMs.App.Msdial.ViewModel.MsResult;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
@@ -113,6 +114,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildDialog<CompoundSearchWindow>);
             broker.ToObservable<ExportMrmprobsViewModel>()
                 .Subscribe(ShowChildSettingDialog<ExportMrmprobsView>("MRMPROBS reference library export", height: 560, width: 560, finishCommandContent: "Export"));
+            broker.ToObservable<AccumulatedMs2SpectrumViewModel>()
+                .Subscribe(ShowChildContent<System.Windows.Controls.ContentControl>("", height: 600, width: 400));
             /*
             broker.ToObservable<PeakSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<AlignmentSpotTable>);
@@ -145,6 +148,22 @@ namespace CompMs.App.Msdial.View.Core
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
             };
             view.Show();
+        }
+
+        private Action<object> ShowChildContent<TView>(string title, double height, double width) where TView: FrameworkElement, new() {
+            void InnerShowDialog(object viewmodel) {
+                var view = new Window
+                {
+                    Height = height, Width = width,
+                    Title = title,
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    DataContext = viewmodel,
+                    Content = new TView(),
+                };
+                view.Show();
+            }
+            return InnerShowDialog;
         }
 
         private void ShowChildViewWithDispose<TView>(object viewmodel) where TView : Window, new() {

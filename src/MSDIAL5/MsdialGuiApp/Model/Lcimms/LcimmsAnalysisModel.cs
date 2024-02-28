@@ -5,6 +5,7 @@ using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.MsResult;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
@@ -302,6 +303,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             }.CombineLatestValuesAreAllTrue()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
+
+            AccumulateSpectraUsecase = new AccumulateSpectraUsecase(spectrumProvider, parameter.PeakPickBaseParam, parameter.ProjectParam.IonMode);
         }
 
         public UndoManager UndoManager => _undoManager;
@@ -343,6 +346,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
+
+        public AccumulateSpectraUsecase AccumulateSpectraUsecase { get; }
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {
             return new LoadChromatogramsUsecase(_ticLoader, _bpcLoader, RtEicLoader, _accumulatedPeakModels, _parameter.PeakPickBaseParam);

@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Utility;
+using CompMs.App.Msdial.ViewModel.MsResult;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.CommonMVVM;
@@ -12,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -31,11 +33,11 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             ChromatogramsViewModel = RangeSelectableChromatogramViewModel.Select(vm => vm?.ChromatogramsViewModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            AppleJuice = ChromatogramsViewModel.DefaultIfNull(vm => 
-                vm.DisplayChromatograms
-                    .OfType<DisplayExtractedIonChromatogram>()
-                    .Select(c => (object)new { c.Mz, Command = new DelegateCommand(() => { }) }).ToArray())
-                .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            AccumulatedMs2SpectrumViewModels = model.ObserveProperty(m => m.AccumulatedMs2SpectrumModels)
+                .Select(ms => ms.Select(m => new AccumulatedMs2SpectrumViewModel(m)).ToArray())
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim(Array.Empty<AccumulatedMs2SpectrumViewModel>())
+                .AddTo(Disposables);
 
             InsertTic = model.LoadChromatogramsUsecase.ToReactivePropertySlimAsSynchronized(m => m.InsertTic).AddTo(Disposables);
             InsertBpc = model.LoadChromatogramsUsecase.ToReactivePropertySlimAsSynchronized(m => m.InsertBpc).AddTo(Disposables);
@@ -74,11 +76,22 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             ClearCommand = new ReactiveCommand()
                 .WithSubscribe(model.Clear)
                 .AddTo(Disposables);
+
+            ShowAccumulatedSpectrumCommand = new AsyncReactiveCommand<AccumulatedMs2SpectrumViewModel>()
+                .WithSubscribe(vm => ShowAccumulatedSpectrumAsync(vm, default)).AddTo(Disposables);
         }
 
         public ReadOnlyReactivePropertySlim<RangeSelectableChromatogramViewModel?> RangeSelectableChromatogramViewModel { get; }
         public ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> ChromatogramsViewModel { get; }
-        public ReadOnlyReactivePropertySlim<object[]?> AppleJuice { get; }
+        public ReadOnlyReactivePropertySlim<AccumulatedMs2SpectrumViewModel[]> AccumulatedMs2SpectrumViewModels { get; }
+
+        public AsyncReactiveCommand<AccumulatedMs2SpectrumViewModel> ShowAccumulatedSpectrumCommand { get; }
+
+        private async Task ShowAccumulatedSpectrumAsync(AccumulatedMs2SpectrumViewModel vm, CancellationToken token) {
+            var task = _model.AccumulateAsync(vm.Model, token);
+            _broker.Publish(vm);
+            await task;
+        }
 
         public ReactiveCommand CopyAsTableCommand { get; }
 

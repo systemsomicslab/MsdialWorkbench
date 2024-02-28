@@ -110,7 +110,7 @@
                 <chart:SimpleChartControl.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Show spectrum"
-                                  ItemsSource="{Binding AppleJuice.Value}">
+                                  ItemsSource="{Binding AccumulatedMs2SpectrumViewModels.Value}">
                             <MenuItem.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock>
@@ -120,7 +120,8 @@
                             </MenuItem.ItemTemplate>
                             <MenuItem.ItemContainerStyle>
                                 <Style TargetType="MenuItem">
-                                    <Setter Property="Command" Value="{Binding Command}"/>
+                                    <Setter Property="Command" Value="{Binding PlacementTarget.DataContext.ShowAccumulatedSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                    <Setter Property="CommandParameter" Value="{Binding}"/>
                                 </Style>
                             </MenuItem.ItemContainerStyle>
                         </MenuItem>

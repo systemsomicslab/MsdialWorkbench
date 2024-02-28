@@ -266,7 +266,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             loadChromatogramsUsecase.InsertTic = tic;
             loadChromatogramsUsecase.InsertBpc = bpc;
             loadChromatogramsUsecase.InsertHighestEic = highestEic;
-            var model = new CheckChromatogramsModel(loadChromatogramsUsecase, Storage.Parameter.AdvancedProcessOptionBaseParam);
+            var model = new CheckChromatogramsModel(loadChromatogramsUsecase, analysisModel.AccumulateSpectraUsecase, Storage.Parameter.AdvancedProcessOptionBaseParam);
             model.Update();
             return model;
         }

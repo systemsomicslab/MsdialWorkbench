@@ -1,4 +1,6 @@
-﻿using CompMs.App.Msdial.Model.Setting;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.MsResult;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -7,18 +9,21 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class CheckChromatogramsModel : BindableBase
     {
+        private readonly AccumulateSpectraUsecase _accumulateSpectra;
         private readonly AdvancedProcessOptionBaseParameter _advancedProcessParameter;
         private readonly List<PeakFeatureSearchValue> _displaySettingValueCandidates;
         private readonly ObservableCollection<PeakFeatureSearchValueModel> _displaySettingValues;
 
-        public CheckChromatogramsModel(LoadChromatogramsUsecase loadingChromatograms, AdvancedProcessOptionBaseParameter advancedProcessParameter) {
+        public CheckChromatogramsModel(LoadChromatogramsUsecase loadingChromatograms, AccumulateSpectraUsecase accumulateSpectra, AdvancedProcessOptionBaseParameter advancedProcessParameter) {
             LoadChromatogramsUsecase = loadingChromatograms ?? throw new ArgumentNullException(nameof(loadingChromatograms));
+            _accumulateSpectra = accumulateSpectra;
             _advancedProcessParameter = advancedProcessParameter;
             advancedProcessParameter.DiplayEicSettingValues ??= new List<PeakFeatureSearchValue>();
             var values = advancedProcessParameter.DiplayEicSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0).ToList();
@@ -40,6 +45,19 @@ namespace CompMs.App.Msdial.Model.Chart
         }
         private RangeSelectableChromatogramModel? _rangeSelectableChromatogramModel;
 
+        public AccumulatedMs2SpectrumModel[] AccumulatedMs2SpectrumModels {
+            get => _accumulatedMs2SpectrumModels;
+            private set {
+                var prevs = _accumulatedMs2SpectrumModels;
+                if (SetProperty(ref _accumulatedMs2SpectrumModels, value)) {
+                    foreach (var prev in prevs) {
+                        prev.Dispose();
+                    }
+                }
+            }
+        }
+        private AccumulatedMs2SpectrumModel[] _accumulatedMs2SpectrumModels = Array.Empty<AccumulatedMs2SpectrumModel>();
+
         public ReadOnlyObservableCollection<PeakFeatureSearchValueModel> DisplayEicSettingValues { get; }
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase { get; }
@@ -58,6 +76,17 @@ namespace CompMs.App.Msdial.Model.Chart
 
             Chromatograms = LoadChromatogramsUsecase.Load(displayEICs);
             RangeSelectableChromatogramModel = new RangeSelectableChromatogramModel(Chromatograms);
+            AccumulatedMs2SpectrumModels = Chromatograms.DisplayChromatograms
+                .OfType<DisplayExtractedIonChromatogram>()
+                .Select(c => new AccumulatedMs2SpectrumModel(c, _accumulateSpectra))
+                .ToArray();
+        }
+
+        public async Task AccumulateAsync(AccumulatedMs2SpectrumModel model, CancellationToken token) {
+            if (RangeSelectableChromatogramModel is { SelectedRanges: { Count: > 0 } }) {
+                var range = RangeSelectableChromatogramModel.ConvertToRt(RangeSelectableChromatogramModel.SelectedRanges[0]);
+                await model.CalculateMs2Async(range, token).ConfigureAwait(false);
+            }
         }
 
         public void Clear() {

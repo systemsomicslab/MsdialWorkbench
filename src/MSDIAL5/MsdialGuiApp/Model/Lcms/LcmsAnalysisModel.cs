@@ -6,6 +6,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.MsResult;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
@@ -227,6 +228,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 MoleculeStructureModel = moleculeStructureModel;
                 Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
             }
+
+            AccumulateSpectraUsecase = new AccumulateSpectraUsecase(provider, parameter.PeakPickBaseParam, parameter.ProjectParam.IonMode);
         }
 
         private static readonly double RtTol = 0.5;
@@ -256,6 +259,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         public FocusNavigatorModel FocusNavigatorModel { get; }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
+
+        public AccumulateSpectraUsecase AccumulateSpectraUsecase { get; }
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {
             return new LoadChromatogramsUsecase(_ticLoader, _bpcLoader, EicLoader, Ms1Peaks, _parameter.PeakPickBaseParam);
