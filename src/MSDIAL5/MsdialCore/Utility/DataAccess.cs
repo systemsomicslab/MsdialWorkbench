@@ -628,36 +628,15 @@ namespace CompMs.MsdialCore.Utility {
 
 
         public static List<SpectrumPeak> GetAverageSpectrum(IReadOnlyList<RawSpectrum> spectrumList, List<int> points, double bin) {
-            var peaks = new List<SpectrumPeak>();
-            var mass2peaks = new Dictionary<int, List<SpectrumPeak>>();
-            var factor = 1.0 / bin;
-
+            var targets = new List<RawSpectrum>(points.Count);
             foreach (var point in points) {
                 if (point < 0 || point > spectrumList.Count - 1) continue;
-                var spec = spectrumList[point];
-                foreach (var peak in spec.Spectrum) {
-                    var mass = (int)(peak.Mz * factor);
-                    var intensity = peak.Intensity;
-                    var spectrumPeak = new SpectrumPeak() { Mass = peak.Mz, Intensity = intensity };
-                    if (mass2peaks.ContainsKey(mass)) {
-                        mass2peaks[mass].Add(spectrumPeak);
-                    }
-                    else {
-                        mass2peaks[mass] = new List<SpectrumPeak>() { spectrumPeak };
-                    }
-                }
+                targets.Add(spectrumList[point]);
             }
-
-            foreach (var item in mass2peaks) {
-                var repMass = item.Value.Argmax(n => n.Intensity).Mass;
-                var aveIntensity = item.Value.Sum(n => n.Intensity) / (double)points.Count;
-                var peak = new SpectrumPeak() { Mass = repMass, Intensity = aveIntensity };
-                peaks.Add(peak);
-            }
-            return peaks;
+            return GetAverageSpectrum(targets, bin);
         }
 
-        public static List<SpectrumPeak> GetAverageSpectrum(IReadOnlyList<RawSpectrum> spectrumList, double bin) {
+        public static List<SpectrumPeak> GetAverageSpectrum(IReadOnlyCollection<RawSpectrum> spectrumList, double bin) {
             var peaks = new List<SpectrumPeak>();
             var mass2peaks = new Dictionary<int, List<SpectrumPeak>>();
             var factor = 1.0 / bin;
