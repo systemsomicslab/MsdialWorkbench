@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.Common.Utility;
+using CompMs.MsdialCore.Algorithm.Internal;
 using CompMs.RawDataHandler.Core;
 using System.Collections.Generic;
 using System.Linq;
@@ -81,6 +82,20 @@ namespace CompMs.MsdialCore.Algorithm
 
         public static int Count(this IDataProvider provider) {
             return provider.LoadMsSpectrums().Count;
+        }
+
+        /// <summary>
+        /// Filters the provided data provider's data based on a specified m/z value and tolerance, returning a new <see cref="IDataProvider"/> that provides access to the filtered data.
+        /// </summary>
+        /// <param name="provider">The original data provider to filter.</param>
+        /// <param name="mz">The target m/z value to filter by.</param>
+        /// <param name="tolerance">The tolerance for the m/z filtering. Data points within this tolerance from the specified m/z value will be included in the filtered data.</param>
+        /// <returns>A new <see cref="IDataProvider"/> instance that provides access to the data filtered based on the specified m/z value and tolerance.</returns>
+        /// <remarks>
+        /// This method creates an instance of <see cref="PrecursorMzSelectedDataProvider"/>, which implements the filtering logic based on the specified m/z value and tolerance.
+        /// </remarks>
+        public static IDataProvider FilterByMz(this IDataProvider provider, double mz, double tolerance) {
+            return new PrecursorMzSelectedDataProvider(provider, mz, tolerance);
         }
 
         public static List<double> LoadCollisionEnergyTargets(this IDataProvider provider) {
