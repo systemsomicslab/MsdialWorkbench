@@ -657,6 +657,34 @@ namespace CompMs.MsdialCore.Utility {
             return peaks;
         }
 
+        public static List<SpectrumPeak> GetAverageSpectrum(IReadOnlyList<RawSpectrum> spectrumList, double bin) {
+            var peaks = new List<SpectrumPeak>();
+            var mass2peaks = new Dictionary<int, List<SpectrumPeak>>();
+            var factor = 1.0 / bin;
+
+            foreach (var spec in spectrumList) {
+                foreach (var peak in spec.Spectrum) {
+                    var mass = (int)(peak.Mz * factor);
+                    var intensity = peak.Intensity;
+                    var spectrumPeak = new SpectrumPeak() { Mass = peak.Mz, Intensity = intensity };
+                    if (mass2peaks.ContainsKey(mass)) {
+                        mass2peaks[mass].Add(spectrumPeak);
+                    }
+                    else {
+                        mass2peaks[mass] = new List<SpectrumPeak>() { spectrumPeak };
+                    }
+                }
+            }
+
+            foreach (var item in mass2peaks) {
+                var repMass = item.Value.Argmax(n => n.Intensity).Mass;
+                var aveIntensity = item.Value.Sum(n => n.Intensity) / spectrumList.Count;
+                var peak = new SpectrumPeak() { Mass = repMass, Intensity = aveIntensity };
+                peaks.Add(peak);
+            }
+            return peaks;
+        }
+
         public static List<SpectrumPeak> GetSubtractSpectrum(IReadOnlyList<RawSpectrum> spectrumList, 
             double mainStart, double mainEnd, 
             double subtractStart, double subtractEnd,
