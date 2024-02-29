@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj;
+using CompMs.Common.Utility;
 using CompMs.RawDataHandler.Core;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,28 @@ namespace CompMs.MsdialCore.Algorithm
 
         public static RawSpectrum LoadMs1SpectrumFromIndex(this IDataProvider provider, int index) {
             return provider.LoadMs1Spectrums()[index];
+        }
+
+        /// <summary>
+        /// An extension method for IDataProvider to retrieve MS2 spectra that have a ScanStartTime within a specified range.
+        /// </summary>
+        /// <param name="provider">The data provider instance on which the extension method operates.</param>
+        /// <param name="start">The lower bound of the retention time range.</param>
+        /// <param name="end">The upper bound of the retention time range.</param>
+        /// <param name="token">A cancellation token that can be used to cancel the operation.</param>
+        /// <returns>A task that represents the asynchronous operation and returns an array of <see cref="RawSpectrum"/> objects within the specified retention time range.</returns>
+        public static async Task<RawSpectrum[]> LoadMs2SpectraWithRtRange(this IDataProvider provider, double start, double end, CancellationToken token) {
+            var spectra = await provider.LoadMsNSpectrumsAsync(2, token).ConfigureAwait(false);
+            var lower = spectra.LowerBound(start, (t, s) => t.ScanStartTime.CompareTo(s));
+            var upper = lower;
+            while (upper < spectra.Count && spectra[upper].ScanStartTime < end) {
+                ++upper;
+            }
+            var result = new RawSpectrum[upper - lower];
+            for (int i = 0; i < result.Length; i++) {
+                result[i] = spectra[i + lower];
+            }
+            return result;
         }
 
         public static double GetMinimumCollisionEnergy(this IDataProvider provider) {
