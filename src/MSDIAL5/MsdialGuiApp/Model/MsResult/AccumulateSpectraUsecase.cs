@@ -4,6 +4,7 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,6 +34,26 @@ namespace CompMs.App.Msdial.Model.MsResult
                 IonMode = _ionMode,
                 ChromXs = new ChromXs(new RetentionTime((rtStart + rtEnd) / 2, ChromXUnit.Min)),
                 Spectrum = peaks,
+            };
+        }
+
+        public async Task<MSScanProperty> AccumulateMs2Async(double mz, double mzTolerance, (double rtStart, double rtEnd) rtRange, IEnumerable<(double rtStart, double rtEnd)> subtracts, CancellationToken token = default) {
+            var provider = _provider.FilterByMz(mz, mzTolerance).Cache();
+            var (rtStart, rtEnd) = rtRange;
+            var spectra = await provider.LoadMs2SpectraWithRtRangeAsync(rtStart, rtEnd, token).ConfigureAwait(false);
+            var peaks = DataAccess.GetAverageSpectrum(spectra, _parameter.CentroidMs2Tolerance);
+
+            var subsTask = subtracts.Select(r => provider.LoadMs2SpectraWithRtRangeAsync(r.rtStart, r.rtEnd, token)).ToArray();
+            var subs = await Task.WhenAll(subsTask);
+            var subPeaks = DataAccess.GetAverageSpectrum(subs.SelectMany(s => s).ToArray(), _parameter.CentroidMs2Tolerance);
+            var subtracted = DataAccess.GetSubtractSpectrum(peaks, subPeaks, _parameter.CentroidMs2Tolerance);
+
+            return new MSScanProperty
+            {
+                PrecursorMz = mz,
+                IonMode = _ionMode,
+                ChromXs = new ChromXs(new RetentionTime((rtStart + rtEnd) / 2, ChromXUnit.Min)),
+                Spectrum = subtracted,
             };
         }
     }

@@ -5,6 +5,7 @@ using CompMs.CommonMVVM;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Export;
 using Reactive.Bindings.Extensions;
+using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
@@ -54,6 +55,10 @@ namespace CompMs.App.Msdial.Model.MsResult
 
         public async Task CalculateMs2Async((double start, double end) baseRange, CancellationToken token = default) {
             Scan = await _accumulateSpectra.AccumulateMs2Async(Chromatogram.Mz, Chromatogram.Tolerance, baseRange.start, baseRange.end, token).ConfigureAwait(false);
+        }
+
+        public async Task CalculateMs2Async((double start, double end) baseRange, IEnumerable<(double start, double end)> subtracts, CancellationToken token = default) {
+            Scan = await _accumulateSpectra.AccumulateMs2Async(Chromatogram.Mz, Chromatogram.Tolerance, baseRange, subtracts, token).ConfigureAwait(false);
         }
     }
 }

@@ -85,7 +85,8 @@ namespace CompMs.App.Msdial.Model.Chart
         public async Task AccumulateAsync(AccumulatedMs2SpectrumModel model, CancellationToken token) {
             if (RangeSelectableChromatogramModel is { MainRange: not null } ) {
                 var range = RangeSelectableChromatogramModel.ConvertToRt(RangeSelectableChromatogramModel.MainRange);
-                await model.CalculateMs2Async(range, token).ConfigureAwait(false);
+                var subs = RangeSelectableChromatogramModel.SubtractRanges.Select(r => RangeSelectableChromatogramModel.ConvertToRt(r)).ToArray();
+                await model.CalculateMs2Async(range, subs, token).ConfigureAwait(false);
             }
         }
 
