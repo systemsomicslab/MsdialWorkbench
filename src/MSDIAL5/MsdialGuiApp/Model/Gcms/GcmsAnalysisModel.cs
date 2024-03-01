@@ -241,7 +241,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         public void SetUnknown() => _spectrumFeatures.SelectedSpectrum.Value?.SetUnknown(UndoManager);
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {
-            return new LoadChromatogramsUsecase(_ticLoader, _bpcLoader, _eicLoader, _peaks, _peakPickParameter);
+            return new LoadChromatogramsUsecase(_ticLoader, _bpcLoader, _eicLoader, _peaks, _projectParameter.IonMode, _peakPickParameter);
         }
 
         public AccumulateSpectraUsecase AccumulateSpectraUsecase { get; }

@@ -350,7 +350,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public AccumulateSpectraUsecase AccumulateSpectraUsecase { get; }
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {
-            return new LoadChromatogramsUsecase(_ticLoader, _bpcLoader, RtEicLoader, _accumulatedPeakModels, _parameter.PeakPickBaseParam);
+            return new LoadChromatogramsUsecase(_ticLoader, _bpcLoader, RtEicLoader, _accumulatedPeakModels, _parameter.ProjectParam.IonMode, _parameter.PeakPickBaseParam);
         }
 
         private Task<List<SpectrumPeakWrapper>> LoadMsSpectrumAsync(ChromatogramPeakFeatureModel? target, CancellationToken token) {

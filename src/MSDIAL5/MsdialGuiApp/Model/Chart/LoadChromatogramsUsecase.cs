@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
@@ -16,16 +17,18 @@ namespace CompMs.App.Msdial.Model.Chart
     internal sealed class LoadChromatogramsUsecase : BindableBase
     {
         private readonly ObservableCollection<ChromatogramPeakFeatureModel> _peaks;
+        private readonly IonMode _ionMode;
         private readonly PeakPickBaseParameter _peakPickParameter;
         private readonly IWholeChromatogramLoader _ticLoader;
         private readonly IWholeChromatogramLoader _bpcLoader;
         private readonly IWholeChromatogramLoader<(double, double)> _eicLoader;
 
-        public LoadChromatogramsUsecase(IWholeChromatogramLoader ticLoader, IWholeChromatogramLoader bpcLoader, IWholeChromatogramLoader<(double, double)> eicLoader, ObservableCollection<ChromatogramPeakFeatureModel> peaks, PeakPickBaseParameter peakPickParameter) {
+        public LoadChromatogramsUsecase(IWholeChromatogramLoader ticLoader, IWholeChromatogramLoader bpcLoader, IWholeChromatogramLoader<(double, double)> eicLoader, ObservableCollection<ChromatogramPeakFeatureModel> peaks, IonMode ionMode, PeakPickBaseParameter peakPickParameter) {
             _ticLoader = ticLoader;
             _bpcLoader = bpcLoader;
             _eicLoader = eicLoader;
             _peaks = peaks;
+            _ionMode = ionMode;
             _peakPickParameter = peakPickParameter;
         }
 
@@ -58,7 +61,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 builder.AddHighestEic();
             }
             if (!displayEICs.IsEmptyOrNull()) {
-                builder.AddEics(displayEICs);
+                builder.AddEics(displayEICs, _ionMode);
             }
             builder.Build();
             return builder.ChromatogramsModel!;
@@ -108,7 +111,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 _contents.Add("most abundant ion's EIC");
             }
 
-            public void AddEics(List<PeakFeatureSearchValue> displayEICs) {
+            public void AddEics(List<PeakFeatureSearchValue> displayEICs, IonMode ionMode) {
                 var counter = 0;
                 foreach (var set in displayEICs) {
                     var eic = _eicLoader.LoadChromatogram((set.Mass, set.MassTolerance));
@@ -117,7 +120,7 @@ namespace CompMs.App.Msdial.Model.Chart
                         title += "; ";
                     }
                     title += $"[{Math.Round(set.Mass - set.MassTolerance, 4)}-{Math.Round(set.Mass + set.MassTolerance, 4)}]";
-                    var chrom = new DisplayExtractedIonChromatogram(eic, set.Mass, set.MassTolerance, new Pen(ChartBrushes.GetChartBrush(counter), 1.0), title);
+                    var chrom = new DisplayExtractedIonChromatogram(eic, set.Mass, set.MassTolerance, ionMode, new Pen(ChartBrushes.GetChartBrush(counter), 1.0), title);
                     counter++;
                     _displayChroms.Add(chrom);
                 }
