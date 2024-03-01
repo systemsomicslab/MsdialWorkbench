@@ -37,7 +37,7 @@ public static class DataProviderExtensions {
     /// <param name="end">The upper bound of the retention time range.</param>
     /// <param name="token">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>A task that represents the asynchronous operation and returns an array of <see cref="RawSpectrum"/> objects within the specified retention time range.</returns>
-    public static async Task<RawSpectrum[]> LoadMs2SpectraWithRtRange(this IDataProvider provider, double start, double end, CancellationToken token) {
+    public static async Task<RawSpectrum[]> LoadMs2SpectraWithRtRangeAsync(this IDataProvider provider, double start, double end, CancellationToken token) {
         var spectra = await provider.LoadMsNSpectrumsAsync(2, token).ConfigureAwait(false);
         var lower = spectra.LowerBound(start, (t, s) => t.ScanStartTime.CompareTo(s));
         var upper = lower;
