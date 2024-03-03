@@ -11,7 +11,7 @@
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.MsResult"
              d:DataContext="{d:DesignInstance Type={x:Type vm:AccumulatedMs2SpectrumViewModel}}"
              d:Background="White"
-             d:DesignHeight="600" d:DesignWidth="370" >
+             d:DesignHeight="600" d:DesignWidth="800" >
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -20,76 +20,99 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid DataContext="{Binding SpectrumViewModel}">
-        <chart:SimpleChartControl HorizontalAxis="{Binding HorizontalAxis.Value}"
-                                  GraphTitle="{Binding Labels.GraphTitle}"
-                                  HorizontalTitle="{Binding Labels.HorizontalTitle}"
-                                  VerticalTitle="{Binding SelectedVerticalAxisItem.Value.GraphLabel}"
-                                  VerticalAxis="{Binding SelectedVerticalAxisItem.Value.AxisManager}">
-            <chart:SimpleChartControl.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Save image as...">
-                        <MenuItem Header="Save as emf"
-                                  Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
-                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                        <MenuItem Header="Save as png"
-                                  Command="{x:Static io:SaveImageAsCommand.PngInstance}"
-                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                    </MenuItem>
-                    <MenuItem Header="Copy image as...">
-                        <MenuItem Header="Copy as emf"
-                                  Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
-                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                        <MenuItem Header="Copy as png"
-                                  Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
-                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                    </MenuItem>
-                </ContextMenu>
-            </chart:SimpleChartControl.ContextMenu>
-            <Grid core:ChartBaseControl.VerticalAxis="{Binding SelectedVerticalAxisItem.Value.AxisManager}">
-                <StackPanel VerticalAlignment="Center">
-                    <StackPanel.Style>
-                        <Style TargetType="StackPanel">
-                            <Setter Property="Visibility" Value="Visible"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding SpectrumLoaded.Value, Mode=OneWay}" Value="True">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </StackPanel.Style>
-                    <TextBlock Text="Loading ..." HorizontalAlignment="Center" FontSize="16" Margin="16"/>
-                    <ProgressBar IsIndeterminate="True" HorizontalAlignment="Center" Width="160" Height="16"/>
-                </StackPanel>
-                <chart:LineSpectrumControlSlim ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
-                                               DataType="{x:Type components:SpectrumPeak}"
-                                               HorizontalProperty="{Binding HorizontalProperty}"
-                                               VerticalProperty="{Binding VerticalProperty}"
-                                               LineBrush="{Binding Brush.Value}"
-                                               LineThickness="{Binding LineThickness.Value}"
-                                               HueProperty="SpectrumComment">
-                    <chart:LineSpectrumControlSlim.ToolTip>
-                        <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
-                                 d:DataContext="{d:DesignInstance Type={x:Type chart:LineSpectrumControlSlim}}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="m/z: "/>
-                                <TextBlock Text="{Binding FocusedItem.Mass}"/>
-                                <TextBlock Text=" Intensity: "/>
-                                <TextBlock Text="{Binding FocusedItem.Intensity}"/>
-                            </StackPanel>
-                        </ToolTip>
-                    </chart:LineSpectrumControlSlim.ToolTip>
-                </chart:LineSpectrumControlSlim>
-                <chart:Annotator ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
-                                 HorizontalPropertyName="{Binding HorizontalProperty}"
-                                 VerticalPropertyName="{Binding VerticalProperty}"
-                                 LabelPropertyName="{Binding Labels.AnnotationLabelProperty}"
-                                 OrderingPropertyName="{Binding Labels.AnnotationOrderProperty}"
-                                 Brush="Black"
-                                 Overlap="Horizontal, Direct"
-                                 Format="F4"
-                                 ClipToBounds="True"/>
-            </Grid>
-        </chart:SimpleChartControl>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid DataContext="{Binding SpectrumViewModel}"
+              Margin="4"
+              Grid.Column="0">
+            <chart:SimpleChartControl HorizontalAxis="{Binding HorizontalAxis.Value}"
+                                      GraphTitle="{Binding Labels.GraphTitle}"
+                                      HorizontalTitle="{Binding Labels.HorizontalTitle}"
+                                      VerticalTitle="{Binding SelectedVerticalAxisItem.Value.GraphLabel}"
+                                      VerticalAxis="{Binding SelectedVerticalAxisItem.Value.AxisManager}">
+                <chart:SimpleChartControl.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Save image as...">
+                            <MenuItem Header="Save as emf"
+                                      Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                            <MenuItem Header="Save as png"
+                                      Command="{x:Static io:SaveImageAsCommand.PngInstance}"
+                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        </MenuItem>
+                        <MenuItem Header="Copy image as...">
+                            <MenuItem Header="Copy as emf"
+                                      Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                            <MenuItem Header="Copy as png"
+                                      Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
+                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        </MenuItem>
+                    </ContextMenu>
+                </chart:SimpleChartControl.ContextMenu>
+                <Grid core:ChartBaseControl.VerticalAxis="{Binding SelectedVerticalAxisItem.Value.AxisManager}">
+                    <StackPanel VerticalAlignment="Center">
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SpectrumLoaded.Value, Mode=OneWay}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        <TextBlock Text="Loading ..." HorizontalAlignment="Center" FontSize="16" Margin="16"/>
+                        <ProgressBar IsIndeterminate="True" HorizontalAlignment="Center" Width="160" Height="16"/>
+                    </StackPanel>
+                    <chart:LineSpectrumControlSlim ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
+                                                   DataType="{x:Type components:SpectrumPeak}"
+                                                   HorizontalProperty="{Binding HorizontalProperty}"
+                                                   VerticalProperty="{Binding VerticalProperty}"
+                                                   LineBrush="{Binding Brush.Value}"
+                                                   LineThickness="{Binding LineThickness.Value}"
+                                                   HueProperty="SpectrumComment">
+                        <chart:LineSpectrumControlSlim.ToolTip>
+                            <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                                     d:DataContext="{d:DesignInstance Type={x:Type chart:LineSpectrumControlSlim}}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="m/z: "/>
+                                    <TextBlock Text="{Binding FocusedItem.Mass}"/>
+                                    <TextBlock Text=" Intensity: "/>
+                                    <TextBlock Text="{Binding FocusedItem.Intensity}"/>
+                                </StackPanel>
+                            </ToolTip>
+                        </chart:LineSpectrumControlSlim.ToolTip>
+                    </chart:LineSpectrumControlSlim>
+                    <chart:Annotator ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
+                                     HorizontalPropertyName="{Binding HorizontalProperty}"
+                                     VerticalPropertyName="{Binding VerticalProperty}"
+                                     LabelPropertyName="{Binding Labels.AnnotationLabelProperty}"
+                                     OrderingPropertyName="{Binding Labels.AnnotationOrderProperty}"
+                                     Brush="Black"
+                                     Overlap="Horizontal, Direct"
+                                     Format="F4"
+                                     ClipToBounds="True"/>
+                </Grid>
+            </chart:SimpleChartControl>
+        </Grid>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0">
+                <Button Content="Search" Command="{Binding SearchCompoundCommand, Mode=OneTime}"/>
+            </StackPanel>
+            <DataGrid ItemsSource="{Binding Compounds.Value}"
+                      Margin="4" Grid.Row="1">
+                
+            </DataGrid>
+        </Grid>
     </Grid>
 </UserControl>

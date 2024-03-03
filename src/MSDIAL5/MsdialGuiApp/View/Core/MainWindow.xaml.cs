@@ -116,7 +116,7 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<ExportMrmprobsViewModel>()
                 .Subscribe(ShowChildSettingDialog<ExportMrmprobsView>("MRMPROBS reference library export", height: 560, width: 560, finishCommandContent: "Export"));
             broker.ToObservable<AccumulatedMs2SpectrumViewModel>()
-                .Subscribe(ShowChildContent<AccumulatedMs2SpectrumView>("", height: 600, width: 400));
+                .Subscribe(ShowChildContent<AccumulatedMs2SpectrumView>("", height: 600, width: 800));
             /*
             broker.ToObservable<PeakSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<AlignmentSpotTable>);
