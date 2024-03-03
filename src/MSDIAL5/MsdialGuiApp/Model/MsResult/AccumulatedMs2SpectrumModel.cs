@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Export;
 using Reactive.Bindings.Extensions;
@@ -49,7 +50,6 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
                 }
                 else {
                     _subject.OnNext(null);
-
                 }
             }
         }
@@ -67,6 +67,12 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
         private set => SetProperty(ref _compounds, value);
     }
     private IReadOnlyList<ICompoundResult>? _compounds;
+
+    public AxisRange? SelectedRange {
+        get => _selectedRange;
+        set => SetProperty(ref _selectedRange, value);
+    }
+    private AxisRange? _selectedRange;
 
     public async Task CalculateMs2Async((double start, double end) baseRange, IEnumerable<(double start, double end)> subtracts, CancellationToken token = default) {
         Scan = await _accumulateSpectra.AccumulateMs2Async(Chromatogram.Mz, Chromatogram.Tolerance, baseRange, subtracts, token).ConfigureAwait(false);

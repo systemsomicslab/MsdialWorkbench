@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace CompMs.App.Msdial.ViewModel.MsResult
             SpectrumViewModel = new SingleSpectrumViewModel(model.ChartSpectrumModel).AddTo(Disposables);
 
             Compounds = model.ObserveProperty(m => m.Compounds).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            SelectedRange = model.ToReactivePropertySlimAsSynchronized(m => m.SelectedRange).AddTo(Disposables);
 
             SearchCompoundCommand = new ReactiveCommand().WithSubscribe(model.SearchCompound).AddTo(Disposables);
         }
@@ -24,6 +26,8 @@ namespace CompMs.App.Msdial.ViewModel.MsResult
 
         public double Mz => Model.Chromatogram.Mz;
         public SingleSpectrumViewModel SpectrumViewModel { get; }
+
+        public ReactivePropertySlim<AxisRange?> SelectedRange { get; }
 
         public ReadOnlyReactivePropertySlim<IReadOnlyList<ICompoundResult>?> Compounds { get; }
 

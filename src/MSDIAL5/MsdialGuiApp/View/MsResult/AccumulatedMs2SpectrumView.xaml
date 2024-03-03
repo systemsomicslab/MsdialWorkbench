@@ -33,6 +33,9 @@
                                       HorizontalTitle="{Binding Labels.HorizontalTitle}"
                                       VerticalTitle="{Binding SelectedVerticalAxisItem.Value.GraphLabel}"
                                       VerticalAxis="{Binding SelectedVerticalAxisItem.Value.AxisManager}">
+                <chart:SimpleChartControl.RenderAreaControlState>
+                    <chart:RenderAreaControlState MoveByDragIsEnabled="False"/>
+                </chart:SimpleChartControl.RenderAreaControlState>
                 <chart:SimpleChartControl.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Save image as...">
@@ -96,6 +99,9 @@
                                      Overlap="Horizontal, Direct"
                                      Format="F4"
                                      ClipToBounds="True"/>
+                    <chart:RangeSelector SelectedRange="{Binding DataContext.SelectedRange.Value, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                         Background="Transparent"
+                                         ClipToBounds="True"/>
                 </Grid>
             </chart:SimpleChartControl>
         </Grid>
