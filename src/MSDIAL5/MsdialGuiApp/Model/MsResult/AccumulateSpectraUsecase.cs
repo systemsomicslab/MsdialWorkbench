@@ -3,7 +3,6 @@ using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -24,19 +23,6 @@ namespace CompMs.App.Msdial.Model.MsResult
             _ionMode = ionMode;
         }
 
-        public async Task<MSScanProperty> AccumulateMs2Async(double mz, double mzTolerance, double rtStart, double rtEnd, CancellationToken token = default) {
-            var spectrum = await _provider.LoadMsNSpectrumsAsync(level: 2, token).ConfigureAwait(false);
-            var filtered = spectrum.Where(s => Math.Abs(s.Precursor.SelectedIonMz - mz) < mzTolerance).ToArray();
-            var peaks = DataAccess.GetAverageSpectrum(filtered, rtStart, rtEnd, _parameter.CentroidMs2Tolerance);
-            return new MSScanProperty
-            {
-                PrecursorMz = mz,
-                IonMode = _ionMode,
-                ChromXs = new ChromXs(new RetentionTime((rtStart + rtEnd) / 2, ChromXUnit.Min)),
-                Spectrum = peaks,
-            };
-        }
-
         public async Task<MSScanProperty> AccumulateMs2Async(double mz, double mzTolerance, (double rtStart, double rtEnd) rtRange, IEnumerable<(double rtStart, double rtEnd)> subtracts, CancellationToken token = default) {
             var provider = _provider.FilterByMz(mz, mzTolerance).Cache();
             var (rtStart, rtEnd) = rtRange;
@@ -48,13 +34,15 @@ namespace CompMs.App.Msdial.Model.MsResult
             var subPeaks = DataAccess.GetAverageSpectrum(subs.SelectMany(s => s).ToArray(), _parameter.CentroidMs2Tolerance);
             var subtracted = DataAccess.GetSubtractSpectrum(peaks, subPeaks, _parameter.CentroidMs2Tolerance);
 
-            return new MSScanProperty
+            var rt = new RetentionTime((rtStart + rtEnd) / 2, ChromXUnit.Min);
+            var scan = new MSScanProperty
             {
                 PrecursorMz = mz,
                 IonMode = _ionMode,
-                ChromXs = new ChromXs(new RetentionTime((rtStart + rtEnd) / 2, ChromXUnit.Min)),
+                ChromXs = new ChromXs(rt),
                 Spectrum = subtracted,
             };
+            return scan;
         }
     }
 }

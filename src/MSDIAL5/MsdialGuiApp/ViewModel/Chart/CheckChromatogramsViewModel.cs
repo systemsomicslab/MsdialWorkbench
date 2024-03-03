@@ -75,7 +75,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .WithSubscribe(model.Clear)
                 .AddTo(Disposables);
 
-            ShowAccumulatedSpectrumCommand = new AsyncReactiveCommand<AccumulatedMs2SpectrumViewModel>()
+            ShowAccumulatedSpectrumCommand = RangeSelectableChromatogramViewModel.Select(vm => vm is not null)
+                .ToAsyncReactiveCommand<AccumulatedMs2SpectrumViewModel>()
                 .WithSubscribe(vm => ShowAccumulatedSpectrumAsync(vm, default)).AddTo(Disposables);
         }
 

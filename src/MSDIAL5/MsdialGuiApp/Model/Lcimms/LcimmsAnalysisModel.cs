@@ -214,6 +214,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             _msdecResult = msdecResult;
 
             var compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper);
+            CompoundSearcher = new LcimmsCompoundSearchUsecase(compoundSearchers.Items);
             var rawLoader = new MultiMsmsRawSpectrumLoader(spectrumProvider, parameter);
             var decSpecLoader = new MsDecSpectrumLoader(decLoader, Ms1Peaks);
             MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => t?.MatchResultsModel)).AddTo(Disposables);
@@ -292,7 +293,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
 
             CompoundSearchModel = target
-                .CombineLatest(msdecResult, (t, r) => t is null || r is null ? null : CreateCompoundearchModel(t, r, compoundSearchers))
+                .CombineLatest(msdecResult, (t, r) => t is null || r is null ? null : CreateCompoundearchModel(t, r))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -326,9 +327,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
         public ReadOnlyReactivePropertySlim<CompoundSearchModel<PeakSpotModel>?> CompoundSearchModel { get; }
+        public LcimmsCompoundSearchUsecase CompoundSearcher { get; }
         public IObservable<bool> CanSearchCompound { get; }
 
-        private CompoundSearchModel<PeakSpotModel>? CreateCompoundearchModel(ChromatogramPeakFeatureModel peak, MSDecResult msdec, CompoundSearcherCollection compoundSearchers) {
+        private CompoundSearchModel<PeakSpotModel>? CreateCompoundearchModel(ChromatogramPeakFeatureModel peak, MSDecResult msdec) {
             if (peak is null || msdec is null) {
                 _broker.Publish(new ShortMessageRequest(MessageHelper.NoPeakSelected));
                 return null;
@@ -338,7 +340,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var compoundSearchModel = new CompoundSearchModel<PeakSpotModel>(
                 _analysisFileModel,
                 new PeakSpotModel(peak, msdec),
-                new LcimmsCompoundSearchUsecase(compoundSearchers.Items),
+                CompoundSearcher,
                 plotService,
                 new SetAnnotationUsecase(peak, peak.MatchResultsModel, _undoManager));
             compoundSearchModel.Disposables.Add(plotService);
@@ -376,6 +378,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public LcimmsAnalysisPeakTableModel PeakTableModel { get; }
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
+
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
         public void SearchFragment() {

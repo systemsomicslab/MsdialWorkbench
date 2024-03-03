@@ -74,6 +74,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             _broker = broker;
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper);
             _undoManager = new UndoManager().AddTo(Disposables);
+            CompoundSearcher = new LcmsCompoundSearchUsecase(_compoundSearchers.Items);
 
             var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Dt & ~FilterEnableStatus.Protein;
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
@@ -261,6 +262,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
 
         public AccumulateSpectraUsecase AccumulateSpectraUsecase { get; }
+        public LcmsCompoundSearchUsecase CompoundSearcher { get; }
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {
             return new LoadChromatogramsUsecase(_ticLoader, _bpcLoader, EicLoader, Ms1Peaks, _parameter.ProjectParam.IonMode, _parameter.PeakPickBaseParam);
@@ -276,7 +278,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             var compoundSearch = new CompoundSearchModel<PeakSpotModel>(
                 AnalysisFileModel,
                 new PeakSpotModel(Target.Value, MsdecResult.Value),
-                new LcmsCompoundSearchUsecase(_compoundSearchers.Items),
+                CompoundSearcher,
                 plotService,
                 new SetAnnotationUsecase(Target.Value, Target.Value.MatchResultsModel, _undoManager));
             compoundSearch.Disposables.Add(plotService);

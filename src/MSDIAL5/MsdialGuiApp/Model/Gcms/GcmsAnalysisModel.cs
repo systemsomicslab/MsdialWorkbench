@@ -66,6 +66,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             _calculateMatchScore = calculateMatchScore;
             _broker = broker;
             UndoManager = new UndoManager().AddTo(_disposables);
+            CompoundSearcher = new GcmsAnalysisCompoundSearchUsecase(_calculateMatchScore);
 
             var selectedSpectrum = _spectrumFeatures.SelectedSpectrum;
             var evaluator = FacadeMatchResultEvaluator.FromDataBases(dbStorage);
@@ -234,6 +235,8 @@ namespace CompMs.App.Msdial.Model.Gcms
         public GcmsAnalysisPeakTableModel PeakTableModel { get; }
         public UndoManager UndoManager { get; }
 
+        public GcmsAnalysisCompoundSearchUsecase CompoundSearcher { get; }
+
         public IObservable<bool> CanSetUnknown => _spectrumFeatures.SelectedSpectrum.Select(t => !(t is null));
 
         public FocusNavigatorModel FocusNavigatorModel { get; }
@@ -255,7 +258,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             var compoundSearch = new CompoundSearchModel<Ms1BasedSpectrumFeature>(
                 _file,
                 spectrumFeature,
-                new GcmsAnalysisCompoundSearchUsecase(_calculateMatchScore),
+                CompoundSearcher,
                 plotService,
                 new SetAnnotationUsecase(spectrumFeature.Molecule, spectrumFeature.MatchResults, UndoManager));
             compoundSearch.Disposables.Add(plotService);

@@ -68,6 +68,7 @@ namespace CompMs.App.Msdial.Model.Imms
             _parameter = parameter;
             _broker = broker;
             _undoManager = new UndoManager().AddTo(Disposables);
+            CompoundSearcher = new ImmsCompoundSearchUsecase(_compoundSearchers.Items);
 
             var filterEnabled = FilterEnableStatus.All & ~FilterEnableStatus.Rt & ~FilterEnableStatus.Protein;
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
@@ -203,6 +204,8 @@ namespace CompMs.App.Msdial.Model.Imms
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
         public AccumulateSpectraUsecase AccumulateSpectraUsecase { get; }
+
+        public ImmsCompoundSearchUsecase CompoundSearcher { get; }
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {
             return new LoadChromatogramsUsecase(_ticLoader, _bpcLoader, EicLoader, Ms1Peaks, _parameter.ProjectParam.IonMode, _parameter.PeakPickBaseParam);

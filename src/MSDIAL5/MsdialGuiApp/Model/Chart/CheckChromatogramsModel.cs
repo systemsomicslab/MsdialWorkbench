@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.MsResult;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
@@ -17,13 +18,15 @@ namespace CompMs.App.Msdial.Model.Chart
     internal sealed class CheckChromatogramsModel : BindableBase
     {
         private readonly AccumulateSpectraUsecase _accumulateSpectra;
+        private readonly ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? _compoundSearch;
         private readonly AdvancedProcessOptionBaseParameter _advancedProcessParameter;
         private readonly List<PeakFeatureSearchValue> _displaySettingValueCandidates;
         private readonly ObservableCollection<PeakFeatureSearchValueModel> _displaySettingValues;
 
-        public CheckChromatogramsModel(LoadChromatogramsUsecase loadingChromatograms, AccumulateSpectraUsecase accumulateSpectra, AdvancedProcessOptionBaseParameter advancedProcessParameter) {
+        public CheckChromatogramsModel(LoadChromatogramsUsecase loadingChromatograms, AccumulateSpectraUsecase accumulateSpectra, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? compoundSearch, AdvancedProcessOptionBaseParameter advancedProcessParameter) {
             LoadChromatogramsUsecase = loadingChromatograms ?? throw new ArgumentNullException(nameof(loadingChromatograms));
             _accumulateSpectra = accumulateSpectra;
+            _compoundSearch = compoundSearch;
             _advancedProcessParameter = advancedProcessParameter;
             advancedProcessParameter.DiplayEicSettingValues ??= new List<PeakFeatureSearchValue>();
             var values = advancedProcessParameter.DiplayEicSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0).ToList();
@@ -74,12 +77,14 @@ namespace CompMs.App.Msdial.Model.Chart
             _advancedProcessParameter.DiplayEicSettingValues.AddRange(_displaySettingValueCandidates.Where(n => n.Mass > 0 && n.MassTolerance > 0));
             var displayEICs = _advancedProcessParameter.DiplayEicSettingValues;
 
-            Chromatograms = LoadChromatogramsUsecase.Load(displayEICs);
-            RangeSelectableChromatogramModel = new RangeSelectableChromatogramModel(Chromatograms);
-            AccumulatedMs2SpectrumModels = Chromatograms.DisplayChromatograms
-                .OfType<DisplayExtractedIonChromatogram>()
-                .Select(c => new AccumulatedMs2SpectrumModel(c, _accumulateSpectra))
-                .ToArray();
+            if (_compoundSearch is not null) {
+                Chromatograms = LoadChromatogramsUsecase.Load(displayEICs);
+                RangeSelectableChromatogramModel = new RangeSelectableChromatogramModel(Chromatograms);
+                AccumulatedMs2SpectrumModels = Chromatograms.DisplayChromatograms
+                    .OfType<DisplayExtractedIonChromatogram>()
+                    .Select(c => new AccumulatedMs2SpectrumModel(c, _accumulateSpectra, _compoundSearch))
+                    .ToArray();
+            }
         }
 
         public async Task AccumulateAsync(AccumulatedMs2SpectrumModel model, CancellationToken token) {
