@@ -101,6 +101,27 @@ namespace CompMs.MsdialCore.DataObj
             return new Chromatogram(driftBinToChromPeak.Values.OrderBy(n => n.ChromXs.Value).ToList(), ChromXType.Drift, ChromXUnit.Msec);
         }
 
+        /// <summary>
+        /// Retrieves a chromatogram for product ions based on specified precursor and product m/z ranges, 
+        /// using the provided chromatogram range settings.
+        /// </summary>
+        /// <param name="precursor">The m/z range for the precursor ions.</param>
+        /// <param name="product">The m/z range for the product ions.</param>
+        /// <param name="chromatogramRange">Specifies the range and type of the chromatogram to be generated, 
+        /// including the chromatogram type (e.g., retention time, drift time) and unit.</param>
+        /// <returns>A <see cref="Chromatogram"/> object representing the chromatogram of product ions 
+        /// within the specified precursor and product m/z ranges and chromatogram range.</returns>
+        /// <remarks>
+        /// This method dynamically selects or constructs an appropriate implementation for generating the chromatogram
+        /// based on the type and unit of the chromatogram specified in <paramref name="chromatogramRange"/>.
+        /// It delegates the actual generation of the chromatogram to the selected implementation, ensuring that
+        /// the chromatogram is generated in accordance with the specified parameters.
+        /// </remarks>
+        public Chromatogram GetProductIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange) {
+            var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
+            return impl.GetProductIonChromatogram(precursor, product, chromatogramRange);
+        }
+
         private static void SetChromatogramPeak(RawSpectrum spectrum, float mz, float mztol, Dictionary<int, ChromatogramPeak> driftBinToChromPeak, Dictionary<int, double> driftBinToBasePeakIntensity) {
             var driftTime = spectrum.DriftTime;
             var driftBin = (int)(driftTime * 1000);
@@ -132,15 +153,15 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         private IChromatogramTypedSpectra BuildIfNotExists(ChromXType type, ChromXUnit unit) {
-            return _spectraImpls.GetOrAdd((type, unit), pair => new Lazy<IChromatogramTypedSpectra>(() => BuildTypedSpectra(_spectra, pair.Item1, pair.Item2, _ionMode))).Value;
+            return _spectraImpls.GetOrAdd((type, unit), pair => new Lazy<IChromatogramTypedSpectra>(() => BuildTypedSpectra(_spectra, pair.Item1, pair.Item2, _ionMode, _acquisitionType))).Value;
         }
 
-        private static IChromatogramTypedSpectra BuildTypedSpectra(IReadOnlyList<RawSpectrum> spectra, ChromXType type, ChromXUnit unit, IonMode ionMode) {
+        private static IChromatogramTypedSpectra BuildTypedSpectra(IReadOnlyList<RawSpectrum> spectra, ChromXType type, ChromXUnit unit, IonMode ionMode, AcquisitionType acquisitionType) {
             switch (type) {
                 case ChromXType.RT:
-                    return new RetentionTimeTypedSpectra(spectra, unit, ionMode);
+                    return new RetentionTimeTypedSpectra(spectra, unit, ionMode, acquisitionType);
                 case ChromXType.Drift:
-                    return new DriftTimeTypedSpectra(spectra, unit, ionMode);
+                    return new DriftTimeTypedSpectra(spectra, unit, ionMode, acquisitionType);
                 default:
                     throw new ArgumentException($"ChromXType {type} is not supported.");
             }

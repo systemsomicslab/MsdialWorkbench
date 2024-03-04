@@ -10,18 +10,19 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.DataObj
 {
-    internal class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
+    internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
     {
         private readonly ChromXUnit _unit;
+        private readonly AcquisitionType _acquisitionType;
         private readonly ScanPolarity _polarity;
         private readonly List<RawSpectrum> _spectra;
         private readonly RetentionTime[] _idToRetentionTime;
         private readonly ConcurrentDictionary<int, Spectrum> _lazySpectra;
         private readonly int[] _ms1Counts;
 
-        public RetentionTimeTypedSpectra(IReadOnlyList<RawSpectrum> spectra, ChromXUnit unit, IonMode ionMode) {
+        public RetentionTimeTypedSpectra(IReadOnlyList<RawSpectrum> spectra, ChromXUnit unit, IonMode ionMode, AcquisitionType acquisitionType) {
             _unit = unit;
-
+            _acquisitionType = acquisitionType;
             _polarity = ionMode switch
             {
                 IonMode.Positive => ScanPolarity.Positive,
@@ -135,6 +136,35 @@ namespace CompMs.MsdialCore.DataObj
                     continue;
                 }
                 var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveTotalIntensity();
+                results.Add(ChromatogramPeak.Create(_spectra[i].Index, basePeakMz, summedIntensity, _idToRetentionTime[i]));
+            }
+            return new Chromatogram(results, ChromXType.RT, _unit);
+        }
+
+        /// <summary>
+        /// Generates a chromatogram for product ions within specified precursor and product m/z ranges and a chromatogram time range.
+        /// </summary>
+        /// <param name="precursor">The m/z range of the precursor ions.</param>
+        /// <param name="product">The m/z range of the product ions.</param>
+        /// <param name="chromatogramRange">The range of retention times to include in the chromatogram.</param>
+        /// <returns>A <see cref="Chromatogram"/> object representing the intensity of product ions across the specified retention time range.</returns>
+        /// <remarks>
+        /// This method filters spectra based on their MS level, the specified precursor and product m/z ranges, and the scan polarity.
+        /// It then calculates the summed intensity of product ions that fall within the specified product m/z range for each spectrum,
+        /// creating a chromatogram peak for each qualifying spectrum. The resulting chromatogram provides a visualization of
+        /// how the intensity of specified product ions changes over the selected range of retention times.
+        /// </remarks>
+        public Chromatogram GetProductIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange) {
+            var startIndex = _spectra.LowerBound(chromatogramRange.Begin, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
+            var endIndex = _spectra.UpperBound(chromatogramRange.End, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
+            var results = new List<ChromatogramPeak>();
+            for (int i = startIndex; i < endIndex; i++) {
+                if (_spectra[i].MsLevel != 2 ||
+                    !_spectra[i].Precursor.ContainsMz(precursor.Mz, precursor.Tolerance, _acquisitionType) ||
+                    _spectra[i].ScanPolarity != _polarity) {
+                    continue;
+                }
+                var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveBin(product.Mz, product.Tolerance);
                 results.Add(ChromatogramPeak.Create(_spectra[i].Index, basePeakMz, summedIntensity, _idToRetentionTime[i]));
             }
             return new Chromatogram(results, ChromXType.RT, _unit);
