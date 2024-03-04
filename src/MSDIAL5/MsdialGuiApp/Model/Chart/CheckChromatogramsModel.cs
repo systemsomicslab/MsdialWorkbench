@@ -76,9 +76,9 @@ namespace CompMs.App.Msdial.Model.Chart
             _advancedProcessParameter.DiplayEicSettingValues.Clear();
             _advancedProcessParameter.DiplayEicSettingValues.AddRange(_displaySettingValueCandidates.Where(n => n.Mass > 0 && n.MassTolerance > 0));
             var displayEICs = _advancedProcessParameter.DiplayEicSettingValues;
+            Chromatograms = LoadChromatogramsUsecase.Load(displayEICs);
 
             if (_compoundSearch is not null) {
-                Chromatograms = LoadChromatogramsUsecase.Load(displayEICs);
                 RangeSelectableChromatogramModel = new RangeSelectableChromatogramModel(Chromatograms);
                 AccumulatedMs2SpectrumModels = Chromatograms.DisplayChromatograms
                     .OfType<DisplayExtractedIonChromatogram>()
