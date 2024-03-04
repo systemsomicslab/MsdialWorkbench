@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.DataObj
 {
-    public class RawSpectra
+    public class RawSpectra : IRawSpectra
     {
         private readonly ConcurrentDictionary<(ChromXType, ChromXUnit), Lazy<IChromatogramTypedSpectra>> _spectraImpls;
         private readonly IReadOnlyList<RawSpectrum> _spectra;
