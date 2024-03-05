@@ -10,6 +10,7 @@ using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -46,6 +47,7 @@ namespace CompMs.App.Msdial.Model.Imms
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly TicLoader _ticLoader;
         private readonly BpcLoader _bpcLoader;
+        private readonly ProductIonChromatogramLoader _productIonChromatogramLoader;
 
         public ImmsAnalysisModel(
             AnalysisFileBeanModel analysisFileModel,
@@ -100,6 +102,7 @@ namespace CompMs.App.Msdial.Model.Imms
             ChromatogramRange chromatogramRange = new ChromatogramRange(parameter.DriftTimeBegin, parameter.DriftTimeEnd, ChromXType.Drift, ChromXUnit.Msec);
             _ticLoader = new TicLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
             _bpcLoader = new BpcLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
+            _productIonChromatogramLoader = new ProductIonChromatogramLoader(new RawSpectra(provider.LoadMsNSpectrums(2), parameter.IonMode, analysisFileModel.File.AcquisitionType), chromatogramRange);
             EicModel = new EicModel(Target, eicLoader)
             {
                 HorizontalTitle = PlotModel.HorizontalTitle,
@@ -206,6 +209,8 @@ namespace CompMs.App.Msdial.Model.Imms
         public AccumulateSpectraUsecase AccumulateSpectraUsecase { get; }
 
         public ImmsCompoundSearchUsecase CompoundSearcher { get; }
+
+        public IWholeChromatogramLoader<(MzRange, MzRange)> ProductIonChromatogramLoader => _productIonChromatogramLoader;
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {
             return new LoadChromatogramsUsecase(_ticLoader, _bpcLoader, EicLoader, Ms1Peaks, _parameter.ProjectParam.IonMode, _parameter.PeakPickBaseParam);

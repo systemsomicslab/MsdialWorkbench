@@ -1,7 +1,9 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
@@ -20,12 +22,14 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
 {
     private readonly AccumulateSpectraUsecase _accumulateSpectra;
     private readonly ICompoundSearchUsecase<ICompoundResult, PeakSpotModel> _compoundSearch;
+    private readonly IWholeChromatogramLoader<(MzRange, MzRange)> _productIonChromatogramLoader;
     private readonly BehaviorSubject<MsSpectrum?> _subject;
 
-    public AccumulatedMs2SpectrumModel(DisplayExtractedIonChromatogram chromatogram, AccumulateSpectraUsecase accumulateSpectra, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel> compoundSearch) {
+    public AccumulatedMs2SpectrumModel(DisplayExtractedIonChromatogram chromatogram, AccumulateSpectraUsecase accumulateSpectra, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel> compoundSearch, IWholeChromatogramLoader<(MzRange, MzRange)> productIonChromatogramLoader) {
         Chromatogram = chromatogram;
         _accumulateSpectra = accumulateSpectra;
         _compoundSearch = compoundSearch;
+        _productIonChromatogramLoader = productIonChromatogramLoader;
         var subject = new BehaviorSubject<MsSpectrum?>(null).AddTo(Disposables);
         _subject = subject;
 
@@ -74,12 +78,28 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
     }
     private AxisRange? _selectedRange;
 
+    public ChromatogramsModel? ProductIonChromatogram {
+        get => _productIonChromatogram;
+        private set => SetProperty(ref _productIonChromatogram, value);
+    }
+    private ChromatogramsModel? _productIonChromatogram;
+
     public async Task CalculateMs2Async((double start, double end) baseRange, IEnumerable<(double start, double end)> subtracts, CancellationToken token = default) {
         Scan = await _accumulateSpectra.AccumulateMs2Async(Chromatogram.Mz, Chromatogram.Tolerance, baseRange, subtracts, token).ConfigureAwait(false);
         var anotatedSpot = new AnnotatedSpotModel(
             Chromatogram.DetectPeak(baseRange.start, baseRange.end),
             new MoleculeProperty());
         PeakSpot = new PeakSpotModel(anotatedSpot, Scan);
+    }
+
+    public void CalculateProductIonChromatogram() {
+        var axis = ChartSpectrumModel.HorizontalPropertySelectors.AxisItemSelector.SelectedAxisItem.AxisManager;
+        var (start, end) = new RangeSelection(SelectedRange).ConvertBy(axis);
+        var range = MzRange.FromRange(start, end);
+
+        var chromatogram = _productIonChromatogramLoader.LoadChromatogram((new MzRange(Chromatogram.Mz, Chromatogram.Tolerance), range));
+        var displayChromatogram = new DisplayChromatogram(chromatogram, title: $"Precursor m/z: {Chromatogram.Mz}±{Chromatogram.Tolerance}, Product ion: {start}-{end}");
+        ProductIonChromatogram = new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
     }
 
     public void SearchCompound() {

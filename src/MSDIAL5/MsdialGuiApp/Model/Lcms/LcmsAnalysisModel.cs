@@ -11,6 +11,7 @@ using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -44,6 +45,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private readonly IMessageBroker _broker;
         private readonly TicLoader _ticLoader;
         private readonly BpcLoader _bpcLoader;
+        private readonly ProductIonChromatogramLoader _productIonChromatogramLoader;
 
         public LcmsAnalysisModel(
             AnalysisFileBeanModel analysisFileModel,
@@ -117,6 +119,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             ChromatogramRange chromatogramRange = new ChromatogramRange(parameter.RetentionTimeBegin, parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
             _ticLoader = new TicLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
             _bpcLoader = new BpcLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
+            _productIonChromatogramLoader = new ProductIonChromatogramLoader(new RawSpectra(provider.LoadMsNSpectrums(2), parameter.IonMode, analysisFileModel.File.AcquisitionType), chromatogramRange);
             EicModel = new EicModel(Target, eicLoader) {
                 HorizontalTitle = PlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
@@ -262,6 +265,9 @@ namespace CompMs.App.Msdial.Model.Lcms
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
 
         public AccumulateSpectraUsecase AccumulateSpectraUsecase { get; }
+
+        public IWholeChromatogramLoader<(MzRange, MzRange)> ProductIonChromatogramLoader => _productIonChromatogramLoader;
+
         public LcmsCompoundSearchUsecase CompoundSearcher { get; }
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {

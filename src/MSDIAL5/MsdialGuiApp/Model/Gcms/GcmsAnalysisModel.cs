@@ -10,6 +10,7 @@ using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -52,6 +53,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly IMessageBroker _broker;
         private readonly IWholeChromatogramLoader _ticLoader, _bpcLoader;
         private readonly IWholeChromatogramLoader<(double, double)> _eicLoader;
+        private readonly IWholeChromatogramLoader<(MzRange, MzRange)> _productIonChromatogramLoader;
 
         public GcmsAnalysisModel(AnalysisFileBeanModel file, IDataProviderFactory<AnalysisFileBeanModel> providerFactory, MsdialGcmsParameter parameter, DataBaseMapper dbMapper, DataBaseStorage dbStorage, FilePropertiesModel projectBaseParameterModel, PeakFilterModel peakFilterModel, CalculateMatchScore calculateMatchScore, IMessageBroker broker) {
             var projectParameter = parameter.ProjectParam;
@@ -88,6 +90,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             _bpcLoader = new BpcLoader(rawSpectra, chromatogramRange, peakPickParameter);
             var eicLoader2 = Loader.EicLoader.BuildForAllRange(file.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
             _eicLoader = eicLoader2;
+            _productIonChromatogramLoader = new ProductIonChromatogramLoader(new RawSpectra(provider.LoadMsNSpectrums(2), parameter.IonMode, file.File.AcquisitionType), chromatogramRange);
 
             // Eic chart
             var eicLoader = new QuantMassEicLoader(file.File, provider, peakPickParameter, projectParameter.IonMode, ChromXType.RT, ChromXUnit.Min, peakPickParameter.RetentionTimeBegin, peakPickParameter.RetentionTimeEnd, isConstantRange: true);
@@ -242,6 +245,8 @@ namespace CompMs.App.Msdial.Model.Gcms
         public FocusNavigatorModel FocusNavigatorModel { get; }
 
         public void SetUnknown() => _spectrumFeatures.SelectedSpectrum.Value?.SetUnknown(UndoManager);
+
+        public IWholeChromatogramLoader<(MzRange, MzRange)> ProductIonChromatogramLoader => _productIonChromatogramLoader;
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {
             return new LoadChromatogramsUsecase(_ticLoader, _bpcLoader, _eicLoader, _peaks, _projectParameter.IonMode, _peakPickParameter);

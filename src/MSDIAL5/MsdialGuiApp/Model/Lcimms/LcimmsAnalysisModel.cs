@@ -10,6 +10,7 @@ using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.DataStructure;
 using CompMs.Common.Enum;
@@ -57,6 +58,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly ReadOnlyReactivePropertySlim<MSDecResult?> _msdecResult;
         private readonly TicLoader _ticLoader;
         private readonly BpcLoader _bpcLoader;
+        private readonly ProductIonChromatogramLoader _productIonChromatogramLoader;
         private readonly ObservableCollection<ChromatogramPeakFeatureModel> _accumulatedPeakModels;
 
         public LcimmsAnalysisModel(
@@ -174,6 +176,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             ChromatogramRange chromatogramRange = new ChromatogramRange(parameter.RetentionTimeBegin, parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
             _ticLoader = new TicLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
             _bpcLoader = new BpcLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
+            _productIonChromatogramLoader = new ProductIonChromatogramLoader(new RawSpectra(spectrumProvider.LoadMsNSpectrums(2), parameter.IonMode, analysisFileModel.File.AcquisitionType), chromatogramRange);
             var rtEicLoader = EicLoader.BuildForAllRange(analysisFileModel.File, accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
             RtEicLoader = EicLoader.BuildForPeakRange(analysisFileModel.File, accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
             RtEicModel = new EicModel(accumulatedTarget, rtEicLoader)
@@ -350,6 +353,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
 
         public AccumulateSpectraUsecase AccumulateSpectraUsecase { get; }
+
+        public IWholeChromatogramLoader<(MzRange, MzRange)> ProductIonChromatogramLoader => _productIonChromatogramLoader;
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {
             return new LoadChromatogramsUsecase(_ticLoader, _bpcLoader, RtEicLoader, _accumulatedPeakModels, _parameter.ProjectParam.IonMode, _parameter.PeakPickBaseParam);

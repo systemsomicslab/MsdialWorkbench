@@ -9,6 +9,7 @@
              xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
              xmlns:io="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.MsResult"
+             xmlns:mvvm="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
              d:DataContext="{d:DesignInstance Type={x:Type vm:AccumulatedMs2SpectrumViewModel}}"
              d:Background="White"
              d:DesignHeight="600" d:DesignWidth="800" >
@@ -25,9 +26,16 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.Resources>
+            <mvvm:BindingProxy x:Key="PICCommand" Data="{Binding CalculateProductIonChromatogramCommand, Mode=OneTime}"/>
+        </Grid.Resources>
         <Grid DataContext="{Binding SpectrumViewModel}"
               Margin="4"
-              Grid.Column="0">
+              Grid.Column="0" Grid.Row="0">
             <chart:SimpleChartControl HorizontalAxis="{Binding HorizontalAxis.Value}"
                                       GraphTitle="{Binding Labels.GraphTitle}"
                                       HorizontalTitle="{Binding Labels.HorizontalTitle}"
@@ -38,6 +46,8 @@
                 </chart:SimpleChartControl.RenderAreaControlState>
                 <chart:SimpleChartControl.ContextMenu>
                     <ContextMenu>
+                        <MenuItem Header="Show product ion chromatogram"
+                                  Command="{Binding Data, Source={StaticResource PICCommand}}"/>
                         <MenuItem Header="Save image as...">
                             <MenuItem Header="Save as emf"
                                       Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
@@ -99,14 +109,88 @@
                                      Overlap="Horizontal, Direct"
                                      Format="F4"
                                      ClipToBounds="True"/>
-                    <chart:RangeSelector SelectedRange="{Binding DataContext.SelectedRange.Value, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    <chart:RangeSelector SelectedRange="{Binding DataContext.SelectedRange.Value, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                          Background="Transparent"
                                          ClipToBounds="True"/>
                 </Grid>
             </chart:SimpleChartControl>
         </Grid>
 
-        <Grid Grid.Column="1">
+        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="160" />
+            </Grid.ColumnDefinitions>
+            <chart:SimpleChartControl HorizontalAxis="{Binding ProductIonChromatogram.Value.HorizontalSelector.SelectedAxisItem.AxisManager}"
+                                      VerticalAxis="{Binding ProductIonChromatogram.Value.VerticalSelector.SelectedAxisItem.AxisManager}"
+                                      HorizontalTitle="{Binding ProductIonChromatogram.Value.HorizontalSelector.SelectedAxisItem.GraphLabel}"
+                                      GraphTitle="{Binding ProductIonChromatogram.Value.GraphTitle}"
+                                      Background="WhiteSmoke"
+                                      BorderBrush="Black">
+                <chart:SimpleChartControl.RenderAreaControlState>
+                    <chart:RenderAreaControlState MoveByDragIsEnabled="False"/>
+                </chart:SimpleChartControl.RenderAreaControlState>
+                <chart:SimpleChartControl.Style>
+                    <Style TargetType="{x:Type chart:SimpleChartControl}" BasedOn="{StaticResource BasicChart}">
+                        <Setter Property="VerticalTitle">
+                            <Setter.Value>
+                                <MultiBinding StringFormat="{}{0}({1})">
+                                    <MultiBinding.Bindings>
+                                        <Binding Path="ProductIonChromatogram.Value.VerticalSelector.SelectedAxisItem.GraphLabel"/>
+                                        <Binding Path="ProductIonChromatogram.Value.VerticalSelector.SelectedAxisItem.AxisManager.UnitLabel"/>
+                                    </MultiBinding.Bindings>
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ProductIonChromatogram.Value.VerticalSelector.SelectedAxisItem.AxisManager.UnitLabel, TargetNullValue=''}" Value="">
+                                <Setter Property="VerticalTitle" Value="{Binding ProductIonChromatogram.Value.VerticalSelector.SelectedAxisItem.GraphLabel}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </chart:SimpleChartControl.Style>
+                <Grid>
+                    <ItemsControl DataContext="{Binding ProductIonChromatogram.Value}"
+                                  ItemsSource="{Binding DisplayChromatograms}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Grid/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <chart:LineChartControl ItemsSource="{Binding ChromatogramPeaks}"
+                                                        LinePen="{Binding LinePen}"
+                                                        HorizontalPropertyName="{Binding DataContext.HorizontalProperty, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                                        VerticalPropertyName="{Binding DataContext.VerticalProperty, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+                <chart:SimpleChartControl.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Save image as...">
+                            <MenuItem Header="Save as emf"
+                                      Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                            <MenuItem Header="Save as png"
+                                      Command="{x:Static io:SaveImageAsCommand.PngInstance}"
+                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        </MenuItem>
+                        <MenuItem Header="Copy image as...">
+                            <MenuItem Header="Copy as emf"
+                                      Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                            <MenuItem Header="Copy as png"
+                                      Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
+                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        </MenuItem>
+                    </ContextMenu>
+                </chart:SimpleChartControl.ContextMenu>
+            </chart:SimpleChartControl>
+        </Grid>
+
+        <Grid Grid.Column="1" Grid.Row="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
