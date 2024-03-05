@@ -88,21 +88,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public (double, double) ConvertToRt(RangeSelection range) {
             var axis = ChromatogramModel.ChromAxisItemSelector.SelectedAxisItem.AxisManager;
-            return (FindRt(axis, range.Range.Minimum), FindRt(axis, range.Range.Maximum));
+            return range.ConvertBy(axis);
         }
-
-        private double FindRt(IAxisManager<double> axis, AxisValue value) {
-            double lo = 0d, hi = 1e9;
-            while (hi - lo > 1e-6) {
-                var mid = (lo + hi) / 2;
-                if (axis.TranslateToAxisValue(mid) <= value) {
-                    lo = mid;
-                }
-                else {
-                    hi = mid;
-                }
-            }
-            return lo;
-        } 
     }
 }

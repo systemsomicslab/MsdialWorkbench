@@ -22,5 +22,23 @@ namespace CompMs.Graphics.Core.Base
             set => SetProperty(ref color, value);
         }
         private Color color = Colors.Gray;
+
+        public (double, double) ConvertBy(IAxisManager<double> axis) {
+            return (FindCore(axis, Range.Minimum), FindCore(axis, Range.Maximum));
+        }
+
+        private double FindCore(IAxisManager<double> axis, AxisValue value) {
+            double lo = 0d, hi = 1e9;
+            while (hi - lo > 1e-6) {
+                var mid = (lo + hi) / 2;
+                if (axis.TranslateToAxisValue(mid) <= value) {
+                    lo = mid;
+                }
+                else {
+                    hi = mid;
+                }
+            }
+            return lo;
+        } 
     }
 }
