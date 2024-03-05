@@ -17,8 +17,14 @@ namespace CompMs.App.Msdial.ViewModel.MsResult
         {
             Model = model;
             SpectrumViewModel = new SingleSpectrumViewModel(model.ChartSpectrumModel).AddTo(Disposables);
+            MsSpectrumViewModel = model.ObserveProperty(m => m.PlotComparedSpectrum)
+                .DefaultIfNull(m => new MsSpectrumViewModel(m.MsSpectrumModel))
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
 
             Compounds = model.ObserveProperty(m => m.Compounds).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            SelectedCompound = model.ToReactivePropertySlimAsSynchronized(m => m.SelectedCompound).AddTo(Disposables);
             SelectedRange = model.ToReactivePropertySlimAsSynchronized(m => m.SelectedRange).AddTo(Disposables);
 
             ProductIonChromatogram = model.ObserveProperty(m => m.ProductIonChromatogram)
@@ -34,12 +40,13 @@ namespace CompMs.App.Msdial.ViewModel.MsResult
 
         public double Mz => Model.Chromatogram.Mz;
         public SingleSpectrumViewModel SpectrumViewModel { get; }
-
+        public ReadOnlyReactivePropertySlim<MsSpectrumViewModel?> MsSpectrumViewModel { get; }
         public ReactivePropertySlim<AxisRange?> SelectedRange { get; }
 
         public ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> ProductIonChromatogram { get; }
 
         public ReadOnlyReactivePropertySlim<IReadOnlyList<ICompoundResult>?> Compounds { get; }
+        public ReactivePropertySlim<ICompoundResult?> SelectedCompound { get; }
 
         public ReactiveCommand SearchCompoundCommand { get; }
 

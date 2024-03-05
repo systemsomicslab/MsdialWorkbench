@@ -400,11 +400,12 @@
                             <Border Background="{Binding Background, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
                                     core:ChartBaseControl.VerticalAxis="{Binding Path=(core:ChartBaseControl.VerticalAxis)}"
                                     core:ChartBaseControl.FlippedY="{Binding Path=(core:ChartBaseControl.FlippedY)}"
-                                    behavior:ZoomByDragBehavior.IsEnabled="True"
-                                    behavior:ZoomByWheelBehavior.IsEnabled="True"
-                                    behavior:MoveByDragBehavior.IsEnabled="True"
-                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True">
-                                <ContentControl Content="{Binding}"/>
+                                    behavior:ZoomByDragBehavior.IsEnabled="{Binding RenderAreaControlState.ZoomByDragIsEnabled, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                    behavior:ZoomByWheelBehavior.IsEnabled="{Binding RenderAreaControlState.ZoomByWheelIsEnabled, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                    behavior:MoveByDragBehavior.IsEnabled="{Binding RenderAreaControlState.MoveByDragIsEnabled, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="{Binding RenderAreaControlState.ResetRangeByDoubleClickIsEnabled, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                    behavior:AxisRangeRecalculationBehavior.IsEnabled="{Binding RenderAreaControlState.AxisRangeRecalculationIsEnabled, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}">
+                                <ContentControl Content="{Binding}" behavior:AxisRangeRecalculationBehavior.IsEnabled="False"/>
                             </Border>
                         </Border>
                         <chart:VerticalAxisControl VerticalAxis="{Binding Path=(core:ChartBaseControl.VerticalAxis)}"

@@ -10,6 +10,7 @@ using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Export;
 using Reactive.Bindings.Extensions;
 using System.Collections.Generic;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
@@ -30,6 +31,7 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
         _accumulateSpectra = accumulateSpectra;
         _compoundSearch = compoundSearch;
         _productIonChromatogramLoader = productIonChromatogramLoader;
+        _plotDisposable = new SerialDisposable().AddTo(Disposables);
         var subject = new BehaviorSubject<MsSpectrum?>(null).AddTo(Disposables);
         _subject = subject;
 
@@ -66,11 +68,32 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
     }
     private PeakSpotModel? _peakSpot;
 
+    public PlotComparedMsSpectrumUsecase? PlotComparedSpectrum {
+        get => _plotComparedSpectrum;
+        private set {
+            if (SetProperty(ref _plotComparedSpectrum, value)) {
+                _plotDisposable.Disposable = value;
+            }
+        }
+    }
+    private PlotComparedMsSpectrumUsecase? _plotComparedSpectrum;
+    private SerialDisposable _plotDisposable;
+
     public IReadOnlyList<ICompoundResult>? Compounds {
         get => _compounds;
         private set => SetProperty(ref _compounds, value);
     }
     private IReadOnlyList<ICompoundResult>? _compounds;
+
+    public ICompoundResult? SelectedCompound {
+        get => _selectedCompound;
+        set {
+            if (SetProperty(ref _selectedCompound, value)) {
+                PlotComparedSpectrum?.UpdateReference(value?.MsReference);
+            }
+        }
+    }
+    private ICompoundResult? _selectedCompound;
 
     public AxisRange? SelectedRange {
         get => _selectedRange;
@@ -90,6 +113,7 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
             Chromatogram.DetectPeak(baseRange.start, baseRange.end),
             new MoleculeProperty());
         PeakSpot = new PeakSpotModel(anotatedSpot, Scan);
+        PlotComparedSpectrum = new PlotComparedMsSpectrumUsecase(Scan);
     }
 
     public void CalculateProductIonChromatogram() {
