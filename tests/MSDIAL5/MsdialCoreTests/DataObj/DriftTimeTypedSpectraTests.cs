@@ -21,7 +21,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             },
             ChromXUnit.Msec,
             IonMode.Positive, AcquisitionType.DDA);
-            var chromatogram = spectra.GetMs1ExtractedChromatogram(102, 2d, 2d, 4d).Peaks;
+            var chromatogram = spectra.GetMs1ExtractedChromatogram(102, 2d, 2d, 4d).AsPeakArray()
             Assert.AreEqual(3, chromatogram.Count);
             Assert.AreEqual(3, chromatogram[0].ID);
             Assert.AreEqual(103d, chromatogram[0].Mass);
@@ -49,7 +49,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             },
             ChromXUnit.Msec,
             IonMode.Positive, AcquisitionType.DDA);
-            var chromatogram = spectra.GetMs1TotalIonChromatogram(2d, 4d).Peaks;
+            var chromatogram = spectra.GetMs1TotalIonChromatogram(2d, 4d).AsPeakArray();
             Assert.AreEqual(3, chromatogram.Count);
             Assert.AreEqual(3, chromatogram[0].ID);
             Assert.AreEqual(108d, chromatogram[0].Mass);
@@ -77,7 +77,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             },
             ChromXUnit.Msec,
             IonMode.Positive, AcquisitionType.DDA);
-            var chromatogram = spectra.GetMs1BasePeakChromatogram(2d, 4d).Peaks;
+            var chromatogram = spectra.GetMs1BasePeakChromatogram(2d, 4d).AsPeakArray();
             Assert.AreEqual(3, chromatogram.Count);
             Assert.AreEqual(3, chromatogram[0].ID);
             Assert.AreEqual(108d, chromatogram[0].Mass);
@@ -108,7 +108,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             },
             ChromXUnit.Msec,
             IonMode.Positive, AcquisitionType.DDA);
-            var chromatogram = spectra.GetProductIonChromatogram(new MzRange(100d, .1d), new MzRange(50d, .5d), new ChromatogramRange(3d, 7d, ChromXType.Drift, ChromXUnit.Msec)).Peaks;
+            var chromatogram = spectra.GetProductIonChromatogram(new MzRange(100d, .1d), new MzRange(50d, .5d), new ChromatogramRange(3d, 7d, ChromXType.Drift, ChromXUnit.Msec)).AsPeakArray();
             Assert.AreEqual(2, chromatogram.Count);
             Assert.AreEqual(3, chromatogram[0].ID);
             Assert.AreEqual(50d, chromatogram[0].Mass);

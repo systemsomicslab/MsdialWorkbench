@@ -19,7 +19,7 @@ namespace CompMs.Common.Components
             _unit = unit;
         }
 
-        public IReadOnlyList<IChromatogramPeak> Peaks => _peaks;
+        public IReadOnlyList<IChromatogramPeak> AsPeakArray() => _peaks;
 
         public ChromXs PeakChromXs(double chromValue, double mz) {
             var result = new ChromXs(chromValue, _type, _unit);

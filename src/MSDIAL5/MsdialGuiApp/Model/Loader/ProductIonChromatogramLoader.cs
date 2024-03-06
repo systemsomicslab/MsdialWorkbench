@@ -39,6 +39,6 @@ internal sealed class ProductIonChromatogramLoader : IWholeChromatogramLoader<(M
     /// <returns>A list of <see cref="PeakItem"/> representing the peaks within the loaded chromatogram.</returns>
     public List<PeakItem> LoadChromatogram((MzRange Precursor, MzRange Product) state) {
         var chromatogram = _rawSpectra.GetProductIonChromatogram(state.Precursor, state.Product, _range);
-        return chromatogram.Peaks.Select(p => new PeakItem(p)).ToList();
+        return chromatogram.AsPeakArray().Select(p => new PeakItem(p)).ToList();
     }
 }

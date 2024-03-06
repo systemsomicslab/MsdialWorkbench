@@ -122,7 +122,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             }
 
             //Do MS2Dec deconvolution
-            var msdecResult = RunDeconvolution(chromPeakFeature, ms1Chromatogram.Peaks, ms2ChromPeaksList, parameter);
+            var msdecResult = RunDeconvolution(chromPeakFeature, ms1Chromatogram.AsPeakArray(), ms2ChromPeaksList, parameter);
             if (msdecResult == null) { //if null (any pure chromatogram is not found.)
                 if (parameter.IsDoAndromedaMs2Deconvolution)
                     return MSDecObjectHandler.GetAndromedaSpectrum(chromPeakFeature, curatedSpectra, parameter, iupac, Math.Abs(chromPeakFeature.PeakCharacter.Charge));
@@ -204,7 +204,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
             Chromatogram ms1Chromatogram,
             MsdialImmsParameter parameter, double targetCE, AcquisitionType type) {
 
-            var ms2ChromPeaksList = DataAccess.GetMs2ValuePeaks(provider, precursorMz, ms1Chromatogram.Peaks.First().ID, ms1Chromatogram.Peaks.Last().ID, productMz, parameter, type, targetCE, ChromXType.Drift, ChromXUnit.Msec);
+            IReadOnlyList<IChromatogramPeak> peaks = ms1Chromatogram.AsPeakArray();
+            var ms2ChromPeaksList = DataAccess.GetMs2ValuePeaks(provider, precursorMz, peaks.First().ID, peaks.Last().ID, productMz, parameter, type, targetCE, ChromXType.Drift, ChromXUnit.Msec);
 
             var smoothedMs2ChromPeaksList = new List<ExtractedIonChromatogram>(ms2ChromPeaksList.Count);
             foreach (var (chromPeaks, mz) in ms2ChromPeaksList.Zip(productMz)) {

@@ -364,15 +364,16 @@ namespace CompMs.MsdialCore.DataObj
                 Mass = mz,
             };
 
+            var peaks = chromatogram.AsPeakArray();
             return new ChromatogramPeakFeature(basePeak)
             {
                 MasterPeakID = peakDetectionResult.PeakID,
                 PeakID = peakDetectionResult.PeakID,
 
                 //assign the scan number of MS1 and MS/MS for precursor ion's peaks
-                MS1RawSpectrumIdTop = chromatogram.Peaks[peakDetectionResult.ScanNumAtPeakTop].ID,
-                MS1RawSpectrumIdLeft = chromatogram.Peaks[peakDetectionResult.ScanNumAtLeftPeakEdge].ID,
-                MS1RawSpectrumIdRight = chromatogram.Peaks[peakDetectionResult.ScanNumAtRightPeakEdge].ID,
+                MS1RawSpectrumIdTop = peaks[peakDetectionResult.ScanNumAtPeakTop].ID,
+                MS1RawSpectrumIdLeft = peaks[peakDetectionResult.ScanNumAtLeftPeakEdge].ID,
+                MS1RawSpectrumIdRight = peaks[peakDetectionResult.ScanNumAtRightPeakEdge].ID,
 
                 PeakShape = new ChromatogramPeakShape()
                 {

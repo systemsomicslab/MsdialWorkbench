@@ -234,10 +234,11 @@ namespace CompMs.MsdialCore.Algorithm {
             //get peak detection result
             var chromPeakFeatures = GetChromatogramPeakFeatures(chromatogram);
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return null;
-            SetRawDataAccessID2ChromatogramPeakFeatures(chromPeakFeatures, provider, chromatogram.Peaks, rawSpectra.AcquisitionType);
+            var peaks = chromatogram.AsPeakArray();
+            SetRawDataAccessID2ChromatogramPeakFeatures(chromPeakFeatures, provider, peaks, rawSpectra.AcquisitionType);
 
             //filtering out noise peaks considering smoothing effects and baseline effects
-            chromPeakFeatures = GetBackgroundSubtractedPeaks(chromPeakFeatures, chromatogram.Peaks);
+            chromPeakFeatures = GetBackgroundSubtractedPeaks(chromPeakFeatures, peaks);
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return null;
 
             return chromPeakFeatures;
@@ -330,9 +331,10 @@ namespace CompMs.MsdialCore.Algorithm {
 
             var chromPeakFeatures = new List<ChromatogramPeakFeature>();
 
+            var peaks = chromatogram.AsPeakArray();
             foreach (var result in detectedPeaks) {
                 if (result.IntensityAtPeakTop <= 0) continue;
-                var mass = chromatogram.Peaks[result.ScanNumAtPeakTop].Mass;
+                var mass = peaks[result.ScanNumAtPeakTop].Mass;
 
                 //option
                 //this method is currently used in LC/MS project.
@@ -918,13 +920,14 @@ namespace CompMs.MsdialCore.Algorithm {
                 var peakHeightFromBaseline = Math.Max(sPeaklist[maxID].Intensity - sPeaklist[minLeftId].Intensity, sPeaklist[maxID].Intensity - sPeaklist[minRightId].Intensity);
                 peakFeature.PeakShape.SignalToNoise = (float)(peakHeightFromBaseline / peakFeature.PeakShape.EstimatedNoise);
 
+                var peaks = chromatogram.AsPeakArray();
                 if (peakFeature.DriftChromFeatures == null) { // meaning not ion mobility data
-                    SetMS2RawSpectrumIDs2ChromatogramPeakFeature(peakFeature, provider, chromatogram.Peaks[minLeftId].ID, chromatogram.Peaks[maxID].ID, chromatogram.Peaks[minRightId].ID, type);
+                    SetMS2RawSpectrumIDs2ChromatogramPeakFeature(peakFeature, provider, peaks[minLeftId].ID, peaks[maxID].ID, peaks[minRightId].ID, type);
                 }
 
-                peakFeature.MS1RawSpectrumIdLeft = chromatogram.Peaks[minLeftId].ID;
-                peakFeature.MS1RawSpectrumIdTop = chromatogram.Peaks[maxID].ID;
-                peakFeature.MS1RawSpectrumIdRight = chromatogram.Peaks[minRightId].ID;
+                peakFeature.MS1RawSpectrumIdLeft = peaks[minLeftId].ID;
+                peakFeature.MS1RawSpectrumIdTop = peaks[maxID].ID;
+                peakFeature.MS1RawSpectrumIdRight = peaks[minRightId].ID;
 
                 recalculatedPeakspots.Add(peakFeature);
             }

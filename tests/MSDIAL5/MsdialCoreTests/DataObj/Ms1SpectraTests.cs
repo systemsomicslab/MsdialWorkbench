@@ -20,7 +20,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             },
             IonMode.Positive, AcquisitionType.DDA);
             var chromatogramRange = new ChromatogramRange(2d, 4d, ChromXType.RT, ChromXUnit.Min);
-            var chromatogram = spectra.GetMs1ExtractedChromatogram(102, 2d, chromatogramRange).Peaks;
+            var chromatogram = spectra.GetMs1ExtractedChromatogram(102, 2d, chromatogramRange).AsPeakArray();
             Assert.AreEqual(3, chromatogram.Count);
             Assert.AreEqual(1, chromatogram[0].ID);
             Assert.AreEqual(101d, chromatogram[0].Mass);
@@ -48,7 +48,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             },
             IonMode.Negative, AcquisitionType.DDA);
             var chromatogramRange = new ChromatogramRange(2d, 4d, ChromXType.Drift, ChromXUnit.Msec);
-            var chromatogram = spectra.GetMs1ExtractedChromatogram(102, 2d, chromatogramRange).Peaks;
+            var chromatogram = spectra.GetMs1ExtractedChromatogram(102, 2d, chromatogramRange).AsPeakArray();
             Assert.AreEqual(3, chromatogram.Count);
             Assert.AreEqual(1, chromatogram[0].ID);
             Assert.AreEqual(101d, chromatogram[0].Mass);
