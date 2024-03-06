@@ -16,7 +16,6 @@ namespace CompMs.App.Msdial.ViewModel.MsResult
         public AccumulatedMs2SpectrumViewModel(AccumulatedMs2SpectrumModel model)
         {
             Model = model;
-            SpectrumViewModel = new SingleSpectrumViewModel(model.ChartSpectrumModel).AddTo(Disposables);
             MsSpectrumViewModel = model.ObserveProperty(m => m.PlotComparedSpectrum)
                 .DefaultIfNull(m => new MsSpectrumViewModel(m.MsSpectrumModel))
                 .DisposePreviousValue()
@@ -39,7 +38,6 @@ namespace CompMs.App.Msdial.ViewModel.MsResult
         public AccumulatedMs2SpectrumModel Model { get; }
 
         public double Mz => Model.Chromatogram.Mz;
-        public SingleSpectrumViewModel SpectrumViewModel { get; }
         public ReadOnlyReactivePropertySlim<MsSpectrumViewModel?> MsSpectrumViewModel { get; }
         public ReactivePropertySlim<AxisRange?> SelectedRange { get; }
 

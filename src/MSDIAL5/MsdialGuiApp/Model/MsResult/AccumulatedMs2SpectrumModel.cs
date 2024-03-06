@@ -6,16 +6,12 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
-using CompMs.Graphics.Design;
-using CompMs.MsdialCore.Export;
 using Reactive.Bindings.Extensions;
 using System.Collections.Generic;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.MsResult;
 
@@ -32,20 +28,10 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
         _compoundSearch = compoundSearch;
         _productIonChromatogramLoader = productIonChromatogramLoader;
         _plotDisposable = new SerialDisposable().AddTo(Disposables);
-        var subject = new BehaviorSubject<MsSpectrum?>(null).AddTo(Disposables);
-        _subject = subject;
-
-        PropertySelector<SpectrumPeak, double> horizontalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Mass);
-        PropertySelector<SpectrumPeak, double> verticalPropertySelector = new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity);
-        var graphLabels = new GraphLabels($"Accumulated MS/MS m/z: {chromatogram.Mz}±{chromatogram.Tolerance}", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
-        ChartHueItem hueItem = new ChartHueItem(nameof(SpectrumPeak.SpectrumComment), new ConstantBrushMapper(Brushes.Black));
-        var spectrumox = new ObservableMsSpectrum(subject, null, Observable.Return<ISpectraExporter?>(null)).AddTo(Disposables);
-        ChartSpectrumModel = new SingleSpectrumModel(spectrumox, spectrumox.CreateAxisPropertySelectors(horizontalPropertySelector, "m/z", "m/z"), spectrumox.CreateAxisPropertySelectors2(verticalPropertySelector, "abundance"), hueItem, graphLabels).AddTo(Disposables);
+        _subject = new BehaviorSubject<MsSpectrum?>(null).AddTo(Disposables);
     }
 
     public DisplayExtractedIonChromatogram Chromatogram { get; }
-
-    public SingleSpectrumModel ChartSpectrumModel { get; }
 
     public MSScanProperty? Scan {
         get => _scan;
@@ -117,7 +103,10 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
     }
 
     public void CalculateProductIonChromatogram() {
-        var axis = ChartSpectrumModel.HorizontalPropertySelectors.AxisItemSelector.SelectedAxisItem.AxisManager;
+        if (PlotComparedSpectrum is null) {
+            return;
+        }
+        var axis = PlotComparedSpectrum.MsSpectrumModel.UpperSpectrumModel.HorizontalPropertySelectors.AxisItemSelector.SelectedAxisItem.AxisManager;
         var (start, end) = new RangeSelection(SelectedRange).ConvertBy(axis);
         var range = MzRange.FromRange(start, end);
 
