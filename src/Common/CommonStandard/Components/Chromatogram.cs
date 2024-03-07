@@ -3,20 +3,27 @@ using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Utility;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.Common.Components
 {
     /// <summary>
-    /// Represents a chromatogram, a graphical representation of detector response, ion intensity or other measure of detector signal, as a function of retention time or another chromatographic run parameter.
+    /// Represents a chromatogram, which is a graphical representation of detector response or ion intensity 
+    /// as a function of retention time or another chromatographic run parameter.
     /// </summary>
     /// <remarks>
-    /// The Chromatogram class encapsulates a collection of peaks (as <see cref="IChromatogramPeak"/> objects) along with their chromatographic type (e.g., retention time) and unit. It provides methods to access peak data, calculate chromatographic metrics, and identify peaks based on specified criteria.
+    /// The Chromatogram class encapsulates a collection of peaks represented by <see cref="ValuePeak"/> objects, 
+    /// providing a unified structure for chromatographic data. It offers methods for accessing peak data, 
+    /// calculating chromatographic metrics, identifying peaks within specific criteria, and smoothing chromatographic data.
+    /// Implementing IDisposable, this class also ensures proper release of resources when no longer needed.
     /// </remarks>
-    public sealed class Chromatogram
+    public class Chromatogram : IDisposable
     {
-        private readonly ValuePeak[] _peaks;
+        private ValuePeak[]? _peaks;
+        private readonly int _size;
+        private ArrayPool<ValuePeak>? _arrayPool;
         private readonly ChromXType _type;
         private readonly ChromXUnit _unit;
 
@@ -33,25 +40,43 @@ namespace CompMs.Common.Components
             }
 
             _peaks = peaks.Select(p => new ValuePeak(p.ID, p.ChromXs.GetChromByType(type).Value, p.Mass, p.Intensity)).ToArray();
+            _size = _peaks.Length;
             _type = type;
             _unit = unit;
         }
 
-        public Chromatogram(IReadOnlyList<ValuePeak> peaks, ChromXType type, ChromXUnit unit) {
+        public Chromatogram(IEnumerable<ValuePeak> peaks, ChromXType type, ChromXUnit unit) {
             if (peaks is null) {
                 throw new ArgumentNullException(nameof(peaks));
             }
 
             _peaks = peaks as ValuePeak[] ?? peaks.ToArray();
+            _size = _peaks.Length;
             _type = type;
             _unit = unit;
+        }
+
+        internal Chromatogram(IEnumerable<ValuePeak> peaks, int size, ChromXType type, ChromXUnit unit, ArrayPool<ValuePeak> arrayPool) {
+            if (peaks is null) {
+                throw new ArgumentNullException(nameof(peaks));
+            }
+
+            _peaks = peaks as ValuePeak[] ?? peaks.ToArray();
+            _size = size;
+            _type = type;
+            _unit = unit;
+            _arrayPool = arrayPool;
         }
 
         /// <summary>
         /// Returns a read-only list of peaks in the chromatogram.
         /// </summary>
         /// <returns>A read-only list of <see cref="IChromatogramPeak"/> objects.</returns>
+        /// <exception cref="ObjectDisposedException">Thrown if the chromatogram has been disposed.</exception>
         public List<ChromatogramPeak> AsPeakArray() {
+            if (_peaks is null) {
+                throw new ObjectDisposedException(nameof(_peaks));
+            }
             return _peaks.Select(p => p.ConvertToChromatogramPeak(_type, _unit)).ToList();
         }
 
@@ -76,28 +101,37 @@ namespace CompMs.Common.Components
         /// Determines if the chromatogram is empty, meaning it contains no peaks.
         /// </summary>
         /// <value>True if the chromatogram contains no peaks; otherwise, false.</value>
-        public bool IsEmpty => _peaks.Length == 0;
+        public bool IsEmpty => _size == 0;
 
-        private IReadOnlyList<ValuePeak> Smoothing(SmoothingMethod method, int level) {
+        /// <exception cref="ObjectDisposedException">Thrown if the chromatogram has been disposed.</exception>
+        public Chromatogram SmoothedChromatogram(SmoothingMethod method, int level) {
+            if (_peaks is null) {
+                throw new ObjectDisposedException(nameof(_peaks));
+            }
+            ValuePeak[] peaks = null;
+            if (method == SmoothingMethod.LinearWeightedMovingAverage) {
+                peaks = _peaks as ValuePeak[];
+            }
+            peaks ??= _peaks.Take(_size).ToArray();
+
             switch (method) {
                 case SmoothingMethod.SimpleMovingAverage:
-                    return Algorithm.ChromSmoothing.Smoothing.SimpleMovingAverage(_peaks, level);
+                    return new Chromatogram(Algorithm.ChromSmoothing.Smoothing.SimpleMovingAverage(peaks, level), _type, _unit);
                 case SmoothingMethod.SavitzkyGolayFilter:
-                    return Algorithm.ChromSmoothing.Smoothing.SavitxkyGolayFilter(_peaks, level);
+                    return new Chromatogram(Algorithm.ChromSmoothing.Smoothing.SavitxkyGolayFilter(peaks, level), _type, _unit);
                 case SmoothingMethod.BinomialFilter:
-                    return Algorithm.ChromSmoothing.Smoothing.BinomialFilter(_peaks, level);
+                    return new Chromatogram(Algorithm.ChromSmoothing.Smoothing.BinomialFilter(peaks, level), _type, _unit);
                 case SmoothingMethod.LowessFilter:
-                    return Algorithm.ChromSmoothing.Smoothing.LowessFilter(_peaks, level);
+                    return new Chromatogram(Algorithm.ChromSmoothing.Smoothing.LowessFilter(peaks, level), _type, _unit);
                 case SmoothingMethod.LoessFilter:
-                    return Algorithm.ChromSmoothing.Smoothing.LoessFilter(_peaks, level);
+                    return new Chromatogram(Algorithm.ChromSmoothing.Smoothing.LoessFilter(peaks, level), _type, _unit);
                 case SmoothingMethod.LinearWeightedMovingAverage:
                 default:
-                    return new Algorithm.ChromSmoothing.Smoothing().LinearWeightedMovingAverage(_peaks, level);
+                    var arrayPool = _arrayPool ?? ArrayPool<ValuePeak>.Shared;
+                    var smoothed = arrayPool.Rent(_size);
+                    new Algorithm.ChromSmoothing.Smoothing().LinearWeightedMovingAverage(peaks, smoothed, _size, level);
+                    return new Chromatogram(smoothed, _size, _type, _unit, arrayPool);
             }
-        }
-
-        public Chromatogram SmoothedChromatogram(SmoothingMethod method, int level) {
-            return new Chromatogram(Smoothing(method, level), _type, _unit);
         }
 
         /// <summary>
@@ -107,11 +141,17 @@ namespace CompMs.Common.Components
         /// <param name="leftIndex">The index of the peak's left boundary.</param>
         /// <param name="rightIndex">The index of the peak's right boundary.</param>
         /// <returns>A <see cref="PeakOfChromatogram"/> object encapsulating the peak information.</returns>
+        /// <exception cref="ObjectDisposedException">Thrown if the chromatogram has been disposed.</exception>
         /// <remarks>
         /// This method is used to construct a peak object from the chromatogram based on the provided indices. It is important to ensure that the indices are within the bounds of the chromatogram data.
         /// </remarks>
         public PeakOfChromatogram AsPeak(int topIndex, int leftIndex, int rightIndex) {
-            return new PeakOfChromatogram(_peaks, _type, _unit, topIndex, leftIndex, rightIndex);
+            if (_peaks is null) {
+                throw new ObjectDisposedException(nameof(_peaks));
+            }
+            var copied = new ValuePeak[_size];
+            Array.Copy(_peaks, copied, _size);
+            return new PeakOfChromatogram(copied, _type, _unit, topIndex, leftIndex, rightIndex);
         }
 
         /// <summary>
@@ -121,26 +161,32 @@ namespace CompMs.Common.Components
         /// <param name="timeRight">The right boundary of the time range to search for the peak.</param>
         /// <returns>A <see cref="PeakOfChromatogram"/> object representing the identified peak within the specified time range, or null if no peak is found within the range.</returns>
         /// <exception cref="ArgumentException">Thrown when <paramref name="timeLeft"/> is greater than <paramref name="timeRight"/>, indicating an invalid time range.</exception>
+        /// <exception cref="ObjectDisposedException">Thrown if the chromatogram has been disposed.</exception>
         /// <remarks>
         /// This method identifies the peak within the specified time range by finding the segment of chromatogram peaks that fall within the range,
         /// then selecting the peak with the highest intensity as the top of the identified peak. It calculates the left and right boundaries based on the time range provided,
         /// ensuring that the identified peak falls entirely within this range. If no peaks are found within the specified time range, the method returns null.
         /// </remarks>
         public PeakOfChromatogram? AsPeak(double timeLeft, double timeRight) {
+            if (_peaks is null) {
+                throw new ObjectDisposedException(nameof(_peaks));
+            }
             if (timeLeft > timeRight) {
                 throw new ArgumentException($"The specified time boundaries are invalid: '{nameof(timeLeft)}' should be less than or equal to '{nameof(timeRight)}'.");
             }
-            var leftIndex = _peaks.LowerBound(timeLeft, (p, l) => p.Time.CompareTo(l));
-            if (leftIndex >= _peaks.Length || _peaks[leftIndex].Time > timeRight) {
+            var leftIndex = _peaks.LowerBound(timeLeft, 0, _size, (p, l) => p.Time.CompareTo(l));
+            if (leftIndex >= _size || _peaks[leftIndex].Time > timeRight) {
                 return null;
             }
             var rightIndex = leftIndex;
-            while (rightIndex < _peaks.Length && _peaks[rightIndex].Time <= timeRight) {
+            while (rightIndex < _size && _peaks[rightIndex].Time <= timeRight) {
                 ++rightIndex;
             }
             rightIndex = Math.Max(leftIndex, rightIndex - 1);
             var topIndex = Enumerable.Range(leftIndex, rightIndex - leftIndex + 1).Argmax(i => _peaks[i].Intensity);
-            return new PeakOfChromatogram(_peaks, _type, _unit, topIndex, leftIndex, rightIndex);
+            var copied = new ValuePeak[_size];
+            Array.Copy(_peaks, copied, _size);
+            return new PeakOfChromatogram(copied, _type, _unit, topIndex, leftIndex, rightIndex);
         }
 
         /// <summary>
@@ -151,25 +197,31 @@ namespace CompMs.Common.Components
         /// <param name="timeRight">The right boundary of the time range to search for the peak.</param>
         /// <returns>A <see cref="PeakOfChromatogram"/> object representing the identified peak within the specified time boundaries, or null if no peak is found within the range.</returns>
         /// <exception cref="ArgumentException">Thrown if the time boundaries are invalid, specifically if <paramref name="timeLeft"/> is greater than <paramref name="timeTop"/>, or <paramref name="timeTop"/> is greater than <paramref name="timeRight"/>.</exception>
+        /// <exception cref="ObjectDisposedException">Thrown if the chromatogram has been disposed.</exception>
         /// <remarks>
         /// This method identifies a peak within the specified time boundaries by locating the segment of chromatogram peaks that falls within the range,
         /// and selecting the peak that is closest to the specified top time as the peak's top point. The method ensures that the identified peak falls entirely within the provided time boundaries.
         /// </remarks>
         public PeakOfChromatogram? AsPeak(double timeLeft, double timeTop, double timeRight) {
+            if (_peaks is null) {
+                throw new ObjectDisposedException(nameof(_peaks));
+            }
             if (timeLeft > timeTop || timeTop > timeRight) {
                 throw new ArgumentException($"The specified time boundaries are invalid: '{nameof(timeLeft)}' should be less than or equal to '{nameof(timeTop)}', and '{nameof(timeTop)}' should be less than or equal to '{nameof(timeRight)}'.");
             }
-            var leftIndex = _peaks.LowerBound(timeLeft, (p, l) => p.Time.CompareTo(l));
-            if (leftIndex >= _peaks.Length || _peaks[leftIndex].Time > timeRight) {
+            var leftIndex = _peaks.LowerBound(timeLeft, 0, _size, (p, l) => p.Time.CompareTo(l));
+            if (leftIndex >= _size || _peaks[leftIndex].Time > timeRight) {
                 return null;
             }
             var rightIndex = leftIndex;
-            while (rightIndex < _peaks.Length && _peaks[rightIndex].Time <= timeRight) {
+            while (rightIndex < _size && _peaks[rightIndex].Time <= timeRight) {
                 ++rightIndex;
             }
             rightIndex = Math.Max(leftIndex, rightIndex - 1);
             var topIndex = Enumerable.Range(leftIndex, rightIndex - leftIndex + 1).Argmin(i => Math.Abs(timeTop - _peaks[i].Time));
-            return new PeakOfChromatogram(_peaks, _type, _unit, topIndex, leftIndex, rightIndex);
+            var copied = new ValuePeak[_size];
+            Array.Copy(_peaks, copied, _size);
+            return new PeakOfChromatogram(copied, _type, _unit, topIndex, leftIndex, rightIndex);
         }
 
         /// <summary>
@@ -179,10 +231,14 @@ namespace CompMs.Common.Components
         /// <param name="width">The maximum time width of the peak.</param>
         /// <param name="peakFeature">An object implementing <see cref="IChromatogramPeakFeature"/> that specifies the peak feature criteria.</param>
         /// <returns>A <see cref="PeakOfChromatogram"/> object representing the found peak.</returns>
+        /// <exception cref="ObjectDisposedException">Thrown if the chromatogram has been disposed.</exception>
         /// <remarks>
         /// This method searches the chromatogram for a peak that meets the criteria defined by <paramref name="peakFeature"/>. The search is constrained by the number of points and the width specified.
         /// </remarks>
         public PeakOfChromatogram FindPeak(int minPoints, double width, IChromatogramPeakFeature peakFeature) {
+            if (_peaks is null) {
+                throw new ObjectDisposedException(nameof(_peaks));
+            }
             var maxId = SearchPeakTop(peakFeature.ChromXsTop);
             var leftId = SearchLeftEdge(maxId, minPoints, width, peakFeature.ChromXsLeft);
             var rightId = SearchRightEdge(maxId, minPoints, width, peakFeature.ChromXsRight);
@@ -191,7 +247,7 @@ namespace CompMs.Common.Components
         }
 
         private int SearchPeakTop(ChromXs top) {
-            var center = SearchNearestPoint(top, _peaks);
+            var center = SearchNearestPoint(top, _peaks.Take(_size));
             var maxID = center;
             var maxInt = double.MinValue;
             //finding local maximum within -2 ~ +2
@@ -199,7 +255,7 @@ namespace CompMs.Common.Components
                 if (i <= 0) {
                     continue;
                 }
-                if (i + 1 >= _peaks.Length) {
+                if (i + 1 >= _size) {
                     break;
                 }
 
@@ -247,7 +303,7 @@ namespace CompMs.Common.Components
                 return minRightId.Value;
             }
 
-            return top + SearchNearestPoint(right, _peaks.Skip(top));
+            return top + SearchNearestPoint(right, _peaks.Take(_size).Skip(top));
         }
 
         private int SearchNearestPoint(ChromXs chrom, IEnumerable<ValuePeak> peaklist) {
@@ -267,6 +323,22 @@ namespace CompMs.Common.Components
                 }
             }
             return realMaxID;
+        }
+
+        /// <summary>
+        /// Disposes the chromatogram, releasing or returning any resources (e.g., to an ArrayPool) as appropriate.
+        /// </summary>
+        /// <remarks>
+        /// Call Dispose when you are finished using the Chromatogram. The Dispose method leaves the Chromatogram in an unusable state.
+        /// After calling Dispose, you must release all references to the Chromatogram so the garbage collector can reclaim the memory that the Chromatogram was occupying.
+        /// </remarks>
+        public void Dispose() {
+            if (_arrayPool is null) {
+                return;
+            }
+            _arrayPool.Return((ValuePeak[])_peaks);
+            _peaks = null;
+            _arrayPool = null;
         }
     }
 }
