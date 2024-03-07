@@ -9,11 +9,11 @@ using System.Linq;
 namespace CompMs.Common.Components
 {
     public sealed class ExtractedIonChromatogram : IDisposable {
-        private IReadOnlyList<ValuePeak> _peaks;
+        private IReadOnlyList<ValuePeak>? _peaks;
         private readonly int _size;
         private readonly ChromXType _type;
         private readonly ChromXUnit _unit;
-        private ArrayPool<ValuePeak> _arrayPool;
+        private ArrayPool<ValuePeak>? _arrayPool;
         private readonly Algorithm.ChromSmoothing.Smoothing _smoother;
 
         public ExtractedIonChromatogram(IEnumerable<ValuePeak> peaks, ChromXType type, ChromXUnit unit, double extractedMz) {
@@ -41,6 +41,9 @@ namespace CompMs.Common.Components
         public int Length => _size;
 
         public ValuePeak[] AsPeakArray() {
+            if (_peaks is null) {
+                throw new ObjectDisposedException(nameof(_peaks));
+            } 
             var dest = new ValuePeak[_size];
             if (_peaks is ValuePeak[] array) {
                 Array.Copy(array, dest, _size);
@@ -87,8 +90,6 @@ namespace CompMs.Common.Components
             }
             return peakTopId;
         }
-
-        
 
         public (int, int, int) ShrinkPeakRange(int start, int end, int averagePeakWidth) {
             var peakTopId = GetPeakTopId(start, end);
