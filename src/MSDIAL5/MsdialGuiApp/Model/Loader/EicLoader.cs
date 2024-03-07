@@ -4,6 +4,7 @@ using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
@@ -46,10 +47,10 @@ namespace CompMs.App.Msdial.Model.Loader
                 var eic = await LoadEicCoreAsync(target, token).ConfigureAwait(false);
                 token.ThrowIfCancellationRequested();
                 var peak = eic.AsPeak(target.ChromXLeftValue, target.ChromXs.GetChromByType(chromXType).Value, target.ChromXRightValue);
-                var description = $"EIC chromatogram of {target.Mass:N4} tolerance [Da]: {MzTolerance:F} Max intensity: {peak?.Top.Intensity ?? 0d:F0}";
+                var description = $"EIC chromatogram of {target.Mass:N4} tolerance [Da]: {MzTolerance:F} Max intensity: {peak?.GetTop().Intensity ?? 0d:F0}";
                 return new PeakChromatogram(eic, peak, string.Empty, Colors.Black, description);
             }
-            return new PeakChromatogram(new Chromatogram([], chromXType, chromXUnit), null, string.Empty, Colors.Black);
+            return new PeakChromatogram(new Chromatogram(Array.Empty<ValuePeak>(), chromXType, chromXUnit), null, string.Empty, Colors.Black);
         }
 
         private static readonly double PEAK_WIDTH_FACTOR = 3d;
@@ -81,7 +82,7 @@ namespace CompMs.App.Msdial.Model.Loader
                 .ToList();
         }
 
-        PeakChromatogram IChromatogramLoader<ChromatogramPeakFeatureModel>.EmptyChromatogram => new PeakChromatogram(new Chromatogram([], chromXType, chromXUnit), null, string.Empty, Colors.Black);
+        PeakChromatogram IChromatogramLoader<ChromatogramPeakFeatureModel>.EmptyChromatogram => new PeakChromatogram(new Chromatogram(Array.Empty<ValuePeak>(), chromXType, chromXUnit), null, string.Empty, Colors.Black);
 
         public static EicLoader BuildForAllRange(AnalysisFileBean file, IDataProvider provider, ParameterBase parameter, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd) {
             return new EicLoader(file, provider, parameter.PeakPickBaseParam, parameter.IonMode, chromXType, chromXUnit, rangeBegin, rangeEnd);

@@ -498,7 +498,7 @@ namespace CompMs.MsdialCore.MSDec {
 
             var peaklist = DataAccess.GetBaselineCorrectedPeaklistByMassAccuracy(spectrumList, (float)peaktopRt, (float)rtBegin, (float)rtEnd, quantMass, param);
 
-            var sPeaklist = peaklist.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+            var sPeaklist = peaklist.SmoothedChromatogram(param.SmoothingMethod, param.SmoothingLevel).AsPeakArray();
             if (sPeaklist.Count != 0) {
 
                 var maxID = -1;
@@ -1323,7 +1323,7 @@ namespace CompMs.MsdialCore.MSDec {
                 peaklist.Add(new ChromatogramPeak(spectrum.Index, maxMass, sum, new ChromXs(spectrum.ScanStartTime)));
             }
 
-            var smoothedPeaklist = new Chromatogram(peaklist, ChromXType.RT, ChromXUnit.Min).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+            var smoothedPeaklist = new Chromatogram(peaklist, ChromXType.RT, ChromXUnit.Min).SmoothedChromatogram(param.SmoothingMethod, param.SmoothingLevel).AsPeakArray();
             for (int i = 0; i < smoothedMargin - leftRemainder; i++) smoothedPeaklist.RemoveAt(0);
             for (int i = 0; i < smoothedMargin - rightRemainder; i++) smoothedPeaklist.RemoveAt(smoothedPeaklist.Count - 1);
 

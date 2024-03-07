@@ -16,7 +16,7 @@ namespace CompMs.Common.Components
     /// </remarks>
     public sealed class Chromatogram
     {
-        private readonly IReadOnlyList<IChromatogramPeak> _peaks;
+        private readonly ValuePeak[] _peaks;
         private readonly ChromXType _type;
         private readonly ChromXUnit _unit;
 
@@ -28,7 +28,21 @@ namespace CompMs.Common.Components
         /// <param name="unit">The unit of measurement for the chromatographic data.</param>
         /// <exception cref="ArgumentNullException">Thrown when the peaks collection is null.</exception>
         public Chromatogram(IReadOnlyList<IChromatogramPeak> peaks, ChromXType type, ChromXUnit unit) {
-            _peaks = peaks ?? throw new ArgumentNullException(nameof(peaks));
+            if (peaks is null) {
+                throw new ArgumentNullException(nameof(peaks));
+            }
+
+            _peaks = peaks.Select(p => new ValuePeak(p.ID, p.ChromXs.GetChromByType(type).Value, p.Mass, p.Intensity)).ToArray();
+            _type = type;
+            _unit = unit;
+        }
+
+        public Chromatogram(IReadOnlyList<ValuePeak> peaks, ChromXType type, ChromXUnit unit) {
+            if (peaks is null) {
+                throw new ArgumentNullException(nameof(peaks));
+            }
+
+            _peaks = peaks as ValuePeak[] ?? peaks.ToArray();
             _type = type;
             _unit = unit;
         }
@@ -37,7 +51,9 @@ namespace CompMs.Common.Components
         /// Returns a read-only list of peaks in the chromatogram.
         /// </summary>
         /// <returns>A read-only list of <see cref="IChromatogramPeak"/> objects.</returns>
-        public IReadOnlyList<IChromatogramPeak> AsPeakArray() => _peaks;
+        public List<ChromatogramPeak> AsPeakArray() {
+            return _peaks.Select(p => p.ConvertToChromatogramPeak(_type, _unit)).ToList();
+        }
 
         /// <summary>
         /// Generates a <see cref="ChromXs"/> object representing the chromatographic position and mass (m/z) for a given chromatographic value.
@@ -60,9 +76,9 @@ namespace CompMs.Common.Components
         /// Determines if the chromatogram is empty, meaning it contains no peaks.
         /// </summary>
         /// <value>True if the chromatogram contains no peaks; otherwise, false.</value>
-        public bool IsEmpty => _peaks.Count == 0;
+        public bool IsEmpty => _peaks.Length == 0;
 
-        public List<ChromatogramPeak> Smoothing(SmoothingMethod method, int level) {
+        private IReadOnlyList<ValuePeak> Smoothing(SmoothingMethod method, int level) {
             switch (method) {
                 case SmoothingMethod.SimpleMovingAverage:
                     return Algorithm.ChromSmoothing.Smoothing.SimpleMovingAverage(_peaks, level);
@@ -76,7 +92,7 @@ namespace CompMs.Common.Components
                     return Algorithm.ChromSmoothing.Smoothing.LoessFilter(_peaks, level);
                 case SmoothingMethod.LinearWeightedMovingAverage:
                 default:
-                    return Algorithm.ChromSmoothing.Smoothing.LinearWeightedMovingAverage(_peaks, level);
+                    return new Algorithm.ChromSmoothing.Smoothing().LinearWeightedMovingAverage(_peaks, level);
             }
         }
 
@@ -95,7 +111,7 @@ namespace CompMs.Common.Components
         /// This method is used to construct a peak object from the chromatogram based on the provided indices. It is important to ensure that the indices are within the bounds of the chromatogram data.
         /// </remarks>
         public PeakOfChromatogram AsPeak(int topIndex, int leftIndex, int rightIndex) {
-            return new PeakOfChromatogram(_peaks, _type, topIndex, leftIndex, rightIndex);
+            return new PeakOfChromatogram(_peaks, _type, _unit, topIndex, leftIndex, rightIndex);
         }
 
         /// <summary>
@@ -114,17 +130,17 @@ namespace CompMs.Common.Components
             if (timeLeft > timeRight) {
                 throw new ArgumentException($"The specified time boundaries are invalid: '{nameof(timeLeft)}' should be less than or equal to '{nameof(timeRight)}'.");
             }
-            var leftIndex = _peaks.LowerBound(timeLeft, (p, l) => p.ChromXs.GetChromByType(_type).Value.CompareTo(l));
-            if (leftIndex >= _peaks.Count || _peaks[leftIndex].ChromXs.GetChromByType(_type).Value > timeRight) {
+            var leftIndex = _peaks.LowerBound(timeLeft, (p, l) => p.Time.CompareTo(l));
+            if (leftIndex >= _peaks.Length || _peaks[leftIndex].Time > timeRight) {
                 return null;
             }
             var rightIndex = leftIndex;
-            while (rightIndex < _peaks.Count && _peaks[rightIndex].ChromXs.GetChromByType(_type).Value <= timeRight) {
+            while (rightIndex < _peaks.Length && _peaks[rightIndex].Time <= timeRight) {
                 ++rightIndex;
             }
             rightIndex = Math.Max(leftIndex, rightIndex - 1);
             var topIndex = Enumerable.Range(leftIndex, rightIndex - leftIndex + 1).Argmax(i => _peaks[i].Intensity);
-            return new PeakOfChromatogram(_peaks, _type, topIndex, leftIndex, rightIndex);
+            return new PeakOfChromatogram(_peaks, _type, _unit, topIndex, leftIndex, rightIndex);
         }
 
         /// <summary>
@@ -143,17 +159,17 @@ namespace CompMs.Common.Components
             if (timeLeft > timeTop || timeTop > timeRight) {
                 throw new ArgumentException($"The specified time boundaries are invalid: '{nameof(timeLeft)}' should be less than or equal to '{nameof(timeTop)}', and '{nameof(timeTop)}' should be less than or equal to '{nameof(timeRight)}'.");
             }
-            var leftIndex = _peaks.LowerBound(timeLeft, (p, l) => p.ChromXs.GetChromByType(_type).Value.CompareTo(l));
-            if (leftIndex >= _peaks.Count || _peaks[leftIndex].ChromXs.GetChromByType(_type).Value > timeRight) {
+            var leftIndex = _peaks.LowerBound(timeLeft, (p, l) => p.Time.CompareTo(l));
+            if (leftIndex >= _peaks.Length || _peaks[leftIndex].Time > timeRight) {
                 return null;
             }
             var rightIndex = leftIndex;
-            while (rightIndex < _peaks.Count && _peaks[rightIndex].ChromXs.GetChromByType(_type).Value <= timeRight) {
+            while (rightIndex < _peaks.Length && _peaks[rightIndex].Time <= timeRight) {
                 ++rightIndex;
             }
             rightIndex = Math.Max(leftIndex, rightIndex - 1);
-            var topIndex = Enumerable.Range(leftIndex, rightIndex - leftIndex + 1).Argmin(i => Math.Abs(timeTop - _peaks[i].ChromXs.GetChromByType(_type).Value));
-            return new PeakOfChromatogram(_peaks, _type, topIndex, leftIndex, rightIndex);
+            var topIndex = Enumerable.Range(leftIndex, rightIndex - leftIndex + 1).Argmin(i => Math.Abs(timeTop - _peaks[i].Time));
+            return new PeakOfChromatogram(_peaks, _type, _unit, topIndex, leftIndex, rightIndex);
         }
 
         /// <summary>
@@ -183,7 +199,7 @@ namespace CompMs.Common.Components
                 if (i <= 0) {
                     continue;
                 }
-                if (i + 1 >= _peaks.Count) {
+                if (i + 1 >= _peaks.Length) {
                     break;
                 }
 
@@ -199,9 +215,9 @@ namespace CompMs.Common.Components
             //finding left edge;
             int? minLeftId = null;
             var minLeftInt = _peaks[top].Intensity;
-            var leftEdge = _peaks[top].ChromXs.GetChromByType(_type).Value - width;
+            var leftEdge = _peaks[top].Time - width;
             for (int i = top - minPoints; i >= 0; i--) {
-                if (minLeftInt < _peaks[i].Intensity || leftEdge > _peaks[i].ChromXs.GetChromByType(_type).Value) {
+                if (minLeftInt < _peaks[i].Intensity || leftEdge > _peaks[i].Time) {
                     break;
                 }
 
@@ -219,9 +235,9 @@ namespace CompMs.Common.Components
             //finding right edge;
             int? minRightId = null;
             var minRightInt = _peaks[top].Intensity;
-            double rightEdge = _peaks[top].ChromXs.GetChromByType(_type).Value + width;
-            for (int i = top + minPoints; i < _peaks.Count - 1; i++) {
-                if (minRightInt < _peaks[i].Intensity || rightEdge < _peaks[i].ChromXs.GetChromByType(_type).Value) {
+            double rightEdge = _peaks[top].Time + width;
+            for (int i = top + minPoints; i < _peaks.Length - 1; i++) {
+                if (minRightInt < _peaks[i].Intensity || rightEdge < _peaks[i].Time) {
                     break;
                 }
                 minRightInt = _peaks[i].Intensity;
@@ -234,13 +250,12 @@ namespace CompMs.Common.Components
             return top + SearchNearestPoint(right, _peaks.Skip(top));
         }
 
-        private int SearchNearestPoint(ChromXs chrom, IEnumerable<IChromatogramPeak> peaklist) {
+        private int SearchNearestPoint(ChromXs chrom, IEnumerable<ValuePeak> peaklist) {
             var target = chrom.GetChromByType(_type).Value;
             return peaklist
-                .Select(peak => Math.Abs(peak.ChromXs.GetChromByType(_type).Value - target))
+                .Select(peak => Math.Abs(peak.Time - target))
                 .Argmin();
         }
-
 
         private int FindHighestIntensity(int start, int end, int defaultId) {
             var realMaxInt = double.MinValue;

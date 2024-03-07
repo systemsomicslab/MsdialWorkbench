@@ -21,7 +21,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             },
             ChromXUnit.Msec,
             IonMode.Positive, AcquisitionType.DDA);
-            var chromatogram = spectra.GetMs1ExtractedChromatogram(102, 2d, 2d, 4d).AsPeakArray()
+            var chromatogram = spectra.GetMs1ExtractedChromatogram(102, 2d, 2d, 4d).AsPeakArray();
             Assert.AreEqual(3, chromatogram.Count);
             Assert.AreEqual(3, chromatogram[0].ID);
             Assert.AreEqual(103d, chromatogram[0].Mass);

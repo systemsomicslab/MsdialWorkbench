@@ -97,7 +97,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
                         .Zip(chromatograms_, (pair, chromatogram) =>
                     {
                         var brush = classnameToBrushes.TryGetValue(pair.Item1.AnalysisFileClass, out var b) ? b : ChartBrushes.GetChartBrush(pair.Item1.AnalysisFileId);
-                        var speaks = chromatogram.Convert().Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel);
+                        var speaks = chromatogram.Convert().SmoothedChromatogram(parameter.SmoothingMethod, parameter.SmoothingLevel).AsPeakArray();
                         var peakProp = new PeakPropertyLegacy(pair.Item2, brush, speaks);
                         var offset = pair.Item2.ChromXsTop.Value - spot.TimesCenter;
                         peakProp.SetAlignOffSet((float)offset);

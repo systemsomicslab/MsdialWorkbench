@@ -440,9 +440,9 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         public void SetPeakProperties(PeakOfChromatogram peakOfChromatogram) {
-            var peakTop = peakOfChromatogram.Top;
-            var peakLeft = peakOfChromatogram.Left;
-            var peakRight = peakOfChromatogram.Right;
+            var peakTop = peakOfChromatogram.GetTop();
+            var peakLeft = peakOfChromatogram.GetLeft();
+            var peakRight = peakOfChromatogram.GetRight();
             PeakFeature.ChromXsLeft = peakLeft.ChromXs;
             PeakFeature.ChromXsTop = peakTop.ChromXs;
             PeakFeature.ChromXsRight = peakRight.ChromXs;

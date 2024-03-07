@@ -25,7 +25,7 @@ namespace CompMs.Common.Components.Tests
                 new ChromatogramPeak(9, 109d, 1009d, new RetentionTime(9d)),
             };
             var chromatogram = new Chromatogram(rawdata, ChromXType.RT, ChromXUnit.Min);
-            var actual = chromatogram.Smoothing(SmoothingMethod.SimpleMovingAverage, 2);
+            var actual = chromatogram.SmoothedChromatogram(SmoothingMethod.SimpleMovingAverage, 2).AsPeakArray();
             Assert.AreEqual(10, actual.Count);
             Assert.AreEqual(5003d / 5, actual[0].Intensity);
             Assert.AreEqual(5007d / 5, actual[1].Intensity);
@@ -109,9 +109,9 @@ namespace CompMs.Common.Components.Tests
             var resultPeak = chromatogram.AsPeak(topIndex, leftIndex, rightIndex);
 
             // Assert
-            Assert.That.AreEqual(peaks[topIndex], resultPeak.Top, "Top peak should match the peak at the top index.");
-            Assert.That.AreEqual(peaks[leftIndex], resultPeak.Left, "Left peak should match the peak at the left index.");
-            Assert.That.AreEqual(peaks[rightIndex], resultPeak.Right, "Right peak should match the peak at the right index.");
+            Assert.That.AreEqual(peaks[topIndex], resultPeak.GetTop(), "Top peak should match the peak at the top index.");
+            Assert.That.AreEqual(peaks[leftIndex], resultPeak.GetLeft(), "Left peak should match the peak at the left index.");
+            Assert.That.AreEqual(peaks[rightIndex], resultPeak.GetRight(), "Right peak should match the peak at the right index.");
         }
 
         [TestMethod()]
@@ -144,7 +144,7 @@ namespace CompMs.Common.Components.Tests
 
             // Assert
             Assert.IsNotNull(foundPeak, "Expected to find a peak but none was found.");
-            Assert.AreEqual(peakFeatureStub.ChromScanIdTop, foundPeak.Top.ID, "The identified top peak does not match the expected peak.");
+            Assert.AreEqual(peakFeatureStub.ChromScanIdTop, foundPeak.GetTop().ID, "The identified top peak does not match the expected peak.");
 
         }
 
@@ -169,9 +169,9 @@ namespace CompMs.Common.Components.Tests
 
             // Assert
             Assert.IsNotNull(peak, "A peak should be identified within the specified time range.");
-            Assert.AreEqual(1, peak.Left.ID, "The left boundary of the peak should match the start of the time range.");
-            Assert.AreEqual(2, peak.Top.ID, "The top of the peak should have the highest intensity within the time range.");
-            Assert.AreEqual(4, peak.Right.ID, "The right boundary of the peak should match the end of the time range.");
+            Assert.AreEqual(1, peak.GetLeft().ID, "The left boundary of the peak should match the start of the time range.");
+            Assert.AreEqual(2, peak.GetTop().ID, "The top of the peak should have the highest intensity within the time range.");
+            Assert.AreEqual(4, peak.GetRight().ID, "The right boundary of the peak should match the end of the time range.");
         }
 
         [TestMethod]
@@ -215,7 +215,7 @@ namespace CompMs.Common.Components.Tests
 
             // Assert
             Assert.IsNotNull(peak, "A peak should be identified within the specified time boundaries.");
-            Assert.AreEqual(2, peak.Top.ID, "The top of the peak should be closest to the specified top time.");
+            Assert.AreEqual(2, peak.GetTop().ID, "The top of the peak should be closest to the specified top time.");
         }
 
         [TestMethod]

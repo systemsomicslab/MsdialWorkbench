@@ -287,7 +287,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
         private List<ChromatogramPeakFeature> GetPeakAreaBeanListOnDriftTimeAxis(Chromatogram chromatogram, ChromatogramPeakFeature rtPeakFeature, RawSpectra rawSpectra, double accumulatedRtRange) {
 
-            var smoothedPeaklist = chromatogram.Smoothing(_parameter.SmoothingMethod, _parameter.SmoothingLevel);
+            var smoothedPeaklist = chromatogram.SmoothedChromatogram(_parameter.SmoothingMethod, _parameter.SmoothingLevel).AsPeakArray();
             var detectedPeaks = PeakDetection.PeakDetectionVS1(smoothedPeaklist, _parameter.MinimumDatapoints, _parameter.MinimumAmplitude * 0.25) ?? new List<PeakDetectionResult>(0);
             var maxIntensityAtPeaks = detectedPeaks.DefaultIfEmpty().Max(n => n?.IntensityAtPeakTop) ?? 0d;
 
@@ -322,7 +322,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
         #region peak detection utilities
         public List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(Chromatogram chromatogram) {
-            var smoothedPeaklist = chromatogram.Smoothing(_parameter.SmoothingMethod, _parameter.SmoothingLevel);
+            var smoothedPeaklist = chromatogram.SmoothedChromatogram(_parameter.SmoothingMethod, _parameter.SmoothingLevel).AsPeakArray();
             //var detectedPeaks = PeakDetection.GetDetectedPeakInformationCollectionFromDifferentialBasedPeakDetectionAlgorithm(analysisParametersBean.MinimumDatapoints, analysisParametersBean.MinimumAmplitude, analysisParametersBean.AmplitudeNoiseFactor, analysisParametersBean.SlopeNoiseFactor, analysisParametersBean.PeaktopNoiseFactor, smoothedPeaklist);
             var minDatapoints = _parameter.MinimumDatapoints;
             var minAmps = _parameter.MinimumAmplitude;
@@ -779,7 +779,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 var chromatogramRange = new ChromatogramRange(peak.ChromXsLeft.Value - peakWidthMargin, peak.ChromXsRight.Value + peakWidthMargin, peak.ChromXsTop.Type, peak.ChromXsTop.Unit);
                 var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(peak.Mass, _parameter.CentroidMs1Tolerance, chromatogramRange);
 
-                var sPeaklist = chromatogram.Smoothing(_parameter.SmoothingMethod, _parameter.SmoothingLevel);
+                var sPeaklist = chromatogram.SmoothedChromatogram(_parameter.SmoothingMethod, _parameter.SmoothingLevel).AsPeakArray();
                 var maxID = -1;
                 var maxInt = double.MinValue;
                 var minRtId = -1;

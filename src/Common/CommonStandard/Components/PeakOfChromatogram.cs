@@ -1,6 +1,5 @@
 ﻿using CompMs.Common.Interfaces;
 using System;
-using System.Collections.Generic;
 
 namespace CompMs.Common.Components
 {
@@ -9,41 +8,59 @@ namespace CompMs.Common.Components
     /// and its boundaries (Left and Right).
     /// </summary>
     /// <remarks>
-    /// This class provides functionality to analyze various attributes of a peak such as its area, baseline area, 
-    /// amplitude, and validity based on a minimum amplitude criterion. It encapsulates the chromatographic data points 
-    /// that constitute the peak and allows for the calculation of metrics important for chromatographic analysis.
+    /// This class encapsulates the data for a chromatographic peak, providing functionality to analyze
+    /// various attributes of the peak, such as its area, baseline area, amplitude, and validity based on
+    /// a minimum amplitude criterion. It operates directly on an array of <see cref="ValuePeak"/> objects,
+    /// simplifying the interaction with chromatographic data.
     /// </remarks>
     public sealed class PeakOfChromatogram
     {
-        private readonly IReadOnlyList<IChromatogramPeak> _chromatogram;
+        private readonly ValuePeak[] _chromatogram;
         private readonly ChromXType _type;
+        private readonly ChromXUnit _unit;
         private readonly int _left;
         private readonly int _top;
         private readonly int _right;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PeakOfChromatogram"/> class.
+        /// Initializes a new instance of the <see cref="PeakOfChromatogram"/> class directly from an array of <see cref="ValuePeak"/> objects.
         /// </summary>
-        /// <param name="chromatogram">The list of peaks from which to derive the peak.</param>
-        /// <param name="type">The type of chromatographic measurement (e.g., retention time).</param>
-        /// <param name="top">The index of the peak's highest intensity within the chromatogram.</param>
-        /// <param name="left">The index marking the start of the peak within the chromatogram.</param>
-        /// <param name="right">The index marking the end of the peak within the chromatogram.</param>
-        internal PeakOfChromatogram(IReadOnlyList<IChromatogramPeak> chromatogram, ChromXType type, int top, int left, int right) {
+        /// <param name="chromatogram">The array of <see cref="ValuePeak"/> objects representing the chromatographic data from which to derive the peak.</param>
+        /// <param name="type">The type of chromatographic measurement (e.g., retention time) applicable to all peaks in the array.</param>
+        /// <param name="unit">The unit of measurement for the chromatographic data.</param>
+        /// <param name="top">The index within the array of the peak's highest intensity.</param>
+        /// <param name="left">The index within the array marking the start of the peak.</param>
+        /// <param name="right">The index within the array marking the end of the peak.</param>
+        /// <remarks>
+        /// This constructor initializes a <see cref="PeakOfChromatogram"/> object directly from the provided <see cref="ValuePeak"/> array.
+        /// It identifies the peak within the chromatogram based on the specified indices, outlining the peak's boundaries.
+        /// </remarks>
+        internal PeakOfChromatogram(ValuePeak[] chromatogram, ChromXType type, ChromXUnit unit, int top, int left, int right) {
             _chromatogram = chromatogram;
             _type = type;
+            _unit = unit;
             _left = left;
             _top = top;
             _right = right;
-
-            Top = _chromatogram[top];
-            Left = _chromatogram[left];
-            Right = _chromatogram[right];
         }
 
-        public IChromatogramPeak Top { get; }
-        public IChromatogramPeak Left { get; }
-        public IChromatogramPeak Right { get; }
+        /// <summary>
+        /// Retrieves the center of peak as an <see cref="IChromatogramPeak"/>.
+        /// </summary>
+        /// <returns>The <see cref="IChromatogramPeak"/> at the center of the peak.</returns>
+        public IChromatogramPeak GetTop() => _chromatogram[_top].ConvertToChromatogramPeak(_type, _unit);
+
+        /// <summary>
+        /// Retrieves the peak's left boundary as an <see cref="IChromatogramPeak"/>.
+        /// </summary>
+        /// <returns>The <see cref="IChromatogramPeak"/> at the left boundary of the peak.</returns>
+        public IChromatogramPeak GetLeft() => _chromatogram[_left].ConvertToChromatogramPeak(_type, _unit);
+
+        /// <summary>
+        /// Retrieves the peak's right boundary as an <see cref="IChromatogramPeak"/>.
+        /// </summary>
+        /// <returns>The <see cref="IChromatogramPeak"/> at the right boundary of the peak.</returns>
+        public IChromatogramPeak GetRight() => _chromatogram[_right].ConvertToChromatogramPeak(_type, _unit);
 
         /// <summary>
         /// Extracts a segment of the chromatogram that corresponds to the peak area.
@@ -55,7 +72,7 @@ namespace CompMs.Common.Components
         public IChromatogramPeak[] SlicePeakArea() {
             var chromatogram = new IChromatogramPeak[_right - _left + 1];
             for (int i = _left; i <= _right; i++) {
-                chromatogram[i - _left] = _chromatogram[i];
+                chromatogram[i - _left] = _chromatogram[i].ConvertToChromatogramPeak(_type, _unit);
             }
             return chromatogram;
         }
@@ -72,7 +89,7 @@ namespace CompMs.Common.Components
             var result = 0d;
             var peaks = _chromatogram;
             for (int i = _left; i + 1 <= _right; i++) {
-                result += (peaks[i + 1].ChromXs.GetChromByType(_type).Value - peaks[i].ChromXs.GetChromByType(_type).Value) * (peaks[i + 1].Intensity + peaks[i].Intensity) / 2;
+                result += (peaks[i + 1].Time - peaks[i].Time) * (peaks[i + 1].Intensity + peaks[i].Intensity) / 2;
             }
             return result;
         }
@@ -86,7 +103,7 @@ namespace CompMs.Common.Components
         /// and integrates the area under this line.
         /// </remarks>
         public double CalculateBaseLineArea() {
-            return (_chromatogram[_left].Intensity + _chromatogram[_right].Intensity) * (_chromatogram[_right].ChromXs.GetChromByType(_type).Value - _chromatogram[_left].ChromXs.GetChromByType(_type).Value) / 2;
+            return (_chromatogram[_left].Intensity + _chromatogram[_right].Intensity) * (_chromatogram[_right].Time - _chromatogram[_left].Time) / 2;
         }
 
         /// <summary>
@@ -98,7 +115,7 @@ namespace CompMs.Common.Components
         /// minimum boundary intensity from the peak's top intensity.
         /// </remarks>
         public double CalculatePeakAmplitude() {
-            return Top.Intensity - Math.Min(Left.Intensity, Right.Intensity);
+            return _chromatogram[_top].Intensity - Math.Min(_chromatogram[_left].Intensity, _chromatogram[_right].Intensity);
         }
 
         /// <summary>
@@ -110,7 +127,7 @@ namespace CompMs.Common.Components
         /// This method is useful for filtering out noise and ensuring that only significant peaks are analyzed.
         /// </remarks>
         public bool IsValid(double minimumAmplitude) {
-            return Top.Intensity > Math.Max(Left.Intensity, Right.Intensity)
+            return _chromatogram[_top].Intensity > Math.Max(_chromatogram[_left].Intensity, _chromatogram[_right].Intensity)
                 && CalculatePeakAmplitude() >= minimumAmplitude;
         }
     }

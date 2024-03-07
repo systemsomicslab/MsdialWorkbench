@@ -30,8 +30,9 @@ namespace CompMs.App.Msdial.Model.DataObj
                 return;
             }
 
-            var left = peaks.IndexOf(peak.Left);
-            var right = peaks.IndexOf(peak.Right);
+            var ids = peaks.Select(p => p.ID).ToArray();
+            var left = ids.IndexOf(peak.GetLeft().ID);
+            var right = ids.IndexOf(peak.GetRight().ID);
             if (left >= 0 && right >= 0) {
                 PeakArea = items.GetRange(left, right - left + 1);
             }
@@ -39,7 +40,7 @@ namespace CompMs.App.Msdial.Model.DataObj
                 PeakArea = peak.SlicePeakArea().Select(v => new PeakItem(v)).ToList();
             }
 
-            var top = peaks.IndexOf(peak.Top);
+            var top = ids.IndexOf(peak.GetTop().ID);
             if (top >= 0) {
                 PeakTop = items[top];
             }
