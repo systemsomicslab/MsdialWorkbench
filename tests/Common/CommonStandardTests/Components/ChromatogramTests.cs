@@ -1,5 +1,7 @@
 ﻿using CompMs.Common.Enum;
+using CompMs.Common.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 
 namespace CompMs.Common.Components.Tests
 {
@@ -39,6 +41,111 @@ namespace CompMs.Common.Components.Tests
                 Assert.AreEqual(rawdata[i].Mass, actual[i].Mass);
                 Assert.AreEqual(rawdata[i].ChromXs.Value, actual[i].ChromXs.Value);
             }
+        }
+
+        [TestMethod()]
+        public void AsPeakArrayTest() {
+            // Arrange
+            var peaks = new List<IChromatogramPeak>
+            {
+                new ChromatogramPeak(0, 100d, 1000d, new ChromXs(1, ChromXType.RT, ChromXUnit.Min)),
+                new ChromatogramPeak(1, 200d, 2000d, new ChromXs(2, ChromXType.RT, ChromXUnit.Min)),
+            };
+
+            var chromatogram = new Chromatogram(peaks, ChromXType.RT, ChromXUnit.Min);
+
+            // Act
+            var resultPeaks = chromatogram.AsPeakArray();
+
+            // Assert
+            Assert.AreEqual(peaks.Count, resultPeaks.Count, "The number of peaks should match.");
+            for (int i = 0; i < peaks.Count; i++)
+            {
+                Assert.AreEqual(peaks[i].ID, resultPeaks[i].ID, $"{nameof(IChromatogramPeak.ID)} of peak at index {i} should match.");
+                Assert.AreEqual(peaks[i].Mass, resultPeaks[i].Mass, $"{nameof(IChromatogramPeak.Mass)} of peak at index {i} should match.");
+                Assert.AreEqual(peaks[i].Intensity, resultPeaks[i].Intensity, $"{nameof(IChromatogramPeak.Intensity)} of peak at index {i} should match.");
+                Assert.That.AreEqual(peaks[i].ChromXs, resultPeaks[i].ChromXs, $"{nameof(IChromatogramPeak.ChromXs)} of peak at index {i} should match.");
+            }
+        }
+
+        [TestMethod()]
+        public void PeakChromXsTest() {
+            // Arrange
+            var dummyPeaks = new List<IChromatogramPeak>();
+            double chromValue = 5.0;
+            double mz = 150.0;
+            ChromXType expectedType = ChromXType.RT;
+            ChromXUnit expectedUnit = ChromXUnit.Min;
+            var chromatogram = new Chromatogram(dummyPeaks, expectedType, expectedUnit);
+
+            // Act
+            var result = chromatogram.PeakChromXs(chromValue, mz);
+
+            // Assert
+            Assert.AreEqual(chromValue, result.Value, "Chromatogram value should match.");
+            Assert.AreEqual(mz, result.Mz.Value, "Mass (m/z) value should match.");
+            Assert.AreEqual(expectedType, result.Type, "ChromXType should match.");
+            Assert.AreEqual(expectedUnit, result.Unit, "ChromXUnit should match.");
+        }
+
+        [TestMethod()]
+        public void AsPeakTest() {
+            // Arrange
+            var peaks = new List<IChromatogramPeak>
+            {
+                new ChromatogramPeak(0, 50d, 500d, new ChromXs(0.5, ChromXType.RT, ChromXUnit.Min)),
+                new ChromatogramPeak(1, 100d, 1000d, new ChromXs(1, ChromXType.RT, ChromXUnit.Min)),
+                new ChromatogramPeak(2, 150d, 1500d, new ChromXs(1.5, ChromXType.RT, ChromXUnit.Min)),
+                new ChromatogramPeak(3, 200d, 2000d, new ChromXs(2, ChromXType.RT, ChromXUnit.Min)),
+                new ChromatogramPeak(4, 250d, 2500d, new ChromXs(2.5, ChromXType.RT, ChromXUnit.Min)),
+            };
+
+            var chromatogram = new Chromatogram(peaks, ChromXType.RT, ChromXUnit.Min);
+            int topIndex = 1;
+            int leftIndex = 0;
+            int rightIndex = 2;
+
+            // Act
+            var resultPeak = chromatogram.AsPeak(topIndex, leftIndex, rightIndex);
+
+            // Assert
+            Assert.That.AreEqual(peaks[topIndex], resultPeak.Top, "Top peak should match the peak at the top index.");
+            Assert.That.AreEqual(peaks[leftIndex], resultPeak.Left, "Left peak should match the peak at the left index.");
+            Assert.That.AreEqual(peaks[rightIndex], resultPeak.Right, "Right peak should match the peak at the right index.");
+        }
+
+        [TestMethod()]
+        public void FindPeakTest() {
+            // Arrange
+            var peaks = new List<IChromatogramPeak>
+            {
+                new ChromatogramPeak(0, 50d, 500d, new ChromXs(0.5, ChromXType.RT, ChromXUnit.Min)),
+                new ChromatogramPeak(1, 100d, 1500d, new ChromXs(1.0, ChromXType.RT, ChromXUnit.Min)), // Expected to identify this peak
+                new ChromatogramPeak(2, 150d, 300d, new ChromXs(1.5, ChromXType.RT, ChromXUnit.Min)),
+                new ChromatogramPeak(3, 200d, 200d, new ChromXs(2.0, ChromXType.RT, ChromXUnit.Min)),
+            };
+
+            var chromatogram = new Chromatogram(peaks, ChromXType.RT, ChromXUnit.Min);
+            var peakFeatureStub = new BaseChromatogramPeakFeature
+            {
+                ChromScanIdLeft = 0,
+                ChromScanIdTop = 1,
+                ChromScanIdRight = 2,
+                ChromXsLeft = new ChromXs(0.5, ChromXType.RT, ChromXUnit.Min),
+                ChromXsTop = new ChromXs(1.0, ChromXType.RT, ChromXUnit.Min),
+                ChromXsRight = new ChromXs(1.5, ChromXType.RT, ChromXUnit.Min),
+                PeakHeightLeft = 500,
+                PeakHeightTop = 1500,
+                PeakHeightRight = 300,
+            };
+
+            // Act
+            var foundPeak = chromatogram.FindPeak(3, 1.0, peakFeatureStub);
+
+            // Assert
+            Assert.IsNotNull(foundPeak, "Expected to find a peak but none was found.");
+            Assert.AreEqual(peakFeatureStub.ChromScanIdTop, foundPeak.Top.ID, "The identified top peak does not match the expected peak.");
+
         }
     }
 }

@@ -21,6 +21,15 @@ namespace CompMs.Common.Components
 
         public IReadOnlyList<IChromatogramPeak> AsPeakArray() => _peaks;
 
+        /// <summary>
+        /// Generates a <see cref="ChromXs"/> object representing the chromatographic position and mass (m/z) for a given chromatographic value.
+        /// </summary>
+        /// <param name="chromValue">The chromatographic value (e.g., retention time, retention index, drift time).</param>
+        /// <param name="mz">The m/z value associated with the chromatographic position.</param>
+        /// <returns>A <see cref="ChromXs"/> object encapsulating the chromatographic position and m/z value.</returns>
+        /// <remarks>
+        /// This method is useful for converting raw chromatographic values and mass-to-charge ratios into a <see cref="ChromXs"/> object, which standardizes the representation of these values within the system.
+        /// </remarks>
         public ChromXs PeakChromXs(double chromValue, double mz) {
             var result = new ChromXs(chromValue, _type, _unit);
             if (_type != ChromXType.Mz) {
@@ -53,14 +62,34 @@ namespace CompMs.Common.Components
             return new Chromatogram(Smoothing(method, level), _type, _unit);
         }
 
-        public PeakOfChromatogram AsPeak(int top, int left, int right) {
-            return new PeakOfChromatogram(_peaks, _type, top, left, right);
+        /// <summary>
+        /// Creates a <see cref="PeakOfChromatogram"/> object representing the peak identified by the specified top, left, and right indices within the chromatogram.
+        /// </summary>
+        /// <param name="topIndex">The index of the peak's highest intensity point.</param>
+        /// <param name="leftIndex">The index of the peak's left boundary.</param>
+        /// <param name="rightIndex">The index of the peak's right boundary.</param>
+        /// <returns>A <see cref="PeakOfChromatogram"/> object encapsulating the peak information.</returns>
+        /// <remarks>
+        /// This method is used to construct a peak object from the chromatogram based on the provided indices. It is important to ensure that the indices are within the bounds of the chromatogram data.
+        /// </remarks>
+        public PeakOfChromatogram AsPeak(int topIndex, int leftIndex, int rightIndex) {
+            return new PeakOfChromatogram(_peaks, _type, topIndex, leftIndex, rightIndex);
         }
 
-        public PeakOfChromatogram FindPeak(int minPoints, double width, IChromatogramPeakFeature peak) {
-            var maxId = SearchPeakTop(peak.ChromXsTop);
-            var leftId = SearchLeftEdge(maxId, minPoints, width, peak.ChromXsLeft);
-            var rightId = SearchRightEdge(maxId, minPoints, width, peak.ChromXsRight);
+        /// <summary>
+        /// Searches for a peak within the chromatogram that matches the specified feature criteria.
+        /// </summary>
+        /// <param name="minPoints">The minimum number of points that the peak must span.</param>
+        /// <param name="width">The maximum time width of the peak.</param>
+        /// <param name="peakFeature">An object implementing <see cref="IChromatogramPeakFeature"/> that specifies the peak feature criteria.</param>
+        /// <returns>A <see cref="PeakOfChromatogram"/> object representing the found peak.</returns>
+        /// <remarks>
+        /// This method searches the chromatogram for a peak that meets the criteria defined by <paramref name="peakFeature"/>. The search is constrained by the number of points and the width specified.
+        /// </remarks>
+        public PeakOfChromatogram FindPeak(int minPoints, double width, IChromatogramPeakFeature peakFeature) {
+            var maxId = SearchPeakTop(peakFeature.ChromXsTop);
+            var leftId = SearchLeftEdge(maxId, minPoints, width, peakFeature.ChromXsLeft);
+            var rightId = SearchRightEdge(maxId, minPoints, width, peakFeature.ChromXsRight);
             var max = FindHighestIntensity(leftId, rightId + 1, maxId);
             return AsPeak(max, leftId, rightId);
         }
