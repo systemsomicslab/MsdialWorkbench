@@ -9,28 +9,40 @@ namespace CompMs.App.Msdial.Model.DataObj
 {
     public sealed class PeakChromatogram
     {
-        private readonly ChromXType _type;
-        private readonly ChromXUnit _unit;
+        private readonly Chromatogram _chromatogram;
+        private readonly PeakOfChromatogram? _peakOfChromatogram;
 
-        public PeakChromatogram(List<PeakItem> peaks, List<PeakItem> peakArea, PeakItem? peakTop, string class_, Color color, ChromXType type, ChromXUnit unit, string description = "") {
-            Peaks = peaks;
-            PeakArea = peakArea;
-            PeakTop = peakTop;
+        public PeakChromatogram(Chromatogram chromatogram, PeakOfChromatogram? peak, string class_, Color color, string description = "") {
+            _chromatogram = chromatogram;
+            _peakOfChromatogram = peak;
+
+            var peaks = chromatogram.AsPeakArray();
+            var items = peaks.Select(v => new PeakItem(v)).ToList();
+
+            Peaks = items;
             Class = class_;
             Color = color;
-            _type = type;
-            _unit = unit;
             Description = description;
-        }
 
-        public PeakChromatogram(List<PeakItem> peaks, List<PeakItem> peakArea, string class_, Color color, ChromXType type, ChromXUnit unit, string description = "")
-            : this(peaks, peakArea, peakArea.DefaultIfEmpty().Argmax(item => item?.Intensity ?? 0d), class_, color, type, unit, description) {
+            if (peak is null) {
+                PeakArea = new List<PeakItem>(0);
+                PeakTop = null;
+                return;
+            }
 
-        }
+            var left = peaks.IndexOf(peak.Left);
+            var right = peaks.IndexOf(peak.Right);
+            if (left >= 0 && right >= 0) {
+                PeakArea = items.GetRange(left, right - left + 1);
+            }
+            else {
+                PeakArea = peak.SlicePeakArea().Select(v => new PeakItem(v)).ToList();
+            }
 
-        public PeakChromatogram(List<PeakItem> peaks, string class_, Color color, ChromXType type, ChromXUnit unit)
-            : this(peaks, peaks, peaks.DefaultIfEmpty().Argmax(item => item?.Intensity ?? 0d), class_, color, type, unit) {
-
+            var top = peaks.IndexOf(peak.Top);
+            if (top >= 0) {
+                PeakTop = items[top];
+            }
         }
 
         public List<PeakItem> Peaks { get; }
@@ -54,9 +66,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             return new AxisRange(0d, Peaks.Max(peak => peak.Intensity));
         }
 
-        public Chromatogram Convert() {
-            return new Chromatogram(Peaks.Select(peak => peak.Chrom).ToArray(), _type, _unit);
-        }
+        public Chromatogram Convert() => _chromatogram;
 
         public DisplayChromatogram ConvertToDisplayChromatogram() {
             var pen = new Pen(new SolidColorBrush(Color), 1d);
