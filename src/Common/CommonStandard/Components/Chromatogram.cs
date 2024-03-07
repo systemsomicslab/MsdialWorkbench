@@ -1,24 +1,42 @@
 ﻿using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
+using CompMs.Common.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.Common.Components
 {
+    /// <summary>
+    /// Represents a chromatogram, a graphical representation of detector response, ion intensity or other measure of detector signal, as a function of retention time or another chromatographic run parameter.
+    /// </summary>
+    /// <remarks>
+    /// The Chromatogram class encapsulates a collection of peaks (as <see cref="IChromatogramPeak"/> objects) along with their chromatographic type (e.g., retention time) and unit. It provides methods to access peak data, calculate chromatographic metrics, and identify peaks based on specified criteria.
+    /// </remarks>
     public sealed class Chromatogram
     {
         private readonly IReadOnlyList<IChromatogramPeak> _peaks;
         private readonly ChromXType _type;
         private readonly ChromXUnit _unit;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Chromatogram"/> class with a specified collection of peaks, chromatographic type, and unit.
+        /// </summary>
+        /// <param name="peaks">A collection of peaks constituting the chromatogram.</param>
+        /// <param name="type">The type of chromatographic data (e.g., retention time).</param>
+        /// <param name="unit">The unit of measurement for the chromatographic data.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the peaks collection is null.</exception>
         public Chromatogram(IReadOnlyList<IChromatogramPeak> peaks, ChromXType type, ChromXUnit unit) {
-            _peaks = peaks ?? throw new System.ArgumentNullException(nameof(peaks));
+            _peaks = peaks ?? throw new ArgumentNullException(nameof(peaks));
             _type = type;
             _unit = unit;
         }
 
+        /// <summary>
+        /// Returns a read-only list of peaks in the chromatogram.
+        /// </summary>
+        /// <returns>A read-only list of <see cref="IChromatogramPeak"/> objects.</returns>
         public IReadOnlyList<IChromatogramPeak> AsPeakArray() => _peaks;
 
         /// <summary>
@@ -38,6 +56,10 @@ namespace CompMs.Common.Components
             return result;
         }
 
+        /// <summary>
+        /// Determines if the chromatogram is empty, meaning it contains no peaks.
+        /// </summary>
+        /// <value>True if the chromatogram contains no peaks; otherwise, false.</value>
         public bool IsEmpty => _peaks.Count == 0;
 
         public List<ChromatogramPeak> Smoothing(SmoothingMethod method, int level) {
@@ -73,6 +95,64 @@ namespace CompMs.Common.Components
         /// This method is used to construct a peak object from the chromatogram based on the provided indices. It is important to ensure that the indices are within the bounds of the chromatogram data.
         /// </remarks>
         public PeakOfChromatogram AsPeak(int topIndex, int leftIndex, int rightIndex) {
+            return new PeakOfChromatogram(_peaks, _type, topIndex, leftIndex, rightIndex);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="PeakOfChromatogram"/> object representing a peak within the specified time range.
+        /// </summary>
+        /// <param name="timeLeft">The left boundary of the time range to search for the peak.</param>
+        /// <param name="timeRight">The right boundary of the time range to search for the peak.</param>
+        /// <returns>A <see cref="PeakOfChromatogram"/> object representing the identified peak within the specified time range, or null if no peak is found within the range.</returns>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="timeLeft"/> is greater than <paramref name="timeRight"/>, indicating an invalid time range.</exception>
+        /// <remarks>
+        /// This method identifies the peak within the specified time range by finding the segment of chromatogram peaks that fall within the range,
+        /// then selecting the peak with the highest intensity as the top of the identified peak. It calculates the left and right boundaries based on the time range provided,
+        /// ensuring that the identified peak falls entirely within this range. If no peaks are found within the specified time range, the method returns null.
+        /// </remarks>
+        public PeakOfChromatogram? AsPeak(double timeLeft, double timeRight) {
+            if (timeLeft > timeRight) {
+                throw new ArgumentException($"The specified time boundaries are invalid: '{nameof(timeLeft)}' should be less than or equal to '{nameof(timeRight)}'.");
+            }
+            var leftIndex = _peaks.LowerBound(timeLeft, (p, l) => p.ChromXs.GetChromByType(_type).Value.CompareTo(l));
+            if (leftIndex >= _peaks.Count || _peaks[leftIndex].ChromXs.GetChromByType(_type).Value > timeRight) {
+                return null;
+            }
+            var rightIndex = leftIndex;
+            while (rightIndex < _peaks.Count && _peaks[rightIndex].ChromXs.GetChromByType(_type).Value <= timeRight) {
+                ++rightIndex;
+            }
+            rightIndex = Math.Max(leftIndex, rightIndex - 1);
+            var topIndex = Enumerable.Range(leftIndex, rightIndex - leftIndex + 1).Argmax(i => _peaks[i].Intensity);
+            return new PeakOfChromatogram(_peaks, _type, topIndex, leftIndex, rightIndex);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="PeakOfChromatogram"/> object representing a peak within the specified time boundaries, including a specified top time.
+        /// </summary>
+        /// <param name="timeLeft">The left boundary of the time range to search for the peak.</param>
+        /// <param name="timeTop">The time corresponding to the peak's highest intensity point within the range.</param>
+        /// <param name="timeRight">The right boundary of the time range to search for the peak.</param>
+        /// <returns>A <see cref="PeakOfChromatogram"/> object representing the identified peak within the specified time boundaries, or null if no peak is found within the range.</returns>
+        /// <exception cref="ArgumentException">Thrown if the time boundaries are invalid, specifically if <paramref name="timeLeft"/> is greater than <paramref name="timeTop"/>, or <paramref name="timeTop"/> is greater than <paramref name="timeRight"/>.</exception>
+        /// <remarks>
+        /// This method identifies a peak within the specified time boundaries by locating the segment of chromatogram peaks that falls within the range,
+        /// and selecting the peak that is closest to the specified top time as the peak's top point. The method ensures that the identified peak falls entirely within the provided time boundaries.
+        /// </remarks>
+        public PeakOfChromatogram? AsPeak(double timeLeft, double timeTop, double timeRight) {
+            if (timeLeft > timeTop || timeTop > timeRight) {
+                throw new ArgumentException($"The specified time boundaries are invalid: '{nameof(timeLeft)}' should be less than or equal to '{nameof(timeTop)}', and '{nameof(timeTop)}' should be less than or equal to '{nameof(timeRight)}'.");
+            }
+            var leftIndex = _peaks.LowerBound(timeLeft, (p, l) => p.ChromXs.GetChromByType(_type).Value.CompareTo(l));
+            if (leftIndex >= _peaks.Count || _peaks[leftIndex].ChromXs.GetChromByType(_type).Value > timeRight) {
+                return null;
+            }
+            var rightIndex = leftIndex;
+            while (rightIndex < _peaks.Count && _peaks[rightIndex].ChromXs.GetChromByType(_type).Value <= timeRight) {
+                ++rightIndex;
+            }
+            rightIndex = Math.Max(leftIndex, rightIndex - 1);
+            var topIndex = Enumerable.Range(leftIndex, rightIndex - leftIndex + 1).Argmin(i => Math.Abs(timeTop - _peaks[i].ChromXs.GetChromByType(_type).Value));
             return new PeakOfChromatogram(_peaks, _type, topIndex, leftIndex, rightIndex);
         }
 

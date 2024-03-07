@@ -46,6 +46,21 @@ namespace CompMs.Common.Components
         public IChromatogramPeak Right { get; }
 
         /// <summary>
+        /// Extracts a segment of the chromatogram that corresponds to the peak area.
+        /// </summary>
+        /// <returns>An array of <see cref="IChromatogramPeak"/> representing the extracted segment of the chromatogram within the peak boundaries.</returns>
+        /// <remarks>
+        /// This method returns the portion of the chromatogram that spans from the left to the right boundary of the peak, inclusive. It's useful for further analysis or visualization of the peak's chromatographic profile.
+        /// </remarks>
+        public IChromatogramPeak[] SlicePeakArea() {
+            var chromatogram = new IChromatogramPeak[_right - _left + 1];
+            for (int i = _left; i <= _right; i++) {
+                chromatogram[i - _left] = _chromatogram[i];
+            }
+            return chromatogram;
+        }
+
+        /// <summary>
         /// Calculates the area under the peak using the trapezoidal rule.
         /// </summary>
         /// <returns>The calculated area under the peak.</returns>

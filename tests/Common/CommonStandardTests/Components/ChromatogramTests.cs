@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.Common.Components;
+using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
@@ -59,8 +60,7 @@ namespace CompMs.Common.Components.Tests
 
             // Assert
             Assert.AreEqual(peaks.Count, resultPeaks.Count, "The number of peaks should match.");
-            for (int i = 0; i < peaks.Count; i++)
-            {
+            for (int i = 0; i < peaks.Count; i++) {
                 Assert.AreEqual(peaks[i].ID, resultPeaks[i].ID, $"{nameof(IChromatogramPeak.ID)} of peak at index {i} should match.");
                 Assert.AreEqual(peaks[i].Mass, resultPeaks[i].Mass, $"{nameof(IChromatogramPeak.Mass)} of peak at index {i} should match.");
                 Assert.AreEqual(peaks[i].Intensity, resultPeaks[i].Intensity, $"{nameof(IChromatogramPeak.Intensity)} of peak at index {i} should match.");
@@ -146,6 +146,91 @@ namespace CompMs.Common.Components.Tests
             Assert.IsNotNull(foundPeak, "Expected to find a peak but none was found.");
             Assert.AreEqual(peakFeatureStub.ChromScanIdTop, foundPeak.Top.ID, "The identified top peak does not match the expected peak.");
 
+        }
+
+        [TestMethod()]
+        public void AsPeak_IdentifiesCorrectPeakWithinTimeRange() {
+            // Arrange
+            var peaks = new List<IChromatogramPeak>
+            {
+                new ChromatogramPeak(0, 50d, 5d, new ChromXs(0.5, ChromXType.RT, ChromXUnit.Min)),  // Before time range
+                new ChromatogramPeak(1, 100d, 10d, new ChromXs(1.0, ChromXType.RT, ChromXUnit.Min)), // Start of time range
+                new ChromatogramPeak(2, 150d, 20d, new ChromXs(1.5, ChromXType.RT, ChromXUnit.Min)), // Highest intensity within range
+                new ChromatogramPeak(3, 200d, 15d, new ChromXs(2.0, ChromXType.RT, ChromXUnit.Min)), // Within time range
+                new ChromatogramPeak(4, 250d, 10d, new ChromXs(2.5, ChromXType.RT, ChromXUnit.Min)), // End of time range
+                new ChromatogramPeak(5, 300d, 5d, new ChromXs(3.0, ChromXType.RT, ChromXUnit.Min))   // After time range
+            };
+            var chromatogram = new Chromatogram(peaks, ChromXType.RT, ChromXUnit.Min);
+
+            double timeLeft = 1.0, timeRight = 2.5;
+
+            // Act
+            var peak = chromatogram.AsPeak(timeLeft, timeRight);
+
+            // Assert
+            Assert.IsNotNull(peak, "A peak should be identified within the specified time range.");
+            Assert.AreEqual(1, peak.Left.ID, "The left boundary of the peak should match the start of the time range.");
+            Assert.AreEqual(2, peak.Top.ID, "The top of the peak should have the highest intensity within the time range.");
+            Assert.AreEqual(4, peak.Right.ID, "The right boundary of the peak should match the end of the time range.");
+        }
+
+        [TestMethod]
+        public void AsPeak_ReturnsNullWhenNoDataPointsWithinTimeRange()
+        {
+            // Arrange
+            var peaks = new List<IChromatogramPeak>
+            {
+                new ChromatogramPeak(0, 50d, 5d, new ChromXs(0.5, ChromXType.RT, ChromXUnit.Min)),
+                new ChromatogramPeak(1, 100d, 10d, new ChromXs(2.5, ChromXType.RT, ChromXUnit.Min))
+            };
+            var chromatogram = new Chromatogram(peaks, ChromXType.RT, ChromXUnit.Min);
+
+            // Specifying a time range that doesn't include any of the defined peaks
+            double timeLeft = 3.0, timeRight = 4.0;
+
+            // Act
+            var peak = chromatogram.AsPeak(timeLeft, timeRight);
+
+            // Assert
+            // Assuming that AsPeak method is designed to return null when no peaks are found within the specified time range.
+            Assert.IsNull(peak, "AsPeak should return null when no data points are found within the specified time range.");
+        }
+
+        [TestMethod]
+        public void AsPeak_IdentifiesCorrectPeakWithinTimeBoundaries()
+        {
+            // Arrange
+            var peaks = new List<IChromatogramPeak>
+            {
+                new ChromatogramPeak(1, 100d, 10d, new ChromXs(0.8, ChromXType.RT, ChromXUnit.Min)),
+                new ChromatogramPeak(2, 150d, 20d, new ChromXs(1.0, ChromXType.RT, ChromXUnit.Min)), // Closest to top time
+                new ChromatogramPeak(3, 200d, 15d, new ChromXs(1.2, ChromXType.RT, ChromXUnit.Min)),
+            };
+            var chromatogram = new Chromatogram(peaks, ChromXType.RT, ChromXUnit.Min);
+
+            double timeLeft = 0.5, timeTop = 1.0, timeRight = 1.5;
+
+            // Act
+            var peak = chromatogram.AsPeak(timeLeft, timeTop, timeRight);
+
+            // Assert
+            Assert.IsNotNull(peak, "A peak should be identified within the specified time boundaries.");
+            Assert.AreEqual(2, peak.Top.ID, "The top of the peak should be closest to the specified top time.");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(System.ArgumentException))]
+        public void AsPeak_ThrowsArgumentExceptionForInvalidTimeBoundaries()
+        {
+            // Arrange
+            var peaks = new List<IChromatogramPeak>(); // Empty peaks for this test case
+            var chromatogram = new Chromatogram(peaks, ChromXType.RT, ChromXUnit.Min);
+
+            // Invalid time boundaries
+            double timeLeft = 1.0, timeTop = 0.5, timeRight = 0.8;
+
+            // Act & Assert
+            var peak = chromatogram.AsPeak(timeLeft, timeTop, timeRight);
         }
     }
 }
