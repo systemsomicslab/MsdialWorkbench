@@ -16,8 +16,8 @@ namespace CompMs.App.Msdial.Model.DataObj
                 linePen = new Pen(Brushes.Black, 1.0);
                 linePen.Freeze();
             }
-            LinePen = linePen;
-            Name = name;
+            _linePen = linePen;
+            _name = name;
         }
 
         public DisplayChromatogram(IEnumerable<ChromatogramPeak> peaks, Pen? linePen = null, string name = "na")
@@ -31,7 +31,11 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public List<PeakItem> ChromatogramPeaks { get; }
 
-        public string Name { get; }
+        public string Name {
+            get => _name;
+            set => SetProperty(ref _name, value);
+        }
+        private string _name;
 
         public bool Visible {
             get => _visible;
@@ -39,7 +43,16 @@ namespace CompMs.App.Msdial.Model.DataObj
         }
         private bool _visible = true;
 
-        public Pen LinePen { get; }
+        public Pen LinePen {
+            get => _linePen;
+            set {
+                if (SetProperty(ref _linePen, value)) {
+                    OnPropertyChanged(nameof(LineBrush));
+                }
+            }
+        }
+        private Pen _linePen;
+
         public Brush LineBrush => LinePen.Brush;
 
         public double MaxIntensity => ChromatogramPeaks.DefaultIfEmpty().Max(chromatogramPeak => chromatogramPeak?.Intensity) ?? 0d;

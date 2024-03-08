@@ -1,8 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Loader
 {
@@ -17,15 +15,11 @@ namespace CompMs.App.Msdial.Model.Loader
             _peakPickParameter = peakPickParameter;
         }
 
-        private List<PeakItem> LoadBpcCore() {
-            return _rawSpectra
+        DisplayChromatogram IWholeChromatogramLoader.LoadChromatogram() {
+            var chromatogram = _rawSpectra
                 .GetMs1BasePeakChromatogram(_chromatogramRange)
-                .ChromatogramSmoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel).AsPeakArray()
-                .Where(peak => peak != null)
-                .Select(peak => new PeakItem(peak))
-                .ToList();
+                .ChromatogramSmoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel);
+            return new DisplayChromatogram(chromatogram);
         }
-
-        List<PeakItem> IWholeChromatogramLoader.LoadChromatogram() => LoadBpcCore();
     }
 }

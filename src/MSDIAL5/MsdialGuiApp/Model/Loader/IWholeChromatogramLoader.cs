@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace CompMs.App.Msdial.Model.Loader
 {
     public interface IWholeChromatogramLoader {
-        List<PeakItem> LoadChromatogram();
+        DisplayChromatogram LoadChromatogram();
     }
 
     public interface IWholeChromatogramLoader<T> {

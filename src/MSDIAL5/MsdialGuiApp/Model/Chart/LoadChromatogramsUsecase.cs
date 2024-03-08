@@ -91,13 +91,19 @@ namespace CompMs.App.Msdial.Model.Chart
 
             public void AddTic() {
                 var tic = _ticLoader.LoadChromatogram();
-                _displayChroms.Add(new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC"));
+                var pen = tic.LinePen = new Pen(Brushes.Black, 1.0);
+                pen.Freeze();
+                tic.Name = "TIC";
+                _displayChroms.Add(tic);
                 _contents.Add("TIC");
             }
 
             public void AddBpc() {
                 var bpc = _bpcLoader.LoadChromatogram();
-                _displayChroms.Add(new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC"));
+                var pen = bpc.LinePen = new Pen(Brushes.Red, 1.0);
+                pen.Freeze();
+                bpc.Name = "BPC";
+                _displayChroms.Add(bpc);
                 _contents.Add("BPC");
             }
 
