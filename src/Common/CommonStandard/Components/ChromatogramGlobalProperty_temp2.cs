@@ -64,7 +64,7 @@ namespace CompMs.Common.Components
         }
 
         internal bool IsNoise(double maxPeakHeight, double minPeakHeight, double _minimumAmplitudeCriteria, double amplitudeNoiseFoldCriteria, int start, int end) {
-            return maxPeakHeight < _globalProperty.Noise || minPeakHeight < _minimumAmplitudeCriteria || minPeakHeight < (double)_noises.AmplitudeNoise * amplitudeNoiseFoldCriteria || (_globalProperty.IsHighBaseline && _chromatogram.AnyBoundsLowHeight(start, end, _globalProperty.BaselineMedian));
+            return maxPeakHeight < _globalProperty.Noise || minPeakHeight < _minimumAmplitudeCriteria || minPeakHeight < (double)_noises.AmplitudeNoise * amplitudeNoiseFoldCriteria || (_globalProperty.IsHighBaseline && _chromatogram.HasBoundaryBelowThreshold(start, end, _globalProperty.BaselineMedian));
         }
 
         internal PeakDetectionResult GetPeakDetectionResult(int peakTopId, int start, int end, double noiseFactor, double maxPeakHeight) {
