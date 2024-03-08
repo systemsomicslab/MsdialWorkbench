@@ -35,7 +35,7 @@ namespace CompMs.App.Msdial.Model.Dims
             var rightMz = (target.ChromXValue ?? 0d) + width;
             var spectra = await provider.LoadMs1SpectrumsAsync(token).ConfigureAwait(false);
             return new Chromatogram(DataAccess.ConvertRawPeakElementToChromatogramPeakList(spectra.Argmax(spectrum => spectrum.Spectrum.Length).Spectrum, leftMz, rightMz), ChromXType.Mz, ChromXUnit.Mz)
-                .SmoothedChromatogram(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel);
+                .ChromatogramSmoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel);
         }
 
         public static DimsEicLoader BuildForEicView(AnalysisFileBean analysisFile, IDataProvider provider, ParameterBase parameter) {

@@ -21,9 +21,9 @@ namespace CompMs.Common.Components
     /// </remarks>
     public class Chromatogram : IDisposable
     {
-        private ValuePeak[]? _peaks;
-        private readonly int _size;
-        private ArrayPool<ValuePeak>? _arrayPool;
+        protected ValuePeak[]? _peaks;
+        protected readonly int _size;
+        protected ArrayPool<ValuePeak>? _arrayPool;
         private readonly ChromXType _type;
         private readonly ChromXUnit _unit;
 
@@ -104,15 +104,22 @@ namespace CompMs.Common.Components
         public bool IsEmpty => _size == 0;
 
         /// <exception cref="ObjectDisposedException">Thrown if the chromatogram has been disposed.</exception>
-        public Chromatogram SmoothedChromatogram(SmoothingMethod method, int level) {
+        public Chromatogram ChromatogramSmoothing(SmoothingMethod method, int level) {
+            return ChromatogramSmoothingCore(method, level);
+        }
+
+        protected virtual Chromatogram ChromatogramSmoothingCore(SmoothingMethod method, int level) {
             if (_peaks is null) {
                 throw new ObjectDisposedException(nameof(_peaks));
             }
-            ValuePeak[] peaks = null;
-            if (method == SmoothingMethod.LinearWeightedMovingAverage) {
-                peaks = _peaks as ValuePeak[];
+            ValuePeak[] peaks;
+            if (method == SmoothingMethod.LinearWeightedMovingAverage || _peaks.Length == _size) {
+                peaks = _peaks;
             }
-            peaks ??= _peaks.Take(_size).ToArray();
+            else {
+                peaks = new ValuePeak[_size];
+                Array.Copy(_peaks, peaks, _size);
+            }
 
             switch (method) {
                 case SmoothingMethod.SimpleMovingAverage:

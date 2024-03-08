@@ -20,7 +20,7 @@ namespace CompMs.App.Msdial.Model.Loader
         private List<PeakItem> LoadBpcCore() {
             return _rawSpectra
                 .GetMs1BasePeakChromatogram(_chromatogramRange)
-                .SmoothedChromatogram(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel).AsPeakArray()
+                .ChromatogramSmoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel).AsPeakArray()
                 .Where(peak => peak != null)
                 .Select(peak => new PeakItem(peak))
                 .ToList();

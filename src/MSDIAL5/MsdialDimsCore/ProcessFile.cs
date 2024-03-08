@@ -44,7 +44,7 @@ namespace CompMs.MsdialDimsCore
             Console.WriteLine("Peak picking started");
             var ms1Spectrum = provider.LoadMs1Spectrums().Argmax(spec => spec.Spectrum.Length);
             var chromPeaks = DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum);
-            var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.Mz, ChromXUnit.Mz).SmoothedChromatogram(param.SmoothingMethod, param.SmoothingLevel).AsPeakArray();
+            var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.Mz, ChromXUnit.Mz).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel).AsPeakArray();
 
             var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, param.MinimumDatapoints, param.MinimumAmplitude);
             if (peakPickResults.IsEmptyOrNull()) return;
@@ -117,7 +117,7 @@ namespace CompMs.MsdialDimsCore
             Console.WriteLine("Peak picking started");
             var ms1Spectrum = provider.LoadMs1Spectrums().Argmax(spec => spec.Spectrum.Length);
             var chromPeaks = DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum);
-            var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.Mz, ChromXUnit.Mz).SmoothedChromatogram(param.SmoothingMethod, param.SmoothingLevel).AsPeakArray();
+            var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.Mz, ChromXUnit.Mz).ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel).AsPeakArray();
 
             var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, param.MinimumDatapoints, param.MinimumAmplitude);
             if (peakPickResults.IsEmptyOrNull()) return;

@@ -37,7 +37,7 @@ namespace CompMs.App.Msdial.Model.Loader
             if (target is not null) {
                 var peakFeature = target.QuantifiedChromatogramPeak.PeakFeature;
                 Chromatogram eic = await LoadEicCoreAsync(peakFeature, token).ConfigureAwait(false);
-                var smoothed = eic.SmoothedChromatogram(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel);
+                var smoothed = eic.ChromatogramSmoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel);
                 token.ThrowIfCancellationRequested();
                 var peakOfChromatogram = smoothed.AsPeak(peakFeature.ChromXsLeft.GetChromByType(_chromXType).Value, peakFeature.ChromXsTop.GetChromByType(_chromXType).Value, peakFeature.ChromXsRight.GetChromByType(_chromXType).Value);
                 var description = $"EIC of {peakFeature.Mass:N4} tolerance [Da]: {MzTolerance:F} Max intensity: {peakOfChromatogram?.GetTop().Intensity ?? 0d:F0}";

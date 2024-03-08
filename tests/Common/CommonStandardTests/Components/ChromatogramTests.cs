@@ -25,7 +25,7 @@ namespace CompMs.Common.Components.Tests
                 new ChromatogramPeak(9, 109d, 1009d, new RetentionTime(9d)),
             };
             var chromatogram = new Chromatogram(rawdata, ChromXType.RT, ChromXUnit.Min);
-            var actual = chromatogram.SmoothedChromatogram(SmoothingMethod.SimpleMovingAverage, 2).AsPeakArray();
+            var actual = chromatogram.ChromatogramSmoothing(SmoothingMethod.SimpleMovingAverage, 2).AsPeakArray();
             Assert.AreEqual(10, actual.Count);
             Assert.AreEqual(5003d / 5, actual[0].Intensity);
             Assert.AreEqual(5007d / 5, actual[1].Intensity);

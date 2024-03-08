@@ -34,7 +34,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             return Task.Run(() =>
             {
                 var ms1Peaks = _rawSpectra.GetDriftChromatogramByScanRtMz(target.InnerModel.MS1RawSpectrumIdTop, (float)target.InnerModel.PeakFeature.ChromXsTop.RT.Value, (float)_parameter.AccumulatedRtRange, (float)target.Mass, _parameter.CentroidMs1Tolerance);
-                var smoothedPeaks = ms1Peaks.SmoothedChromatogram(_parameter.SmoothingMethod, _parameter.SmoothingLevel);
+                var smoothedPeaks = ms1Peaks.ChromatogramSmoothing(_parameter.SmoothingMethod, _parameter.SmoothingLevel);
                 var eic = smoothedPeaks.AsPeakArray()
                     .Where(peak => peak != null)
                     .Select(peak => new PeakItem(peak))

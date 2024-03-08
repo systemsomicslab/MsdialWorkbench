@@ -20,7 +20,7 @@ namespace CompMs.App.Msdial.Model.Loader
         private List<PeakItem> LoadTicCore() {
             var chromatogram = _rawSpectra.GetMs1TotalIonChromatogram(_chromatogramRange);
             return chromatogram
-                .SmoothedChromatogram(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel).AsPeakArray()
+                .ChromatogramSmoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel).AsPeakArray()
                 .Where(peak => peak != null)
                 .Select(peak => new PeakItem(peak))
                 .ToList();

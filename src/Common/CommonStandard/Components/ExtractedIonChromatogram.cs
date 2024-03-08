@@ -8,12 +8,9 @@ using System.Linq;
 
 namespace CompMs.Common.Components
 {
-    public sealed class ExtractedIonChromatogram : IDisposable {
-        private IReadOnlyList<ValuePeak>? _peaks;
-        private readonly int _size;
+    public sealed class ExtractedIonChromatogram : Chromatogram {
         private readonly ChromXType _type;
         private readonly ChromXUnit _unit;
-        private ArrayPool<ValuePeak>? _arrayPool;
         private readonly Algorithm.ChromSmoothing.Smoothing _smoother;
 
         /// <summary>
@@ -27,9 +24,7 @@ namespace CompMs.Common.Components
         /// <remarks>
         /// This constructor is suitable for cases where the peaks are provided in a collection that may not be initially indexed. It ensures that the peaks are stored internally as a read-only list, facilitating efficient access while preserving immutability.
         /// </remarks>
-        public ExtractedIonChromatogram(IEnumerable<ValuePeak> peaks, ChromXType type, ChromXUnit unit, double extractedMz) {
-            _peaks = peaks as IReadOnlyList<ValuePeak> ?? peaks?.ToArray() ?? throw new ArgumentNullException(nameof(peaks));
-            _size = _peaks.Count;
+        public ExtractedIonChromatogram(IEnumerable<ValuePeak> peaks, ChromXType type, ChromXUnit unit, double extractedMz) : base(peaks, type, unit) {
             _type = type;
             _unit = unit;
             _smoother = new Algorithm.ChromSmoothing.Smoothing();
@@ -48,19 +43,15 @@ namespace CompMs.Common.Components
         /// <remarks>
         /// This constructor is optimized for scenarios where memory efficiency is crucial, utilizing an <see cref="ArrayPool{ValuePeak}"/> for the peak array. This approach is particularly useful in high-throughput environments or when processing large datasets. Ensure to call <see cref="Dispose"/> when done using the instance to release the array back to the specified <see cref="ArrayPool{ValuePeak}"/>, preventing memory leaks and ensuring the array can be reused. It is essential that the provided `peaks` array is rented from an array pool to align with the disposal pattern and memory management practices.
         /// </remarks>
-        public ExtractedIonChromatogram(ValuePeak[] peaks, int size, ChromXType type, ChromXUnit unit, double extractedMz, ArrayPool<ValuePeak> arrayPool) {
-            _peaks = peaks;
-            _size = size;
+        public ExtractedIonChromatogram(ValuePeak[] peaks, int size, ChromXType type, ChromXUnit unit, double extractedMz, ArrayPool<ValuePeak> arrayPool) : base(peaks, size, type, unit, arrayPool) {
             _type = type;
             _unit = unit;
-            _arrayPool = arrayPool;
             _smoother = new Algorithm.ChromSmoothing.Smoothing();
             ExtractedMz = extractedMz;
         }
 
         public double ExtractedMz { get; }
 
-        public bool IsEmpty => _size == 0;
         public int Length => _size;
 
         /// <summary>
@@ -72,7 +63,7 @@ namespace CompMs.Common.Components
         /// This method ensures the integrity of the chromatographic data by returning a copy of the internal peak array, 
         /// allowing safe read-only access to the peak data.
         /// </remarks>
-        public ValuePeak[] AsPeakArray() {
+        public new ValuePeak[] AsPeakArray() {
             if (_peaks is null) {
                 throw new ObjectDisposedException(nameof(_peaks));
             } 
@@ -138,24 +129,6 @@ namespace CompMs.Common.Components
                 throw new ObjectDisposedException(nameof(_peaks));
             } 
             return _peaks[index].Id;
-        }
-
-        /// <summary>
-        /// Creates a <see cref="ChromXs"/> object representing a chromatographic position with an associated m/z.
-        /// </summary>
-        /// <param name="chromValue">The chromatographic value (e.g., retention time).</param>
-        /// <param name="mz">The m/z to associate with the chromatographic position.</param>
-        /// <returns>A <see cref="ChromXs"/> object encapsulating the specified chromatographic position and m/z value.</returns>
-        /// <remarks>
-        /// This method facilitates the creation of a <see cref="ChromXs"/> object for cases where the chromatographic type
-        /// does not inherently involve m/z values, allowing for the explicit association of an m/z value with a given chromatographic measurement.
-        /// </remarks>
-        public ChromXs PeakChromXs(double chromValue, double mz) {
-            var result = new ChromXs(chromValue, _type, _unit);
-            if (_type != ChromXType.Mz) {
-                result.Mz = new MzValue(mz);
-            }
-            return result;
         }
 
         /// <summary>
@@ -555,16 +528,21 @@ namespace CompMs.Common.Components
         /// <param name="method">The smoothing method to apply, defined by the <see cref="SmoothingMethod"/> enumeration.</param>
         /// <param name="level">The level of smoothing to apply, which may affect the degree of noise reduction and peak preservation based on the chosen method.</param>
         /// <returns>A new <see cref="ExtractedIonChromatogram"/> instance representing the smoothed chromatogram.</returns>
+        /// <exception cref="ObjectDisposedException">Thrown if the chromatogram has been disposed.</exception>
         /// <remarks>
         /// This method facilitates various smoothing techniques, each with their own strengths in different analytical contexts. For instance, simple moving averages are effective for general noise reduction, while more sophisticated methods like Savitzky-Golay filtering can preserve peak shape and height better. The choice of method and level should be tailored to the specific needs of the chromatographic analysis.
         /// </remarks>
-        public ExtractedIonChromatogram ChromatogramSmoothing(SmoothingMethod method, int level) {
-            ValuePeak[] peaks = null;
-            if (method == SmoothingMethod.LinearWeightedMovingAverage) {
-                peaks = _peaks as ValuePeak[];
+        public new ExtractedIonChromatogram ChromatogramSmoothing(SmoothingMethod method, int level) {
+            if (_peaks is null) {
+                throw new ObjectDisposedException(nameof(_peaks));
             }
-            if (peaks is null) {
-                peaks = _peaks.Take(_size).ToArray();
+            ValuePeak[] peaks;
+            if (method == SmoothingMethod.LinearWeightedMovingAverage || _peaks.Length == _size) {
+                peaks = _peaks;
+            }
+            else {
+                peaks = new ValuePeak[_size];
+                Array.Copy(_peaks, peaks, _size);
             }
 
             switch (method) {
@@ -585,6 +563,10 @@ namespace CompMs.Common.Components
                     _smoother.LinearWeightedMovingAverage(peaks, smoothed, _size, level);
                     return new ExtractedIonChromatogram(smoothed, _size, _type, _unit, ExtractedMz, arrayPool);
             }
+        }
+
+        protected override Chromatogram ChromatogramSmoothingCore(SmoothingMethod method, int level) {
+            return ChromatogramSmoothing(method, level);
         }
 
         /// <summary>
@@ -639,15 +621,6 @@ namespace CompMs.Common.Components
             var noises = globalProperty.CalculateSlopeNoises(differencialCoefficients);
 
             return new ChroChroChromatogram(this, globalProperty, differencialCoefficients, noises);
-        }
-
-        public void Dispose() {
-            if (_arrayPool is null) {
-                return;
-            }
-            _arrayPool.Return((ValuePeak[])_peaks);
-            _peaks = null;
-            _arrayPool = null;
         }
     }
 }
