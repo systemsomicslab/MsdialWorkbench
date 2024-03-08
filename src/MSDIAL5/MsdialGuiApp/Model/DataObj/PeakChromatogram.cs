@@ -72,7 +72,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public DisplayChromatogram ConvertToDisplayChromatogram() {
             var pen = new Pen(new SolidColorBrush(Color), 1d);
             pen.Freeze();
-            return new DisplayChromatogram(Peaks, pen, Class);
+            return new DisplayChromatogram(_chromatogram, pen, Class);
         }
     }
 }

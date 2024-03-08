@@ -11,8 +11,14 @@ namespace CompMs.App.Msdial.Model.DataObj
     {
         private readonly IonMode _ionMode;
 
-        public DisplayExtractedIonChromatogram(List<PeakItem> peaks, double mz, double tolerance, IonMode ionMode, Pen? linePen = null, string title = "na") : base(peaks, linePen, title) {
+        public DisplayExtractedIonChromatogram(List<PeakItem> peaks, double mz, double tolerance, IonMode ionMode, Pen? linePen = null, string name = "na") : base(peaks, linePen, name) {
             Mz = mz;
+            Tolerance = tolerance;
+            _ionMode = ionMode;
+        }
+
+        public DisplayExtractedIonChromatogram(ExtractedIonChromatogram chromatogram, double tolerance, IonMode ionMode, Pen? linePen = null, string name = "na") : base(chromatogram, linePen, name) {
+            Mz = chromatogram.ExtractedMz;
             Tolerance = tolerance;
             _ionMode = ionMode;
         }

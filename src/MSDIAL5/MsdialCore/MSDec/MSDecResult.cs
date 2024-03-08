@@ -41,18 +41,19 @@ namespace CompMs.MsdialCore.MSDec {
         public List<int> MspIDs { get; set; } = new List<int>(); // ID list having the metabolite candidates exceeding the threshold (optional)
         public MsScanMatchResult MspBasedMatchResult { get; set; } = new MsScanMatchResult();
 
-        public List<ChromatogramPeak[]> DecChromPeaks(int maxPeakNum = int.MaxValue) {
-            var chroms = new List<ChromatogramPeak[]>(Spectrum.Count);
-            var spectrum = Spectrum.OrderByDescending(n => n.Intensity).ToList();
+        public ExtractedIonChromatogram[] DecChromPeaks(int maxPeakNum = int.MaxValue) {
+            var spectrum = Spectrum.OrderByDescending(n => n.Intensity).Take(maxPeakNum).ToArray();
+            var chroms = new ExtractedIonChromatogram[spectrum.Length];
             var modelPeaks = ModelPeakChromatogram;
             var maxIntensity = modelPeaks.DefaultIfEmpty().Max(n => n?.Intensity) ?? 1e-10;
-            for (int i = 0; i < spectrum.Count; i++) {
-                if (i >= maxPeakNum) break;
-                var chrom = new ChromatogramPeak[ModelPeakChromatogram.Count];
+            for (int i = 0; i < spectrum.Length; i++) {
+                var chrom = new ValuePeak[ModelPeakChromatogram.Count];
+                var type = modelPeaks.Select(p => p.ChromXs.MainType).FirstOrDefault();
+                var unit = modelPeaks.Select(p => p.ChromXs.Unit).FirstOrDefault();
                 for (int j = 0; j < ModelPeakChromatogram.Count; j++) {
-                    chrom[j] = new ChromatogramPeak(modelPeaks[j].ID, spectrum[i].Mass, modelPeaks[j].Intensity * spectrum[i].Intensity / maxIntensity, modelPeaks[j].ChromXs);
+                    chrom[j] = new ValuePeak(modelPeaks[j].ID, modelPeaks[j].ChromXs.Value, spectrum[i].Mass, modelPeaks[j].Intensity * spectrum[i].Intensity / maxIntensity);
                 }
-                chroms.Add(chrom);
+                chroms[i] = new ExtractedIonChromatogram(chrom, type, unit, spectrum[i].Mass);
             }
             return chroms;
         }
