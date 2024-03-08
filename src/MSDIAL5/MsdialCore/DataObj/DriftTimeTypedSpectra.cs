@@ -128,17 +128,17 @@ namespace CompMs.MsdialCore.DataObj
         /// <param name="precursor">The m/z range of the precursor ions.</param>
         /// <param name="product">The m/z range of the product ions.</param>
         /// <param name="chromatogramRange">The range of drift times to include in the chromatogram.</param>
-        /// <returns>A <see cref="Chromatogram"/> object representing the intensity of product ions across the specified drift time range.</returns>
+        /// <returns>A <see cref="ExtractedIonChromatogram"/> object representing the intensity of product ions across the specified drift time range.</returns>
         /// <remarks>
         /// This method filters spectra based on their MS level, the specified precursor and product m/z ranges, scan polarity, and the specified drift time range.
         /// For each spectrum that meets these criteria, it calculates the summed intensity of product ions that fall within the specified product m/z range,
         /// associating each intensity with its corresponding drift time. The resulting chromatogram provides insights into how the intensity of specified product ions changes
         /// over the selected drift time range, which is useful for analyzing the behavior of ions with different mobility characteristics.
         /// </remarks>
-        public Chromatogram GetProductIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange) {
+        public ExtractedIonChromatogram GetProductIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange) {
             var startIndex = _spectra.LowerBound(chromatogramRange.Begin, (spectrum, target) => spectrum.DriftTime.CompareTo(target));
             var endIndex = _spectra.UpperBound(chromatogramRange.End, startIndex, _spectra.Count, (spectrum, target) => spectrum.DriftTime.CompareTo(target));
-            var results = new List<ChromatogramPeak>();
+            var results = new List<ValuePeak>();
             for (int i = startIndex; i < endIndex; i++) {
                 if (_spectra[i].MsLevel != 2 ||
                     !_spectra[i].Precursor.ContainsMz(precursor.Mz, precursor.Tolerance, _acquisitionType) ||
@@ -146,10 +146,9 @@ namespace CompMs.MsdialCore.DataObj
                     continue;
                 }
                 var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveBin(product.Mz, product.Tolerance);
-                var time = _idToDriftTime.GetOrAdd(i, j => new Lazy<DriftTime>(() => new DriftTime(_spectra[j].DriftTime)));
-                results.Add(ChromatogramPeak.Create(_spectra[i].Index, basePeakMz, summedIntensity, time.Value));
+                results.Add(new ValuePeak(_spectra[i].Index, _spectra[i].DriftTime, basePeakMz, summedIntensity));
             }
-            return new Chromatogram(results, ChromXType.Drift, _unit);
+            return new ExtractedIonChromatogram(results, ChromXType.Drift, _unit, product.Mz);
         }
     }
 }

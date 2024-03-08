@@ -11,6 +11,6 @@ namespace CompMs.MsdialCore.DataObj
         IEnumerable<ExtractedIonChromatogram> GetMs1ExtractedChromatograms_temp2(IEnumerable<double> mzs, double tolerance, double start, double end);
         Chromatogram GetMs1TotalIonChromatogram(double start, double end);
         Chromatogram GetMs1BasePeakChromatogram(double start, double end);
-        Chromatogram GetProductIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange);
+        ExtractedIonChromatogram GetProductIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange);
     }
 }

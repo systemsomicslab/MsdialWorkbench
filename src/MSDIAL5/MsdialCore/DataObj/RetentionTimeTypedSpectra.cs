@@ -147,17 +147,17 @@ namespace CompMs.MsdialCore.DataObj
         /// <param name="precursor">The m/z range of the precursor ions.</param>
         /// <param name="product">The m/z range of the product ions.</param>
         /// <param name="chromatogramRange">The range of retention times to include in the chromatogram.</param>
-        /// <returns>A <see cref="Chromatogram"/> object representing the intensity of product ions across the specified retention time range.</returns>
+        /// <returns>A <see cref="ExtractedIonChromatogram"/> object representing the intensity of product ions across the specified retention time range.</returns>
         /// <remarks>
         /// This method filters spectra based on their MS level, the specified precursor and product m/z ranges, and the scan polarity.
         /// It then calculates the summed intensity of product ions that fall within the specified product m/z range for each spectrum,
         /// creating a chromatogram peak for each qualifying spectrum. The resulting chromatogram provides a visualization of
         /// how the intensity of specified product ions changes over the selected range of retention times.
         /// </remarks>
-        public Chromatogram GetProductIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange) {
+        public ExtractedIonChromatogram GetProductIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange) {
             var startIndex = _spectra.LowerBound(chromatogramRange.Begin, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
             var endIndex = _spectra.UpperBound(chromatogramRange.End, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
-            var results = new List<ChromatogramPeak>();
+            var results = new List<ValuePeak>();
             for (int i = startIndex; i < endIndex; i++) {
                 if (_spectra[i].MsLevel != 2 ||
                     !_spectra[i].Precursor.ContainsMz(precursor.Mz, precursor.Tolerance, _acquisitionType) ||
@@ -165,9 +165,9 @@ namespace CompMs.MsdialCore.DataObj
                     continue;
                 }
                 var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveBin(product.Mz, product.Tolerance);
-                results.Add(ChromatogramPeak.Create(_spectra[i].Index, basePeakMz, summedIntensity, _idToRetentionTime[i]));
+                results.Add(new ValuePeak(_spectra[i].Index, _spectra[i].ScanStartTime, basePeakMz, summedIntensity));
             }
-            return new Chromatogram(results, ChromXType.RT, _unit);
+            return new ExtractedIonChromatogram(results, ChromXType.RT, _unit, product.Mz);
         }
     }
 }

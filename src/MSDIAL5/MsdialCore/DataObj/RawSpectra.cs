@@ -109,7 +109,7 @@ namespace CompMs.MsdialCore.DataObj
         /// <param name="product">The m/z range for the product ions.</param>
         /// <param name="chromatogramRange">Specifies the range and type of the chromatogram to be generated, 
         /// including the chromatogram type (e.g., retention time, drift time) and unit.</param>
-        /// <returns>A <see cref="Chromatogram"/> object representing the chromatogram of product ions 
+        /// <returns>A <see cref="ExtractedIonChromatogram"/> object representing the chromatogram of product ions 
         /// within the specified precursor and product m/z ranges and chromatogram range.</returns>
         /// <remarks>
         /// This method dynamically selects or constructs an appropriate implementation for generating the chromatogram
@@ -117,7 +117,7 @@ namespace CompMs.MsdialCore.DataObj
         /// It delegates the actual generation of the chromatogram to the selected implementation, ensuring that
         /// the chromatogram is generated in accordance with the specified parameters.
         /// </remarks>
-        public Chromatogram GetProductIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange) {
+        public ExtractedIonChromatogram GetProductIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange) {
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
             return impl.GetProductIonChromatogram(precursor, product, chromatogramRange);
         }

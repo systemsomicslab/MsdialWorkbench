@@ -9,9 +9,9 @@ namespace CompMs.MsdialCore.DataObj.Tests.Helper;
 
 public class MockRawSpectra : IRawSpectra
 {
-    public Chromatogram ExpectedChromatogram { get; set; }
+    public ExtractedIonChromatogram ExpectedChromatogram { get; set; }
 
-    Chromatogram IRawSpectra.GetProductIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange)
+    ExtractedIonChromatogram IRawSpectra.GetProductIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange)
     {
         return ExpectedChromatogram;
     }

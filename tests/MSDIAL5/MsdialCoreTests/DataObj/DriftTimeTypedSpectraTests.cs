@@ -109,15 +109,15 @@ namespace CompMs.MsdialCore.DataObj.Tests
             ChromXUnit.Msec,
             IonMode.Positive, AcquisitionType.DDA);
             var chromatogram = spectra.GetProductIonChromatogram(new MzRange(100d, .1d), new MzRange(50d, .5d), new ChromatogramRange(3d, 7d, ChromXType.Drift, ChromXUnit.Msec)).AsPeakArray();
-            Assert.AreEqual(2, chromatogram.Count);
-            Assert.AreEqual(3, chromatogram[0].ID);
-            Assert.AreEqual(50d, chromatogram[0].Mass);
+            Assert.AreEqual(2, chromatogram.Length);
+            Assert.AreEqual(3, chromatogram[0].Id);
+            Assert.AreEqual(50d, chromatogram[0].Mz);
             Assert.AreEqual(1000d, chromatogram[0].Intensity);
-            Assert.AreEqual(4d, chromatogram[0].ChromXs.Drift.Value);
-            Assert.AreEqual(4, chromatogram[1].ID);
-            Assert.AreEqual(50.2d, chromatogram[1].Mass);
+            Assert.AreEqual(4d, chromatogram[0].Time);
+            Assert.AreEqual(4, chromatogram[1].Id);
+            Assert.AreEqual(50.2d, chromatogram[1].Mz);
             Assert.AreEqual(2000d, chromatogram[1].Intensity);
-            Assert.AreEqual(5d, chromatogram[1].ChromXs.Drift.Value);
+            Assert.AreEqual(5d, chromatogram[1].Time);
         }
     }
 }
