@@ -176,7 +176,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             ChromatogramRange chromatogramRange = new ChromatogramRange(parameter.RetentionTimeBegin, parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
             _ticLoader = new TicLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
             _bpcLoader = new BpcLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
-            _productIonChromatogramLoader = new ProductIonChromatogramLoader(new RawSpectra(spectrumProvider.LoadMsNSpectrums(2), parameter.IonMode, analysisFileModel.File.AcquisitionType), chromatogramRange);
+            _productIonChromatogramLoader = new ProductIonChromatogramLoader(new RawSpectra(spectrumProvider.LoadMsNSpectrums(2), parameter.IonMode, analysisFileModel.File.AcquisitionType), parameter.ProjectParam.IonMode, chromatogramRange);
             var rtEicLoader = EicLoader.BuildForAllRange(analysisFileModel.File, accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
             RtEicLoader = EicLoader.BuildForPeakRange(analysisFileModel.File, accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
             RtEicModel = new EicModel(accumulatedTarget, rtEicLoader)

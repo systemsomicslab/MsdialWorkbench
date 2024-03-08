@@ -102,7 +102,7 @@ namespace CompMs.App.Msdial.Model.Imms
             ChromatogramRange chromatogramRange = new ChromatogramRange(parameter.DriftTimeBegin, parameter.DriftTimeEnd, ChromXType.Drift, ChromXUnit.Msec);
             _ticLoader = new TicLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
             _bpcLoader = new BpcLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
-            _productIonChromatogramLoader = new ProductIonChromatogramLoader(new RawSpectra(provider.LoadMsNSpectrums(2), parameter.IonMode, analysisFileModel.File.AcquisitionType), chromatogramRange);
+            _productIonChromatogramLoader = new ProductIonChromatogramLoader(new RawSpectra(provider.LoadMsNSpectrums(2), parameter.IonMode, analysisFileModel.File.AcquisitionType), parameter.ProjectParam.IonMode, chromatogramRange);
             EicModel = new EicModel(Target, eicLoader)
             {
                 HorizontalTitle = PlotModel.HorizontalTitle,

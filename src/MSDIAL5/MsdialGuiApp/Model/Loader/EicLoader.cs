@@ -5,9 +5,6 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -19,6 +16,7 @@ namespace CompMs.App.Msdial.Model.Loader
         protected EicLoader(AnalysisFileBean file, IDataProvider provider, PeakPickBaseParameter peakPickParameter, IonMode ionMode, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd, bool isConstantRange = true) {
             this.provider = provider;
             _peakPickParameter = peakPickParameter;
+            _ionMode = ionMode;
             this.chromXType = chromXType;
             this.chromXUnit = chromXUnit;
             this.rangeBegin = rangeBegin;
@@ -31,6 +29,7 @@ namespace CompMs.App.Msdial.Model.Loader
 
         protected readonly IDataProvider provider;
         protected readonly PeakPickBaseParameter _peakPickParameter;
+        private readonly IonMode _ionMode;
         protected readonly ChromXType chromXType;
         protected readonly ChromXUnit chromXUnit;
         protected readonly double rangeBegin, rangeEnd;
@@ -69,17 +68,14 @@ namespace CompMs.App.Msdial.Model.Loader
             return ms1Peaks.ChromatogramSmoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel);
         }
 
-        protected Chromatogram LoadEicCore(double mass, double massTolerance) {
+        protected ExtractedIonChromatogram LoadEicCore(double mass, double massTolerance) {
             return RawSpectra
-                .GetMs1ExtractedChromatogram(mass, massTolerance, _chromatogramRange)
+                .GetMs1ExtractedChromatogram_temp2(mass, massTolerance, _chromatogramRange)
                 .ChromatogramSmoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel);
         }
 
-        List<PeakItem> IWholeChromatogramLoader<(double mass, double tolerance)>.LoadChromatogram((double mass, double tolerance) state) {
-            return LoadEicCore(state.mass, state.tolerance)
-                .AsPeakArray()
-                .Select(peak => new PeakItem(peak))
-                .ToList();
+        DisplayChromatogram IWholeChromatogramLoader<(double mass, double tolerance)>.LoadChromatogram((double mass, double tolerance) state) {
+            return new DisplayExtractedIonChromatogram(LoadEicCore(state.mass, state.tolerance), state.tolerance, _ionMode);
         }
 
         PeakChromatogram IChromatogramLoader<ChromatogramPeakFeatureModel>.EmptyChromatogram => new PeakChromatogram(new Chromatogram(Array.Empty<ValuePeak>(), chromXType, chromXUnit), null, string.Empty, Colors.Black);

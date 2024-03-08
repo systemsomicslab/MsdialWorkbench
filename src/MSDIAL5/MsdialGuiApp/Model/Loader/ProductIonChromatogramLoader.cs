@@ -1,8 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.DataObj;
+using CompMs.Common.Enum;
 using CompMs.MsdialCore.DataObj;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Loader;
 
@@ -19,16 +18,18 @@ namespace CompMs.App.Msdial.Model.Loader;
 internal sealed class ProductIonChromatogramLoader : IWholeChromatogramLoader<(MzRange Precursor, MzRange Product)>
 {
     private readonly IRawSpectra _rawSpectra;
+    private readonly IonMode _ionMode;
     private readonly ChromatogramRange _range;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ProductIonChromatogramLoader"/> class with specified raw spectra data and chromatogram range.
     /// </summary>
     /// <param name="rawSpectra">The raw spectra data to be used for chromatogram generation.</param>
+    /// <param name="ionMode"></param>
     /// <param name="range">The range within which the chromatogram is to be generated.</param>
-    public ProductIonChromatogramLoader(IRawSpectra rawSpectra, ChromatogramRange range)
-    {
+    public ProductIonChromatogramLoader(IRawSpectra rawSpectra, IonMode ionMode, ChromatogramRange range) {
         _rawSpectra = rawSpectra;
+        _ionMode = ionMode;
         _range = range;
     }
 
@@ -36,9 +37,9 @@ internal sealed class ProductIonChromatogramLoader : IWholeChromatogramLoader<(M
     /// Loads a chromatogram based on the specified precursor and product m/z ranges within the previously defined chromatogram range.
     /// </summary>
     /// <param name="state">A tuple containing the precursor and product m/z ranges for which the chromatogram is to be loaded.</param>
-    /// <returns>A list of <see cref="PeakItem"/> representing the peaks within the loaded chromatogram.</returns>
-    public List<PeakItem> LoadChromatogram((MzRange Precursor, MzRange Product) state) {
+    /// <returns>A <see cref="DisplayChromatogram"/> representing the peaks within the loaded chromatogram.</returns>
+    DisplayChromatogram IWholeChromatogramLoader<(MzRange Precursor, MzRange Product)>.LoadChromatogram((MzRange Precursor, MzRange Product) state) {
         var chromatogram = _rawSpectra.GetProductIonChromatogram(state.Precursor, state.Product, _range);
-        return chromatogram.AsPeakArray().Select(p => new PeakItem(p)).ToList();
+        return new DisplayExtractedIonChromatogram(chromatogram, state.Product.Tolerance, _ionMode);
     }
 }

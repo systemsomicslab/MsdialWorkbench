@@ -90,7 +90,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             _bpcLoader = new BpcLoader(rawSpectra, chromatogramRange, peakPickParameter);
             var eicLoader2 = Loader.EicLoader.BuildForAllRange(file.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
             _eicLoader = eicLoader2;
-            _productIonChromatogramLoader = new ProductIonChromatogramLoader(new RawSpectra(provider.LoadMsNSpectrums(2), parameter.IonMode, file.File.AcquisitionType), chromatogramRange);
+            _productIonChromatogramLoader = new ProductIonChromatogramLoader(new RawSpectra(provider.LoadMsNSpectrums(2), parameter.IonMode, file.File.AcquisitionType), parameter.ProjectParam.IonMode, chromatogramRange);
 
             // Eic chart
             var eicLoader = new QuantMassEicLoader(file.File, provider, peakPickParameter, projectParameter.IonMode, ChromXType.RT, ChromXUnit.Min, peakPickParameter.RetentionTimeBegin, peakPickParameter.RetentionTimeEnd, isConstantRange: true);

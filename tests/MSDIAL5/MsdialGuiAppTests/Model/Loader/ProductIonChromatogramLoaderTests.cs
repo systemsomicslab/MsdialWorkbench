@@ -26,7 +26,7 @@ public class ProductIonChromatogramLoaderTests
 
         mockRawSpectra.ExpectedChromatogram = new ExtractedIonChromatogram(expectedPeaks, ChromXType.RT, ChromXUnit.Min, 160d);
         
-        var loader = new ProductIonChromatogramLoader(mockRawSpectra, testRange);
+        var loader = new ProductIonChromatogramLoader(mockRawSpectra, CompMs.Common.Enum.IonMode.Positive, testRange);
 
         // Act
         var result = ((IWholeChromatogramLoader<(MzRange Precursor, MzRange Product)>)loader).LoadChromatogram(testState);

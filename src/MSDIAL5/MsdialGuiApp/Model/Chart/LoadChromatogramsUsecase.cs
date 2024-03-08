@@ -113,7 +113,10 @@ namespace CompMs.App.Msdial.Model.Chart
                     return;
                 }
                 var eic = _eicLoader.LoadChromatogram((maxPeakMz.Value, _peakPickParameter.MassSliceWidth));
-                _displayChroms.Add(new DisplayChromatogram(eic, new Pen(Brushes.Blue, 1.0), "EIC of m/z " + Math.Round(maxPeakMz.Value, 5).ToString()));
+                var pen = eic.LinePen = new Pen(Brushes.Blue, 1.0);
+                pen.Freeze();
+                eic.Name = "EIC of m/z " + Math.Round(maxPeakMz.Value, 5).ToString();
+                _displayChroms.Add(eic);
                 _contents.Add("most abundant ion's EIC");
             }
 
@@ -126,9 +129,11 @@ namespace CompMs.App.Msdial.Model.Chart
                         title += "; ";
                     }
                     title += $"[{Math.Round(set.Mass - set.MassTolerance, 4)}-{Math.Round(set.Mass + set.MassTolerance, 4)}]";
-                    var chrom = new DisplayExtractedIonChromatogram(eic, set.Mass, set.MassTolerance, ionMode, new Pen(ChartBrushes.GetChartBrush(counter), 1.0), title);
+                    eic.Name = title;
+                    var pen = eic.LinePen = new Pen(ChartBrushes.GetChartBrush(counter), 1.0);
+                    pen.Freeze();
                     counter++;
-                    _displayChroms.Add(chrom);
+                    _displayChroms.Add(eic);
                 }
                 if (counter == 1) {
                     _contents.Add("selected EIC");

@@ -2,7 +2,6 @@
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Utility;
-using System.Collections.Generic;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.DataObj
@@ -10,12 +9,6 @@ namespace CompMs.App.Msdial.Model.DataObj
     public sealed class DisplayExtractedIonChromatogram : DisplayChromatogram
     {
         private readonly IonMode _ionMode;
-
-        public DisplayExtractedIonChromatogram(List<PeakItem> peaks, double mz, double tolerance, IonMode ionMode, Pen? linePen = null, string name = "na") : base(peaks, linePen, name) {
-            Mz = mz;
-            Tolerance = tolerance;
-            _ionMode = ionMode;
-        }
 
         public DisplayExtractedIonChromatogram(ExtractedIonChromatogram chromatogram, double tolerance, IonMode ionMode, Pen? linePen = null, string name = "na") : base(chromatogram, linePen, name) {
             Mz = chromatogram.ExtractedMz;
