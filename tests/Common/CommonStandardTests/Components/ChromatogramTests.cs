@@ -1,7 +1,7 @@
-﻿using CompMs.Common.Components;
-using CompMs.Common.Enum;
+﻿using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Buffers;
 using System.Collections.Generic;
 
 namespace CompMs.Common.Components.Tests
@@ -65,6 +65,31 @@ namespace CompMs.Common.Components.Tests
                 Assert.AreEqual(peaks[i].Mass, resultPeaks[i].Mass, $"{nameof(IChromatogramPeak.Mass)} of peak at index {i} should match.");
                 Assert.AreEqual(peaks[i].Intensity, resultPeaks[i].Intensity, $"{nameof(IChromatogramPeak.Intensity)} of peak at index {i} should match.");
                 Assert.That.AreEqual(peaks[i].ChromXs, resultPeaks[i].ChromXs, $"{nameof(IChromatogramPeak.ChromXs)} of peak at index {i} should match.");
+            }
+        }
+
+        [TestMethod()]
+        public void AsPeakArray_Trimed() {
+            // Arrange
+            var arrayPool = ArrayPool<ValuePeak>.Shared;
+            var size = 3;
+            var peaks = arrayPool.Rent(size);
+            peaks[0] = new ValuePeak(0, 1d, 100d, 1000d);
+            peaks[1] = new ValuePeak(1, 2d, 200d, 2000d);
+            peaks[2] = new ValuePeak(2, 3d, 300d, 3000d);
+
+            var chromatogram = new Chromatogram(peaks, size, ChromXType.RT, ChromXUnit.Min, arrayPool);
+
+            // Act
+            var resultPeaks = chromatogram.AsPeakArray();
+
+            // Assert
+            Assert.AreEqual(size, resultPeaks.Count, "The number of peaks should match.");
+            for (int i = 0; i < resultPeaks.Count; i++) {
+                Assert.AreEqual(peaks[i].Id, resultPeaks[i].ID, $"{nameof(IChromatogramPeak.ID)} of peak at index {i} should match.");
+                Assert.AreEqual(peaks[i].Mz, resultPeaks[i].Mass, $"{nameof(IChromatogramPeak.Mass)} of peak at index {i} should match.");
+                Assert.AreEqual(peaks[i].Intensity, resultPeaks[i].Intensity, $"{nameof(IChromatogramPeak.Intensity)} of peak at index {i} should match.");
+                Assert.AreEqual(peaks[i].Time, resultPeaks[i].ChromXs.Value, $"{nameof(IChromatogramPeak.ChromXs)} of peak at index {i} should match.");
             }
         }
 
@@ -175,8 +200,7 @@ namespace CompMs.Common.Components.Tests
         }
 
         [TestMethod]
-        public void AsPeak_ReturnsNullWhenNoDataPointsWithinTimeRange()
-        {
+        public void AsPeak_ReturnsNullWhenNoDataPointsWithinTimeRange() {
             // Arrange
             var peaks = new List<IChromatogramPeak>
             {
@@ -197,8 +221,7 @@ namespace CompMs.Common.Components.Tests
         }
 
         [TestMethod]
-        public void AsPeak_IdentifiesCorrectPeakWithinTimeBoundaries()
-        {
+        public void AsPeak_IdentifiesCorrectPeakWithinTimeBoundaries() {
             // Arrange
             var peaks = new List<IChromatogramPeak>
             {
@@ -220,8 +243,7 @@ namespace CompMs.Common.Components.Tests
 
         [TestMethod]
         [ExpectedException(typeof(System.ArgumentException))]
-        public void AsPeak_ThrowsArgumentExceptionForInvalidTimeBoundaries()
-        {
+        public void AsPeak_ThrowsArgumentExceptionForInvalidTimeBoundaries() {
             // Arrange
             var peaks = new List<IChromatogramPeak>(); // Empty peaks for this test case
             var chromatogram = new Chromatogram(peaks, ChromXType.RT, ChromXUnit.Min);
@@ -231,6 +253,7 @@ namespace CompMs.Common.Components.Tests
 
             // Act & Assert
             var peak = chromatogram.AsPeak(timeLeft, timeTop, timeRight);
+            Assert.IsNull(peak);
         }
     }
 }

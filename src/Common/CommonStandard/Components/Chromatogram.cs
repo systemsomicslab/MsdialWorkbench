@@ -77,7 +77,7 @@ namespace CompMs.Common.Components
             if (_peaks is null) {
                 throw new ObjectDisposedException(nameof(_peaks));
             }
-            return _peaks.Select(p => p.ConvertToChromatogramPeak(_type, _unit)).ToList();
+            return _peaks.Take(_size).Select(p => p.ConvertToChromatogramPeak(_type, _unit)).ToList();
         }
 
         /// <summary>
