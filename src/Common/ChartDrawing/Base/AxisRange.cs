@@ -5,7 +5,7 @@ using System.Globalization;
 namespace CompMs.Graphics.Core.Base
 {
     [TypeConverter(typeof(AxisRangeTypeConverter))]
-    public sealed class AxisRange
+    public sealed class AxisRange : IEquatable<AxisRange>
     {
         public AxisValue Minimum { get; private set; }
         public AxisValue Maximum { get; private set; }
@@ -51,6 +51,10 @@ namespace CompMs.Graphics.Core.Base
 
         public override string ToString() {
             return $"{Minimum.Value}-{Maximum.Value}";
+        }
+
+        public bool Equals(AxisRange other) {
+            return !(other is null) && Maximum == other.Maximum && Minimum == other.Minimum;
         }
     }
 

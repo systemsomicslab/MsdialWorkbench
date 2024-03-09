@@ -39,11 +39,27 @@ namespace CompMs.Graphics.Chart
             DependencyProperty.Register(
                 nameof(SelectedRange),
                 typeof(AxisRange),
-                typeof(RangeSelector));
+                typeof(RangeSelector),
+                new PropertyMetadata(
+                    null,
+                    OnSelectedRangePropertyChanged));
 
         public AxisRange SelectedRange {
             get => (AxisRange)GetValue(SelectedRangeProperty);
             set => SetValue(SelectedRangeProperty, value);
+        }
+
+        private static void OnSelectedRangePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            if (d is RangeSelector rs) {
+                rs.OnSelectedRangePropertyChanged((AxisRange)e.OldValue, (AxisRange)e.NewValue);
+            }
+        }
+
+        private void OnSelectedRangePropertyChanged(AxisRange oldValue, AxisRange newValue) {
+            if (!(SelectedRangeAdorner is null) && SelectedRangeAdorner.HorizontalRange.Equals(oldValue) && oldValue != newValue && !dragging) {
+                SelectedRangeAdorner.Detach();
+                ClearValue(SelectedRangeAdornerProperty);
+            }
         }
 
         public static readonly Color SelectedColor = Colors.Gray;
@@ -92,7 +108,7 @@ namespace CompMs.Graphics.Chart
 
             var addValues = newValues.Except(oldValues);
             foreach (var addValue in addValues) {
-                var adorner = new RangeSelectAdorner(this, addValue);
+                var adorner = new RangeSelectAdorner(this, addValue) { IsClipEnabled = true };
                 adorner.Attach();
                 Adorners.Add(adorner);
             }
@@ -113,7 +129,7 @@ namespace CompMs.Graphics.Chart
             }
             if (e.NewItems != null) {
                 foreach (var item in e.NewItems.OfType<RangeSelection>()) {
-                    var adorner = new RangeSelectAdorner(this, item);
+                    var adorner = new RangeSelectAdorner(this, item) { IsClipEnabled = true };
                     adorner.Attach();
                     Adorners.Add(adorner);
                 }
