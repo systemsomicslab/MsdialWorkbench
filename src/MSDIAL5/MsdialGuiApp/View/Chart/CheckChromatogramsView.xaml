@@ -89,23 +89,6 @@
                     </Style>
                 </chart:SimpleChartControl.Style>
                 <Grid>
-                    <ItemsControl ItemsSource="{Binding Areas}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <Grid/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <chart:AreaChartControl ItemsSource="{Binding}"
-                                                        HorizontalPropertyName="Time"
-                                                        VerticalPropertyName="Intensity"
-                                                        AreaBrush="Cyan"
-                                                        Opacity=".5"
-                                                        IsHitTestVisible="False"/>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
                     <ItemsControl DataContext="{Binding ChromatogramsViewModel.Value}"
                                   ItemsSource="{Binding DisplayChromatograms}">
                         <ItemsControl.ItemsPanel>
@@ -115,10 +98,21 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <chart:LineChartControl ItemsSource="{Binding ChromatogramPeaks}"
-                                                        LinePen="{Binding LinePen}"
-                                                        HorizontalPropertyName="{Binding DataContext.HorizontalProperty, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                                        VerticalPropertyName="{Binding DataContext.VerticalProperty, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+                                <Grid>
+                                    <chart:MultiAreaChartControl ItemsSources="{Binding Peaks}"
+                                                                 CollectionDataType="{x:Type do:DisplayPeakOfChromatogram}"
+                                                                 ItemsProperty="Points"
+                                                                 ItemsDataType="{x:Type do:PeakItem}"
+                                                                 HorizontalProperty="Time"
+                                                                 VerticalProperty="Intensity"
+                                                                 AreaBrush="{Binding BrushMapper, Mode=OneWay}"
+                                                                 AreaOpacity=".2"
+                                                                 IsHitTestVisible="False"/>
+                                    <chart:LineChartControl ItemsSource="{Binding ChromatogramPeaks}"
+                                                            LinePen="{Binding LinePen}"
+                                                            HorizontalPropertyName="{Binding DataContext.HorizontalProperty, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                                            VerticalPropertyName="{Binding DataContext.VerticalProperty, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+                                </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

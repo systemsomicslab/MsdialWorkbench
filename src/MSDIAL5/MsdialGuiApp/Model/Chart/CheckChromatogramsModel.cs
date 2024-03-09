@@ -4,7 +4,6 @@ using CompMs.App.Msdial.Model.MsResult;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Algorithm.PeakPick;
-using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
@@ -53,8 +52,6 @@ internal sealed class CheckChromatogramsModel : BindableBase
         private set => SetProperty(ref _rangeSelectableChromatogramModel, value);
     }
     private RangeSelectableChromatogramModel? _rangeSelectableChromatogramModel;
-
-    public ObservableCollection<PeakItem[]> Areas { get; } = [];
 
     public AccumulatedMs2SpectrumModel[] AccumulatedMs2SpectrumModels {
         get => _accumulatedMs2SpectrumModels;
@@ -110,25 +107,11 @@ internal sealed class CheckChromatogramsModel : BindableBase
     }
 
     public void DetectPeaks() {
-        if (Chromatograms is null) {
-            return;
-        }
         var detector = new PeakDetection(1, 0d);
-        foreach (var chromatogram in Chromatograms.DisplayChromatograms) {
-            if (chromatogram.Chromatogram is ExtractedIonChromatogram eic) {
-                var results = detector.PeakDetectionVS1(eic);
-                foreach (var result in results) {
-                    var peak = chromatogram.Chromatogram.AsPeak(result.ChromXAxisAtLeftPeakEdge, result.ChromXAxisAtPeakTop, result.ChromXAxisAtRightPeakEdge);
-                    if (peak is null) {
-                        continue;
-                    }
-                    Areas.Add(peak.SlicePeakArea().Select(p => new PeakItem(p)).ToArray());
-                }
-            }
-        }
+        Chromatograms?.DetectPeaks(detector);
     }
 
     public void ResetPeaks() {
-        Areas.Clear();
+        Chromatograms?.ResetPeaks();
     }
 }

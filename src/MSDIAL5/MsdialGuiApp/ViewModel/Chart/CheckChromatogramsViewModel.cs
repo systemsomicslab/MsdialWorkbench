@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
-using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.ViewModel.MsResult;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
@@ -8,7 +7,6 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -85,10 +83,6 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         }
 
         public ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> ChromatogramsViewModel { get; }
-        public ObservableCollection<PeakItem[]> Areas => _model.Areas;
-        public ReactiveCommand DetectPeaksCommand { get; }
-        public ReactiveCommand ResetPeaksCommand { get; }
-
         public ReadOnlyReactivePropertySlim<RangeSelectableChromatogramViewModel?> RangeSelectableChromatogramViewModel { get; }
         public ReadOnlyReactivePropertySlim<AccumulatedMs2SpectrumViewModel[]> AccumulatedMs2SpectrumViewModels { get; }
 
@@ -131,6 +125,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReactivePropertySlim<bool> InsertHighestEic { get; }
 
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
+
+        public ReactiveCommand DetectPeaksCommand { get; }
+        public ReactiveCommand ResetPeaksCommand { get; }
 
         public ReactiveCommand ApplyCommand { get; }
         public ReactiveCommand ClearCommand { get; }
