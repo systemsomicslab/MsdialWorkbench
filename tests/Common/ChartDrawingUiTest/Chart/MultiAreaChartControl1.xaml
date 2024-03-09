@@ -13,6 +13,10 @@
         <local:MultiLineChartControlViewModel1/>
     </Page.DataContext>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
         <chart:SimpleChartControl HorizontalAxis="{Binding HorizontalAxis}"
                                   VerticalAxis="{Binding VerticalAxis}">
             <chart:MultiAreaChartControl ItemsSources="{Binding Serieses}"
@@ -23,6 +27,10 @@
                                          VerticalProperty="Y"
                                          AreaBrush="{Binding Brush}"
                                          AreaOpacity="0.2"/>
-        </chart:SimpleChartControl>   
+        </chart:SimpleChartControl>
+        <StackPanel Orientation="Horizontal" Grid.Row="1">
+            <Button Content="Add" Command="{Binding AddCommand, Mode=OneTime}" Margin="4"/>
+            <Button Content="Clear" Command="{Binding ClearCommand, Mode=OneTime}" Margin="4"/>
+        </StackPanel>
     </Grid>
 </Page>
