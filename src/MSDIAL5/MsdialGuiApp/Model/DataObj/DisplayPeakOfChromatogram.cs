@@ -8,7 +8,11 @@ public sealed class DisplayPeakOfChromatogram(PeakOfChromatogram peak) : Bindabl
 {
     public PeakItem[] Points { get; } = peak.SlicePeakArea().Select(p => new PeakItem(p)).ToArray();
 
+    public PeakItem Top { get; } = new PeakItem(peak.GetTop());
+
     public double Time { get; } = peak.GetTop().ChromXs.Value;
+
+    public double Intensity { get; } = peak.GetTop().Intensity;
 
     public double Area { get; } = peak.CalculateArea();
 }

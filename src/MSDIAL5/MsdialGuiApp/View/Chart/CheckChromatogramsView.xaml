@@ -112,6 +112,12 @@
                                                             LinePen="{Binding LinePen}"
                                                             HorizontalPropertyName="{Binding DataContext.HorizontalProperty, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
                                                             VerticalPropertyName="{Binding DataContext.VerticalProperty, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+                                    <chart:Annotator ItemsSource="{Binding Peaks}"
+                                                     HorizontalPropertyName="Top.Time"
+                                                     VerticalPropertyName="Top.Intensity"
+                                                     LabelPropertyName="Top.Time"
+                                                     Overlap="Direct"
+                                                     IsHitTestVisible="False"/>
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
