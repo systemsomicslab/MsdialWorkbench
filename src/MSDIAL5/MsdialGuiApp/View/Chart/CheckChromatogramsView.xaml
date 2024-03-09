@@ -6,8 +6,11 @@
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:design="clr-namespace:CompMs.Graphics.Design;assembly=ChartDrawing"
              xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type={x:Type vm:CheckChromatogramsViewModel}}"
              d:Background="White"
@@ -86,6 +89,23 @@
                     </Style>
                 </chart:SimpleChartControl.Style>
                 <Grid>
+                    <ItemsControl ItemsSource="{Binding Areas}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Grid/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <chart:AreaChartControl ItemsSource="{Binding}"
+                                                        HorizontalPropertyName="Time"
+                                                        VerticalPropertyName="Intensity"
+                                                        AreaBrush="Cyan"
+                                                        Opacity=".5"
+                                                        IsHitTestVisible="False"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                     <ItemsControl DataContext="{Binding ChromatogramsViewModel.Value}"
                                   ItemsSource="{Binding DisplayChromatograms}">
                         <ItemsControl.ItemsPanel>
@@ -149,13 +169,19 @@
                 </chart:SimpleChartControl.ContextMenu>
             </chart:SimpleChartControl>
             <DockPanel Grid.Column="1">
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Left"
+                            DockPanel.Dock="Bottom">
+                    <Button Content="Detect" Command="{Binding DetectPeaksCommand, Mode=OneTime}" Width="32" Margin="8"/>
+                    <Button Content="Reset" Command="{Binding ResetPeaksCommand, Mode=OneTime}" Width="32" Margin="8"/>
+                </StackPanel>
                 <StackPanel DataContext="{Binding RangeSelectableChromatogramViewModel.Value}"
                             Orientation="Horizontal"
                             HorizontalAlignment="Left"
                             DockPanel.Dock="Bottom">
-                    <Button Content="+" Command="{Binding SetMainRangeCommand}" Width="32" Margin="8"/>
-                    <Button Content="-" Command="{Binding SetSubtractRangeCommand}" Width="32" Margin="8"/>
-                    <Button Content="Reset" Command="{Binding RemoveRangesCommand}" Width="64" Margin="8"/>
+                    <Button Content="+" Command="{Binding SetMainRangeCommand, Mode=OneTime}" Width="32" Margin="8"/>
+                    <Button Content="-" Command="{Binding SetSubtractRangeCommand, Mode=OneTime}" Width="32" Margin="8"/>
+                    <Button Content="Reset" Command="{Binding RemoveRangesCommand, Mode=OneTime}" Width="64" Margin="8"/>
                 </StackPanel>
                 <ItemsControl DataContext="{Binding ChromatogramsViewModel.Value}"
                               ItemsSource="{Binding DisplayChromatograms}"

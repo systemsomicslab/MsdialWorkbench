@@ -3,6 +3,8 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.MsResult;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.Common.Algorithm.PeakPick;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
@@ -15,94 +17,118 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CompMs.App.Msdial.Model.Chart
+namespace CompMs.App.Msdial.Model.Chart;
+
+internal sealed class CheckChromatogramsModel : BindableBase
 {
-    internal sealed class CheckChromatogramsModel : BindableBase
-    {
-        private readonly AccumulateSpectraUsecase _accumulateSpectra;
-        private readonly ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? _compoundSearch;
-        private readonly AdvancedProcessOptionBaseParameter _advancedProcessParameter;
-        private readonly IWholeChromatogramLoader<(MzRange, MzRange)> _productIonChromatogramLoader;
-        private readonly List<PeakFeatureSearchValue> _displaySettingValueCandidates;
-        private readonly ObservableCollection<PeakFeatureSearchValueModel> _displaySettingValues;
+    private readonly AccumulateSpectraUsecase _accumulateSpectra;
+    private readonly ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? _compoundSearch;
+    private readonly AdvancedProcessOptionBaseParameter _advancedProcessParameter;
+    private readonly IWholeChromatogramLoader<(MzRange, MzRange)> _productIonChromatogramLoader;
+    private readonly List<PeakFeatureSearchValue> _displaySettingValueCandidates;
+    private readonly ObservableCollection<PeakFeatureSearchValueModel> _displaySettingValues;
 
-        public CheckChromatogramsModel(LoadChromatogramsUsecase loadingChromatograms, AccumulateSpectraUsecase accumulateSpectra, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? compoundSearch, AdvancedProcessOptionBaseParameter advancedProcessParameter, IWholeChromatogramLoader<(MzRange, MzRange)> productIonChromatogramLoader) {
-            LoadChromatogramsUsecase = loadingChromatograms ?? throw new ArgumentNullException(nameof(loadingChromatograms));
-            _accumulateSpectra = accumulateSpectra;
-            _compoundSearch = compoundSearch;
-            _advancedProcessParameter = advancedProcessParameter;
-            _productIonChromatogramLoader = productIonChromatogramLoader;
-            advancedProcessParameter.DiplayEicSettingValues ??= new List<PeakFeatureSearchValue>();
-            var values = advancedProcessParameter.DiplayEicSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0).ToList();
-            values.AddRange(Enumerable.Repeat(0, 100).Select(_ => new PeakFeatureSearchValue()));
-            _displaySettingValueCandidates = values;
-            _displaySettingValues = new ObservableCollection<PeakFeatureSearchValueModel>(values.Select(v => new PeakFeatureSearchValueModel(v)));
-            DisplayEicSettingValues = new ReadOnlyObservableCollection<PeakFeatureSearchValueModel>(_displaySettingValues);
-        }
+    public CheckChromatogramsModel(LoadChromatogramsUsecase loadingChromatograms, AccumulateSpectraUsecase accumulateSpectra, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? compoundSearch, AdvancedProcessOptionBaseParameter advancedProcessParameter, IWholeChromatogramLoader<(MzRange, MzRange)> productIonChromatogramLoader) {
+        LoadChromatogramsUsecase = loadingChromatograms ?? throw new ArgumentNullException(nameof(loadingChromatograms));
+        _accumulateSpectra = accumulateSpectra;
+        _compoundSearch = compoundSearch;
+        _advancedProcessParameter = advancedProcessParameter;
+        _productIonChromatogramLoader = productIonChromatogramLoader;
+        advancedProcessParameter.DiplayEicSettingValues ??= new List<PeakFeatureSearchValue>();
+        var values = advancedProcessParameter.DiplayEicSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0).ToList();
+        values.AddRange(Enumerable.Repeat(0, 100).Select(_ => new PeakFeatureSearchValue()));
+        _displaySettingValueCandidates = values;
+        _displaySettingValues = new ObservableCollection<PeakFeatureSearchValueModel>(values.Select(v => new PeakFeatureSearchValueModel(v)));
+        DisplayEicSettingValues = new ReadOnlyObservableCollection<PeakFeatureSearchValueModel>(_displaySettingValues);
+    }
 
-        public ChromatogramsModel? Chromatograms {
-            get => _chromatograms;
-            private set => SetProperty(ref _chromatograms, value);
-        }
-        private ChromatogramsModel? _chromatograms;
+    public ChromatogramsModel? Chromatograms {
+        get => _chromatograms;
+        private set => SetProperty(ref _chromatograms, value);
+    }
+    private ChromatogramsModel? _chromatograms;
 
-        public RangeSelectableChromatogramModel? RangeSelectableChromatogramModel {
-            get => _rangeSelectableChromatogramModel;
-            private set => SetProperty(ref _rangeSelectableChromatogramModel, value);
-        }
-        private RangeSelectableChromatogramModel? _rangeSelectableChromatogramModel;
+    public RangeSelectableChromatogramModel? RangeSelectableChromatogramModel {
+        get => _rangeSelectableChromatogramModel;
+        private set => SetProperty(ref _rangeSelectableChromatogramModel, value);
+    }
+    private RangeSelectableChromatogramModel? _rangeSelectableChromatogramModel;
 
-        public AccumulatedMs2SpectrumModel[] AccumulatedMs2SpectrumModels {
-            get => _accumulatedMs2SpectrumModels;
-            private set {
-                var prevs = _accumulatedMs2SpectrumModels;
-                if (SetProperty(ref _accumulatedMs2SpectrumModels, value)) {
-                    foreach (var prev in prevs) {
-                        prev.Dispose();
-                    }
+    public ObservableCollection<PeakItem[]> Areas { get; } = [];
+
+    public AccumulatedMs2SpectrumModel[] AccumulatedMs2SpectrumModels {
+        get => _accumulatedMs2SpectrumModels;
+        private set {
+            var prevs = _accumulatedMs2SpectrumModels;
+            if (SetProperty(ref _accumulatedMs2SpectrumModels, value)) {
+                foreach (var prev in prevs) {
+                    prev.Dispose();
                 }
             }
         }
-        private AccumulatedMs2SpectrumModel[] _accumulatedMs2SpectrumModels = Array.Empty<AccumulatedMs2SpectrumModel>();
+    }
+    private AccumulatedMs2SpectrumModel[] _accumulatedMs2SpectrumModels = Array.Empty<AccumulatedMs2SpectrumModel>();
 
-        public ReadOnlyObservableCollection<PeakFeatureSearchValueModel> DisplayEicSettingValues { get; }
+    public ReadOnlyObservableCollection<PeakFeatureSearchValueModel> DisplayEicSettingValues { get; }
 
-        public LoadChromatogramsUsecase LoadChromatogramsUsecase { get; }
+    public LoadChromatogramsUsecase LoadChromatogramsUsecase { get; }
 
-        public Task ExportAsync(Stream stream, string separator) {
-            return Chromatograms?.ExportAsync(stream, separator) ?? Task.CompletedTask;
+    public Task ExportAsync(Stream stream, string separator) {
+        return Chromatograms?.ExportAsync(stream, separator) ?? Task.CompletedTask;
+    }
+
+    public void Update() {
+        foreach (var m in DisplayEicSettingValues) {
+            m.Commit();
         }
+        _advancedProcessParameter.DiplayEicSettingValues.Clear();
+        _advancedProcessParameter.DiplayEicSettingValues.AddRange(_displaySettingValueCandidates.Where(n => n.Mass > 0 && n.MassTolerance > 0));
+        var displayEICs = _advancedProcessParameter.DiplayEicSettingValues;
+        Chromatograms = LoadChromatogramsUsecase.Load(displayEICs);
 
-        public void Update() {
-            foreach (var m in DisplayEicSettingValues) {
-                m.Commit();
-            }
-            _advancedProcessParameter.DiplayEicSettingValues.Clear();
-            _advancedProcessParameter.DiplayEicSettingValues.AddRange(_displaySettingValueCandidates.Where(n => n.Mass > 0 && n.MassTolerance > 0));
-            var displayEICs = _advancedProcessParameter.DiplayEicSettingValues;
-            Chromatograms = LoadChromatogramsUsecase.Load(displayEICs);
+        if (_compoundSearch is not null) {
+            RangeSelectableChromatogramModel = new RangeSelectableChromatogramModel(Chromatograms);
+            AccumulatedMs2SpectrumModels = Chromatograms.DisplayChromatograms
+                .OfType<DisplayExtractedIonChromatogram>()
+                .Select(c => new AccumulatedMs2SpectrumModel(c, _accumulateSpectra, _compoundSearch, _productIonChromatogramLoader))
+                .ToArray();
+        }
+    }
 
-            if (_compoundSearch is not null) {
-                RangeSelectableChromatogramModel = new RangeSelectableChromatogramModel(Chromatograms);
-                AccumulatedMs2SpectrumModels = Chromatograms.DisplayChromatograms
-                    .OfType<DisplayExtractedIonChromatogram>()
-                    .Select(c => new AccumulatedMs2SpectrumModel(c, _accumulateSpectra, _compoundSearch, _productIonChromatogramLoader))
-                    .ToArray();
+    public async Task AccumulateAsync(AccumulatedMs2SpectrumModel model, CancellationToken token) {
+        if (RangeSelectableChromatogramModel is { MainRange: not null } ) {
+            var range = RangeSelectableChromatogramModel.ConvertToRt(RangeSelectableChromatogramModel.MainRange);
+            var subs = RangeSelectableChromatogramModel.SubtractRanges.Select(r => RangeSelectableChromatogramModel.ConvertToRt(r)).ToArray();
+            await model.CalculateMs2Async(range, subs, token).ConfigureAwait(false);
+        }
+    }
+
+    public void Clear() {
+        foreach (var m in DisplayEicSettingValues) {
+            m.ClearChromatogramSearchQuery();
+        }
+    }
+
+    public void DetectPeaks() {
+        if (Chromatograms is null) {
+            return;
+        }
+        var detector = new PeakDetection(1, 0d);
+        foreach (var chromatogram in Chromatograms.DisplayChromatograms) {
+            if (chromatogram.Chromatogram is ExtractedIonChromatogram eic) {
+                var results = detector.PeakDetectionVS1(eic);
+                foreach (var result in results) {
+                    var peak = chromatogram.Chromatogram.AsPeak(result.ChromXAxisAtLeftPeakEdge, result.ChromXAxisAtPeakTop, result.ChromXAxisAtRightPeakEdge);
+                    if (peak is null) {
+                        continue;
+                    }
+                    Areas.Add(peak.SlicePeakArea().Select(p => new PeakItem(p)).ToArray());
+                }
             }
         }
+    }
 
-        public async Task AccumulateAsync(AccumulatedMs2SpectrumModel model, CancellationToken token) {
-            if (RangeSelectableChromatogramModel is { MainRange: not null } ) {
-                var range = RangeSelectableChromatogramModel.ConvertToRt(RangeSelectableChromatogramModel.MainRange);
-                var subs = RangeSelectableChromatogramModel.SubtractRanges.Select(r => RangeSelectableChromatogramModel.ConvertToRt(r)).ToArray();
-                await model.CalculateMs2Async(range, subs, token).ConfigureAwait(false);
-            }
-        }
-
-        public void Clear() {
-            foreach (var m in DisplayEicSettingValues) {
-                m.ClearChromatogramSearchQuery();
-            }
-        }
+    public void ResetPeaks() {
+        Areas.Clear();
     }
 }

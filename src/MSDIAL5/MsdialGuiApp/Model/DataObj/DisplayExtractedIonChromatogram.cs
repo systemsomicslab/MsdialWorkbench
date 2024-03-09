@@ -12,9 +12,12 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public DisplayExtractedIonChromatogram(ExtractedIonChromatogram chromatogram, double tolerance, IonMode ionMode, Pen? linePen = null, string name = "na") : base(chromatogram, linePen, name) {
             Mz = chromatogram.ExtractedMz;
+            Chromatogram = chromatogram;
             Tolerance = tolerance;
             _ionMode = ionMode;
         }
+
+        public new ExtractedIonChromatogram Chromatogram { get; }
 
         public double Mz { get; }
         public double Tolerance { get; }

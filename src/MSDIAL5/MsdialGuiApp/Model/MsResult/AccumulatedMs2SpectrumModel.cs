@@ -2,12 +2,15 @@
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings.Extensions;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 using System.Threading;
@@ -65,6 +68,8 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
     private PlotComparedMsSpectrumUsecase? _plotComparedSpectrum;
     private SerialDisposable _plotDisposable;
 
+    public ObservableCollection<PeakItem[]> Areas { get; } = [];
+
     public IReadOnlyList<ICompoundResult>? Compounds {
         get => _compounds;
         private set => SetProperty(ref _compounds, value);
@@ -113,6 +118,22 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
         var displayChromatogram = _productIonChromatogramLoader.LoadChromatogram((new MzRange(Chromatogram.Mz, Chromatogram.Tolerance), range));
         displayChromatogram.Name = $"Precursor m/z: {Chromatogram.Mz}±{Chromatogram.Tolerance}, Product ion: {start}-{end}";
         ProductIonChromatogram = new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
+    }
+
+    public void DetectPeaks() {
+        var detector = new PeakDetection(1, 0d);
+        var results = detector.PeakDetectionVS1(Chromatogram.Chromatogram);
+        foreach (var result in results) {
+            var peak = Chromatogram.Chromatogram.AsPeak(result.ScanNumAtLeftPeakEdge, result.ScanNumAtRightPeakEdge);
+            if (peak is null) {
+                continue;
+            }
+            Areas.Add(peak.SlicePeakArea().Select(p => new PeakItem(p)).ToArray());
+        }
+    }
+
+    public void ResetPeaks() {
+        Areas.Clear();
     }
 
     public void SearchCompound() {

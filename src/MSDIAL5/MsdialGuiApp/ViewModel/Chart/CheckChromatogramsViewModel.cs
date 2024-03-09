@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.ViewModel.MsResult;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
@@ -7,6 +8,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -78,10 +80,16 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             ShowAccumulatedSpectrumCommand = RangeSelectableChromatogramViewModel.Select(vm => vm is not null)
                 .ToAsyncReactiveCommand<AccumulatedMs2SpectrumViewModel>()
                 .WithSubscribe(vm => ShowAccumulatedSpectrumAsync(vm, default)).AddTo(Disposables);
+            DetectPeaksCommand = new ReactiveCommand().WithSubscribe(model.DetectPeaks).AddTo(Disposables);
+            ResetPeaksCommand = new ReactiveCommand().WithSubscribe(model.ResetPeaks).AddTo(Disposables);
         }
 
-        public ReadOnlyReactivePropertySlim<RangeSelectableChromatogramViewModel?> RangeSelectableChromatogramViewModel { get; }
         public ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> ChromatogramsViewModel { get; }
+        public ObservableCollection<PeakItem[]> Areas => _model.Areas;
+        public ReactiveCommand DetectPeaksCommand { get; }
+        public ReactiveCommand ResetPeaksCommand { get; }
+
+        public ReadOnlyReactivePropertySlim<RangeSelectableChromatogramViewModel?> RangeSelectableChromatogramViewModel { get; }
         public ReadOnlyReactivePropertySlim<AccumulatedMs2SpectrumViewModel[]> AccumulatedMs2SpectrumViewModels { get; }
 
         public AsyncReactiveCommand<AccumulatedMs2SpectrumViewModel> ShowAccumulatedSpectrumCommand { get; }
