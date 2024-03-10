@@ -316,6 +316,7 @@
                         <Button Content="Detect" Command="{Binding DetectPeaksCommand, Mode=OneTime}" Width="64" Margin="8"/>
                         <Button Content="Manual" Command="{Binding AddPeaksCommand, Mode=OneTime}" Width="64" Margin="8"/>
                         <Button Content="Reset" Command="{Binding ResetPeaksCommand, Mode=OneTime}" Width="64" Margin="8"/>
+                        <Button Content="Export" Command="{Binding ExportPeaksCommand, Mode=OneTime}" Width="64" Margin="8"/>
                     </StackPanel>
                     <CheckBox x:Name="ShowLabelCheckBox" Content="Show label"
                               IsChecked="True"

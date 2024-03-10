@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.MsResult;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.DataObj;
 using CompMs.CommonMVVM;
@@ -128,5 +129,23 @@ internal sealed class CheckChromatogramsModel : BindableBase
 
     public void RemovePeak(DisplayPeakOfChromatogram peak) {
         Chromatograms?.RemovePeak(peak);
+    }
+
+    public void ExportPeaks() {
+        if (Chromatograms is null) {
+            return;
+        }
+        string filePath = string.Empty;
+        var request = new SaveFileNameRequest(f => filePath = f);
+        _broker.Publish(request);
+        if (request.Result == true && Directory.Exists(Path.GetDirectoryName(filePath))) {
+            using var writer = new StreamWriter(filePath);
+            writer.WriteLine("Name\tTime\tAbundance\tArea");
+            foreach (var chromatogram in Chromatograms.DisplayChromatograms) {
+                foreach (var peak in chromatogram.Peaks) {
+                    writer.WriteLine($"{chromatogram.Name}\t{peak.Time}\t{peak.Intensity}\t{peak.Area}");
+                }
+            }
+        }
     }
 }
