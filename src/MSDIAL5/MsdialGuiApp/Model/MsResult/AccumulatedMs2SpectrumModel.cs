@@ -107,6 +107,20 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
             new MoleculeProperty());
         PeakSpot = new PeakSpotModel(anotatedSpot, Scan);
         PlotComparedSpectrum = new PlotComparedMsSpectrumUsecase(Scan);
+
+        _compoundSearch.Search(PeakSpot);
+        CalculateProductIonTotalIonChromatogram();
+    }
+
+    public void CalculateProductIonTotalIonChromatogram() {
+        if (PlotComparedSpectrum is null) {
+            return;
+        }
+        var range = MzRange.FromRange(0d, double.MaxValue);
+
+        var displayChromatogram = _productIonChromatogramLoader.LoadChromatogram((new MzRange(Chromatogram.Mz, Chromatogram.Tolerance), range));
+        displayChromatogram.Name = $"TIC Precursor m/z: {Chromatogram.Mz}±{Chromatogram.Tolerance}";
+        ProductIonChromatogram = new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
     }
 
     public void CalculateProductIonChromatogram() {
