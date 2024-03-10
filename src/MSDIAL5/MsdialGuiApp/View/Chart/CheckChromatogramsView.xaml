@@ -173,6 +173,7 @@
                             HorizontalAlignment="Left"
                             DockPanel.Dock="Bottom">
                     <Button Content="Detect" Command="{Binding DetectPeaksCommand, Mode=OneTime}" Width="32" Margin="8"/>
+                    <Button Content="Manual" Command="{Binding AddPeaksCommand, Mode=OneTime}" Width="32" Margin="8"/>
                     <Button Content="Reset" Command="{Binding ResetPeaksCommand, Mode=OneTime}" Width="32" Margin="8"/>
                 </StackPanel>
                 <StackPanel DataContext="{Binding RangeSelectableChromatogramViewModel.Value}"

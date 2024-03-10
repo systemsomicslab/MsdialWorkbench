@@ -73,6 +73,13 @@ public class DisplayChromatogram : BindableBase {
         }
     }
 
+    public void AsPeak(double timeLeft, double timeRight) {
+        var peak = Chromatogram.AsPeak(timeLeft, timeRight);
+        if (peak is not null) {
+            Peaks.Add(new DisplayPeakOfChromatogram(peak));
+        }
+    }
+
     public void ResetPeaks() {
         Peaks.Clear();
     }

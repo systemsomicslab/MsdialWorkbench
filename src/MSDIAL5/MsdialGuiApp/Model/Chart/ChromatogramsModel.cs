@@ -87,6 +87,12 @@ public sealed class ChromatogramsModel : DisposableModelBase {
         }
     }
 
+    public void AddPeak(double timeLeft, double timeRight) {
+        foreach (var chromatogram in DisplayChromatograms) {
+            chromatogram.AsPeak(timeLeft, timeRight);
+        }
+    }
+
     public void ResetPeaks() {
         foreach (var chromatogram in DisplayChromatograms) {
             chromatogram.ResetPeaks();

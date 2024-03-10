@@ -79,6 +79,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .ToAsyncReactiveCommand<AccumulatedMs2SpectrumViewModel>()
                 .WithSubscribe(vm => ShowAccumulatedSpectrumAsync(vm, default)).AddTo(Disposables);
             DetectPeaksCommand = new ReactiveCommand().WithSubscribe(model.DetectPeaks).AddTo(Disposables);
+            AddPeaksCommand = RangeSelectableChromatogramViewModel.Select(vm => vm is { SelectedRange: not null })
+                .ToReactiveCommand().WithSubscribe(model.AddPeak).AddTo(Disposables);
             ResetPeaksCommand = new ReactiveCommand().WithSubscribe(model.ResetPeaks).AddTo(Disposables);
         }
 
@@ -127,6 +129,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
 
         public ReactiveCommand DetectPeaksCommand { get; }
+        public ReactiveCommand AddPeaksCommand { get; }
         public ReactiveCommand ResetPeaksCommand { get; }
 
         public ReactiveCommand ApplyCommand { get; }

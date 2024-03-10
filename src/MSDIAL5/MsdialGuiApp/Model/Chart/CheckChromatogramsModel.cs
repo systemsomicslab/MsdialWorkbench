@@ -6,6 +6,7 @@ using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.DataObj;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using System;
@@ -109,6 +110,13 @@ internal sealed class CheckChromatogramsModel : BindableBase
     public void DetectPeaks() {
         var detector = new PeakDetection(1, 0d);
         Chromatograms?.DetectPeaks(detector);
+    }
+
+    public void AddPeak() {
+        if (RangeSelectableChromatogramModel is { SelectedRange: not null } ) {
+            var range = RangeSelectableChromatogramModel.ConvertToRt(new RangeSelection(RangeSelectableChromatogramModel.SelectedRange));
+            Chromatograms?.AddPeak(range.Item1, range.Item2);
+        }
     }
 
     public void ResetPeaks() {
