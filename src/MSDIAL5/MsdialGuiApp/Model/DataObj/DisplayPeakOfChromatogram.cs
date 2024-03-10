@@ -15,4 +15,6 @@ public sealed class DisplayPeakOfChromatogram(PeakOfChromatogram peak) : Bindabl
     public double Intensity { get; } = peak.GetTop().Intensity;
 
     public double Area { get; } = peak.CalculateArea();
+
+    public string Label { get; } = $"{peak.GetTop().ChromXs.GetRepresentativeXAxis()}\nArea: {peak.CalculateArea():F0}\nAbundance: {peak.GetTop().Intensity:F0}";
 }

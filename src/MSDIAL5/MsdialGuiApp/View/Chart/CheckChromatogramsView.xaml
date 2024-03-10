@@ -115,7 +115,7 @@
                                     <chart:Annotator ItemsSource="{Binding Peaks}"
                                                      HorizontalPropertyName="Top.Time"
                                                      VerticalPropertyName="Top.Intensity"
-                                                     LabelPropertyName="Top.Time"
+                                                     LabelPropertyName="Label"
                                                      Overlap="Direct"
                                                      IsHitTestVisible="False"/>
                                 </Grid>
