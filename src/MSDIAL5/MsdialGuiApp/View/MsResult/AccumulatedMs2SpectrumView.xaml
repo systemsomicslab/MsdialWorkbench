@@ -8,6 +8,7 @@
              xmlns:components="clr-namespace:CompMs.Common.Components;assembly=Common"
              xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
              xmlns:io="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.MsResult"
              xmlns:mvvm="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
              xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
@@ -184,7 +185,7 @@
         <Grid Grid.Row="1" Grid.Column="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="160" />
+                <ColumnDefinition Width="80" />
             </Grid.ColumnDefinitions>
             <chart:SimpleChartControl HorizontalAxis="{Binding ProductIonChromatogram.Value.HorizontalSelector.SelectedAxisItem.AxisManager}"
                                       VerticalAxis="{Binding ProductIonChromatogram.Value.VerticalSelector.SelectedAxisItem.AxisManager}"
@@ -286,12 +287,66 @@
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="0">
-                <Button Content="Search" Command="{Binding SearchCompoundCommand, Mode=OneTime}"/>
+                <StackPanel Orientation="Horizontal">
+                    <ui:LabeledContent PrependLabel="Select annotation method:"
+                                       HorizontalAlignment="Left"
+                                       Margin="4">
+                        <ComboBox ItemsSource="{Binding SearchMethods, Mode=OneTime}"
+                                  SelectedItem="{Binding SearchMethod.Value}"
+                                  DisplayMemberPath="Id"
+                                  VerticalAlignment="Center"
+                                  Width="200"/>
+                    </ui:LabeledContent>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <ui:LabeledContent PrependLabel="MS1 tol. [Da]:" Height="25">
+                        <TextBox Name="TextBox_Ms1Tolerance"
+                                 DataContext="{Binding ParameterViewModel.Value}"
+                                 Text="{Binding Ms1Tolerance.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Validation.ErrorTemplate="{StaticResource BasicErrorTemplate}"
+                                 HorizontalAlignment="Left" VerticalAlignment="Center"
+                                 Width="32"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Rt tol. [min]:"
+                                       Margin="10,0,0,0"
+                                       Height="25" >
+                        <TextBox Name="TextBox_RtTolerance"
+                                 DataContext="{Binding ParameterViewModel.Value}"
+                                 Text="{Binding RtTolerance.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Validation.ErrorTemplate="{StaticResource BasicErrorTemplate}"
+                                 HorizontalAlignment="Left" VerticalAlignment="Center"
+                                 Width="32"/>
+                    </ui:LabeledContent>
+                    <Button Content="Search" Command="{Binding SearchCompoundCommand, Mode=OneTime}"
+                            Width="64"/>
+                </StackPanel>
             </StackPanel>
             <DataGrid ItemsSource="{Binding Compounds.Value}"
                       SelectedItem="{Binding SelectedCompound.Value}"
+                      IsSynchronizedWithCurrentItem="True"
+                      CanUserAddRows="False" CanUserDeleteRows="False"
+                      CanUserReorderColumns="False" CanUserSortColumns="True"
+                      SelectionUnit="FullRow" IsReadOnly="True"
+                      HeadersVisibility="All" AutoGenerateColumns="False"
                       Margin="4" Grid.Row="1">
-                
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="DataGridColumnHeader" >
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Library ID" Width="*" Binding="{Binding Path=LibraryID}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Name" Width="2*" Binding="{Binding Path=Name}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Adduct" Width="*" Binding="{Binding Path=AdductName}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Pre. m/z" Width="*" Binding="{Binding Path=PrecursorMz, StringFormat=N5}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Rt [min]" Width="*" Binding="{Binding Path=ChromXs.RT.Value, StringFormat=N1}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Dot prod." Width="*" Binding="{Binding Path=WeightedDotProduct, StringFormat=N2}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Rev. prod." Width="*" Binding="{Binding Path=ReverseDotProduct, StringFormat=N2}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Presense" Width="*" Binding="{Binding Path=Presence, StringFormat=N2}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Instrument" Width="*" Binding="{Binding Path=Instrument}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Comment" Width="2*" Binding="{Binding Path=Comment}" IsReadOnly="True" />
+                </DataGrid.Columns>
             </DataGrid>
         </Grid>
     </Grid>

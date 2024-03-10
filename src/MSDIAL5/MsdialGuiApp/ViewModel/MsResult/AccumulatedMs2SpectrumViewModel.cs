@@ -2,10 +2,12 @@
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Chart;
+using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reactive.Linq;
 
@@ -32,6 +34,13 @@ namespace CompMs.App.Msdial.ViewModel.MsResult
                 .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             ProductIonRange = model.ToReactivePropertySlimAsSynchronized(m => m.ProductIonRange).AddTo(Disposables);
 
+            SearchMethod = model.ToReactivePropertySlimAsSynchronized(m => m.SearchMethod).AddTo(Disposables);
+            ParameterViewModel = model.SearchParameter
+                .Select(parameter => parameter is null ? null : new MsRefSearchParameterBaseViewModel(parameter))
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+
             SearchCompoundCommand = new ReactiveCommand().WithSubscribe(model.SearchCompound).AddTo(Disposables);
             CalculateProductIonChromatogramCommand = SelectedRange.Select(r => r is not null).ToReactiveCommand().WithSubscribe(model.CalculateProductIonChromatogram).AddTo(Disposables);
 
@@ -55,6 +64,12 @@ namespace CompMs.App.Msdial.ViewModel.MsResult
 
         public ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> ProductIonChromatogram { get; }
         public ReactivePropertySlim<AxisRange?> ProductIonRange { get; }
+
+        public IList SearchMethods => Model.SearchMethods;
+
+        public ReactivePropertySlim<object?> SearchMethod { get; }
+
+        public ReadOnlyReactivePropertySlim<MsRefSearchParameterBaseViewModel?> ParameterViewModel { get; }
 
         public ReadOnlyReactivePropertySlim<IReadOnlyList<ICompoundResult>?> Compounds { get; }
         public ReactivePropertySlim<ICompoundResult?> SelectedCompound { get; }

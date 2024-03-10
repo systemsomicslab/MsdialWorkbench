@@ -6,11 +6,14 @@ using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
+using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Export;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reactive.Disposables;
@@ -36,6 +39,7 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
         _broker = broker;
         _plotDisposable = new SerialDisposable().AddTo(Disposables);
         _subject = new BehaviorSubject<MsSpectrum?>(null).AddTo(Disposables);
+        SearchParameter = compoundSearch.ObserveProperty(m => m.SearchParameter).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
     }
 
     public DisplayExtractedIonChromatogram Chromatogram { get; }
@@ -105,6 +109,20 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
         set => SetProperty(ref _productIonRange, value);
     }
     private AxisRange? _productIonRange;
+
+    public IList SearchMethods => _compoundSearch.SearchMethods;
+
+    public object? SearchMethod {
+        get => _compoundSearch.SearchMethod;
+        set {
+            if (_compoundSearch.SearchMethod != value) {
+                _compoundSearch.SearchMethod = value;
+                OnPropertyChanged(nameof(SearchMethod));
+            }
+        }
+    }
+
+    public ReadOnlyReactivePropertySlim<MsRefSearchParameterBase?> SearchParameter { get; }
 
     public async Task CalculateMs2Async((double start, double end) baseRange, IEnumerable<(double start, double end)> subtracts, CancellationToken token = default) {
         Scan = await _accumulateSpectra.AccumulateMs2Async(Chromatogram.Mz, Chromatogram.Tolerance, baseRange, subtracts, token).ConfigureAwait(false);
