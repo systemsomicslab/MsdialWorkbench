@@ -38,6 +38,11 @@ namespace CompMs.App.Msdial.ViewModel.MsResult
             DetectPeaksCommand = new ReactiveCommand().WithSubscribe(model.DetectPeaks).AddTo(Disposables);
             AddPeakCommand = new ReactiveCommand().WithSubscribe(model.AddPeak).AddTo(Disposables);
             ResetPeaksCommand = new ReactiveCommand().WithSubscribe(model.ResetPeaks).AddTo(Disposables);
+
+            SaveAsNistCommand = new[] {
+                model.ObserveProperty(m => m.PeakSpot).Select(m => m is not null),
+                model.ObserveProperty(m => m.Scan).Select(m => m is not null),
+            }.CombineLatestValuesAreAllTrue().ToReactiveCommand().WithSubscribe(model.Export).AddTo(Disposables);
         }
 
         public AccumulatedMs2SpectrumModel Model { get; }
@@ -45,6 +50,8 @@ namespace CompMs.App.Msdial.ViewModel.MsResult
         public double Mz => Model.Chromatogram.Mz;
         public ReadOnlyReactivePropertySlim<MsSpectrumViewModel?> MsSpectrumViewModel { get; }
         public ReactivePropertySlim<AxisRange?> SelectedRange { get; }
+
+        public ReactiveCommand SaveAsNistCommand { get; }
 
         public ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> ProductIonChromatogram { get; }
         public ReactivePropertySlim<AxisRange?> ProductIonRange { get; }

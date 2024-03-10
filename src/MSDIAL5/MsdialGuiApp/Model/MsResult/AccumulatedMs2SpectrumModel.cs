@@ -2,13 +2,17 @@
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
+using CompMs.MsdialCore.Export;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System.Collections.Generic;
+using System.IO;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 using System.Threading;
@@ -21,13 +25,15 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
     private readonly AccumulateSpectraUsecase _accumulateSpectra;
     private readonly ICompoundSearchUsecase<ICompoundResult, PeakSpotModel> _compoundSearch;
     private readonly IWholeChromatogramLoader<(MzRange, MzRange)> _productIonChromatogramLoader;
+    private readonly IMessageBroker _broker;
     private readonly BehaviorSubject<MsSpectrum?> _subject;
 
-    public AccumulatedMs2SpectrumModel(DisplayExtractedIonChromatogram chromatogram, AccumulateSpectraUsecase accumulateSpectra, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel> compoundSearch, IWholeChromatogramLoader<(MzRange, MzRange)> productIonChromatogramLoader) {
+    public AccumulatedMs2SpectrumModel(DisplayExtractedIonChromatogram chromatogram, AccumulateSpectraUsecase accumulateSpectra, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel> compoundSearch, IWholeChromatogramLoader<(MzRange, MzRange)> productIonChromatogramLoader, IMessageBroker broker) {
         Chromatogram = chromatogram;
         _accumulateSpectra = accumulateSpectra;
         _compoundSearch = compoundSearch;
         _productIonChromatogramLoader = productIonChromatogramLoader;
+        _broker = broker;
         _plotDisposable = new SerialDisposable().AddTo(Disposables);
         _subject = new BehaviorSubject<MsSpectrum?>(null).AddTo(Disposables);
     }
@@ -158,5 +164,20 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
             return;
         }
         Compounds = _compoundSearch.Search(PeakSpot);
+    }
+
+    public void Export() {
+        if (PeakSpot is null || Scan is null) {
+            return;
+        }
+        var builder = new NistRecordBuilder();
+        builder.SetIonPropertyProperties(PeakSpot.PeakSpot.MSIon);
+        builder.SetMSProperties(PeakSpot.PeakSpot.MSIon);
+        builder.SetScan(Scan);
+        var request = new SaveFileNameRequest(filename => {
+            using var stream = File.Open(filename, FileMode.Create);
+            builder.Export(stream);
+        });
+        _broker.Publish(request);
     }
 }

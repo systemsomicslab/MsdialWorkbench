@@ -34,6 +34,7 @@
         </Grid.RowDefinitions>
         <Grid.Resources>
             <mvvm:BindingProxy x:Key="PICCommand" Data="{Binding CalculateProductIonChromatogramCommand, Mode=OneTime}"/>
+            <mvvm:BindingProxy x:Key="SaveNistCommand" Data="{Binding SaveAsNistCommand, Mode=OneTime}"/>
         </Grid.Resources>
         <Grid Margin="4"
               Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">
@@ -50,6 +51,7 @@
                     <ContextMenu>
                         <MenuItem Header="Show product ion chromatogram" Command="{Binding Data, Source={StaticResource PICCommand}}"/>
                         <Separator/>
+                        <MenuItem Header="Save spectrum as nist format" Command="{Binding Data, Source={StaticResource SaveNistCommand}}"/>
                         <MenuItem Header="Save image as...">
                             <MenuItem Header="Save as emf"
                                       Command="{x:Static io:SaveImageAsCommand.EmfInstance}"

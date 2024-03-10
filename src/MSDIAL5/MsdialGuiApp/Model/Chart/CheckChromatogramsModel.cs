@@ -9,6 +9,7 @@ using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -25,15 +26,17 @@ internal sealed class CheckChromatogramsModel : BindableBase
     private readonly ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? _compoundSearch;
     private readonly AdvancedProcessOptionBaseParameter _advancedProcessParameter;
     private readonly IWholeChromatogramLoader<(MzRange, MzRange)> _productIonChromatogramLoader;
+    private readonly IMessageBroker _broker;
     private readonly List<PeakFeatureSearchValue> _displaySettingValueCandidates;
     private readonly ObservableCollection<PeakFeatureSearchValueModel> _displaySettingValues;
 
-    public CheckChromatogramsModel(LoadChromatogramsUsecase loadingChromatograms, AccumulateSpectraUsecase accumulateSpectra, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? compoundSearch, AdvancedProcessOptionBaseParameter advancedProcessParameter, IWholeChromatogramLoader<(MzRange, MzRange)> productIonChromatogramLoader) {
+    public CheckChromatogramsModel(LoadChromatogramsUsecase loadingChromatograms, AccumulateSpectraUsecase accumulateSpectra, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? compoundSearch, AdvancedProcessOptionBaseParameter advancedProcessParameter, IWholeChromatogramLoader<(MzRange, MzRange)> productIonChromatogramLoader, IMessageBroker broker) {
         LoadChromatogramsUsecase = loadingChromatograms ?? throw new ArgumentNullException(nameof(loadingChromatograms));
         _accumulateSpectra = accumulateSpectra;
         _compoundSearch = compoundSearch;
         _advancedProcessParameter = advancedProcessParameter;
         _productIonChromatogramLoader = productIonChromatogramLoader;
+        _broker = broker;
         advancedProcessParameter.DiplayEicSettingValues ??= new List<PeakFeatureSearchValue>();
         var values = advancedProcessParameter.DiplayEicSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0).ToList();
         values.AddRange(Enumerable.Repeat(0, 100).Select(_ => new PeakFeatureSearchValue()));
@@ -88,7 +91,7 @@ internal sealed class CheckChromatogramsModel : BindableBase
             RangeSelectableChromatogramModel = new RangeSelectableChromatogramModel(Chromatograms);
             AccumulatedMs2SpectrumModels = Chromatograms.DisplayChromatograms
                 .OfType<DisplayExtractedIonChromatogram>()
-                .Select(c => new AccumulatedMs2SpectrumModel(c, _accumulateSpectra, _compoundSearch, _productIonChromatogramLoader))
+                .Select(c => new AccumulatedMs2SpectrumModel(c, _accumulateSpectra, _compoundSearch, _productIonChromatogramLoader, _broker))
                 .ToArray();
         }
     }
