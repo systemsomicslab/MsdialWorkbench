@@ -30,9 +30,14 @@ namespace CompMs.App.Msdial.ViewModel.MsResult
                 .DefaultIfNull(m => new ChromatogramsViewModel(m))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            ProductIonRange = model.ToReactivePropertySlimAsSynchronized(m => m.ProductIonRange).AddTo(Disposables);
 
             SearchCompoundCommand = new ReactiveCommand().WithSubscribe(model.SearchCompound).AddTo(Disposables);
             CalculateProductIonChromatogramCommand = SelectedRange.Select(r => r is not null).ToReactiveCommand().WithSubscribe(model.CalculateProductIonChromatogram).AddTo(Disposables);
+
+            DetectPeaksCommand = new ReactiveCommand().WithSubscribe(model.DetectPeaks).AddTo(Disposables);
+            AddPeakCommand = new ReactiveCommand().WithSubscribe(model.AddPeak).AddTo(Disposables);
+            ResetPeaksCommand = new ReactiveCommand().WithSubscribe(model.ResetPeaks).AddTo(Disposables);
         }
 
         public AccumulatedMs2SpectrumModel Model { get; }
@@ -42,6 +47,7 @@ namespace CompMs.App.Msdial.ViewModel.MsResult
         public ReactivePropertySlim<AxisRange?> SelectedRange { get; }
 
         public ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> ProductIonChromatogram { get; }
+        public ReactivePropertySlim<AxisRange?> ProductIonRange { get; }
 
         public ReadOnlyReactivePropertySlim<IReadOnlyList<ICompoundResult>?> Compounds { get; }
         public ReactivePropertySlim<ICompoundResult?> SelectedCompound { get; }
@@ -49,5 +55,9 @@ namespace CompMs.App.Msdial.ViewModel.MsResult
         public ReactiveCommand SearchCompoundCommand { get; }
 
         public ReactiveCommand CalculateProductIonChromatogramCommand { get; }
+
+        public ReactiveCommand DetectPeaksCommand { get; }
+        public ReactiveCommand AddPeakCommand { get; }
+        public ReactiveCommand ResetPeaksCommand { get; }
     }
 }

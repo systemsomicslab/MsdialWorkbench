@@ -11,6 +11,7 @@
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.MsResult"
              xmlns:mvvm="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
              xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              d:DataContext="{d:DesignInstance Type={x:Type vm:AccumulatedMs2SpectrumViewModel}}"
              d:Background="White"
              d:DesignHeight="600" d:DesignWidth="800" >
@@ -221,13 +222,32 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <chart:LineChartControl ItemsSource="{Binding ChromatogramPeaks}"
-                                                        LinePen="{Binding LinePen}"
-                                                        HorizontalPropertyName="{Binding DataContext.HorizontalProperty, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                                        VerticalPropertyName="{Binding DataContext.VerticalProperty, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+                                <Grid>
+                                    <chart:LineChartControl ItemsSource="{Binding ChromatogramPeaks}"
+                                                            LinePen="{Binding LinePen}"
+                                                            HorizontalPropertyName="{Binding DataContext.HorizontalProperty, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                                            VerticalPropertyName="{Binding DataContext.VerticalProperty, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+                                    <chart:MultiAreaChartControl ItemsSources="{Binding Peaks}"
+                                                                 CollectionDataType="{x:Type do:DisplayPeakOfChromatogram}"
+                                                                 ItemsProperty="Points"
+                                                                 ItemsDataType="{x:Type do:PeakItem}"
+                                                                 HorizontalProperty="Time"
+                                                                 VerticalProperty="Intensity"
+                                                                 AreaBrush="{Binding BrushMapper, Mode=OneWay}"
+                                                                 AreaOpacity=".2"
+                                                                 IsHitTestVisible="False"/>
+                                    <chart:Annotator ItemsSource="{Binding Peaks}"
+                                                     HorizontalPropertyName="Top.Time"
+                                                     VerticalPropertyName="Top.Intensity"
+                                                     LabelPropertyName="Top.Time"
+                                                     Overlap="Direct"
+                                                     IsHitTestVisible="False"/>
+                                </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
+                    <chart:RangeSelector SelectedRange="{Binding ProductIonRange.Value, Mode=TwoWay}"
+                                         Background="Transparent"/>
                 </Grid>
                 <chart:SimpleChartControl.ContextMenu>
                     <ContextMenu>
@@ -250,6 +270,11 @@
                     </ContextMenu>
                 </chart:SimpleChartControl.ContextMenu>
             </chart:SimpleChartControl>
+            <StackPanel Margin="8" Grid.Column="1">
+                <Button Content="Detect" Command="{Binding DetectPeaksCommand, Mode=OneTime}" Margin="8"/>
+                <Button Content="Add" Command="{Binding AddPeakCommand, Mode=OneTime}" Margin="8"/>
+                <Button Content="Reset" Command="{Binding ResetPeaksCommand, Mode=OneTime}" Margin="8"/>
+            </StackPanel>
         </Grid>
 
         <Grid Grid.Column="1" Grid.Row="0">

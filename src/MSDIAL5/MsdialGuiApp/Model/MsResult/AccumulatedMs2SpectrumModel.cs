@@ -9,8 +9,6 @@ using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings.Extensions;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 using System.Threading;
@@ -68,8 +66,6 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
     private PlotComparedMsSpectrumUsecase? _plotComparedSpectrum;
     private SerialDisposable _plotDisposable;
 
-    public ObservableCollection<PeakItem[]> Areas { get; } = [];
-
     public IReadOnlyList<ICompoundResult>? Compounds {
         get => _compounds;
         private set => SetProperty(ref _compounds, value);
@@ -98,6 +94,12 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
     }
     private ChromatogramsModel? _productIonChromatogram;
 
+    public AxisRange? ProductIonRange {
+        get => _productIonRange;
+        set => SetProperty(ref _productIonRange, value);
+    }
+    private AxisRange? _productIonRange;
+
     public async Task CalculateMs2Async((double start, double end) baseRange, IEnumerable<(double start, double end)> subtracts, CancellationToken token = default) {
         Scan = await _accumulateSpectra.AccumulateMs2Async(Chromatogram.Mz, Chromatogram.Tolerance, baseRange, subtracts, token).ConfigureAwait(false);
         var anotatedSpot = new AnnotatedSpotModel(
@@ -122,18 +124,19 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
 
     public void DetectPeaks() {
         var detector = new PeakDetection(1, 0d);
-        var results = detector.PeakDetectionVS1(Chromatogram.Chromatogram);
-        foreach (var result in results) {
-            var peak = Chromatogram.Chromatogram.AsPeak(result.ScanNumAtLeftPeakEdge, result.ScanNumAtRightPeakEdge);
-            if (peak is null) {
-                continue;
-            }
-            Areas.Add(peak.SlicePeakArea().Select(p => new PeakItem(p)).ToArray());
+        ProductIonChromatogram?.DetectPeaks(detector);
+    }
+
+    public void AddPeak() {
+        if (ProductIonRange is not null && ProductIonChromatogram is not null) {
+            var range = new RangeSelection(ProductIonRange).ConvertBy(ProductIonChromatogram.ChromAxisItemSelector.SelectedAxisItem.AxisManager);
+            ProductIonChromatogram?.AddPeak(range.Item1, range.Item2);
+            ProductIonRange = null;
         }
     }
 
     public void ResetPeaks() {
-        Areas.Clear();
+        ProductIonChromatogram?.ResetPeaks();
     }
 
     public void SearchCompound() {
