@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.ViewModel.MsResult;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
@@ -82,6 +83,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             AddPeaksCommand = RangeSelectableChromatogramViewModel.Select(vm => vm is { SelectedRange: not null })
                 .ToReactiveCommand().WithSubscribe(model.AddPeak).AddTo(Disposables);
             ResetPeaksCommand = new ReactiveCommand().WithSubscribe(model.ResetPeaks).AddTo(Disposables);
+            RemovePeakCommand = new ReactiveCommand<DisplayPeakOfChromatogram>().WithSubscribe(model.RemovePeak).AddTo(Disposables);
         }
 
         public ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> ChromatogramsViewModel { get; }
@@ -131,6 +133,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReactiveCommand DetectPeaksCommand { get; }
         public ReactiveCommand AddPeaksCommand { get; }
         public ReactiveCommand ResetPeaksCommand { get; }
+        public ReactiveCommand<DisplayPeakOfChromatogram> RemovePeakCommand { get; }
 
         public ReactiveCommand ApplyCommand { get; }
         public ReactiveCommand ClearCommand { get; }

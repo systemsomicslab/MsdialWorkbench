@@ -83,4 +83,8 @@ public class DisplayChromatogram : BindableBase {
     public void ResetPeaks() {
         Peaks.Clear();
     }
+
+    public void RemovePeak(DisplayPeakOfChromatogram peak) {
+        Peaks.Remove(peak);
+    }
 }

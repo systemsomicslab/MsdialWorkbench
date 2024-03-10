@@ -125,4 +125,8 @@ internal sealed class CheckChromatogramsModel : BindableBase
     public void ResetPeaks() {
         Chromatograms?.ResetPeaks();
     }
+
+    public void RemovePeak(DisplayPeakOfChromatogram peak) {
+        Chromatograms?.RemovePeak(peak);
+    }
 }

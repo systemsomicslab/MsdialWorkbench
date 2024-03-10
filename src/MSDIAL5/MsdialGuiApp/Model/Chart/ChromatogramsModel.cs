@@ -98,4 +98,10 @@ public sealed class ChromatogramsModel : DisposableModelBase {
             chromatogram.ResetPeaks();
         }
     }
+
+    public void RemovePeak(DisplayPeakOfChromatogram peak) {
+        foreach (var chromatogram in DisplayChromatograms) {
+            chromatogram.RemovePeak(peak);
+        }
+    }
 }

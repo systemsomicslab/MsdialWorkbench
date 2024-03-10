@@ -10,6 +10,8 @@ public sealed class DisplayPeakOfChromatogram(PeakOfChromatogram peak) : Bindabl
 
     public PeakItem Top { get; } = new PeakItem(peak.GetTop());
 
+    public IChromX RepresentativeTime { get; } = peak.GetTop().ChromXs.GetRepresentativeXAxis();
+
     public double Time { get; } = peak.GetTop().ChromXs.Value;
 
     public double Intensity { get; } = peak.GetTop().Intensity;
