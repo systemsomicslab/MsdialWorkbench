@@ -202,7 +202,13 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
         var request = new SaveFileNameRequest(filename => {
             using var stream = File.Open(filename, FileMode.Create);
             builder.Export(stream);
-        });
+        })
+        {
+            Title = "Save spectrum",
+            Filter = "NIST format|*.msp|All|*",
+            RestoreDirectory = true,
+            AddExtension = true,
+        };
         _broker.Publish(request);
     }
 }

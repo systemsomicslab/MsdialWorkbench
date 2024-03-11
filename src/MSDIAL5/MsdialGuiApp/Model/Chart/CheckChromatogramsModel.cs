@@ -140,7 +140,13 @@ internal sealed class CheckChromatogramsModel : BindableBase
             return;
         }
         string filePath = string.Empty;
-        var request = new SaveFileNameRequest(f => filePath = f);
+        var request = new SaveFileNameRequest(f => filePath = f)
+        {
+            Title = "Save peaks as table",
+            Filter = "tab separated values|*.txt|All|*",
+            RestoreDirectory = true,
+            AddExtension = true,
+        };
         _broker.Publish(request);
         if (request.Result == true && Directory.Exists(Path.GetDirectoryName(filePath))) {
             using var writer = new StreamWriter(filePath);
