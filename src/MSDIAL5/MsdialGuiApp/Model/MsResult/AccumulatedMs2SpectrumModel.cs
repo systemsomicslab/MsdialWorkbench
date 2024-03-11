@@ -8,6 +8,7 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Export;
 using Reactive.Bindings;
@@ -145,6 +146,9 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
         var displayChromatogram = _productIonChromatogramLoader.LoadChromatogram((new MzRange(Chromatogram.Mz, Chromatogram.Tolerance), range));
         displayChromatogram.Name = $"TIC Precursor m/z: {Chromatogram.Mz}±{Chromatogram.Tolerance}";
         ProductIonChromatogram = new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
+        if (ProductIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> chromAxis) {
+            chromAxis.ChartMargin = new ConstantMargin(0, 60);
+        }
     }
 
     public void CalculateProductIonChromatogram() {
@@ -158,6 +162,9 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
         var displayChromatogram = _productIonChromatogramLoader.LoadChromatogram((new MzRange(Chromatogram.Mz, Chromatogram.Tolerance), range));
         displayChromatogram.Name = $"Precursor m/z: {Chromatogram.Mz}±{Chromatogram.Tolerance}, Product ion: {start}-{end}";
         ProductIonChromatogram = new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
+        if (ProductIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> chromAxis) {
+            chromAxis.ChartMargin = new ConstantMargin(0, 40);
+        }
     }
 
     public void DetectPeaks() {

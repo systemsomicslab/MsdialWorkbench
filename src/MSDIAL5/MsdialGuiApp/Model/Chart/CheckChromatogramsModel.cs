@@ -7,6 +7,7 @@ using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.DataObj;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -87,6 +88,9 @@ internal sealed class CheckChromatogramsModel : BindableBase
         _advancedProcessParameter.DiplayEicSettingValues.AddRange(_displaySettingValueCandidates.Where(n => n.Mass > 0 && n.MassTolerance > 0));
         var displayEICs = _advancedProcessParameter.DiplayEicSettingValues;
         Chromatograms = LoadChromatogramsUsecase.Load(displayEICs);
+        if (Chromatograms.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> axis) {
+            axis.ChartMargin = new ConstantMargin(0, 60);
+        }
 
         if (_compoundSearch is not null) {
             RangeSelectableChromatogramModel = new RangeSelectableChromatogramModel(Chromatograms);

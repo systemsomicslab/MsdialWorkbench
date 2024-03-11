@@ -11,6 +11,7 @@
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              xmlns:mvvm="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
+             x:Name="ChromatogramsView"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type={x:Type vm:CheckChromatogramsViewModel}}"
              d:Background="White"
@@ -51,6 +52,29 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
+        <Grid.Resources>
+            <mvvm:BindingProxy x:Key="ViewRoot" Data="{Binding ElementName=ChromatogramsView}"/>
+        </Grid.Resources>
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Save view image as...">
+                    <MenuItem Header="Save as emf"
+                              Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                              CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                    <MenuItem Header="Save as png"
+                              Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                              CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                </MenuItem>
+                <MenuItem Header="Copy view image as...">
+                    <MenuItem Header="Copy as emf"
+                              Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                              CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                    <MenuItem Header="Copy as png"
+                              Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                              CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                </MenuItem>
+            </ContextMenu>
+        </Grid.ContextMenu>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="320" />
@@ -99,7 +123,7 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Grid>
+                                <Grid ClipToBounds="True">
                                     <chart:MultiAreaChartControl ItemsSources="{Binding Peaks}"
                                                                  CollectionDataType="{x:Type do:DisplayPeakOfChromatogram}"
                                                                  ItemsProperty="Points"
@@ -119,7 +143,11 @@
                                                      LabelPropertyName="Label"
                                                      Overlap="Direct"
                                                      Visibility="{Binding IsChecked, ElementName=ShowLabelCheckBox, Converter={StaticResource BooleanToVisibility}}"
-                                                     IsHitTestVisible="False"/>
+                                                     IsHitTestVisible="False">
+                                        <chart:Annotator.RenderTransform>
+                                            <TranslateTransform Y="-30"/>
+                                        </chart:Annotator.RenderTransform>
+                                    </chart:Annotator>
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -163,6 +191,22 @@
                             <MenuItem Header="Copy as png"
                                       Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
                                       CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        </MenuItem>
+                        <MenuItem Header="Save view image as...">
+                            <MenuItem Header="Save as emf"
+                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                      CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                            <MenuItem Header="Save as png"
+                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                      CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                        </MenuItem>
+                        <MenuItem Header="Copy view image as...">
+                            <MenuItem Header="Copy as emf"
+                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                      CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                            <MenuItem Header="Copy as png"
+                                      Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                      CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
                         </MenuItem>
                         <Separator/>
                         <MenuItem Header="Copy as table" Command="{Binding CopyAsTableCommand, Mode=OneTime}"/>
@@ -332,8 +376,8 @@
                                                 <DataTemplate DataType="{x:Type do:DisplayPeakOfChromatogram}">
                                                     <StackPanel>
                                                         <ContentControl Content="{Binding RepresentativeTime, Mode=OneTime}"/>
-                                                        <TextBlock Text="{Binding Area, Mode=OneTime, StringFormat=Area: {0}}"/>
-                                                        <TextBlock Text="{Binding Intensity, Mode=OneTime, StringFormat=Abundance: {0}}"/>
+                                                        <TextBlock Text="{Binding Area, Mode=OneTime, StringFormat=Area: {0:F0}}"/>
+                                                        <TextBlock Text="{Binding Intensity, Mode=OneTime, StringFormat=Abundance: {0:F0}}"/>
                                                         <Button Content="Remove"
                                                                 Command="{Binding Data, Source={StaticResource RemovePeakCommand}}"
                                                                 CommandParameter="{Binding Mode=OneTime}"/>

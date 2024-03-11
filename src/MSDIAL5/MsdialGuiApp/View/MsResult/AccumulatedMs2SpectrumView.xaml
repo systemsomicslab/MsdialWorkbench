@@ -13,6 +13,7 @@
              xmlns:mvvm="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
              xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
+             x:Name="AccumulatedSpectrumView"
              d:DataContext="{d:DesignInstance Type={x:Type vm:AccumulatedMs2SpectrumViewModel}}"
              d:Background="White"
              d:DesignHeight="600" d:DesignWidth="800" >
@@ -36,7 +37,28 @@
         <Grid.Resources>
             <mvvm:BindingProxy x:Key="PICCommand" Data="{Binding CalculateProductIonChromatogramCommand, Mode=OneTime}"/>
             <mvvm:BindingProxy x:Key="SaveNistCommand" Data="{Binding SaveAsNistCommand, Mode=OneTime}"/>
+            <mvvm:BindingProxy x:Key="ViewRoot" Data="{Binding ElementName=AccumulatedSpectrumView}"/>
         </Grid.Resources>
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Save view image as...">
+                    <MenuItem Header="Save as emf"
+                              Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                              CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                    <MenuItem Header="Save as png"
+                              Command="{x:Static io:SaveImageAsCommand.PngInstance}"
+                              CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                </MenuItem>
+                <MenuItem Header="Copy view image as...">
+                    <MenuItem Header="Copy as emf"
+                              Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                              CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                    <MenuItem Header="Copy as png"
+                              Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
+                              CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                </MenuItem>
+            </ContextMenu>
+        </Grid.ContextMenu>
         <Grid Margin="4"
               Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">
             <chart:MultiChart DataContext="{Binding MsSpectrumViewModel.Value}"
@@ -68,6 +90,22 @@
                             <MenuItem Header="Copy as png"
                                       Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
                                       CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        </MenuItem>
+                        <MenuItem Header="Save view image as...">
+                            <MenuItem Header="Save as emf"
+                                      Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                                      CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                            <MenuItem Header="Save as png"
+                                      Command="{x:Static io:SaveImageAsCommand.PngInstance}"
+                                      CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                        </MenuItem>
+                        <MenuItem Header="Copy view image as...">
+                            <MenuItem Header="Copy as emf"
+                                      Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                                      CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                            <MenuItem Header="Copy as png"
+                                      Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
+                                      CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
                         </MenuItem>
                     </ContextMenu>
                 </chart:MultiChart.ContextMenu>
@@ -225,7 +263,7 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Grid>
+                                <Grid ClipToBounds="True">
                                     <chart:LineChartControl ItemsSource="{Binding ChromatogramPeaks}"
                                                             LinePen="{Binding LinePen}"
                                                             HorizontalPropertyName="{Binding DataContext.HorizontalProperty, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
@@ -242,15 +280,20 @@
                                     <chart:Annotator ItemsSource="{Binding Peaks}"
                                                      HorizontalPropertyName="Top.Time"
                                                      VerticalPropertyName="Top.Intensity"
-                                                     LabelPropertyName="Top.Time"
+                                                     LabelPropertyName="Label"
                                                      Overlap="Direct"
-                                                     IsHitTestVisible="False"/>
+                                                     IsHitTestVisible="False">
+                                        <chart:Annotator.RenderTransform>
+                                            <TranslateTransform Y="-30"/>
+                                        </chart:Annotator.RenderTransform>
+                                    </chart:Annotator>
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                     <chart:RangeSelector SelectedRange="{Binding ProductIonRange.Value, Mode=TwoWay}"
-                                         Background="Transparent"/>
+                                         Background="Transparent"
+                                         ClipToBounds="True"/>
                 </Grid>
                 <chart:SimpleChartControl.ContextMenu>
                     <ContextMenu>
@@ -269,6 +312,22 @@
                             <MenuItem Header="Copy as png"
                                       Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
                                       CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        </MenuItem>
+                        <MenuItem Header="Save view image as...">
+                            <MenuItem Header="Save as emf"
+                                      Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                                      CommandParameter="{Binding ElementName=AccumulatedMs2SpectrumView}"/>
+                            <MenuItem Header="Save as png"
+                                      Command="{x:Static io:SaveImageAsCommand.PngInstance}"
+                                      CommandParameter="{Binding ElementName=AccumulatedMs2SpectrumView}"/>
+                        </MenuItem>
+                        <MenuItem Header="Copy view image as...">
+                            <MenuItem Header="Copy as emf"
+                                      Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                                      CommandParameter="{Binding ElementName=CheckChromatogramsView}"/>
+                            <MenuItem Header="Copy as png"
+                                      Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
+                                      CommandParameter="{Binding ElementName=CheckChromatogramsView}"/>
                         </MenuItem>
                     </ContextMenu>
                 </chart:SimpleChartControl.ContextMenu>
