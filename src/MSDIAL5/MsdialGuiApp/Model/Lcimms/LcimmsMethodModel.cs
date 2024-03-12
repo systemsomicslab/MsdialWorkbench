@@ -23,8 +23,11 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -179,6 +182,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         public override async Task RunAsync(ProcessOption processOption, CancellationToken token) {
+
+            var parameter = Storage.Parameter;
+            var starttimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
+            var stopwatch = Stopwatch.StartNew();
+
             // Set analysis param
             var annotationProcess = BuildAnnotationProcess();
 
@@ -205,6 +213,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     return;
                 }
             }
+            stopwatch.Stop();
+            var ts = stopwatch.Elapsed;
+            AutoParametersSave(starttimestamp, ts, parameter);
 
             await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
         }

@@ -97,7 +97,11 @@ namespace CompMs.MsdialGcMsApi.Process
             var provider = _providerFactory.Create(analysisFile);
             token.ThrowIfCancellationRequested();
             var spectraTask = provider.LoadMsSpectrumsAsync(token);
+            var chromPeakFeatures = await analysisFile.LoadChromatogramPeakFeatureCollectionAsync();
             var mSDecResults = analysisFile.LoadMsdecResultWithAnnotationInfo();
+
+            SetRetentionIndex(chromPeakFeatures.Items, riHandler);
+            SetRetentionIndex(mSDecResults, riHandler);
 
             // annotations
             Console.WriteLine("Annotation started");
@@ -110,6 +114,7 @@ namespace CompMs.MsdialGcMsApi.Process
             SetRetentionIndex(spectrumFeatureCollection, riHandler);
 
             // save
+            await chromPeakFeatures.SerializeAsync(analysisFile, token);
             analysisFile.SaveMsdecResultWithAnnotationInfo(mSDecResults);
             analysisFile.SaveSpectrumFeatures(spectrumFeatureCollection);
             reportAction?.Invoke((int)PROCESS_END);

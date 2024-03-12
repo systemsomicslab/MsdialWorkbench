@@ -21,8 +21,11 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -190,6 +193,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         public override async Task RunAsync(ProcessOption processOption, CancellationToken token) {
             // Set analysis param
             var parameter = _storage.Parameter;
+            var starttimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
+            var stopwatch = Stopwatch.StartNew();
             IAnnotationProcess annotationProcess;
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
                 annotationProcess = BuildProteoMetabolomicsAnnotationProcess();
@@ -223,12 +228,11 @@ namespace CompMs.App.Msdial.Model.Lcms
                 if (!ProcessAlignment(_storage))
                     return;
             }
+            stopwatch.Stop();
+            var ts = stopwatch.Elapsed;
+            AutoParametersSave(starttimestamp, ts, parameter);
 
             await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
-
-#if DEBUG
-            Console.WriteLine(string.Join("\n", _storage.Parameter.ParametersAsText()));
-#endif
         }
 
         private IAnnotationProcess BuildAnnotationProcess() {
