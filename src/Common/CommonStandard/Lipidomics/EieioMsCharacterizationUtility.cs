@@ -127,10 +127,10 @@ namespace CompMs.Common.Lipidomics
             { // chain cannot determine
                 converter = SPECIES_LEVEL;
             }
-            //else if (!result.IsDoubleBondIonsExisted)
-            //{ 
-            //    converter = POSITION_AND_DOUBLEBOND_LEVEL;
-            //}
+            else if (!result.IsDoubleBondIonsExisted)
+            {
+                converter = POSITION_LEVEL;
+            }
             else
             {// chain existed expected: FAHFA 18:1/18:0;O
                 converter = DOUBLEBONDPOSITION_LEVEL;
