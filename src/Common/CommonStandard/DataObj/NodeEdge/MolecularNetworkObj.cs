@@ -73,6 +73,7 @@ namespace CompMs.Common.DataObj.NodeEdge {
         public double matchpeakcount { get; set; }
         public string linecolor { get; set; }
         public string comment { get; set; }
+        public List<double> scores { get; set; }
     }
 
     public class Edge {

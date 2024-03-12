@@ -772,6 +772,31 @@ namespace CompMs.Common.Algorithm.Scoring {
             return new double[] { product / (product + scaler1 + scaler2), matchedPeaks.Count };
         }
 
+        public static double[] GetCosineScore(
+            IMSScanProperty prop1,
+            IMSScanProperty prop2,
+            double massTolerance = 0.05,
+            MassToleranceType massToleranceType = MassToleranceType.Da) {
+
+            var score = 0.0;
+            var matched = 0.0;
+            if (prop1.PrecursorMz < prop2.PrecursorMz) {
+                score = GetSimpleDotProduct(prop2, prop1, massTolerance, 0, Math.Min(prop1.PrecursorMz, prop2.PrecursorMz));
+                var matchedscores = GetMatchedPeaksScores(prop2, prop1, massTolerance, 0, Math.Min(prop1.PrecursorMz, prop2.PrecursorMz));
+                matched = matchedscores[1];
+            }
+            else {
+                score = GetSimpleDotProduct(prop1, prop2, massTolerance, 0, Math.Min(prop1.PrecursorMz, prop2.PrecursorMz));
+                var matchedscores = GetMatchedPeaksScores(prop1, prop2, massTolerance, 0, Math.Min(prop1.PrecursorMz, prop2.PrecursorMz));
+                matched = matchedscores[1];
+            }
+
+            if (matched == 0) {
+                return new double[] { 0, 0 };
+            }
+            return new double[] { score, matched };
+        }
+
         public static void SearchMatchedPeaks(
             List<SpectrumPeak> ePeaks,
             double ePrecursor, // small precursor

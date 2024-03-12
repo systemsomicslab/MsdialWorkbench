@@ -193,7 +193,7 @@ namespace CompMs.Common.Algorithm.Function
            double maxEdgeNumPerNode,
            double maxPrecursorDiff,
            double maxPrecursorDiff_Percent,
-           bool isBonanza,
+           MsmsSimilarityCalc msmsSimilarityCalc,
            Action<double> report) {
 
             var edges = new List<EdgeData>();
@@ -216,13 +216,29 @@ namespace CompMs.Common.Algorithm.Function
                     var prop2 = peaks2[j];
                     var massDiff = Math.Abs(prop1.PrecursorMz - prop2.PrecursorMz);
                     if (massDiff > maxPrecursorDiff) continue;
-                    double[] scoreitem = new double[2];
-                    if (isBonanza) {
-                        scoreitem = MsScanMatching.GetBonanzaScore(prop1, prop2, massTolerance);
+                    var scoreitem = new List<double>();
+                    if (msmsSimilarityCalc == MsmsSimilarityCalc.Bonanza) {
+                        scoreitem = MsScanMatching.GetBonanzaScore(prop1, prop2, massTolerance).ToList();
                     }
-                    else {
-                        scoreitem = MsScanMatching.GetModifiedDotProductScore(prop1, prop2, massTolerance);
+                    else if (msmsSimilarityCalc == MsmsSimilarityCalc.ModDot) {
+                        scoreitem = MsScanMatching.GetModifiedDotProductScore(prop1, prop2, massTolerance).ToList();
                     }
+                    else if (msmsSimilarityCalc == MsmsSimilarityCalc.Cosine) {
+                        scoreitem = MsScanMatching.GetCosineScore(prop1, prop2, massTolerance).ToList();
+                    } 
+                    else if (msmsSimilarityCalc == MsmsSimilarityCalc.All) {
+                        var score1 = MsScanMatching.GetBonanzaScore(prop1, prop2, massTolerance).ToList();
+                        var score2 = MsScanMatching.GetModifiedDotProductScore(prop1, prop2, massTolerance).ToList();
+                        var score3 = MsScanMatching.GetCosineScore(prop1, prop2, massTolerance).ToList();
+
+                        scoreitem.Add(score1[0]);
+                        scoreitem.Add(score1[1]);
+                        scoreitem.Add(score2[0]);
+                        scoreitem.Add(score2[1]);
+                        scoreitem.Add(score3[0]);
+                        scoreitem.Add(score3[1]);
+                    }
+
                     if (scoreitem[1] < minimumPeakMatch) continue;
                     if (scoreitem[0] < matchThreshold * 0.01) continue;
 
@@ -251,7 +267,8 @@ namespace CompMs.Common.Algorithm.Function
                     var target_node_id = peaks2[link.Index].ScanID;
 
                     var edge = new EdgeData() {
-                        score = link.Score[0], matchpeakcount = link.Score[1], source = source_node_id, target = target_node_id
+                        score = link.Score[0], matchpeakcount = link.Score[1], source = source_node_id, target = target_node_id,
+                        scores = link.Score
                     };
                     edges.Add(edge);
                 }
@@ -270,7 +287,7 @@ namespace CompMs.Common.Algorithm.Function
         }
 
         class LinkNode {
-            public double[] Score { get; set; }
+            public List<double> Score { get; set; } = new List<double>();
             public IMSScanProperty Node { get; set; }
             public int Index { get; set; }
         }

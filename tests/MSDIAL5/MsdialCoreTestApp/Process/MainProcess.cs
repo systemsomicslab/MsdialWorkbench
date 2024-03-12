@@ -19,6 +19,7 @@ namespace CompMs.App.MsdialConsole.Process {
             var isAif = false;
             var targetMz = -1.0f;
             var ionmode = "Positive";
+            var overwrite = false;
 
             for (int i = 1; i < args.Length; i++) {
                 if (args[i] == "-i" && i + 1 < args.Length) inputFolder = args[i + 1];
@@ -31,6 +32,12 @@ namespace CompMs.App.MsdialConsole.Process {
                     }
                 }
                 else if (args[i] == "-ionmode" && i + 1 < args.Length) ionmode = args[i + 1];
+                else if (args[i] == "-overwrite" && i + 1 < args.Length) {
+                    var booleanstring = args[i + 1];
+                    if (bool.TryParse(booleanstring, out bool isoverwirte)) {
+                        overwrite = isoverwirte;
+                    }
+                }
             }
             if (inputFolder == string.Empty || methodFile == string.Empty || outputFolder == string.Empty) return argsError();
             var analysisType = args[0];
@@ -47,7 +54,7 @@ namespace CompMs.App.MsdialConsole.Process {
                     case "imms":
                         return new ImmsProcess().Run(inputFolder, outputFolder, methodFile, isProjectStore, targetMz);
                     case "msn":
-                        return new MoleculerNetworkProcess().Run(inputFolder, outputFolder, methodFile, ionmode);
+                        return new MoleculerNetworkProcess().Run(inputFolder, outputFolder, methodFile, ionmode, overwrite);
                     default:
                         Console.WriteLine("Invalid analysis type. Valid options are: 'gcms', 'lcmsdda', 'lcmsdia', 'dims', 'imms'");
                         return -1;
