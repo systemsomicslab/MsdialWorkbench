@@ -128,11 +128,11 @@ namespace CompMs.Common.Lipidomics
                 converter = SPECIES_LEVEL;
             }
             else if (!result.IsDoubleBondIonsExisted)
-            {
+            {// chain existed expected: FAHFA 18:1/18:0;O
                 converter = POSITION_LEVEL;
             }
             else
-            {// chain existed expected: FAHFA 18:1/18:0;O
+            {// chain existed expected: FAHFA 18:1(9)/18:0;O
                 converter = DOUBLEBONDPOSITION_LEVEL;
             }
             return (molecule.Accept(converter, IdentityDecomposer<ILipid, ILipid>.Instance), new double[2] { result.TotalScore, result.TotalMatchedIonCount });
