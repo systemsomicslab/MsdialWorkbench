@@ -37,7 +37,7 @@ namespace CompMs.Common.Lipidomics
 
     public static class StandardMsCharacterizationUtility
     {
-        private readonly static IVisitor<ILipid, ILipid> SPECIES_LEVEL, POSITION_AND_DOUBLEBOND_LEVEL, POSITION_LEVEL, MOLECULAR_SPECIES_AND_DOUBLEBOND_LEVEL, MOLECULAR_SPECIES_LEVEL, CERAMIDE_POSITION_LEVEL;
+        private readonly static IVisitor<ILipid, ILipid> SPECIES_LEVEL, POSITION_AND_DOUBLEBOND_LEVEL, POSITION_LEVEL, MOLECULAR_SPECIES_AND_DOUBLEBOND_LEVEL, MOLECULAR_SPECIES_LEVEL, CERAMIDE_POSITION_LEVEL, DOUBLEBONDPOSITION_LEVEL;
 
         static StandardMsCharacterizationUtility()
         {
@@ -50,6 +50,11 @@ namespace CompMs.Common.Lipidomics
             director.SetDoubleBondPositionLevel();
             director.SetOxidizedPositionLevel();
             POSITION_AND_DOUBLEBOND_LEVEL = builder.Create();
+
+            director.SetPositionLevel();
+            director.SetDoubleBondPositionLevel();
+            director.SetOxidizedNumberLevel();
+            DOUBLEBONDPOSITION_LEVEL = builder.Create(); //fahfa
 
             director.SetPositionLevel();
             director.SetDoubleBondNumberLevel();
@@ -112,6 +117,23 @@ namespace CompMs.Common.Lipidomics
             }
             else {
                 converter = POSITION_AND_DOUBLEBOND_LEVEL;
+            }
+            return (molecule.Accept(converter, IdentityDecomposer<ILipid, ILipid>.Instance), new double[2] { result.TotalScore, result.TotalMatchedIonCount });
+        }
+        public static (ILipid, double[]) GetDefaultCharacterizationResultForFahfa(ILipid molecule, LipidMsCharacterizationResult result)
+        {
+            IVisitor<ILipid, ILipid> converter;
+            if (!result.IsChainIonsExisted)
+            { // chain cannot determine
+                converter = SPECIES_LEVEL;
+            }
+            //else if (!result.IsDoubleBondIonsExisted)
+            //{ 
+            //    converter = POSITION_AND_DOUBLEBOND_LEVEL;
+            //}
+            else
+            {// chain existed expected: FAHFA 18:1/18:0;O
+                converter = DOUBLEBONDPOSITION_LEVEL;
             }
             return (molecule.Accept(converter, IdentityDecomposer<ILipid, ILipid>.Instance), new double[2] { result.TotalScore, result.TotalMatchedIonCount });
         }

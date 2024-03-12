@@ -1468,7 +1468,7 @@ namespace CompMs.Common.Lipidomics
         {
 
             var totalCarbon = sn1Carbon + sn2Carbon;
-            var totalDB = sn1Double + sn2Double;
+            var totalDB = sn1Double + sn2Double + 1;
             var totalString = totalCarbon + ":" + totalDB + ";O";
             var totalName = lipidClass + " " + totalString;
 
@@ -8595,7 +8595,7 @@ AdductIon adduct)
 
                             var query = new List<SpectrumPeak>
                                         {
-                                        new SpectrumPeak() { Mass = NL_SN1, Intensity = 0.5 },
+                                        new SpectrumPeak() { Mass = NL_SN1, Intensity = 0.05 },
                                         new SpectrumPeak() { Mass = NL_SN1_header, Intensity = 5.0 },
                                         };
 
@@ -8607,7 +8607,7 @@ AdductIon adduct)
                             {
                                 var molecule = new LipidMolecule();
                                 molecule = LipidMsmsCharacterizationUtility.getFahfaMoleculeObjAsLevel2_0("DMEDFAHFA", LbmClass.DMEDFAHFA, sn1Carbon, sn1Double,
-                            sn2Carbon, sn2Double, averageIntensity);
+                                sn2Carbon, sn2Double, averageIntensity);
                                 candidates.Add(molecule);
                             }
                         }
