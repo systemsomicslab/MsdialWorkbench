@@ -227,16 +227,7 @@ namespace CompMs.Common.Algorithm.Function
                         scoreitem = MsScanMatching.GetCosineScore(prop1, prop2, massTolerance).ToList();
                     } 
                     else if (msmsSimilarityCalc == MsmsSimilarityCalc.All) {
-                        var score1 = MsScanMatching.GetBonanzaScore(prop1, prop2, massTolerance).ToList();
-                        var score2 = MsScanMatching.GetModifiedDotProductScore(prop1, prop2, massTolerance).ToList();
-                        var score3 = MsScanMatching.GetCosineScore(prop1, prop2, massTolerance).ToList();
-
-                        scoreitem.Add(score1[0]);
-                        scoreitem.Add(score1[1]);
-                        scoreitem.Add(score2[0]);
-                        scoreitem.Add(score2[1]);
-                        scoreitem.Add(score3[0]);
-                        scoreitem.Add(score3[1]);
+                        scoreitem = MsScanMatching.GetBonanzaModifiedDotCosineScores(prop1, prop2, massTolerance).ToList();
                     }
 
                     if (scoreitem[1] < minimumPeakMatch) continue;

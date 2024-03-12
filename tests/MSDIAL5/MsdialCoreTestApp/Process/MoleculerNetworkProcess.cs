@@ -114,7 +114,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                 if (edges.IsEmptyOrNull()) return;
                 var fedge = edges.FirstOrDefault();
                 if (fedge.scores.Count > 2) {
-                    sw.WriteLine("SourceID: {0}\tTargetID: {1}\tBonanzaScore\tBonanzaMatchPeakCount\tModDotScore\tModDotMatchPeakCount\tCosineScore\tCosineMatchPeakCount", inputA, inputB);
+                    sw.WriteLine("SourceID: {0}\tTargetID: {1}\tBonanzaScore\tMatchPeakCount\tModDotScore\tCosineScore", inputA, inputB);
                 }
                 else {
                     sw.WriteLine("SourceID: {0}\tTargetID: {1}\tSimilarityScore\tMatchPeakCount", inputA, inputB);
