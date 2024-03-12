@@ -21,8 +21,11 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -150,24 +153,40 @@ namespace CompMs.App.Msdial.Model.Gcms
         }
         private GcmsAlignmentModel? _selectedAlignmentModel;
 
-        public override Task RunAsync(ProcessOption option, CancellationToken token) {
+        public override async Task RunAsync(ProcessOption option, CancellationToken token) {
+            var parameter = _storage.Parameter;
+            var starttimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
+            var stopwatch = Stopwatch.StartNew();
             if (option.HasFlag(ProcessOption.PeakSpotting | ProcessOption.Identification)) {
                 if (!RunFromPeakSpotting()) {
-                    return Task.CompletedTask;
+                    return;
                 }
             }
             else if (option.HasFlag(ProcessOption.Identification)) {
                 if (!RunFromIdentification()) {
-                    return Task.CompletedTask;
+                    return;
                 }
             }
 
             if (option.HasFlag(ProcessOption.Alignment)) {
                 if (!RunAlignment()) {
-                    return Task.CompletedTask;
+                    return;
                 }
             }
-            return Task.CompletedTask;
+            await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
+
+            stopwatch.Stop();
+            var ts = stopwatch.Elapsed;
+            var elapsedTime = String.Format("{0}h{1}min{2}sec", ts.Hours, ts.Minutes, ts.Seconds);
+            var folderpath = parameter.ProjectFolderPath;
+            var endtimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
+            var output = Path.Combine(folderpath, Path.GetFileNameWithoutExtension(parameter.ProjectFileName) + "_param_" + endtimestamp + ".txt");
+            using (var sw = new StreamWriter(output, false, Encoding.ASCII)) {
+                sw.WriteLine("Start time stamp: {0}", starttimestamp);
+                sw.WriteLine("End time stamp: {0}", endtimestamp);
+                sw.WriteLine("Analysis time: {0}", elapsedTime);
+                sw.WriteLine(string.Join("\n", _storage.Parameter.ParametersAsText()));
+            };
         }
 
         private bool RunFromPeakSpotting() {
