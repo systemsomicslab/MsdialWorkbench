@@ -15,7 +15,10 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -56,6 +59,11 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         public StudyContextModel StudyContext { get; }
 
         public override async Task RunAsync(ProcessOption option, CancellationToken token) {
+
+            var parameter = _storage.Parameter;
+            var starttimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
+            var stopwatch = Stopwatch.StartNew();
+
             var files = AnalysisFileModelCollection.IncludedAnalysisFiles;
             if (option.HasFlag(ProcessOption.Identification | ProcessOption.PeakSpotting)) {
                 var processor = new FileProcess(_storage, null, null, _evaluator);
@@ -71,6 +79,10 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                     ImageModels.Add(new ImagingImmsImageModel(file, _storage, _evaluator, _providerFactory, _projectBaseParameter, _broker));
                 }
             }
+
+            stopwatch.Stop();
+            var ts = stopwatch.Elapsed;
+            AutoParametersSave(starttimestamp, ts, parameter);
             await LoadAnalysisFileAsync(files.FirstOrDefault(), token).ConfigureAwait(false);
         }
 

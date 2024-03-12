@@ -22,8 +22,11 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -143,6 +146,11 @@ namespace CompMs.App.Msdial.Model.Imms
         public StudyContextModel StudyContext { get; }
 
         public override Task RunAsync(ProcessOption option, CancellationToken token) {
+
+            var parameter = _storage.Parameter;
+            var starttimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
+            var stopwatch = Stopwatch.StartNew();
+
             // Run PeakPick and Identification
             if (option.HasFlag(ProcessOption.Identification | ProcessOption.PeakSpotting)) {
                 if (!ProcessPeakPickAndAnnotation(_storage)) {
@@ -159,6 +167,10 @@ namespace CompMs.App.Msdial.Model.Imms
                 if (!ProcessAlignment(_storage))
                     return Task.CompletedTask;
             }
+
+            stopwatch.Stop();
+            var ts = stopwatch.Elapsed;
+            AutoParametersSave(starttimestamp, ts, parameter);
 
             return LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token);
         }

@@ -228,20 +228,11 @@ namespace CompMs.App.Msdial.Model.Lcms
                 if (!ProcessAlignment(_storage))
                     return;
             }
-
-            await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
             stopwatch.Stop();
             var ts = stopwatch.Elapsed;
-            var elapsedTime = String.Format("{0}h{1}min{2}sec", ts.Hours, ts.Minutes, ts.Seconds);
-            var folderpath = parameter.ProjectFolderPath;
-            var endtimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
-            var output = Path.Combine(folderpath, Path.GetFileNameWithoutExtension(parameter.ProjectFileName) + "_param_" + endtimestamp + ".txt");
-            using (var sw = new StreamWriter(output, false, Encoding.ASCII)) {
-                sw.WriteLine("Start time stamp: {0}", starttimestamp);
-                sw.WriteLine("End time stamp: {0}", endtimestamp);
-                sw.WriteLine("Analysis time: {0}", elapsedTime);
-                sw.WriteLine(string.Join("\n", _storage.Parameter.ParametersAsText())); 
-            };
+            AutoParametersSave(starttimestamp, ts, parameter);
+
+            await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
         }
 
         private IAnnotationProcess BuildAnnotationProcess() {
