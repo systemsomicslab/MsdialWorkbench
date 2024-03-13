@@ -2,19 +2,17 @@
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.DataObj.Property;
-using CompMs.Common.DataObj.Result;
-using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Utility;
-using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CompMs.MsdialCore.Algorithm {
+namespace CompMs.MsdialCore.Algorithm
+{
 
     public class IsotopeTemp {
         public int WeightNumber { get; set; }
@@ -706,47 +704,6 @@ namespace CompMs.MsdialCore.Algorithm {
                 return "C" + carbonCount.ToString() + "H" + hCount.ToString();
             }
 
-        }
-
-        public void ResetAdductAndLink(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
-            foreach (var peak in chromPeakFeatures) {
-                var character = peak.PeakCharacter;
-                if (peak.MatchResults.IsReferenceMatched(evaluator)) {
-                    character.IsotopeParentPeakID = peak.PeakID;
-                    character.IsotopeWeightNumber = 0;
-                    foreach (var link in character.PeakLinks) {
-                        if (link.Character == PeakLinkFeatureEnum.Isotope) {
-                            chromPeakFeatures[link.LinkedPeakID].PeakCharacter.PeakLinks.RemoveAll(l => l.LinkedPeakID == peak.PeakID && l.Character == PeakLinkFeatureEnum.Isotope);
-                            chromPeakFeatures[link.LinkedPeakID].PeakCharacter.IsLinked = chromPeakFeatures[link.LinkedPeakID].PeakCharacter.PeakLinks.Count > 0;
-                        }
-                    }
-                    character.PeakLinks.RemoveAll(l => l.Character == PeakLinkFeatureEnum.Isotope);
-                    character.IsLinked = character.PeakLinks.Count > 0;
-                }
-                if (character.IsotopeWeightNumber > 0) {
-                    var parentID = character.IsotopeParentPeakID;
-                    var parentCharacter = chromPeakFeatures[parentID].PeakCharacter;
-                    if (parentCharacter.AdductType != null && parentCharacter.AdductType.FormatCheck) {
-                        peak.SetAdductType(parentCharacter.AdductType);
-                    }
-                    if (character.PeakLinks.All(n => n.LinkedPeakID != parentID || n.Character != PeakLinkFeatureEnum.Isotope)) {
-
-                        character.PeakLinks.Add(new LinkedPeakFeature() {
-                            LinkedPeakID = parentID,
-                            Character = PeakLinkFeatureEnum.Isotope
-                        });
-                        character.IsLinked = true;
-
-                        if (parentCharacter.PeakLinks.All(n => n.LinkedPeakID != peak.PeakID || n.Character != PeakLinkFeatureEnum.Isotope)) {
-                            parentCharacter.PeakLinks.Add(new LinkedPeakFeature() {
-                                LinkedPeakID = peak.PeakID,
-                                Character = PeakLinkFeatureEnum.Isotope
-                            });
-                            parentCharacter.IsLinked = true;
-                        }
-                    }
-                }
-            }
         }
     }
 }

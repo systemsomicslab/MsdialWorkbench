@@ -26,6 +26,7 @@ namespace CompMs.MsdialCore.Export.Tests
             "Scan",
             "Height",
             "Area",
+            "Model masses",
             "Adduct",
             "Isotope",
             "Comment",

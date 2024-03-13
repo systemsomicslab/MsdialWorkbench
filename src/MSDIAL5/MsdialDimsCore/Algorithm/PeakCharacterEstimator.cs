@@ -36,7 +36,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
 
             // collecting the same RT region spots
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.PeakID).ToList();
-            new IsotopeEstimator().ResetAdductAndLink(chromPeakFeatures, evaluator);
+            new MsdialCore.Algorithm.PeakCharacterEstimator(0d, 100d).ResetAdductAndLink(chromPeakFeatures, evaluator);
 
             CharacterAssigner(file, chromPeakFeatures, provider, msdecResults, evaluator, parameter);
             ReportProgress.Show(InitialProgress, ProgressMax, chromPeakFeatures.Count, chromPeakFeatures.Count, reportAction);

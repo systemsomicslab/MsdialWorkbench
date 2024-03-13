@@ -54,7 +54,7 @@ namespace CompMs.MsdialCore.Algorithm
 
             // collecting the same RT region spots
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.PeakID).ToList();
-            new IsotopeEstimator().ResetAdductAndLink(chromPeakFeatures, evaluator);
+            ResetAdductAndLink(chromPeakFeatures, evaluator);
 
             RawSpectra rawSpectra = new RawSpectra(provider, parameter.IonMode, file.AcquisitionType);
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.Mass).ToList();
@@ -132,6 +132,47 @@ namespace CompMs.MsdialCore.Algorithm
             }
             if (frag == true) return false;
             else return true;
+        }
+
+        public void ResetAdductAndLink(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+            foreach (var peak in chromPeakFeatures) {
+                var character = peak.PeakCharacter;
+                if (peak.MatchResults.IsReferenceMatched(evaluator)) {
+                    character.IsotopeParentPeakID = peak.PeakID;
+                    character.IsotopeWeightNumber = 0;
+                    foreach (var link in character.PeakLinks) {
+                        if (link.Character == PeakLinkFeatureEnum.Isotope) {
+                            chromPeakFeatures[link.LinkedPeakID].PeakCharacter.PeakLinks.RemoveAll(l => l.LinkedPeakID == peak.PeakID && l.Character == PeakLinkFeatureEnum.Isotope);
+                            chromPeakFeatures[link.LinkedPeakID].PeakCharacter.IsLinked = chromPeakFeatures[link.LinkedPeakID].PeakCharacter.PeakLinks.Count > 0;
+                        }
+                    }
+                    character.PeakLinks.RemoveAll(l => l.Character == PeakLinkFeatureEnum.Isotope);
+                    character.IsLinked = character.PeakLinks.Count > 0;
+                }
+                if (character.IsotopeWeightNumber > 0) {
+                    var parentID = character.IsotopeParentPeakID;
+                    var parentCharacter = chromPeakFeatures[parentID].PeakCharacter;
+                    if (parentCharacter.AdductType != null && parentCharacter.AdductType.FormatCheck) {
+                        peak.SetAdductType(parentCharacter.AdductType);
+                    }
+                    if (character.PeakLinks.All(n => n.LinkedPeakID != parentID || n.Character != PeakLinkFeatureEnum.Isotope)) {
+
+                        character.PeakLinks.Add(new LinkedPeakFeature() {
+                            LinkedPeakID = parentID,
+                            Character = PeakLinkFeatureEnum.Isotope
+                        });
+                        character.IsLinked = true;
+
+                        if (parentCharacter.PeakLinks.All(n => n.LinkedPeakID != peak.PeakID || n.Character != PeakLinkFeatureEnum.Isotope)) {
+                            parentCharacter.PeakLinks.Add(new LinkedPeakFeature() {
+                                LinkedPeakID = peak.PeakID,
+                                Character = PeakLinkFeatureEnum.Isotope
+                            });
+                            parentCharacter.IsLinked = true;
+                        }
+                    }
+                }
+            }
         }
 
         private void SearchedAdductInitialize(ParameterBase param) {
