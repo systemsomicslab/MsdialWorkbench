@@ -23,8 +23,6 @@ namespace CompMs.MsdialCore.Algorithm {
 
     public sealed class IsotopeEstimator
     {
-        private IsotopeEstimator() { }
-
         /// <summary>
         /// This method tries to decide if the detected peak is the isotopic ion or not.
         /// The peaks less than the abundance of the mono isotopic ion will be assigned to the isotopic ions within the same data point.
@@ -705,6 +703,18 @@ namespace CompMs.MsdialCore.Algorithm {
                 return "C" + carbonCount.ToString() + "H" + hCount.ToString();
             }
 
+        }
+
+        public void ResetAdductAndLink(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures) {
+            throw new NotImplementedException();
+        }
+
+        public void SetAdductByParent(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures) {
+            throw new NotImplementedException();
+        }
+
+        public void ResetIsotopeNumber(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeature) {
+            throw new NotImplementedException();
         }
     }
 }
