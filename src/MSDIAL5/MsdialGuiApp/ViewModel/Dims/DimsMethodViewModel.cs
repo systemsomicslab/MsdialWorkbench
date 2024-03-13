@@ -114,7 +114,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 },
                 new MsdialAnalysisMassBankRecordExportModel(container.Parameter.ProjectParam, _model.StudyContext),
             };
-            var model = new AnalysisResultExportModel(_model.AnalysisFileModelCollection, _model.Storage.Parameter.ProjectParam.ProjectFolderPath, models);
+            var model = new AnalysisResultExportModel(_model.AnalysisFileModelCollection, _model.Storage.Parameter.ProjectParam.ProjectFolderPath, _broker, models);
             using (var vm = new AnalysisResultExportViewModel(model)) {
                 _broker.Publish(vm);
             }

@@ -318,7 +318,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 },
                 new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam, StudyContext),
             };
-            return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, models);
+            return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, _broker, models);
         }
 
         public CheckChromatogramsModel? PrepareChromatograms(bool tic, bool bpc, bool highestEic) {

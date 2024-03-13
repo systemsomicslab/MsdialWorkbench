@@ -308,7 +308,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 //},
                 // new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam, _studyContext),
             };
-            return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, models);
+            return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, _broker, models);
         }
 
         public AlignmentResultExportModel AlignmentResultExportModel { get; }

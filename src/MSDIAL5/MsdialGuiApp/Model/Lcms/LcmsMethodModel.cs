@@ -383,7 +383,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 },
                 new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam, _studyContext),
             };
-            return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, models);
+            return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, _broker, models);
         }
 
         public CheckChromatogramsModel? ShowChromatograms(bool tic = false, bool bpc = false, bool highestEic = false) {
