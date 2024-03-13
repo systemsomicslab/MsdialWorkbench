@@ -54,7 +54,7 @@ namespace CompMs.MsdialCore.Algorithm
 
             // collecting the same RT region spots
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.PeakID).ToList();
-            Initialization(chromPeakFeatures);
+            new IsotopeEstimator().ResetAdductAndLink(chromPeakFeatures, evaluator);
 
             RawSpectra rawSpectra = new RawSpectra(provider, parameter.IonMode, file.AcquisitionType);
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.Mass).ToList();
@@ -132,36 +132,6 @@ namespace CompMs.MsdialCore.Algorithm
             }
             if (frag == true) return false;
             else return true;
-        }
-
-
-        private void Initialization(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures) {
-            foreach (var peak in chromPeakFeatures) {
-                var character = peak.PeakCharacter;
-                if (character.IsotopeWeightNumber > 0) {
-                    var parentID = character.IsotopeParentPeakID;
-                    var parentCharacter = chromPeakFeatures[parentID].PeakCharacter;
-                    if (parentCharacter.AdductType != null && parentCharacter.AdductType.FormatCheck) {
-                        peak.SetAdductType(parentCharacter.AdductType);
-                    }
-                    if (character.PeakLinks.Count(n => n.LinkedPeakID == parentID &&
-                        n.Character == PeakLinkFeatureEnum.Isotope) == 0) {
-
-                        character.PeakLinks.Add(new LinkedPeakFeature() {
-                            LinkedPeakID = parentID,
-                            Character = PeakLinkFeatureEnum.Isotope
-                        });
-                        character.IsLinked = true;
-
-                        if (parentCharacter.PeakLinks.Count(n => n.LinkedPeakID == peak.PeakID && n.Character == PeakLinkFeatureEnum.Isotope) == 0) {
-                            parentCharacter.PeakLinks.Add(new LinkedPeakFeature() {
-                                LinkedPeakID = peak.PeakID,
-                                Character = PeakLinkFeatureEnum.Isotope
-                            });
-                        }
-                    }
-                }
-            }
         }
 
         private void SearchedAdductInitialize(ParameterBase param) {

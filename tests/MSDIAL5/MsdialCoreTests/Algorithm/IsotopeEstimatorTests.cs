@@ -5,6 +5,7 @@ using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Parser;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -1043,48 +1044,49 @@ public class IsotopeEstimatorTests
         var peaks = new[]
         {
             new ChromatogramPeakFeature {
-                MasterPeakID = 0, PeakFeature = new BaseChromatogramPeakFeature { Mass = 50d, }, AdductType = hadduct,
-                PeakCharacter = new IonFeatureCharacter { AdductType = hadduct, IsotopeWeightNumber = 0, AdductParent = 0, IsLinked = false, PeakLinks = [], } },
+                MasterPeakID = 0, PeakID = 0, PeakFeature = new BaseChromatogramPeakFeature { Mass = 50d, }, AdductType = hadduct,
+                PeakCharacter = new IonFeatureCharacter { AdductType = hadduct, IsotopeWeightNumber = 0, IsotopeParentPeakID = 0, IsLinked = false, PeakLinks = [], } },
             new ChromatogramPeakFeature {
-                MasterPeakID = 1, PeakFeature = new BaseChromatogramPeakFeature { Mass = 100d, }, AdductType = hadduct,
-                PeakCharacter = new IonFeatureCharacter { AdductType = hadduct, IsotopeWeightNumber = 0, AdductParent = 1, IsLinked = false, PeakLinks = [], } },
+                MasterPeakID = 1, PeakID = 1, PeakFeature = new BaseChromatogramPeakFeature { Mass = 100d, }, AdductType = hadduct,
+                PeakCharacter = new IonFeatureCharacter { AdductType = hadduct, IsotopeWeightNumber = 0, IsotopeParentPeakID = 1, IsLinked = false, PeakLinks = [], } },
             new ChromatogramPeakFeature {
-                MasterPeakID = 2, PeakFeature = new BaseChromatogramPeakFeature { Mass = 101d, }, AdductType = hadduct,
-                PeakCharacter = new IonFeatureCharacter { AdductType = hadduct, IsotopeWeightNumber = 1, AdductParent = 1, IsLinked = false, PeakLinks = [], } },
+                MasterPeakID = 2, PeakID = 2, PeakFeature = new BaseChromatogramPeakFeature { Mass = 101d, }, AdductType = hadduct,
+                PeakCharacter = new IonFeatureCharacter { AdductType = hadduct, IsotopeWeightNumber = 1, IsotopeParentPeakID = 1, IsLinked = false, PeakLinks = [], } },
             new ChromatogramPeakFeature {
-                MasterPeakID = 3, PeakFeature = new BaseChromatogramPeakFeature { Mass = 102d, }, AdductType = nh4adduct,
-                PeakCharacter = new IonFeatureCharacter { AdductType = nh4adduct, IsotopeWeightNumber = 2, AdductParent = 1, IsLinked = false, PeakLinks = [], } },
+                MasterPeakID = 3, PeakID = 3, PeakFeature = new BaseChromatogramPeakFeature { Mass = 102d, }, AdductType = nh4adduct,
+                PeakCharacter = new IonFeatureCharacter { AdductType = nh4adduct, IsotopeWeightNumber = 2, IsotopeParentPeakID = 1, IsLinked = false, PeakLinks = [], } },
             new ChromatogramPeakFeature {
-                MasterPeakID = 4, PeakFeature = new BaseChromatogramPeakFeature { Mass = 103d, }, AdductType = hadduct,
-                PeakCharacter = new IonFeatureCharacter { AdductType = hadduct, IsotopeWeightNumber = 3, AdductParent = 1, IsLinked = false, PeakLinks = [], } },
+                MasterPeakID = 4, PeakID = 4, PeakFeature = new BaseChromatogramPeakFeature { Mass = 103d, }, AdductType = hadduct,
+                PeakCharacter = new IonFeatureCharacter { AdductType = hadduct, IsotopeWeightNumber = 3, IsotopeParentPeakID = 1, IsLinked = false, PeakLinks = [], } },
             new ChromatogramPeakFeature {
-                MasterPeakID = 5, PeakFeature = new BaseChromatogramPeakFeature { Mass = 104d, }, AdductType = hadduct,
-                PeakCharacter = new IonFeatureCharacter { AdductType = hadduct, IsotopeWeightNumber = 4, AdductParent = 1, IsLinked = false, PeakLinks = [], } },
+                MasterPeakID = 5, PeakID = 5, PeakFeature = new BaseChromatogramPeakFeature { Mass = 104d, }, AdductType = hadduct,
+                PeakCharacter = new IonFeatureCharacter { AdductType = hadduct, IsotopeWeightNumber = 4, IsotopeParentPeakID = 1, IsLinked = false, PeakLinks = [], } },
         };
         peaks[3].MatchResults.AddResult(new MsScanMatchResult() { IsReferenceMatched = true });
 
-        estimator.ResetIsotopeNumber(peaks);
+        var evaluator = new MsScanMatchResultEvaluator(new Common.Parameter.MsRefSearchParameterBase());
+        estimator.ResetAdductAndLink(peaks, evaluator);
 
         var expects = new[]
         {
             new ChromatogramPeakFeature {
-                MasterPeakID = 0, PeakFeature = new BaseChromatogramPeakFeature { Mass = 50d, }, AdductType = hadduct,
-                PeakCharacter = new IonFeatureCharacter { AdductType = hadduct, IsotopeWeightNumber = 0, AdductParent = 0, IsLinked = false, PeakLinks = [], } },
+                MasterPeakID = 0, PeakID = 0, PeakFeature = new BaseChromatogramPeakFeature { Mass = 50d, }, AdductType = hadduct,
+                PeakCharacter = new IonFeatureCharacter { AdductType = hadduct, IsotopeWeightNumber = 0, IsotopeParentPeakID = 0, IsLinked = false, PeakLinks = [], } },
             new ChromatogramPeakFeature {
-                MasterPeakID = 1, PeakFeature = new BaseChromatogramPeakFeature { Mass = 100d, }, AdductType = hadduct,
-                PeakCharacter = new IonFeatureCharacter { AdductType = hadduct, IsotopeWeightNumber = 0, AdductParent = 1, IsLinked = true, PeakLinks = [ new() { LinkedPeakID = 2, Character = PeakLinkFeatureEnum.Isotope, }, ], } },
+                MasterPeakID = 1, PeakID = 1, PeakFeature = new BaseChromatogramPeakFeature { Mass = 100d, }, AdductType = hadduct,
+                PeakCharacter = new IonFeatureCharacter { AdductType = hadduct, IsotopeWeightNumber = 0, IsotopeParentPeakID = 1, IsLinked = true, PeakLinks = [ new() { LinkedPeakID = 2, Character = PeakLinkFeatureEnum.Isotope, }, new() { LinkedPeakID = 4, Character = PeakLinkFeatureEnum.Isotope, }, new() { LinkedPeakID = 5, Character = PeakLinkFeatureEnum.Isotope, }, ], } },
             new ChromatogramPeakFeature {
-                MasterPeakID = 2, PeakFeature = new BaseChromatogramPeakFeature { Mass = 101d, }, AdductType = hadduct,
-                PeakCharacter = new IonFeatureCharacter { AdductType = hadduct, IsotopeWeightNumber = 1, AdductParent = 1, IsLinked = true, PeakLinks = [ new() { LinkedPeakID = 1, Character = PeakLinkFeatureEnum.Isotope, }, ], } },
+                MasterPeakID = 2, PeakID = 2, PeakFeature = new BaseChromatogramPeakFeature { Mass = 101d, }, AdductType = hadduct,
+                PeakCharacter = new IonFeatureCharacter { AdductType = hadduct, IsotopeWeightNumber = 1, IsotopeParentPeakID = 1, IsLinked = true, PeakLinks = [ new() { LinkedPeakID = 1, Character = PeakLinkFeatureEnum.Isotope, }, ], } },
             new ChromatogramPeakFeature {
-                MasterPeakID = 3, PeakFeature = new BaseChromatogramPeakFeature { Mass = 102d, }, AdductType = nh4adduct,
-                PeakCharacter = new IonFeatureCharacter { AdductType = nh4adduct, IsotopeWeightNumber = 0, AdductParent = 3, IsLinked = true, PeakLinks = [ new() { LinkedPeakID = 4, Character = PeakLinkFeatureEnum.Isotope, }, new() { LinkedPeakID = 5, Character = PeakLinkFeatureEnum.Isotope, }, ], } },
+                MasterPeakID = 3, PeakID = 3, PeakFeature = new BaseChromatogramPeakFeature { Mass = 102d, }, AdductType = nh4adduct,
+                PeakCharacter = new IonFeatureCharacter { AdductType = nh4adduct, IsotopeWeightNumber = 0, IsotopeParentPeakID = 3, IsLinked = false, PeakLinks = [], } },
             new ChromatogramPeakFeature {
-                MasterPeakID = 4, PeakFeature = new BaseChromatogramPeakFeature { Mass = 103d, }, AdductType = nh4adduct,
-                PeakCharacter = new IonFeatureCharacter { AdductType = nh4adduct, IsotopeWeightNumber = 1, AdductParent = 3, IsLinked = true, PeakLinks = [ new() { LinkedPeakID = 3, Character = PeakLinkFeatureEnum.Isotope, } ], } },
+                MasterPeakID = 4, PeakID = 4, PeakFeature = new BaseChromatogramPeakFeature { Mass = 103d, }, AdductType = hadduct,
+                PeakCharacter = new IonFeatureCharacter { AdductType = hadduct, IsotopeWeightNumber = 3, IsotopeParentPeakID = 1, IsLinked = true, PeakLinks = [ new() { LinkedPeakID = 1, Character = PeakLinkFeatureEnum.Isotope, } ], } },
             new ChromatogramPeakFeature {
-                MasterPeakID = 5, PeakFeature = new BaseChromatogramPeakFeature { Mass = 104d, }, AdductType = nh4adduct,
-                PeakCharacter = new IonFeatureCharacter { AdductType = nh4adduct, IsotopeWeightNumber = 2, AdductParent = 3, IsLinked = true, PeakLinks = [ new() { LinkedPeakID = 3, Character = PeakLinkFeatureEnum.Isotope, } ], } },
+                MasterPeakID = 5, PeakID = 5, PeakFeature = new BaseChromatogramPeakFeature { Mass = 104d, }, AdductType = hadduct,
+                PeakCharacter = new IonFeatureCharacter { AdductType = hadduct, IsotopeWeightNumber = 4, IsotopeParentPeakID = 1, IsLinked = true, PeakLinks = [ new() { LinkedPeakID = 1, Character = PeakLinkFeatureEnum.Isotope, } ], } },
         };
 
         Assert.AreEqual(expects.Length, peaks.Length);
@@ -1097,15 +1099,5 @@ public class IsotopeEstimatorTests
             CollectionAssert.AreEquivalent(expects[i].PeakCharacter.PeakLinks.Select(l => l.LinkedPeakID).ToArray(), peaks[i].PeakCharacter.PeakLinks.Select(l => l.LinkedPeakID).ToArray());
             CollectionAssert.AreEquivalent(expects[i].PeakCharacter.PeakLinks.Select(l => l.Character).ToArray(), peaks[i].PeakCharacter.PeakLinks.Select(l => l.Character).ToArray());
         }
-    }
-
-    [TestMethod()]
-    public void ResetIsotopeNumberTest() {
-        Assert.Fail();
-    }
-
-    [TestMethod()]
-    public void SetAdductByParentTest() {
-        Assert.Fail();
     }
 }
