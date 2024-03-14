@@ -817,4 +817,26 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="{x:Type ui:DockItemsControl}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ui:DockItemsControl}">
+                    <ContentControl Content="{Binding Path=Containers.Root, RelativeSource={RelativeSource TemplatedParent}}">
+                        <ContentControl.Resources>
+                            <DataTemplate DataType="{x:Type ui:ContainerOver}">
+                                <TabControl ItemsSource="{Binding Children}"/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type ui:ContainerSplit}">
+                                <ui:ResizableItemsControl Orientation="{Binding Orientation}" ItemsSource="{Binding Children}"/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type ui:ContainerLeaf}">
+                                <ContentPresenter Content="{Binding Content}"/>
+                            </DataTemplate>
+                        </ContentControl.Resources>
+                    </ContentControl>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

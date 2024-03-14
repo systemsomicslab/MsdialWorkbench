@@ -69,6 +69,7 @@ namespace ChartDrawingUiTest
                 typeof(NumericUpDownTest),
                 typeof(NestedProperties),
                 typeof(ResizableItemsControl),
+                typeof(DockItemsControl),
             };
             pageType = pages.ToDictionary(type => type.Name);
             names = pageType.Keys.ToList();
