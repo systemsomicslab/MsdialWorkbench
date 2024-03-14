@@ -308,7 +308,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 }
                 RtCorrectionCommon.SampleCellInfoListList.Add(l);
             }
-            CommonStdList = RetentionTimeCorrectionModelLegacy.MakeCommonStdList(this.AnalysisFiles, this.RtCorrectionCommon.StandardLibrary);
+            CommonStdList = RetentionTimeCorrectionMethod.MakeCommonStdList(this.AnalysisFiles, this.RtCorrectionCommon.StandardLibrary);
         }
 
         #endregion
@@ -590,13 +590,15 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             if (this.CheckBox_SkipCheck)
                 excuteNext(false);
 
-            CommonStdList = RetentionTimeCorrectionModelLegacy.MakeCommonStdList(this.AnalysisFiles, this.RtCorrectionCommon.StandardLibrary);
+            CommonStdList = RetentionTimeCorrectionMethod.MakeCommonStdList(this.AnalysisFiles, this.RtCorrectionCommon.StandardLibrary);
             if (isAfterRtTune) {
                 var NoHitCompList = CommonStdList.Where(x => x.NumHit == 0).Select(x => x.Reference).ToList();
                 ShowMessage_NoHitCompounds(NoHitCompList);
             }
 
-            RetentionTimeCorrectionModelLegacy.UpdateRtCorrectionBean(this.AnalysisFiles, this.parallelOptions, this.RtCorrectionParam, CommonStdList);
+            this.RtCorrectionCommon.CommonStdList = CommonStdList;
+
+            RetentionTimeCorrectionMethod.UpdateRtCorrectionBean(this.AnalysisFiles, this.parallelOptions, this.RtCorrectionParam, CommonStdList);
             CreateSampleList();
             OnPropertyChanged("SampleListVMs");
             Update_AllViewer();
@@ -607,7 +609,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             if (!Processed) { SetDemoData(); return; }
             this.RtWin.IsEnabled = false;
             Mouse.OverrideCursor = Cursors.Wait;
-            RetentionTimeCorrectionModelLegacy.UpdateRtCorrectionBean(this.AnalysisFiles, this.parallelOptions, this.RtCorrectionParam, CommonStdList);
+            RetentionTimeCorrectionMethod.UpdateRtCorrectionBean(this.AnalysisFiles, this.parallelOptions, this.RtCorrectionParam, CommonStdList);
             Update_AllViewer();
             Mouse.OverrideCursor = null;
             this.RtWin.IsEnabled = true;

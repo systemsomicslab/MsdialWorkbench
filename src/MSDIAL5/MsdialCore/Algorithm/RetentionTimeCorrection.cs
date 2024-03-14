@@ -30,8 +30,8 @@ namespace CompMs.MsdialCore.Algorithm {
 
             // original RT array
             var spectrumList = provider.LoadMsSpectrums();
-            var originalRTs = spectrumList.Select(x => x.ScanStartTime).ToArray();
-            return new RetentionTimeCorrectionBean() { StandardList = stdList, OriginalRt = originalRTs.ToList() };
+            var originalRTs = spectrumList.Select(x => x.ScanStartTime).ToList();
+            return new RetentionTimeCorrectionBean() { StandardList = stdList, OriginalRt = originalRTs };
         }
 
         private static List<StandardPair> GetStdPair(

@@ -62,8 +62,25 @@ namespace CompMs.MsdialCore.DataObj
             using (var stream = await streamManager.Create(MsdialSerializer.Combine(prefix, projectTitle)).ConfigureAwait(false)) {
                 var mspList = MspDB;
                 MspDB = new List<MoleculeMsReference>();
+
+                var rtCorreBeans = new List<RetentionTimeCorrectionBean>();
+                foreach (var file in this.AnalysisFiles) {
+                    rtCorreBeans.Add(file.RetentionTimeCorrectionBean);
+                    
+                    file.RetentionTimeCorrectionBean.OriginalRt = new List<double>();
+                    file.RetentionTimeCorrectionBean.RtDiff = new List<double>();
+                    file.RetentionTimeCorrectionBean.PredictedRt = new List<double>();
+                }
+
                 SaveMsdialDataStorageCore(stream);
                 MspDB = mspList;
+
+                for (int i = 0; i < rtCorreBeans.Count; i++) {
+                    var file = this.AnalysisFiles[i];
+                    file.RetentionTimeCorrectionBean.OriginalRt = rtCorreBeans[i].OriginalRt;
+                    file.RetentionTimeCorrectionBean.RtDiff = rtCorreBeans[i].RtDiff;
+                    file.RetentionTimeCorrectionBean.PredictedRt = rtCorreBeans[i].PredictedRt;
+                }
             }
 
         }
