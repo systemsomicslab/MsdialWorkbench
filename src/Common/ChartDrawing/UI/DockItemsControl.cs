@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -88,6 +89,8 @@ public class DockItemsControl : ItemsControl
         Leaves.Add(leaf4);
     }
 
+    private List<ContainerLeaf> Leaves { get; } = [];
+
     protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue) {
         base.OnItemsSourceChanged(oldValue, newValue);
         var idx = 0;
@@ -97,6 +100,21 @@ public class DockItemsControl : ItemsControl
                 break;
             }
             Leaves[idx++].Content = val;
+        }
+    }
+
+    private void OnItemsSourceCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
+        switch (e.Action) {
+            case NotifyCollectionChangedAction.Add:
+                break;
+            case NotifyCollectionChangedAction.Remove:
+                break;
+            case NotifyCollectionChangedAction.Move:
+                break;
+            case NotifyCollectionChangedAction.Replace:
+                break;
+            case NotifyCollectionChangedAction.Reset:
+                break;
         }
     }
 
@@ -113,8 +131,6 @@ public class DockItemsControl : ItemsControl
         get => (NodeContainers)GetValue(ContainersProperty);
         private set => SetValue(ContainersProperty, value);
     }
-
-    private List<ContainerLeaf> Leaves { get; } = [];
 }
 
 public interface IContainerNode {
