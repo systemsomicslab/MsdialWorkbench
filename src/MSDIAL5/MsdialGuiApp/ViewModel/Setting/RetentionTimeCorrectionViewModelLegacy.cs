@@ -323,11 +323,16 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         }
 
         private void excuteNext(bool obj) {
-            //if (!CheckBox_RunWithRtCorrection) {
-            //    foreach (var f in this.AnalysisFiles) {
-            //        f.RetentionTimeCorrectionBean = new RetentionTimeCorrectionBean();
-            //    }
-            //}
+            if (CheckBox_RunWithRtCorrection) {
+                foreach (var f in this.AnalysisFiles) {
+                    f.RetentionTimeCorrectionBean.StandardList.RemoveAll(pair => !pair.Reference.IsTargetMolecule);
+                }
+            }
+            else {
+                //foreach (var f in this.AnalysisFiles) {
+                //    f.RetentionTimeCorrectionBean = new RetentionTimeCorrectionBean();
+                //}
+            }
             Parameter.AdvancedProcessOptionBaseParam.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection = CheckBox_RunWithRtCorrection; 
             this.RtWin.DialogResult = true;
             this.RtWin.Close();

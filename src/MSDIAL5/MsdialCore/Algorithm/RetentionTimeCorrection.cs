@@ -1,26 +1,22 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 
-namespace CompMs.MsdialCore.Algorithm {
+namespace CompMs.MsdialCore.Algorithm
+{
     public static class RetentionTimeCorrection {
         public static void Execute(
             AnalysisFileBean analysisFile, ParameterBase param, IDataProvider provider) {
             var iStandardLibrary = param.RetentionTimeCorrectionCommon.StandardLibrary;
             var rtParam = param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam;
             analysisFile.RetentionTimeCorrectionBean = DetectStdPeaks(provider, param, iStandardLibrary, analysisFile, rtParam);
-            return;
         }
-
 
         public static RetentionTimeCorrectionBean DetectStdPeaks(IDataProvider provider, ParameterBase param,
             List<MoleculeMsReference> iStdLib, AnalysisFileBean property, RetentionTimeCorrectionParam rtParam) {
