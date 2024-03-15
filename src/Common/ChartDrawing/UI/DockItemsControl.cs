@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -133,6 +134,22 @@ public class DockItemsControl : ItemsControl
         get => (NodeContainers)GetValue(ContainersProperty);
         private set => SetValue(ContainersProperty, value);
     }
+
+    public Action<object, int, object, int> MoveNodeCallback => MoveNode;
+    
+    private void MoveNode(object srcCollection, int srcIndex, object dstCollection, int dstIndex) {
+        if (srcCollection is IContainerNodeCollection srcs && dstCollection is IContainerNodeCollection dsts) {
+            var node = srcs.ElementAt(srcIndex);
+            if (dstIndex < 0) {
+                dsts.Insert(node, dsts.Count);
+                srcs.Remove(node);
+            }
+            else {
+                Containers?.Move(node, dsts, dstIndex);
+            }
+        }
+    }
+
 }
 
 public interface IContainerNode {

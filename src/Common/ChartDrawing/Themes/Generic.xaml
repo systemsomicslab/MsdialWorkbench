@@ -4,6 +4,7 @@
                     xmlns:control="clr-namespace:CompMs.Graphics.Controls"
                     xmlns:ui="clr-namespace:CompMs.Graphics.UI"
                     xmlns:template="clr-namespace:CompMs.Graphics.Template"
+                    xmlns:mvvm="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
                     xmlns:converter="clr-namespace:CompMs.Graphics.Converter" 
                     xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior">
 
@@ -824,14 +825,18 @@
                 <ControlTemplate TargetType="{x:Type ui:DockItemsControl}">
                     <ContentControl Content="{Binding Path=Containers.Root, RelativeSource={RelativeSource TemplatedParent}}">
                         <ContentControl.Resources>
+                            <mvvm:BindingProxy x:Key="callback" Data="{Binding MoveNodeCallback, Mode=OneTime, RelativeSource={RelativeSource TemplatedParent}}"/>
                             <DataTemplate DataType="{x:Type ui:ContainerOver}">
-                                <TabControl ItemsSource="{Binding Children}"/>
+                                <TabControl ItemsSource="{Binding Children}"
+                                            behavior:MovableItemsControlBehavior.Collection="{Binding}"
+                                            behavior:MovableItemsControlBehavior.Callback="{Binding Data, Source={StaticResource callback}}"
+                                            AllowDrop="True"/>
                             </DataTemplate>
                             <DataTemplate DataType="{x:Type ui:ContainerSplit}">
                                 <ui:ResizableItemsControl Orientation="{Binding Orientation}" ItemsSource="{Binding Children}"/>
                             </DataTemplate>
                             <DataTemplate DataType="{x:Type ui:ContainerLeaf}">
-                                <ContentPresenter Content="{Binding Content}"/>
+                                <ContentPresenter Content="{Binding Content}" IsHitTestVisible="False"/>
                             </DataTemplate>
                         </ContentControl.Resources>
                     </ContentControl>
