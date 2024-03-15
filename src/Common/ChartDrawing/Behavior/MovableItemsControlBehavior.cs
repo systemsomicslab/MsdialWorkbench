@@ -86,7 +86,7 @@ public static class MovableItemsControlBehavior
             itemsControl.PreviewMouseLeftButtonUp += OnPreviewMouseLeftButtonUp;
             itemsControl.PreviewDragEnter += OnPreviewDragEnter;
             itemsControl.PreviewDragLeave += OnPreviewDragLeave;
-            itemsControl.PreviewDrop += OnPreviewDrop;
+            itemsControl.Drop += OnDrop;
         }
         else {
             itemsControl.PreviewMouseLeftButtonDown -= OnPreviewMouseLeftButtonDown;
@@ -94,7 +94,7 @@ public static class MovableItemsControlBehavior
             itemsControl.PreviewMouseLeftButtonUp -= OnPreviewMouseLeftButtonUp;
             itemsControl.PreviewDragEnter -= OnPreviewDragEnter;
             itemsControl.PreviewDragLeave -= OnPreviewDragLeave;
-            itemsControl.PreviewDrop -= OnPreviewDrop;
+            itemsControl.Drop -= OnDrop;
         }
     }
 
@@ -142,7 +142,7 @@ public static class MovableItemsControlBehavior
         }
     }
 
-    private static void OnPreviewDrop(object sender, DragEventArgs e) {
+    private static void OnDrop(object sender, DragEventArgs e) {
         if (_draggingData.IsDroppable) {
             var data = _draggingData;
             var itemsControl = sender as ItemsControl;
@@ -151,12 +151,13 @@ public static class MovableItemsControlBehavior
             var index = itemsControl.ItemContainerGenerator.IndexFromContainer(destinationContainer);
             if (destinationCollection is not null) {
                 GetCallback(itemsControl)?.Invoke(data.SourceCollection, data.SourceIndex, destinationCollection, index);
+                e.Handled = true;
             }
         }
     }
 
     private static FrameworkElement GetTemplatedRootElement(FrameworkElement element) {
-        var parent = element.TemplatedParent as FrameworkElement;
+        var parent = element;
         while (parent.TemplatedParent is not null) {
             parent = parent.TemplatedParent as FrameworkElement;
         }
