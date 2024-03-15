@@ -140,6 +140,9 @@ namespace CompMs.Graphics.UI
             }
 
             if (visualItem is not null && _grid is not null) {
+                if (index > _grid.Children.Count) {
+                    index = _grid.Children.Count;
+                }
                 switch (Orientation) {
                     case Orientation.Horizontal:
                         if (index % 2 == 0) {
