@@ -12,7 +12,27 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
         <ui:ResizableItemsControl ItemsSource="{Binding}" Orientation="Vertical" Grid.Column="0"/>
         <ui:ResizableItemsControl ItemsSource="{Binding}" Orientation="Horizontal" Grid.Column="1"/>
+
+        <ItemsControl ItemsSource="{Binding}" AlternationCount="100" Grid.Row="1" Grid.ColumnSpan="2">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <Button Content="{Binding}" ContentStringFormat="Add: {0}" Click="Add_Click" Margin="4" Tag="{TemplateBinding ItemsControl.AlternationIndex}"/>
+                        <Button Content="{Binding}" ContentStringFormat="Del: {0}" Click="Remove_Click" Margin="4" Tag="{TemplateBinding ItemsControl.AlternationIndex}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
 </Page>
