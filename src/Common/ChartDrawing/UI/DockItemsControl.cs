@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -137,13 +139,103 @@ public interface IContainerNode {
 
 }
 
+public interface IContainerNodeCollection : IContainerNode, IEnumerable<IContainerNode> {
+    int Count { get; }
+    void Insert(IContainerNode node, int index);
+    void Remove(IContainerNode node);
+}
+
 public sealed class NodeContainers {
     public IContainerNode? Root { get; set; }
 
+    public void Add(object item) {
+        var node = new ContainerLeaf
+        {
+            Content = item,
+            Width = new GridLength(1, GridUnitType.Star),
+            Height = new GridLength(1, GridUnitType.Star),
+        };
+        var collection = FindLastCollection();
+        if (collection is not null) {
+            collection.Insert(node, collection.Count);
+            return;
+        }
+        var root = new ContainerOver
+        {
+            Width = new GridLength(1, GridUnitType.Star),
+            Height = new GridLength(1, GridUnitType.Star),
+        };
+        if (Root is not null) {
+            root.Insert(Root, root.Count);
+        }
+        root.Insert(node, root.Count);
+    }
+
+    public void Insert(object item, IContainerNodeCollection parent, int index) {
+        var node = new ContainerLeaf
+        {
+            Content = item,
+            Width = new GridLength(1, GridUnitType.Star),
+            Height = new GridLength(1, GridUnitType.Star),
+        };
+        parent.Insert(node, index);
+    }
+
+    public void Move(IContainerNode node, IContainerNodeCollection parent, int index) {
+        var currentParent = FindParent(node);
+        if (currentParent is null) {
+            return;
+        }
+        parent.Insert(node, index);
+        currentParent.Remove(node);
+    }
+
+    public void Remove(IContainerNode node) {
+        var parent = FindParent(node);
+        if (parent is null) {
+            return;
+        }
+        parent.Remove(node);
+    }
+
+    private IContainerNodeCollection FindParent(IContainerNode node) {
+        return FindParent(node, Root as IContainerNodeCollection);
+    }
+
+    private IContainerNodeCollection? FindParent(IContainerNode node, IContainerNodeCollection? current) {
+        if (current is null) {
+            return null;
+        }
+        foreach (var next in current) {
+            if (next == node) {
+                return current;
+            }
+            var result = FindParent(node, next as IContainerNodeCollection);
+            if (result is not null) {
+                return result;
+            }
+        }
+        return null;
+    }
+
+    private IContainerNodeCollection? FindLastCollection() {
+        if (Root is IContainerNodeCollection root) {
+            return FindLastCollection(root);
+        }
+        return null;
+    }
+
+    private IContainerNodeCollection FindLastCollection(IContainerNodeCollection? current) {
+        foreach (var next in current.OfType<IContainerNodeCollection>().Reverse()) {
+            if (FindLastCollection(next) is IContainerNodeCollection found) {
+                return found;
+            }
+        }
+        return current;
+    }
 }
 
 internal sealed class ContainerLeaf : IContainerNode, INotifyPropertyChanged {
-    public List<IContainerNode> Children { get; } = [];
     public object? Content {
         get => _content;
         set {
@@ -180,9 +272,11 @@ internal sealed class ContainerLeaf : IContainerNode, INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
 }
 
-internal sealed class ContainerSplit : IContainerNode, IEnumerable<IContainerNode>, INotifyPropertyChanged
+internal sealed class ContainerSplit : IContainerNode, IContainerNodeCollection, IEnumerable<IContainerNode>, INotifyPropertyChanged
 {
-    public List<IContainerNode> Children { get; } = [];
+    public ObservableCollection<IContainerNode> Children { get; } = [];
+
+    public int Count => Children.Count;
 
     public Orientation Orientation {
         get => _orientation;
@@ -229,11 +323,23 @@ internal sealed class ContainerSplit : IContainerNode, IEnumerable<IContainerNod
         return ((IEnumerable)Children).GetEnumerator();
     }
 
+    public void Insert(IContainerNode node, int index) {
+        if ((uint)index <= Children.Count) {
+            Children.Insert(index, node);
+        }
+    }
+
+    public void Remove(IContainerNode node) {
+        Children.Remove(node);
+    }
+
     public event PropertyChangedEventHandler? PropertyChanged;
 }
 
-internal sealed class ContainerOver : IContainerNode, IEnumerable<IContainerNode>, INotifyPropertyChanged {
-    public List<IContainerNode> Children { get; } = [];
+internal sealed class ContainerOver : IContainerNode, IContainerNodeCollection, IEnumerable<IContainerNode>, INotifyPropertyChanged {
+    public ObservableCollection<IContainerNode> Children { get; } = [];
+
+    public int Count => Children.Count;
 
     public GridLength Width {
         get => _width;
@@ -267,6 +373,16 @@ internal sealed class ContainerOver : IContainerNode, IEnumerable<IContainerNode
 
     IEnumerator IEnumerable.GetEnumerator() {
         return ((IEnumerable)Children).GetEnumerator();
+    }
+
+    public void Insert(IContainerNode node, int index) {
+        if ((uint)index <= Children.Count) {
+            Children.Insert(index, node);
+        }
+    }
+
+    public void Remove(IContainerNode node) {
+        Children.Remove(node);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
