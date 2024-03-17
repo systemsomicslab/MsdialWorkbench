@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace CompMs.Graphics.UI;
 
@@ -44,6 +45,9 @@ public class DockItemsControl : ItemsControl
     static DockItemsControl() {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(DockItemsControl), new FrameworkPropertyMetadata(typeof(DockItemsControl)));
     }
+
+    public readonly static RoutedCommand SplitHorizontalCommand = new RoutedCommand(nameof(DockItemsControl), typeof(DockItemsControl));
+    public readonly static RoutedCommand SplitVerticalCommand = new RoutedCommand(nameof(DockItemsControl), typeof(DockItemsControl));
 
     public DockItemsControl()
     {
@@ -90,6 +94,9 @@ public class DockItemsControl : ItemsControl
         Leaves.Add(leaf2);
         Leaves.Add(leaf3);
         Leaves.Add(leaf4);
+
+        CommandBindings.Add(new CommandBinding(SplitHorizontalCommand, new ExecutedRoutedEventHandler(SplitHorizontal), CanSplitHorizontal));
+        CommandBindings.Add(new CommandBinding(SplitVerticalCommand, SplitVertical, CanSplitVertical));
     }
 
     private List<ContainerLeaf> Leaves { get; } = [];
@@ -147,9 +154,29 @@ public class DockItemsControl : ItemsControl
             else {
                 Containers?.Move(node, dsts, dstIndex);
             }
+            Containers?.Shrink();
         }
     }
 
+    private void SplitHorizontal(object sender, ExecutedRoutedEventArgs args) {
+        if (args.Parameter is IContainerNode node) {
+            Containers?.SplitHorizontal(node);
+        }
+    }
+
+    private void CanSplitHorizontal(object sender, CanExecuteRoutedEventArgs args) {
+        args.CanExecute = args.Parameter is IContainerNode;
+    }
+
+    private void SplitVertical(object sender, ExecutedRoutedEventArgs args) {
+        if (args.Parameter is IContainerNode node) {
+            Containers?.SplitVertical(node);
+        }
+    }
+
+    private void CanSplitVertical(object sender, CanExecuteRoutedEventArgs args) {
+        args.CanExecute = args.Parameter is IContainerNode;
+    }
 }
 
 public interface IContainerNode {
@@ -158,6 +185,7 @@ public interface IContainerNode {
 
 public interface IContainerNodeCollection : IContainerNode, IEnumerable<IContainerNode> {
     int Count { get; }
+    int IndexOf(IContainerNode node);
     void Insert(IContainerNode node, int index);
     void Remove(IContainerNode node);
 }
@@ -215,7 +243,140 @@ public sealed class NodeContainers {
         parent.Remove(node);
     }
 
-    private IContainerNodeCollection FindParent(IContainerNode node) {
+    public void SplitHorizontal(IContainerNode node) {
+        var parent = FindParent(node);
+        if (parent is not ContainerOver) {
+            return;
+        }
+        var grand = FindParent(parent);
+        if (grand is ContainerSplit grandSplit && grandSplit.Orientation == Orientation.Horizontal) {
+            var over = new ContainerOver
+            {
+                Width = new GridLength(1, GridUnitType.Star),
+                Height = new GridLength(1, GridUnitType.Star),
+            };
+            Move(node, over, over.Count);
+            grandSplit.Insert(over, grand.IndexOf(parent) + 1);
+            return;
+        }
+        if (grand is null) {
+            if (parent != Root) {
+                return;
+            }
+            var split = new ContainerSplit
+            {
+                Orientation = Orientation.Horizontal,
+                Width = new GridLength(1, GridUnitType.Star),
+                Height = new GridLength(1, GridUnitType.Star),
+            };
+            split.Add(parent);
+            var over = new ContainerOver
+            {
+                Width = new GridLength(1, GridUnitType.Star),
+                Height = new GridLength(1, GridUnitType.Star),
+            };
+            Move(node, over, over.Count);
+            split.Add(over);
+            Root = split;
+        }
+        else {
+            var split = new ContainerSplit
+            {
+                Orientation = Orientation.Horizontal,
+                Width = new GridLength(1, GridUnitType.Star),
+                Height = new GridLength(1, GridUnitType.Star),
+            };
+            var idx = grand.IndexOf(parent);
+            grand.Insert(split, idx);
+            Move(parent, split, split.Count);
+            var over = new ContainerOver
+            {
+                Width = new GridLength(1, GridUnitType.Star),
+                Height = new GridLength(1, GridUnitType.Star),
+            };
+            split.Add(over);
+            Move(node, over, over.Count);
+        }
+    }
+
+    public void SplitVertical(IContainerNode node) {
+        var parent = FindParent(node);
+        if (parent is not ContainerOver) {
+            return;
+        }
+        var grand = FindParent(parent);
+        if (grand is ContainerSplit grandSplit && grandSplit.Orientation == Orientation.Vertical) {
+            var over = new ContainerOver
+            {
+                Width = new GridLength(1, GridUnitType.Star),
+                Height = new GridLength(1, GridUnitType.Star),
+            };
+            Move(node, over, over.Count);
+            grandSplit.Insert(over, grand.IndexOf(parent) + 1);
+            return;
+        }
+        if (grand is null) {
+            if (parent != Root) {
+                return;
+            }
+            var split = new ContainerSplit
+            {
+                Orientation = Orientation.Vertical,
+                Width = new GridLength(1, GridUnitType.Star),
+                Height = new GridLength(1, GridUnitType.Star),
+            };
+            split.Add(parent);
+            var over = new ContainerOver
+            {
+                Width = new GridLength(1, GridUnitType.Star),
+                Height = new GridLength(1, GridUnitType.Star),
+            };
+            Move(node, over, over.Count);
+            split.Add(over);
+            Root = split;
+        }
+        else {
+            var split = new ContainerSplit
+            {
+                Orientation = Orientation.Vertical,
+                Width = new GridLength(1, GridUnitType.Star),
+                Height = new GridLength(1, GridUnitType.Star),
+            };
+            var idx = grand.IndexOf(parent);
+            grand.Insert(split, idx);
+            Move(parent, split, split.Count);
+            var over = new ContainerOver
+            {
+                Width = new GridLength(1, GridUnitType.Star),
+                Height = new GridLength(1, GridUnitType.Star),
+            };
+            split.Add(over);
+            Move(node, over, over.Count);
+        }
+    }
+
+    public void Shrink() {
+        if (Root is IContainerNodeCollection collection) {
+            ShrinkRec(collection);
+        }
+    }
+
+    private void ShrinkRec(IContainerNodeCollection collection) {
+        var unused = new List<IContainerNode>();
+        foreach (var node in collection) {
+            if (node is IContainerNodeCollection c) {
+                ShrinkRec(c);
+                if (c.Count == 0) {
+                    unused.Add(c);
+                }
+            }
+        }
+        foreach (var item in unused) {
+            collection.Remove(item);
+        }
+    }
+
+    private IContainerNodeCollection? FindParent(IContainerNode node) {
         return FindParent(node, Root as IContainerNodeCollection);
     }
 
@@ -350,6 +511,10 @@ internal sealed class ContainerSplit : IContainerNode, IContainerNodeCollection,
         Children.Remove(node);
     }
 
+    public int IndexOf(IContainerNode node) {
+        return Children.IndexOf(node);
+    }
+
     public event PropertyChangedEventHandler? PropertyChanged;
 }
 
@@ -400,6 +565,10 @@ internal sealed class ContainerOver : IContainerNode, IContainerNodeCollection, 
 
     public void Remove(IContainerNode node) {
         Children.Remove(node);
+    }
+
+    public int IndexOf(IContainerNode node) {
+        return Children.IndexOf(node);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

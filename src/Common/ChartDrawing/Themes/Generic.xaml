@@ -830,7 +830,24 @@
                                 <TabControl ItemsSource="{Binding Children}"
                                             behavior:MovableItemsControlBehavior.Collection="{Binding}"
                                             behavior:MovableItemsControlBehavior.Callback="{Binding Data, Source={StaticResource callback}}"
-                                            AllowDrop="True"/>
+                                            AllowDrop="True">
+                                    <TabControl.ItemContainerStyle>
+                                        <Style TargetType="TabItem">
+                                            <Setter Property="ContextMenu">
+                                                <Setter.Value>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="Split horizontal"
+                                                                  Command="{x:Static ui:DockItemsControl.SplitHorizontalCommand}"
+                                                                  CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                        <MenuItem Header="Split vertical"
+                                                                  Command="{x:Static ui:DockItemsControl.SplitVerticalCommand}"
+                                                                  CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                    </ContextMenu>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </TabControl.ItemContainerStyle>
+                                </TabControl>
                             </DataTemplate>
                             <DataTemplate DataType="{x:Type ui:ContainerSplit}">
                                 <ui:ResizableItemsControl Orientation="{Binding Orientation}" ItemsSource="{Binding Children}"/>
