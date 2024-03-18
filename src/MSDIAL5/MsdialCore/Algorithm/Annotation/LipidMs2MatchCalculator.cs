@@ -50,7 +50,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         bool IsOtherLipidMatch { get; }
     }
 
-    public sealed class LipidMs2MatchResult : SpectrumMatchResult, ILipidMatchResult
+    public sealed class LipidMs2MatchResult : Ms2MatchResult, ILipidMatchResult
     {
         public LipidMs2MatchResult(
             string name,

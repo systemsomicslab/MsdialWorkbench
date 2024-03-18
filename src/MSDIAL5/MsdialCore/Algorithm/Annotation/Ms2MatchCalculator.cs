@@ -7,9 +7,9 @@ using System.Collections.Generic;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public sealed class SpectrumMatchCalculator : IMatchScoreCalculator<IMSScanMatchQuery, IMSScanProperty, SpectrumMatchResult>
+    public sealed class Ms2MatchCalculator : IMatchScoreCalculator<IMSScanMatchQuery, IMSScanProperty, Ms2MatchResult>
     {
-        public SpectrumMatchResult Calculate(IMSScanMatchQuery query, IMSScanProperty reference) {
+        public Ms2MatchResult Calculate(IMSScanMatchQuery query, IMSScanProperty reference) {
             var weightedDotProduct = MsScanMatching.GetWeightedDotProduct(query.Scan, reference, query.Ms2Tolerance, query.Ms2RangeBegin, query.Ms2RangeEnd);
             var simpleDotProduct = MsScanMatching.GetSimpleDotProduct(query.Scan, reference, query.Ms2Tolerance, query.Ms2RangeBegin, query.Ms2RangeEnd);
             var reverseDotProduct = MsScanMatching.GetReverseDotProduct(query.Scan, reference, query.Ms2Tolerance, query.Ms2RangeBegin, query.Ms2RangeEnd);
@@ -20,7 +20,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 || reverseDotProduct == -1
                 || matchedPeaksScores[0] == -1
                 || matchedPeaksScores[1] == -1) {
-                return SpectrumMatchResult.Empty;
+                return Ms2MatchResult.Empty;
             }
 
             var isSpectrumMatch =
@@ -29,7 +29,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 && reverseDotProduct >= query.ReverseDotProductCutOff
                 && matchedPeaksScores[0] >= query.MatchedPeaksPercentageCutOff
                 && matchedPeaksScores[1] >= query.MinimumSpectrumMatch;
-            return new SpectrumMatchResult(
+            return new Ms2MatchResult(
                 weightedDotProduct, simpleDotProduct, reverseDotProduct,
                 matchedPeaksScores[0], (int)matchedPeaksScores[1],
                 isSpectrumMatch);
@@ -89,7 +89,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
     }
 
-    public interface ISpectrumMatchResult : IMatchResult
+    public interface IMs2MatchResult : IMatchResult
     {
         double WeightedDotProduct { get; }
         double SimpleDotProduct { get; }
@@ -100,7 +100,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         bool IsSpectrumMatch { get; }
     }
 
-    public class SpectrumMatchResult : ISpectrumMatchResult
+    public class Ms2MatchResult : IMs2MatchResult
     {
         public double WeightedDotProduct { get; }
         public double SimpleDotProduct { get; }
@@ -116,7 +116,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public bool IsSpectrumMatch { get; }
 
-        public SpectrumMatchResult(
+        public Ms2MatchResult(
             double weightedDotProduct, double simpleDotProduct, double reverseDotProduct,
             double matchedPeaksPercentage, int matchedPeaksCount,
             bool isSpectrumMatch) {
@@ -137,7 +137,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             result.IsSpectrumMatch = IsSpectrumMatch;
         }
 
-        public static SpectrumMatchResult Empty => empty ?? (empty = new SpectrumMatchResult(0, 0, 0, 0, 0, false));
-        private static SpectrumMatchResult empty;
+        public static Ms2MatchResult Empty => empty ?? (empty = new Ms2MatchResult(0, 0, 0, 0, 0, false));
+        private static Ms2MatchResult empty;
     }
 }
