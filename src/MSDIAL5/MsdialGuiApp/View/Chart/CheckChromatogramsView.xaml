@@ -159,7 +159,9 @@
                 </Grid>
                 <chart:SimpleChartControl.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Show spectrum"
+                        <MenuItem Header="Show ms spectrum"
+                                  Command="{Binding ShowAccumulatedMs1SpectrumCommand, Mode=OneTime}"/>
+                        <MenuItem Header="Show ms/ms spectrum"
                                   ItemsSource="{Binding AccumulatedMs2SpectrumViewModels.Value}">
                             <MenuItem.ItemTemplate>
                                 <DataTemplate>

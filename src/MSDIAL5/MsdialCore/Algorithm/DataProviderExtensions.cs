@@ -30,6 +30,32 @@ public static class DataProviderExtensions {
     }
 
     /// <summary>
+    /// Asynchronously loads MS1 spectra from the data provider that have a ScanStartTime within the specified retention time (RT) range.
+    /// This extension method filters the spectra based on their start times, returning only those within the given RT bounds.
+    /// </summary>
+    /// <param name="provider">The data provider instance on which the extension method operates. It provides access to the spectra data.</param>
+    /// <param name="start">The lower bound of the RT range, inclusive. Spectra with a ScanStartTime equal to or greater than this value are included in the result.</param>
+    /// <param name="end">The upper bound of the RT range, exclusive. Spectra with a ScanStartTime less than this value are included in the result.</param>
+    /// <param name="token">A cancellation token that can be used to request cancellation of the operation. It allows the asynchronous task to be cancelled partway through execution.</param>
+    /// <returns>A task representing the asynchronous operation. Upon completion, the task returns an array of <see cref="RawSpectrum"/> objects that fall within the specified RT range. These spectra are of type MS1, corresponding to the first stage of mass spectrometry analysis.</returns>
+    /// <remarks>
+    /// This method is useful for analyzing or processing subsets of spectra data based on their retention times, particularly in contexts where the temporal dimension of the data is of interest.
+    /// </remarks>
+    public static async Task<RawSpectrum[]> LoadMs1SpectraWithRtRangeAsync(this IDataProvider provider, double start, double end, CancellationToken token) {
+        var spectra = await provider.LoadMs1SpectrumsAsync(token).ConfigureAwait(false);
+        var lower = spectra.LowerBound(start, (t, s) => t.ScanStartTime.CompareTo(s));
+        var upper = lower;
+        while (upper < spectra.Count && spectra[upper].ScanStartTime < end) {
+            ++upper;
+        }
+        var result = new RawSpectrum[upper - lower];
+        for (int i = 0; i < result.Length; i++) {
+            result[i] = spectra[i + lower];
+        }
+        return result;
+    }
+
+    /// <summary>
     /// An extension method for IDataProvider to retrieve MS2 spectra that have a ScanStartTime within a specified range.
     /// </summary>
     /// <param name="provider">The data provider instance on which the extension method operates.</param>

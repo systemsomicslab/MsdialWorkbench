@@ -120,6 +120,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             _ticLoader = new TicLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
             _bpcLoader = new BpcLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
             _productIonChromatogramLoader = new ProductIonChromatogramLoader(new RawSpectra(provider.LoadMsNSpectrums(2), parameter.IonMode, analysisFileModel.File.AcquisitionType), parameter.ProjectParam.IonMode, chromatogramRange);
+            ExtractedIonChromatogramLoader = eicLoader;
             EicModel = new EicModel(Target, eicLoader) {
                 HorizontalTitle = PlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
@@ -266,6 +267,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public AccumulateSpectraUsecase AccumulateSpectraUsecase { get; }
 
+        public IWholeChromatogramLoader<MzRange> ExtractedIonChromatogramLoader { get; }
         public IWholeChromatogramLoader<(MzRange, MzRange)> ProductIonChromatogramLoader => _productIonChromatogramLoader;
 
         public LcmsCompoundSearchUsecase CompoundSearcher { get; }

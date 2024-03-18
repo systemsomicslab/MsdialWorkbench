@@ -103,6 +103,7 @@ namespace CompMs.App.Msdial.Model.Imms
             _ticLoader = new TicLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
             _bpcLoader = new BpcLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
             _productIonChromatogramLoader = new ProductIonChromatogramLoader(new RawSpectra(provider.LoadMsNSpectrums(2), parameter.IonMode, analysisFileModel.File.AcquisitionType), parameter.ProjectParam.IonMode, chromatogramRange);
+            ExtractedIonChromatogramLoader = eicLoader;
             EicModel = new EicModel(Target, eicLoader)
             {
                 HorizontalTitle = PlotModel.HorizontalTitle,
@@ -210,6 +211,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public ImmsCompoundSearchUsecase CompoundSearcher { get; }
 
+        public IWholeChromatogramLoader<MzRange> ExtractedIonChromatogramLoader { get; }
         public IWholeChromatogramLoader<(MzRange, MzRange)> ProductIonChromatogramLoader => _productIonChromatogramLoader;
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {

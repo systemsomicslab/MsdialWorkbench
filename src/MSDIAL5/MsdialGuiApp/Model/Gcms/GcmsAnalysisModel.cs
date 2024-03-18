@@ -246,6 +246,7 @@ namespace CompMs.App.Msdial.Model.Gcms
 
         public void SetUnknown() => _spectrumFeatures.SelectedSpectrum.Value?.SetUnknown(UndoManager);
 
+        public IWholeChromatogramLoader<MzRange> ExtractedIonChromatogramLoader => (IWholeChromatogramLoader<MzRange>)_eicLoader;
         public IWholeChromatogramLoader<(MzRange, MzRange)> ProductIonChromatogramLoader => _productIonChromatogramLoader;
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {

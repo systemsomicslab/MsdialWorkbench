@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
@@ -11,7 +12,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Loader
 {
-    public class EicLoader : IChromatogramLoader<ChromatogramPeakFeatureModel>, IWholeChromatogramLoader<(double mass, double tolerance)>
+    public class EicLoader : IChromatogramLoader<ChromatogramPeakFeatureModel>, IWholeChromatogramLoader<(double mass, double tolerance)>, IWholeChromatogramLoader<MzRange>
     {
         protected EicLoader(AnalysisFileBean file, IDataProvider provider, PeakPickBaseParameter peakPickParameter, IonMode ionMode, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd, bool isConstantRange = true) {
             this.provider = provider;
@@ -76,6 +77,10 @@ namespace CompMs.App.Msdial.Model.Loader
 
         DisplayChromatogram IWholeChromatogramLoader<(double mass, double tolerance)>.LoadChromatogram((double mass, double tolerance) state) {
             return new DisplayExtractedIonChromatogram(LoadEicCore(state.mass, state.tolerance), state.tolerance, _ionMode);
+        }
+
+        DisplayChromatogram IWholeChromatogramLoader<MzRange>.LoadChromatogram(MzRange state) {
+            return new DisplayExtractedIonChromatogram(LoadEicCore(state.Mz, state.Tolerance), state.Tolerance, _ionMode);
         }
 
         PeakChromatogram IChromatogramLoader<ChromatogramPeakFeatureModel>.EmptyChromatogram => new PeakChromatogram(new Chromatogram(Array.Empty<ValuePeak>(), chromXType, chromXUnit), null, string.Empty, Colors.Black);

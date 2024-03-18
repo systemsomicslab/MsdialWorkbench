@@ -249,7 +249,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             loadChromatogramsUsecase.InsertTic = tic;
             loadChromatogramsUsecase.InsertBpc = bpc;
             loadChromatogramsUsecase.InsertHighestEic = highestEic;
-            var model = new CheckChromatogramsModel(loadChromatogramsUsecase, analysisModel.AccumulateSpectraUsecase, null, _storage.Parameter.AdvancedProcessOptionBaseParam, analysisModel.ProductIonChromatogramLoader, _broker);
+            var model = new CheckChromatogramsModel(loadChromatogramsUsecase, analysisModel.AccumulateSpectraUsecase, null, _storage.Parameter.AdvancedProcessOptionBaseParam, analysisModel.ExtractedIonChromatogramLoader, analysisModel.ProductIonChromatogramLoader, _broker);
             model.Update();
             return model;
         }

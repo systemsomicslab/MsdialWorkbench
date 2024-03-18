@@ -27,16 +27,18 @@ internal sealed class CheckChromatogramsModel : BindableBase
     private readonly AccumulateSpectraUsecase _accumulateSpectra;
     private readonly ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? _compoundSearch;
     private readonly AdvancedProcessOptionBaseParameter _advancedProcessParameter;
+    private readonly IWholeChromatogramLoader<MzRange> _extractedIonChromatogramLoader;
     private readonly IWholeChromatogramLoader<(MzRange, MzRange)> _productIonChromatogramLoader;
     private readonly IMessageBroker _broker;
     private readonly List<PeakFeatureSearchValue> _displaySettingValueCandidates;
     private readonly ObservableCollection<PeakFeatureSearchValueModel> _displaySettingValues;
 
-    public CheckChromatogramsModel(LoadChromatogramsUsecase loadingChromatograms, AccumulateSpectraUsecase accumulateSpectra, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? compoundSearch, AdvancedProcessOptionBaseParameter advancedProcessParameter, IWholeChromatogramLoader<(MzRange, MzRange)> productIonChromatogramLoader, IMessageBroker broker) {
+    public CheckChromatogramsModel(LoadChromatogramsUsecase loadingChromatograms, AccumulateSpectraUsecase accumulateSpectra, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? compoundSearch, AdvancedProcessOptionBaseParameter advancedProcessParameter, IWholeChromatogramLoader<MzRange> extractedIonChromatogramLoader, IWholeChromatogramLoader<(MzRange, MzRange)> productIonChromatogramLoader, IMessageBroker broker) {
         LoadChromatogramsUsecase = loadingChromatograms ?? throw new ArgumentNullException(nameof(loadingChromatograms));
         _accumulateSpectra = accumulateSpectra;
         _compoundSearch = compoundSearch;
         _advancedProcessParameter = advancedProcessParameter;
+        _extractedIonChromatogramLoader = extractedIonChromatogramLoader;
         _productIonChromatogramLoader = productIonChromatogramLoader;
         _broker = broker;
         advancedProcessParameter.DiplayEicSettingValues ??= new List<PeakFeatureSearchValue>();
@@ -58,6 +60,17 @@ internal sealed class CheckChromatogramsModel : BindableBase
         private set => SetProperty(ref _rangeSelectableChromatogramModel, value);
     }
     private RangeSelectableChromatogramModel? _rangeSelectableChromatogramModel;
+
+    public AccumulatedMs1SpectrumModel? AccumulatedMs1SpectrumModel {
+        get => _accumulatedMs1SpectrumModel;
+        private set {
+            var prev = _accumulatedMs1SpectrumModel;
+            if (SetProperty(ref _accumulatedMs1SpectrumModel, value)) {
+                prev?.Dispose();
+            }
+        }
+    }
+    private AccumulatedMs1SpectrumModel? _accumulatedMs1SpectrumModel;
 
     public AccumulatedMs2SpectrumModel[] AccumulatedMs2SpectrumModels {
         get => _accumulatedMs2SpectrumModels;
@@ -91,6 +104,7 @@ internal sealed class CheckChromatogramsModel : BindableBase
         if (Chromatograms.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> axis) {
             axis.ChartMargin = new ConstantMargin(0, 60);
         }
+        AccumulatedMs1SpectrumModel = new AccumulatedMs1SpectrumModel(_accumulateSpectra, _extractedIonChromatogramLoader, _broker);
 
         if (_compoundSearch is not null) {
             RangeSelectableChromatogramModel = new RangeSelectableChromatogramModel(Chromatograms);
@@ -98,6 +112,14 @@ internal sealed class CheckChromatogramsModel : BindableBase
                 .OfType<DisplayExtractedIonChromatogram>()
                 .Select(c => new AccumulatedMs2SpectrumModel(c, _accumulateSpectra, _compoundSearch, _productIonChromatogramLoader, _broker))
                 .ToArray();
+        }
+    }
+
+    public async Task AccumulateAsync(CancellationToken token) {
+        if (RangeSelectableChromatogramModel is { MainRange: not null } && AccumulatedMs1SpectrumModel is not null) {
+            var range = RangeSelectableChromatogramModel.ConvertToRt(RangeSelectableChromatogramModel.MainRange);
+            var subs = RangeSelectableChromatogramModel.SubtractRanges.Select(r => RangeSelectableChromatogramModel.ConvertToRt(r)).ToArray();
+            await AccumulatedMs1SpectrumModel.CalculateMs1Async(range, subs, token).ConfigureAwait(false);
         }
     }
 
