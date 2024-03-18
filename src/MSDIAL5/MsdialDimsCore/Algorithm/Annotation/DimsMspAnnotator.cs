@@ -97,9 +97,9 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             => massCalculator ?? (massCalculator = new MassMatchCalculator());
         private static MassMatchCalculator massCalculator;
 
-        private static Ms2MatchCalculator Ms2Calculator
-            => ms2Calculator ?? (ms2Calculator = new Ms2MatchCalculator());
-        private static Ms2MatchCalculator ms2Calculator;
+        private static SpectrumMatchCalculator Ms2Calculator
+            => ms2Calculator ?? (ms2Calculator = new SpectrumMatchCalculator());
+        private static SpectrumMatchCalculator ms2Calculator;
         
         private static LipidMs2MatchCalculator LipidMs2Calculator
             => lipidMs2Calculator ?? (lipidMs2Calculator = new LipidMs2MatchCalculator());

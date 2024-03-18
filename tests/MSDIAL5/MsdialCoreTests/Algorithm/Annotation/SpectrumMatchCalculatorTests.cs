@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
 {
     [TestClass()]
-    public class Ms2MatchCalculatorTests
+    public class SpectrumMatchCalculatorTests
     {
         [TestMethod()]
         public void CalculateTest() {
@@ -48,7 +48,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 }
             };
 
-            var calculator = new Ms2MatchCalculator();
+            var calculator = new SpectrumMatchCalculator();
             var result = calculator.Calculate(new MSScanMatchQuery(target, parameter), reference);
 
             Assert.AreEqual(0.8547842944, result.WeightedDotProduct, 0.00001);
@@ -99,7 +99,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 }
             };
 
-            var calculator = new Ms2MatchCalculator();
+            var calculator = new SpectrumMatchCalculator();
 
             var result = calculator.Calculate(new MSScanMatchQuery(target, parameter), reference);
             Assert.IsTrue(result.IsSpectrumMatch);
