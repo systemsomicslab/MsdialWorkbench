@@ -128,6 +128,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
             this.RtWin = win;
             this.RtCorrectionCommon = param.RetentionTimeCorrectionCommon;
+            //this.RtCorrectionCommon.AnalysisFileNames = files.Select(n => n.AnalysisFileName).ToList();
             this.RtCorrectionParam = this.RtCorrectionCommon.RetentionTimeCorrectionParam;
             parallelOptions.MaxDegreeOfParallelism = param.NumThreads;
 
@@ -178,9 +179,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         }
 
         private void excuteRtCorrection() {
-            foreach (var f in this.AnalysisFiles) {
-                f.RetentionTimeCorrectionBean = new RetentionTimeCorrectionBean();
-            }
+            //foreach (var f in this.AnalysisFiles) {
+            //    f.RetentionTimeCorrectionBean = new RetentionTimeCorrectionBean();
+            //}
             RtCorrectionCommon.SampleCellInfoListList = new List<List<SampleListCellInfo>>();
             RtCorrectionCommon.StandardLibrary = RetentionTimeCorrectionModelLegacy.ConvertCompoundVMtoTextFormat(StandardData);
             new RtCorrectionProcessModelLegacy().Process(this.AnalysisFiles, this.Parameter, this.RtWin);
@@ -322,11 +323,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         }
 
         private void excuteNext(bool obj) {
-            if (!CheckBox_RunWithRtCorrection) {
-                foreach (var f in this.AnalysisFiles) {
-                    f.RetentionTimeCorrectionBean = new RetentionTimeCorrectionBean();
-                }
-            }
+            //if (!CheckBox_RunWithRtCorrection) {
+            //    foreach (var f in this.AnalysisFiles) {
+            //        f.RetentionTimeCorrectionBean = new RetentionTimeCorrectionBean();
+            //    }
+            //}
             Parameter.AdvancedProcessOptionBaseParam.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection = CheckBox_RunWithRtCorrection; 
             this.RtWin.DialogResult = true;
             this.RtWin.Close();
@@ -491,9 +492,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             var num = files.Count;
             var yMax = float.MinValue; var yMin = float.MaxValue;
             foreach (var f in files) {
-                if (f.RetentionTimeCorrectionBean.RtDiff != null) {
-                    var tmp_max = f.RetentionTimeCorrectionBean.RtDiff.Max();
-                    var tmp_min = f.RetentionTimeCorrectionBean.RtDiff.Min();
+                var rtDiff = f.RetentionTimeCorrectionBean.RtDiff;
+                if (rtDiff != null) {
+                    var tmp_max = rtDiff.Max();
+                    var tmp_min = rtDiff.Min();
                     if (yMax < tmp_max) yMax = (float)tmp_max;
                     if (yMin > tmp_min) yMin = (float)tmp_min;
                 }
@@ -596,7 +598,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 ShowMessage_NoHitCompounds(NoHitCompList);
             }
 
-            this.RtCorrectionCommon.CommonStdList = CommonStdList;
+            //this.RtCorrectionCommon.CommonStdList = CommonStdList;
 
             RetentionTimeCorrectionMethod.UpdateRtCorrectionBean(this.AnalysisFiles, this.parallelOptions, this.RtCorrectionParam, CommonStdList);
             CreateSampleList();

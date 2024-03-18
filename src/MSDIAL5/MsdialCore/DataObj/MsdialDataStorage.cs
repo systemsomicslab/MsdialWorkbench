@@ -1,6 +1,9 @@
-﻿using CompMs.Common.Components;
+﻿using Accord.Statistics.Kernels;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
+using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
+using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using MessagePack;
@@ -62,27 +65,10 @@ namespace CompMs.MsdialCore.DataObj
             using (var stream = await streamManager.Create(MsdialSerializer.Combine(prefix, projectTitle)).ConfigureAwait(false)) {
                 var mspList = MspDB;
                 MspDB = new List<MoleculeMsReference>();
-
-                var rtCorreBeans = new List<RetentionTimeCorrectionBean>();
-                foreach (var file in this.AnalysisFiles) {
-                    rtCorreBeans.Add(file.RetentionTimeCorrectionBean);
-                    
-                    file.RetentionTimeCorrectionBean.OriginalRt = new List<double>();
-                    file.RetentionTimeCorrectionBean.RtDiff = new List<double>();
-                    file.RetentionTimeCorrectionBean.PredictedRt = new List<double>();
-                }
-
+                foreach (var file in AnalysisFiles) file.RetentionTimeCorrectionBean.ClearCache();
                 SaveMsdialDataStorageCore(stream);
                 MspDB = mspList;
-
-                for (int i = 0; i < rtCorreBeans.Count; i++) {
-                    var file = this.AnalysisFiles[i];
-                    file.RetentionTimeCorrectionBean.OriginalRt = rtCorreBeans[i].OriginalRt;
-                    file.RetentionTimeCorrectionBean.RtDiff = rtCorreBeans[i].RtDiff;
-                    file.RetentionTimeCorrectionBean.PredictedRt = rtCorreBeans[i].PredictedRt;
-                }
             }
-
         }
 
         protected virtual void SaveMspDB(Stream stream) {
@@ -116,6 +102,17 @@ namespace CompMs.MsdialCore.DataObj
                 file.ProteinAssembledResultFilePath = ReplaceFolderPath(file.ProteinAssembledResultFilePath, previousFolder, projectFolder);
                 file.RiDictionaryFilePath = ReplaceFolderPath(file.RiDictionaryFilePath, previousFolder, projectFolder);
                 file.DeconvolutionFilePathList = file.DeconvolutionFilePathList.Select(decfile => ReplaceFolderPath(decfile, previousFolder, projectFolder)).ToList();
+
+                if (file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath.IsEmptyOrNull()) {
+                    var filedir = Path.GetDirectoryName(file.DeconvolutionFilePath);
+                    var filename = Path.GetFileNameWithoutExtension(file.DeconvolutionFilePath);
+                    var filepath = Path.Combine(filedir, filename + "." + MsdialDataStorageFormat.rtc);
+                    file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath = filepath;
+                }
+                else {
+                    file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath = ReplaceFolderPath(file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, previousFolder, projectFolder); ;
+                }
+
             }
 
             foreach (var file in storage.AlignmentFiles) {
@@ -125,6 +122,8 @@ namespace CompMs.MsdialCore.DataObj
                 file.ProteinAssembledResultFilePath = ReplaceFolderPath(file.ProteinAssembledResultFilePath, previousFolder, projectFolder);
             }
         }
+
+       
 
         private static string ReplaceFolderPath(string path, string oldFolder, string newFolder) {
             if (string.IsNullOrEmpty(path))
