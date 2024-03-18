@@ -85,7 +85,18 @@ namespace CompMs.MsdialCore.DataObj
 
         public void FixDatasetFolder(string projectFolder) {
             var storage = this as IMsdialDataStorage<ParameterBase>;
-            if (storage is null || storage.Parameter.ProjectFolderPath == projectFolder) {
+
+            if (storage is null) return;
+            foreach (var file in storage.AnalysisFiles) {
+                if (file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath.IsEmptyOrNull()) {
+                    var filedir = Path.GetDirectoryName(file.DeconvolutionFilePath);
+                    var filename = Path.GetFileNameWithoutExtension(file.DeconvolutionFilePath);
+                    var filepath = Path.Combine(filedir, filename + "." + MsdialDataStorageFormat.rtc);
+                    file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath = filepath;
+                }
+            }
+
+            if (storage.Parameter.ProjectFolderPath == projectFolder) {
                 return;
             }
 
@@ -102,17 +113,7 @@ namespace CompMs.MsdialCore.DataObj
                 file.ProteinAssembledResultFilePath = ReplaceFolderPath(file.ProteinAssembledResultFilePath, previousFolder, projectFolder);
                 file.RiDictionaryFilePath = ReplaceFolderPath(file.RiDictionaryFilePath, previousFolder, projectFolder);
                 file.DeconvolutionFilePathList = file.DeconvolutionFilePathList.Select(decfile => ReplaceFolderPath(decfile, previousFolder, projectFolder)).ToList();
-
-                if (file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath.IsEmptyOrNull()) {
-                    var filedir = Path.GetDirectoryName(file.DeconvolutionFilePath);
-                    var filename = Path.GetFileNameWithoutExtension(file.DeconvolutionFilePath);
-                    var filepath = Path.Combine(filedir, filename + "." + MsdialDataStorageFormat.rtc);
-                    file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath = filepath;
-                }
-                else {
-                    file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath = ReplaceFolderPath(file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, previousFolder, projectFolder); ;
-                }
-
+                file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath = ReplaceFolderPath(file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, previousFolder, projectFolder); ;
             }
 
             foreach (var file in storage.AlignmentFiles) {

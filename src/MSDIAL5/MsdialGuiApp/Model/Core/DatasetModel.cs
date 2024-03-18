@@ -192,19 +192,12 @@ namespace CompMs.App.Msdial.Model.Core
                 var storage = await serializer.LoadAsync(streamManager, projectFileName, projectFolder, string.Empty);
                 streamManager.Complete();
                 storage.FixDatasetFolder(projectFolder);
-                KeepPreviousRtCorrectionResult(storage);
+               
                 return storage;
             }
         }
 
-        public static void KeepPreviousRtCorrectionResult(IMsdialDataStorage<ParameterBase> storage) {
-            foreach (var file in storage.AnalysisFiles) {
-                var rtbean = file.RetentionTimeCorrectionBean;
-                if (!rtbean.OriginalRt.IsEmptyOrNull()) {
-                    RetentionTimeCorrectionMethod.SaveRetentionCorrectionResult(rtbean.RetentionTimeCorrectionResultFilePath, rtbean.OriginalRt, rtbean.RtDiff, rtbean.PredictedRt);
-                }
-            }
-        }
+        
 
         AnalysisFileBeanModelCollection IDatasetModel.AnalysisFiles => _analysisFileBeanModelCollection;
     }
