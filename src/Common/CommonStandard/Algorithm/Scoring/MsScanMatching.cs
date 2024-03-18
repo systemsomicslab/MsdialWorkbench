@@ -265,7 +265,6 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.DGTS:
                 case LbmClass.LDGTA:
                 case LbmClass.LDGTS:
-                case LbmClass.DMEDFAHFA:
                     return OadDefaultCharacterization.Characterize4DiacylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.SM:
                 case LbmClass.Cer_NS:
@@ -300,6 +299,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.DMEDFA:
                 case LbmClass.DMEDOxFA:
                     return OadDefaultCharacterization.Characterize4SingleAcylChainLiipid(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.DMEDFAHFA:
+                    return OadDefaultCharacterization.Characterize4Fahfa(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
 
                 default: return (null, new double[2] { 0.0, 0.0 });
             }

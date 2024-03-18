@@ -20,6 +20,8 @@ namespace CompMs.Common.Lipidomics
                 var parts = lipidStr.Split('|');
                 lipidStr = parts.Length > 1 ? parts[1] : lipidStr;
                 foreach (var parser in parsers) {
+                    var parts = lipidStr.Split('|');
+                    lipidStr = parts.Length > 1 ? parts[1] : lipidStr;
                     if (parser.Parse(lipidStr) is ILipid lipid) {
                         return lipid;
                     }
