@@ -772,6 +772,68 @@ namespace CompMs.Common.Algorithm.Scoring {
             return new double[] { product / (product + scaler1 + scaler2), matchedPeaks.Count };
         }
 
+        public static double[] GetBonanzaModifiedDotCosineScores(
+            IMSScanProperty prop1,
+            IMSScanProperty prop2,
+            double massTolerance = 0.05,
+            MassToleranceType massToleranceType = MassToleranceType.Da) {
+            var matchedPeaks = new List<MatchedPeak>();
+            if (prop1.PrecursorMz < prop2.PrecursorMz) {
+                SearchMatchedPeaks(prop1.Spectrum, prop1.PrecursorMz, prop2.Spectrum, prop2.PrecursorMz, massTolerance, massToleranceType, out matchedPeaks);
+            }
+            else {
+                SearchMatchedPeaks(prop2.Spectrum, prop2.PrecursorMz, prop1.Spectrum, prop1.PrecursorMz, massTolerance, massToleranceType, out matchedPeaks);
+            }
+
+            if (matchedPeaks.Count == 0) {
+                return new double[] { 0, 0, 0, 0 };
+            }
+
+            // bonanza
+            var product = matchedPeaks.Sum(n => n.Intensity * n.MatchedIntensity);
+            var scaler1 = prop1.Spectrum.Where(n => n.IsMatched == false).Sum(n => Math.Pow(n.Intensity, 2));
+            var scaler2 = prop2.Spectrum.Where(n => n.IsMatched == false).Sum(n => Math.Pow(n.Intensity, 2));
+            var bonanza = product / (product + scaler1 + scaler2);
+
+            // modified dot
+            scaler1 = matchedPeaks.Sum(n => n.Intensity * n.Intensity);
+            scaler2 = matchedPeaks.Sum(n => n.MatchedIntensity * n.MatchedIntensity);
+            var modifieddot = scaler1 == 0 || scaler2 == 0 ? 0.0 : product / (Math.Sqrt(scaler1) * Math.Sqrt(scaler2));
+
+            // cosine
+            product = matchedPeaks.Where(n => n.IsProductIonMatched).Sum(n => n.Intensity * n.MatchedIntensity);
+            scaler1 = matchedPeaks.Where(n => n.IsProductIonMatched).Sum(n => n.Intensity * n.Intensity);
+            scaler2 = matchedPeaks.Where(n => n.IsProductIonMatched).Sum(n => n.MatchedIntensity * n.MatchedIntensity);
+            var cosine = scaler1 == 0 || scaler2 == 0 ? 0.0 : product / (Math.Sqrt(scaler1) * Math.Sqrt(scaler2));
+
+            return new double[] { bonanza, matchedPeaks.Count, modifieddot, cosine };
+        }
+
+        public static double[] GetCosineScore(
+            IMSScanProperty prop1,
+            IMSScanProperty prop2,
+            double massTolerance = 0.05,
+            MassToleranceType massToleranceType = MassToleranceType.Da) {
+
+            var score = 0.0;
+            var matched = 0.0;
+            if (prop1.PrecursorMz < prop2.PrecursorMz) {
+                score = GetSimpleDotProduct(prop2, prop1, massTolerance, 0, Math.Min(prop1.PrecursorMz, prop2.PrecursorMz));
+                var matchedscores = GetMatchedPeaksScores(prop2, prop1, massTolerance, 0, Math.Min(prop1.PrecursorMz, prop2.PrecursorMz));
+                matched = matchedscores[1];
+            }
+            else {
+                score = GetSimpleDotProduct(prop1, prop2, massTolerance, 0, Math.Min(prop1.PrecursorMz, prop2.PrecursorMz));
+                var matchedscores = GetMatchedPeaksScores(prop1, prop2, massTolerance, 0, Math.Min(prop1.PrecursorMz, prop2.PrecursorMz));
+                matched = matchedscores[1];
+            }
+
+            if (matched == 0) {
+                return new double[] { 0, 0 };
+            }
+            return new double[] { score, matched };
+        }
+
         public static void SearchMatchedPeaks(
             List<SpectrumPeak> ePeaks,
             double ePrecursor, // small precursor

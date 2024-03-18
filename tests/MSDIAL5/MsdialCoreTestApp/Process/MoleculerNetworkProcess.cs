@@ -6,6 +6,7 @@ using CompMs.Common.DataObj.NodeEdge;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
+using NCDK.QSAR.Descriptors.Atomic;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,10 +18,10 @@ using System.Threading.Tasks;
 namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
     public class MoleculerNetworkProcess {
 
-        public int Run(string inputDir, string outputDir, string methodFile, string ionMode) {
+        public int Run(string inputDir, string outputDir, string methodFile, string ionMode, bool isOverwrite) {
             var files = ReadInput(inputDir);
             var dt = DateTime.Now;
-            var folder = Path.Combine(outputDir, $"result-{dt:yyMMddhhmm}");
+            var folder = Path.Combine(outputDir);
             if (!Directory.Exists(folder)) {
                 Directory.CreateDirectory(folder);
             }
@@ -42,6 +43,13 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                 Parallel.For(i, files.Count, j => {
                     var stopwatch = Stopwatch.StartNew();
                     var inputB = files[j];
+                    var outputName = Path.GetFileNameWithoutExtension(inputA) + "_mn_" + Path.GetFileNameWithoutExtension(inputB) + ".pairs";
+                    var outputPath = Path.Combine(folder, outputName);
+
+                    if (File.Exists(outputPath) && !isOverwrite) {
+                        return;
+                    }
+
                     var recordsB = LibraryHandler.ReadMspLibrary(inputB).Where(n => n.IonMode.ToString() == ionMode && n.Spectrum?.Count() > 0).ToList();
                     if (recordsB.Count <= 1) return;
 
@@ -54,13 +62,12 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                     var edges = MoleculerNetworkingBase.GenerateEdges(recordsA, recordsB, param.MnMassTolerance,
                         param.MinimumPeakMatch, param.MnSpectrumSimilarityCutOff, param.MaxEdgeNumberPerNode + sameFileOffset,
                         param.MaxPrecursorDifference, param.MaxPrecursorDifferenceAsPercent,
-                        param.MsmsSimilarityCalc == Common.Enum.MsmsSimilarityCalc.Bonanza ? true : false,
+                        param.MsmsSimilarityCalc,
                         null);
                     // Console.WriteLine();
                     // Console.WriteLine("Time {0} sec", stopwatch.ElapsedMilliseconds * 0.001);
 
-                    var outputName = Path.GetFileNameWithoutExtension(inputA) + "_mn_" + Path.GetFileNameWithoutExtension(inputB) + ".pairs";
-                    var outputPath = Path.Combine(folder, outputName);
+                    
                     ExportEdges(outputPath, edges, inputA, inputB);
                     lock (syncObj) {
                         progress++;
@@ -104,7 +111,15 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
 
         private void ExportEdges(string path, List<EdgeData> edges, string inputA, string inputB) {
             using (var sw = new StreamWriter(path, false)) {
-                sw.WriteLine("SourceID: {0}\tTargetID: {1}\tSimilarityScore\tMatchPeakCount", inputA, inputB);
+                if (edges.IsEmptyOrNull()) return;
+                var fedge = edges.FirstOrDefault();
+                if (fedge.scores.Count > 2) {
+                    sw.WriteLine("SourceID: {0}\tTargetID: {1}\tBonanzaScore\tMatchPeakCount\tModDotScore\tCosineScore", inputA, inputB);
+                }
+                else {
+                    sw.WriteLine("SourceID: {0}\tTargetID: {1}\tSimilarityScore\tMatchPeakCount", inputA, inputB);
+                }
+
                 var isABMatched = inputA == inputB;
 
                 if (isABMatched) {
@@ -113,14 +128,16 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                     foreach (var edge in edges) {
                         var st = Math.Min(edge.source, edge.target) + "_" + Math.Max(edge.source, edge.target);
                         if (!dones.Contains(st)) {
-                            sw.WriteLine(edge.source + "\t" + edge.target + "\t" + edge.score + "\t" + edge.matchpeakcount);
+                            sw.WriteLine(edge.source + "\t" + edge.target + "\t" + String.Join("\t", edge.scores));
                             dones.Add(st);
                         }
                     }
                 }
                 else {
                     foreach (var edge in edges) {
-                        sw.WriteLine(edge.source + "\t" + edge.target + "\t" + edge.score + "\t" + edge.matchpeakcount);
+                        if (fedge.scores.Count == 2) {
+                            sw.WriteLine(edge.source + "\t" + edge.target + "\t" + String.Join("\t", edge.scores));
+                        }
                     }
                 }
             }
