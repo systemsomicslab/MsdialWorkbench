@@ -10,6 +10,7 @@ namespace CompMs.MsdialCore.DataObj.Tests.Helper;
 public class MockRawSpectra : IRawSpectra
 {
     public ExtractedIonChromatogram ExpectedChromatogram { get; set; }
+    public Chromatogram ExpectedChromatogram2 { get; set; }
 
     ExtractedIonChromatogram IRawSpectra.GetProductIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange)
     {
@@ -46,5 +47,13 @@ public class MockRawSpectra : IRawSpectra
 
     PeakMs2Spectra IRawSpectra.GetPeakMs2Spectra(ChromatogramPeakFeature rtPeakFeature, double ms2Tolerance, AcquisitionType acquisitionType, DriftTime driftTime) {
         throw new NotImplementedException();
+    }
+
+    public Chromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange) {
+        return ExpectedChromatogram2;
+    }
+
+    public Chromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange, int experimentID) {
+        return ExpectedChromatogram2;
     }
 }
