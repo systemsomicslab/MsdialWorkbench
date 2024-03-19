@@ -102,6 +102,33 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         /// <summary>
+        /// Generates a total ion chromatogram for MS2 spectra within a specified chromatogram range.
+        /// </summary>
+        /// <param name="chromatogramRange">The range of the chromatogram, defined by start and end points along with the type and unit of the chromatographic measurement (e.g., retention time or ion mobility).</param>
+        /// <returns>A <see cref="Chromatogram"/> object representing the total ion chromatogram of MS2 spectra within the specified range. The chromatogram includes peaks with details such as index, chromatographic measurement (e.g., retention time or drift time), base peak m/z value, and summed intensity.</returns>
+        /// <remarks>
+        /// This method dynamically builds or retrieves an appropriate chromatogram generator based on the specified range type and unit, and then generates the total ion chromatogram for MS2 spectra within the given range.
+        /// </remarks>
+        public Chromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange) {
+            var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
+            return impl.GetMs2TotalIonChromatogram(chromatogramRange);
+        }
+
+        /// <summary>
+        /// Generates a total ion chromatogram for MS2 spectra from a specific experiment within a specified chromatogram range.
+        /// </summary>
+        /// <param name="chromatogramRange">The range of the chromatogram, defined by start and end points along with the type and unit of the chromatographic measurement (e.g., retention time or ion mobility).</param>
+        /// <param name="experimentID">The ID of the experiment from which to retrieve MS2 spectra. Only spectra matching this experiment ID are included in the chromatogram.</param>
+        /// <returns>A <see cref="Chromatogram"/> object representing the total ion chromatogram of MS2 spectra from the specified experiment within the given range. Each peak in the chromatogram corresponds to an MS2 spectrum, including details such as index, chromatographic measurement (e.g., retention time or drift time), base peak m/z value, and summed intensity.</returns>
+        /// <remarks>
+        /// Similar to the overload without the experiment ID, this method also dynamically builds or retrieves a suitable chromatogram generator based on the range type and unit. It then filters the MS2 spectra by the specified experiment ID before generating the chromatogram.
+        /// </remarks>
+        public Chromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange, int experimentID) {
+            var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
+            return impl.GetMS2TotalIonChromatogram(chromatogramRange, experimentID);
+        }
+
+        /// <summary>
         /// Retrieves a chromatogram for product ions based on specified precursor and product m/z ranges, 
         /// using the provided chromatogram range settings.
         /// </summary>
