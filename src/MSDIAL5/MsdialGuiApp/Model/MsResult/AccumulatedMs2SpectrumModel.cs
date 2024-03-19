@@ -133,7 +133,6 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
         PeakSpot = new PeakSpotModel(anotatedSpot, Scan);
         PlotComparedSpectrum = new PlotComparedMsSpectrumUsecase(Scan);
 
-        _compoundSearch.Search(PeakSpot);
         CalculateProductIonTotalIonChromatogram();
     }
 

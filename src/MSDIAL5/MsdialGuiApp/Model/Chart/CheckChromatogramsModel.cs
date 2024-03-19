@@ -32,6 +32,7 @@ internal sealed class CheckChromatogramsModel : BindableBase
     private readonly IMessageBroker _broker;
     private readonly List<PeakFeatureSearchValue> _displaySettingValueCandidates;
     private readonly ObservableCollection<PeakFeatureSearchValueModel> _displaySettingValues;
+    private readonly MsScanCompoundSearchUsecase _scanCompoundSearchUsecase;
 
     public CheckChromatogramsModel(LoadChromatogramsUsecase loadingChromatograms, AccumulateSpectraUsecase accumulateSpectra, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? compoundSearch, AdvancedProcessOptionBaseParameter advancedProcessParameter, IWholeChromatogramLoader<MzRange> extractedIonChromatogramLoader, IWholeChromatogramLoader<(MzRange, MzRange)> productIonChromatogramLoader, IMessageBroker broker) {
         LoadChromatogramsUsecase = loadingChromatograms ?? throw new ArgumentNullException(nameof(loadingChromatograms));
@@ -47,6 +48,7 @@ internal sealed class CheckChromatogramsModel : BindableBase
         _displaySettingValueCandidates = values;
         _displaySettingValues = new ObservableCollection<PeakFeatureSearchValueModel>(values.Select(v => new PeakFeatureSearchValueModel(v)));
         DisplayEicSettingValues = new ReadOnlyObservableCollection<PeakFeatureSearchValueModel>(_displaySettingValues);
+        _scanCompoundSearchUsecase = new MsScanCompoundSearchUsecase();
     }
 
     public ChromatogramsModel? Chromatograms {
@@ -104,7 +106,7 @@ internal sealed class CheckChromatogramsModel : BindableBase
         if (Chromatograms.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> axis) {
             axis.ChartMargin = new ConstantMargin(0, 60);
         }
-        AccumulatedMs1SpectrumModel = new AccumulatedMs1SpectrumModel(_accumulateSpectra, _extractedIonChromatogramLoader, _broker);
+        AccumulatedMs1SpectrumModel = new AccumulatedMs1SpectrumModel(_accumulateSpectra, _scanCompoundSearchUsecase, _extractedIonChromatogramLoader, _broker);
 
         if (_compoundSearch is not null) {
             RangeSelectableChromatogramModel = new RangeSelectableChromatogramModel(Chromatograms);

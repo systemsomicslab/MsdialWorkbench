@@ -1,6 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
@@ -14,7 +16,6 @@ using CompMs.MsdialCore.Export;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -28,18 +29,19 @@ namespace CompMs.App.Msdial.Model.MsResult;
 internal sealed class AccumulatedMs1SpectrumModel : DisposableModelBase
 {
     private readonly AccumulateSpectraUsecase _accumulateSpectra;
-    //private readonly ICompoundSearchUsecase<ICompoundResult, IMSScanProperty> _compoundSearch;
+    private readonly MsScanCompoundSearchUsecase _compoundSearch;
     private readonly IWholeChromatogramLoader<MzRange> _extractedIonChromatogramLoader;
     private readonly IMessageBroker _broker;
     private readonly BehaviorSubject<MsSpectrum?> _subject;
 
-    public AccumulatedMs1SpectrumModel(AccumulateSpectraUsecase accumulateSpectra, IWholeChromatogramLoader<MzRange> extractedIonChromatogramLoader, IMessageBroker broker)
-    {
+    public AccumulatedMs1SpectrumModel(AccumulateSpectraUsecase accumulateSpectra, MsScanCompoundSearchUsecase compoundSearch, IWholeChromatogramLoader<MzRange> extractedIonChromatogramLoader, IMessageBroker broker) {
         _subject = new BehaviorSubject<MsSpectrum?>(null).AddTo(Disposables);
         _plotDisposable = new SerialDisposable().AddTo(Disposables);
         _accumulateSpectra = accumulateSpectra;
+        _compoundSearch = compoundSearch;
         _extractedIonChromatogramLoader = extractedIonChromatogramLoader;
         _broker = broker;
+        SearchParameter = compoundSearch.ObserveProperty(m => m.SearchParameter).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
     }
 
     public MSScanProperty? Scan {
@@ -56,6 +58,12 @@ internal sealed class AccumulatedMs1SpectrumModel : DisposableModelBase
         }
     }
     private MSScanProperty? _scan;
+
+    public PeakSpotModel? PeakSpot {
+        get => _peakSpot;
+        private set => SetProperty(ref _peakSpot, value);
+    }
+    private PeakSpotModel? _peakSpot;
 
     public PlotComparedMsSpectrumUsecase? PlotComparedSpectrum {
         get => _plotComparedSpectrum;
@@ -102,44 +110,38 @@ internal sealed class AccumulatedMs1SpectrumModel : DisposableModelBase
     }
     private AxisRange? _productIonRange;
 
-    //public IList SearchMethods => _compoundSearch.SearchMethods;
+    public IList SearchMethods => _compoundSearch.SearchMethods;
 
-    //public object? SearchMethod {
-    //    get => _compoundSearch.SearchMethod;
-    //    set {
-    //        if (_compoundSearch.SearchMethod != value) {
-    //            _compoundSearch.SearchMethod = value;
-    //            OnPropertyChanged(nameof(SearchMethod));
-    //        }
-    //    }
-    //}
+    public object? SearchMethod {
+        get => _compoundSearch.SearchMethod;
+        set {
+            if (_compoundSearch.SearchMethod != value) {
+                _compoundSearch.SearchMethod = value;
+                OnPropertyChanged(nameof(SearchMethod));
+            }
+        }
+    }
 
-    //public ReadOnlyReactivePropertySlim<MsRefSearchParameterBase?> SearchParameter { get; }
+    public ReadOnlyReactivePropertySlim<MsRefSearchParameterBase?> SearchParameter { get; }
 
     public async Task CalculateMs1Async((double start, double end) baseRange, IEnumerable<(double start, double end)> subtracts, CancellationToken token = default) {
         Scan = await _accumulateSpectra.AccumulateMs1Async(baseRange, subtracts, token).ConfigureAwait(false);
-        //var anotatedSpot = new AnnotatedSpotModel(
-        //    Chromatogram.DetectPeak(baseRange.start, baseRange.end),
-        //    new MoleculeProperty());
-        //PeakSpot = new PeakSpotModel(anotatedSpot, Scan);
         PlotComparedSpectrum = new PlotComparedMsSpectrumUsecase(Scan);
-
-        //_compoundSearch.Search(PeakSpot);
-        //CalculateTotalIonChromatogram();
+        CalculateTotalIonChromatogram();
     }
 
     public void CalculateTotalIonChromatogram() {
-        //if (PlotComparedSpectrum is null) {
-        //    return;
-        //}
-        //var range = MzRange.FromRange(0d, double.MaxValue);
+        if (PlotComparedSpectrum is null) {
+            return;
+        }
+        var range = MzRange.FromRange(0d, double.MaxValue);
 
-        //var displayChromatogram = _extractedIonChromatogramLoader.LoadChromatogram((new MzRange(Chromatogram.Mz, Chromatogram.Tolerance), range));
-        //displayChromatogram.Name = $"TIC Precursor m/z: {Chromatogram.Mz}±{Chromatogram.Tolerance}";
-        //ProductIonChromatogram = new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
-        //if (ProductIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> chromAxis) {
-        //    chromAxis.ChartMargin = new ConstantMargin(0, 60);
-        //}
+        var displayChromatogram = _extractedIonChromatogramLoader.LoadChromatogram(range);
+        displayChromatogram.Name = $"Total ion chromatogram";
+        ExtractedIonChromatogram = new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
+        if (ExtractedIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> chromAxis) {
+            chromAxis.ChartMargin = new ConstantMargin(0, 60);
+        }
     }
 
     public void CalculateExtractedIonChromatogram() {
@@ -176,7 +178,24 @@ internal sealed class AccumulatedMs1SpectrumModel : DisposableModelBase
     }
 
     public void SearchCompound() {
-        throw new NotImplementedException();
+        if (Scan is null) {
+            return;
+        }
+        Compounds = _compoundSearch.Search(Scan);
+    }
+
+    public void ImportDatabase() {
+        var request = new OpenFileRequest(filename => {
+            if (File.Exists(filename)) {
+                _compoundSearch.AddDataBase(filename);
+            }
+        })
+        {
+            Title = "Load nist format database",
+            Filter = "NIST format|*.msp",
+            RestoreDirectory = true,
+        };
+        _broker.Publish(request);
     }
 
     public void Export() {

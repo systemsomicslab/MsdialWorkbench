@@ -7,13 +7,10 @@ using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.ViewModel.MsResult;
 
@@ -38,24 +35,23 @@ internal sealed class AccumulatedMs1SpectrumViewModel : ViewModelBase
             .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         ProductIonRange = model.ToReactivePropertySlimAsSynchronized(m => m.ExtractIonRange).AddTo(Disposables);
 
-        //SearchMethod = model.ToReactivePropertySlimAsSynchronized(m => m.SearchMethod).AddTo(Disposables);
-        //ParameterViewModel = model.SearchParameter
-        //    .Select(parameter => parameter is null ? null : new MsRefSearchParameterBaseViewModel(parameter))
-        //    .DisposePreviousValue()
-        //    .ToReadOnlyReactivePropertySlim()
-        //    .AddTo(Disposables);
+        SearchMethod = model.ToReactivePropertySlimAsSynchronized(m => m.SearchMethod).AddTo(Disposables);
+        ParameterViewModel = model.SearchParameter
+            .Select(parameter => parameter is null ? null : new MsRefSearchParameterBaseViewModel(parameter))
+            .DisposePreviousValue()
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
 
         SearchCompoundCommand = new ReactiveCommand().WithSubscribe(model.SearchCompound).AddTo(Disposables);
+        ImportDataBaseCommand = new ReactiveCommand().WithSubscribe(model.ImportDatabase).AddTo(Disposables);
         CalculateExtractedIonChromatogramCommand = SelectedRange.Select(r => r is not null).ToReactiveCommand().WithSubscribe(model.CalculateExtractedIonChromatogram).AddTo(Disposables);
 
         DetectPeaksCommand = new ReactiveCommand().WithSubscribe(model.DetectPeaks).AddTo(Disposables);
         AddPeakCommand = new ReactiveCommand().WithSubscribe(model.AddPeak).AddTo(Disposables);
         ResetPeaksCommand = new ReactiveCommand().WithSubscribe(model.ResetPeaks).AddTo(Disposables);
 
-        SaveAsNistCommand = new[] {
-            //model.ObserveProperty(m => m.PeakSpot).Select(m => m is not null),
-            model.ObserveProperty(m => m.Scan).Select(m => m is not null),
-        }.CombineLatestValuesAreAllTrue().ToReactiveCommand().WithSubscribe(model.Export).AddTo(Disposables);
+        SaveAsNistCommand = model.ObserveProperty(m => m.Scan).Select(m => m is not null)
+            .ToReactiveCommand().WithSubscribe(model.Export).AddTo(Disposables);
     }
 
     public AccumulatedMs1SpectrumModel Model { get; }
@@ -68,16 +64,18 @@ internal sealed class AccumulatedMs1SpectrumViewModel : ViewModelBase
     public ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> ExtractedIonChromatogram { get; }
     public ReactivePropertySlim<AxisRange?> ProductIonRange { get; }
 
-    //public IList SearchMethods => Model.SearchMethods;
+    public IList SearchMethods => Model.SearchMethods;
 
-    //public ReactivePropertySlim<object?> SearchMethod { get; }
+    public ReactivePropertySlim<object?> SearchMethod { get; }
 
-    //public ReadOnlyReactivePropertySlim<MsRefSearchParameterBaseViewModel?> ParameterViewModel { get; }
+    public ReadOnlyReactivePropertySlim<MsRefSearchParameterBaseViewModel?> ParameterViewModel { get; }
 
     public ReadOnlyReactivePropertySlim<IReadOnlyList<ICompoundResult>?> Compounds { get; }
     public ReactivePropertySlim<ICompoundResult?> SelectedCompound { get; }
 
     public ReactiveCommand SearchCompoundCommand { get; }
+
+    public ReactiveCommand ImportDataBaseCommand { get; }
 
     public ReactiveCommand CalculateExtractedIonChromatogramCommand { get; }
 
