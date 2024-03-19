@@ -377,9 +377,23 @@
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate DataType="{x:Type do:DisplayPeakOfChromatogram}">
                                                     <StackPanel>
-                                                        <ContentControl Content="{Binding RepresentativeTime, Mode=OneTime}"/>
-                                                        <TextBlock Text="{Binding Area, Mode=OneTime, StringFormat=Area: {0:F0}}"/>
-                                                        <TextBlock Text="{Binding Intensity, Mode=OneTime, StringFormat=Abundance: {0:F0}}"/>
+                                                        <TextBlock Text="{Binding PeakTop.ChromXs.RT, Mode=OneTime}"/>
+                                                        <TextBlock>
+                                                            <TextBlock.Text>
+                                                                <MultiBinding StringFormat="{}{0} - {1}">
+                                                                    <Binding Path="PeakLeft.ChromXs.RT" Mode="OneTime"/>
+                                                                    <Binding Path="PeakRight.ChromXs.RT" Mode="OneTime"/>
+                                                                </MultiBinding>
+                                                            </TextBlock.Text>
+                                                        </TextBlock>
+                                                        <TextBlock>
+                                                            <TextBlock.Text>
+                                                                <MultiBinding StringFormat="Area: {0:F0}, Abundance: {1:F0}">
+                                                                    <Binding Path="Area" Mode="OneTime"/>
+                                                                    <Binding Path="Intensity" Mode="OneTime"/>
+                                                                </MultiBinding>
+                                                            </TextBlock.Text>
+                                                        </TextBlock>
                                                         <Button Content="Remove"
                                                                 Command="{Binding Data, Source={StaticResource RemovePeakCommand}}"
                                                                 CommandParameter="{Binding Mode=OneTime}"/>

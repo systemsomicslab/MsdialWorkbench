@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using System.Linq;
 
@@ -8,9 +9,9 @@ public sealed class DisplayPeakOfChromatogram(PeakOfChromatogram peak) : Bindabl
 {
     public PeakItem[] Points { get; } = peak.SlicePeakArea().Select(p => new PeakItem(p)).ToArray();
 
-    public PeakItem Top { get; } = new PeakItem(peak.GetTop());
-
-    public IChromX RepresentativeTime { get; } = peak.GetTop().ChromXs.GetRepresentativeXAxis();
+    public IChromatogramPeak PeakTop { get; } = peak.GetTop();
+    public IChromatogramPeak PeakLeft { get; } = peak.GetLeft();
+    public IChromatogramPeak PeakRight { get; } = peak.GetRight();
 
     public double Time { get; } = peak.GetTop().ChromXs.Value;
 
