@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
@@ -17,19 +18,26 @@ namespace CompMs.App.Msdial.Model.Chart
     internal sealed class LoadChromatogramsUsecase : BindableBase
     {
         private readonly ObservableCollection<ChromatogramPeakFeatureModel> _peaks;
-        private readonly IonMode _ionMode;
+        private readonly RawSpectra _rawSpectra;
         private readonly PeakPickBaseParameter _peakPickParameter;
         private readonly IWholeChromatogramLoader _ticLoader;
         private readonly IWholeChromatogramLoader _bpcLoader;
+        private readonly IWholeChromatogramLoader _productTicLoader;
+        private readonly IWholeChromatogramLoader<int> _productExperimentTicLoader;
         private readonly IWholeChromatogramLoader<(double, double)> _eicLoader;
+        private readonly IWholeChromatogramLoader<(MzRange, MzRange)> _productEicLoader;
 
-        public LoadChromatogramsUsecase(IWholeChromatogramLoader ticLoader, IWholeChromatogramLoader bpcLoader, IWholeChromatogramLoader<(double, double)> eicLoader, ObservableCollection<ChromatogramPeakFeatureModel> peaks, IonMode ionMode, PeakPickBaseParameter peakPickParameter) {
-            _ticLoader = ticLoader;
-            _bpcLoader = bpcLoader;
-            _eicLoader = eicLoader;
+        public LoadChromatogramsUsecase(RawSpectra rawSpectra, ChromatogramRange chromatogramRange, PeakPickBaseParameter parameter, IonMode ionMode, ObservableCollection<ChromatogramPeakFeatureModel> peaks)
+        {
+            _ticLoader = new TicLoader(rawSpectra, chromatogramRange, parameter);
+            _bpcLoader = new BpcLoader(rawSpectra, chromatogramRange, parameter);
+            _eicLoader = new EicLoader(rawSpectra, parameter, ionMode, chromatogramRange);
+            _productTicLoader = new MS2TicLoader(rawSpectra, chromatogramRange, parameter);
+            _productEicLoader = new ProductIonChromatogramLoader(rawSpectra, ionMode, chromatogramRange);
+            _productExperimentTicLoader = new MS2TicLoader(rawSpectra, chromatogramRange, parameter);
             _peaks = peaks;
-            _ionMode = ionMode;
-            _peakPickParameter = peakPickParameter;
+            _rawSpectra = rawSpectra;
+            _peakPickParameter = parameter;
         }
 
         public bool InsertTic {
@@ -49,6 +57,30 @@ namespace CompMs.App.Msdial.Model.Chart
         }
         private bool _insertHighestEic;
 
+        public bool InsertMS2Tic {
+            get => _insertMS2Tic;
+            set => SetProperty(ref _insertMS2Tic, value);
+        }
+        private bool _insertMS2Tic;
+
+        public ChromatogramsModel LoadMS2Eic(MzRange precursor, MzRange product) {
+            var displayChromatogram = _productEicLoader.LoadChromatogram((precursor, product));
+            displayChromatogram.Name = $"Precursor m/z: {precursor.Mz}±{precursor.Tolerance}, fragment ion: {product.Mz}±{product.Tolerance}";
+            return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
+        }
+
+        public ChromatogramsModel LoadTic() {
+            var displayChromatogram = _ticLoader.LoadChromatogram();
+            displayChromatogram.Name = "Total ion chromatoram";
+            return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
+        }
+
+        public ChromatogramsModel LoadEic(MzRange mzRange) {
+            var displayChromatogram = _eicLoader.LoadChromatogram((mzRange.Mz, mzRange.Tolerance));
+            displayChromatogram.Name = $"m/z: {mzRange.Mz}±{mzRange.Tolerance}";
+            return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
+        }
+
         public ChromatogramsModel Load(List<PeakFeatureSearchValue> displayEICs) {
             var builder = new ChromatogramsBuilder(_ticLoader, _bpcLoader, _eicLoader, _peaks, _peakPickParameter);
             if (InsertTic) {
@@ -60,8 +92,16 @@ namespace CompMs.App.Msdial.Model.Chart
             if (InsertHighestEic) {
                 builder.AddHighestEic();
             }
+            if (InsertMS2Tic) {
+                builder.AddMS2Tic(_productTicLoader);
+                foreach (var (level, ID) in _rawSpectra.ExperimentIDs) {
+                    if (level == 2) {
+                        builder.AddMS2Tic(_productExperimentTicLoader, ID);
+                    }
+                }
+            }
             if (!displayEICs.IsEmptyOrNull()) {
-                builder.AddEics(displayEICs, _ionMode);
+                builder.AddEics(displayEICs);
             }
             builder.Build();
             return builder.ChromatogramsModel!;
@@ -120,7 +160,25 @@ namespace CompMs.App.Msdial.Model.Chart
                 _contents.Add("most abundant ion's EIC");
             }
 
-            public void AddEics(List<PeakFeatureSearchValue> displayEICs, IonMode ionMode) {
+            public void AddMS2Tic(IWholeChromatogramLoader productTicLoader) {
+                var tic = productTicLoader.LoadChromatogram();
+                var pen = tic.LinePen = new Pen(Brushes.Cyan, 1.0);
+                pen.Freeze();
+                tic.Name = "MS2 TIC";
+                _displayChroms.Add(tic);
+                _contents.Add("MS2 TIC");
+            }
+
+            public void AddMS2Tic(IWholeChromatogramLoader<int> productTicLoader, int experimentID) {
+                var tic = productTicLoader.LoadChromatogram(experimentID);
+                var pen = tic.LinePen = new Pen(Brushes.Cyan, 1.0);
+                pen.Freeze();
+                tic.Name = $"MS2 TIC of experiment {experimentID}";
+                _displayChroms.Add(tic);
+                _contents.Add($"MS2 TIC of experiment {experimentID}");
+            }
+
+            public void AddEics(List<PeakFeatureSearchValue> displayEICs) {
                 var counter = 0;
                 foreach (var set in displayEICs) {
                     var eic = _eicLoader.LoadChromatogram((set.Mass, set.MassTolerance));

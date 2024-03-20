@@ -51,9 +51,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly AnalysisFileBeanModel _file;
         private readonly CalculateMatchScore _calculateMatchScore;
         private readonly IMessageBroker _broker;
-        private readonly IWholeChromatogramLoader _ticLoader, _bpcLoader;
-        private readonly IWholeChromatogramLoader<(double, double)> _eicLoader;
-        private readonly IWholeChromatogramLoader<(MzRange, MzRange)> _productIonChromatogramLoader;
+        private readonly RawSpectra _rawSpectra;
 
         public GcmsAnalysisModel(AnalysisFileBeanModel file, IDataProviderFactory<AnalysisFileBeanModel> providerFactory, MsdialGcmsParameter parameter, DataBaseMapper dbMapper, DataBaseStorage dbStorage, FilePropertiesModel projectBaseParameterModel, PeakFilterModel peakFilterModel, CalculateMatchScore calculateMatchScore, IMessageBroker broker) {
             var projectParameter = parameter.ProjectParam;
@@ -83,17 +81,11 @@ namespace CompMs.App.Msdial.Model.Gcms
             PeakPlotModel = new SpectrumFeaturePlotModel(_spectrumFeatures, _peaks, brushMapDataSelector, label).AddTo(_disposables);
 
             IDataProvider provider = providerFactory.Create(file);
-
-            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), parameter.IonMode, file.File.AcquisitionType);
-            ChromatogramRange chromatogramRange = new ChromatogramRange(parameter.RetentionTimeBegin, parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
-            _ticLoader = new TicLoader(rawSpectra, chromatogramRange, peakPickParameter);
-            _bpcLoader = new BpcLoader(rawSpectra, chromatogramRange, peakPickParameter);
-            var eicLoader2 = Loader.EicLoader.BuildForAllRange(file.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
-            _eicLoader = eicLoader2;
-            _productIonChromatogramLoader = new ProductIonChromatogramLoader(new RawSpectra(provider.LoadMsNSpectrums(2), parameter.IonMode, file.File.AcquisitionType), parameter.ProjectParam.IonMode, chromatogramRange);
+            _rawSpectra = new RawSpectra(provider, parameter.IonMode, file.File.AcquisitionType);
 
             // Eic chart
             var eicLoader = new QuantMassEicLoader(file.File, provider, peakPickParameter, projectParameter.IonMode, ChromXType.RT, ChromXUnit.Min, peakPickParameter.RetentionTimeBegin, peakPickParameter.RetentionTimeEnd, isConstantRange: true);
+            var eicLoader2 = Loader.EicLoader.BuildForAllRange(file.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
             var tableEicLoader = new QuantMassEicLoader(file.File, provider, peakPickParameter, projectParameter.IonMode, ChromXType.RT, ChromXUnit.Min, peakPickParameter.RetentionTimeBegin, peakPickParameter.RetentionTimeEnd, isConstantRange: false);
             EicLoader = tableEicLoader;
             EicModel = EicModel.CreateBuilder(string.Empty, string.Empty, string.Empty)
@@ -246,11 +238,9 @@ namespace CompMs.App.Msdial.Model.Gcms
 
         public void SetUnknown() => _spectrumFeatures.SelectedSpectrum.Value?.SetUnknown(UndoManager);
 
-        public IWholeChromatogramLoader<MzRange> ExtractedIonChromatogramLoader => (IWholeChromatogramLoader<MzRange>)_eicLoader;
-        public IWholeChromatogramLoader<(MzRange, MzRange)> ProductIonChromatogramLoader => _productIonChromatogramLoader;
-
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {
-            return new LoadChromatogramsUsecase(_ticLoader, _bpcLoader, _eicLoader, _peaks, _projectParameter.IonMode, _peakPickParameter);
+            var chromatogramRange = new ChromatogramRange(_peakPickParameter.RetentionTimeBegin, _peakPickParameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
+            return new LoadChromatogramsUsecase(_rawSpectra, chromatogramRange, _peakPickParameter, _projectParameter.IonMode, _peaks);
         }
 
         public AccumulateSpectraUsecase AccumulateSpectraUsecase { get; }

@@ -14,26 +14,26 @@ namespace CompMs.App.Msdial.Model.Loader
 {
     public class EicLoader : IChromatogramLoader<ChromatogramPeakFeatureModel>, IWholeChromatogramLoader<(double mass, double tolerance)>, IWholeChromatogramLoader<MzRange>
     {
-        protected EicLoader(AnalysisFileBean file, IDataProvider provider, PeakPickBaseParameter peakPickParameter, IonMode ionMode, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd, bool isConstantRange = true) {
-            this.provider = provider;
+        public EicLoader(AnalysisFileBean file, IDataProvider provider, PeakPickBaseParameter peakPickParameter, IonMode ionMode, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd, bool isConstantRange = true) {
             _peakPickParameter = peakPickParameter;
             _ionMode = ionMode;
-            this.chromXType = chromXType;
-            this.chromXUnit = chromXUnit;
-            this.rangeBegin = rangeBegin;
-            this.rangeEnd = rangeEnd;
             _isConstantRange = isConstantRange;
 
             _rawSpectraTask = Task.Run(async () => new RawSpectra(await provider.LoadMs1SpectrumsAsync(default).ConfigureAwait(false), ionMode, file.AcquisitionType));
             _chromatogramRange = new ChromatogramRange(rangeBegin, rangeEnd, chromXType, chromXUnit);
         }
 
-        protected readonly IDataProvider provider;
+        public EicLoader(RawSpectra rawSpectra, PeakPickBaseParameter peakPickParameter, IonMode ionMode, ChromatogramRange chromatogramRange, bool isConstantRange = true) {
+            _peakPickParameter = peakPickParameter;
+            _ionMode = ionMode;
+            _isConstantRange = isConstantRange;
+
+            _rawSpectraTask = Task.FromResult(rawSpectra);
+            _chromatogramRange = chromatogramRange;
+        }
+
         protected readonly PeakPickBaseParameter _peakPickParameter;
         private readonly IonMode _ionMode;
-        protected readonly ChromXType chromXType;
-        protected readonly ChromXUnit chromXUnit;
-        protected readonly double rangeBegin, rangeEnd;
         private readonly bool _isConstantRange;
         private readonly Task<RawSpectra> _rawSpectraTask;
         private readonly ChromatogramRange _chromatogramRange;
@@ -46,11 +46,11 @@ namespace CompMs.App.Msdial.Model.Loader
             if (target is not null) {
                 var eic = await LoadEicCoreAsync(target, token).ConfigureAwait(false);
                 token.ThrowIfCancellationRequested();
-                var peak = eic.AsPeak(target.ChromXLeftValue, target.ChromXs.GetChromByType(chromXType).Value, target.ChromXRightValue);
+                var peak = eic.AsPeak(target.ChromXLeftValue, target.ChromXs.GetChromByType(_chromatogramRange.Type).Value, target.ChromXRightValue);
                 var description = $"EIC chromatogram of {target.Mass:N4} tolerance [Da]: {MzTolerance:F} Max intensity: {peak?.GetTop().Intensity ?? 0d:F0}";
                 return new PeakChromatogram(eic, peak, string.Empty, Colors.Black, description);
             }
-            return new PeakChromatogram(new Chromatogram(Array.Empty<ValuePeak>(), chromXType, chromXUnit), null, string.Empty, Colors.Black);
+            return new PeakChromatogram(new Chromatogram(Array.Empty<ValuePeak>(), _chromatogramRange.Type, _chromatogramRange.Unit), null, string.Empty, Colors.Black);
         }
 
         private static readonly double PEAK_WIDTH_FACTOR = 3d;
@@ -58,9 +58,9 @@ namespace CompMs.App.Msdial.Model.Loader
             if (_isConstantRange) {
                 return _chromatogramRange;
             }
-            var width = target.InnerModel.PeakWidth(chromXType) * PEAK_WIDTH_FACTOR;
+            var width = target.InnerModel.PeakWidth(_chromatogramRange.Type) * PEAK_WIDTH_FACTOR;
             var center = target.ChromXValue ?? 0d;
-            return new ChromatogramRange(center - width / 2, center + width / 2, chromXType, chromXUnit);
+            return new ChromatogramRange(center - width / 2, center + width / 2, _chromatogramRange.Type, _chromatogramRange.Unit);
         }
 
         protected virtual async Task<Chromatogram> LoadEicCoreAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
@@ -83,7 +83,7 @@ namespace CompMs.App.Msdial.Model.Loader
             return new DisplayExtractedIonChromatogram(LoadEicCore(state.Mz, state.Tolerance), state.Tolerance, _ionMode);
         }
 
-        PeakChromatogram IChromatogramLoader<ChromatogramPeakFeatureModel>.EmptyChromatogram => new PeakChromatogram(new Chromatogram(Array.Empty<ValuePeak>(), chromXType, chromXUnit), null, string.Empty, Colors.Black);
+        PeakChromatogram IChromatogramLoader<ChromatogramPeakFeatureModel>.EmptyChromatogram => new PeakChromatogram(new Chromatogram(Array.Empty<ValuePeak>(), _chromatogramRange.Type, _chromatogramRange.Unit), null, string.Empty, Colors.Black);
 
         public static EicLoader BuildForAllRange(AnalysisFileBean file, IDataProvider provider, ParameterBase parameter, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd) {
             return new EicLoader(file, provider, parameter.PeakPickBaseParam, parameter.IonMode, chromXType, chromXUnit, rangeBegin, rangeEnd);

@@ -52,6 +52,16 @@ namespace CompMs.MsdialCore.DataObj
             }
         }
 
+        public (int MsLevel, int ExperimentID)[] ExperimentIDs {
+            get {
+                var result = new HashSet<(int MsLevel, int ExperimentID)>();
+                foreach (var spec in _spectra) {
+                    result.Add((spec.MsLevel, spec.ExperimentID));
+                }
+                return [.. result];
+            }
+        }
+
         public ExtractedIonChromatogram GetMs1ExtractedChromatogram_temp2(double mz, double tolerance, ChromatogramRange chromatogramRange) {
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
             return impl.GetMs1ExtractedChromatogram_temp2(mz, tolerance, chromatogramRange.Begin, chromatogramRange.End);

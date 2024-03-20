@@ -316,18 +316,18 @@
                         <MenuItem Header="Save view image as...">
                             <MenuItem Header="Save as emf"
                                       Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
-                                      CommandParameter="{Binding ElementName=AccumulatedSpectrumView}"/>
+                                      CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
                             <MenuItem Header="Save as png"
                                       Command="{x:Static io:SaveImageAsCommand.PngInstance}"
-                                      CommandParameter="{Binding ElementName=AccumulatedSpectrumView}"/>
+                                      CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
                         </MenuItem>
                         <MenuItem Header="Copy view image as...">
                             <MenuItem Header="Copy as emf"
                                       Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
-                                      CommandParameter="{Binding ElementName=AccumulatedSpectrumView}"/>
+                                      CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
                             <MenuItem Header="Copy as png"
                                       Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
-                                      CommandParameter="{Binding ElementName=AccumulatedSpectrumView}"/>
+                                      CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
                         </MenuItem>
                     </ContextMenu>
                 </chart:SimpleChartControl.ContextMenu>

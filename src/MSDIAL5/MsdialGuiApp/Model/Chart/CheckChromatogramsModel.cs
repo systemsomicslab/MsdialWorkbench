@@ -27,20 +27,16 @@ internal sealed class CheckChromatogramsModel : BindableBase
     private readonly AccumulateSpectraUsecase _accumulateSpectra;
     private readonly ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? _compoundSearch;
     private readonly AdvancedProcessOptionBaseParameter _advancedProcessParameter;
-    private readonly IWholeChromatogramLoader<MzRange> _extractedIonChromatogramLoader;
-    private readonly IWholeChromatogramLoader<(MzRange, MzRange)> _productIonChromatogramLoader;
     private readonly IMessageBroker _broker;
     private readonly List<PeakFeatureSearchValue> _displaySettingValueCandidates;
     private readonly ObservableCollection<PeakFeatureSearchValueModel> _displaySettingValues;
     private readonly MsScanCompoundSearchUsecase _scanCompoundSearchUsecase;
 
-    public CheckChromatogramsModel(LoadChromatogramsUsecase loadingChromatograms, AccumulateSpectraUsecase accumulateSpectra, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? compoundSearch, AdvancedProcessOptionBaseParameter advancedProcessParameter, IWholeChromatogramLoader<MzRange> extractedIonChromatogramLoader, IWholeChromatogramLoader<(MzRange, MzRange)> productIonChromatogramLoader, IMessageBroker broker) {
+    public CheckChromatogramsModel(LoadChromatogramsUsecase loadingChromatograms, AccumulateSpectraUsecase accumulateSpectra, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? compoundSearch, AdvancedProcessOptionBaseParameter advancedProcessParameter, IMessageBroker broker) {
         LoadChromatogramsUsecase = loadingChromatograms ?? throw new ArgumentNullException(nameof(loadingChromatograms));
         _accumulateSpectra = accumulateSpectra;
         _compoundSearch = compoundSearch;
         _advancedProcessParameter = advancedProcessParameter;
-        _extractedIonChromatogramLoader = extractedIonChromatogramLoader;
-        _productIonChromatogramLoader = productIonChromatogramLoader;
         _broker = broker;
         advancedProcessParameter.DiplayEicSettingValues ??= new List<PeakFeatureSearchValue>();
         var values = advancedProcessParameter.DiplayEicSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0).ToList();
@@ -106,13 +102,13 @@ internal sealed class CheckChromatogramsModel : BindableBase
         if (Chromatograms.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> axis) {
             axis.ChartMargin = new ConstantMargin(0, 60);
         }
-        AccumulatedMs1SpectrumModel = new AccumulatedMs1SpectrumModel(_accumulateSpectra, _scanCompoundSearchUsecase, _extractedIonChromatogramLoader, _broker);
+        AccumulatedMs1SpectrumModel = new AccumulatedMs1SpectrumModel(_accumulateSpectra, _scanCompoundSearchUsecase, LoadChromatogramsUsecase, _broker);
 
         if (_compoundSearch is not null) {
             RangeSelectableChromatogramModel = new RangeSelectableChromatogramModel(Chromatograms);
             AccumulatedMs2SpectrumModels = Chromatograms.DisplayChromatograms
                 .OfType<DisplayExtractedIonChromatogram>()
-                .Select(c => new AccumulatedMs2SpectrumModel(c, _accumulateSpectra, _compoundSearch, _productIonChromatogramLoader, _broker))
+                .Select(c => new AccumulatedMs2SpectrumModel(c, _accumulateSpectra, _compoundSearch, LoadChromatogramsUsecase, _broker))
                 .ToArray();
         }
     }

@@ -11,7 +11,6 @@ using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -43,9 +42,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly ParameterBase _parameter;
         private readonly IMessageBroker _broker;
-        private readonly TicLoader _ticLoader;
-        private readonly BpcLoader _bpcLoader;
-        private readonly ProductIonChromatogramLoader _productIonChromatogramLoader;
 
         public LcmsAnalysisModel(
             AnalysisFileBeanModel analysisFileModel,
@@ -115,12 +111,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             // Eic chart
             var eicLoader = EicLoader.BuildForAllRange(analysisFileModel.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
             EicLoader = EicLoader.BuildForPeakRange(analysisFileModel.File, provider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
-            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), parameter.IonMode, analysisFileModel.File.AcquisitionType);
-            ChromatogramRange chromatogramRange = new ChromatogramRange(parameter.RetentionTimeBegin, parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
-            _ticLoader = new TicLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
-            _bpcLoader = new BpcLoader(rawSpectra, chromatogramRange, parameter.PeakPickBaseParam);
-            _productIonChromatogramLoader = new ProductIonChromatogramLoader(new RawSpectra(provider.LoadMsNSpectrums(2), parameter.IonMode, analysisFileModel.File.AcquisitionType), parameter.ProjectParam.IonMode, chromatogramRange);
-            ExtractedIonChromatogramLoader = eicLoader;
+            _rawSpectra = new RawSpectra(provider.LoadMsSpectrums(), parameter.IonMode, analysisFileModel.File.AcquisitionType);
             EicModel = new EicModel(Target, eicLoader) {
                 HorizontalTitle = PlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
@@ -253,6 +244,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public ReadOnlyReactivePropertySlim<ExperimentSpectrumModel?> ExperimentSpectrumModel { get; }
 
         private readonly IMsSpectrumLoader<ChromatogramPeakFeatureModel> _rawSpectrumLoader;
+        private readonly RawSpectra _rawSpectra;
 
         public RawDecSpectrumsModel Ms2SpectrumModel { get; }
         public RawPurifiedSpectrumsModel RawPurifiedSpectrumsModel { get; }
@@ -267,13 +259,11 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public AccumulateSpectraUsecase AccumulateSpectraUsecase { get; }
 
-        public IWholeChromatogramLoader<MzRange> ExtractedIonChromatogramLoader { get; }
-        public IWholeChromatogramLoader<(MzRange, MzRange)> ProductIonChromatogramLoader => _productIonChromatogramLoader;
-
         public LcmsCompoundSearchUsecase CompoundSearcher { get; }
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase() {
-            return new LoadChromatogramsUsecase(_ticLoader, _bpcLoader, EicLoader, Ms1Peaks, _parameter.ProjectParam.IonMode, _parameter.PeakPickBaseParam);
+            var chromatogramRange = new ChromatogramRange(_parameter.PeakPickBaseParam.RetentionTimeBegin, _parameter.PeakPickBaseParam.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
+            return new LoadChromatogramsUsecase(_rawSpectra, chromatogramRange, _parameter.PeakPickBaseParam, _parameter.ProjectParam.IonMode, Ms1Peaks);
         }
 
         public CompoundSearchModel<PeakSpotModel>? CreateCompoundSearchModel() {

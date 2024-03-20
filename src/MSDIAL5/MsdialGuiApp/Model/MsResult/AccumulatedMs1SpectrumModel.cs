@@ -1,13 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
-using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
@@ -30,16 +28,16 @@ internal sealed class AccumulatedMs1SpectrumModel : DisposableModelBase
 {
     private readonly AccumulateSpectraUsecase _accumulateSpectra;
     private readonly MsScanCompoundSearchUsecase _compoundSearch;
-    private readonly IWholeChromatogramLoader<MzRange> _extractedIonChromatogramLoader;
+    private readonly LoadChromatogramsUsecase _loadingChromatograms;
     private readonly IMessageBroker _broker;
     private readonly BehaviorSubject<MsSpectrum?> _subject;
 
-    public AccumulatedMs1SpectrumModel(AccumulateSpectraUsecase accumulateSpectra, MsScanCompoundSearchUsecase compoundSearch, IWholeChromatogramLoader<MzRange> extractedIonChromatogramLoader, IMessageBroker broker) {
+    public AccumulatedMs1SpectrumModel(AccumulateSpectraUsecase accumulateSpectra, MsScanCompoundSearchUsecase compoundSearch, LoadChromatogramsUsecase loadingChromatograms, IMessageBroker broker) {
         _subject = new BehaviorSubject<MsSpectrum?>(null).AddTo(Disposables);
         _plotDisposable = new SerialDisposable().AddTo(Disposables);
         _accumulateSpectra = accumulateSpectra;
         _compoundSearch = compoundSearch;
-        _extractedIonChromatogramLoader = extractedIonChromatogramLoader;
+        _loadingChromatograms = loadingChromatograms;
         _broker = broker;
         SearchParameter = compoundSearch.ObserveProperty(m => m.SearchParameter).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
     }
@@ -131,14 +129,7 @@ internal sealed class AccumulatedMs1SpectrumModel : DisposableModelBase
     }
 
     public void CalculateTotalIonChromatogram() {
-        if (PlotComparedSpectrum is null) {
-            return;
-        }
-        var range = MzRange.FromRange(0d, double.MaxValue);
-
-        var displayChromatogram = _extractedIonChromatogramLoader.LoadChromatogram(range);
-        displayChromatogram.Name = $"Total ion chromatogram";
-        ExtractedIonChromatogram = new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
+        ExtractedIonChromatogram = _loadingChromatograms.LoadTic();
         if (ExtractedIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> chromAxis) {
             chromAxis.ChartMargin = new ConstantMargin(0, 60);
         }
@@ -151,10 +142,7 @@ internal sealed class AccumulatedMs1SpectrumModel : DisposableModelBase
         var axis = PlotComparedSpectrum.MsSpectrumModel.UpperSpectrumModel.HorizontalPropertySelectors.AxisItemSelector.SelectedAxisItem.AxisManager;
         var (start, end) = new RangeSelection(SelectedRange).ConvertBy(axis);
         var range = MzRange.FromRange(start, end);
-
-        var displayChromatogram = _extractedIonChromatogramLoader.LoadChromatogram(range);
-        displayChromatogram.Name = $"Extracted ion: {start}-{end}";
-        ExtractedIonChromatogram = new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
+        ExtractedIonChromatogram = _loadingChromatograms.LoadEic(range);
         if (ExtractedIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> chromAxis) {
             chromAxis.ChartMargin = new ConstantMargin(0, 40);
         }

@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Algorithm.PeakPick;
@@ -28,15 +27,15 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
 {
     private readonly AccumulateSpectraUsecase _accumulateSpectra;
     private readonly ICompoundSearchUsecase<ICompoundResult, PeakSpotModel> _compoundSearch;
-    private readonly IWholeChromatogramLoader<(MzRange, MzRange)> _productIonChromatogramLoader;
+    private readonly LoadChromatogramsUsecase _loadingChromatograms;
     private readonly IMessageBroker _broker;
     private readonly BehaviorSubject<MsSpectrum?> _subject;
 
-    public AccumulatedMs2SpectrumModel(DisplayExtractedIonChromatogram chromatogram, AccumulateSpectraUsecase accumulateSpectra, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel> compoundSearch, IWholeChromatogramLoader<(MzRange, MzRange)> productIonChromatogramLoader, IMessageBroker broker) {
+    public AccumulatedMs2SpectrumModel(DisplayExtractedIonChromatogram chromatogram, AccumulateSpectraUsecase accumulateSpectra, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel> compoundSearch, LoadChromatogramsUsecase loadingChromatograms, IMessageBroker broker) {
         Chromatogram = chromatogram;
         _accumulateSpectra = accumulateSpectra;
         _compoundSearch = compoundSearch;
-        _productIonChromatogramLoader = productIonChromatogramLoader;
+        _loadingChromatograms = loadingChromatograms;
         _broker = broker;
         _plotDisposable = new SerialDisposable().AddTo(Disposables);
         _subject = new BehaviorSubject<MsSpectrum?>(null).AddTo(Disposables);
@@ -140,11 +139,9 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
         if (PlotComparedSpectrum is null) {
             return;
         }
-        var range = MzRange.FromRange(0d, double.MaxValue);
 
-        var displayChromatogram = _productIonChromatogramLoader.LoadChromatogram((new MzRange(Chromatogram.Mz, Chromatogram.Tolerance), range));
-        displayChromatogram.Name = $"TIC Precursor m/z: {Chromatogram.Mz}±{Chromatogram.Tolerance}";
-        ProductIonChromatogram = new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
+        var range = MzRange.FromRange(0d, double.MaxValue);
+        ProductIonChromatogram = _loadingChromatograms.LoadMS2Eic(new MzRange(Chromatogram.Mz, Chromatogram.Tolerance), range);
         if (ProductIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> chromAxis) {
             chromAxis.ChartMargin = new ConstantMargin(0, 60);
         }
@@ -154,13 +151,11 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
         if (PlotComparedSpectrum is null) {
             return;
         }
+
         var axis = PlotComparedSpectrum.MsSpectrumModel.UpperSpectrumModel.HorizontalPropertySelectors.AxisItemSelector.SelectedAxisItem.AxisManager;
         var (start, end) = new RangeSelection(SelectedRange).ConvertBy(axis);
         var range = MzRange.FromRange(start, end);
-
-        var displayChromatogram = _productIonChromatogramLoader.LoadChromatogram((new MzRange(Chromatogram.Mz, Chromatogram.Tolerance), range));
-        displayChromatogram.Name = $"Precursor m/z: {Chromatogram.Mz}±{Chromatogram.Tolerance}, Product ion: {start}-{end}";
-        ProductIonChromatogram = new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
+        ProductIonChromatogram = _loadingChromatograms.LoadMS2Eic(new MzRange(Chromatogram.Mz, Chromatogram.Tolerance), range);
         if (ProductIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> chromAxis) {
             chromAxis.ChartMargin = new ConstantMargin(0, 40);
         }
