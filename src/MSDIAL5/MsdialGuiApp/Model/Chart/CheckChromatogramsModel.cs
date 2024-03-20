@@ -1,11 +1,9 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.MsResult;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Algorithm.PeakPick;
-using CompMs.Common.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
@@ -81,7 +79,7 @@ internal sealed class CheckChromatogramsModel : BindableBase
             }
         }
     }
-    private AccumulatedMs2SpectrumModel[] _accumulatedMs2SpectrumModels = Array.Empty<AccumulatedMs2SpectrumModel>();
+    private AccumulatedMs2SpectrumModel[] _accumulatedMs2SpectrumModels = [];
 
     public ReadOnlyObservableCollection<PeakFeatureSearchValueModel> DisplayEicSettingValues { get; }
 

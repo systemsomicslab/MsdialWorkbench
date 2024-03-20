@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Utility;
@@ -15,9 +16,12 @@ namespace CompMs.App.Msdial.Model.DataObj
             Chromatogram = chromatogram;
             Tolerance = tolerance;
             _ionMode = ionMode;
+            MzRange = new(Mz, tolerance);
         }
 
         public new ExtractedIonChromatogram Chromatogram { get; }
+
+        public MzRange MzRange { get; }
 
         public double Mz { get; }
         public double Tolerance { get; }
