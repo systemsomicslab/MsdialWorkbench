@@ -89,13 +89,15 @@ namespace CompMs.App.MsdialConsole {
             //args = new string[] {
             //    "msn"
             //    , "-i"
-            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\data"
+            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\data\ogawa_20240123\input_msn_neg"
             //    , "-o"
-            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\msn"
+            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\data\ogawa_20240123\output_msn_neg"
             //    , "-m"
-            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\msn_param.txt"
+            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\data\ogawa_20240123\msn_param_20240127.txt"
             //    , "-ionmode"
             //    , "Negative"
+            //    , "-overwrite"
+            //    , "false"
             //};
 
             //MoleculerSpectrumNetworkingTest.MergeNodeFiles(@"E:\6_Projects\PROJECT_MsMachineLearning\data\MTBKS157\peakpick\neg", @"E:\6_Projects\PROJECT_MsMachineLearning\msn\cytoscape_test\node.txt");

@@ -27,6 +27,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReadOnlyObservableCollection<DisplayChromatogram> DisplayChromatograms => _model.DisplayChromatograms;
 
+        public AxisItemSelector<double> HorizontalSelector => _model.ChromAxisItemSelector;
+        public AxisItemSelector<double> VerticalSelector => _model.AbundanceAxisItemSelector;
+
         public IAxisManager<double> HorizontalAxis => _model.ChromAxisItemSelector.SelectedAxisItem.AxisManager;
         public IAxisManager<double> VerticalAxis => _model.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager;
 

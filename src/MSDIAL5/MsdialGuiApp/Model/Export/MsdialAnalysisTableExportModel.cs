@@ -1,9 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,7 +16,9 @@ namespace CompMs.App.Msdial.Model.Export
 {
     internal sealed class MsdialAnalysisTableExportModel : BindableBase, IMsdialAnalysisExport
     {
-        public MsdialAnalysisTableExportModel(IEnumerable<ISpectraType> spectraTypes, IEnumerable<SpectraFormat> spectraFormats) {
+        private readonly IMessageBroker _broker;
+
+        public MsdialAnalysisTableExportModel(IEnumerable<ISpectraType> spectraTypes, IEnumerable<SpectraFormat> spectraFormats, IMessageBroker? broker = null) {
             if (spectraTypes is null) {
                 throw new ArgumentNullException(nameof(spectraTypes));
             }
@@ -28,6 +32,7 @@ namespace CompMs.App.Msdial.Model.Export
 
             ExportSpectraFileFormats = new ObservableCollection<SpectraFormat>(spectraFormats);
             SelectedFileFormat = ExportSpectraFileFormats.FirstOrDefault();
+            _broker = broker ?? MessageBroker.Default;
         }
 
         public bool ShouldExport {
@@ -55,13 +60,24 @@ namespace CompMs.App.Msdial.Model.Export
         }
         private int _isotopeExportMax = 2;
 
+        /// <summary>
+        /// Exports the analysis file result to the specified destination folder.
+        /// </summary>
+        /// <param name="destinationFolder">The destination folder to export the file to.</param>
+        /// <param name="fileBeanModel">The analysis file model.</param>
         public void Export(string destinationFolder, AnalysisFileBeanModel fileBeanModel) {
             if (!ShouldExport || SelectedFileFormat is null || SelectedSpectraType is null) {
                 return;
             }
             var filename = Path.Combine(destinationFolder, fileBeanModel.AnalysisFileName + "." + SelectedFileFormat.Format);
-            using var stream = File.Open(filename, FileMode.Create, FileAccess.Write);
-            SelectedSpectraType.Export(stream, fileBeanModel.File, SelectedFileFormat.ExporterFactory);
+            try {
+                using var stream = File.Open(filename, FileMode.Create, FileAccess.Write);
+                SelectedSpectraType.Export(stream, fileBeanModel.File, SelectedFileFormat.ExporterFactory);
+            }
+            catch (IOException ex) {
+                var request = new ShortMessageRequest("Failed to export file: " + ex.Message);
+                _broker.Publish(request);
+            }
         }
     }
 
@@ -77,7 +93,8 @@ namespace CompMs.App.Msdial.Model.Export
         public AnalysisCSVExporterFactory ExporterFactory { get; }
     }
 
-    interface ISpectraType {
+    interface ISpectraType
+    {
         void Export(Stream stream, AnalysisFileBean file, AnalysisCSVExporterFactory exporterFactory);
     }
 

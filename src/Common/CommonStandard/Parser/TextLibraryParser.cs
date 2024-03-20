@@ -170,7 +170,6 @@ namespace CompMs.Common.Parser
             return peaks;
         }
 
-
         public static List<MoleculeMsReference> TextLibraryReader(string filePath, out string error)
         {
             List<MoleculeMsReference> result = null;

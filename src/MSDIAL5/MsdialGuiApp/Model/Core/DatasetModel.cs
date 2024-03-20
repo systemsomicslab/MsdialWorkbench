@@ -16,6 +16,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using CompMs.Common.Extension;
 
 namespace CompMs.App.Msdial.Model.Core
 {
@@ -191,9 +192,12 @@ namespace CompMs.App.Msdial.Model.Core
                 var storage = await serializer.LoadAsync(streamManager, projectFileName, projectFolder, string.Empty);
                 streamManager.Complete();
                 storage.FixDatasetFolder(projectFolder);
+               
                 return storage;
             }
         }
+
+        
 
         AnalysisFileBeanModelCollection IDatasetModel.AnalysisFiles => _analysisFileBeanModelCollection;
     }

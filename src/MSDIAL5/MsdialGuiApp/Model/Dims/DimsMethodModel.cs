@@ -19,8 +19,11 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -151,6 +154,12 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         public override async Task RunAsync(ProcessOption processOption, CancellationToken token) {
+
+            var parameter = Storage.Parameter;
+            var starttimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
+            var stopwatch = Stopwatch.StartNew();
+
+
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
             IAnnotationProcess annotationProcess;
             if (Storage.Parameter.TargetOmics == TargetOmics.Lipidomics && 
@@ -184,6 +193,10 @@ namespace CompMs.App.Msdial.Model.Dims
                     return;
                 }
             }
+
+            stopwatch.Stop();
+            var ts = stopwatch.Elapsed;
+            AutoParametersSave(starttimestamp, ts, parameter);
 
             await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
         }

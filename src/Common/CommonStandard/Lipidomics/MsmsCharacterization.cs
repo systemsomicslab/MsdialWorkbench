@@ -1468,7 +1468,7 @@ namespace CompMs.Common.Lipidomics
         {
 
             var totalCarbon = sn1Carbon + sn2Carbon;
-            var totalDB = sn1Double + sn2Double;
+            var totalDB = sn1Double + sn2Double + 1;
             var totalString = totalCarbon + ":" + totalDB + ";O";
             var totalName = lipidClass + " " + totalString;
 
@@ -8602,7 +8602,7 @@ AdductIon adduct)
 
                             var query = new List<SpectrumPeak>
                                         {
-                                        new SpectrumPeak() { Mass = NL_SN1, Intensity = 0.5 },
+                                        new SpectrumPeak() { Mass = NL_SN1, Intensity = 0.05 },
                                         new SpectrumPeak() { Mass = NL_SN1_header, Intensity = 5.0 },
                                         };
 
@@ -8614,7 +8614,7 @@ AdductIon adduct)
                             {
                                 var molecule = new LipidMolecule();
                                 molecule = LipidMsmsCharacterizationUtility.getFahfaMoleculeObjAsLevel2_0("DMEDFAHFA", LbmClass.DMEDFAHFA, sn1Carbon, sn1Double,
-                            sn2Carbon, sn2Double, averageIntensity);
+                                sn2Carbon, sn2Double, averageIntensity);
                                 candidates.Add(molecule);
                             }
                         }
@@ -18753,14 +18753,17 @@ AdductIon adduct)
                         theoreticalMz - (MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 3) : theoreticalMz;
 
                     //  seek "[C5H12PO5]+"; // 183
-                    var threshold = 10.0;
+                    var threshold = 2.0;
                     var diagnosticMz1 = 12 * 5 + MassDiffDictionary.HydrogenMass * 11 + MassDiffDictionary.OxygenMass * 5 + MassDiffDictionary.PhosphorusMass + Proton;
                     //  C2H7PO4 Loss
                     var diagnosticMz2 = diagnosticMz - (12 * 2 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass);
 
                     var isClassIonFound1 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
-                    if (isClassIonFound1 == false || isClassIonFound2 == false) return null;
+                    if (isClassIonFound1 == false || isClassIonFound2 == false)
+                    {
+                        return null;
+                    }
 
                     var candidates = new List<LipidMolecule>();
 

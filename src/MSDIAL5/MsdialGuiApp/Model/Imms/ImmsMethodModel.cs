@@ -22,8 +22,11 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -143,6 +146,11 @@ namespace CompMs.App.Msdial.Model.Imms
         public StudyContextModel StudyContext { get; }
 
         public override Task RunAsync(ProcessOption option, CancellationToken token) {
+
+            var parameter = _storage.Parameter;
+            var starttimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
+            var stopwatch = Stopwatch.StartNew();
+
             // Run PeakPick and Identification
             if (option.HasFlag(ProcessOption.Identification | ProcessOption.PeakSpotting)) {
                 if (!ProcessPeakPickAndAnnotation(_storage)) {
@@ -159,6 +167,10 @@ namespace CompMs.App.Msdial.Model.Imms
                 if (!ProcessAlignment(_storage))
                     return Task.CompletedTask;
             }
+
+            stopwatch.Stop();
+            var ts = stopwatch.Elapsed;
+            AutoParametersSave(starttimestamp, ts, parameter);
 
             return LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token);
         }
@@ -285,7 +297,7 @@ namespace CompMs.App.Msdial.Model.Imms
             };
             var models = new IMsdialAnalysisExport[]
             {
-                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats),
+                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, _broker),
                 new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
                     [ExportspectraType.deconvoluted] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter),
                     [ExportspectraType.centroid] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter, file => new CentroidMsScanPropertyLoader(ProviderFactory.Create(file), _storage.Parameter.MS2DataType)),
@@ -306,7 +318,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 },
                 new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam, StudyContext),
             };
-            return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, models);
+            return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, _broker, models);
         }
 
         public CheckChromatogramsModel? PrepareChromatograms(bool tic, bool bpc, bool highestEic) {

@@ -21,8 +21,11 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -150,24 +153,32 @@ namespace CompMs.App.Msdial.Model.Gcms
         }
         private GcmsAlignmentModel? _selectedAlignmentModel;
 
-        public override Task RunAsync(ProcessOption option, CancellationToken token) {
+        public override async Task RunAsync(ProcessOption option, CancellationToken token) {
+            var parameter = _storage.Parameter;
+            var starttimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
+            var stopwatch = Stopwatch.StartNew();
             if (option.HasFlag(ProcessOption.PeakSpotting | ProcessOption.Identification)) {
                 if (!RunFromPeakSpotting()) {
-                    return Task.CompletedTask;
+                    return;
                 }
             }
             else if (option.HasFlag(ProcessOption.Identification)) {
                 if (!RunFromIdentification()) {
-                    return Task.CompletedTask;
+                    return;
                 }
             }
 
             if (option.HasFlag(ProcessOption.Alignment)) {
                 if (!RunAlignment()) {
-                    return Task.CompletedTask;
+                    return;
                 }
             }
-            return Task.CompletedTask;
+
+            stopwatch.Stop();
+            var ts = stopwatch.Elapsed;
+            AutoParametersSave(starttimestamp, ts, parameter);
+
+            await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
         }
 
         private bool RunFromPeakSpotting() {
@@ -275,7 +286,7 @@ namespace CompMs.App.Msdial.Model.Gcms
 
             var models = new IMsdialAnalysisExport[]
             {
-                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats),
+                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, _broker),
                 // TODO: Export msp and mgf files by using SpectrumFeature not ChromatogramPeakFeature
                 //new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
                 //    [ExportspectraType.deconvoluted] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter),
@@ -297,7 +308,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 //},
                 // new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam, _studyContext),
             };
-            return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, models);
+            return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, _broker, models);
         }
 
         public AlignmentResultExportModel AlignmentResultExportModel { get; }
