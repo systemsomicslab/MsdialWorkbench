@@ -19,6 +19,16 @@
                     </ui:ContainerElement>
                 </ui:ContainerElement>
             </ui:DockItemsControl.LayoutElement>
+            <ui:DockItemsControl.ContentTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding StringFormat=Content: {0}}"/>
+                </DataTemplate>
+            </ui:DockItemsControl.ContentTemplate>
+            <ui:DockItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding StringFormat=Header: {0}}"/>
+                </DataTemplate>
+            </ui:DockItemsControl.ItemTemplate>
         </ui:DockItemsControl>
     </Grid>
 </Page>

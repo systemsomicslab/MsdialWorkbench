@@ -833,6 +833,8 @@
                                             AllowDrop="True">
                                     <TabControl.ItemContainerStyle>
                                         <Style TargetType="TabItem">
+                                            <Setter Property="HeaderTemplate" Value="{Binding ItemTemplate, RelativeSource={RelativeSource AncestorType=ui:DockItemsControl}}"/>
+                                            <Setter Property="Header" Value="{Binding Content}"/>
                                             <Setter Property="ContextMenu">
                                                 <Setter.Value>
                                                     <ContextMenu>
@@ -853,7 +855,9 @@
                                 <ui:ResizableItemsControl Orientation="{Binding Orientation}" ItemsSource="{Binding Children}"/>
                             </DataTemplate>
                             <DataTemplate DataType="{x:Type ui:ContainerLeaf}">
-                                <ContentPresenter Content="{Binding Content}" IsHitTestVisible="False"/>
+                                <ContentPresenter Content="{Binding Content}"
+                                                  ContentTemplate="{Binding ContentTemplate, RelativeSource={RelativeSource AncestorType=ui:DockItemsControl}}"
+                                                  IsHitTestVisible="False"/>
                             </DataTemplate>
                         </ContentControl.Resources>
                     </ContentControl>

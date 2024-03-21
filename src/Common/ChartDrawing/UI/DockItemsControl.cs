@@ -83,14 +83,12 @@ public class DockItemsControl : ItemsControl
             nameof(Containers),
             typeof(NodeContainers),
             typeof(DockItemsControl),
-            new FrameworkPropertyMetadata(
-                null,
-                FrameworkPropertyMetadataOptions.AffectsRender));
+            new FrameworkPropertyMetadata(null));
 
     private static readonly DependencyProperty ContainersProperty = ContainersPropertyKey.DependencyProperty;
 
-    public NodeContainers Containers {
-        get => (NodeContainers)GetValue(ContainersProperty);
+    public NodeContainers? Containers {
+        get => (NodeContainers?)GetValue(ContainersProperty);
         private set => SetValue(ContainersPropertyKey, value);
     }
 
@@ -101,26 +99,36 @@ public class DockItemsControl : ItemsControl
             typeof(DockItemsControl),
             new FrameworkPropertyMetadata(
                 null,
-                FrameworkPropertyMetadataOptions.AffectsRender,
                 OnLayoutElementChanged));
 
-    public IDockLayoutElement LayoutElement {
-        get => (IDockLayoutElement)GetValue(LayoutElementProperty);
+    public IDockLayoutElement? LayoutElement {
+        get => (IDockLayoutElement?)GetValue(LayoutElementProperty);
         set => SetValue(LayoutElementProperty, value);
     }
 
     private static void OnLayoutElementChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
         if (d is DockItemsControl dc) {
-            dc.OnLayoutElementChanged((IDockLayoutElement)e.OldValue, (IDockLayoutElement)e.NewValue);
+            dc.OnLayoutElementChanged((IDockLayoutElement?)e.OldValue, (IDockLayoutElement?)e.NewValue);
         }
     }
 
-    private void OnLayoutElementChanged(IDockLayoutElement oldValue, IDockLayoutElement newValue) {
+    private void OnLayoutElementChanged(IDockLayoutElement? oldValue, IDockLayoutElement? newValue) {
         var values = Containers.Leaves.Select(leaf => leaf.Content).ToArray();
         Containers.Build(newValue);
         foreach (var value in values) {
             Containers.SetLast(value);
         }
+    }
+
+    public static readonly DependencyProperty ContentTemplateProperty =
+        DependencyProperty.Register(
+            nameof(ContentTemplate),
+            typeof(DataTemplate),
+            typeof(DockItemsControl));
+
+    public DataTemplate? ContentTemplate {
+        get => (DataTemplate?)GetValue(ContentTemplateProperty);
+        set => SetValue(ContentTemplateProperty, value);
     }
 
     public Action<object, int, object, int> MoveNodeCallback => MoveNode;
