@@ -10,7 +10,7 @@ namespace ChartDrawingUiTest.UI
         public DockItemsControl() {
             InitializeComponent();
 
-            DataContext = new[] { 1, 2, 3, 4, };
+            DataContext = new[] { 1, 2, 3, 4, 5, };
         }
     }
 }

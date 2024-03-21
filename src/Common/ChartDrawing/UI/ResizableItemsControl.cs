@@ -146,7 +146,12 @@ namespace CompMs.Graphics.UI
                 switch (Orientation) {
                     case Orientation.Horizontal:
                         if (index % 2 == 0) {
-                            _grid.ColumnDefinitions.Insert(index, new ColumnDefinition { Width = new GridLength(1d, GridUnitType.Star), });
+                            if (visualItem is ContentPresenter presenter && presenter.Content is IContainerNode node) {
+                                _grid.ColumnDefinitions.Insert(index, new ColumnDefinition { Width = node.Width, });
+                            }
+                            else {
+                                _grid.ColumnDefinitions.Insert(index, new ColumnDefinition { Width = new GridLength(1d, GridUnitType.Star), });
+                            }
                             Grid.SetColumn(visualItem, index);
                             _grid.Children.Insert(index, visualItem);
                             if (_grid.ColumnDefinitions.Count >= 2) {
@@ -175,14 +180,24 @@ namespace CompMs.Graphics.UI
                             };
                             Grid.SetColumn(splitter, index);
                             _grid.Children.Insert(index, splitter);
-                            _grid.ColumnDefinitions.Insert(index + 1, new ColumnDefinition { Width = new GridLength(1d, GridUnitType.Star), });
+                            if (visualItem is ContentPresenter presenter && presenter.Content is IContainerNode node) {
+                                _grid.ColumnDefinitions.Insert(index + 1, new ColumnDefinition { Width = node.Width, });
+                            }
+                            else {
+                                _grid.ColumnDefinitions.Insert(index + 1, new ColumnDefinition { Width = new GridLength(1d, GridUnitType.Star), });
+                            }
                             Grid.SetColumn(visualItem, index + 1);
                             _grid.Children.Insert(index + 1, visualItem);
                         }
                         break;
                     case Orientation.Vertical:
                         if (index % 2 == 0) {
-                            _grid.RowDefinitions.Insert(index, new RowDefinition { Height = new GridLength(1d, GridUnitType.Star), });
+                            if (visualItem is ContentPresenter presenter && presenter.Content is IContainerNode node) {
+                                _grid.RowDefinitions.Insert(index, new RowDefinition { Height = node.Height, });
+                            }
+                            else {
+                                _grid.RowDefinitions.Insert(index, new RowDefinition { Height = new GridLength(1d, GridUnitType.Star), });
+                            }
                             Grid.SetRow(visualItem, index);
                             _grid.Children.Insert(index, visualItem);
                             if (_grid.RowDefinitions.Count >= 2) {
@@ -211,7 +226,12 @@ namespace CompMs.Graphics.UI
                             };
                             Grid.SetRow(splitter, index);
                             _grid.Children.Insert(index, splitter);
-                            _grid.RowDefinitions.Insert(index + 1, new RowDefinition { Height = new GridLength(1d, GridUnitType.Star), });
+                            if (visualItem is ContentPresenter presenter && presenter.Content is IContainerNode node) {
+                                _grid.RowDefinitions.Insert(index + 1, new RowDefinition { Height = node.Height, });
+                            }
+                            else {
+                                _grid.RowDefinitions.Insert(index + 1, new RowDefinition { Height = new GridLength(1d, GridUnitType.Star), });
+                            }
                             Grid.SetRow(visualItem, index + 1);
                             _grid.Children.Insert(index + 1, visualItem);
                         }

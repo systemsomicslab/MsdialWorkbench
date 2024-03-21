@@ -46,70 +46,20 @@ public class DockItemsControl : ItemsControl
         DefaultStyleKeyProperty.OverrideMetadata(typeof(DockItemsControl), new FrameworkPropertyMetadata(typeof(DockItemsControl)));
     }
 
-    public readonly static RoutedCommand SplitHorizontalCommand = new RoutedCommand(nameof(DockItemsControl), typeof(DockItemsControl));
-    public readonly static RoutedCommand SplitVerticalCommand = new RoutedCommand(nameof(DockItemsControl), typeof(DockItemsControl));
+    public readonly static RoutedCommand SplitHorizontalCommand = new(nameof(DockItemsControl), typeof(DockItemsControl));
+    public readonly static RoutedCommand SplitVerticalCommand = new(nameof(DockItemsControl), typeof(DockItemsControl));
 
     public DockItemsControl()
     {
-        var leaf1 = new ContainerLeaf();
-        var overlay1 = new ContainerOver
-        {
-            Width = new GridLength(2, GridUnitType.Star),
-        };
-        overlay1.Add(leaf1);
-        var leaf2 = new ContainerLeaf();
-        var overlay2 = new ContainerOver
-        {
-            Height = new GridLength(1, GridUnitType.Star),
-        };
-        overlay2.Add(leaf2);
-        var leaf3 = new ContainerLeaf();
-        var leaf4 = new ContainerLeaf();
-        var overlay34 = new ContainerOver
-        {
-            Height = new GridLength(2, GridUnitType.Star),
-        };
-        overlay34.Add(leaf3);
-        overlay34.Add(leaf4);
-        var vertical = new ContainerSplit
-        {
-            Orientation = Orientation.Vertical,
-            Width = new GridLength(3, GridUnitType.Star),
-        };
-        vertical.Add(overlay2);
-        vertical.Add(overlay34);
-        var horizontal = new ContainerSplit
-        {
-            Orientation = Orientation.Horizontal,
-        };
-        horizontal.Add(overlay1);
-        horizontal.Add(vertical); 
-
-        Containers = new NodeContainers
-        {
-            Root = horizontal,
-        };
-
-        Leaves.Add(leaf1);
-        Leaves.Add(leaf2);
-        Leaves.Add(leaf3);
-        Leaves.Add(leaf4);
-
+        Containers = new NodeContainers();
         CommandBindings.Add(new CommandBinding(SplitHorizontalCommand, new ExecutedRoutedEventHandler(SplitHorizontal), CanSplitHorizontal));
         CommandBindings.Add(new CommandBinding(SplitVerticalCommand, SplitVertical, CanSplitVertical));
     }
 
-    private List<ContainerLeaf> Leaves { get; } = [];
-
     protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue) {
         base.OnItemsSourceChanged(oldValue, newValue);
-        var idx = 0;
         foreach (var val in newValue) {
-            // Temporary ignore
-            if (idx >= Leaves.Count) {
-                break;
-            }
-            Leaves[idx++].Content = val;
+            Containers.SetLast(val);
         }
     }
 
@@ -128,8 +78,8 @@ public class DockItemsControl : ItemsControl
         }
     }
 
-    internal static readonly DependencyProperty ContainersProperty =
-        DependencyProperty.Register(
+    private static readonly DependencyPropertyKey ContainersPropertyKey =
+        DependencyProperty.RegisterReadOnly(
             nameof(Containers),
             typeof(NodeContainers),
             typeof(DockItemsControl),
@@ -137,9 +87,40 @@ public class DockItemsControl : ItemsControl
                 null,
                 FrameworkPropertyMetadataOptions.AffectsRender));
 
-    public NodeContainers? Containers {
+    private static readonly DependencyProperty ContainersProperty = ContainersPropertyKey.DependencyProperty;
+
+    public NodeContainers Containers {
         get => (NodeContainers)GetValue(ContainersProperty);
-        private set => SetValue(ContainersProperty, value);
+        private set => SetValue(ContainersPropertyKey, value);
+    }
+
+    public static readonly DependencyProperty LayoutElementProperty =
+        DependencyProperty.Register(
+            nameof(LayoutElement),
+            typeof(IDockLayoutElement),
+            typeof(DockItemsControl),
+            new FrameworkPropertyMetadata(
+                null,
+                FrameworkPropertyMetadataOptions.AffectsRender,
+                OnLayoutElementChanged));
+
+    public IDockLayoutElement LayoutElement {
+        get => (IDockLayoutElement)GetValue(LayoutElementProperty);
+        set => SetValue(LayoutElementProperty, value);
+    }
+
+    private static void OnLayoutElementChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+        if (d is DockItemsControl dc) {
+            dc.OnLayoutElementChanged((IDockLayoutElement)e.OldValue, (IDockLayoutElement)e.NewValue);
+        }
+    }
+
+    private void OnLayoutElementChanged(IDockLayoutElement oldValue, IDockLayoutElement newValue) {
+        var values = Containers.Leaves.Select(leaf => leaf.Content).ToArray();
+        Containers.Build(newValue);
+        foreach (var value in values) {
+            Containers.SetLast(value);
+        }
     }
 
     public Action<object, int, object, int> MoveNodeCallback => MoveNode;
@@ -180,7 +161,8 @@ public class DockItemsControl : ItemsControl
 }
 
 public interface IContainerNode {
-
+    GridLength Width { get; }
+    GridLength Height { get; }
 }
 
 public interface IContainerNodeCollection : IContainerNode, IEnumerable<IContainerNode> {
@@ -188,21 +170,53 @@ public interface IContainerNodeCollection : IContainerNode, IEnumerable<IContain
     int IndexOf(IContainerNode node);
     void Insert(IContainerNode node, int index);
     void Remove(IContainerNode node);
+    internal IEnumerable<ContainerLeaf> GetLeaves();
 }
 
-public sealed class NodeContainers {
-    public IContainerNode? Root { get; set; }
+public sealed class NodeContainers : INotifyPropertyChanged {
+    public IContainerNodeCollection? Root {
+        get => _root;
+        private set {
+            if (_root != value) {
+                _root = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Root)));
+            }
+        }
+    }
+    private IContainerNodeCollection? _root;
+
+    internal ContainerLeaf[] Leaves {
+        get => _leaves;
+        private set {
+            if (_leaves != value) {
+                _leaves = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Leaves)));
+            }
+        }
+    }
+    private ContainerLeaf[] _leaves = [];
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    public void SetLast(object item) {
+        foreach (var leaf in _leaves) {
+            if (leaf.Content is null) {
+                leaf.Content = item;
+                return;
+            }
+        }
+        Add(item);
+    }
 
     public void Add(object item) {
         var node = new ContainerLeaf
         {
             Content = item,
-            Width = new GridLength(1, GridUnitType.Star),
-            Height = new GridLength(1, GridUnitType.Star),
         };
         var collection = FindLastCollection();
         if (collection is not null) {
             collection.Insert(node, collection.Count);
+            Leaves = [..Root.GetLeaves()];
             return;
         }
         var root = new ContainerOver
@@ -214,36 +228,39 @@ public sealed class NodeContainers {
             root.Insert(Root, root.Count);
         }
         root.Insert(node, root.Count);
+        Root = root;
+        Leaves = [..Root.GetLeaves()];
     }
 
-    public void Insert(object item, IContainerNodeCollection parent, int index) {
+    internal void Insert(object item, IContainerNodeCollection parent, int index) {
         var node = new ContainerLeaf
         {
             Content = item,
-            Width = new GridLength(1, GridUnitType.Star),
-            Height = new GridLength(1, GridUnitType.Star),
         };
         parent.Insert(node, index);
+        Leaves = [..Root.GetLeaves()];
     }
 
-    public void Move(IContainerNode node, IContainerNodeCollection parent, int index) {
+    internal void Move(IContainerNode node, IContainerNodeCollection parent, int index) {
         var currentParent = FindParent(node);
         if (currentParent is null) {
             return;
         }
         parent.Insert(node, index);
         currentParent.Remove(node);
+        Leaves = [..Root.GetLeaves()];
     }
 
-    public void Remove(IContainerNode node) {
+    internal void Remove(IContainerNode node) {
         var parent = FindParent(node);
         if (parent is null) {
             return;
         }
         parent.Remove(node);
+        Leaves = [..Root.GetLeaves()];
     }
 
-    public void SplitHorizontal(IContainerNode node) {
+    internal void SplitHorizontal(IContainerNode node) {
         var parent = FindParent(node);
         if (parent is not ContainerOver) {
             return;
@@ -411,6 +428,18 @@ public sealed class NodeContainers {
         }
         return current;
     }
+
+    public void Build(IDockLayoutElement? itemElement) {
+        if (itemElement is null) {
+            Root = null;
+            Leaves = [];
+            return;
+        }
+        Root = itemElement.Build();
+        if (Root is not null) {
+            Leaves = [..Root.GetLeaves()];
+        }
+    }
 }
 
 internal sealed class ContainerLeaf : IContainerNode, INotifyPropertyChanged {
@@ -515,6 +544,19 @@ internal sealed class ContainerSplit : IContainerNode, IContainerNodeCollection,
         return Children.IndexOf(node);
     }
 
+    public IEnumerable<ContainerLeaf> GetLeaves() {
+        foreach (var child in Children) {
+            if (child is IContainerNodeCollection collection) {
+                foreach (var leaf in collection.GetLeaves()) {
+                    yield return leaf;
+                }
+            }
+            else if (child is ContainerLeaf leaf) {
+                yield return leaf;
+            }
+        }
+    }
+
     public event PropertyChangedEventHandler? PropertyChanged;
 }
 
@@ -571,6 +613,62 @@ internal sealed class ContainerOver : IContainerNode, IContainerNodeCollection, 
         return Children.IndexOf(node);
     }
 
+    public IEnumerable<ContainerLeaf> GetLeaves() {
+        foreach (var child in Children) {
+            if (child is IContainerNodeCollection collection) {
+                foreach (var leaf in collection.GetLeaves()) {
+                    yield return leaf;
+                }
+            }
+            else if (child is ContainerLeaf leaf) {
+                yield return leaf;
+            }
+        }
+    }
+
     public event PropertyChangedEventHandler? PropertyChanged;
+}
+
+public interface IDockLayoutElement {
+    internal IContainerNodeCollection Build();
+}
+
+[System.Windows.Markup.ContentProperty("Items")]
+public sealed class ContainerElement : IDockLayoutElement {
+    public List<IDockLayoutElement> Items { get; set; } = [];
+    public Orientation Orientation { get; set; }
+    public GridLength Width { get; set; }
+    public GridLength Height { get; set; }
+
+    IContainerNodeCollection IDockLayoutElement.Build() {
+        var container = new ContainerSplit
+        {
+            Orientation = Orientation,
+            Width = Width,
+            Height = Height,
+        };
+        foreach (var item in Items) {
+            container.Add(item.Build());
+        }
+        return container;
+    }
+}
+
+public sealed class LeafElement : IDockLayoutElement {
+    public int Size { get; set; }
+    public GridLength Width { get; set; }
+    public GridLength Height { get; set; }
+
+    IContainerNodeCollection IDockLayoutElement.Build() {
+        var container = new ContainerOver
+        {
+            Width = Width,
+            Height = Height,
+        };
+        for (int i = 0; i < Size; i++) {
+            container.Add(new ContainerLeaf());
+        }
+        return container;
+    }
 }
 
