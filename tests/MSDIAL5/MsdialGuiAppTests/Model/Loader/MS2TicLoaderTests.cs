@@ -105,6 +105,10 @@ public class MS2TicLoaderTests
             throw new System.NotImplementedException();
         }
 
+        public ExtractedIonChromatogram GetMS2ExtractedIonChromatogram(MzRange product, ChromatogramRange chromatogramRange, int experimentID) {
+            throw new NotImplementedException();
+        }
+
         public Chromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange) {
             throw new System.NotImplementedException();
         }

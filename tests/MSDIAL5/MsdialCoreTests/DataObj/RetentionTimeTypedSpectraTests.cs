@@ -195,4 +195,35 @@ public class RetentionTimeTypedSpectraTests
         Assert.AreEqual(8d, chromatogram[1].ChromXs.RT.Value, "Second peak should have a time of 8 minutes.");
     }
 
+    [TestMethod()]
+    public void GetMS2ExtractedIonChromatogram_WithExperimentIdAndValidMzRange_ReturnsCorrectChromatogram()
+    {
+        // Arrange: Create a set of test spectra with varying characteristics and different experiment IDs.
+        var spectra = new RetentionTimeTypedSpectra(new[]
+        {
+            new RawSpectrum { Index = 0, ScanStartTime = 1d, MsLevel = 2, ExperimentID = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 100d }, new RawPeakElement{ Mz = 200d, Intensity = 1000d } } },
+            new RawSpectrum { Index = 1, ScanStartTime = 2d, MsLevel = 2, ExperimentID = 2, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 150d, Intensity = 500d }, new RawPeakElement{ Mz = 250d, Intensity = 1500d } } },
+            // Additional spectra omitted for brevity...
+            new RawSpectrum { Index = 7, ScanStartTime = 8d, MsLevel = 2, ExperimentID = 2, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 150d, Intensity = 500d }, new RawPeakElement{ Mz = 250d, Intensity = 1500d } } },
+        },
+        ChromXUnit.Min,
+        IonMode.Positive, AcquisitionType.DDA);
+
+        int testExperimentID = 2; // Specify the experiment ID to filter by.
+        MzRange testMzRange = new MzRange(140d, 10d); // Targeting m/z of 150 with a tolerance of 10.
+
+        // Act: Call the method under test with a specific chromatogram range, m/z range, and experiment ID.
+        var chromatogram = spectra.GetMS2ExtractedIonChromatogram(testMzRange, new ChromatogramRange(1d, 8d, ChromXType.RT, ChromXUnit.Min), testExperimentID).AsPeakArray();
+
+        // Assert: Verify the method returns the correct number of peaks and their properties, filtering by experiment ID and m/z range.
+        Assert.AreEqual(2, chromatogram.Length, "Expected 2 peaks in the chromatogram filtered by experiment ID and m/z range.");
+
+        // Assertions for peaks, considering they are filtered by m/z range and experiment ID
+        foreach (var peak in chromatogram)
+        {
+            Assert.IsTrue(peak.Mz >= testMzRange.Mz - testMzRange.Tolerance && peak.Mz <= testMzRange.Mz + testMzRange.Tolerance, $"Peak mass {peak.Mz} should be within the m/z range of {testMzRange.Mz} ± {testMzRange.Tolerance}.");
+            Assert.IsTrue(peak.Intensity > 0, "Peak intensity should be greater than 0.");
+            Assert.IsTrue(peak.Time >= 1d && peak.Time <= 8d, $"Peak retention time {peak.Time} should be within the specified range.");
+        }
+    }
 }

@@ -57,4 +57,8 @@ public class MockRawSpectra : IRawSpectra
     public SpecificExperimentChromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange, int experimentID) {
         return ExpectedChromatogram3;
     }
+
+    public ExtractedIonChromatogram GetMS2ExtractedIonChromatogram(MzRange product, ChromatogramRange chromatogramRange, int experimentID) {
+        return ExpectedChromatogram;
+    }
 }

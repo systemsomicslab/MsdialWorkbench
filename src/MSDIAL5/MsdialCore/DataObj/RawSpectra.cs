@@ -159,6 +159,21 @@ namespace CompMs.MsdialCore.DataObj
             return impl.GetProductIonChromatogram(precursor, product, chromatogramRange);
         }
 
+        /// <summary>
+        /// Generates an extracted ion chromatogram from MS2 spectra for a specified m/z range within a given chromatogram range, filtering by a specific experiment ID.
+        /// </summary>
+        /// <param name="product">The target m/z range for the extracted ion, including the center m/z value and the tolerance for the extraction.</param>
+        /// <param name="chromatogramRange">Specifies the range and type of the chromatogram to be generated, including the chromatogram type (e.g., retention time, drift time) and unit.</param>
+        /// <param name="experimentID">The ID of the experiment from which to retrieve MS2 spectra. Only spectra matching this experiment ID and falling within the specified chromatogram range are included in the chromatogram.</param>
+        /// <returns>An <see cref="ExtractedIonChromatogram"/> object representing the chromatogram of extracted ions within the specified product m/z range and chromatogram range, filtered by the specified experiment ID. Each <see cref="ValuePeak"/> in the chromatogram corresponds to an extracted ion, detailing the spectrum index, chromatogram time (e.g., drift time), base peak m/z value, and summed intensity.</returns>
+        /// <remarks>
+        /// This method filters spectra based on the MS level (MS2), scan polarity, and the specified experiment ID, within the specified chromatogram range. It calculates the extracted ion chromatogram by summing the intensities of ions within the specified m/z range for each selected spectrum. This targeted approach enables detailed analysis of specific ions, facilitating the exploration of their behavior within the experimental setup.
+        /// </remarks>
+        public ExtractedIonChromatogram GetMS2ExtractedIonChromatogram(MzRange product, ChromatogramRange chromatogramRange, int experimentID) {
+            var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
+            return impl.GetMS2ExtractedIonChromatogram(product, chromatogramRange, experimentID);
+        }
+
         private static void SetChromatogramPeak(RawSpectrum spectrum, float mz, float mztol, Dictionary<int, ChromatogramPeak> driftBinToChromPeak, Dictionary<int, double> driftBinToBasePeakIntensity) {
             var driftTime = spectrum.DriftTime;
             var driftBin = (int)(driftTime * 1000);

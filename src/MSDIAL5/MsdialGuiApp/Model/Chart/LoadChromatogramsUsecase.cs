@@ -24,6 +24,7 @@ namespace CompMs.App.Msdial.Model.Chart
         private readonly IWholeChromatogramLoader _bpcLoader;
         private readonly IWholeChromatogramLoader _productTicLoader;
         private readonly IWholeChromatogramLoader<int> _productExperimentTicLoader;
+        private readonly IWholeChromatogramLoader<(int, MzRange)> _productExperimentEicLoader;
         private readonly IWholeChromatogramLoader<(double, double)> _eicLoader;
         private readonly IWholeChromatogramLoader<(MzRange, MzRange)> _productEicLoader;
 
@@ -35,6 +36,7 @@ namespace CompMs.App.Msdial.Model.Chart
             _productTicLoader = new MS2TicLoader(rawSpectra, chromatogramRange, parameter);
             _productEicLoader = new ProductIonChromatogramLoader(rawSpectra, ionMode, chromatogramRange);
             _productExperimentTicLoader = new MS2TicLoader(rawSpectra, chromatogramRange, parameter);
+            _productExperimentEicLoader = new ProductIonChromatogramLoader(rawSpectra, ionMode, chromatogramRange);
             _peaks = peaks;
             _rawSpectra = rawSpectra;
             _peakPickParameter = parameter;
@@ -70,8 +72,7 @@ namespace CompMs.App.Msdial.Model.Chart
         }
 
         public ChromatogramsModel LoadMS2Eic(int experimentID, MzRange product) {
-            System.Diagnostics.Debug.Fail("Implement product ion filtering");
-            var displayChromatogram = _productExperimentTicLoader.LoadChromatogram(experimentID);
+            var displayChromatogram = _productExperimentEicLoader.LoadChromatogram((experimentID, product));
             displayChromatogram.Name = $"ExperimentID: {experimentID}, fragment ion: {product.Mz}±{product.Tolerance}";
             return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
         }

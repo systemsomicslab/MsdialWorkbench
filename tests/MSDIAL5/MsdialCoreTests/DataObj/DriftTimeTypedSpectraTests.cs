@@ -191,4 +191,37 @@ public class DriftTimeTypedSpectraTests
         Assert.AreEqual(1005d, chromatogram[1].Intensity, "Second peak's intensity should be 1005.");
         Assert.AreEqual(5d, chromatogram[1].ChromXs.Drift.Value, "Second peak's drift time should be 5 msec.");
     }
+
+    [TestMethod()]
+    public void GetMS2ExtractedIonChromatogram_WithExperimentIdAndValidMzAndDriftTimeRange_ReturnsCorrectChromatogram()
+    {
+        // Arrange: Create a set of test spectra with varying characteristics and different experiment IDs.
+        var spectra = new DriftTimeTypedSpectra(new[]
+        {
+            new RawSpectrum { Index = 0, DriftTime = 1d, MsLevel = 2, ExperimentID = 1, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 100d }, new RawPeakElement{ Mz = 150d, Intensity = 1000d } } },
+            new RawSpectrum { Index = 1, DriftTime = 2d, MsLevel = 2, ExperimentID = 2, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 150d, Intensity = 500d }, new RawPeakElement{ Mz = 200d, Intensity = 1500d } } },
+            new RawSpectrum { Index = 2, DriftTime = 3d, MsLevel = 2, ExperimentID = 2, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 150d, Intensity = 500d }, new RawPeakElement{ Mz = 200d, Intensity = 1500d } } },
+            // Additional spectra omitted for brevity...
+            new RawSpectrum { Index = 6, DriftTime = 7d, MsLevel = 2, ExperimentID = 2, ScanPolarity = ScanPolarity.Positive, Spectrum = new[] { new RawPeakElement{ Mz = 150d, Intensity = 500d }, new RawPeakElement{ Mz = 200d, Intensity = 1500d } } },
+        },
+        ChromXUnit.Msec,
+        IonMode.Positive, AcquisitionType.DDA);
+
+        int testExperimentID = 2; // Specify the experiment ID to filter by.
+        MzRange testMzRange = new MzRange(150d, 5d); // Targeting m/z of 150 with a tolerance of 5.
+
+        // Act: Call the method under test with a specific chromatogram range, m/z range, and experiment ID.
+        var chromatogram = spectra.GetMS2ExtractedIonChromatogram(testMzRange, new ChromatogramRange(2d, 7d, ChromXType.Drift, ChromXUnit.Msec), testExperimentID).AsPeakArray();
+
+        // Assert: Verify the method returns the correct number of peaks and their properties, filtering by experiment ID, m/z range, and drift time range.
+        Assert.AreEqual(3, chromatogram.Length, "Expected 3 peaks in the chromatogram filtered by experiment ID, m/z range, and drift time range.");
+
+        // Assertions for peaks
+        foreach (var peak in chromatogram)
+        {
+            Assert.IsTrue(peak.Mz >= testMzRange.Mz - testMzRange.Tolerance && peak.Mz <= testMzRange.Mz + testMzRange.Tolerance, $"Peak Mz {peak.Mz} should be within the m/z range of {testMzRange.Mz} ± {testMzRange.Tolerance}.");
+            Assert.IsTrue(peak.Intensity > 0, "Peak intensity should be greater than 0.");
+            Assert.IsTrue(peak.Time >= 2d && peak.Time <= 7d, $"Peak drift time {peak.Time} should be within the specified range.");
+        }
+    }
 }

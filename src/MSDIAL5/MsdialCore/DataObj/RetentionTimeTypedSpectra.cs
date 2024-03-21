@@ -219,4 +219,31 @@ internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
         }
         return new SpecificExperimentChromatogram(results, ChromXType.RT, _unit, experimentID);
     }
+
+    /// <summary>
+    /// Generates an extracted ion chromatogram from MS2 spectra for a specified m/z range and experiment ID within a given chromatogram range.
+    /// </summary>
+    /// <param name="product">The target m/z range for the extracted ion. Includes the center m/z value and tolerance for the extraction.</param>
+    /// <param name="chromatogramRange">The range of the chromatogram, specified by start and end retention times. The range should be of type ChromXType.RT.</param>
+    /// <param name="experimentID">The ID of the experiment from which to retrieve MS2 spectra. Only spectra matching this experiment ID and falling within the specified m/z range are included in the chromatogram.</param>
+    /// <returns>A <see cref="ExtractedIonChromatogram"/> object representing the extracted ion chromatogram of MS2 spectra for the specified m/z range and experiment ID within the given range. The chromatogram includes data points for each spectrum that matches the criteria, specifying the index, scan start time, base peak m/z value, and summed intensity of the extracted ion.</returns>
+    /// <remarks>
+    /// This method filters spectra based on MS level (MS2), scan polarity, specified experiment ID, and the targeted m/z range. It calculates the extracted ion chromatogram by summing the intensities of ions within the specified m/z range for each selected spectrum. This approach enables targeted analysis of specific ions within complex datasets, providing insights into the presence and behavior of particular molecules across the experiment.
+    /// </remarks>
+    public ExtractedIonChromatogram GetMS2ExtractedIonChromatogram(MzRange product, ChromatogramRange chromatogramRange, int experimentID) {
+        System.Diagnostics.Debug.Assert(chromatogramRange.Type == ChromXType.RT);
+        var startIndex = _spectra.LowerBound(chromatogramRange.Begin, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
+        var endIndex = _spectra.UpperBound(chromatogramRange.End, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
+        var results = new List<ValuePeak>();
+        for (int i = startIndex; i < endIndex; i++) {
+            if (_spectra[i].MsLevel != 2 ||
+                _spectra[i].ExperimentID != experimentID ||
+                _spectra[i].ScanPolarity != _polarity) {
+                continue;
+            }
+            var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveBin(product.Mz, product.Tolerance);
+            results.Add(new ValuePeak(_spectra[i].Index, _spectra[i].ScanStartTime, basePeakMz, summedIntensity));
+        }
+        return new ExtractedIonChromatogram(results, ChromXType.RT, _unit, product.Mz);
+    }
 }

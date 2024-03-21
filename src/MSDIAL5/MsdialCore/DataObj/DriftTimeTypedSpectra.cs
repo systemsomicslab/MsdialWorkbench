@@ -85,8 +85,8 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
     }
 
     public IEnumerable<ExtractedIonChromatogram> GetMs1ExtractedChromatograms_temp2(IEnumerable<double> mzs, double tolerance, double start, double end) {
-        var startIndex = _spectra.LowerBound(start, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
-        var endIndex = _spectra.UpperBound(end, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
+        var startIndex = _spectra.LowerBound(start, (spectrum, target) => spectrum.DriftTime.CompareTo(target));
+        var endIndex = _spectra.UpperBound(end, startIndex, _spectra.Count, (spectrum, target) => spectrum.DriftTime.CompareTo(target));
         var enumerables = new List<IEnumerable<Spectrum.SummarizedSpectrum>>();
         var indexs = new List<int>();
         var times = new List<double>();
@@ -199,5 +199,32 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
             results.Add(new ValuePeak(_spectra[i].Index, _spectra[i].DriftTime, basePeakMz, summedIntensity));
         }
         return new SpecificExperimentChromatogram(results, ChromXType.Drift, _unit, experimentID);
+    }
+
+    /// <summary>
+    /// Generates an extracted ion chromatogram from MS2 spectra for a specified m/z range and experiment ID within a given ion mobility (drift time) range.
+    /// </summary>
+    /// <param name="product">The target m/z range for the extracted ion, including the center m/z value and tolerance for the extraction.</param>
+    /// <param name="chromatogramRange">The range of ion mobility (drift time), specified by start and end drift times. This range should be of type <see cref="ChromXType.Drift"/>.</param>
+    /// <param name="experimentID">The ID of the experiment from which to retrieve MS2 spectra. Only spectra matching this experiment ID and falling within the specified ion mobility (drift time) range are included in the chromatogram.</param>
+    /// <returns>An <see cref="ExtractedIonChromatogram"/> object representing the extracted ion chromatogram of MS2 spectra for the specified m/z range and experiment ID within the given ion mobility (drift time) range. Each <see cref="ValuePeak"/> in the chromatogram corresponds to an extracted ion, detailing the spectrum index, drift time, base peak m/z value, and summed intensity.</returns>
+    /// <remarks>
+    /// This method filters spectra based on MS level (MS2), scan polarity, specified experiment ID, and the targeted m/z range within a specific ion mobility (drift time) window. It calculates the extracted ion chromatogram by summing the intensities of ions within the specified m/z range for each selected spectrum. This approach allows for targeted analysis of specific ions across different mobility profiles, providing insights into their behavior within the experimental setup.
+    /// </remarks>
+    public ExtractedIonChromatogram GetMS2ExtractedIonChromatogram(MzRange product, ChromatogramRange chromatogramRange, int experimentID) {
+        System.Diagnostics.Debug.Assert(chromatogramRange.Type == ChromXType.Drift);
+        var startIndex = _spectra.LowerBound(chromatogramRange.Begin, (spectrum, target) => spectrum.DriftTime.CompareTo(target));
+        var endIndex = _spectra.UpperBound(chromatogramRange.End, startIndex, _spectra.Count, (spectrum, target) => spectrum.DriftTime.CompareTo(target));
+        var results = new List<ValuePeak>();
+        for (int i = startIndex; i < endIndex; i++) {
+            if (_spectra[i].MsLevel != 2 ||
+                _spectra[i].ExperimentID != experimentID ||
+                _spectra[i].ScanPolarity != _polarity) {
+                continue;
+            }
+            var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveBin(product.Mz, product.Tolerance);
+            results.Add(new ValuePeak(_spectra[i].Index, _spectra[i].DriftTime, basePeakMz, summedIntensity));
+        }
+        return new ExtractedIonChromatogram(results, ChromXType.Drift, _unit, product.Mz);
     }
 }
