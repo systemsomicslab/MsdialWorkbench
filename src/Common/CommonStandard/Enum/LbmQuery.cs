@@ -54,6 +54,7 @@ namespace CompMs.Common.Enum
         NATryA, NA5HT, WE, BisMeLPA, NALeu, NASer, NAAla, NAGln, NAVal,
         bmPC,
         ASHexCer,
+        Cer_ABP
     }
 
     /// <summary>

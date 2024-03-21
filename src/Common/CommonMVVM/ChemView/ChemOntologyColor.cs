@@ -2726,6 +2726,7 @@ namespace CompMs.CommonMVVM.ChemView {
             { "Cer_NS_d7", Color.FromArgb(180, 220, 20, 60) },
             { "Cer_NP", Color.FromArgb(180, 255, 182, 193) },
             { "Cer_AP", Color.FromArgb(180, 178, 34, 34) },
+            { "Cer_ABP", Color.FromArgb(180, 178, 134, 34) },
             { "Cer_OS", Color.FromArgb(180, 228, 122, 224) },
             { "Cer_HS", Color.FromArgb(180, 218, 112, 214) },
             { "Cer_HDS", Color.FromArgb(180, 208, 102, 204) },

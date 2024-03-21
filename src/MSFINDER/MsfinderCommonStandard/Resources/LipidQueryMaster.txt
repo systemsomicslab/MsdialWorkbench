@@ -348,3 +348,7 @@ bmPC	[M+CH3COO]-	Negative	FALSE
 bmPC	[M+HCOO]-	Negative	FALSE
 BisMeLPA	[M+H]+	Positive	FALSE
 BisMeLPA	[M+NH4]+	Positive	FALSE
+Cer_ABP	[M+H]+	Positive	True
+Cer_ABP	[M-H]-	Negative	True
+Cer_ABP	[M+HCOO]-	Negative	True
+Cer_ABP	[M+CH3COO]-	Negative	True

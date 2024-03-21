@@ -31,7 +31,19 @@ namespace CompMs.Common.Lipidomics
             if (groups["dbpos"].Success) {
                 return new DoubleBond(dbnum, groups["dbpos"].Captures.Cast<Capture>().Select(c => ParseDoubleBondInfo(c.Value)).ToArray());
             }
-            else if (dbnum >=1) // sphingo doublebond >=1 one of them position "4"
+            if (groups["oxpos"].Success)
+            {
+                var oxposnum = groups["oxpos"].Captures.Cast<Capture>().Select(c => int.Parse(c.Value)).ToArray().Length;
+                if (oxposnum > 2)
+                {
+                    return new DoubleBond(dbnum);
+                }
+            }
+            else if (groups["oxnum"].Success && int.Parse(groups["oxnum"].Value) > 2)
+            {
+                return new DoubleBond(dbnum);
+            }
+            else if (dbnum >= 1) // sphingo doublebond >=1 one of them position "4"
             {
                 return new DoubleBond(dbnum, DoubleBondInfo.Create(4));
             }
