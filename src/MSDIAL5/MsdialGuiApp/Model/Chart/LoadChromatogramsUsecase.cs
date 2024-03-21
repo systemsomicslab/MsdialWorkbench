@@ -108,9 +108,10 @@ namespace CompMs.App.Msdial.Model.Chart
             }
             if (InsertMS2Tic) {
                 builder.AddMS2Tic(_productTicLoader);
+                var counter = 0;
                 foreach (var (level, ID) in _rawSpectra.ExperimentIDs) {
                     if (level == 2) {
-                        builder.AddMS2Tic(_productExperimentTicLoader, ID);
+                        builder.AddMS2Tic(_productExperimentTicLoader, ID, ChartBrushes.GetChartBrush(counter++));
                     }
                 }
             }
@@ -176,16 +177,16 @@ namespace CompMs.App.Msdial.Model.Chart
 
             public void AddMS2Tic(IWholeChromatogramLoader productTicLoader) {
                 var tic = productTicLoader.LoadChromatogram();
-                var pen = tic.LinePen = new Pen(Brushes.Cyan, 1.0);
+                var pen = tic.LinePen = new Pen(Brushes.DarkGray, 1.0);
                 pen.Freeze();
                 tic.Name = "MS2 TIC";
                 _displayChroms.Add(tic);
                 _contents.Add("MS2 TIC");
             }
 
-            public void AddMS2Tic(IWholeChromatogramLoader<int> productTicLoader, int experimentID) {
+            public void AddMS2Tic(IWholeChromatogramLoader<int> productTicLoader, int experimentID, Brush? brush = null) {
                 var tic = productTicLoader.LoadChromatogram(experimentID);
-                var pen = tic.LinePen = new Pen(Brushes.Cyan, 1.0);
+                var pen = tic.LinePen = new Pen(brush ?? Brushes.Cyan, 1.0);
                 pen.Freeze();
                 tic.Name = $"MS2 TIC of experiment {experimentID}";
                 _displayChroms.Add(tic);
