@@ -370,6 +370,8 @@
                     </ui:LabeledContent>
                     <Button Content="Search" Command="{Binding SearchCompoundCommand, Mode=OneTime}"
                             Width="64"/>
+                    <Button Content="Export" Command="{Binding ExportCompoundCommand, Mode=OneTime}"
+                            Width="64" Margin="8,0"/>
                 </StackPanel>
             </StackPanel>
             <DataGrid ItemsSource="{Binding Compounds.Value}"
@@ -389,6 +391,8 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Library ID" Width="*" Binding="{Binding Path=LibraryID}" IsReadOnly="True" />
                     <DataGridTextColumn Header="Name" Width="2*" Binding="{Binding Path=Name}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Adduct" Width="*" Binding="{Binding Path=AdductName}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Pre. m/z" Width="*" Binding="{Binding Path=PrecursorMz, StringFormat=N5}" IsReadOnly="True" />
                     <DataGridTextColumn Header="Rt [min]" Width="*" Binding="{Binding Path=ChromXs.RT.Value, StringFormat=N1}" IsReadOnly="True" />
                     <DataGridTextColumn Header="Dot prod." Width="*" Binding="{Binding Path=WeightedDotProduct, StringFormat=N2}" IsReadOnly="True" />
                     <DataGridTextColumn Header="Rev. prod." Width="*" Binding="{Binding Path=ReverseDotProduct, StringFormat=N2}" IsReadOnly="True" />

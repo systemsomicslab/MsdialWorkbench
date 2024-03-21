@@ -44,6 +44,7 @@ internal sealed class AccumulatedSpecificExperimentMS2SpectrumViewModel : ViewMo
 
         SearchCompoundCommand = new ReactiveCommand().WithSubscribe(model.SearchCompound).AddTo(Disposables);
         ImportDataBaseCommand = new ReactiveCommand().WithSubscribe(model.ImportDatabase).AddTo(Disposables);
+        ExportCompoundCommand = new ReactiveCommand().WithSubscribe(model.ExportCompounds).AddTo(Disposables);
         CalculateExtractedIonChromatogramCommand = SelectedRange.Select(r => r is not null).ToReactiveCommand().WithSubscribe(model.CalculateExtractedIonChromatogram).AddTo(Disposables);
 
         DetectPeaksCommand = new ReactiveCommand().WithSubscribe(model.DetectPeaks).AddTo(Disposables);
@@ -78,6 +79,8 @@ internal sealed class AccumulatedSpecificExperimentMS2SpectrumViewModel : ViewMo
     public ReactiveCommand SearchCompoundCommand { get; }
 
     public ReactiveCommand ImportDataBaseCommand { get; }
+
+    public ReactiveCommand ExportCompoundCommand { get; }
 
     public ReactiveCommand CalculateExtractedIonChromatogramCommand { get; }
 

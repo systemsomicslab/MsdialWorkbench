@@ -10,6 +10,7 @@ using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Export;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -21,6 +22,7 @@ using System.IO;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -203,6 +205,29 @@ internal sealed class AccumulatedSpecificExperimentMS2SpectrumModel : Disposable
         {
             Title = "Save spectrum",
             Filter = "NIST format|*.msp|All|*",
+            RestoreDirectory = true,
+            AddExtension = true,
+        };
+        _broker.Publish(request);
+    }
+
+    public void ExportCompounds() {
+        if (Compounds is null || Compounds.Count == 0) {
+            return;
+        }
+        var request = new SaveFileNameRequest(filename => {
+            using var stream = File.Open(filename, FileMode.Create);
+            using var writer = new StreamWriter(stream, Encoding.ASCII, 4096, true);
+            writer.WriteLine("Name,Adduct,Precursor m/z,Retention time,Weighted dot product,Reverse dot product,Total score,Comment");
+            foreach (var compound in Compounds) {
+                var reference = compound.MsReference;
+                var match = compound.MatchResult;
+                writer.WriteLine($"{reference.Name},{reference.AdductType.AdductIonName},{reference.PrecursorMz},{reference.ChromXs.RT.Value},{match.WeightedDotProduct},{match.ReverseDotProduct},{match.TotalScore},'{reference.Comment}'");
+            }
+        })
+        {
+            Title = "Save compounds",
+            Filter = "Comma separated values|*.csv|All|*",
             RestoreDirectory = true,
             AddExtension = true,
         };
