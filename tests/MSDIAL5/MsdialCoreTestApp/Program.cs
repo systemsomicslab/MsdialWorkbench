@@ -100,6 +100,31 @@ namespace CompMs.App.MsdialConsole {
             //    , "false"
             //};
 
+
+            //args = new string[] {
+            //    "msn"
+            //    , "-i"
+            //    , @"\\165.93.102.222\Public\MetaboBankPeakPick\ogawa_20240123\msn_msp_pos\MSMS-Public_experimentspectra-pos-VS19.msp"
+            //    , "-o"
+            //    , @"\\165.93.102.222\Public\MetaboBankPeakPick\ogawa_20240123\msn_msp_pos\MSMS-Public_experimentspectra-pos-VS19.edge"
+            //    , "-m"
+            //    , @"\\165.93.102.222\Public\MetaboBankPeakPick\ogawa_20240123\msn_param_20240318.txt"
+            //    , "-ionmode"
+            //    , "Positive"
+            //};
+
+            //args = new string[] {
+            //    "msn"
+            //    , "-i"
+            //    , @"\\165.93.102.222\Public\MetaboBankPeakPick\ogawa_20240123\msn_msp_neg\MSMS-Public_experimentspectra-neg-VS19.msp"
+            //    , "-o"
+            //    , @"\\165.93.102.222\Public\MetaboBankPeakPick\ogawa_20240123\msn_msp_neg\MSMS-Public_experimentspectra-neg-VS19.edge"
+            //    , "-m"
+            //    , @"\\165.93.102.222\Public\MetaboBankPeakPick\ogawa_20240123\msn_param_20240318.txt"
+            //    , "-ionmode"
+            //    , "Negative"
+            //};
+
             //MoleculerSpectrumNetworkingTest.MergeNodeFiles(@"E:\6_Projects\PROJECT_MsMachineLearning\data\MTBKS157\peakpick\neg", @"E:\6_Projects\PROJECT_MsMachineLearning\msn\cytoscape_test\node.txt");
             //MoleculerSpectrumNetworkingTest.MergeEdgeFiles(@"E:\6_Projects\PROJECT_MsMachineLearning\msn\result-2309271138", @"E:\6_Projects\PROJECT_MsMachineLearning\msn\cytoscape_test\edge.txt");
             //EadAnnotationTest.Run(
@@ -113,6 +138,8 @@ namespace CompMs.App.MsdialConsole {
             //    @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\StandardMix\KE14_output\annofile.txt",
             //    @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\StandardMix\KE14_output\peaknamefile.txt",
             //    @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\StandardMix\KE14_output\resultexport.txt");
+
+
             MainProcess.Run(args);
         }
     }
