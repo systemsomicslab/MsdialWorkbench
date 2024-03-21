@@ -125,6 +125,19 @@ public static class DataProviderExtensions {
     }
 
     /// <summary>
+    /// Filters the provided data provider's data based on a specified experiment ID, returning a new <see cref="IDataProvider"/> that provides access to the filtered data.
+    /// </summary>
+    /// <param name="provider">The original data provider to filter.</param>
+    /// <param name="experimentID">The experiment ID used to filter the data.</param>
+    /// <returns>A new <see cref="IDataProvider"/> instance that provides access to the data filtered by the specified experiment ID.</returns>
+    /// <remarks>
+    /// This method creates an instance of <see cref="ExperimentIDSelectedDataProvider"/>, which implements the filtering logic based on the specified experiment ID. It enables clients to access only the data associated with the given experiment ID, thus facilitating data handling in scenarios where analysis is focused on specific experimental data.
+    /// </remarks>
+    public static IDataProvider SelectExperimentID(this IDataProvider provider, int experimentID) {
+        return new ExperimentIDSelectedDataProvider(provider, experimentID);
+    }
+
+    /// <summary>
     /// Wraps the specified <see cref="IDataProvider"/> instance with a <see cref="CachedDataProvider"/>,
     /// enabling caching of spectra data to improve performance.
     /// </summary>
