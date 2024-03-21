@@ -11,6 +11,7 @@ public class MockRawSpectra : IRawSpectra
 {
     public ExtractedIonChromatogram ExpectedChromatogram { get; set; }
     public Chromatogram ExpectedChromatogram2 { get; set; }
+    public SpecificExperimentChromatogram ExpectedChromatogram3 { get; set; }
 
     ExtractedIonChromatogram IRawSpectra.GetProductIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange)
     {
@@ -53,7 +54,7 @@ public class MockRawSpectra : IRawSpectra
         return ExpectedChromatogram2;
     }
 
-    public Chromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange, int experimentID) {
-        return ExpectedChromatogram2;
+    public SpecificExperimentChromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange, int experimentID) {
+        return ExpectedChromatogram3;
     }
 }

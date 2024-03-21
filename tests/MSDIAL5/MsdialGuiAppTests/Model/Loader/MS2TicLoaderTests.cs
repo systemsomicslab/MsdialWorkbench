@@ -109,9 +109,9 @@ public class MS2TicLoaderTests
             throw new System.NotImplementedException();
         }
 
-        public Chromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange, int experimentID) {
+        public SpecificExperimentChromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange, int experimentID) {
             ExperimentID = experimentID;
-            return new Chromatogram(Array.Empty<ValuePeak>(), ChromXType.RT, ChromXUnit.Min);
+            return new SpecificExperimentChromatogram(Array.Empty<ValuePeak>(), ChromXType.RT, ChromXUnit.Min, experimentID);
         }
 
         public PeakMs2Spectra GetPeakMs2Spectra(ChromatogramPeakFeature rtPeakFeature, double ms2Tolerance, AcquisitionType acquisitionType, DriftTime driftTime) {

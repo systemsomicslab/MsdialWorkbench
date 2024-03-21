@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.Common.DataObj;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 
@@ -15,7 +16,7 @@ namespace CompMs.App.Msdial.Model.Loader;
 /// This loader is designed to process raw spectra data to produce display-ready chromatograms for MS2 scans,
 /// applying specified smoothing methods and levels as part of the peak picking process.
 /// </remarks>
-internal sealed class MS2TicLoader(IRawSpectra rawSpectra, ChromatogramRange chromatogramRange, PeakPickBaseParameter peakPickParameter) : IWholeChromatogramLoader, IWholeChromatogramLoader<int> {
+internal sealed class MS2TicLoader(IRawSpectra rawSpectra, ChromatogramRange chromatogramRange, PeakPickBaseParameter peakPickParameter) : IWholeChromatogramLoader, IWholeChromatogramLoader<int>, IWholeChromatogramLoader<(int, MzRange)> {
     /// <summary>
     /// Loads and processes an MS2 total ion chromatogram from the provided raw spectra, applying smoothing based on the specified peak picking parameters.
     /// </summary>
@@ -44,6 +45,12 @@ internal sealed class MS2TicLoader(IRawSpectra rawSpectra, ChromatogramRange chr
     public DisplayChromatogram LoadChromatogram(int experimentID) {
         var chromatogram = rawSpectra.GetMS2TotalIonChromatogram(chromatogramRange, experimentID)
             .ChromatogramSmoothing(peakPickParameter.SmoothingMethod, peakPickParameter.SmoothingLevel);
-        return new DisplayChromatogram(chromatogram);
+        return new DisplaySpecificExperimentChromatogram(chromatogram);
+    }
+
+    public DisplayChromatogram LoadChromatogram((int, MzRange) state) {
+        var chromatogram = rawSpectra.GetMS2TotalIonChromatogram(chromatogramRange, state.Item1)
+            .ChromatogramSmoothing(peakPickParameter.SmoothingMethod, peakPickParameter.SmoothingLevel);
+        return new DisplaySpecificExperimentChromatogram(chromatogram);
     }
 }

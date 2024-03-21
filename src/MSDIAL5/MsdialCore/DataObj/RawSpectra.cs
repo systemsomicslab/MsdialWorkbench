@@ -133,7 +133,7 @@ namespace CompMs.MsdialCore.DataObj
         /// <remarks>
         /// Similar to the overload without the experiment ID, this method also dynamically builds or retrieves a suitable chromatogram generator based on the range type and unit. It then filters the MS2 spectra by the specified experiment ID before generating the chromatogram.
         /// </remarks>
-        public Chromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange, int experimentID) {
+        public SpecificExperimentChromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange, int experimentID) {
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
             return impl.GetMS2TotalIonChromatogram(chromatogramRange, experimentID);
         }

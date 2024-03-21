@@ -199,11 +199,11 @@ internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
     /// </summary>
     /// <param name="chromatogramRange">The range of the chromatogram, specified by start and end retention times. The range should be of type ChromXType.RT.</param>
     /// <param name="experimentID">The ID of the experiment from which to retrieve MS2 spectra. Only spectra matching this experiment ID are included in the chromatogram.</param>
-    /// <returns>A <see cref="Chromatogram"/> object representing the total ion chromatogram of MS2 spectra from the specified experiment within the given range. The chromatogram includes data points for each spectrum that matches the experiment ID and falls within the range, specifying the index, scan start time, base peak m/z value, and summed intensity of the spectrum.</returns>
+    /// <returns>A <see cref="SpecificExperimentChromatogram"/> object representing the total ion chromatogram of MS2 spectra from the specified experiment within the given range. The chromatogram includes data points for each spectrum that matches the experiment ID and falls within the range, specifying the index, scan start time, base peak m/z value, and summed intensity of the spectrum.</returns>
     /// <remarks>
     /// In addition to filtering by MS level (MS2) and scan polarity, this method also filters spectra by the specified experiment ID, allowing for more targeted analysis within complex datasets. It calculates the total ion chromatogram by summing the intensities of all ions in each selected spectrum.
     /// </remarks>
-    public Chromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange, int experimentID) {
+    public SpecificExperimentChromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange, int experimentID) {
         System.Diagnostics.Debug.Assert(chromatogramRange.Type == ChromXType.RT);
         var startIndex = _spectra.LowerBound(chromatogramRange.Begin, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
         var endIndex = _spectra.UpperBound(chromatogramRange.End, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
@@ -217,6 +217,6 @@ internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
             var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveTotalIntensity();
             results.Add(new ValuePeak(_spectra[i].Index, _spectra[i].ScanStartTime, basePeakMz, summedIntensity));
         }
-        return new Chromatogram(results, ChromXType.RT, _unit);
+        return new SpecificExperimentChromatogram(results, ChromXType.RT, _unit, experimentID);
     }
 }

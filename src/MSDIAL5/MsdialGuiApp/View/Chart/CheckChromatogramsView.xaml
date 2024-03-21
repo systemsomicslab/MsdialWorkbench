@@ -11,6 +11,7 @@
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              xmlns:mvvm="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
+             xmlns:msResult="clr-namespace:CompMs.App.Msdial.ViewModel.MsResult"
              x:Name="ChromatogramsView"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type={x:Type vm:CheckChromatogramsViewModel}}"
@@ -94,6 +95,10 @@
                 <chart:SimpleChartControl.RenderAreaControlState>
                     <chart:RenderAreaControlState MoveByDragIsEnabled="False"/>
                 </chart:SimpleChartControl.RenderAreaControlState>
+                <chart:SimpleChartControl.Resources>
+                    <CollectionViewSource x:Key="MS2Eic" Source="{Binding AccumulatedMs2SpectrumViewModels.Value}"/>
+                    <CollectionViewSource x:Key="MS2Exp" Source="{Binding AccumulatedSpecificExperimentMS2SpectrumViewModels.Value}"/>
+                </chart:SimpleChartControl.Resources>
                 <chart:SimpleChartControl.Style>
                     <Style TargetType="{x:Type chart:SimpleChartControl}" BasedOn="{StaticResource BasicChart}">
                         <Setter Property="VerticalTitle">
@@ -161,15 +166,25 @@
                     <ContextMenu>
                         <MenuItem Header="Show ms spectrum"
                                   Command="{Binding ShowAccumulatedMs1SpectrumCommand}"/>
-                        <MenuItem Header="Show ms/ms spectrum"
-                                  ItemsSource="{Binding AccumulatedMs2SpectrumViewModels.Value}">
-                            <MenuItem.ItemTemplate>
-                                <DataTemplate>
+                        <MenuItem Header="Show ms/ms spectrum">
+                            <MenuItem.ItemsSource>
+                                <CompositeCollection>
+                                    <CollectionContainer Collection="{Binding Source={StaticResource MS2Exp}}"/>
+                                    <CollectionContainer Collection="{Binding Source={StaticResource MS2Eic}}"/>
+                                </CompositeCollection>
+                            </MenuItem.ItemsSource>
+                            <MenuItem.Resources>
+                                <DataTemplate DataType="{x:Type msResult:AccumulatedMs2SpectrumViewModel}">
                                     <TextBlock>
                                         <Run FontStyle="Italic">m/z</Run>: <Run Text="{Binding Mz, Mode=OneTime}"/>
                                     </TextBlock>
                                 </DataTemplate>
-                            </MenuItem.ItemTemplate>
+                                <DataTemplate DataType="{x:Type msResult:AccumulatedSpecificExperimentMS2SpectrumViewModel}">
+                                    <TextBlock>
+                                        Experiment ID: <Run Text="{Binding ExperimentID, Mode=OneTime}"/>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </MenuItem.Resources>
                             <MenuItem.ItemContainerStyle>
                                 <Style TargetType="MenuItem">
                                     <Setter Property="Command" Value="{Binding PlacementTarget.DataContext.ShowAccumulatedSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
@@ -246,16 +261,23 @@
                         <RowDefinition Height="40"/>
                     </Grid.RowDefinitions>
 
-                    <StackPanel Orientation="Horizontal"
-                                Margin="4">
+                    <StackPanel>
                         <StackPanel.Resources>
                             <Style TargetType="CheckBox">
                                 <Setter Property="Margin" Value="8,0"/>
                             </Style>
                         </StackPanel.Resources>
-                        <CheckBox Content="TIC" IsChecked="{Binding InsertTic.Value}"/>
-                        <CheckBox Content="BPC" IsChecked="{Binding InsertBpc.Value}"/>
-                        <CheckBox Content="Highest peak m/z's EIC" IsChecked="{Binding InsertHighestEic.Value}"/>
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="4">
+                            <CheckBox Content="TIC" IsChecked="{Binding InsertTic.Value}"/>
+                            <CheckBox Content="BPC" IsChecked="{Binding InsertBpc.Value}"/>
+                            <CheckBox Content="Highest peak m/z's EIC" IsChecked="{Binding InsertHighestEic.Value}"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="4">
+                            <CheckBox Content="MS2TIC" IsChecked="{Binding InsertMS2Tic.Value}"/>
+                        </StackPanel>
                     </StackPanel>
 
                     <DataGrid ClipboardCopyMode="IncludeHeader" x:Name="Datagrid_EicDiplayProperties" Style="{StaticResource ResourceKey=ToolTipErrorStyleDataGrid}" 

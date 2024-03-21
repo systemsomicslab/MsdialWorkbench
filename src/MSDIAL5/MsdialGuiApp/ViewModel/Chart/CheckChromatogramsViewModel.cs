@@ -43,10 +43,16 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim(Array.Empty<AccumulatedMs2SpectrumViewModel>())
                 .AddTo(Disposables);
+            AccumulatedSpecificExperimentMS2SpectrumViewModels = model.ObserveProperty(m => m.AccumulatedSpecificExperimentMS2SpectrumModels)
+                .Select(ms => ms.Select(m => new AccumulatedSpecificExperimentMS2SpectrumViewModel(m)).ToArray())
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim(Array.Empty<AccumulatedSpecificExperimentMS2SpectrumViewModel>())
+                .AddTo(Disposables);
 
             InsertTic = model.LoadChromatogramsUsecase.ToReactivePropertySlimAsSynchronized(m => m.InsertTic).AddTo(Disposables);
             InsertBpc = model.LoadChromatogramsUsecase.ToReactivePropertySlimAsSynchronized(m => m.InsertBpc).AddTo(Disposables);
             InsertHighestEic = model.LoadChromatogramsUsecase.ToReactivePropertySlimAsSynchronized(m => m.InsertHighestEic).AddTo(Disposables);
+            InsertMS2Tic = model.LoadChromatogramsUsecase.ToReactivePropertySlimAsSynchronized(m => m.InsertMS2Tic).AddTo(Disposables);
 
             CopyAsTableCommand = new ReactiveCommand()
                 .WithSubscribe(CopyAsTable)
@@ -86,7 +92,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .ToAsyncReactiveCommand()
                 .WithSubscribe(() => ShowAccumulatedSpectrumAsync(default)).AddTo(Disposables);
             ShowAccumulatedSpectrumCommand = RangeSelectableChromatogramViewModel.Select(vm => vm is not null)
-                .ToAsyncReactiveCommand<AccumulatedMs2SpectrumViewModel>()
+                .ToAsyncReactiveCommand<ViewModelBase>()
                 .WithSubscribe(vm => ShowAccumulatedSpectrumAsync(vm, default)).AddTo(Disposables);
             DetectPeaksCommand = new ReactiveCommand().WithSubscribe(model.DetectPeaks).AddTo(Disposables);
             AddPeaksCommand = RangeSelectableChromatogramViewModel.Select(vm => vm is { SelectedRange: not null })
@@ -100,9 +106,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<RangeSelectableChromatogramViewModel?> RangeSelectableChromatogramViewModel { get; }
         public ReadOnlyReactivePropertySlim<AccumulatedMs1SpectrumViewModel?> AccumulatedMs1SpectrumViewModel { get; }
         public ReadOnlyReactivePropertySlim<AccumulatedMs2SpectrumViewModel[]> AccumulatedMs2SpectrumViewModels { get; }
+        public ReadOnlyReactivePropertySlim<AccumulatedSpecificExperimentMS2SpectrumViewModel[]> AccumulatedSpecificExperimentMS2SpectrumViewModels { get; }
 
         public AsyncReactiveCommand ShowAccumulatedMs1SpectrumCommand { get; }
-        public AsyncReactiveCommand<AccumulatedMs2SpectrumViewModel> ShowAccumulatedSpectrumCommand { get; }
+        public AsyncReactiveCommand<ViewModelBase> ShowAccumulatedSpectrumCommand { get; }
 
         private async Task ShowAccumulatedSpectrumAsync(CancellationToken token) {
             if (AccumulatedMs1SpectrumViewModel.Value is not null) {
@@ -112,9 +119,19 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             }
         }
 
-        private async Task ShowAccumulatedSpectrumAsync(AccumulatedMs2SpectrumViewModel vm, CancellationToken token) {
-            var task = _model.AccumulateAsync(vm.Model, token);
-            _broker.Publish(vm);
+        private async Task ShowAccumulatedSpectrumAsync(ViewModelBase vm, CancellationToken token) {
+            Task task = Task.CompletedTask;
+            switch (vm)
+            {
+                case AccumulatedMs2SpectrumViewModel ms2:
+                    task = _model.AccumulateAsync(ms2.Model, token);
+                    _broker.Publish(ms2);
+                    break;
+                case AccumulatedSpecificExperimentMS2SpectrumViewModel expms2:
+                    task = _model.AccumulateAsync(expms2.Model, token);
+                    _broker.Publish(expms2);
+                    break;
+            };
             await task.ConfigureAwait(false);
         }
 
@@ -147,6 +164,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReactivePropertySlim<bool> InsertTic { get; }
         public ReactivePropertySlim<bool> InsertBpc { get; }
         public ReactivePropertySlim<bool> InsertHighestEic { get; }
+        public ReactivePropertySlim<bool> InsertMS2Tic { get; }
 
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
 

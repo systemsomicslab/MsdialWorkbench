@@ -12,7 +12,7 @@ namespace CompMs.MsdialCore.DataObj
         Chromatogram GetMs1TotalIonChromatogram(double start, double end);
         Chromatogram GetMs1BasePeakChromatogram(double start, double end);
         Chromatogram GetMs2TotalIonChromatogram(ChromatogramRange chromatogramRange);
-        Chromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange, int experimentID);
+        SpecificExperimentChromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange, int experimentID);
         ExtractedIonChromatogram GetProductIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange);
     }
 }

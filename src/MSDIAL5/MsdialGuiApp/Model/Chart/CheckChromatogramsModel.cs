@@ -36,7 +36,7 @@ internal sealed class CheckChromatogramsModel : BindableBase
         _compoundSearch = compoundSearch;
         _advancedProcessParameter = advancedProcessParameter;
         _broker = broker;
-        advancedProcessParameter.DiplayEicSettingValues ??= new List<PeakFeatureSearchValue>();
+        advancedProcessParameter.DiplayEicSettingValues ??= [];
         var values = advancedProcessParameter.DiplayEicSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0).ToList();
         values.AddRange(Enumerable.Repeat(0, 100).Select(_ => new PeakFeatureSearchValue()));
         _displaySettingValueCandidates = values;
@@ -67,6 +67,19 @@ internal sealed class CheckChromatogramsModel : BindableBase
         }
     }
     private AccumulatedMs1SpectrumModel? _accumulatedMs1SpectrumModel;
+
+    public AccumulatedSpecificExperimentMS2SpectrumModel[] AccumulatedSpecificExperimentMS2SpectrumModels {
+        get => _accumulatedSpecificExperimentMS2SpectrumModels;
+        private set {
+            var prevs = _accumulatedSpecificExperimentMS2SpectrumModels;
+            if (SetProperty(ref _accumulatedSpecificExperimentMS2SpectrumModels, value)) {
+                foreach (var prev in prevs) {
+                    prev.Dispose();
+                }
+            }
+        }
+    }
+    private AccumulatedSpecificExperimentMS2SpectrumModel[] _accumulatedSpecificExperimentMS2SpectrumModels = [];
 
     public AccumulatedMs2SpectrumModel[] AccumulatedMs2SpectrumModels {
         get => _accumulatedMs2SpectrumModels;
@@ -102,13 +115,15 @@ internal sealed class CheckChromatogramsModel : BindableBase
         }
         AccumulatedMs1SpectrumModel = new AccumulatedMs1SpectrumModel(_accumulateSpectra, _scanCompoundSearchUsecase, LoadChromatogramsUsecase, _broker);
 
-        if (_compoundSearch is not null) {
-            RangeSelectableChromatogramModel = new RangeSelectableChromatogramModel(Chromatograms);
-            AccumulatedMs2SpectrumModels = Chromatograms.DisplayChromatograms
-                .OfType<DisplayExtractedIonChromatogram>()
-                .Select(c => new AccumulatedMs2SpectrumModel(c, _accumulateSpectra, _compoundSearch, LoadChromatogramsUsecase, _broker))
-                .ToArray();
-        }
+        RangeSelectableChromatogramModel = new RangeSelectableChromatogramModel(Chromatograms);
+        AccumulatedMs2SpectrumModels = Chromatograms.DisplayChromatograms
+            .OfType<DisplayExtractedIonChromatogram>()
+            .Select(c => new AccumulatedMs2SpectrumModel(c, _accumulateSpectra, _compoundSearch, LoadChromatogramsUsecase, _broker))
+            .ToArray();
+        AccumulatedSpecificExperimentMS2SpectrumModels = Chromatograms.DisplayChromatograms
+            .OfType<DisplaySpecificExperimentChromatogram>()
+            .Select(c => new AccumulatedSpecificExperimentMS2SpectrumModel(c, _accumulateSpectra, _scanCompoundSearchUsecase, LoadChromatogramsUsecase, _broker))
+            .ToArray();
     }
 
     public async Task AccumulateAsync(CancellationToken token) {
@@ -120,6 +135,14 @@ internal sealed class CheckChromatogramsModel : BindableBase
     }
 
     public async Task AccumulateAsync(AccumulatedMs2SpectrumModel model, CancellationToken token) {
+        if (RangeSelectableChromatogramModel is { MainRange: not null } ) {
+            var range = RangeSelectableChromatogramModel.ConvertToRt(RangeSelectableChromatogramModel.MainRange);
+            var subs = RangeSelectableChromatogramModel.SubtractRanges.Select(r => RangeSelectableChromatogramModel.ConvertToRt(r)).ToArray();
+            await model.CalculateMs2Async(range, subs, token).ConfigureAwait(false);
+        }
+    }
+
+    public async Task AccumulateAsync(AccumulatedSpecificExperimentMS2SpectrumModel model, CancellationToken token) {
         if (RangeSelectableChromatogramModel is { MainRange: not null } ) {
             var range = RangeSelectableChromatogramModel.ConvertToRt(RangeSelectableChromatogramModel.MainRange);
             var subs = RangeSelectableChromatogramModel.SubtractRanges.Select(r => RangeSelectableChromatogramModel.ConvertToRt(r)).ToArray();

@@ -180,11 +180,11 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
     /// </summary>
     /// <param name="chromatogramRange">The range of ion mobility (drift time), specified by start and end drift times. The range should be of type <see cref="ChromXType.Drift"/>.</param>
     /// <param name="experimentID">The ID of the experiment from which to retrieve MS2 spectra. Only spectra matching this experiment ID are included in the chromatogram.</param>
-    /// <returns>A <see cref="Chromatogram"/> object representing the total ion chromatogram of MS2 spectra from the specified experiment within the given ion mobility (drift time) range. Each <see cref="ValuePeak"/> in the chromatogram corresponds to an MS2 spectrum, including details such as the spectrum index, drift time, base peak m/z value, and summed intensity.</returns>
+    /// <returns>A <see cref="SpecificExperimentChromatogram"/> object representing the total ion chromatogram of MS2 spectra from the specified experiment within the given ion mobility (drift time) range. Each <see cref="ValuePeak"/> in the chromatogram corresponds to an MS2 spectrum, including details such as the spectrum index, drift time, base peak m/z value, and summed intensity.</returns>
     /// <remarks>
     /// In addition to filtering by MS level (MS2) and scan polarity, this method also filters spectra by the specified experiment ID. This allows for targeted analysis within complex datasets where ion mobility (drift time) is a key factor.
     /// </remarks>
-    public Chromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange, int experimentID) {
+    public SpecificExperimentChromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange, int experimentID) {
         System.Diagnostics.Debug.Assert(chromatogramRange.Type == ChromXType.Drift);
         var startIndex = _spectra.LowerBound(chromatogramRange.Begin, (spectrum, target) => spectrum.DriftTime.CompareTo(target));
         var endIndex = _spectra.UpperBound(chromatogramRange.End, startIndex, _spectra.Count, (spectrum, target) => spectrum.DriftTime.CompareTo(target));
@@ -198,6 +198,6 @@ internal class DriftTimeTypedSpectra : IChromatogramTypedSpectra
             var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveTotalIntensity();
             results.Add(new ValuePeak(_spectra[i].Index, _spectra[i].DriftTime, basePeakMz, summedIntensity));
         }
-        return new Chromatogram(results, ChromXType.Drift, _unit);
+        return new SpecificExperimentChromatogram(results, ChromXType.Drift, _unit, experimentID);
     }
 }

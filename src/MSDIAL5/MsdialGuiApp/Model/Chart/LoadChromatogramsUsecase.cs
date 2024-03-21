@@ -63,6 +63,19 @@ namespace CompMs.App.Msdial.Model.Chart
         }
         private bool _insertMS2Tic;
 
+        public ChromatogramsModel LoadMS2Tic(int experimentID) {
+            var displayChromatogram = _productExperimentTicLoader.LoadChromatogram(experimentID);
+            displayChromatogram.Name = $"Total ion chromatogram, ExperimentID: {experimentID}";
+            return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
+        }
+
+        public ChromatogramsModel LoadMS2Eic(int experimentID, MzRange product) {
+            System.Diagnostics.Debug.Fail("Implement product ion filtering");
+            var displayChromatogram = _productExperimentTicLoader.LoadChromatogram(experimentID);
+            displayChromatogram.Name = $"ExperimentID: {experimentID}, fragment ion: {product.Mz}±{product.Tolerance}";
+            return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
+        }
+
         public ChromatogramsModel LoadMS2Eic(MzRange precursor, MzRange product) {
             var displayChromatogram = _productEicLoader.LoadChromatogram((precursor, product));
             displayChromatogram.Name = $"Precursor m/z: {precursor.Mz}±{precursor.Tolerance}, fragment ion: {product.Mz}±{product.Tolerance}";

@@ -119,6 +119,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildContent<AccumulatedMs1SpectrumView>("", height: 600, width: 800));
             broker.ToObservable<AccumulatedMs2SpectrumViewModel>()
                 .Subscribe(ShowChildContent<AccumulatedMs2SpectrumView>("", height: 600, width: 800));
+            broker.ToObservable<AccumulatedSpecificExperimentMS2SpectrumViewModel>()
+                .Subscribe(ShowChildContent<AccumulatedSpecificExperimentMS2SpectrumView>("", height: 600, width: 800));
             /*
             broker.ToObservable<PeakSpotTableViewModelBase>()
                 .Subscribe(ShowChildView<AlignmentSpotTable>);
