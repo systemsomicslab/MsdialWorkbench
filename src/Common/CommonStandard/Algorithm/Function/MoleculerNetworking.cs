@@ -184,6 +184,33 @@ namespace CompMs.Common.Algorithm.Function
             return scoreitem;
         }
 
+        public static EdgeData GetEdge(
+           IMoleculeMsProperty peak1,
+           IMoleculeMsProperty peak2,
+           double massTolerance,
+           double minimumPeakMatch,
+           double matchThreshold,
+           double maxEdgeNumPerNode,
+           double maxPrecursorDiff,
+           double maxPrecursorDiff_Percent,
+           MsmsSimilarityCalc msmsSimilarityCalc) {
+           if (peak1.Spectrum.Count <= 0 || peak2.Spectrum.Count <= 0) return null;
+            var massDiff = Math.Abs(peak1.PrecursorMz - peak2.PrecursorMz);
+            if (massDiff > maxPrecursorDiff) return null; 
+
+            var scoreitem = new List<double>();
+            scoreitem = GetMsnScoreItems(peak1, peak2, massTolerance, msmsSimilarityCalc);
+            if (scoreitem == null) return null;
+            if (scoreitem[1] < minimumPeakMatch) return null;
+            if (scoreitem[0] < matchThreshold * 0.01) return null;
+
+            var edge = new EdgeData() {
+                score = scoreitem[0], matchpeakcount = scoreitem[1], source = peak1.ScanID, target = peak2.ScanID,
+                scores = scoreitem
+            };
+            return edge;
+        }
+
         public static List<EdgeData> GenerateEdges(
            IReadOnlyList<IMoleculeMsProperty> peaks1,
            IReadOnlyList<IMoleculeMsProperty> peaks2,
@@ -216,20 +243,10 @@ namespace CompMs.Common.Algorithm.Function
                     var prop2 = peaks2[j];
                     var massDiff = Math.Abs(prop1.PrecursorMz - prop2.PrecursorMz);
                     if (massDiff > maxPrecursorDiff) continue;
-                    var scoreitem = new List<double>();
-                    if (msmsSimilarityCalc == MsmsSimilarityCalc.Bonanza) {
-                        scoreitem = MsScanMatching.GetBonanzaScore(prop1, prop2, massTolerance).ToList();
-                    }
-                    else if (msmsSimilarityCalc == MsmsSimilarityCalc.ModDot) {
-                        scoreitem = MsScanMatching.GetModifiedDotProductScore(prop1, prop2, massTolerance).ToList();
-                    }
-                    else if (msmsSimilarityCalc == MsmsSimilarityCalc.Cosine) {
-                        scoreitem = MsScanMatching.GetCosineScore(prop1, prop2, massTolerance).ToList();
-                    } 
-                    else if (msmsSimilarityCalc == MsmsSimilarityCalc.All) {
-                        scoreitem = MsScanMatching.GetBonanzaModifiedDotCosineScores(prop1, prop2, massTolerance).ToList();
-                    }
 
+                    var scoreitem = new List<double>();
+                    scoreitem = GetMsnScoreItems(prop1, prop2, massTolerance, msmsSimilarityCalc);
+                    if (scoreitem == null) continue;
                     if (scoreitem[1] < minimumPeakMatch) continue;
                     if (scoreitem[0] < matchThreshold * 0.01) continue;
 
@@ -265,6 +282,22 @@ namespace CompMs.Common.Algorithm.Function
                 }
             }
             return edges;
+        }
+
+        private static List<double> GetMsnScoreItems(IMoleculeMsProperty prop1, IMoleculeMsProperty prop2, double massTolerance, MsmsSimilarityCalc msmsSimilarityCalc) {
+            if (msmsSimilarityCalc == MsmsSimilarityCalc.Bonanza) {
+                return MsScanMatching.GetBonanzaScore(prop1, prop2, massTolerance).ToList();
+            }
+            else if (msmsSimilarityCalc == MsmsSimilarityCalc.ModDot) {
+                return MsScanMatching.GetModifiedDotProductScore(prop1, prop2, massTolerance).ToList();
+            }
+            else if (msmsSimilarityCalc == MsmsSimilarityCalc.Cosine) {
+                return MsScanMatching.GetCosineScore(prop1, prop2, massTolerance).ToList();
+            }
+            else if (msmsSimilarityCalc == MsmsSimilarityCalc.All) {
+                return MsScanMatching.GetBonanzaModifiedDotCosineScores(prop1, prop2, massTolerance).ToList();
+            }
+            return null;
         }
 
         class PeakScanPair<T> {

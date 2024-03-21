@@ -18,6 +18,42 @@ using System.Threading.Tasks;
 namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
     public class MoleculerNetworkProcess {
 
+        public int Run4Onefile(string intputfile, string outputfile, string methodFile, string ionMode) {
+            var dt = DateTime.Now;
+            var param = ConfigParser.ReadForMoleculerNetworkingParameter(methodFile);
+            var counter = 0;
+
+            var records = LibraryHandler.ReadMspLibrary(intputfile).Where(n => n.IonMode.ToString() == ionMode && n.Spectrum?.Count() > 0).ToList();
+
+            Console.WriteLine("Total records count: {0}", records.Count);
+            foreach (var record in records)
+                record.Spectrum = MsScanMatching.GetProcessedSpectrum(record.Spectrum, record.PrecursorMz, absoluteAbundanceCutOff: param.MnAbsoluteAbundanceCutOff, relativeAbundanceCutOff: param.MnRelativeAbundanceCutOff);
+            using (var sw = new StreamWriter(outputfile)) {
+                if (param.MsmsSimilarityCalc == Common.Enum.MsmsSimilarityCalc.All) {
+                    sw.WriteLine("SourceID\tTargetID\tBonanzaScore\tMatchPeakCount\tModDotScore\tCosineScore");
+                }
+                else {
+                    sw.WriteLine("SourceID\tTargetID\tScore\tMatchPeakCount");
+                }
+                for (int i = 0; i < records.Count; i++) {
+                    for (int j = i + 1; j < records.Count; j++) {
+                        var edge = MoleculerNetworkingBase.GetEdge(records[i], records[j], param.MnMassTolerance,
+                            param.MinimumPeakMatch, param.MnSpectrumSimilarityCutOff, param.MaxEdgeNumberPerNode,
+                            param.MaxPrecursorDifference, param.MaxPrecursorDifferenceAsPercent,
+                            param.MsmsSimilarityCalc);
+                        if (edge != null)
+                            sw.WriteLine(edge.source + "\t" + edge.target + "\t" + String.Join("\t", edge.scores));
+                    }
+                    counter++;
+                    if (counter % 100 == 0) {
+                        Console.Write("{0} / {1}", counter, records.Count);
+                        Console.SetCursorPosition(0, Console.CursorTop);
+                    }
+                }
+            }
+            return 1;
+        }
+
         public int Run(string inputDir, string outputDir, string methodFile, string ionMode, bool isOverwrite) {
             var files = ReadInput(inputDir);
             var dt = DateTime.Now;
@@ -46,7 +82,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                     var outputName = Path.GetFileNameWithoutExtension(inputA) + "_mn_" + Path.GetFileNameWithoutExtension(inputB) + ".pairs";
                     var outputPath = Path.Combine(folder, outputName);
 
-                    if (File.Exists(outputPath) && !isOverwrite) {
+                    if (System.IO.File.Exists(outputPath) && !isOverwrite) {
                         return;
                     }
 
@@ -144,7 +180,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
         }
 
         private List<string> ReadInput(string inputDir) {
-            FileAttributes attributes = File.GetAttributes(inputDir);
+            FileAttributes attributes = System.IO.File.GetAttributes(inputDir);
             if ((attributes & FileAttributes.Directory) == FileAttributes.Directory) {
                 Debug.WriteLine(String.Format("{0} is a folder", inputDir));
                 return Directory.GetFiles(inputDir, "*.*msp", SearchOption.AllDirectories)?.ToList();
