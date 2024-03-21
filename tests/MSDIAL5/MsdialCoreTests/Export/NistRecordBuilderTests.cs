@@ -201,6 +201,42 @@ Num Peaks: 3
         Assert.AreEqual(expects, actual, "The exported NIST format data does not match the expected output.");
     }
 
+    [TestMethod]
+    public void Export_NoName()
+    {
+        // Arrange
+        var msdecResult = new MSDecResult
+        {
+            Spectrum = new List<SpectrumPeak>
+            {
+                new SpectrumPeak { Mass = 50, Intensity = 500 },
+                new SpectrumPeak { Mass = 150, Intensity = 1500 },
+                new SpectrumPeak { Mass = 250, Intensity = 2500 }
+            }
+        };
+        var builder = new NistRecordBuilder();
+        builder.SetScan(msdecResult);
+
+        var stream = new MemoryStream();
+        var expects =
+$@"NAME: Unknown
+Num Peaks: 3
+50{'\t'}500
+150{'\t'}1500
+250{'\t'}2500
+
+";
+
+        // Act
+        builder.Export(stream);
+
+        // Assert
+        stream.Seek(0, SeekOrigin.Begin);
+        var reader = new StreamReader(stream, Encoding.ASCII);
+        var actual = reader.ReadToEnd();
+        Assert.AreEqual(expects, actual, "The exported NIST format data does not match the expected output.");
+    }
+
     class MockRefer(MoleculeMsReference reference) : IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>
     {
         public string Key => "";

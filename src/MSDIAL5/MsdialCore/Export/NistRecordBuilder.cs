@@ -1,7 +1,4 @@
-﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
-using CompMs.Common.Interfaces;
-using CompMs.MsdialCore.Algorithm.Annotation;
+﻿using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using System;
@@ -132,7 +129,7 @@ public sealed class NistRecordBuilder
     }
 
     public void SetNameProperty(string name) {
-        if (!string.IsNullOrEmpty(name) && !string.Equals(name, "unknown", StringComparison.OrdinalIgnoreCase)) {
+        if (!string.IsNullOrEmpty(name) && !string.Equals(name, "unknown", StringComparison.CurrentCultureIgnoreCase)) {
             _contents["NAME"] = name;
         }
     }
@@ -190,13 +187,37 @@ public sealed class NistRecordBuilder
     }
 
     public void SetScan(IMSScanProperty scan) {
+        if (!_contents.ContainsKey("NAME")) {
+            var values = new List<string> { "Unknown", };
+            if (scan.PrecursorMz > 0) {
+                values.Add($"|MZ={Math.Round(scan.PrecursorMz, 4)}");
+            }
+            if (scan.ChromXs.RT.Value > 0) {
+                values.Add($"|RT={Math.Round(scan.ChromXs.RT.Value, 3)}");
+            }
+            if (scan.ChromXs.RI.Value > 0) {
+                values.Add($"|RI={Math.Round(scan.ChromXs.RI.Value, 3)}");
+            }
+            if (scan.ChromXs.Drift.Value > 0) {
+                values.Add($"|DT={Math.Round(scan.ChromXs.Drift.Value, 3)}");
+            }
+            _contents["NAME"] = string.Concat(values);
+        }
         _spectra.AddRange(scan.Spectrum);
     }
 
+    /// <summary>
+    /// Exports the NIST record to the specified stream.
+    /// </summary>
+    /// <param name="stream">The stream to export the record to.</param>
     public void Export(Stream stream) {
         using var writer = new StreamWriter(stream, Encoding.ASCII, 4096, true);
+        if (!_contents.TryGetValue("NAME", out var name)) {
+            name = "Unknown";
+        }
+        writer.WriteLine($"NAME: {name}");
         foreach (var field in _fields) {
-            if (_contents.TryGetValue(field, out var value) && (field != "CCS" || _contents.ContainsKey("MOBILITY"))) {
+            if (_contents.TryGetValue(field, out var value) && (field != "CCS" || _contents.ContainsKey("MOBILITY")) && field != "NAME") {
                 writer.WriteLine($"{field}: {value}");
             }
         }
