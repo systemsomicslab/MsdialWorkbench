@@ -23,7 +23,7 @@ namespace CompMs.Graphics.Behavior
             if (d is FrameworkElement fe) {
                 if ((bool)e.OldValue)
                     OnDetaching(fe);
-                if ((bool)e.NewValue)
+                if ((bool)e.NewValue && !(bool)e.OldValue)
                     OnAttached(fe);
             }
         }

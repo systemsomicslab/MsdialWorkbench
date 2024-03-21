@@ -9,6 +9,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -100,6 +101,12 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             ResetPeaksCommand = new ReactiveCommand().WithSubscribe(model.ResetPeaks).AddTo(Disposables);
             RemovePeakCommand = new ReactiveCommand<DisplayPeakOfChromatogram>().WithSubscribe(model.RemovePeak).AddTo(Disposables);
             ExportPeaksCommand = new ReactiveCommand().WithSubscribe(model.ExportPeaks).AddTo(Disposables);
+
+            ViewModels = [
+                new ChromatogramViewModel(ChromatogramsViewModel, RangeSelectableChromatogramViewModel, AccumulatedMs2SpectrumViewModels, AccumulatedSpecificExperimentMS2SpectrumViewModels, ShowAccumulatedMs1SpectrumCommand, ShowAccumulatedSpectrumCommand, CopyAsTableCommand, SaveAsTableCommand),
+                new EicSettingViewModel(DiplayEicSettingValues, InsertTic, InsertBpc, InsertHighestEic, InsertMS2Tic, ApplyCommand, ClearCommand),
+                new PeakPickViewModel(ChromatogramsViewModel, DetectPeaksCommand, AddPeaksCommand, ResetPeaksCommand, RemovePeakCommand, ExportPeaksCommand),
+            ];
         }
 
         public ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> ChromatogramsViewModel { get; }
@@ -183,5 +190,65 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             }
             _model.Update();
         }
+
+        public ObservableCollection<BindableBase> ViewModels { get; }
+
+    }
+
+    internal sealed class ChromatogramViewModel(
+        ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> chromatogramsViewModel,
+        ReadOnlyReactivePropertySlim<RangeSelectableChromatogramViewModel?> rangeSelectableChromatogramViewModel,
+        ReadOnlyReactivePropertySlim<AccumulatedMs2SpectrumViewModel[]> accumulatedMs2SpectrumViewModels,
+        ReadOnlyReactivePropertySlim<AccumulatedSpecificExperimentMS2SpectrumViewModel[]> accumulatedSpecificExperimentMS2SpectrumViewModels,
+        AsyncReactiveCommand showAccumulatedMs1SpectrumCommand,
+        AsyncReactiveCommand<ViewModelBase> showAccumulatedSpectrumCommand,
+        ReactiveCommand copyAsTableCommand,
+        AsyncReactiveCommand saveAsTableCommand) : BindableBase
+    {
+        public string Title { get; } = "Chromatograms";
+        public ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> ChromatogramsViewModel { get; } = chromatogramsViewModel;
+        public ReadOnlyReactivePropertySlim<RangeSelectableChromatogramViewModel?> RangeSelectableChromatogramViewModel { get; } = rangeSelectableChromatogramViewModel;
+        public ReadOnlyReactivePropertySlim<AccumulatedMs2SpectrumViewModel[]> AccumulatedMs2SpectrumViewModels { get; } = accumulatedMs2SpectrumViewModels;
+        public ReadOnlyReactivePropertySlim<AccumulatedSpecificExperimentMS2SpectrumViewModel[]> AccumulatedSpecificExperimentMS2SpectrumViewModels { get; } = accumulatedSpecificExperimentMS2SpectrumViewModels;
+        public AsyncReactiveCommand ShowAccumulatedMs1SpectrumCommand { get; } = showAccumulatedMs1SpectrumCommand;
+        public AsyncReactiveCommand<ViewModelBase> ShowAccumulatedSpectrumCommand { get; } = showAccumulatedSpectrumCommand;
+        public ReactiveCommand CopyAsTableCommand { get; } = copyAsTableCommand;
+        public AsyncReactiveCommand SaveAsTableCommand { get; } = saveAsTableCommand;
+    }
+
+    internal sealed class EicSettingViewModel(
+        ReadOnlyReactiveCollection<PeakFeatureSearchValueViewModel> diplayEicSettingValues,
+        ReactivePropertySlim<bool> insertTic,
+        ReactivePropertySlim<bool> insertBpc,
+        ReactivePropertySlim<bool> insertHighestEic,
+        ReactivePropertySlim<bool> insertMS2Tic,
+        ReactiveCommand applyCommand,
+        ReactiveCommand clearCommand) : BindableBase
+    {
+        public string Title { get; } = "Setting";
+        public ReadOnlyReactiveCollection<PeakFeatureSearchValueViewModel> DiplayEicSettingValues { get; } = diplayEicSettingValues;
+        public ReactivePropertySlim<bool> InsertTic { get; } = insertTic;
+        public ReactivePropertySlim<bool> InsertBpc { get; } = insertBpc;
+        public ReactivePropertySlim<bool> InsertHighestEic { get; } = insertHighestEic;
+        public ReactivePropertySlim<bool> InsertMS2Tic { get; } = insertMS2Tic;
+        public ReactiveCommand ApplyCommand { get; } = applyCommand;
+        public ReactiveCommand ClearCommand { get; } = clearCommand;
+    }
+
+    internal sealed class PeakPickViewModel(
+        ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> chromatogramsViewModel,
+        ReactiveCommand detectPeaksCommand,
+        ReactiveCommand addPeaksCommand,
+        ReactiveCommand resetPeaksCommand,
+        ReactiveCommand<DisplayPeakOfChromatogram> removePeakCommand,
+        ReactiveCommand exportPeaksCommand) : BindableBase
+    {
+        public string Title { get; } = "Peaks";
+        public ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> ChromatogramsViewModel { get; } = chromatogramsViewModel;
+        public ReactiveCommand DetectPeaksCommand { get; } = detectPeaksCommand;
+        public ReactiveCommand AddPeaksCommand { get; } = addPeaksCommand;
+        public ReactiveCommand ResetPeaksCommand { get; } = resetPeaksCommand;
+        public ReactiveCommand<DisplayPeakOfChromatogram> RemovePeakCommand { get; } = removePeakCommand;
+        public ReactiveCommand ExportPeaksCommand { get; } = exportPeaksCommand;
     }
 }

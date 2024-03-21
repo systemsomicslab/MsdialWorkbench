@@ -856,8 +856,7 @@
                             </DataTemplate>
                             <DataTemplate DataType="{x:Type ui:ContainerLeaf}">
                                 <ContentPresenter Content="{Binding Content}"
-                                                  ContentTemplate="{Binding ContentTemplate, RelativeSource={RelativeSource AncestorType=ui:DockItemsControl}}"
-                                                  IsHitTestVisible="False"/>
+                                                  ContentTemplate="{Binding ContentTemplate, RelativeSource={RelativeSource AncestorType=ui:DockItemsControl}}"/>
                             </DataTemplate>
                         </ContentControl.Resources>
                     </ContentControl>

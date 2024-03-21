@@ -25,7 +25,7 @@
                 </DataTemplate>
             </ui:DockItemsControl.ContentTemplate>
             <ui:DockItemsControl.ItemTemplate>
-                <DataTemplate>
+                <DataTemplate DataType="int">
                     <TextBlock Text="{Binding StringFormat=Header: {0}}"/>
                 </DataTemplate>
             </ui:DockItemsControl.ItemTemplate>
