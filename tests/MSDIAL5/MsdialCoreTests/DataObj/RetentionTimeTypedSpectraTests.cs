@@ -138,25 +138,25 @@ public class RetentionTimeTypedSpectraTests
         IonMode.Positive, AcquisitionType.DDA);
 
         // Act: Call the method under test with a specific chromatogram range.
-        var chromatogram = spectra.GetMs2TotalIonChromatogram(new ChromatogramRange(3d, 7d, ChromXType.RT, ChromXUnit.Min)).AsPeakArray();
+        var chromatogram = spectra.GetMs2TotalIonChromatogram(new ChromatogramRange(2d, 7d, ChromXType.RT, ChromXUnit.Min)).AsPeakArray();
 
         // Assert: Verify the method returns the correct number of peaks and their properties.
         Assert.AreEqual(3, chromatogram.Count, "Expected 3 peaks in the chromatogram.");
 
-        Assert.AreEqual(3, chromatogram[0].ID, "First peak should have ID 3.");
+        Assert.AreEqual(1, chromatogram[0].ID, "First peak should have ID 1.");
         Assert.AreEqual(50d, chromatogram[0].Mass, "First peak should have an Mz of 50.");
         Assert.AreEqual(2000d, chromatogram[0].Intensity, "First peak should have an intensity of 2000.");
-        Assert.AreEqual(4d, chromatogram[0].ChromXs.RT.Value, "First peak should have a time of 4 minutes.");
+        Assert.AreEqual(2d, chromatogram[0].ChromXs.RT.Value, "First peak should have a time of 2 minutes.");
 
-        Assert.AreEqual(4, chromatogram[1].ID, "Second peak should have ID 4.");
+        Assert.AreEqual(3, chromatogram[1].ID, "Second peak should have ID 3.");
         Assert.AreEqual(50.2d, chromatogram[1].Mass, "Second peak should have an Mz of 50.2.");
-        Assert.AreEqual(3000d, chromatogram[1].Intensity, "Second peak should have an intensity of 3000.");
-        Assert.AreEqual(5d, chromatogram[1].ChromXs.RT.Value, "Second peak should have a time of 5 minutes.");
+        Assert.AreEqual(7000d, chromatogram[1].Intensity, "Second peak should have an intensity of 7000.");
+        Assert.AreEqual(4d, chromatogram[1].ChromXs.RT.Value, "Second peak should have a time of 4 minutes.");
 
-        Assert.AreEqual(5, chromatogram[2].ID, "Second peak should have ID 4.");
-        Assert.AreEqual(50d, chromatogram[2].Mass, "Second peak should have an Mz of 50.");
-        Assert.AreEqual(2000d, chromatogram[2].Intensity, "Second peak should have an intensity of 2000.");
-        Assert.AreEqual(6d, chromatogram[2].ChromXs.RT.Value, "Second peak should have a time of 6 minutes.");
+        Assert.AreEqual(7, chromatogram[2].ID, "Third peak should have ID 7.");
+        Assert.AreEqual(50d, chromatogram[2].Mass, "Third peak should have an Mz of 50.");
+        Assert.AreEqual(2000d, chromatogram[2].Intensity, "Third peak should have an intensity of 2000.");
+        Assert.AreEqual(8d, chromatogram[2].ChromXs.RT.Value, "Third peak should have a time of 8 minutes.");
     }
 
     [TestMethod()]

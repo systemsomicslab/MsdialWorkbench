@@ -176,22 +176,81 @@ internal sealed class RetentionTimeTypedSpectra : IChromatogramTypedSpectra
     /// <param name="chromatogramRange">The range of the chromatogram, specified by start and end retention times. The range should be of type ChromXType.RT.</param>
     /// <returns>A <see cref="Chromatogram"/> object representing the total ion chromatogram of MS2 spectra within the specified range. The chromatogram includes data points for each spectrum that falls within the range, specifying the index, scan start time, base peak m/z value, and summed intensity of the spectrum.</returns>
     /// <remarks>
-    /// This method filters spectra based on their MS level (only MS2 spectra are considered) and the predefined scan polarity. It calculates the total ion chromatogram by summing the intensities of all ions in each selected spectrum.
+    /// This method processes only MS2 level spectra, filtering out spectra based on the predefined scan polarity and the specified retention time range. It aggregates the total ion intensity from each selected MS2 spectrum to construct the chromatogram. The method is optimized for performance by utilizing an array pool for efficient memory management during the grouping of spectra.
     /// </remarks>
     public Chromatogram GetMs2TotalIonChromatogram(ChromatogramRange chromatogramRange) {
-        System.Diagnostics.Debug.Assert(chromatogramRange.Type == ChromXType.RT);
-        var startIndex = _spectra.LowerBound(chromatogramRange.Begin, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
-        var endIndex = _spectra.UpperBound(chromatogramRange.End, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
         var results = new List<ValuePeak>();
-        for (int i = startIndex; i < endIndex; i++) {
-            if (_spectra[i].MsLevel != 2 ||
-                _spectra[i].ScanPolarity != _polarity) {
-                continue;
-            }
-            var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveTotalIntensity();
-            results.Add(new ValuePeak(_spectra[i].Index, _spectra[i].ScanStartTime, basePeakMz, summedIntensity));
+        var arrayPool = ArrayPool<RawSpectrum>.Shared;
+        foreach (var spectra in GroupedSpectrum(chromatogramRange, arrayPool)) {
+            var (basePeakMz, basePeakIntensity, summedIntensity) = spectra.Select(s => new Spectrum(s.Spectrum).RetrieveTotalIntensity()).Aggregate(AccumulateSpectra);
+            results.Add(new ValuePeak(spectra.Array[0].Index, spectra.Array[0].ScanStartTime, basePeakMz, summedIntensity));
+            arrayPool.Return(spectra.Array);
         }
         return new Chromatogram(results, ChromXType.RT, _unit);
+    }
+
+    /// <summary>
+    /// Accumulates spectra information, selecting the base peak with the highest intensity and summing total intensities.
+    /// </summary>
+    /// <param name="x">The first spectrum to compare.</param>
+    /// <param name="y">The second spectrum to compare.</param>
+    /// <returns>A tuple containing the m/z value of the base peak with the highest intensity, that peak's intensity, and the summed intensity of both spectra.</returns>
+    private (double, double, double) AccumulateSpectra((double BasePeakMz, double BasePeakIntensity, double SummedIntensity) x, (double BasePeakMz, double BasePeakIntensity, double SummedIntensity) y) {
+        if (x.BasePeakIntensity > y.BasePeakIntensity) {
+            return (x.BasePeakMz, x.BasePeakIntensity, x.SummedIntensity + y.SummedIntensity);
+        }
+        else {
+            return (y.BasePeakMz, y.BasePeakIntensity, x.SummedIntensity + y.SummedIntensity);
+        }
+    }
+
+    /// <summary>
+    /// Groups spectra by MS level and scan polarity, utilizing a buffer and array pool for efficient memory management.
+    /// </summary>
+    /// <param name="chromatogramRange">The chromatogram range based on retention time.</param>
+    /// <param name="arrayPool">An array pool for reusing arrays and reducing GC pressure.</param>
+    /// <returns>An enumerable of grouped spectra segments, ready for processing.</returns>
+    /// <remarks>
+    /// This method organizes spectra into groups suitable for generating a total ion chromatogram. It filters spectra by scan polarity and groups adjacent MS2 level spectra together, skipping over MS1 level spectra and ensuring all returned groups are relevant for TIC generation.
+    /// </remarks>
+    private IEnumerable<ArraySegment<RawSpectrum>> GroupedSpectrum(ChromatogramRange chromatogramRange, ArrayPool<RawSpectrum> arrayPool) {
+        System.Diagnostics.Debug.Assert(chromatogramRange.Type == ChromXType.RT);
+        var startIndex = _spectra.LowerBound(chromatogramRange.Begin, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
+        if (startIndex - 1 < 0 || _spectra[startIndex - 1].MsLevel != 1) {
+            while (startIndex < _spectra.Count && _spectra[startIndex].MsLevel != 1) {
+                ++startIndex;
+            }
+            if (startIndex < _spectra.Count) {
+                ++startIndex;
+            }
+        }
+        var endIndex = _spectra.UpperBound(chromatogramRange.End, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
+        while (endIndex < _spectra.Count && _spectra[endIndex].MsLevel != 1) {
+            ++endIndex;
+        }
+        var buffer = new List<RawSpectrum>();
+        for (int i = startIndex; i < endIndex; i++) {
+            if (_spectra[i].ScanPolarity != _polarity) {
+                continue;
+            }
+            else if (_spectra[i].MsLevel == 1) {
+                if (buffer.Count > 0) {
+                    var result = arrayPool.Rent(buffer.Count);
+                    buffer.CopyTo(result);
+                    yield return new ArraySegment<RawSpectrum>(result, 0, buffer.Count);
+                    buffer.Clear();
+                }
+            }
+            else if (_spectra[i].MsLevel == 2) {
+                buffer.Add(_spectra[i]);
+            }
+        }
+        if (buffer.Count > 0) {
+            var result = arrayPool.Rent(buffer.Count);
+            buffer.CopyTo(result);
+            yield return new ArraySegment<RawSpectrum>(result, 0, buffer.Count);
+            buffer.Clear();
+        }
     }
 
     /// <summary>
