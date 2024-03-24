@@ -9,6 +9,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.MsResult;
@@ -53,6 +54,12 @@ internal sealed class AccumulatedExtractedMs2SpectrumViewModel : ViewModelBase
             model.ObserveProperty(m => m.PeakSpot).Select(m => m is not null),
             model.ObserveProperty(m => m.Scan).Select(m => m is not null),
         }.CombineLatestValuesAreAllTrue().ToReactiveCommand().WithSubscribe(model.Export).AddTo(Disposables);
+
+        ViewModels = [
+            new AccumulatedExtractedMs2SpectrumViewModel_Spectrum(MsSpectrumViewModel, SelectedRange, SaveAsNistCommand, CalculateProductIonChromatogramCommand),
+            new AccumulatedExtractedMs2SpectrumViewModel_Search(model.SearchMethods, SearchMethod, ParameterViewModel, Compounds, SelectedCompound, SearchCompoundCommand, ExportCompoundCommand),
+            new AccumulatedExtractedMs2SpectrumViewModel_Chromatogram(ProductIonChromatogram, ProductIonRange, DetectPeaksCommand, AddPeakCommand, ResetPeaksCommand),
+        ];
     }
 
     public AccumulatedExtractedMs2SpectrumModel Model { get; }
@@ -84,4 +91,52 @@ internal sealed class AccumulatedExtractedMs2SpectrumViewModel : ViewModelBase
     public ReactiveCommand DetectPeaksCommand { get; }
     public ReactiveCommand AddPeakCommand { get; }
     public ReactiveCommand ResetPeaksCommand { get; }
+    public ObservableCollection<BindableBase> ViewModels { get; }
+}
+
+internal class AccumulatedExtractedMs2SpectrumViewModel_Spectrum(
+    ReadOnlyReactivePropertySlim<MsSpectrumViewModel?> msSpectrumViewModel,
+    ReactivePropertySlim<AxisRange?> selectedRange,
+    ReactiveCommand saveAsNistCommand,
+    ReactiveCommand calculateProductIonChromatogramCommand) : BindableBase
+{
+    public string Title { get; } = "Spectrum";
+    public ReadOnlyReactivePropertySlim<MsSpectrumViewModel?> MsSpectrumViewModel { get; } = msSpectrumViewModel;
+    public ReactivePropertySlim<AxisRange?> SelectedRange { get; } = selectedRange;
+    public ReactiveCommand SaveAsNistCommand { get; } = saveAsNistCommand;
+    public ReactiveCommand CalculateProductIonChromatogramCommand { get; } = calculateProductIonChromatogramCommand;
+}
+
+internal class AccumulatedExtractedMs2SpectrumViewModel_Search(
+    IList searchMethods,
+    ReactivePropertySlim<object?> searchMethod,
+    ReadOnlyReactivePropertySlim<MsRefSearchParameterBaseViewModel?> parameterViewModel,
+    ReadOnlyReactivePropertySlim<IReadOnlyList<ICompoundResult>?> compounds,
+    ReactivePropertySlim<ICompoundResult?> selectedCompound,
+    ReactiveCommand searchCompoundCommand,
+    ReactiveCommand exportCompoundCommand) : BindableBase
+{
+    public string Title { get; } = "Search";
+    public IList SearchMethods { get; } = searchMethods;
+    public ReactivePropertySlim<object?> SearchMethod { get; } = searchMethod;
+    public ReadOnlyReactivePropertySlim<MsRefSearchParameterBaseViewModel?> ParameterViewModel { get; } = parameterViewModel;
+    public ReadOnlyReactivePropertySlim<IReadOnlyList<ICompoundResult>?> Compounds { get; } = compounds;
+    public ReactivePropertySlim<ICompoundResult?> SelectedCompound { get; } = selectedCompound;
+    public ReactiveCommand SearchCompoundCommand { get; } = searchCompoundCommand;
+    public ReactiveCommand ExportCompoundCommand { get; } = exportCompoundCommand;
+}
+
+internal class AccumulatedExtractedMs2SpectrumViewModel_Chromatogram(
+    ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> productIonChromatogram,
+    ReactivePropertySlim<AxisRange?> productIonRange,
+    ReactiveCommand detectPeaksCommand,
+    ReactiveCommand addPeakCommand,
+    ReactiveCommand resetPeaksCommand) : BindableBase
+{
+    public string Title { get; } = "Chromatogram";
+    public ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> ProductIonChromatogram { get; } = productIonChromatogram;
+    public ReactivePropertySlim<AxisRange?> ProductIonRange { get; } = productIonRange;
+    public ReactiveCommand DetectPeaksCommand { get; } = detectPeaksCommand;
+    public ReactiveCommand AddPeakCommand { get; } = addPeakCommand;
+    public ReactiveCommand ResetPeaksCommand { get; } = resetPeaksCommand;
 }

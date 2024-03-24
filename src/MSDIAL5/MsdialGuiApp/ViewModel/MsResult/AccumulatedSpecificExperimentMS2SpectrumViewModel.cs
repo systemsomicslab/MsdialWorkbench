@@ -9,6 +9,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 
@@ -53,6 +54,12 @@ internal sealed class AccumulatedSpecificExperimentMS2SpectrumViewModel : ViewMo
 
         SaveAsNistCommand = model.ObserveProperty(m => m.Scan).Select(m => m is not null)
             .ToReactiveCommand().WithSubscribe(model.Export).AddTo(Disposables);
+
+        ViewModels = [
+            new AccumulatedSpecificExperimentMS2SpectrumViewModel_Spectrum(MsSpectrumViewModel, SelectedRange, SaveAsNistCommand, CalculateExtractedIonChromatogramCommand),
+            new AccumulatedSpecificExperimentMS2SpectrumViewModel_Search(model.SearchMethods, SearchMethod, ParameterViewModel, Compounds, SelectedCompound, SearchCompoundCommand, ImportDataBaseCommand, ExportCompoundCommand),
+            new AccumulatedSpecificExperimentMS2SpectrumViewModel_Chromatogram(ExtractedIonChromatogram, ProductIonRange, DetectPeaksCommand, AddPeakCommand, ResetPeaksCommand),
+        ];
     }
 
     public AccumulatedSpecificExperimentMS2SpectrumModel Model { get; }
@@ -87,4 +94,55 @@ internal sealed class AccumulatedSpecificExperimentMS2SpectrumViewModel : ViewMo
     public ReactiveCommand DetectPeaksCommand { get; }
     public ReactiveCommand AddPeakCommand { get; }
     public ReactiveCommand ResetPeaksCommand { get; }
+
+    public ObservableCollection<BindableBase> ViewModels { get; }
+}
+
+internal class AccumulatedSpecificExperimentMS2SpectrumViewModel_Spectrum(
+    ReadOnlyReactivePropertySlim<MsSpectrumViewModel?> msSpectrumViewModel,
+    ReactivePropertySlim<AxisRange?> selectedRange,
+    ReactiveCommand saveAsNistCommand,
+    ReactiveCommand calculateExtractedIonChromatogramCommand) : BindableBase
+{
+    public string Title { get; } = "Spectrum";
+    public ReadOnlyReactivePropertySlim<MsSpectrumViewModel?> MsSpectrumViewModel { get; } = msSpectrumViewModel;
+    public ReactivePropertySlim<AxisRange?> SelectedRange { get; } = selectedRange;
+    public ReactiveCommand SaveAsNistCommand { get; } = saveAsNistCommand;
+    public ReactiveCommand CalculateExtractedIonChromatogramCommand { get; } = calculateExtractedIonChromatogramCommand;
+}
+
+internal class AccumulatedSpecificExperimentMS2SpectrumViewModel_Search(
+    IList searchMethods,
+    ReactivePropertySlim<object?> searchMethod,
+    ReadOnlyReactivePropertySlim<MsRefSearchParameterBaseViewModel?> parameterViewModel,
+    ReadOnlyReactivePropertySlim<IReadOnlyList<ICompoundResult>?> compounds,
+    ReactivePropertySlim<ICompoundResult?> selectedCompound,
+    ReactiveCommand searchCompoundCommand,
+    ReactiveCommand importDataBaseCommand,
+    ReactiveCommand exportCompoundCommand) : BindableBase
+{
+    public string Title { get; } = "Search";
+    public IList SearchMethods { get; } = searchMethods;
+    public ReactivePropertySlim<object?> SearchMethod { get; } = searchMethod;
+    public ReadOnlyReactivePropertySlim<MsRefSearchParameterBaseViewModel?> ParameterViewModel { get; } = parameterViewModel;
+    public ReadOnlyReactivePropertySlim<IReadOnlyList<ICompoundResult>?> Compounds { get; } = compounds;
+    public ReactivePropertySlim<ICompoundResult?> SelectedCompound { get; } = selectedCompound;
+    public ReactiveCommand SearchCompoundCommand { get; } = searchCompoundCommand;
+    public ReactiveCommand ImportDataBaseCommand { get; } = importDataBaseCommand;
+    public ReactiveCommand ExportCompoundCommand { get; } = exportCompoundCommand;
+}
+
+internal class AccumulatedSpecificExperimentMS2SpectrumViewModel_Chromatogram(
+    ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> extractedIonChromatogram,
+    ReactivePropertySlim<AxisRange?> productIonRange,
+    ReactiveCommand detectPeaksCommand,
+    ReactiveCommand addPeakCommand,
+    ReactiveCommand resetPeaksCommand) : BindableBase
+{
+    public string Title { get; } = "Chromatogram";
+    public ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> ExtractedIonChromatogram { get; } = extractedIonChromatogram;
+    public ReactivePropertySlim<AxisRange?> ProductIonRange { get; } = productIonRange;
+    public ReactiveCommand DetectPeaksCommand { get; } = detectPeaksCommand;
+    public ReactiveCommand AddPeakCommand { get; } = addPeakCommand;
+    public ReactiveCommand ResetPeaksCommand { get; } = resetPeaksCommand;
 }
