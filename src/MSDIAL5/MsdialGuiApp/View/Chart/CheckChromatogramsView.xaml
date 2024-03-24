@@ -185,7 +185,7 @@
                                                         </CompositeCollection>
                                                     </MenuItem.ItemsSource>
                                                     <MenuItem.Resources>
-                                                        <DataTemplate DataType="{x:Type msResult:AccumulatedMs2SpectrumViewModel}">
+                                                        <DataTemplate DataType="{x:Type msResult:AccumulatedExtractedMs2SpectrumViewModel}">
                                                             <TextBlock>
                                                                 <Run FontStyle="Italic">m/z</Run>: <Run Text="{Binding Mz, Mode=OneTime}"/>
                                                             </TextBlock>

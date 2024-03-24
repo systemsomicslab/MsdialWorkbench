@@ -81,7 +81,7 @@ internal sealed class CheckChromatogramsModel : BindableBase
     }
     private AccumulatedSpecificExperimentMS2SpectrumModel[] _accumulatedSpecificExperimentMS2SpectrumModels = [];
 
-    public AccumulatedMs2SpectrumModel[] AccumulatedMs2SpectrumModels {
+    public AccumulatedExtractedMs2SpectrumModel[] AccumulatedMs2SpectrumModels {
         get => _accumulatedMs2SpectrumModels;
         private set {
             var prevs = _accumulatedMs2SpectrumModels;
@@ -92,7 +92,7 @@ internal sealed class CheckChromatogramsModel : BindableBase
             }
         }
     }
-    private AccumulatedMs2SpectrumModel[] _accumulatedMs2SpectrumModels = [];
+    private AccumulatedExtractedMs2SpectrumModel[] _accumulatedMs2SpectrumModels = [];
 
     public ReadOnlyObservableCollection<PeakFeatureSearchValueModel> DisplayEicSettingValues { get; }
 
@@ -118,7 +118,7 @@ internal sealed class CheckChromatogramsModel : BindableBase
         RangeSelectableChromatogramModel = new RangeSelectableChromatogramModel(Chromatograms);
         AccumulatedMs2SpectrumModels = Chromatograms.DisplayChromatograms
             .OfType<DisplayExtractedIonChromatogram>()
-            .Select(c => new AccumulatedMs2SpectrumModel(c, _accumulateSpectra, _compoundSearch, LoadChromatogramsUsecase, _broker))
+            .Select(c => new AccumulatedExtractedMs2SpectrumModel(c, _accumulateSpectra, _compoundSearch, LoadChromatogramsUsecase, _broker))
             .ToArray();
         AccumulatedSpecificExperimentMS2SpectrumModels = Chromatograms.DisplayChromatograms
             .OfType<DisplaySpecificExperimentChromatogram>()
@@ -134,7 +134,7 @@ internal sealed class CheckChromatogramsModel : BindableBase
         }
     }
 
-    public async Task AccumulateAsync(AccumulatedMs2SpectrumModel model, CancellationToken token) {
+    public async Task AccumulateAsync(AccumulatedExtractedMs2SpectrumModel model, CancellationToken token) {
         if (RangeSelectableChromatogramModel is { MainRange: not null } ) {
             var range = RangeSelectableChromatogramModel.ConvertToRt(RangeSelectableChromatogramModel.MainRange);
             var subs = RangeSelectableChromatogramModel.SubtractRanges.Select(r => RangeSelectableChromatogramModel.ConvertToRt(r)).ToArray();

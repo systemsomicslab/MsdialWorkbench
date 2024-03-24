@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.MsResult;
 
-internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
+internal sealed class AccumulatedExtractedMs2SpectrumModel : DisposableModelBase
 {
     private readonly AccumulateSpectraUsecase _accumulateSpectra;
     private readonly ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? _compoundSearch;
@@ -34,7 +34,7 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
     private readonly IMessageBroker _broker;
     private readonly BehaviorSubject<MsSpectrum?> _subject;
 
-    public AccumulatedMs2SpectrumModel(DisplayExtractedIonChromatogram chromatogram, AccumulateSpectraUsecase accumulateSpectra, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? compoundSearch, LoadChromatogramsUsecase loadingChromatograms, IMessageBroker broker) {
+    public AccumulatedExtractedMs2SpectrumModel(DisplayExtractedIonChromatogram chromatogram, AccumulateSpectraUsecase accumulateSpectra, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? compoundSearch, LoadChromatogramsUsecase loadingChromatograms, IMessageBroker broker) {
         Chromatogram = chromatogram;
         _accumulateSpectra = accumulateSpectra;
         _compoundSearch = compoundSearch;

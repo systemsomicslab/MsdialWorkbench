@@ -13,9 +13,9 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.MsResult;
 
-internal sealed class AccumulatedMs2SpectrumViewModel : ViewModelBase
+internal sealed class AccumulatedExtractedMs2SpectrumViewModel : ViewModelBase
 {
-    public AccumulatedMs2SpectrumViewModel(AccumulatedMs2SpectrumModel model)
+    public AccumulatedExtractedMs2SpectrumViewModel(AccumulatedExtractedMs2SpectrumModel model)
     {
         Model = model;
         MsSpectrumViewModel = model.ObserveProperty(m => m.PlotComparedSpectrum)
@@ -55,7 +55,7 @@ internal sealed class AccumulatedMs2SpectrumViewModel : ViewModelBase
         }.CombineLatestValuesAreAllTrue().ToReactiveCommand().WithSubscribe(model.Export).AddTo(Disposables);
     }
 
-    public AccumulatedMs2SpectrumModel Model { get; }
+    public AccumulatedExtractedMs2SpectrumModel Model { get; }
 
     public double Mz => Model.Chromatogram.Mz;
     public ReadOnlyReactivePropertySlim<MsSpectrumViewModel?> MsSpectrumViewModel { get; }
