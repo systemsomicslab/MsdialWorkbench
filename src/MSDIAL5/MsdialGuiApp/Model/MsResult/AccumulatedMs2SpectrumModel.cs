@@ -130,7 +130,7 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
     }
 
     public void CalculateTotalIonChromatogram() {
-        ExtractedIonChromatogram = _loadingChromatograms.LoadTic();
+        ExtractedIonChromatogram = _loadingChromatograms.LoadMS2Tic();
         if (ExtractedIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> chromAxis) {
             chromAxis.ChartMargin = new ConstantMargin(0, 60);
         }

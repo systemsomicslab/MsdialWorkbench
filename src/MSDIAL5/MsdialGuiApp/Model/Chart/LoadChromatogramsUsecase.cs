@@ -65,6 +65,12 @@ namespace CompMs.App.Msdial.Model.Chart
         }
         private bool _insertMS2Tic;
 
+        public ChromatogramsModel LoadMS2Tic() {
+            var displayChromatogram = _productTicLoader.LoadChromatogram();
+            displayChromatogram.Name = $"Total ion chromatogram, MS2";
+            return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
+        }
+
         public ChromatogramsModel LoadMS2Tic(int experimentID) {
             var displayChromatogram = _productExperimentTicLoader.LoadChromatogram(experimentID);
             displayChromatogram.Name = $"Total ion chromatogram, ExperimentID: {experimentID}";
