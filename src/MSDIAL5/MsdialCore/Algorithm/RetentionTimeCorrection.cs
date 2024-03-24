@@ -60,8 +60,8 @@ namespace CompMs.MsdialCore.Algorithm {
                     }
                 }
                 if (pab == null) pab = new ChromatogramPeakFeature() { PrecursorMz = i.PrecursorMz, ChromXs = new ChromXs(0) };
-                var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(startMass, i.MassTolerance, chromatogramRange);
-                var peaklist = chromatogram.AsPeakArray().Select(peak => peak as ChromatogramPeak ?? ChromatogramPeak.Create(peak.ID, peak.Mass, peak.Intensity, peak.ChromXs.RT)).ToList();
+                var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(startMass, i.MassTolerance), chromatogramRange);
+                var peaklist = ((Chromatogram)chromatogram).AsPeakArray().Select(peak => peak ?? ChromatogramPeak.Create(peak.ID, peak.Mass, peak.Intensity, peak.ChromXs.RT)).ToList();
                 targetList.Add(new StandardPair() { SamplePeakAreaBean = pab, Reference = i, Chromatogram = peaklist });
             }
             /*   foreach(var t in targetList) {

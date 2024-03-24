@@ -134,7 +134,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             var spectra = new RawSpectra(provider, projectParameter.IonMode, file.AcquisitionType);
             var rawChromatograms = selectedSpectrum.SkipNull()
                 .SelectSwitch(feature => rawSpectrumLoader_.LoadSpectrumAsObservable(feature).CombineLatest(numberOfChromatograms, (List<SpectrumPeak> spectrum, int number) => (feature, spectrum: spectrum.OrderByDescending(peak_ => peak_.Intensity).Take(number).OrderBy(n => n.Mass))))
-                .Select(pair => spectra.GetMs1ExtractedChromatograms_temp2(pair.spectrum.Select(s => s.Mass), peakPickParameter.CentroidMs1Tolerance, new ChromatogramRange(pair.feature.QuantifiedChromatogramPeak.PeakFeature, ChromXType.RT, ChromXUnit.Min)))
+                .Select(pair => spectra.GetMS1ExtractedChromatograms(pair.spectrum.Select(s => s.Mass), peakPickParameter.CentroidMs1Tolerance, new ChromatogramRange(pair.feature.QuantifiedChromatogramPeak.PeakFeature, ChromXType.RT, ChromXUnit.Min)))
                 .Select(chromatograms => chromatograms.Select(chromatogram => chromatogram.ChromatogramSmoothing(SmoothingMethod.LinearWeightedMovingAverage, peakPickParameter.SmoothingLevel)))
                 .Select(chromatograms => new ChromatogramsModel(
                     "EI chromatograms",

@@ -128,8 +128,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             var rtTol = maxRt.Value - minRt.Value;
 
             var range = new ChromatogramRange(centralRT.Value, centralRT.Value, ChromXType.RT, ChromXUnit.Min).ExtendWith(rtTol * 3);
-            return rawSpectra.GetMs1ExtractedChromatogram(centralMz, _parameter.CentroidMs1Tolerance, range)
-                .ChromatogramSmoothing(smoothingMethod, smoothingLevel).AsPeakArray();
+            return ((Chromatogram)rawSpectra.GetMS1ExtractedChromatogram(new MzRange(centralMz, _parameter.CentroidMs1Tolerance), range)
+                .ChromatogramSmoothing(smoothingMethod, smoothingLevel)).AsPeakArray();
         }
     }
 
@@ -183,8 +183,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             var rtTol = maxRt.Value - minRt.Value;
 
             var range = new ChromatogramRange(centralRT.Value, centralRT.Value, ChromXType.RT, ChromXUnit.Min).ExtendWith(rtTol * 3);
-            var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(centralMz, _parameter.CentroidMs1Tolerance, range)
-                .ChromatogramSmoothing(smoothingMethod, smoothingLevel).AsPeakArray();
+            var chromatogram = ((Chromatogram)rawSpectra.GetMS1ExtractedChromatogram(new MzRange(centralMz, _parameter.CentroidMs1Tolerance), range)
+                .ChromatogramSmoothing(smoothingMethod, smoothingLevel)).AsPeakArray();
             foreach (var peak in chromatogram) {
                 peak.ChromXs.RI = riHandler.Convert(peak.ChromXs.RT);
                 peak.ChromXs.MainType = ChromXType.RI;

@@ -81,31 +81,27 @@ public class MS2TicLoaderTests
             throw new System.NotImplementedException();
         }
 
-        public Chromatogram GetMs1BasePeakChromatogram(ChromatogramRange chromatogramRange) {
+        public Chromatogram GetMS1BasePeakChromatogram(ChromatogramRange chromatogramRange) {
             throw new System.NotImplementedException();
         }
 
-        public Chromatogram GetMs1ExtractedChromatogram(double mz, double tolerance, ChromatogramRange chromatogramRange) {
+        public Chromatogram GetMS1ExtractedChromatogramByHighestBasePeakMz(IEnumerable<ISpectrumPeak> peaks, double tolerance, ChromatogramRange chromatogramRange) {
             throw new System.NotImplementedException();
         }
 
-        public Chromatogram GetMs1ExtractedChromatogramByHighestBasePeakMz(IEnumerable<ISpectrumPeak> peaks, double tolerance, ChromatogramRange chromatogramRange) {
+        public IEnumerable<ExtractedIonChromatogram> GetMS1ExtractedChromatograms(IEnumerable<double> mzs, double tolerance, ChromatogramRange chromatogramRange) {
             throw new System.NotImplementedException();
         }
 
-        public IEnumerable<ExtractedIonChromatogram> GetMs1ExtractedChromatograms_temp2(IEnumerable<double> mzs, double tolerance, ChromatogramRange chromatogramRange) {
+        public ExtractedIonChromatogram GetMS1ExtractedChromatogram(MzRange mzRange, ChromatogramRange chromatogramRange) {
             throw new System.NotImplementedException();
         }
 
-        public ExtractedIonChromatogram GetMs1ExtractedChromatogram_temp2(double mz, double tolerance, ChromatogramRange chromatogramRange) {
+        public Chromatogram GetMS1TotalIonChromatogram(ChromatogramRange chromatogramRange) {
             throw new System.NotImplementedException();
         }
 
-        public Chromatogram GetMs1TotalIonChromatogram(ChromatogramRange chromatogramRange) {
-            throw new System.NotImplementedException();
-        }
-
-        public ExtractedIonChromatogram GetMS2ExtractedIonChromatogram(MzRange product, ChromatogramRange chromatogramRange, int experimentID) {
+        public ExtractedIonChromatogram GetMS2ExtractedIonChromatogram(int experimentID, MzRange product, ChromatogramRange chromatogramRange) {
             throw new NotImplementedException();
         }
 
@@ -113,7 +109,7 @@ public class MS2TicLoaderTests
             throw new System.NotImplementedException();
         }
 
-        public SpecificExperimentChromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange, int experimentID) {
+        public SpecificExperimentChromatogram GetMS2TotalIonChromatogram(int experimentID, ChromatogramRange chromatogramRange) {
             ExperimentID = experimentID;
             return new SpecificExperimentChromatogram(Array.Empty<ValuePeak>(), ChromXType.RT, ChromXUnit.Min, experimentID);
         }
@@ -122,7 +118,7 @@ public class MS2TicLoaderTests
             throw new System.NotImplementedException();
         }
 
-        public ExtractedIonChromatogram GetProductIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange) {
+        public ExtractedIonChromatogram GetMS2ExtractedIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange) {
             throw new System.NotImplementedException();
         }
     }

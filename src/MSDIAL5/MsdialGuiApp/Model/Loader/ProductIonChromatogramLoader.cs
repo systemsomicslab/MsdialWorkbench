@@ -39,7 +39,7 @@ internal sealed class ProductIonChromatogramLoader : IWholeChromatogramLoader<(M
     /// <param name="state">A tuple containing the precursor and product m/z ranges for which the chromatogram is to be loaded.</param>
     /// <returns>A <see cref="DisplayChromatogram"/> representing the peaks within the loaded chromatogram.</returns>
     DisplayChromatogram IWholeChromatogramLoader<(MzRange Precursor, MzRange Product)>.LoadChromatogram((MzRange Precursor, MzRange Product) state) {
-        var chromatogram = _rawSpectra.GetProductIonChromatogram(state.Precursor, state.Product, _range);
+        var chromatogram = _rawSpectra.GetMS2ExtractedIonChromatogram(state.Precursor, state.Product, _range);
         return new DisplayExtractedIonChromatogram(chromatogram, state.Product.Tolerance, _ionMode);
     }
 
@@ -52,7 +52,7 @@ internal sealed class ProductIonChromatogramLoader : IWholeChromatogramLoader<(M
     /// This method fetches the MS2 spectra associated with a specified experiment ID and filters those spectra based on the provided product m/z range. It then constructs a chromatogram from these filtered spectra, illustrating the intensity and distribution of product ions across the chromatogram range. This functionality is particularly useful for analyzing the behavior of specific ions in complex mixtures or experimental conditions.
     /// </remarks>
     DisplayChromatogram IWholeChromatogramLoader<(int ExperimentID, MzRange Product)>.LoadChromatogram((int ExperimentID, MzRange Product) state) {
-        var chromatogram = _rawSpectra.GetMS2ExtractedIonChromatogram(state.Product, _range, state.ExperimentID);
+        var chromatogram = _rawSpectra.GetMS2ExtractedIonChromatogram(state.ExperimentID, state.Product, _range);
         return new DisplayExtractedIonChromatogram(chromatogram, state.Product.Tolerance, _ionMode);
     }
 }

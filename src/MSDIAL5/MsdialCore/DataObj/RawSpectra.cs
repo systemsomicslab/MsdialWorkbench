@@ -33,11 +33,6 @@ namespace CompMs.MsdialCore.DataObj
             _acquisitionType= acquisitionType;
         }
 
-        public Chromatogram GetMs1ExtractedChromatogram(double mz, double tolerance, ChromatogramRange chromatogramRange) {
-            var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
-            return impl.GetMs1ExtractedChromatogram(mz, tolerance, chromatogramRange.Begin, chromatogramRange.End);
-        }
-
         public double StartRt { 
             get {
                 if (_spectra.IsEmptyOrNull()) return 0;
@@ -62,27 +57,27 @@ namespace CompMs.MsdialCore.DataObj
             }
         }
 
-        public ExtractedIonChromatogram GetMs1ExtractedChromatogram_temp2(double mz, double tolerance, ChromatogramRange chromatogramRange) {
+        public ExtractedIonChromatogram GetMS1ExtractedChromatogram(MzRange mzRange, ChromatogramRange chromatogramRange) {
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
-            return impl.GetMs1ExtractedChromatogram_temp2(mz, tolerance, chromatogramRange.Begin, chromatogramRange.End);
+            return impl.GetMs1ExtractedChromatogram_temp2(mzRange.Mz, mzRange.Tolerance, chromatogramRange.Begin, chromatogramRange.End);
         }
 
-        public IEnumerable<ExtractedIonChromatogram> GetMs1ExtractedChromatograms_temp2(IEnumerable<double> mzs, double tolerance, ChromatogramRange chromatogramRange) {
+        public IEnumerable<ExtractedIonChromatogram> GetMS1ExtractedChromatograms(IEnumerable<double> mzs, double tolerance, ChromatogramRange chromatogramRange) {
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
             return impl.GetMs1ExtractedChromatograms_temp2(mzs, tolerance, chromatogramRange.Begin, chromatogramRange.End);
         }
 
-        public Chromatogram GetMs1TotalIonChromatogram(ChromatogramRange chromatogramRange) {
+        public Chromatogram GetMS1TotalIonChromatogram(ChromatogramRange chromatogramRange) {
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
             return impl.GetMs1TotalIonChromatogram(chromatogramRange.Begin, chromatogramRange.End);
         }
 
-        public Chromatogram GetMs1BasePeakChromatogram(ChromatogramRange chromatogramRange) {
+        public Chromatogram GetMS1BasePeakChromatogram(ChromatogramRange chromatogramRange) {
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
             return impl.GetMs1BasePeakChromatogram(chromatogramRange.Begin, chromatogramRange.End);
         }
 
-        public Chromatogram GetMs1ExtractedChromatogramByHighestBasePeakMz(IEnumerable<ISpectrumPeak> peaks, double tolerance, ChromatogramRange chromatogramRange) {
+        public Chromatogram GetMS1ExtractedChromatogramByHighestBasePeakMz(IEnumerable<ISpectrumPeak> peaks, double tolerance, ChromatogramRange chromatogramRange) {
             var mz = peaks.Argmax(feature => feature.Intensity).Mass;
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
             return impl.GetMs1ExtractedChromatogram(mz, tolerance, chromatogramRange.Begin, chromatogramRange.End);
@@ -127,13 +122,13 @@ namespace CompMs.MsdialCore.DataObj
         /// <summary>
         /// Generates a total ion chromatogram for MS2 spectra from a specific experiment within a specified chromatogram range.
         /// </summary>
-        /// <param name="chromatogramRange">The range of the chromatogram, defined by start and end points along with the type and unit of the chromatographic measurement (e.g., retention time or ion mobility).</param>
         /// <param name="experimentID">The ID of the experiment from which to retrieve MS2 spectra. Only spectra matching this experiment ID are included in the chromatogram.</param>
+        /// <param name="chromatogramRange">The range of the chromatogram, defined by start and end points along with the type and unit of the chromatographic measurement (e.g., retention time or ion mobility).</param>
         /// <returns>A <see cref="Chromatogram"/> object representing the total ion chromatogram of MS2 spectra from the specified experiment within the given range. Each peak in the chromatogram corresponds to an MS2 spectrum, including details such as index, chromatographic measurement (e.g., retention time or drift time), base peak m/z value, and summed intensity.</returns>
         /// <remarks>
         /// Similar to the overload without the experiment ID, this method also dynamically builds or retrieves a suitable chromatogram generator based on the range type and unit. It then filters the MS2 spectra by the specified experiment ID before generating the chromatogram.
         /// </remarks>
-        public SpecificExperimentChromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange, int experimentID) {
+        public SpecificExperimentChromatogram GetMS2TotalIonChromatogram(int experimentID, ChromatogramRange chromatogramRange) {
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
             return impl.GetMS2TotalIonChromatogram(chromatogramRange, experimentID);
         }
@@ -154,7 +149,7 @@ namespace CompMs.MsdialCore.DataObj
         /// It delegates the actual generation of the chromatogram to the selected implementation, ensuring that
         /// the chromatogram is generated in accordance with the specified parameters.
         /// </remarks>
-        public ExtractedIonChromatogram GetProductIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange) {
+        public ExtractedIonChromatogram GetMS2ExtractedIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange) {
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
             return impl.GetProductIonChromatogram(precursor, product, chromatogramRange);
         }
@@ -162,14 +157,14 @@ namespace CompMs.MsdialCore.DataObj
         /// <summary>
         /// Generates an extracted ion chromatogram from MS2 spectra for a specified m/z range within a given chromatogram range, filtering by a specific experiment ID.
         /// </summary>
+        /// <param name="experimentID">The ID of the experiment from which to retrieve MS2 spectra. Only spectra matching this experiment ID and falling within the specified chromatogram range are included in the chromatogram.</param>
         /// <param name="product">The target m/z range for the extracted ion, including the center m/z value and the tolerance for the extraction.</param>
         /// <param name="chromatogramRange">Specifies the range and type of the chromatogram to be generated, including the chromatogram type (e.g., retention time, drift time) and unit.</param>
-        /// <param name="experimentID">The ID of the experiment from which to retrieve MS2 spectra. Only spectra matching this experiment ID and falling within the specified chromatogram range are included in the chromatogram.</param>
         /// <returns>An <see cref="ExtractedIonChromatogram"/> object representing the chromatogram of extracted ions within the specified product m/z range and chromatogram range, filtered by the specified experiment ID. Each <see cref="ValuePeak"/> in the chromatogram corresponds to an extracted ion, detailing the spectrum index, chromatogram time (e.g., drift time), base peak m/z value, and summed intensity.</returns>
         /// <remarks>
         /// This method filters spectra based on the MS level (MS2), scan polarity, and the specified experiment ID, within the specified chromatogram range. It calculates the extracted ion chromatogram by summing the intensities of ions within the specified m/z range for each selected spectrum. This targeted approach enables detailed analysis of specific ions, facilitating the exploration of their behavior within the experimental setup.
         /// </remarks>
-        public ExtractedIonChromatogram GetMS2ExtractedIonChromatogram(MzRange product, ChromatogramRange chromatogramRange, int experimentID) {
+        public ExtractedIonChromatogram GetMS2ExtractedIonChromatogram(int experimentID, MzRange product, ChromatogramRange chromatogramRange) {
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
             return impl.GetMS2ExtractedIonChromatogram(product, chromatogramRange, experimentID);
         }

@@ -17,7 +17,7 @@ namespace CompMs.App.Msdial.Model.Loader
 
         DisplayChromatogram IWholeChromatogramLoader.LoadChromatogram() {
             var chromatogram = _rawSpectra
-                .GetMs1BasePeakChromatogram(_chromatogramRange)
+                .GetMS1BasePeakChromatogram(_chromatogramRange)
                 .ChromatogramSmoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel);
             return new DisplayChromatogram(chromatogram);
         }

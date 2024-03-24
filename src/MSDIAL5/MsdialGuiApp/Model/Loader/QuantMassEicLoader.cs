@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm;
@@ -49,7 +50,7 @@ namespace CompMs.App.Msdial.Model.Loader
         private async Task<Chromatogram> LoadEicCoreAsync(IChromatogramPeakFeature peakFeature, CancellationToken token) {
             var rawSpectra = await _rawSpectraTask.ConfigureAwait(false);
             token.ThrowIfCancellationRequested();
-            return rawSpectra.GetMs1ExtractedChromatogram(peakFeature.Mass, _peakPickParameter.MassSliceWidth, GetChromatogramRange(peakFeature));
+            return rawSpectra.GetMS1ExtractedChromatogram(new MzRange(peakFeature.Mass, _peakPickParameter.MassSliceWidth), GetChromatogramRange(peakFeature));
         }
 
         PeakChromatogram IChromatogramLoader<Ms1BasedSpectrumFeature?>.EmptyChromatogram  => new PeakChromatogram(new Chromatogram(Array.Empty<ValuePeak>(), _chromXType, _chromXUnit), null, string.Empty, Colors.Black);

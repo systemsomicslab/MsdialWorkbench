@@ -13,7 +13,7 @@ public class MockRawSpectra : IRawSpectra
     public Chromatogram ExpectedChromatogram2 { get; set; }
     public SpecificExperimentChromatogram ExpectedChromatogram3 { get; set; }
 
-    ExtractedIonChromatogram IRawSpectra.GetProductIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange)
+    ExtractedIonChromatogram IRawSpectra.GetMS2ExtractedIonChromatogram(MzRange precursor, MzRange product, ChromatogramRange chromatogramRange)
     {
         return ExpectedChromatogram;
     }
@@ -22,27 +22,23 @@ public class MockRawSpectra : IRawSpectra
         throw new NotImplementedException();
     }
 
-    Chromatogram IRawSpectra.GetMs1BasePeakChromatogram(ChromatogramRange chromatogramRange) {
+    Chromatogram IRawSpectra.GetMS1BasePeakChromatogram(ChromatogramRange chromatogramRange) {
         throw new NotImplementedException();
     }
 
-    Chromatogram IRawSpectra.GetMs1ExtractedChromatogram(double mz, double tolerance, ChromatogramRange chromatogramRange) {
+    Chromatogram IRawSpectra.GetMS1ExtractedChromatogramByHighestBasePeakMz(IEnumerable<ISpectrumPeak> peaks, double tolerance, ChromatogramRange chromatogramRange) {
         throw new NotImplementedException();
     }
 
-    Chromatogram IRawSpectra.GetMs1ExtractedChromatogramByHighestBasePeakMz(IEnumerable<ISpectrumPeak> peaks, double tolerance, ChromatogramRange chromatogramRange) {
+    IEnumerable<ExtractedIonChromatogram> IRawSpectra.GetMS1ExtractedChromatograms(IEnumerable<double> mzs, double tolerance, ChromatogramRange chromatogramRange) {
         throw new NotImplementedException();
     }
 
-    IEnumerable<ExtractedIonChromatogram> IRawSpectra.GetMs1ExtractedChromatograms_temp2(IEnumerable<double> mzs, double tolerance, ChromatogramRange chromatogramRange) {
+    ExtractedIonChromatogram IRawSpectra.GetMS1ExtractedChromatogram(MzRange mzRange, ChromatogramRange chromatogramRange) {
         throw new NotImplementedException();
     }
 
-    ExtractedIonChromatogram IRawSpectra.GetMs1ExtractedChromatogram_temp2(double mz, double tolerance, ChromatogramRange chromatogramRange) {
-        throw new NotImplementedException();
-    }
-
-    Chromatogram IRawSpectra.GetMs1TotalIonChromatogram(ChromatogramRange chromatogramRange) {
+    Chromatogram IRawSpectra.GetMS1TotalIonChromatogram(ChromatogramRange chromatogramRange) {
         throw new NotImplementedException();
     }
 
@@ -54,11 +50,11 @@ public class MockRawSpectra : IRawSpectra
         return ExpectedChromatogram2;
     }
 
-    public SpecificExperimentChromatogram GetMS2TotalIonChromatogram(ChromatogramRange chromatogramRange, int experimentID) {
+    public SpecificExperimentChromatogram GetMS2TotalIonChromatogram(int experimentID, ChromatogramRange chromatogramRange) {
         return ExpectedChromatogram3;
     }
 
-    public ExtractedIonChromatogram GetMS2ExtractedIonChromatogram(MzRange product, ChromatogramRange chromatogramRange, int experimentID) {
+    public ExtractedIonChromatogram GetMS2ExtractedIonChromatogram(int experimentID, MzRange product, ChromatogramRange chromatogramRange) {
         return ExpectedChromatogram;
     }
 }

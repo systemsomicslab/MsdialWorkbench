@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -328,13 +329,13 @@ namespace CompMs.MsdialDimsCore.Algorithm
                 var tLeftRt = peak.ChromXsLeft.RT.Value;
                 var tRightRt = peak.ChromXsRight.RT.Value;
                 var chromatogramRange = new ChromatogramRange(tLeftRt, tRightRt, ChromXType.RT, ChromXUnit.Min);
-                var tPeaklist = rawSpectra.GetMs1ExtractedChromatogram(peak.Mass, param.CentroidMs1Tolerance, chromatogramRange);
+                var tPeaklist = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(peak.Mass, param.CentroidMs1Tolerance), chromatogramRange);
                 var tChrom = tPeaklist.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel).AsPeakArray();
 
                 foreach (var cPeak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 
                 && !n.PeakCharacter.IsLinked && n.PeakID != peak.PeakID && n.PeakShape.PeakPureValue >= 0.9)) {
 
-                    var cPeaklist = rawSpectra.GetMs1ExtractedChromatogram(cPeak.Mass, param.CentroidMs1Tolerance, chromatogramRange);
+                    var cPeaklist = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(cPeak.Mass, param.CentroidMs1Tolerance), chromatogramRange);
                     var cChrom = cPeaklist.ChromatogramSmoothing(param.SmoothingMethod, param.SmoothingLevel).AsPeakArray();
 
                     var col = BasicMathematics.Coefficient(cChrom.Select(chrom => chrom.Intensity).ToArray(), tChrom.Select(chrom => chrom.Intensity).ToArray());

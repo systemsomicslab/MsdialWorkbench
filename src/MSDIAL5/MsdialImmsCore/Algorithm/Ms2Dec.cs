@@ -179,7 +179,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             //note that the MS1 chromatogram trace (i.e. EIC) is also used as the candidate of model chromatogram
             var rawSpectra = new RawSpectra(provider, ionMode, type);
             var chromatogramRange = new ChromatogramRange(startDt, endDt, ChromXType.Drift, ChromXUnit.Msec);
-            return rawSpectra.GetMs1ExtractedChromatogram(chromPeakFeature.Mass, centroidMs1Tolerance, chromatogramRange);
+            return rawSpectra.GetMS1ExtractedChromatogram(new MzRange(chromPeakFeature.Mass, centroidMs1Tolerance), chromatogramRange);
         }
 
         //private static List<List<ChromatogramPeak>> GetMs2PeaksList(

@@ -65,13 +65,13 @@ namespace CompMs.App.Msdial.Model.Loader
 
         protected virtual async Task<Chromatogram> LoadEicCoreAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             var rawSpectra = await _rawSpectraTask.ConfigureAwait(false);
-            var ms1Peaks = rawSpectra.GetMs1ExtractedChromatogram(target.Mass, _peakPickParameter.CentroidMs1Tolerance, GetChromatogramRange(target));
+            var ms1Peaks = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(target.Mass, _peakPickParameter.CentroidMs1Tolerance), GetChromatogramRange(target));
             return ms1Peaks.ChromatogramSmoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel);
         }
 
         protected ExtractedIonChromatogram LoadEicCore(double mass, double massTolerance) {
             return RawSpectra
-                .GetMs1ExtractedChromatogram_temp2(mass, massTolerance, _chromatogramRange)
+                .GetMS1ExtractedChromatogram(new MzRange(mass, massTolerance), _chromatogramRange)
                 .ChromatogramSmoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel);
         }
 

@@ -42,7 +42,7 @@ internal sealed class MS2TicLoader(IRawSpectra rawSpectra, ChromatogramRange chr
     /// allowing for focused analysis on data from a specific experiment.
     /// </remarks>
     public DisplayChromatogram LoadChromatogram(int experimentID) {
-        var chromatogram = rawSpectra.GetMS2TotalIonChromatogram(chromatogramRange, experimentID)
+        var chromatogram = rawSpectra.GetMS2TotalIonChromatogram(experimentID, chromatogramRange)
             .ChromatogramSmoothing(peakPickParameter.SmoothingMethod, peakPickParameter.SmoothingLevel);
         return new DisplaySpecificExperimentChromatogram(chromatogram);
     }
