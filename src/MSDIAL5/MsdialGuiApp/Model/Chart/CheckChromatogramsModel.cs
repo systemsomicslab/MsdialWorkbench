@@ -68,6 +68,17 @@ internal sealed class CheckChromatogramsModel : BindableBase
     }
     private AccumulatedMs1SpectrumModel? _accumulatedMs1SpectrumModel;
 
+    public AccumulatedMs2SpectrumModel? AccumulatedMs2SpectrumModel {
+        get => _accumulatedMs2SpectrumModel;
+        private set {
+            var prev = _accumulatedMs2SpectrumModel;
+            if (SetProperty(ref _accumulatedMs2SpectrumModel, value)) {
+                prev?.Dispose();
+            }
+        }
+    }
+    private AccumulatedMs2SpectrumModel? _accumulatedMs2SpectrumModel;
+
     public AccumulatedSpecificExperimentMS2SpectrumModel[] AccumulatedSpecificExperimentMS2SpectrumModels {
         get => _accumulatedSpecificExperimentMS2SpectrumModels;
         private set {
@@ -114,6 +125,7 @@ internal sealed class CheckChromatogramsModel : BindableBase
             axis.ChartMargin = new ConstantMargin(0, 60);
         }
         AccumulatedMs1SpectrumModel = new AccumulatedMs1SpectrumModel(_accumulateSpectra, _scanCompoundSearchUsecase, LoadChromatogramsUsecase, _broker);
+        AccumulatedMs2SpectrumModel = new AccumulatedMs2SpectrumModel(_accumulateSpectra, _scanCompoundSearchUsecase, LoadChromatogramsUsecase, _broker);
 
         RangeSelectableChromatogramModel = new RangeSelectableChromatogramModel(Chromatograms);
         AccumulatedMs2SpectrumModels = Chromatograms.DisplayChromatograms
@@ -133,6 +145,15 @@ internal sealed class CheckChromatogramsModel : BindableBase
             await AccumulatedMs1SpectrumModel.CalculateMs1Async(range, subs, token).ConfigureAwait(false);
         }
     }
+
+    public async Task AccumulateAsync(AccumulatedMs2SpectrumModel model, CancellationToken token) {
+        if (RangeSelectableChromatogramModel is { MainRange: not null } ) {
+            var range = RangeSelectableChromatogramModel.ConvertToRt(RangeSelectableChromatogramModel.MainRange);
+            var subs = RangeSelectableChromatogramModel.SubtractRanges.Select(r => RangeSelectableChromatogramModel.ConvertToRt(r)).ToArray();
+            await model.CalculateMs2Async(range, subs, token).ConfigureAwait(false);
+        }
+    }
+
 
     public async Task AccumulateAsync(AccumulatedExtractedMs2SpectrumModel model, CancellationToken token) {
         if (RangeSelectableChromatogramModel is { MainRange: not null } ) {

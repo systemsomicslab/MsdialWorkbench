@@ -71,6 +71,13 @@ namespace CompMs.App.Msdial.Model.Chart
             return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
         }
 
+        public ChromatogramsModel LoadMS2Eic(MzRange product) {
+            var range = MzRange.FromRange(0d, double.MaxValue);
+            var displayChromatogram = _productEicLoader.LoadChromatogram((range, product));
+            displayChromatogram.Name = $"Fragment ion: {product.Mz:F5}±{product.Tolerance:F3}";
+            return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
+        }
+
         public ChromatogramsModel LoadMS2Eic(int experimentID, MzRange product) {
             var displayChromatogram = _productExperimentEicLoader.LoadChromatogram((experimentID, product));
             displayChromatogram.Name = $"ExperimentID: {experimentID}, fragment ion: {product.Mz:F5}±{product.Tolerance:F3}";

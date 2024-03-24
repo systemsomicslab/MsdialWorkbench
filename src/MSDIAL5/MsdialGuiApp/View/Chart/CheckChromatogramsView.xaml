@@ -106,10 +106,6 @@
                                                               RenderAreaControlState="{StaticResource DisableMove}"
                                                               Background="WhiteSmoke"
                                                               BorderBrush="Black">
-                                        <chart:SimpleChartControl.Resources>
-                                            <CollectionViewSource x:Key="MS2Eic" Source="{Binding AccumulatedMs2SpectrumViewModels.Value}"/>
-                                            <CollectionViewSource x:Key="MS2Exp" Source="{Binding AccumulatedSpecificExperimentMS2SpectrumViewModels.Value}"/>
-                                        </chart:SimpleChartControl.Resources>
                                         <chart:SimpleChartControl.Style>
                                             <Style TargetType="{x:Type chart:SimpleChartControl}" BasedOn="{StaticResource UnmoveBasicChart}">
                                                 <Setter Property="VerticalTitle">
@@ -177,14 +173,12 @@
                                             <ContextMenu>
                                                 <MenuItem Header="Show ms spectrum"
                                                           Command="{Binding ShowAccumulatedMs1SpectrumCommand}"/>
-                                                <MenuItem Header="Show ms/ms spectrum">
-                                                    <MenuItem.ItemsSource>
-                                                        <CompositeCollection>
-                                                            <CollectionContainer Collection="{Binding Source={StaticResource MS2Exp}}"/>
-                                                            <CollectionContainer Collection="{Binding Source={StaticResource MS2Eic}}"/>
-                                                        </CompositeCollection>
-                                                    </MenuItem.ItemsSource>
+                                                <MenuItem Header="Show ms/ms spectrum"
+                                                          ItemsSource="{Binding AccumulatedMs2SpectrumViewModels.Value}">
                                                     <MenuItem.Resources>
+                                                        <DataTemplate DataType="{x:Type msResult:AccumulatedMs2SpectrumViewModel}">
+                                                            <TextBlock Text="All ms/ms"/>
+                                                        </DataTemplate>
                                                         <DataTemplate DataType="{x:Type msResult:AccumulatedExtractedMs2SpectrumViewModel}">
                                                             <TextBlock>
                                                                 <Run FontStyle="Italic">m/z</Run>: <Run Text="{Binding Mz, Mode=OneTime}"/>

@@ -39,6 +39,11 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+            AccumulatedMs2SpectrumViewModel = model.ObserveProperty(m => m.AccumulatedMs2SpectrumModel)
+                .DefaultIfNull(m => new AccumulatedMs2SpectrumViewModel(m))
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
             AccumulatedMs2SpectrumViewModels = model.ObserveProperty(m => m.AccumulatedMs2SpectrumModels)
                 .Select(ms => ms.Select(m => new AccumulatedExtractedMs2SpectrumViewModel(m)).ToArray())
                 .DisposePreviousValue()
@@ -103,7 +108,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             ExportPeaksCommand = new ReactiveCommand().WithSubscribe(model.ExportPeaks).AddTo(Disposables);
 
             ViewModels = [
-                new ChromatogramViewModel(ChromatogramsViewModel, RangeSelectableChromatogramViewModel, AccumulatedMs2SpectrumViewModels, AccumulatedSpecificExperimentMS2SpectrumViewModels, ShowAccumulatedMs1SpectrumCommand, ShowAccumulatedSpectrumCommand, CopyAsTableCommand, SaveAsTableCommand),
+                new ChromatogramViewModel(ChromatogramsViewModel, RangeSelectableChromatogramViewModel, AccumulatedMs2SpectrumViewModel, AccumulatedMs2SpectrumViewModels, AccumulatedSpecificExperimentMS2SpectrumViewModels, ShowAccumulatedMs1SpectrumCommand, ShowAccumulatedSpectrumCommand, CopyAsTableCommand, SaveAsTableCommand),
                 new EicSettingViewModel(DiplayEicSettingValues, InsertTic, InsertBpc, InsertHighestEic, InsertMS2Tic, ApplyCommand, ClearCommand),
                 new PeakPickViewModel(ChromatogramsViewModel, DetectPeaksCommand, AddPeaksCommand, ResetPeaksCommand, RemovePeakCommand, ExportPeaksCommand),
             ];
@@ -112,6 +117,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> ChromatogramsViewModel { get; }
         public ReadOnlyReactivePropertySlim<RangeSelectableChromatogramViewModel?> RangeSelectableChromatogramViewModel { get; }
         public ReadOnlyReactivePropertySlim<AccumulatedMs1SpectrumViewModel?> AccumulatedMs1SpectrumViewModel { get; }
+        public ReadOnlyReactivePropertySlim<AccumulatedMs2SpectrumViewModel?> AccumulatedMs2SpectrumViewModel { get; }
         public ReadOnlyReactivePropertySlim<AccumulatedExtractedMs2SpectrumViewModel[]> AccumulatedMs2SpectrumViewModels { get; }
         public ReadOnlyReactivePropertySlim<AccumulatedSpecificExperimentMS2SpectrumViewModel[]> AccumulatedSpecificExperimentMS2SpectrumViewModels { get; }
 
@@ -130,6 +136,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             Task task = Task.CompletedTask;
             switch (vm)
             {
+                case AccumulatedMs2SpectrumViewModel ms2:
+                    task = _model.AccumulateAsync(ms2.Model, token);
+                    _broker.Publish(ms2);
+                    break;
                 case AccumulatedExtractedMs2SpectrumViewModel ms2:
                     task = _model.AccumulateAsync(ms2.Model, token);
                     _broker.Publish(ms2);
@@ -198,7 +208,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
     internal sealed class ChromatogramViewModel(
         ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> chromatogramsViewModel,
         ReadOnlyReactivePropertySlim<RangeSelectableChromatogramViewModel?> rangeSelectableChromatogramViewModel,
-        ReadOnlyReactivePropertySlim<AccumulatedExtractedMs2SpectrumViewModel[]> accumulatedMs2SpectrumViewModels,
+        ReadOnlyReactivePropertySlim<AccumulatedMs2SpectrumViewModel?> accumulatedMs2SpectrumViewModel,
+        ReadOnlyReactivePropertySlim<AccumulatedExtractedMs2SpectrumViewModel[]> accumulatedExtractedMs2SpectrumViewModels,
         ReadOnlyReactivePropertySlim<AccumulatedSpecificExperimentMS2SpectrumViewModel[]> accumulatedSpecificExperimentMS2SpectrumViewModels,
         AsyncReactiveCommand showAccumulatedMs1SpectrumCommand,
         AsyncReactiveCommand<ViewModelBase> showAccumulatedSpectrumCommand,
@@ -208,8 +219,13 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public string Title { get; } = "Chromatograms";
         public ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> ChromatogramsViewModel { get; } = chromatogramsViewModel;
         public ReadOnlyReactivePropertySlim<RangeSelectableChromatogramViewModel?> RangeSelectableChromatogramViewModel { get; } = rangeSelectableChromatogramViewModel;
-        public ReadOnlyReactivePropertySlim<AccumulatedExtractedMs2SpectrumViewModel[]> AccumulatedMs2SpectrumViewModels { get; } = accumulatedMs2SpectrumViewModels;
-        public ReadOnlyReactivePropertySlim<AccumulatedSpecificExperimentMS2SpectrumViewModel[]> AccumulatedSpecificExperimentMS2SpectrumViewModels { get; } = accumulatedSpecificExperimentMS2SpectrumViewModels;
+
+        public ReadOnlyReactivePropertySlim<ViewModelBase[]> AccumulatedMs2SpectrumViewModels { get; } = new IObservable<ViewModelBase[]>[] {
+            accumulatedMs2SpectrumViewModel.Select(x => x is null ? Array.Empty<ViewModelBase>() : [x]),
+            accumulatedExtractedMs2SpectrumViewModels,
+            accumulatedSpecificExperimentMS2SpectrumViewModels,
+        }.CombineLatest<ViewModelBase[], ViewModelBase[]>(xs => [..xs[0], ..xs[1], ..xs[2]]).ToReadOnlyReactivePropertySlim([]);
+
         public AsyncReactiveCommand ShowAccumulatedMs1SpectrumCommand { get; } = showAccumulatedMs1SpectrumCommand;
         public AsyncReactiveCommand<ViewModelBase> ShowAccumulatedSpectrumCommand { get; } = showAccumulatedSpectrumCommand;
         public ReactiveCommand CopyAsTableCommand { get; } = copyAsTableCommand;

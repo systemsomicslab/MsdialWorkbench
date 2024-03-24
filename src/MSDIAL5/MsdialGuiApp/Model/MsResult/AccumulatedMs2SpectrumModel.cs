@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.MsResult;
 
-internal sealed class AccumulatedMs1SpectrumModel : DisposableModelBase
+internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
 {
     private readonly AccumulateSpectraUsecase _accumulateSpectra;
     private readonly MsScanCompoundSearchUsecase _compoundSearch;
@@ -33,7 +33,7 @@ internal sealed class AccumulatedMs1SpectrumModel : DisposableModelBase
     private readonly IMessageBroker _broker;
     private readonly BehaviorSubject<MsSpectrum?> _subject;
 
-    public AccumulatedMs1SpectrumModel(AccumulateSpectraUsecase accumulateSpectra, MsScanCompoundSearchUsecase compoundSearch, LoadChromatogramsUsecase loadingChromatograms, IMessageBroker broker) {
+    public AccumulatedMs2SpectrumModel(AccumulateSpectraUsecase accumulateSpectra, MsScanCompoundSearchUsecase compoundSearch, LoadChromatogramsUsecase loadingChromatograms, IMessageBroker broker) {
         _subject = new BehaviorSubject<MsSpectrum?>(null).AddTo(Disposables);
         _plotDisposable = new SerialDisposable().AddTo(Disposables);
         _accumulateSpectra = accumulateSpectra;
@@ -123,8 +123,8 @@ internal sealed class AccumulatedMs1SpectrumModel : DisposableModelBase
 
     public ReadOnlyReactivePropertySlim<MsRefSearchParameterBase?> SearchParameter { get; }
 
-    public async Task CalculateMs1Async((double start, double end) baseRange, IEnumerable<(double start, double end)> subtracts, CancellationToken token = default) {
-        Scan = await _accumulateSpectra.AccumulateMs1Async(baseRange, subtracts, token).ConfigureAwait(false);
+    public async Task CalculateMs2Async((double start, double end) baseRange, IEnumerable<(double start, double end)> subtracts, CancellationToken token = default) {
+        Scan = await _accumulateSpectra.AccumulateMs2Async(baseRange, subtracts, token).ConfigureAwait(false);
         PlotComparedSpectrum = new PlotComparedMsSpectrumUsecase(Scan);
         CalculateTotalIonChromatogram();
     }
@@ -143,7 +143,7 @@ internal sealed class AccumulatedMs1SpectrumModel : DisposableModelBase
         var axis = PlotComparedSpectrum.MsSpectrumModel.UpperSpectrumModel.HorizontalPropertySelectors.AxisItemSelector.SelectedAxisItem.AxisManager;
         var (start, end) = new RangeSelection(SelectedRange).ConvertBy(axis);
         var range = MzRange.FromRange(start, end);
-        ExtractedIonChromatogram = _loadingChromatograms.LoadEic(range);
+        ExtractedIonChromatogram = _loadingChromatograms.LoadMS2Eic(range);
         if (ExtractedIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> chromAxis) {
             chromAxis.ChartMargin = new ConstantMargin(0, 40);
         }

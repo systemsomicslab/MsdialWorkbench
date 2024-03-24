@@ -44,6 +44,26 @@ namespace CompMs.App.Msdial.Model.MsResult
             return scan;
         }
 
+        public async Task<MSScanProperty> AccumulateMs2Async((double rtStart, double rtEnd) rtRange, IEnumerable<(double rtStart, double rtEnd)> subtracts, CancellationToken token = default) {
+            var (rtStart, rtEnd) = rtRange;
+            var spectra = await _provider.LoadMs2SpectraWithRtRangeAsync(rtStart, rtEnd, token).ConfigureAwait(false);
+            var peaks = DataAccess.GetAverageSpectrum(spectra, _parameter.CentroidMs2Tolerance);
+
+            var subsTask = subtracts.Select(r => _provider.LoadMs2SpectraWithRtRangeAsync(r.rtStart, r.rtEnd, token)).ToArray();
+            var subs = await Task.WhenAll(subsTask);
+            var subPeaks = DataAccess.GetAverageSpectrum(subs.SelectMany(s => s).ToArray(), _parameter.CentroidMs2Tolerance);
+            var subtracted = DataAccess.GetSubtractSpectrum(peaks, subPeaks, _parameter.CentroidMs2Tolerance);
+
+            var rt = new RetentionTime((rtStart + rtEnd) / 2, ChromXUnit.Min);
+            var scan = new MSScanProperty
+            {
+                IonMode = _ionMode,
+                ChromXs = new ChromXs(rt),
+                Spectrum = subtracted,
+            };
+            return scan;
+        }
+
         public async Task<MSScanProperty> AccumulateMs2Async(double mz, double mzTolerance, (double rtStart, double rtEnd) rtRange, IEnumerable<(double rtStart, double rtEnd)> subtracts, CancellationToken token = default) {
             var provider = _provider.FilterByMz(mz, mzTolerance).Cache();
             var (rtStart, rtEnd) = rtRange;
