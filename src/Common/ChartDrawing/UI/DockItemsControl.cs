@@ -238,6 +238,7 @@ public sealed class NodeContainers : INotifyPropertyChanged {
         if (collection is not null) {
             collection.Insert(node, collection.Count);
             Leaves = [..Root.GetLeaves()];
+            Array.Sort(Leaves, (x, y) => y.Priority.CompareTo(x.Priority));
             return;
         }
         var root = new ContainerOver
@@ -251,6 +252,7 @@ public sealed class NodeContainers : INotifyPropertyChanged {
         root.Insert(node, root.Count);
         Root = root;
         Leaves = [..Root.GetLeaves()];
+        Array.Sort(Leaves, (x, y) => y.Priority.CompareTo(x.Priority));
     }
 
     internal void Insert(object item, IContainerNodeCollection parent, int index) {
@@ -260,6 +262,7 @@ public sealed class NodeContainers : INotifyPropertyChanged {
         };
         parent.Insert(node, index);
         Leaves = [..Root.GetLeaves()];
+        Array.Sort(Leaves, (x, y) => y.Priority.CompareTo(x.Priority));
     }
 
     internal void Move(IContainerNode node, IContainerNodeCollection parent, int index) {
@@ -270,6 +273,7 @@ public sealed class NodeContainers : INotifyPropertyChanged {
         parent.Insert(node, index);
         currentParent.Remove(node);
         Leaves = [..Root.GetLeaves()];
+        Array.Sort(Leaves, (x, y) => y.Priority.CompareTo(x.Priority));
     }
 
     internal void Remove(IContainerNode node) {
@@ -279,6 +283,7 @@ public sealed class NodeContainers : INotifyPropertyChanged {
         }
         parent.Remove(node);
         Leaves = [..Root.GetLeaves()];
+        Array.Sort(Leaves, (x, y) => y.Priority.CompareTo(x.Priority));
     }
 
     internal void SplitHorizontal(IContainerNode node) {
@@ -459,8 +464,11 @@ public sealed class NodeContainers : INotifyPropertyChanged {
         Root = itemElement.Build();
         if (Root is not null) {
             Leaves = [..Root.GetLeaves()];
+            Array.Sort(Leaves, (x, y) => y.Priority.CompareTo(x.Priority));
         }
     }
+
+    public DockLayoutElement Convert() => ContainerElement.Convert(Root);
 
     public void Serialize(Stream stream) {
         var writer = new StreamWriter(stream);
@@ -508,6 +516,17 @@ internal sealed class ContainerLeaf : IContainerNode, INotifyPropertyChanged {
         }
     }
     private GridLength _height;
+
+    public int Priority {
+        get => _priority;
+        set {
+            if (_priority != value) {
+                _priority = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Priority)));
+            }
+        }
+    }
+    private int _priority = 0;
 
     public event PropertyChangedEventHandler PropertyChanged;
 }
@@ -739,10 +758,12 @@ public sealed class ContainerElement : DockLayoutElement {
                 Width = over.Width,
                 Height = over.Height,
                 Size = over.Count,
+                Priorities = over.Children.OfType<ContainerLeaf>().Select(leaf => leaf.Priority).ToArray(),
             },
             _ => new LeafElement
             {
                 Size = 0,
+                Priorities = [],
             }
         };
     }
@@ -777,6 +798,9 @@ public sealed class LeafElement : DockLayoutElement {
     [XmlElement("HeightUnitType")]
     public GridUnitType HeightUnitType { get; set; }
 
+    [XmlElement("Priorities")]
+    public int[] Priorities { get; set; }
+
     protected override IContainerNodeCollection BuildCore() {
         var container = new ContainerOver
         {
@@ -784,7 +808,10 @@ public sealed class LeafElement : DockLayoutElement {
             Height = Height,
         };
         for (int i = 0; i < Size; i++) {
-            container.Add(new ContainerLeaf());
+            container.Add(new ContainerLeaf
+            {
+                Priority = i < Priorities.Length ? Priorities[i] : 0,
+            });
         }
         return container;
     }

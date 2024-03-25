@@ -29,6 +29,7 @@ namespace ChartDrawingUiTest.UI
                     new LeafElement {
                         Size = 1,
                         Width = new GridLength(2, GridUnitType.Star),
+                        Priorities = [4],
                     },
                     new ContainerElement {
                         Orientation = Orientation.Vertical,
@@ -37,10 +38,12 @@ namespace ChartDrawingUiTest.UI
                             new LeafElement {
                                 Size = 1,
                                 Height = new GridLength(1, GridUnitType.Star),
+                                Priorities = [3],
                             },
                             new LeafElement {
                                 Size = 2,
                                 Height = new GridLength(2, GridUnitType.Star),
+                                Priorities = [2, 1],
                             },
                         ],
                     },
@@ -59,7 +62,7 @@ namespace ChartDrawingUiTest.UI
         private void Button_Click(object sender, RoutedEventArgs e) {
             var builder = new StringBuilder();
             var writer = new StringWriter(builder);
-            var converted = ContainerElement.Convert(Container.Containers.Root);
+            var converted = Container.Containers.Convert();
             var serializer = new XmlSerializer(typeof(ContainerElement), [typeof(LeafElement), typeof(ContainerElement)]);
             serializer.Serialize(writer, converted);
             Serialized.Text = builder.ToString();

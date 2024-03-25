@@ -19,6 +19,7 @@ namespace CompMs.Graphics.UI.Tests
                     new LeafElement {
                         Size = 1,
                         Width = new GridLength(2, GridUnitType.Star),
+                        Priorities = [4],
                     },
                     new ContainerElement {
                         Orientation = Orientation.Vertical,
@@ -27,10 +28,12 @@ namespace CompMs.Graphics.UI.Tests
                             new LeafElement {
                                 Size = 1,
                                 Height = new GridLength(1, GridUnitType.Star),
+                                Priorities = [3],
                             },
                             new LeafElement {
                                 Size = 2,
                                 Height = new GridLength(2, GridUnitType.Star),
+                                Priorities = [2, 1],
                             },
                         ],
                     },
@@ -56,6 +59,7 @@ namespace CompMs.Graphics.UI.Tests
                     Assert.AreEqual(e.Size, a.Size);
                     Assert.AreEqual(e.Width, a.Width);
                     Assert.AreEqual(e.Height, a.Height);
+                    CollectionAssert.AreEqual(e.Priorities, a.Priorities);
                     break;
                 case (ContainerElement e, ContainerElement a):
                     Assert.AreEqual(e.Orientation, a.Orientation);

@@ -54,8 +54,8 @@ internal sealed class CheckChromatogramsModel : BindableBase
             {
                 Orientation = System.Windows.Controls.Orientation.Horizontal,
                 Items = [
-                    new LeafElement { Width = new(2, System.Windows.GridUnitType.Star), Size = 1 },
-                    new LeafElement { Width = new(1, System.Windows.GridUnitType.Star), Size = 2 },
+                    new LeafElement { Width = new(2, System.Windows.GridUnitType.Star), Size = 1, Priorities = [3] },
+                    new LeafElement { Width = new(1, System.Windows.GridUnitType.Star), Size = 2, Priorities = [2, 1] },
                 ],
             };
         }
@@ -252,7 +252,7 @@ internal sealed class CheckChromatogramsModel : BindableBase
     public void SerializeLayout(NodeContainers nodeContainers) {
         if (nodeContainers is { Root: not null }) {
             var settings = Properties.Settings.Default;
-            settings.ChromatogramsViewLayoutTemplate = ContainerElement.Convert(nodeContainers.Root);
+            settings.ChromatogramsViewLayoutTemplate = nodeContainers.Convert();
             settings.Save();
         }
     }

@@ -264,7 +264,7 @@ internal sealed class AccumulatedExtractedMs2SpectrumModel : DisposableModelBase
     public void SerializeLayout(NodeContainers nodeContainers) {
         if (nodeContainers is { Root: not null }) {
             var settings = Properties.Settings.Default;
-            settings.AccumulatedSpectrumViewLayoutTemplate = ContainerElement.Convert(nodeContainers.Root);
+            settings.AccumulatedSpectrumViewLayoutTemplate = nodeContainers.Convert();
             settings.Save();
         }
     }

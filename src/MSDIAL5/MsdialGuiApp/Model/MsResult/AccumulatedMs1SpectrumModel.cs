@@ -52,13 +52,13 @@ internal sealed class AccumulatedMs1SpectrumModel : DisposableModelBase
             {
                 Orientation = System.Windows.Controls.Orientation.Horizontal,
                 Items = [
-                    new LeafElement { Width = new(2, System.Windows.GridUnitType.Star), Size = 1 },
+                    new LeafElement { Width = new(2, System.Windows.GridUnitType.Star), Size = 1, Priorities = [3] },
                     new ContainerElement {
                         Orientation = System.Windows.Controls.Orientation.Vertical,
                         Width = new(3, System.Windows.GridUnitType.Star),
                         Items = [
-                            new LeafElement { Height = new(1, System.Windows.GridUnitType.Star), Size = 1 },
-                            new LeafElement { Height = new(1, System.Windows.GridUnitType.Star), Size = 1 },
+                            new LeafElement { Height = new(1, System.Windows.GridUnitType.Star), Size = 1, Priorities = [2] },
+                            new LeafElement { Height = new(1, System.Windows.GridUnitType.Star), Size = 1, Priorities = [1] },
                         ]
                     },
                 ],
@@ -261,7 +261,7 @@ internal sealed class AccumulatedMs1SpectrumModel : DisposableModelBase
     public void SerializeLayout(NodeContainers nodeContainers) {
         if (nodeContainers is { Root: not null }) {
             var settings = Properties.Settings.Default;
-            settings.AccumulatedSpectrumViewLayoutTemplate = ContainerElement.Convert(nodeContainers.Root);
+            settings.AccumulatedSpectrumViewLayoutTemplate = nodeContainers.Convert();
             settings.Save();
         }
     }
