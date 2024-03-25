@@ -56,6 +56,7 @@
     <Grid>
         <Grid.Resources>
             <mvvm:BindingProxy x:Key="ViewRoot" Data="{Binding ElementName=ChromatogramsView}"/>
+            <mvvm:BindingProxy x:Key="ContentsProxy" Data="{Binding ElementName=Contents}"/>
         </Grid.Resources>
         <Grid.ContextMenu>
             <ContextMenu>
@@ -75,15 +76,15 @@
                               Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
                               CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
                 </MenuItem>
+                <Separator/>
+                <MenuItem Header="Save current layout"
+                          Command="{Binding SerializeLayoutCommand, Mode=OneTime}"
+                          CommandParameter="{Binding Data.Containers, Source={StaticResource ContentsProxy}}"/>
+                <MenuItem Header="Load previous layout"
+                          Command="{Binding DeserializeLayoutCommand, Mode=OneTime}"/>
             </ContextMenu>
         </Grid.ContextMenu>
-        <ui:DockItemsControl ItemsSource="{Binding ViewModels, Mode=OneTime}">
-            <ui:DockItemsControl.LayoutElement>
-                <ui:ContainerElement Orientation="Horizontal">
-                    <ui:LeafElement Width="*" Size="1"/>
-                    <ui:LeafElement Width="320" Size="2"/>
-                </ui:ContainerElement>
-            </ui:DockItemsControl.LayoutElement>
+        <ui:DockItemsControl x:Name="Contents" ItemsSource="{Binding ViewModels, Mode=OneTime}" LayoutElement="{Binding Layout.Value, Mode=OneWay}">
             <ui:DockItemsControl.ItemTemplate>
                 <DataTemplate>
                     <ContentPresenter Content="{Binding Title}"/>

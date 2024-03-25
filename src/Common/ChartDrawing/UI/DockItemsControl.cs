@@ -666,6 +666,8 @@ public interface IDockLayoutElement {
     internal IContainerNodeCollection Build();
 }
 
+[XmlInclude(typeof(LeafElement))]
+[XmlInclude(typeof(ContainerElement))]
 public abstract class DockLayoutElement : IDockLayoutElement
 {
     IContainerNodeCollection IDockLayoutElement.Build() {
@@ -677,6 +679,7 @@ public abstract class DockLayoutElement : IDockLayoutElement
 
 [System.Windows.Markup.ContentProperty("Items")]
 [XmlRoot("ContainerElement")]
+[XmlInclude(typeof(LeafElement))]
 public sealed class ContainerElement : DockLayoutElement {
     [XmlArrayItem("LeafElement", typeof(LeafElement))]
     [XmlArrayItem("ContainerElement", typeof(ContainerElement))]

@@ -5,6 +5,7 @@ using CompMs.App.Msdial.ViewModel.MsResult;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.UI;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -107,6 +108,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             RemovePeakCommand = new ReactiveCommand<DisplayPeakOfChromatogram>().WithSubscribe(model.RemovePeak).AddTo(Disposables);
             ExportPeaksCommand = new ReactiveCommand().WithSubscribe(model.ExportPeaks).AddTo(Disposables);
 
+            Layout = model.ObserveProperty(m => m.Layout).ToReadOnlyReactivePropertySlim<IDockLayoutElement>().AddTo(Disposables);
+            SerializeLayoutCommand = new ReactiveCommand<NodeContainers>().WithSubscribe(model.SerializeLayout).AddTo(Disposables);
+            DeserializeLayoutCommand = new ReactiveCommand().WithSubscribe(model.DeserializeLayout).AddTo(Disposables);
+
             ViewModels = [
                 new ChromatogramViewModel(ChromatogramsViewModel, RangeSelectableChromatogramViewModel, AccumulatedMs2SpectrumViewModel, AccumulatedMs2SpectrumViewModels, AccumulatedSpecificExperimentMS2SpectrumViewModels, ShowAccumulatedMs1SpectrumCommand, ShowAccumulatedSpectrumCommand, CopyAsTableCommand, SaveAsTableCommand),
                 new EicSettingViewModel(DiplayEicSettingValues, InsertTic, InsertBpc, InsertHighestEic, InsertMS2Tic, ApplyCommand, ClearCommand),
@@ -200,6 +205,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             }
             _model.Update();
         }
+
+        public ReadOnlyReactivePropertySlim<IDockLayoutElement> Layout { get; }
+        public ReactiveCommand<NodeContainers> SerializeLayoutCommand { get; }
+        public ReactiveCommand DeserializeLayoutCommand { get; }
 
         public ObservableCollection<BindableBase> ViewModels { get; }
 

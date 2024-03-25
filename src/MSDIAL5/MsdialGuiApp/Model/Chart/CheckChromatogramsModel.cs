@@ -7,6 +7,7 @@ using CompMs.Common.Algorithm.PeakPick;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
+using CompMs.Graphics.UI;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings.Notifiers;
@@ -43,6 +44,21 @@ internal sealed class CheckChromatogramsModel : BindableBase
         _displaySettingValues = new ObservableCollection<PeakFeatureSearchValueModel>(values.Select(v => new PeakFeatureSearchValueModel(v)));
         DisplayEicSettingValues = new ReadOnlyObservableCollection<PeakFeatureSearchValueModel>(_displaySettingValues);
         _scanCompoundSearchUsecase = new MsScanCompoundSearchUsecase();
+
+        var settings = Properties.Settings.Default;
+        if (settings.ChromatogramsViewLayoutTemplate is { } layout) {
+            Layout = layout;
+        }
+        else {
+            _layout = new ContainerElement
+            {
+                Orientation = System.Windows.Controls.Orientation.Horizontal,
+                Items = [
+                    new LeafElement { Width = new(2, System.Windows.GridUnitType.Star), Size = 1 },
+                    new LeafElement { Width = new(1, System.Windows.GridUnitType.Star), Size = 2 },
+                ],
+            };
+        }
     }
 
     public ChromatogramsModel? Chromatograms {
@@ -108,6 +124,12 @@ internal sealed class CheckChromatogramsModel : BindableBase
     public ReadOnlyObservableCollection<PeakFeatureSearchValueModel> DisplayEicSettingValues { get; }
 
     public LoadChromatogramsUsecase LoadChromatogramsUsecase { get; }
+
+    public IDockLayoutElement Layout {
+        get => _layout;
+        set => SetProperty(ref _layout, value);
+    }
+    private IDockLayoutElement _layout;
 
     public Task ExportAsync(Stream stream, string separator) {
         return Chromatograms?.ExportAsync(stream, separator) ?? Task.CompletedTask;
@@ -218,6 +240,21 @@ internal sealed class CheckChromatogramsModel : BindableBase
                     writer.WriteLine($"{chromatogram.Name}\t{peak.Time}\t{peak.Intensity}\t{peak.Area}");
                 }
             }
+        }
+    }
+
+    public void SerializeLayout(NodeContainers nodeContainers) {
+        if (nodeContainers is { Root: not null }) {
+            var settings = Properties.Settings.Default;
+            settings.ChromatogramsViewLayoutTemplate = ContainerElement.Convert(nodeContainers.Root);
+            settings.Save();
+        }
+    }
+
+    public void DeserializeLayout() {
+        var settings = Properties.Settings.Default;
+        if (settings.ChromatogramsViewLayoutTemplate is { } layout) {
+            Layout = layout;
         }
     }
 }
