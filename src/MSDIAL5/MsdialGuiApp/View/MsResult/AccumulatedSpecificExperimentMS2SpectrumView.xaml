@@ -30,6 +30,7 @@
             <mvvm:BindingProxy x:Key="EICCommand" Data="{Binding CalculateExtractedIonChromatogramCommand, Mode=OneTime}"/>
             <mvvm:BindingProxy x:Key="SaveNistCommand" Data="{Binding SaveAsNistCommand, Mode=OneTime}"/>
             <mvvm:BindingProxy x:Key="ViewRoot" Data="{Binding ElementName=AccumulatedSpectrumView}"/>
+            <mvvm:BindingProxy x:Key="ContentsProxy" Data="{Binding ElementName=Contents}"/>
         </Grid.Resources>
         <Grid.ContextMenu>
             <ContextMenu>
@@ -49,18 +50,15 @@
                               Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
                               CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
                 </MenuItem>
+                <Separator/>
+                <MenuItem Header="Save current layout"
+                          Command="{Binding SerializeLayoutCommand, Mode=OneTime}"
+                          CommandParameter="{Binding Data.Containers, Source={StaticResource ContentsProxy}}"/>
+                <MenuItem Header="Load previous layout"
+                          Command="{Binding DeserializeLayoutCommand, Mode=OneTime}"/>
             </ContextMenu>
         </Grid.ContextMenu>
-        <ui:DockItemsControl ItemsSource="{Binding ViewModels, Mode=OneTime}">
-            <ui:DockItemsControl.LayoutElement>
-                <ui:ContainerElement Orientation="Horizontal">
-                    <ui:LeafElement Width="2*" Size="1"/>
-                    <ui:ContainerElement Orientation="Vertical" Width="3*">
-                        <ui:LeafElement Height="*" Size="1"/>
-                        <ui:LeafElement Height="*" Size="1"/>
-                    </ui:ContainerElement>
-                </ui:ContainerElement>
-            </ui:DockItemsControl.LayoutElement>
+        <ui:DockItemsControl x:Name="Contents" ItemsSource="{Binding ViewModels, Mode=OneTime}" LayoutElement="{Binding Layout.Value}">
             <ui:DockItemsControl.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Title}"/>

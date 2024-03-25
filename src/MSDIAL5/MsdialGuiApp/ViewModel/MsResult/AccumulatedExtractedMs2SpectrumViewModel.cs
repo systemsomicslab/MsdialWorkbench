@@ -5,6 +5,7 @@ using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
+using CompMs.Graphics.UI;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.Collections;
@@ -55,6 +56,10 @@ internal sealed class AccumulatedExtractedMs2SpectrumViewModel : ViewModelBase
             model.ObserveProperty(m => m.Scan).Select(m => m is not null),
         }.CombineLatestValuesAreAllTrue().ToReactiveCommand().WithSubscribe(model.Export).AddTo(Disposables);
 
+        Layout = model.ObserveProperty(m => m.Layout).ToReadOnlyReactivePropertySlim<IDockLayoutElement>().AddTo(Disposables);
+        SerializeLayoutCommand = new ReactiveCommand<NodeContainers>().WithSubscribe(model.SerializeLayout).AddTo(Disposables);
+        DeserializeLayoutCommand = new ReactiveCommand().WithSubscribe(model.DeserializeLayout).AddTo(Disposables);
+
         ViewModels = [
             new AccumulatedExtractedMs2SpectrumViewModel_Spectrum(MsSpectrumViewModel, SelectedRange, SaveAsNistCommand, CalculateProductIonChromatogramCommand),
             new AccumulatedExtractedMs2SpectrumViewModel_Search(model.SearchMethods, SearchMethod, ParameterViewModel, Compounds, SelectedCompound, SearchCompoundCommand, ExportCompoundCommand),
@@ -91,6 +96,11 @@ internal sealed class AccumulatedExtractedMs2SpectrumViewModel : ViewModelBase
     public ReactiveCommand DetectPeaksCommand { get; }
     public ReactiveCommand AddPeakCommand { get; }
     public ReactiveCommand ResetPeaksCommand { get; }
+
+    public ReadOnlyReactivePropertySlim<IDockLayoutElement> Layout { get; }
+    public ReactiveCommand<NodeContainers> SerializeLayoutCommand { get; }
+    public ReactiveCommand DeserializeLayoutCommand { get; }
+
     public ObservableCollection<BindableBase> ViewModels { get; }
 }
 

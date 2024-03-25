@@ -10,6 +10,7 @@ using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
+using CompMs.Graphics.UI;
 using CompMs.MsdialCore.Export;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -41,6 +42,28 @@ internal sealed class AccumulatedMs1SpectrumModel : DisposableModelBase
         _loadingChromatograms = loadingChromatograms;
         _broker = broker;
         SearchParameter = compoundSearch.ObserveProperty(m => m.SearchParameter).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+        var settings = Properties.Settings.Default;
+        if (settings.AccumulatedSpectrumViewLayoutTemplate is { } layout) {
+            _layout = layout;
+        }
+        else {
+            _layout = new ContainerElement
+            {
+                Orientation = System.Windows.Controls.Orientation.Horizontal,
+                Items = [
+                    new LeafElement { Width = new(2, System.Windows.GridUnitType.Star), Size = 1 },
+                    new ContainerElement {
+                        Orientation = System.Windows.Controls.Orientation.Vertical,
+                        Width = new(3, System.Windows.GridUnitType.Star),
+                        Items = [
+                            new LeafElement { Height = new(1, System.Windows.GridUnitType.Star), Size = 1 },
+                            new LeafElement { Height = new(1, System.Windows.GridUnitType.Star), Size = 1 },
+                        ]
+                    },
+                ],
+            };
+        }
     }
 
     public MSScanProperty? Scan {
@@ -122,6 +145,12 @@ internal sealed class AccumulatedMs1SpectrumModel : DisposableModelBase
     }
 
     public ReadOnlyReactivePropertySlim<MsRefSearchParameterBase?> SearchParameter { get; }
+
+    public IDockLayoutElement Layout {
+        get => _layout;
+        set => SetProperty(ref _layout, value);
+    }
+    private IDockLayoutElement _layout;
 
     public async Task CalculateMs1Async((double start, double end) baseRange, IEnumerable<(double start, double end)> subtracts, CancellationToken token = default) {
         Scan = await _accumulateSpectra.AccumulateMs1Async(baseRange, subtracts, token).ConfigureAwait(false);
@@ -227,5 +256,20 @@ internal sealed class AccumulatedMs1SpectrumModel : DisposableModelBase
             AddExtension = true,
         };
         _broker.Publish(request);
+    }
+
+    public void SerializeLayout(NodeContainers nodeContainers) {
+        if (nodeContainers is { Root: not null }) {
+            var settings = Properties.Settings.Default;
+            settings.AccumulatedSpectrumViewLayoutTemplate = ContainerElement.Convert(nodeContainers.Root);
+            settings.Save();
+        }
+    }
+
+    public void DeserializeLayout() {
+        var settings = Properties.Settings.Default;
+        if (settings.AccumulatedSpectrumViewLayoutTemplate is { } layout) {
+            Layout = layout;
+        }
     }
 }
