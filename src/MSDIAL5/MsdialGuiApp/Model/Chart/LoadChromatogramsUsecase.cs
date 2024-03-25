@@ -92,7 +92,10 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public ChromatogramsModel LoadMS2Eic(MzRange precursor, MzRange product) {
             var displayChromatogram = _productEicLoader.LoadChromatogram((precursor, product));
-            displayChromatogram.Name = $"Precursor m/z: {precursor.Mz:F5}±{precursor.Tolerance:F3}, fragment ion: {product.Mz:F5}±{product.Tolerance:F3}";
+            displayChromatogram.Name = $"Precursor m/z: {precursor.Mz:F5}±{precursor.Tolerance:F3}";
+            if (product.Tolerance < 1000) {
+                displayChromatogram.Name += $"fragment ion: {product.Mz:F5}±{product.Tolerance:F3}";
+            }
             return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
         }
 
