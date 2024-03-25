@@ -101,6 +101,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             ShowAccumulatedSpectrumCommand = RangeSelectableChromatogramViewModel.Select(vm => vm is not null)
                 .ToAsyncReactiveCommand<ViewModelBase>()
                 .WithSubscribe(vm => ShowAccumulatedSpectrumAsync(vm, default)).AddTo(Disposables);
+
+            VisiblePeakLabel = model.ToReactivePropertySlimAsSynchronized(m => m.VisiblePeakLabel).AddTo(Disposables);
             DetectPeaksCommand = new ReactiveCommand().WithSubscribe(model.DetectPeaks).AddTo(Disposables);
             AddPeaksCommand = RangeSelectableChromatogramViewModel.Select(vm => vm is { SelectedRange: not null })
                 .ToReactiveCommand().WithSubscribe(model.AddPeak).AddTo(Disposables);
@@ -113,9 +115,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             DeserializeLayoutCommand = new ReactiveCommand().WithSubscribe(model.DeserializeLayout).AddTo(Disposables);
 
             ViewModels = [
-                new ChromatogramViewModel(ChromatogramsViewModel, RangeSelectableChromatogramViewModel, AccumulatedMs2SpectrumViewModel, AccumulatedMs2SpectrumViewModels, AccumulatedSpecificExperimentMS2SpectrumViewModels, ShowAccumulatedMs1SpectrumCommand, ShowAccumulatedSpectrumCommand, CopyAsTableCommand, SaveAsTableCommand),
+                new ChromatogramViewModel(ChromatogramsViewModel, RangeSelectableChromatogramViewModel, AccumulatedMs2SpectrumViewModel, AccumulatedMs2SpectrumViewModels, AccumulatedSpecificExperimentMS2SpectrumViewModels, VisiblePeakLabel, ShowAccumulatedMs1SpectrumCommand, ShowAccumulatedSpectrumCommand, CopyAsTableCommand, SaveAsTableCommand),
                 new EicSettingViewModel(DiplayEicSettingValues, InsertTic, InsertBpc, InsertHighestEic, InsertMS2Tic, ApplyCommand, ClearCommand),
-                new PeakPickViewModel(ChromatogramsViewModel, DetectPeaksCommand, AddPeaksCommand, ResetPeaksCommand, RemovePeakCommand, ExportPeaksCommand),
+                new PeakPickViewModel(ChromatogramsViewModel, VisiblePeakLabel, DetectPeaksCommand, AddPeaksCommand, ResetPeaksCommand, RemovePeakCommand, ExportPeaksCommand),
             ];
         }
 
@@ -190,6 +192,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
 
+        public ReactivePropertySlim<bool> VisiblePeakLabel { get; }
+
         public ReactiveCommand DetectPeaksCommand { get; }
         public ReactiveCommand AddPeaksCommand { get; }
         public ReactiveCommand ResetPeaksCommand { get; }
@@ -220,6 +224,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         ReadOnlyReactivePropertySlim<AccumulatedMs2SpectrumViewModel?> accumulatedMs2SpectrumViewModel,
         ReadOnlyReactivePropertySlim<AccumulatedExtractedMs2SpectrumViewModel[]> accumulatedExtractedMs2SpectrumViewModels,
         ReadOnlyReactivePropertySlim<AccumulatedSpecificExperimentMS2SpectrumViewModel[]> accumulatedSpecificExperimentMS2SpectrumViewModels,
+        ReactivePropertySlim<bool> visiblePeakLabel,
         AsyncReactiveCommand showAccumulatedMs1SpectrumCommand,
         AsyncReactiveCommand<ViewModelBase> showAccumulatedSpectrumCommand,
         ReactiveCommand copyAsTableCommand,
@@ -235,6 +240,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             accumulatedSpecificExperimentMS2SpectrumViewModels,
         }.CombineLatest<ViewModelBase[], ViewModelBase[]>(xs => [..xs[0], ..xs[1], ..xs[2]]).ToReadOnlyReactivePropertySlim([]);
 
+        public ReactivePropertySlim<bool> VisiblePeakLabel { get; } = visiblePeakLabel;
         public AsyncReactiveCommand ShowAccumulatedMs1SpectrumCommand { get; } = showAccumulatedMs1SpectrumCommand;
         public AsyncReactiveCommand<ViewModelBase> ShowAccumulatedSpectrumCommand { get; } = showAccumulatedSpectrumCommand;
         public ReactiveCommand CopyAsTableCommand { get; } = copyAsTableCommand;
@@ -262,6 +268,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
     internal sealed class PeakPickViewModel(
         ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> chromatogramsViewModel,
+        ReactivePropertySlim<bool> visiblePeakLabel,
         ReactiveCommand detectPeaksCommand,
         ReactiveCommand addPeaksCommand,
         ReactiveCommand resetPeaksCommand,
@@ -270,6 +277,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
     {
         public string Title { get; } = "Peaks";
         public ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> ChromatogramsViewModel { get; } = chromatogramsViewModel;
+        public ReactivePropertySlim<bool> VisiblePeakLabel { get; } = visiblePeakLabel;
         public ReactiveCommand DetectPeaksCommand { get; } = detectPeaksCommand;
         public ReactiveCommand AddPeaksCommand { get; } = addPeaksCommand;
         public ReactiveCommand ResetPeaksCommand { get; } = resetPeaksCommand;

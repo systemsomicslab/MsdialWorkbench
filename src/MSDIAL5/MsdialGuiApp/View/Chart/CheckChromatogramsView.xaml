@@ -151,11 +151,11 @@
                                                                                     HorizontalPropertyName="{Binding DataContext.HorizontalProperty, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
                                                                                     VerticalPropertyName="{Binding DataContext.VerticalProperty, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
                                                             <chart:Annotator ItemsSource="{Binding Peaks}"
-                                                                             HorizontalPropertyName="Top.Time"
-                                                                             VerticalPropertyName="Top.Intensity"
+                                                                             HorizontalPropertyName="Time"
+                                                                             VerticalPropertyName="Intensity"
                                                                              LabelPropertyName="Label"
                                                                              Overlap="Direct"
-                                                                             Visibility="{Binding IsChecked, ElementName=ShowLabelCheckBox, Converter={StaticResource BooleanToVisibility}}"
+                                                                             Visibility="{Binding Data.DataContext.VisiblePeakLabel.Value, Converter={StaticResource BooleanToVisibility}, Source={StaticResource ViewRoot}}"
                                                                              IsHitTestVisible="False">
                                                                 <chart:Annotator.RenderTransform>
                                                                     <TranslateTransform Y="-30"/>
@@ -390,8 +390,8 @@
                                         <Button Content="Reset" Command="{Binding ResetPeaksCommand, Mode=OneTime}" Width="64" Margin="8"/>
                                         <Button Content="Export" Command="{Binding ExportPeaksCommand, Mode=OneTime}" Width="64" Margin="8"/>
                                     </StackPanel>
-                                    <CheckBox x:Name="ShowLabelCheckBox" Content="Show label"
-                                              IsChecked="True"
+                                    <CheckBox Content="Show label"
+                                              IsChecked="{Binding VisiblePeakLabel.Value, Mode=TwoWay}"
                                               Grid.Row="1"/>
                                     <ScrollViewer Grid.Row="2">
                                         <ItemsControl ItemsSource="{Binding ChromatogramsViewModel.Value.DisplayChromatograms}">

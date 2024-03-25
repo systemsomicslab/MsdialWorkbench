@@ -47,7 +47,7 @@ internal sealed class CheckChromatogramsModel : BindableBase
 
         var settings = Properties.Settings.Default;
         if (settings.ChromatogramsViewLayoutTemplate is { } layout) {
-            Layout = layout;
+            _layout = layout;
         }
         else {
             _layout = new ContainerElement
@@ -198,6 +198,12 @@ internal sealed class CheckChromatogramsModel : BindableBase
             m.ClearChromatogramSearchQuery();
         }
     }
+
+    public bool VisiblePeakLabel {
+        get => _visiblePeakLabel;
+        set => SetProperty(ref _visiblePeakLabel, value);
+    }
+    private bool _visiblePeakLabel = true;
 
     public void DetectPeaks() {
         var detector = new PeakDetection(1, 0d);
