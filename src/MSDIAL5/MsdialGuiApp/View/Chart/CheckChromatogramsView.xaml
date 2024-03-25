@@ -80,8 +80,10 @@
                 <MenuItem Header="Save current layout"
                           Command="{Binding SerializeLayoutCommand, Mode=OneTime}"
                           CommandParameter="{Binding Data.Containers, Source={StaticResource ContentsProxy}}"/>
+                <!--
                 <MenuItem Header="Load previous layout"
                           Command="{Binding DeserializeLayoutCommand, Mode=OneTime}"/>
+                -->
             </ContextMenu>
         </Grid.ContextMenu>
         <ui:DockItemsControl x:Name="Contents" ItemsSource="{Binding ViewModels, Mode=OneTime}" LayoutElement="{Binding Layout.Value, Mode=OneWay}">
