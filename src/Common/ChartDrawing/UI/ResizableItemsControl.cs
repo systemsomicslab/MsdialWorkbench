@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 
 namespace CompMs.Graphics.UI
@@ -147,7 +148,13 @@ namespace CompMs.Graphics.UI
                     case Orientation.Horizontal:
                         if (index % 2 == 0) {
                             if (visualItem is ContentPresenter presenter && presenter.Content is IContainerNode node) {
-                                _grid.ColumnDefinitions.Insert(index, new ColumnDefinition { Width = node.Width, });
+                                ColumnDefinition columndef = new() { DataContext = node, Width = node.Width, };
+                                Binding binding = new(nameof(IContainerNode.Width))
+                                {
+                                    Mode = BindingMode.TwoWay,
+                                };
+                                columndef.SetBinding(ColumnDefinition.WidthProperty, binding);
+                                _grid.ColumnDefinitions.Insert(index, columndef);
                             }
                             else {
                                 _grid.ColumnDefinitions.Insert(index, new ColumnDefinition { Width = new GridLength(1d, GridUnitType.Star), });
@@ -181,7 +188,13 @@ namespace CompMs.Graphics.UI
                             Grid.SetColumn(splitter, index);
                             _grid.Children.Insert(index, splitter);
                             if (visualItem is ContentPresenter presenter && presenter.Content is IContainerNode node) {
-                                _grid.ColumnDefinitions.Insert(index + 1, new ColumnDefinition { Width = node.Width, });
+                                ColumnDefinition columndef = new() { DataContext = node, Width = node.Width, };
+                                Binding binding = new(nameof(IContainerNode.Width))
+                                {
+                                    Mode = BindingMode.TwoWay,
+                                };
+                                columndef.SetBinding(ColumnDefinition.WidthProperty, binding);
+                                _grid.ColumnDefinitions.Insert(index + 1, columndef);
                             }
                             else {
                                 _grid.ColumnDefinitions.Insert(index + 1, new ColumnDefinition { Width = new GridLength(1d, GridUnitType.Star), });
@@ -193,7 +206,13 @@ namespace CompMs.Graphics.UI
                     case Orientation.Vertical:
                         if (index % 2 == 0) {
                             if (visualItem is ContentPresenter presenter && presenter.Content is IContainerNode node) {
-                                _grid.RowDefinitions.Insert(index, new RowDefinition { Height = node.Height, });
+                                RowDefinition rowdef = new() { DataContext = node, Height = node.Height, };
+                                Binding binding = new(nameof(IContainerNode.Height))
+                                {
+                                    Mode = BindingMode.TwoWay,
+                                };
+                                rowdef.SetBinding(RowDefinition.HeightProperty, binding);
+                                _grid.RowDefinitions.Insert(index, rowdef);
                             }
                             else {
                                 _grid.RowDefinitions.Insert(index, new RowDefinition { Height = new GridLength(1d, GridUnitType.Star), });
@@ -227,7 +246,13 @@ namespace CompMs.Graphics.UI
                             Grid.SetRow(splitter, index);
                             _grid.Children.Insert(index, splitter);
                             if (visualItem is ContentPresenter presenter && presenter.Content is IContainerNode node) {
-                                _grid.RowDefinitions.Insert(index + 1, new RowDefinition { Height = node.Height, });
+                                RowDefinition rowdef = new() { DataContext = node, Height = node.Height, };
+                                Binding binding = new(nameof(IContainerNode.Height))
+                                {
+                                    Mode = BindingMode.TwoWay,
+                                };
+                                rowdef.SetBinding(RowDefinition.HeightProperty, binding);
+                                _grid.RowDefinitions.Insert(index + 1, rowdef);
                             }
                             else {
                                 _grid.RowDefinitions.Insert(index + 1, new RowDefinition { Height = new GridLength(1d, GridUnitType.Star), });

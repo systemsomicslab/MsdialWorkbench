@@ -4,10 +4,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace CompMs.Graphics.UI;
 
@@ -48,12 +51,14 @@ public class DockItemsControl : ItemsControl
 
     public readonly static RoutedCommand SplitHorizontalCommand = new(nameof(DockItemsControl), typeof(DockItemsControl));
     public readonly static RoutedCommand SplitVerticalCommand = new(nameof(DockItemsControl), typeof(DockItemsControl));
+    public readonly static RoutedCommand ExportLayoutCommand = new(nameof(DockItemsControl), typeof(DockItemsControl));
 
     public DockItemsControl()
     {
         Containers = new NodeContainers();
-        CommandBindings.Add(new CommandBinding(SplitHorizontalCommand, new ExecutedRoutedEventHandler(SplitHorizontal), CanSplitHorizontal));
+        CommandBindings.Add(new CommandBinding(SplitHorizontalCommand, SplitHorizontal, CanSplitHorizontal));
         CommandBindings.Add(new CommandBinding(SplitVerticalCommand, SplitVertical, CanSplitVertical));
+        CommandBindings.Add(new CommandBinding(ExportLayoutCommand, ExportLayout));
     }
 
     protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue) {
@@ -165,6 +170,14 @@ public class DockItemsControl : ItemsControl
 
     private void CanSplitVertical(object sender, CanExecuteRoutedEventArgs args) {
         args.CanExecute = args.Parameter is IContainerNode;
+    }
+
+    private void ExportLayout(object sender, ExecutedRoutedEventArgs args) {
+        if (args.Parameter is TextWriter writer) {
+            var converted = ContainerElement.Convert(Containers.Root);
+            var serializer = new XmlSerializer(typeof(ContainerElement), [typeof(LeafElement), typeof(ContainerElement)]);
+            serializer.Serialize(writer, converted);
+        }
     }
 }
 
@@ -448,6 +461,18 @@ public sealed class NodeContainers : INotifyPropertyChanged {
             Leaves = [..Root.GetLeaves()];
         }
     }
+
+    public void Serialize(Stream stream) {
+        var writer = new StreamWriter(stream);
+        var converted = ContainerElement.Convert(Root);
+        var serializer = new XmlSerializer(typeof(ContainerElement), [typeof(LeafElement), typeof(ContainerElement)]);
+        serializer.Serialize(writer, converted);
+    }
+
+    public void Deserialize(Stream stream) {
+        var serializer = new XmlSerializer(typeof(ContainerElement), [typeof(LeafElement), typeof(ContainerElement)]);
+        Root = (IContainerNodeCollection)serializer.Deserialize(stream);
+    }
 }
 
 internal sealed class ContainerLeaf : IContainerNode, INotifyPropertyChanged {
@@ -641,14 +666,49 @@ public interface IDockLayoutElement {
     internal IContainerNodeCollection Build();
 }
 
-[System.Windows.Markup.ContentProperty("Items")]
-public sealed class ContainerElement : IDockLayoutElement {
-    public List<IDockLayoutElement> Items { get; set; } = [];
-    public Orientation Orientation { get; set; }
-    public GridLength Width { get; set; }
-    public GridLength Height { get; set; }
-
+public abstract class DockLayoutElement : IDockLayoutElement
+{
     IContainerNodeCollection IDockLayoutElement.Build() {
+        return BuildCore();
+    }
+
+    protected abstract IContainerNodeCollection BuildCore();
+}
+
+[System.Windows.Markup.ContentProperty("Items")]
+[XmlRoot("ContainerElement")]
+public sealed class ContainerElement : DockLayoutElement {
+    [XmlArrayItem("LeafElement", typeof(LeafElement))]
+    [XmlArrayItem("ContainerElement", typeof(ContainerElement))]
+    public List<DockLayoutElement> Items { get; set; } = [];
+    [XmlElement("Orientation")]
+    public Orientation Orientation { get; set; }
+    [XmlIgnore]
+    public GridLength Width {
+        get => new(WidthValue, WidthUnitType);
+        set {
+            WidthValue = value.Value;
+            WidthUnitType = value.GridUnitType;
+        }
+    }
+    [XmlIgnore]
+    public GridLength Height {
+        get => new(HeightValue, HeightUnitType);
+        set {
+            HeightValue = value.Value;
+            HeightUnitType = value.GridUnitType;
+        }
+    }
+    [XmlElement("WidthValue")]
+    public double WidthValue { get; set; }
+    [XmlElement("HeightValue")]
+    public double HeightValue { get; set; }
+    [XmlElement("WidthUnitType")]
+    public GridUnitType WidthUnitType { get; set; }
+    [XmlElement("HeightUnitType")]
+    public GridUnitType HeightUnitType { get; set; }
+
+    protected override IContainerNodeCollection BuildCore() {
         var container = new ContainerSplit
         {
             Orientation = Orientation,
@@ -656,18 +716,65 @@ public sealed class ContainerElement : IDockLayoutElement {
             Height = Height,
         };
         foreach (var item in Items) {
-            container.Add(item.Build());
+            container.Add(((IDockLayoutElement)item).Build());
         }
         return container;
     }
+
+    public static DockLayoutElement Convert(IContainerNode node) {
+        return node switch
+        {
+            ContainerSplit split => new ContainerElement
+            {
+                Width = split.Width,
+                Height = split.Height,
+                Orientation = split.Orientation,
+                Items = split.Children.Select(Convert).Where(e => e is not null).ToList(),
+            },
+            ContainerOver over => new LeafElement
+            {
+                Width = over.Width,
+                Height = over.Height,
+                Size = over.Count,
+            },
+            _ => new LeafElement
+            {
+                Size = 0,
+            }
+        };
+    }
 }
 
-public sealed class LeafElement : IDockLayoutElement {
+[XmlRoot("LeafElement")]
+public sealed class LeafElement : DockLayoutElement {
+    [XmlElement("Size")]
     public int Size { get; set; }
-    public GridLength Width { get; set; }
-    public GridLength Height { get; set; }
+    [XmlIgnore]
+    public GridLength Width {
+        get => new(WidthValue, WidthUnitType);
+        set {
+            WidthValue = value.Value;
+            WidthUnitType = value.GridUnitType;
+        }
+    }
+    [XmlIgnore]
+    public GridLength Height {
+        get => new(HeightValue, HeightUnitType);
+        set {
+            HeightValue = value.Value;
+            HeightUnitType = value.GridUnitType;
+        }
+    }
+    [XmlElement("WidthValue")]
+    public double WidthValue { get; set; }
+    [XmlElement("HeightValue")]
+    public double HeightValue { get; set; }
+    [XmlElement("WidthUnitType")]
+    public GridUnitType WidthUnitType { get; set; }
+    [XmlElement("HeightUnitType")]
+    public GridUnitType HeightUnitType { get; set; }
 
-    IContainerNodeCollection IDockLayoutElement.Build() {
+    protected override IContainerNodeCollection BuildCore() {
         var container = new ContainerOver
         {
             Width = Width,
