@@ -12,6 +12,7 @@
     <converter:BooleanAnyConverter x:Key="BooleanAny"/>
     <converter2:AreEqualsConverter x:Key="AreEquals"/>
     <converter:AdductIonConverter x:Key="AdductIonConverter"/>
+    <converter2:MultiIdentityConverter x:Key="MultiId"/>
 
     <ControlTemplate x:Key="InputErrorTemplate">
         <DockPanel>

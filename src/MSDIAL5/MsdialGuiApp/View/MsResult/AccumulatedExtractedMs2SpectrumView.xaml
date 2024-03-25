@@ -50,6 +50,7 @@
                               Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
                               CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
                 </MenuItem>
+                <MenuItem Header="Save all view items" Click="BatchSaveViews"/>
                 <Separator/>
                 <MenuItem Header="Save current layout"
                           Command="{Binding SerializeLayoutCommand, Mode=OneTime}"
@@ -70,7 +71,7 @@
                 <DataTemplate>
                     <DataTemplate.Resources>
                         <DataTemplate DataType="{x:Type vm:AccumulatedExtractedMs2SpectrumViewModel_Spectrum}">
-                            <Grid>
+                            <Grid x:Name="Spectrum">
                                 <chart:MultiChart DataContext="{Binding MsSpectrumViewModel.Value}"
                                                   HorizontalAxis="{Binding HorizontalAxis.Value}"
                                                   GraphTitle="{Binding GraphTitle.Value}"
@@ -232,7 +233,7 @@
                             </Grid>
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type vm:AccumulatedExtractedMs2SpectrumViewModel_Chromatogram}">
-                            <Grid>
+                            <Grid x:Name="Chromatogram">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="80" />
@@ -352,11 +353,48 @@
                             </Grid>
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type vm:AccumulatedExtractedMs2SpectrumViewModel_Search}">
-                            <Grid>
+                            <Grid x:Name="Search">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
+
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Save image as...">
+                                            <MenuItem Header="Save as emf"
+                                                      Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                            <MenuItem Header="Save as png"
+                                                      Command="{x:Static io:SaveImageAsCommand.PngInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        </MenuItem>
+                                        <MenuItem Header="Copy image as...">
+                                            <MenuItem Header="Copy as emf"
+                                                      Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                            <MenuItem Header="Copy as png"
+                                                      Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        </MenuItem>
+                                        <MenuItem Header="Save view image as...">
+                                            <MenuItem Header="Save as emf"
+                                                      Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                                            <MenuItem Header="Save as png"
+                                                      Command="{x:Static io:SaveImageAsCommand.PngInstance}"
+                                                      CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                                        </MenuItem>
+                                        <MenuItem Header="Copy view image as...">
+                                            <MenuItem Header="Copy as emf"
+                                                      Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                                            <MenuItem Header="Copy as png"
+                                                      Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
+                                                      CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
 
                                 <StackPanel Grid.Row="0">
                                     <StackPanel Orientation="Horizontal">
