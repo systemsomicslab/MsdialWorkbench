@@ -471,7 +471,7 @@ namespace CompMs.MsdialCore.MSDec {
             }
             if (spectrum.Count > 0) {
                 var maxIntensity = spectrum.Max(n => n.Intensity);
-                spectrum = spectrum.Where(n => n.Intensity > maxIntensity * 0.001).ToList();
+                spectrum = spectrum.Where(n => n.Intensity > param.AmplitudeCutoff).ToList();
                 return spectrum;
             }
 
