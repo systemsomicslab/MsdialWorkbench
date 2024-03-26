@@ -233,12 +233,13 @@
                             </Grid>
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type vm:AccumulatedMS2SpectrumViewModel_Chromatogram}">
-                            <Grid x:Name="Chromatogram">
+                            <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="80" />
                                 </Grid.ColumnDefinitions>
-                                <chart:SimpleChartControl HorizontalAxis="{Binding ExtractedIonChromatogram.Value.HorizontalSelector.SelectedAxisItem.AxisManager}"
+                                <chart:SimpleChartControl x:Name="Chromatogram"
+                                                          HorizontalAxis="{Binding ExtractedIonChromatogram.Value.HorizontalSelector.SelectedAxisItem.AxisManager}"
                                                           VerticalAxis="{Binding ExtractedIonChromatogram.Value.VerticalSelector.SelectedAxisItem.AxisManager}"
                                                           HorizontalTitle="{Binding ExtractedIonChromatogram.Value.HorizontalSelector.SelectedAxisItem.GraphLabel}"
                                                           GraphTitle="{Binding ExtractedIonChromatogram.Value.GraphTitle}"
