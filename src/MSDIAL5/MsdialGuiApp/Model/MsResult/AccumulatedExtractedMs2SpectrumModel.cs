@@ -180,7 +180,7 @@ internal sealed class AccumulatedExtractedMs2SpectrumModel : DisposableModelBase
     }
 
     public void CalculateProductIonChromatogram() {
-        if (PlotComparedSpectrum is null) {
+        if (PlotComparedSpectrum is null || SelectedRange is null) {
             return;
         }
 
@@ -189,7 +189,7 @@ internal sealed class AccumulatedExtractedMs2SpectrumModel : DisposableModelBase
         var range = MzRange.FromRange(start, end);
         ProductIonChromatogram = _loadingChromatograms.LoadMS2Eic(Chromatogram.MzRange, range);
         if (ProductIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> chromAxis) {
-            chromAxis.ChartMargin = new ConstantMargin(0, 40);
+            chromAxis.ChartMargin = new ConstantMargin(0, 60);
         }
     }
 

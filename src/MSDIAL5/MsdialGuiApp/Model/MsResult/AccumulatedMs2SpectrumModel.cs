@@ -174,7 +174,7 @@ internal sealed class AccumulatedMs2SpectrumModel : DisposableModelBase
         var range = MzRange.FromRange(start, end);
         ExtractedIonChromatogram = _loadingChromatograms.LoadMS2Eic(range);
         if (ExtractedIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> chromAxis) {
-            chromAxis.ChartMargin = new ConstantMargin(0, 40);
+            chromAxis.ChartMargin = new ConstantMargin(0, 60);
         }
     }
 

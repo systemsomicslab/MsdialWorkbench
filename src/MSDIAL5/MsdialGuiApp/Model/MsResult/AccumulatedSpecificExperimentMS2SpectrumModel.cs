@@ -171,7 +171,7 @@ internal sealed class AccumulatedSpecificExperimentMS2SpectrumModel : Disposable
     }
 
     public void CalculateExtractedIonChromatogram() {
-        if (PlotComparedSpectrum is null) {
+        if (PlotComparedSpectrum is null || SelectedRange is null) {
             return;
         }
 
@@ -179,7 +179,7 @@ internal sealed class AccumulatedSpecificExperimentMS2SpectrumModel : Disposable
         var (start, end) = new RangeSelection(SelectedRange).ConvertBy(axis);
         ExtractedIonChromatogram = _loadingChromatograms.LoadMS2Eic(_chromatogram.Chromatogram.ExperimentID, MzRange.FromRange(start, end));
         if (ExtractedIonChromatogram.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> chromAxis) {
-            chromAxis.ChartMargin = new ConstantMargin(0, 40);
+            chromAxis.ChartMargin = new ConstantMargin(0, 60);
         }
     }
 
