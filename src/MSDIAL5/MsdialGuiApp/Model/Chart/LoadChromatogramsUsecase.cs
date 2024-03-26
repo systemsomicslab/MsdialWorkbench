@@ -80,21 +80,21 @@ namespace CompMs.App.Msdial.Model.Chart
         public ChromatogramsModel LoadMS2Eic(MzRange product) {
             var range = MzRange.FromRange(0d, double.MaxValue);
             var displayChromatogram = _productEicLoader.LoadChromatogram((range, product));
-            displayChromatogram.Name = $"Fragment ion: {product.Mz:F5}±{product.Tolerance:F3}";
+            displayChromatogram.Name = $"Fragment ion: {product.Mz:F5}±{Math.Round(product.Tolerance, 5)}";
             return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
         }
 
         public ChromatogramsModel LoadMS2Eic(int experimentID, MzRange product) {
             var displayChromatogram = _productExperimentEicLoader.LoadChromatogram((experimentID, product));
-            displayChromatogram.Name = $"ExperimentID: {experimentID}, fragment ion: {product.Mz:F5}±{product.Tolerance:F3}";
+            displayChromatogram.Name = $"ExperimentID: {experimentID}, fragment ion: {product.Mz:F5}±{Math.Round(product.Tolerance, 5)}";
             return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
         }
 
         public ChromatogramsModel LoadMS2Eic(MzRange precursor, MzRange product) {
             var displayChromatogram = _productEicLoader.LoadChromatogram((precursor, product));
-            displayChromatogram.Name = $"Precursor m/z: {precursor.Mz:F5}±{precursor.Tolerance:F3}";
-            if (product.Tolerance < 1000) {
-                displayChromatogram.Name += $"fragment ion: {product.Mz:F5}±{product.Tolerance:F3}";
+            displayChromatogram.Name = $"Precursor m/z: {precursor.Mz:F5}±{Math.Round(precursor.Tolerance, 5)}";
+            if (product.Tolerance < 10000) {
+                displayChromatogram.Name += $"fragment ion: {product.Mz:F5}±{Math.Round(product.Tolerance, 5)}";
             }
             return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
         }
@@ -107,7 +107,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public ChromatogramsModel LoadEic(MzRange mzRange) {
             var displayChromatogram = _eicLoader.LoadChromatogram((mzRange.Mz, mzRange.Tolerance));
-            displayChromatogram.Name = $"m/z: {mzRange.Mz}±{mzRange.Tolerance}";
+            displayChromatogram.Name = $"m/z: {mzRange.Mz:F5}±{Math.Round(mzRange.Tolerance, 5)}";
             return new ChromatogramsModel(string.Empty, displayChromatogram, displayChromatogram.Name, "Time", "Abundance");
         }
 
