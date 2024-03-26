@@ -118,6 +118,11 @@
                                                           Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
                                                           CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
                                             </MenuItem>
+                                            <MenuItem Header="Save all view items" Click="BatchSaveViews"/>
+                                            <Separator/>
+                                            <MenuItem Header="Save current layout"
+                                                      Command="{Binding Data.DataContext.SerializeLayoutCommand, Mode=OneTime, Source={StaticResource ViewRoot}}"
+                                                      CommandParameter="{Binding Data.Containers, Source={StaticResource ContentsProxy}}"/>
                                         </ContextMenu>
                                     </chart:MultiChart.ContextMenu>
                                     <ItemsControl ItemsSource="{Binding UpperSpectraViewModel}"
@@ -343,6 +348,11 @@
                                                           Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
                                                           CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
                                             </MenuItem>
+                                            <MenuItem Header="Save all view items" Click="BatchSaveViews"/>
+                                            <Separator/>
+                                            <MenuItem Header="Save current layout"
+                                                      Command="{Binding Data.DataContext.SerializeLayoutCommand, Mode=OneTime, Source={StaticResource ViewRoot}}"
+                                                      CommandParameter="{Binding Data.Containers, Source={StaticResource ContentsProxy}}"/>
                                         </ContextMenu>
                                     </chart:SimpleChartControl.ContextMenu>
                                 </chart:SimpleChartControl>
@@ -394,6 +404,11 @@
                                                       Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
                                                       CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
                                         </MenuItem>
+                                        <MenuItem Header="Save all view items" Click="BatchSaveViews"/>
+                                        <Separator/>
+                                        <MenuItem Header="Save current layout"
+                                                  Command="{Binding Data.DataContext.SerializeLayoutCommand, Mode=OneTime, Source={StaticResource ViewRoot}}"
+                                                  CommandParameter="{Binding Data.Containers, Source={StaticResource ContentsProxy}}"/>
                                     </ContextMenu>
                                 </Grid.ContextMenu>
 
