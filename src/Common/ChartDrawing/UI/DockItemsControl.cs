@@ -799,7 +799,7 @@ public sealed class LeafElement : DockLayoutElement {
     public GridUnitType HeightUnitType { get; set; }
 
     [XmlElement("Priorities")]
-    public int[] Priorities { get; set; }
+    public int[] Priorities { get; set; } = [];
 
     protected override IContainerNodeCollection BuildCore() {
         var container = new ContainerOver
@@ -810,7 +810,7 @@ public sealed class LeafElement : DockLayoutElement {
         for (int i = 0; i < Size; i++) {
             container.Add(new ContainerLeaf
             {
-                Priority = i < Priorities.Length ? Priorities[i] : 0,
+                Priority = (Priorities is not null && i < Priorities.Length) ? Priorities[i] : 0,
             });
         }
         return container;

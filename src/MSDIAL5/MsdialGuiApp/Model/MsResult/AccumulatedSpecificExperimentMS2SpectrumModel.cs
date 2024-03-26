@@ -11,7 +11,6 @@ using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.UI;
-using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Export;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -58,13 +57,13 @@ internal sealed class AccumulatedSpecificExperimentMS2SpectrumModel : Disposable
             {
                 Orientation = System.Windows.Controls.Orientation.Horizontal,
                 Items = [
-                    new LeafElement { Width = new(2, System.Windows.GridUnitType.Star), Size = 1 },
+                    new LeafElement { Width = new(2, System.Windows.GridUnitType.Star), Size = 1, Priorities = [3] },
                     new ContainerElement {
                         Orientation = System.Windows.Controls.Orientation.Vertical,
                         Width = new(3, System.Windows.GridUnitType.Star),
                         Items = [
-                            new LeafElement { Height = new(1, System.Windows.GridUnitType.Star), Size = 1 },
-                            new LeafElement { Height = new(1, System.Windows.GridUnitType.Star), Size = 1 },
+                            new LeafElement { Height = new(1, System.Windows.GridUnitType.Star), Size = 1, Priorities = [2] },
+                            new LeafElement { Height = new(1, System.Windows.GridUnitType.Star), Size = 1, Priorities = [1] },
                         ]
                     },
                 ],
