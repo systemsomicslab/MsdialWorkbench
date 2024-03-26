@@ -77,7 +77,7 @@
                                                   GraphTitle="{Binding GraphTitle.Value}"
                                                   HorizontalTitle="{Binding HorizontalTitle.Value}"
                                                   VerticalTitle="{Binding VerticalTitle.Value}"
-                                                  Style="{StaticResource VerticalConcatChart}">
+                                                  Style="{StaticResource UnmoveVerticalConcatChart}">
                                     <chart:MultiChart.RenderAreaControlState>
                                         <chart:RenderAreaControlState MoveByDragIsEnabled="False"/>
                                     </chart:MultiChart.RenderAreaControlState>

@@ -77,7 +77,7 @@
                                                   GraphTitle="{Binding GraphTitle.Value}"
                                                   HorizontalTitle="{Binding HorizontalTitle.Value}"
                                                   VerticalTitle="{Binding VerticalTitle.Value}"
-                                                  Style="{StaticResource VerticalConcatChart}">
+                                                  Style="{StaticResource UnmoveVerticalConcatChart}">
                                     <chart:MultiChart.RenderAreaControlState>
                                         <chart:RenderAreaControlState MoveByDragIsEnabled="False"/>
                                     </chart:MultiChart.RenderAreaControlState>
@@ -248,7 +248,7 @@
                                         <chart:RenderAreaControlState MoveByDragIsEnabled="False"/>
                                     </chart:SimpleChartControl.RenderAreaControlState>
                                     <chart:SimpleChartControl.Style>
-                                        <Style TargetType="{x:Type chart:SimpleChartControl}" BasedOn="{StaticResource BasicChart}">
+                                        <Style TargetType="{x:Type chart:SimpleChartControl}" BasedOn="{StaticResource UnmoveBasicChart}">
                                             <Setter Property="VerticalTitle">
                                                 <Setter.Value>
                                                     <MultiBinding StringFormat="{}{0}({1})">
