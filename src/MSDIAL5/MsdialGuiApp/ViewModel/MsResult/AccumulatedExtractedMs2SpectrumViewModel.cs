@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.MsResult;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.MsResult;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Chart;
@@ -69,6 +70,8 @@ internal sealed class AccumulatedExtractedMs2SpectrumViewModel : ViewModelBase, 
     }
 
     public AccumulatedExtractedMs2SpectrumModel Model { get; }
+
+    public AnalysisFileBeanModel FileModel => Model.FileModel;
 
     public double Mz => Model.Chromatogram.Mz;
     public ReadOnlyReactivePropertySlim<MsSpectrumViewModel?> MsSpectrumViewModel { get; }

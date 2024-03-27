@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.MsResult;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.MsResult;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Chart;
@@ -69,6 +70,8 @@ internal sealed class AccumulatedSpecificExperimentMS2SpectrumViewModel : ViewMo
     }
 
     public AccumulatedSpecificExperimentMS2SpectrumModel Model { get; }
+
+    public AnalysisFileBeanModel FileModel => Model.FileModel;
 
     public int ExperimentID => Model.ExperimentID;
 

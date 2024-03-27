@@ -57,6 +57,16 @@
         <Grid.Resources>
             <mvvm:BindingProxy x:Key="ViewRoot" Data="{Binding ElementName=ChromatogramsView}"/>
             <mvvm:BindingProxy x:Key="ContentsProxy" Data="{Binding ElementName=Contents}"/>
+            <graphio:SaveImageAsCommand x:Key="SaveImageCommand" Format="Png">
+                <graphio:SaveImageAsCommand.Converter>
+                    <graphio:HeaderConverter Header="{Binding Data.DataContext.FileModel.AnalysisFileName, Source={StaticResource ViewRoot}}"/>
+                </graphio:SaveImageAsCommand.Converter>
+            </graphio:SaveImageAsCommand>
+            <graphio:CopyImageAsCommand x:Key="CopyImageCommand" Format="Png">
+                <graphio:CopyImageAsCommand.Converter>
+                    <graphio:HeaderConverter Header="{Binding Data.DataContext.FileModel.AnalysisFileName, Source={StaticResource ViewRoot}}"/>
+                </graphio:CopyImageAsCommand.Converter>
+            </graphio:CopyImageAsCommand>
         </Grid.Resources>
         <Grid.ContextMenu>
             <ContextMenu>
@@ -65,7 +75,7 @@
                               Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
                               CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
                     <MenuItem Header="Save as png"
-                              Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                              Command="{StaticResource SaveImageCommand}"
                               CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
                 </MenuItem>
                 <MenuItem Header="Copy view image as...">
@@ -73,7 +83,7 @@
                               Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
                               CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
                     <MenuItem Header="Copy as png"
-                              Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                              Command="{StaticResource CopyImageCommand}"
                               CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
                 </MenuItem>
                 <Separator/>
@@ -208,7 +218,7 @@
                                                               Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
                                                               CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                                     <MenuItem Header="Save as png"
-                                                              Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                              Command="{StaticResource SaveImageCommand}"
                                                               CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                                 </MenuItem>
                                                 <MenuItem Header="Copy image as...">
@@ -216,7 +226,7 @@
                                                               Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
                                                               CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                                     <MenuItem Header="Copy as png"
-                                                              Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                                              Command="{StaticResource CopyImageCommand}"
                                                               CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                                 </MenuItem>
                                                 <MenuItem Header="Save view image as...">
@@ -224,7 +234,7 @@
                                                               Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
                                                               CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
                                                     <MenuItem Header="Save as png"
-                                                              Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                              Command="{StaticResource SaveImageCommand}"
                                                               CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
                                                 </MenuItem>
                                                 <MenuItem Header="Copy view image as...">
@@ -232,7 +242,7 @@
                                                               Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
                                                               CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
                                                     <MenuItem Header="Copy as png"
-                                                              Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                                              Command="{StaticResource CopyImageCommand}"
                                                               CommandParameter="{Binding Data, Source={StaticResource ViewRoot}}"/>
                                                 </MenuItem>
                                                 <Separator/>

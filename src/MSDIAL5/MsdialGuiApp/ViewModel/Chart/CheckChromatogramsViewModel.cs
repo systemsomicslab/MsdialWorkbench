@@ -122,6 +122,8 @@ internal sealed class CheckChromatogramsViewModel : ViewModelBase, IDialogProper
         ];
     }
 
+    public AnalysisFileBeanModel FileModel => _model.File;
+
     public ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> ChromatogramsViewModel { get; }
     public ReadOnlyReactivePropertySlim<RangeSelectableChromatogramViewModel?> RangeSelectableChromatogramViewModel { get; }
     public ReadOnlyReactivePropertySlim<AccumulatedMs1SpectrumViewModel?> AccumulatedMs1SpectrumViewModel { get; }

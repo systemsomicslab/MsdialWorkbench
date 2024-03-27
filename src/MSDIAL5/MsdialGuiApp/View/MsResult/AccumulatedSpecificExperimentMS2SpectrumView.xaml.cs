@@ -26,17 +26,18 @@ namespace CompMs.App.Msdial.View.MsResult
             }
             var folderPath = sfd.SelectedPath;
             var encoder = new PngEncoder();
+            var converter = (IVisualConverter)Resources["AttachHeader"];
             if (FindChild<FrameworkElement>(this, "Spectrum") is { } spectrum) {
                 using var fs = File.Open(Path.Combine(folderPath, "spectrum.png"), FileMode.Create);
-                encoder.Save(spectrum, fs);
+                encoder.Save(converter.Convert(spectrum), fs);
             }
             if (FindChild<FrameworkElement>(this, "Chromatogram") is { } chromatogram) {
                 using var fs = File.Open(Path.Combine(folderPath, "chromatogram.png"), FileMode.Create);
-                encoder.Save(chromatogram, fs);
+                encoder.Save(converter.Convert(chromatogram), fs);
             }
             if (FindChild<FrameworkElement>(this, "Search") is { } search) {
                 using var fs = File.Open(Path.Combine(folderPath, "search.png"), FileMode.Create);
-                encoder.Save(search, fs);
+                encoder.Save(converter.Convert(search), fs);
             }
         }
 
