@@ -5,6 +5,7 @@ using CompMs.App.Msdial.ViewModel.MsResult;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.Common;
 using CompMs.Graphics.UI;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -21,7 +22,7 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Chart;
 
-internal sealed class CheckChromatogramsViewModel : ViewModelBase
+internal sealed class CheckChromatogramsViewModel : ViewModelBase, IDialogPropertiesViewModel
 {
     private readonly CheckChromatogramsModel _model;
     private readonly IMessageBroker _broker;
@@ -215,7 +216,9 @@ internal sealed class CheckChromatogramsViewModel : ViewModelBase
     public ReactiveCommand DeserializeLayoutCommand { get; }
 
     public ObservableCollection<BindableBase> ViewModels { get; }
-
+    string? IDialogPropertiesViewModel.Title => $"Display chromatograms {_model.File.AnalysisFileName}";
+    double? IDialogPropertiesViewModel.Width => null;
+    double? IDialogPropertiesViewModel.Height => null;
 }
 
 internal sealed class ChromatogramViewModel(

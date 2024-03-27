@@ -4,6 +4,7 @@ using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.Common;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.UI;
 using Reactive.Bindings;
@@ -16,7 +17,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.MsResult;
 
-internal sealed class AccumulatedMs1SpectrumViewModel : ViewModelBase
+internal sealed class AccumulatedMs1SpectrumViewModel : ViewModelBase, IDialogPropertiesViewModel
 {
     public AccumulatedMs1SpectrumViewModel(AccumulatedMs1SpectrumModel model)
     {
@@ -103,6 +104,10 @@ internal sealed class AccumulatedMs1SpectrumViewModel : ViewModelBase
     public ReactiveCommand DeserializeLayoutCommand { get; }
 
     public ObservableCollection<BindableBase> ViewModels { get; }
+
+    string? IDialogPropertiesViewModel.Title => $"Accumulated MS1 Spectrum, {Model.FileModel.AnalysisFileName}";
+    double? IDialogPropertiesViewModel.Width => null;
+    double? IDialogPropertiesViewModel.Height => null;
 }
 
 internal class AccumulatedMs1SpectrumViewModel_Spectrum(

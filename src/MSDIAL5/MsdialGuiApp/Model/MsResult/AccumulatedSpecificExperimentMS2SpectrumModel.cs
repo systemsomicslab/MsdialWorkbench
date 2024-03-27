@@ -37,12 +37,12 @@ internal sealed class AccumulatedSpecificExperimentMS2SpectrumModel : Disposable
     private readonly IMessageBroker _broker;
     private readonly BehaviorSubject<MsSpectrum?> _subject;
 
-    public AccumulatedSpecificExperimentMS2SpectrumModel(DisplaySpecificExperimentChromatogram chromatogram, AccumulateSpectraUsecase accumulateSpectra, MsScanCompoundSearchUsecase? compoundSearch, LoadChromatogramsUsecase loadingChromatograms, IMessageBroker broker)
-    {
+    public AccumulatedSpecificExperimentMS2SpectrumModel(DisplaySpecificExperimentChromatogram chromatogram, AccumulateSpectraUsecase accumulateSpectra, MsScanCompoundSearchUsecase? compoundSearch, LoadChromatogramsUsecase loadingChromatograms, AnalysisFileBeanModel fileModel, IMessageBroker broker) {
         _chromatogram = chromatogram;
         _accumulateSpectra = accumulateSpectra;
         _compoundSearch = compoundSearch;
         _loadingChromatograms = loadingChromatograms;
+        FileModel = fileModel;
         _broker = broker;
         _subject = new BehaviorSubject<MsSpectrum?>(null).AddTo(Disposables);
         _plotDisposable = new SerialDisposable().AddTo(Disposables);
@@ -151,6 +151,8 @@ internal sealed class AccumulatedSpecificExperimentMS2SpectrumModel : Disposable
         get => _layout;
         set => SetProperty(ref _layout, value);
     }
+    public AnalysisFileBeanModel FileModel { get; }
+
     private IDockLayoutElement _layout;
 
     public async Task CalculateMs2Async((double start, double end) baseRange, IEnumerable<(double start, double end)> subtracts, CancellationToken token = default) {

@@ -31,11 +31,12 @@ internal sealed class CheckChromatogramsModel : BindableBase
     private readonly ObservableCollection<PeakFeatureSearchValueModel> _displaySettingValues;
     private readonly MsScanCompoundSearchUsecase _scanCompoundSearchUsecase;
 
-    public CheckChromatogramsModel(LoadChromatogramsUsecase loadingChromatograms, AccumulateSpectraUsecase accumulateSpectra, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? compoundSearch, AdvancedProcessOptionBaseParameter advancedProcessParameter, IMessageBroker broker) {
+    public CheckChromatogramsModel(LoadChromatogramsUsecase loadingChromatograms, AccumulateSpectraUsecase accumulateSpectra, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? compoundSearch, AdvancedProcessOptionBaseParameter advancedProcessParameter, AnalysisFileBeanModel file, IMessageBroker broker) {
         LoadChromatogramsUsecase = loadingChromatograms ?? throw new ArgumentNullException(nameof(loadingChromatograms));
         _accumulateSpectra = accumulateSpectra;
         _compoundSearch = compoundSearch;
         _advancedProcessParameter = advancedProcessParameter;
+        File = file;
         _broker = broker;
         advancedProcessParameter.DiplayEicSettingValues ??= [];
         var values = advancedProcessParameter.DiplayEicSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0).ToList();
@@ -60,6 +61,8 @@ internal sealed class CheckChromatogramsModel : BindableBase
             };
         }
     }
+
+    public AnalysisFileBeanModel File { get; }
 
     public ChromatogramsModel? Chromatograms {
         get => _chromatograms;
@@ -146,17 +149,17 @@ internal sealed class CheckChromatogramsModel : BindableBase
         if (Chromatograms.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager is BaseAxisManager<double> axis) {
             axis.ChartMargin = new ConstantMargin(0, 60);
         }
-        AccumulatedMs1SpectrumModel = new AccumulatedMs1SpectrumModel(_accumulateSpectra, _scanCompoundSearchUsecase, LoadChromatogramsUsecase, _broker);
-        AccumulatedMs2SpectrumModel = new AccumulatedMs2SpectrumModel(_accumulateSpectra, _scanCompoundSearchUsecase, LoadChromatogramsUsecase, _broker);
+        AccumulatedMs1SpectrumModel = new AccumulatedMs1SpectrumModel(_accumulateSpectra, _scanCompoundSearchUsecase, LoadChromatogramsUsecase, File, _broker);
+        AccumulatedMs2SpectrumModel = new AccumulatedMs2SpectrumModel(_accumulateSpectra, _scanCompoundSearchUsecase, LoadChromatogramsUsecase, File, _broker);
 
         RangeSelectableChromatogramModel = new RangeSelectableChromatogramModel(Chromatograms);
         AccumulatedMs2SpectrumModels = Chromatograms.DisplayChromatograms
             .OfType<DisplayExtractedIonChromatogram>()
-            .Select(c => new AccumulatedExtractedMs2SpectrumModel(c, _accumulateSpectra, _compoundSearch, LoadChromatogramsUsecase, _broker))
+            .Select(c => new AccumulatedExtractedMs2SpectrumModel(c, _accumulateSpectra, _compoundSearch, LoadChromatogramsUsecase, File, _broker))
             .ToArray();
         AccumulatedSpecificExperimentMS2SpectrumModels = Chromatograms.DisplayChromatograms
             .OfType<DisplaySpecificExperimentChromatogram>()
-            .Select(c => new AccumulatedSpecificExperimentMS2SpectrumModel(c, _accumulateSpectra, _scanCompoundSearchUsecase, LoadChromatogramsUsecase, _broker))
+            .Select(c => new AccumulatedSpecificExperimentMS2SpectrumModel(c, _accumulateSpectra, _scanCompoundSearchUsecase, LoadChromatogramsUsecase, File, _broker))
             .ToArray();
     }
 

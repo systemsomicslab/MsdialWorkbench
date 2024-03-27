@@ -305,6 +305,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             AccumulateSpectraUsecase = new AccumulateSpectraUsecase(spectrumProvider, parameter.PeakPickBaseParam, parameter.ProjectParam.IonMode);
         }
 
+        public AnalysisFileBeanModel AnalysisFileModel => _analysisFileModel;
         public UndoManager UndoManager => _undoManager;
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
         public AnalysisPeakPlotModel RtMzPlotModel { get; }

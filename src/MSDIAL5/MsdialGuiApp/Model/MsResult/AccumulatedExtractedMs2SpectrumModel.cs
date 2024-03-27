@@ -35,11 +35,12 @@ internal sealed class AccumulatedExtractedMs2SpectrumModel : DisposableModelBase
     private readonly IMessageBroker _broker;
     private readonly BehaviorSubject<MsSpectrum?> _subject;
 
-    public AccumulatedExtractedMs2SpectrumModel(DisplayExtractedIonChromatogram chromatogram, AccumulateSpectraUsecase accumulateSpectra, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? compoundSearch, LoadChromatogramsUsecase loadingChromatograms, IMessageBroker broker) {
+    public AccumulatedExtractedMs2SpectrumModel(DisplayExtractedIonChromatogram chromatogram, AccumulateSpectraUsecase accumulateSpectra, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? compoundSearch, LoadChromatogramsUsecase loadingChromatograms, AnalysisFileBeanModel fileModel, IMessageBroker broker) {
         Chromatogram = chromatogram;
         _accumulateSpectra = accumulateSpectra;
         _compoundSearch = compoundSearch;
         _loadingChromatograms = loadingChromatograms;
+        FileModel = fileModel;
         _broker = broker;
         _plotDisposable = new SerialDisposable().AddTo(Disposables);
         _subject = new BehaviorSubject<MsSpectrum?>(null).AddTo(Disposables);
@@ -69,6 +70,7 @@ internal sealed class AccumulatedExtractedMs2SpectrumModel : DisposableModelBase
     }
 
     public DisplayExtractedIonChromatogram Chromatogram { get; }
+    public AnalysisFileBeanModel FileModel { get; }
 
     public MSScanProperty? Scan {
         get => _scan;

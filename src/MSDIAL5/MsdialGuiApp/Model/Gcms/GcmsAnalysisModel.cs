@@ -213,6 +213,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             AccumulateSpectraUsecase = new AccumulateSpectraUsecase(provider, peakPickParameter, _projectParameter.IonMode);
         }
 
+        public AnalysisFileBeanModel AnalysisFileModel => _file;
         public SpectrumFeaturePlotModel PeakPlotModel { get; }
         public RawDecSpectrumsModel RawDecSpectrumModel { get; }
         public RawPurifiedSpectrumsModel RawPurifiedSpectrumsModel { get; }
