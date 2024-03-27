@@ -85,7 +85,7 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<ChromatogramsViewModel>()
                 .Subscribe(ShowChildView<DisplayChromatogramsView>);
             broker.ToObservable<CheckChromatogramsViewModel>()
-                .Subscribe(ShowChildContent<CheckChromatogramsView>("Display chromatograms", height: 400, width: 1000, needDispose: true));
+                .Subscribe(ShowChildContent<CheckChromatogramsView>(height: 400, width: 1000, needDispose: true));
             broker.ToObservable<NormalizationSetViewModel>()
                 .Subscribe(ShowChildDialog<NormalizationSetView>);
             broker.ToObservable<MultivariateAnalysisSettingViewModel>()
