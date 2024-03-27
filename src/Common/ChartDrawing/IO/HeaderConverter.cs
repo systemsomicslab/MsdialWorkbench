@@ -35,13 +35,18 @@ public sealed class HeaderConverter : DependencyObject, IVisualConverter
             FontSize = 18,
             Foreground = Brushes.Black,
             Background = null,
-            Width = width,
-            Height = 32d,
             TextAlignment = TextAlignment.Left,
         };
+        var viewbox = new Viewbox
+        {
+            HorizontalAlignment = HorizontalAlignment.Left,
+            Width = width,
+            Height = 32d,
+            Child = text,
+        };
 
-        Canvas.SetTop(text, 0);
-        Canvas.SetLeft(text, 0);
+        Canvas.SetTop(viewbox, 0);
+        Canvas.SetLeft(viewbox, 0);
 
         var rectangle = new Rectangle
         {
@@ -53,7 +58,7 @@ public sealed class HeaderConverter : DependencyObject, IVisualConverter
         Canvas.SetLeft(rectangle, 0);
 
         canvas.Children.Add(rectangle);
-        canvas.Children.Add(text);
+        canvas.Children.Add(viewbox);
 
         canvas.Measure(new Size(width, height + 32d));
         canvas.Arrange(new Rect(0, 0, width, height + 32d));
