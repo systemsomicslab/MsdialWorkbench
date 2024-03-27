@@ -429,7 +429,7 @@
                                         </ui:LabeledContent>
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal">
-                                        <ui:LabeledContent PrependLabel="MS1 tol. [Da]:" Height="25">
+                                        <ui:LabeledContent PrependLabel="Precursor m/z tol. [Da]:" Height="25">
                                             <TextBox Name="TextBox_Ms1Tolerance"
                                                      DataContext="{Binding ParameterViewModel.Value}"
                                                      Text="{Binding Ms1Tolerance.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
