@@ -18,6 +18,7 @@ namespace CompMs.Graphics.IO
         private SaveImageAsCommand(ImageFormat format) {
             Format = format;
             Formatter = new NoneFormatter();
+            Converter = NoneVisualConverter.Instance;
         }
 
         public SaveImageAsCommand() : this(ImageFormat.None) {
@@ -27,6 +28,8 @@ namespace CompMs.Graphics.IO
         public ImageFormat Format { get; set; }
 
         public IElementFormatter Formatter { get; set; }
+
+        public IVisualConverter Converter { get; set; }
 
 #pragma warning disable 67
         public event EventHandler CanExecuteChanged;
@@ -41,7 +44,8 @@ namespace CompMs.Graphics.IO
                 if (TryGetPathAndEncoder(Format, out var path, out var encoder)) {
                     using (await Formatter.Format(parameter))
                     using (var fs = File.Open(path, FileMode.Create)) {
-                        encoder.Save(element, fs);
+                        var converted = Converter.Convert(element);
+                        encoder.Save(converted, fs);
                     }
                 }
             }

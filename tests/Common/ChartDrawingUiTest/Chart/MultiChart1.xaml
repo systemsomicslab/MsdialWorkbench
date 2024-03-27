@@ -22,6 +22,11 @@
                                   MaxValue="{Binding MaxY, Source={StaticResource vm}}"
                                   MinValue="{Binding MinY, Source={StaticResource vm}}"
                                   ChartMargin="0.05"/>
+        <io:SaveImageAsCommand x:Key="SaveImageCommand" Format="Png">
+            <io:SaveImageAsCommand.Converter>
+                <io:HeaderConverter Header="Header XXXX"/>
+            </io:SaveImageAsCommand.Converter>
+        </io:SaveImageAsCommand>
     </Page.Resources>
 
     <Grid>
@@ -65,7 +70,7 @@
                 <ContextMenu>
                     <MenuItem Header="Save image">
                         <MenuItem Header="Save as png"
-                                  Command="{x:Static io:SaveImageAsCommand.PngInstance}"
+                                  Command="{StaticResource SaveImageCommand}"
                                   CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                         <MenuItem Header="Save as emf"
                                   Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
