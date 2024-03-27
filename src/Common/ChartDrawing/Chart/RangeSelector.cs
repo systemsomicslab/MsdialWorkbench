@@ -107,10 +107,20 @@ namespace CompMs.Graphics.Chart
             }
 
             var addValues = newValues.Except(oldValues);
+            var newAdorners = new List<RangeSelectAdorner>();
             foreach (var addValue in addValues) {
-                var adorner = new RangeSelectAdorner(this, addValue) { IsClipEnabled = true };
+                var adorner = new RangeSelectAdorner(this, addValue);
                 adorner.Attach();
                 Adorners.Add(adorner);
+                newAdorners.Add(adorner);
+            }
+            foreach (var adorner in newAdorners) {
+                try {
+                    adorner.IsClipEnabled = true;
+                }
+                catch (NullReferenceException e) {
+                    System.Diagnostics.Debug.WriteLine(e);
+                }
             }
         }
 
