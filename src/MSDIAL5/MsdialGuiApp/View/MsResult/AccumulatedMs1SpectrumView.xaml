@@ -178,9 +178,11 @@
                                                                      Overlap="Horizontal, Direct"
                                                                      Format="F4"
                                                                      ClipToBounds="True"/>
-                                                    <chart:RangeSelector SelectedRange="{Binding DataContext.SelectedRange.Value, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                                         Background="Transparent"
-                                                                         ClipToBounds="True"/>
+                                                    <AdornerDecorator>
+                                                        <chart:RangeSelector SelectedRange="{Binding DataContext.SelectedRange.Value, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                             Background="Transparent"
+                                                                             ClipToBounds="True"/>
+                                                    </AdornerDecorator>
                                                 </Grid>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
@@ -416,9 +418,11 @@
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
                                         </ItemsControl>
-                                        <chart:RangeSelector SelectedRange="{Binding ProductIonRange.Value, Mode=TwoWay}"
-                                                             Background="Transparent"
-                                                             ClipToBounds="True"/>
+                                        <AdornerDecorator>
+                                            <chart:RangeSelector SelectedRange="{Binding ProductIonRange.Value, Mode=TwoWay}"
+                                                                 Background="Transparent"
+                                                                 ClipToBounds="True"/>
+                                        </AdornerDecorator>
                                     </Grid>
                                     <chart:SimpleChartControl.ContextMenu>
                                         <ContextMenu>

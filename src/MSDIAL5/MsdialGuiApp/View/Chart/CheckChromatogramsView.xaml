@@ -167,10 +167,12 @@
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>
-                                            <chart:RangeSelector Background="Transparent"
-                                                                 SelectedRange="{Binding RangeSelectableChromatogramViewModel.Value.SelectedRange.Value, Mode=TwoWay}"
-                                                                 DisplayRanges="{Binding RangeSelectableChromatogramViewModel.Value.SelectedRanges, Mode=OneWay}"
-                                                                 ClipToBounds="True"/>
+                                            <AdornerDecorator>
+                                                <chart:RangeSelector Background="Transparent"
+                                                                     SelectedRange="{Binding RangeSelectableChromatogramViewModel.Value.SelectedRange.Value, Mode=TwoWay}"
+                                                                     DisplayRanges="{Binding RangeSelectableChromatogramViewModel.Value.SelectedRanges, Mode=OneWay}"
+                                                                     ClipToBounds="True"/>
+                                            </AdornerDecorator>
                                         </Grid>
                                         <chart:SimpleChartControl.ContextMenu>
                                             <ContextMenu>
