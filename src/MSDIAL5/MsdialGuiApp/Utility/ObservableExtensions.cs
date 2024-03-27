@@ -19,9 +19,11 @@ namespace CompMs.App.Msdial.Utility
         }
 
         public static IObservable<U?> DefaultIfNull<T, U>(this IObservable<T?> source, Func<T, U?> ifNotNull) where T: class {
-            var x = source.Where(v => v is null).ToConstant(default(U?));
-            var y = source.Where(v => v is not null).Select(v => ifNotNull(v!));
-            return Observable.Merge(x, y);
+            return source.Publish(src => {
+                var x = src.Where(v => v is null).ToConstant(default(U?));
+                var y = src.Where(v => v is not null).Select(v => ifNotNull(v!));
+                return Observable.Merge(x, y);
+            });
         }
 
         public static IObservable<U> DefaultIfNull<T, U>(this IObservable<T?> source, Func<T, U> ifNotNull, U ifNull) where T: class {
