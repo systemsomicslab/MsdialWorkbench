@@ -26,7 +26,7 @@ namespace CompMs.App.Msdial.View.MsResult
             }
             var folderPath = sfd.SelectedPath;
             var encoder = new PngEncoder();
-            var converter = (IVisualConverter)Resources["AttachHeader"];
+            var converter = ((FrameworkElement)Content).Resources["AttatchHeader"] as IVisualConverter ?? NoneVisualConverter.Instance;
             if (FindChild<FrameworkElement>(this, "Spectrum") is { } spectrum) {
                 using var fs = File.Open(Path.Combine(folderPath, "spectrum.png"), FileMode.Create);
                 encoder.Save(converter.Convert(spectrum), fs);
