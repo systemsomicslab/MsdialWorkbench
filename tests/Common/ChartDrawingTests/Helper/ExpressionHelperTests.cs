@@ -110,6 +110,15 @@ public class ExpressionHelperTests
         Assert.IsFalse(axis.BaseMethodCalled);
     } 
 
+    [TestMethod()]
+    public void IdentityTest() {
+        var a = new A(0);
+        var identity = ExpressionHelper.Identity(typeof(A));
+        var getter = (Func<A, A>)identity.Compile();
+        var actual = getter.Invoke(a);
+        Assert.AreEqual(a, actual);
+    }
+
     class A(int X)
     {
         public int X { get; } = X;

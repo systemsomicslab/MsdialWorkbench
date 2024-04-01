@@ -120,6 +120,24 @@ namespace CompMs.Graphics.Helper;
         return Expression.Lambda<Func<object, IAxisManager, AxisValue>>(val, parameter, axis);
     }
 
+    /// <summary>
+    /// Creates a lambda expression representing an identity function for a specified type.
+    /// </summary>
+    /// <remarks>
+    /// An identity function is a function that returns its input. This method generates a lambda expression
+    /// that takes a single parameter of the specified <paramref name="type"/> and returns it directly.
+    /// This can be useful in scenarios where a generic lambda expression is needed for passing through values
+    /// of a specific type without modification.
+    /// </remarks>
+    /// <param name="type">The type of the parameter and return value of the lambda expression. This type must not be null.</param>
+    /// <returns>A <see cref="LambdaExpression"/> that represents an identity function for the specified type.
+    /// The expression takes a single parameter of the specified <paramref name="type"/> and returns it.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="type"/> is null.</exception>
+    public static LambdaExpression Identity(Type type) {
+        var parameter = Expression.Parameter(type);
+        return Expression.Lambda(parameter, parameter);
+    }
+
         public static bool ValidatePropertyString(Type type, string property) {
             if (string.IsNullOrEmpty(property)) {
                 return false;
