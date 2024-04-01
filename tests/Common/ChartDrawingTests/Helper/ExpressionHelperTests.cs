@@ -1,5 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using CompMs.Graphics.Core.Base;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.Graphics.Helper.Tests;
@@ -63,6 +65,51 @@ public class ExpressionHelperTests
         getter(c);
     }
 
+    [TestMethod()]
+    public void GetConvertToAxisValueExpression_Generic() {
+        C c = new C(new B(new A(5)));
+        var expressions = ExpressionHelper.GetPropertyGetterExpressions(typeof(C), "B.A.X");
+        var axis = new MockAxis();
+        var axisValueExpression = ExpressionHelper.GetConvertToAxisValueExpression(expressions.Last());
+        var getter = axisValueExpression.Compile();
+        var val = getter.Invoke(c, axis);
+        Assert.AreEqual(5d, val.Value);
+        Assert.IsTrue(axis.GenericMethodCalled);
+        Assert.IsFalse(axis.BaseMethodCalled);
+    } 
+
+    [TestMethod()]
+    public void GetConvertToAxisValueExpression_NotGeneric() {
+        C c = new C(new B(new A(5)));
+        var expressions = ExpressionHelper.GetPropertyGetterExpressions(typeof(C), "B.A");
+        var axis = new MockAxis();
+        var axisValueExpression = ExpressionHelper.GetConvertToAxisValueExpression(expressions.Last());
+        var getter = axisValueExpression.Compile();
+        var val = getter.Invoke(c, axis);
+        Assert.AreEqual(0d, val.Value);
+        Assert.IsFalse(axis.GenericMethodCalled);
+        Assert.IsTrue(axis.BaseMethodCalled);
+    } 
+
+    [TestMethod()]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void GetConvertToAxisValueExpression_NullGetter_ThrowsException() {
+        _ = ExpressionHelper.GetConvertToAxisValueExpression(null);
+    }
+
+    [TestMethod()]
+    public void GetConvertToAxisValueExpression_InvalidArgument() {
+        C c = new C(new B(new A(5)));
+        var expressions = ExpressionHelper.GetPropertyGetterExpressions(typeof(C), "B.A.X");
+        var axis = new MockAxis();
+        var axisValueExpression = ExpressionHelper.GetConvertToAxisValueExpression(expressions.Last());
+        var getter = axisValueExpression.Compile();
+        var val = getter.Invoke(c.B, axis);
+        Assert.IsTrue(val.IsNaN());
+        Assert.IsFalse(axis.GenericMethodCalled);
+        Assert.IsFalse(axis.BaseMethodCalled);
+    } 
+
     class A(int X)
     {
         public int X { get; } = X;
@@ -74,5 +121,70 @@ public class ExpressionHelperTests
 
     class C(B B) {
         public B B { get; } = B;
+    }
+
+    class MockAxis : IAxisManager<int>
+    {
+        AxisRange IAxisManager.Range => new(0d, 1d);
+
+        public event EventHandler RangeChanged;
+
+        public event EventHandler InitialRangeChanged;
+
+        bool IAxisManager.Contains(AxisValue value) {
+            throw new NotImplementedException();
+        }
+
+        bool IAxisManager.ContainsCurrent(AxisValue value) {
+            throw new NotImplementedException();
+        }
+
+        void IAxisManager.Focus(AxisRange range) {
+            throw new NotImplementedException();
+        }
+
+        List<LabelTickData> IAxisManager.GetLabelTicks() {
+            throw new NotImplementedException();
+        }
+
+        void IAxisManager.Recalculate(double drawableLength) {
+            throw new NotImplementedException();
+        }
+
+        void IAxisManager.Reset() {
+            throw new NotImplementedException();
+        }
+
+        AxisValue IAxisManager.TranslateFromRenderPoint(double value, bool isFlipped, double drawableLength) {
+            throw new NotImplementedException();
+        }
+
+        public bool GenericMethodCalled;
+        AxisValue IAxisManager<int>.TranslateToAxisValue(int value) {
+            GenericMethodCalled = true;
+            return new AxisValue(value);
+        }
+
+        public bool BaseMethodCalled;
+        AxisValue IAxisManager.TranslateToAxisValue(object value) {
+            BaseMethodCalled = true;
+            return new AxisValue(0d);
+        }
+
+        double IAxisManager.TranslateToRenderPoint(AxisValue value, bool isFlipped, double drawableLength) {
+            throw new NotImplementedException();
+        }
+
+        List<double> IAxisManager<int>.TranslateToRenderPoints(IEnumerable<int> values, bool isFlipped, double drawableLength) {
+            throw new NotImplementedException();
+        }
+
+        List<double> IAxisManager.TranslateToRenderPoints(IEnumerable<object> values, bool isFlipped, double drawableLength) {
+            throw new NotImplementedException();
+        }
+
+        List<double> IAxisManager.TranslateToRenderPoints(IEnumerable<AxisValue> values, bool isFlipped, double drawableLength) {
+            throw new NotImplementedException();
+        }
     }
 }
