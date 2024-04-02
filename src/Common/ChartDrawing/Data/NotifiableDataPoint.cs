@@ -1,85 +1,124 @@
 ﻿using CompMs.Graphics.Core.Base;
+using CompMs.Graphics.Helper;
 using System;
 using System.ComponentModel;
+using System.Linq;
 
-namespace CompMs.Graphics.Data
+namespace CompMs.Graphics.Data;
+
+internal sealed class NotifiableDataPoint : INotifyPropertyChanged, IDisposable
 {
-    internal class NotifiableDataPoint : INotifyPropertyChanged, IDisposable
+    private readonly IAxisManager _xAxisManager, _yAxisManager;
+    private readonly PropertiesAccessor _xPropertiesAccessor, _yPropertiesAccessor;
+    private bool _disposedValue;
+    private object[]? _xValues, _yValues;
+    private PropertyChangedEventHandler[]? _xHandles, _yHandles;
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    public NotifiableDataPoint(object data, IAxisManager xAxisManager, IAxisManager yAxisManager, PropertiesAccessor xPropertiesAccessor, PropertiesAccessor yPropertiesAccessor) {
+        Item = data;
+        X = xPropertiesAccessor.GetAxisValue(data, xAxisManager);
+        Y = yPropertiesAccessor.GetAxisValue(data, yAxisManager);
+        _xAxisManager = xAxisManager;
+        _yAxisManager = yAxisManager;
+        _xPropertiesAccessor = xPropertiesAccessor;
+        _yPropertiesAccessor = yPropertiesAccessor;
+
+        _xValues = xPropertiesAccessor.Delegates.Select(d => d.DynamicInvoke(data)).Prepend(data).ToArray();
+        _xHandles = CreateHandles(xPropertiesAccessor, _xValues, UpdateX);
+        for (int i = 0; i < _xHandles.Length; i++) {
+            if (_xValues[i] is INotifyPropertyChanged np) {
+                np.PropertyChanged += _xHandles[i];
+            }
+        }
+
+        _yValues = yPropertiesAccessor.Delegates.Select(d => d.DynamicInvoke(data)).Prepend(data).ToArray();
+        _yHandles = CreateHandles(yPropertiesAccessor, _yValues, UpdateY);
+        for (int i = 0; i < _yHandles.Length; i++) {
+            if (_yValues[i] is INotifyPropertyChanged np) {
+                np.PropertyChanged += _yHandles[i];
+            }
+        }
+    }
+
+    public object Item { get; }
+
+    public AxisValue X { get; private set; }
+    public AxisValue Y { get; private set; }
+
+    private PropertyChangedEventHandler[] CreateHandles(PropertiesAccessor accessor, object[] values, Action update) {
+        var handles = new PropertyChangedEventHandler[accessor.Properties.Length];
+        for (int i = 0; i < handles.Length; i++) {
+            handles[i] = CreateHandle(i, accessor, values, handles, update);
+        }
+        return handles;
+    }
+
+    private PropertyChangedEventHandler CreateHandle(int depth, PropertiesAccessor accessor, object[] values, PropertyChangedEventHandler[] handles, Action update) {
+        var property = accessor.Properties[depth];
+        void handle(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == property) {
+                for (int i = depth + 1; i < values.Length - 1; i++) {
+                    if (values[i] is INotifyPropertyChanged oldValue) {
+                        oldValue.PropertyChanged -= handles[i];
+                    }
+                }
+                for (int i = depth; i < accessor.Delegates.Length; i++) {
+                    values[i + 1] = accessor.Delegates[i].DynamicInvoke(Item);
+                }
+                for (int i = depth + 1; i < values.Length - 1; i++) {
+                    if (values[i] is INotifyPropertyChanged newValue) {
+                        newValue.PropertyChanged += handles[i];
+                    }
+                }
+                update();
+            }
+        }
+        return handle;
+    }
+
+    private void UpdateX() {
+        X = _xPropertiesAccessor.GetAxisValue(Item, _xAxisManager);
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(X)));
+    }
+
+    private void UpdateY() {
+        Y = _yPropertiesAccessor.GetAxisValue(Item, _yAxisManager);
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Y)));
+    }
+
+    private void Dispose(bool disposing) {
+        if (!_disposedValue) {
+            if (disposing) {
+
+            }
+
+            for (int i = 0; i < _xHandles.Length; i++) {
+                if (_xValues[i] is INotifyPropertyChanged np) {
+                    np.PropertyChanged -= _xHandles[i];
+                }
+            }
+            for (int i = 0; i < _yHandles.Length; i++) {
+                if (_yValues[i] is INotifyPropertyChanged np) {
+                    np.PropertyChanged -= _yHandles[i];
+                }
+            }
+            _xValues = _yValues = null;
+            _xHandles = _yHandles = null;
+            _disposedValue = true;
+        }
+    }
+
+    ~NotifiableDataPoint()
     {
-        private INotifyPropertyChanged _data;
-        private PropertyChangedEventHandler _handle;
-        private readonly Func<object, AxisValue> _xMap, _yMap;
-        private bool _disposedValue;
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: false);
+    }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public NotifiableDataPoint(object data,  string xProperty, string yProperty, Func<object, AxisValue> xMap, Func<object, AxisValue> yMap)
-        {
-            _xMap = xMap;
-            _yMap = yMap;
-            X = xMap(data);
-            Y = yMap(data);
-            Item = data;
-
-            if (data is INotifyPropertyChanged np) {
-                _data = np;
-                _handle = CreateHandle(this, xProperty, yProperty);
-                np.PropertyChanged += _handle;
-            }
-        }
-
-        public object Item { get; }
-
-        public AxisValue X { get; private set; }
-        public AxisValue Y { get; private set; }
-
-        private void UpdateX() {
-            X = _xMap(_data);
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(X)));
-        }
-
-        private void UpdateY() {
-            Y = _yMap(_data);
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Y)));
-        }
-
-        private static PropertyChangedEventHandler CreateHandle(NotifiableDataPoint dp, string xProperty, string yProperty) {
-            void handle(object sender, PropertyChangedEventArgs e) {
-                if (e.PropertyName == xProperty) {
-                    dp.UpdateX();
-                }
-                if (e.PropertyName == yProperty) {
-                    dp.UpdateY();
-                }
-            }
-            return handle;
-        }
-
-        protected virtual void Dispose(bool disposing) {
-            if (!_disposedValue) {
-                if (disposing) {
-
-                }
-
-                if (_data != null) {
-                    _data.PropertyChanged -= _handle;
-                    _data = null;
-                    _handle = null;
-                }
-                _disposedValue = true;
-            }
-        }
-
-        ~NotifiableDataPoint()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: false);
-        }
-
-        public void Dispose() {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
+    public void Dispose() {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }
