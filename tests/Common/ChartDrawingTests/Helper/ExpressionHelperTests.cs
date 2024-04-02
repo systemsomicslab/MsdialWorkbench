@@ -10,12 +10,12 @@ namespace CompMs.Graphics.Helper.Tests;
 public class ExpressionHelperTests
 {
     [TestMethod()]
-    public void GetPropertyGetterExpressionsTest() {
+    public void GetPropertyGetterFromSourceExpressionsTest() {
         A a = new(1);
         B b = new(a);
         C c = new(b);
 
-        var expressions = ExpressionHelper.GetPropertyGetterExpressions(typeof(C), "B.A.X");
+        var expressions = ExpressionHelper.GetPropertyGetterFromSourceExpressions(typeof(C), "B.A.X");
         var getters = expressions.Select(exp => exp.Compile()).ToArray();
 
         Assert.AreEqual(3, expressions.Length);
@@ -30,26 +30,26 @@ public class ExpressionHelperTests
 
     [TestMethod()]
     [ExpectedException(typeof(ArgumentNullException))]
-    public void GetPropertyGetterExpressions_NullType_ThrowsException() {
-        _ = ExpressionHelper.GetPropertyGetterExpressions(null, "");
+    public void GetPropertyGetterFromSourceExpressions_NullType_ThrowsException() {
+        _ = ExpressionHelper.GetPropertyGetterFromSourceExpressions(null, "");
     }
 
     [TestMethod()]
     [ExpectedException(typeof(ArgumentException))]
-    public void GetPropertyGetterExpressions_EmptyProperty_ThrowsException() {
-        _ = ExpressionHelper.GetPropertyGetterExpressions(typeof(C), "");
+    public void GetPropertyGetterFromSourceExpressions_EmptyProperty_ThrowsException() {
+        _ = ExpressionHelper.GetPropertyGetterFromSourceExpressions(typeof(C), "");
     }
 
     [TestMethod()]
     [ExpectedException(typeof(ArgumentException))]
-    public void GetPropertyGetterExpressions_InvalidProperty_ThrowsException() {
-        _ = ExpressionHelper.GetPropertyGetterExpressions(typeof(C), "NonExistentProperty");
+    public void GetPropertyGetterFromSourceExpressions_InvalidProperty_ThrowsException() {
+        _ = ExpressionHelper.GetPropertyGetterFromSourceExpressions(typeof(C), "NonExistentProperty");
     }
 
     [TestMethod()]
-    public void GetPropertyGetterExpressions_SingleProperty_Success() {
+    public void GetPropertyGetterFromSourceExpressions_SingleProperty_Success() {
         C c = new C(new B(new A(1)));
-        var expressions = ExpressionHelper.GetPropertyGetterExpressions(typeof(C), "B");
+        var expressions = ExpressionHelper.GetPropertyGetterFromSourceExpressions(typeof(C), "B");
         var getter = (Func<C, B>)expressions.Single().Compile();
 
         Assert.AreEqual(c.B, getter(c));
@@ -57,18 +57,48 @@ public class ExpressionHelperTests
 
     [TestMethod()]
     [ExpectedException(typeof(InvalidCastException))]
-    public void GetPropertyGetterExpressions_TypeMismatch_ThrowsException() {
+    public void GetPropertyGetterFromSourceExpressions_TypeMismatch_ThrowsException() {
         C c = new C(new B(new A(1)));
-        var expressions = ExpressionHelper.GetPropertyGetterExpressions(typeof(C), "B.A.X");
+        var expressions = ExpressionHelper.GetPropertyGetterFromSourceExpressions(typeof(C), "B.A.X");
         var getter = (Func<C, string>)expressions.Last().Compile();
 
         getter(c);
     }
 
+    [TestMethod]
+    public void GetPropertyGetterExpressions_Success() {
+        C c = new C(new B(new A(1)));
+        var expresssions = ExpressionHelper.GetPropertyGetterExpressions(typeof(C), "B.A.X");
+        var getters = expresssions.Select(exp => exp.Compile()).ToArray();
+
+        Assert.AreEqual(3, expresssions.Length);
+        Assert.AreSame(c.B, getters[0].DynamicInvoke(c));
+        Assert.AreSame(c.B.A, getters[1].DynamicInvoke(c.B));
+        Assert.AreEqual(c.B.A.X, getters[2].DynamicInvoke(c.B.A));
+    }
+
+    [TestMethod()]
+    [ExpectedException(typeof(ArgumentException))]
+    public void GetPropertyGetterExpressions_InvalidProperty_ThrowsException() {
+        _ = ExpressionHelper.GetPropertyGetterExpressions(typeof(C), "InvalidPropertyName");
+    }
+
+    [TestMethod()]
+    [ExpectedException(typeof(ArgumentException))]
+    public void GetPropertyGetterExpressions_EmptyPropertyName_ThrowsException() {
+        _ = ExpressionHelper.GetPropertyGetterExpressions(typeof(C), "");
+    }
+
+    [TestMethod()]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void GetPropertyGetterExpressions_NullPropertyName_ThrowsException() {
+        _ = ExpressionHelper.GetPropertyGetterExpressions(typeof(C), null);
+    }
+
     [TestMethod()]
     public void GetConvertToAxisValueExpression_Generic() {
         C c = new C(new B(new A(5)));
-        var expressions = ExpressionHelper.GetPropertyGetterExpressions(typeof(C), "B.A.X");
+        var expressions = ExpressionHelper.GetPropertyGetterFromSourceExpressions(typeof(C), "B.A.X");
         var axis = new MockAxis();
         var axisValueExpression = ExpressionHelper.GetConvertToAxisValueExpression(expressions.Last());
         var getter = axisValueExpression.Compile();
@@ -81,7 +111,7 @@ public class ExpressionHelperTests
     [TestMethod()]
     public void GetConvertToAxisValueExpression_NotGeneric() {
         C c = new C(new B(new A(5)));
-        var expressions = ExpressionHelper.GetPropertyGetterExpressions(typeof(C), "B.A");
+        var expressions = ExpressionHelper.GetPropertyGetterFromSourceExpressions(typeof(C), "B.A");
         var axis = new MockAxis();
         var axisValueExpression = ExpressionHelper.GetConvertToAxisValueExpression(expressions.Last());
         var getter = axisValueExpression.Compile();
@@ -100,7 +130,7 @@ public class ExpressionHelperTests
     [TestMethod()]
     public void GetConvertToAxisValueExpression_InvalidArgument() {
         C c = new C(new B(new A(5)));
-        var expressions = ExpressionHelper.GetPropertyGetterExpressions(typeof(C), "B.A.X");
+        var expressions = ExpressionHelper.GetPropertyGetterFromSourceExpressions(typeof(C), "B.A.X");
         var axis = new MockAxis();
         var axisValueExpression = ExpressionHelper.GetConvertToAxisValueExpression(expressions.Last());
         var getter = axisValueExpression.Compile();
@@ -108,7 +138,7 @@ public class ExpressionHelperTests
         Assert.IsTrue(val.IsNaN());
         Assert.IsFalse(axis.GenericMethodCalled);
         Assert.IsFalse(axis.BaseMethodCalled);
-    } 
+    }
 
     [TestMethod()]
     public void IdentityTest() {

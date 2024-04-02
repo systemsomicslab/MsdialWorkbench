@@ -60,7 +60,7 @@ namespace CompMs.Graphics.Helper;
     /// <returns>An array of <see cref="LambdaExpression"/> objects, each representing a getter for the specified property or one of the nested properties. The length of the array matches the number of properties specified.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="type"/> is null.</exception>
     /// <exception cref="ArgumentException">Thrown if <paramref name="property"/> is null, empty, or if any property in the chain does not exist on the expected type.</exception>
-    public static LambdaExpression[] GetPropertyGetterExpressions(Type type, string property) {
+    public static LambdaExpression[] GetPropertyGetterFromSourceExpressions(Type type, string property) {
         if (type is null) {
             throw new ArgumentNullException(nameof(type));
         }
@@ -72,6 +72,39 @@ namespace CompMs.Graphics.Helper;
         for (int i = 0; i < properties.Length; i++) {
             curValue = Expression.Property(curValue, properties[i]);
             result[i] = Expression.Lambda(curValue, parameter);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Generates an array of lambda expressions, each representing a getter for a property or nested properties of a specified type.
+    /// </summary>
+    /// <remarks>
+    /// This method supports accessing nested properties by specifying a dot-separated string for the <paramref name="property"/> parameter. 
+    /// It iteratively creates lambda expressions for each property in the chain, with each subsequent property being accessed from the type of the previous property.
+    /// This allows for dynamic creation of property accessors without knowing the property names or structure at compile time.
+    /// </remarks>
+    /// <param name="type">The root type from which to start accessing the properties. This type must not be null.</param>
+    /// <param name="property">A dot-separated string specifying the property or nested properties to access. Each segment of the string should correspond to a property name on the current or subsequent type.</param>
+    /// <returns>An array of <see cref="LambdaExpression"/> objects, each representing a getter for the specified property or one of the properties in the chain. The length of the array corresponds to the number of properties specified.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="type"/> parameter is null.</exception>
+    /// <exception cref="ArgumentException">Thrown if the <paramref name="property"/> string is null, empty, or if any specified property does not exist on the expected type.</exception>
+    public static LambdaExpression[] GetPropertyGetterExpressions(Type type, string property) {
+        if (type is null) {
+            throw new ArgumentNullException(nameof(type));
+        }
+
+        if (property is null) {
+            throw new ArgumentNullException(nameof(property));
+        }
+
+        var properties = property.Split('.');
+        var result = new LambdaExpression[properties.Length];
+        for (int i = 0; i < properties.Length; i++) {
+            var parameter = Expression.Parameter(type);
+            var returnValue = Expression.Property(parameter, properties[i]);
+            result[i] = Expression.Lambda(returnValue, parameter);
+            type = returnValue.Type;
         }
         return result;
     }
