@@ -5,12 +5,12 @@ using System.Linq.Expressions;
 
 namespace CompMs.Graphics.Helper;
 
-internal sealed class PropertiesAccessor
+internal sealed class TypedPropertiesAccessor
 {
     private readonly LambdaExpression[] _expressions;
     private readonly Expression<Func<object, IAxisManager, AxisValue>> _getAxisValueExpression;
 
-    public PropertiesAccessor(string property, Type type)
+    public TypedPropertiesAccessor(string property, Type type)
     {
         Properties = ExpressionHelper.GetProperties(property);
         _expressions = ExpressionHelper.GetPropertyGetterFromSourceExpressions(type, property);

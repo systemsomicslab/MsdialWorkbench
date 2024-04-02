@@ -28,6 +28,12 @@ public class ScatterControlSlim : ChartBaseControl
         ClipToBoundsProperty.OverrideMetadata(typeof(ScatterControlSlim), newClipToBoundsMetadata);
     }
 
+    public ScatterControlSlim()
+    {
+        Loaded += OnLoaded;
+        Unloaded += OnUnloaded;
+    }
+
     public IEnumerable ItemsSource {
         get => (IEnumerable)GetValue(ItemsSourceProperty);
         set => SetValue(ItemsSourceProperty, value);
@@ -184,8 +190,10 @@ public class ScatterControlSlim : ChartBaseControl
         var collection = source.Cast<object>().Select(item => new NotifiableDataPoint(item, haxis, vaxis, _xAccessor, _yAccessor)); // TODO: Need to remove boxing here.
         _items = new Lazy<NotifiableDataPoint[]>(() => {
             var items = collection.ToArray();
-            foreach (var item in items) {
-                item.PropertyChanged += UpdateVisual;
+            if (IsLoaded) {
+                foreach (var item in items) {
+                    item.PropertyChanged += UpdateVisual;
+                }
             }
             return items;
         });
@@ -196,7 +204,7 @@ public class ScatterControlSlim : ChartBaseControl
         _tree = new Lazy<KdTree<NotifiableDataPoint>>(() => KdTree.Build(_items.Value, new ScatterDistanceCalculator(this), v => v.X.Value, v => v.Y.Value));
     }
 
-    private PropertiesAccessor? _xAccessor, _yAccessor;
+    private TypedPropertiesAccessor? _xAccessor, _yAccessor;
 
     private void CoerceXProperty(Type type, string hprop) {
         if (type is null
@@ -205,7 +213,7 @@ public class ScatterControlSlim : ChartBaseControl
             _xAccessor = null;
             return;
         }
-        _xAccessor = new PropertiesAccessor(hprop, type);
+        _xAccessor = new TypedPropertiesAccessor(hprop, type);
     }
 
     private void CoerceYProperty(Type type, string vprop) {
@@ -215,7 +223,7 @@ public class ScatterControlSlim : ChartBaseControl
             _yAccessor = null;
             return;
         }
-        _yAccessor = new PropertiesAccessor(vprop, type);
+        _yAccessor = new TypedPropertiesAccessor(vprop, type);
     }
 
     public static readonly DependencyProperty HuePropertyProperty =
@@ -237,17 +245,16 @@ public class ScatterControlSlim : ChartBaseControl
         CoerceHueProperty(DataType, newValue);
     }
 
-    private Lazy<Func<object, object>> _hueLambda;
+    private TypedPropertiesAccessor? _hueAccessor;
 
     private void CoerceHueProperty(Type type, string hueProperty) {
-        if (type == null
+        if (type is null
             || string.IsNullOrEmpty(hueProperty)
             || !ExpressionHelper.ValidatePropertyString(type, hueProperty)) {
-            _hueLambda = null;
+            _hueAccessor = null;
             return;
         }
-        var lambda = ExpressionHelper.GetPropertyGetterExpression(type, hueProperty);
-        _hueLambda = new Lazy<Func<object, object>>(lambda.Compile);
+        _hueAccessor = new TypedPropertiesAccessor(hueProperty, type);
     }
 
     public double Radius {
@@ -396,7 +403,7 @@ public class ScatterControlSlim : ChartBaseControl
                 var x = haxis.TranslateToRenderPoint(item.X, flippedX, actualWidth);
                 var y = vaxis.TranslateToRenderPoint(item.Y, flippedY, actualHeight);
                 // drawingContext.DrawRectangle(brush.Map(item.Item), null, new Rect(x - radius, y - radius, radius * 2, radius * 2));
-                drawingContext.DrawEllipse(brush.Map(_hueLambda?.Value?.Invoke(item.Item) ?? item.Item), null, new Point(x, y), radius, radius);
+                drawingContext.DrawEllipse(brush.Map(_hueAccessor?.Delegates.LastOrDefault()?.DynamicInvoke(item.Item) ?? item.Item), null, new Point(x, y), radius, radius);
             }
         }
         UpdateSelectedPoint();

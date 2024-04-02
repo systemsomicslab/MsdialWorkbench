@@ -9,14 +9,14 @@ namespace CompMs.Graphics.Data;
 internal sealed class NotifiableDataPoint : INotifyPropertyChanged, IDisposable
 {
     private readonly IAxisManager _xAxisManager, _yAxisManager;
-    private readonly PropertiesAccessor _xPropertiesAccessor, _yPropertiesAccessor;
+    private readonly TypedPropertiesAccessor _xPropertiesAccessor, _yPropertiesAccessor;
     private bool _disposedValue;
     private object[]? _xValues, _yValues;
     private PropertyChangedEventHandler[]? _xHandles, _yHandles;
 
     public event PropertyChangedEventHandler PropertyChanged;
 
-    public NotifiableDataPoint(object data, IAxisManager xAxisManager, IAxisManager yAxisManager, PropertiesAccessor xPropertiesAccessor, PropertiesAccessor yPropertiesAccessor) {
+    public NotifiableDataPoint(object data, IAxisManager xAxisManager, IAxisManager yAxisManager, TypedPropertiesAccessor xPropertiesAccessor, TypedPropertiesAccessor yPropertiesAccessor) {
         Item = data;
         X = xPropertiesAccessor.GetAxisValue(data, xAxisManager);
         Y = yPropertiesAccessor.GetAxisValue(data, yAxisManager);
@@ -47,7 +47,7 @@ internal sealed class NotifiableDataPoint : INotifyPropertyChanged, IDisposable
     public AxisValue X { get; private set; }
     public AxisValue Y { get; private set; }
 
-    private PropertyChangedEventHandler[] CreateHandles(PropertiesAccessor accessor, object[] values, Action update) {
+    private PropertyChangedEventHandler[] CreateHandles(TypedPropertiesAccessor accessor, object[] values, Action update) {
         var handles = new PropertyChangedEventHandler[accessor.Properties.Length];
         for (int i = 0; i < handles.Length; i++) {
             handles[i] = CreateHandle(i, accessor, values, handles, update);
@@ -55,7 +55,7 @@ internal sealed class NotifiableDataPoint : INotifyPropertyChanged, IDisposable
         return handles;
     }
 
-    private PropertyChangedEventHandler CreateHandle(int depth, PropertiesAccessor accessor, object[] values, PropertyChangedEventHandler[] handles, Action update) {
+    private PropertyChangedEventHandler CreateHandle(int depth, TypedPropertiesAccessor accessor, object[] values, PropertyChangedEventHandler[] handles, Action update) {
         var property = accessor.Properties[depth];
         void handle(object sender, PropertyChangedEventArgs e) {
             if (e.PropertyName == property) {
@@ -79,11 +79,17 @@ internal sealed class NotifiableDataPoint : INotifyPropertyChanged, IDisposable
     }
 
     private void UpdateX() {
+        if (_disposedValue) {
+            return;
+        }
         X = _xPropertiesAccessor.GetAxisValue(Item, _xAxisManager);
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(X)));
     }
 
     private void UpdateY() {
+        if (_disposedValue) {
+            return;
+        }
         Y = _yPropertiesAccessor.GetAxisValue(Item, _yAxisManager);
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Y)));
     }
