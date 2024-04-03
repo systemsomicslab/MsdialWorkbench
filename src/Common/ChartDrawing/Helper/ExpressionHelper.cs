@@ -2,6 +2,7 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace CompMs.Graphics.Helper;
 

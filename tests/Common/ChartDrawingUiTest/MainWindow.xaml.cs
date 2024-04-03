@@ -36,6 +36,7 @@ namespace ChartDrawingUiTest
                 typeof(Scatter3),
                 typeof(Scatter4),
                 typeof(ScatterControlSlimTest1),
+                typeof(ScatterControlSlimTest2),
                 typeof(ScatterControlSlimNotifyTest),
                 typeof(LineSpectrum1),
                 typeof(LineSpectrum2),

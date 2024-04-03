@@ -9,23 +9,23 @@ namespace CompMs.Graphics.Data;
 internal sealed class NotifiableDataPoint : INotifyPropertyChanged, IDisposable
 {
     private readonly IAxisManager _xAxisManager, _yAxisManager;
-    private readonly TypedPropertiesAccessor _xPropertiesAccessor, _yPropertiesAccessor;
+    private readonly IPropertiesAccessor _xPropertiesAccessor, _yPropertiesAccessor;
     private bool _disposedValue;
     private object[]? _xValues, _yValues;
     private PropertyChangedEventHandler[]? _xHandles, _yHandles;
 
     public event PropertyChangedEventHandler PropertyChanged;
 
-    public NotifiableDataPoint(object data, IAxisManager xAxisManager, IAxisManager yAxisManager, TypedPropertiesAccessor xPropertiesAccessor, TypedPropertiesAccessor yPropertiesAccessor) {
+    public NotifiableDataPoint(object data, IAxisManager xAxisManager, IAxisManager yAxisManager, IPropertiesAccessor xPropertiesAccessor, IPropertiesAccessor yPropertiesAccessor) {
         Item = data;
-        X = xPropertiesAccessor.GetAxisValue(data, xAxisManager);
-        Y = yPropertiesAccessor.GetAxisValue(data, yAxisManager);
+        X = xPropertiesAccessor.ConvertToAxisValue(data, xAxisManager);
+        Y = yPropertiesAccessor.ConvertToAxisValue(data, yAxisManager);
         _xAxisManager = xAxisManager;
         _yAxisManager = yAxisManager;
         _xPropertiesAccessor = xPropertiesAccessor;
         _yPropertiesAccessor = yPropertiesAccessor;
 
-        _xValues = xPropertiesAccessor.Delegates.Select(d => d.DynamicInvoke(data)).Prepend(data).ToArray();
+        _xValues = Enumerable.Range(0, xPropertiesAccessor.Properties.Length).Select(i => xPropertiesAccessor.Apply(i, data)).Prepend(data).ToArray();
         _xHandles = CreateHandles(xPropertiesAccessor, _xValues, UpdateX);
         for (int i = 0; i < _xHandles.Length; i++) {
             if (_xValues[i] is INotifyPropertyChanged np) {
@@ -33,7 +33,7 @@ internal sealed class NotifiableDataPoint : INotifyPropertyChanged, IDisposable
             }
         }
 
-        _yValues = yPropertiesAccessor.Delegates.Select(d => d.DynamicInvoke(data)).Prepend(data).ToArray();
+        _yValues = Enumerable.Range(0, yPropertiesAccessor.Properties.Length).Select(i => yPropertiesAccessor.Apply(i, data)).Prepend(data).ToArray();
         _yHandles = CreateHandles(yPropertiesAccessor, _yValues, UpdateY);
         for (int i = 0; i < _yHandles.Length; i++) {
             if (_yValues[i] is INotifyPropertyChanged np) {
@@ -47,7 +47,7 @@ internal sealed class NotifiableDataPoint : INotifyPropertyChanged, IDisposable
     public AxisValue X { get; private set; }
     public AxisValue Y { get; private set; }
 
-    private PropertyChangedEventHandler[] CreateHandles(TypedPropertiesAccessor accessor, object[] values, Action update) {
+    private PropertyChangedEventHandler[] CreateHandles(IPropertiesAccessor accessor, object[] values, Action update) {
         var handles = new PropertyChangedEventHandler[accessor.Properties.Length];
         for (int i = 0; i < handles.Length; i++) {
             handles[i] = CreateHandle(i, accessor, values, handles, update);
@@ -55,7 +55,7 @@ internal sealed class NotifiableDataPoint : INotifyPropertyChanged, IDisposable
         return handles;
     }
 
-    private PropertyChangedEventHandler CreateHandle(int depth, TypedPropertiesAccessor accessor, object[] values, PropertyChangedEventHandler[] handles, Action update) {
+    private PropertyChangedEventHandler CreateHandle(int depth, IPropertiesAccessor accessor, object[] values, PropertyChangedEventHandler[] handles, Action update) {
         var property = accessor.Properties[depth];
         void handle(object sender, PropertyChangedEventArgs e) {
             if (e.PropertyName == property) {
@@ -64,8 +64,8 @@ internal sealed class NotifiableDataPoint : INotifyPropertyChanged, IDisposable
                         oldValue.PropertyChanged -= handles[i];
                     }
                 }
-                for (int i = depth; i < accessor.Delegates.Length; i++) {
-                    values[i + 1] = accessor.Delegates[i].DynamicInvoke(Item);
+                for (int i = depth; i < accessor.Properties.Length; i++) {
+                    values[i + 1] = accessor.Apply(i, Item);
                 }
                 for (int i = depth + 1; i < values.Length - 1; i++) {
                     if (values[i] is INotifyPropertyChanged newValue) {
@@ -82,7 +82,7 @@ internal sealed class NotifiableDataPoint : INotifyPropertyChanged, IDisposable
         if (_disposedValue) {
             return;
         }
-        X = _xPropertiesAccessor.GetAxisValue(Item, _xAxisManager);
+        X = _xPropertiesAccessor.ConvertToAxisValue(Item, _xAxisManager);
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(X)));
     }
 
@@ -90,7 +90,7 @@ internal sealed class NotifiableDataPoint : INotifyPropertyChanged, IDisposable
         if (_disposedValue) {
             return;
         }
-        Y = _yPropertiesAccessor.GetAxisValue(Item, _yAxisManager);
+        Y = _yPropertiesAccessor.ConvertToAxisValue(Item, _yAxisManager);
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Y)));
     }
 

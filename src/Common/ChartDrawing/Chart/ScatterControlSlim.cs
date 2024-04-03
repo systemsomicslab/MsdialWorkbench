@@ -166,8 +166,8 @@ public class ScatterControlSlim : ChartBaseControl
         CoerceTree();
     }
 
-    private Lazy<NotifiableDataPoint[]> _items;
-    private Lazy<KdTree<NotifiableDataPoint>> _tree;
+    private Lazy<NotifiableDataPoint[]>? _items;
+    private Lazy<KdTree<NotifiableDataPoint>>? _tree;
 
     private void CoerceTree() {
         if (_items != null && _items.IsValueCreated) {
@@ -178,7 +178,6 @@ public class ScatterControlSlim : ChartBaseControl
         }
 
         if (_collectionView is not IEnumerable source
-            || DataType is null
             || _xAccessor is null
             || _yAccessor is null
             || HorizontalAxis is not IAxisManager haxis
@@ -204,26 +203,14 @@ public class ScatterControlSlim : ChartBaseControl
         _tree = new Lazy<KdTree<NotifiableDataPoint>>(() => KdTree.Build(_items.Value, new ScatterDistanceCalculator(this), v => v.X.Value, v => v.Y.Value));
     }
 
-    private TypedPropertiesAccessor? _xAccessor, _yAccessor;
+    private IPropertiesAccessor? _xAccessor, _yAccessor;
 
     private void CoerceXProperty(Type type, string hprop) {
-        if (type is null
-            || string.IsNullOrEmpty(hprop)
-            || !ExpressionHelper.ValidatePropertyString(type, hprop)) {
-            _xAccessor = null;
-            return;
-        }
-        _xAccessor = new TypedPropertiesAccessor(hprop, type);
+        _xAccessor = PropertiesAccessor.Build(type, hprop);
     }
 
     private void CoerceYProperty(Type type, string vprop) {
-        if (type is null
-            || string.IsNullOrEmpty(vprop)
-            || !ExpressionHelper.ValidatePropertyString(type, vprop)) {
-            _yAccessor = null;
-            return;
-        }
-        _yAccessor = new TypedPropertiesAccessor(vprop, type);
+        _yAccessor = PropertiesAccessor.Build(type, vprop);
     }
 
     public static readonly DependencyProperty HuePropertyProperty =
@@ -245,16 +232,10 @@ public class ScatterControlSlim : ChartBaseControl
         CoerceHueProperty(DataType, newValue);
     }
 
-    private TypedPropertiesAccessor? _hueAccessor;
+    private IPropertiesAccessor? _hueAccessor;
 
     private void CoerceHueProperty(Type type, string hueProperty) {
-        if (type is null
-            || string.IsNullOrEmpty(hueProperty)
-            || !ExpressionHelper.ValidatePropertyString(type, hueProperty)) {
-            _hueAccessor = null;
-            return;
-        }
-        _hueAccessor = new TypedPropertiesAccessor(hueProperty, type);
+        _hueAccessor = PropertiesAccessor.Build(type, hueProperty);
     }
 
     public double Radius {
@@ -324,14 +305,14 @@ public class ScatterControlSlim : ChartBaseControl
     private void UpdateSelectedPoint() {
         if (HorizontalAxis is IAxisManager haxis
             && VerticalAxis is IAxisManager vaxis
-            && _xAccessor?.GetAxisValue is Func<object, IAxisManager, AxisValue> xlambda
-            && _yAccessor?.GetAxisValue is Func<object, IAxisManager, AxisValue> ylambda
+            && _xAccessor is IPropertiesAccessor xAccessor
+            && _yAccessor is IPropertiesAccessor yAccessor
             && SelectedItem != null) {
 
             var item = SelectedItem;
             var pt = new Point(
-                haxis.TranslateToRenderPoint(xlambda(item, haxis), FlippedX, ActualWidth),
-                vaxis.TranslateToRenderPoint(ylambda(item, vaxis), FlippedY, ActualHeight));
+                haxis.TranslateToRenderPoint(xAccessor.ConvertToAxisValue(item, haxis), FlippedX, ActualWidth),
+                vaxis.TranslateToRenderPoint(yAccessor.ConvertToAxisValue(item, vaxis), FlippedY, ActualHeight));
             if (pt != SelectedPoint) {
                 SelectedPoint = pt;
             }
@@ -376,13 +357,13 @@ public class ScatterControlSlim : ChartBaseControl
     private void UpdateFocusedPoint() {
         if (HorizontalAxis is IAxisManager haxis
             && VerticalAxis is IAxisManager vaxis
-            && _xAccessor?.GetAxisValue is Func<object, IAxisManager, AxisValue> xlambda
-            && _yAccessor?.GetAxisValue is Func<object, IAxisManager, AxisValue> ylambda
+            && _xAccessor is IPropertiesAccessor xAccessor
+            && _yAccessor is IPropertiesAccessor yAccessor
             && FocusedItem is object item) {
 
             var pt = new Point(
-                haxis.TranslateToRenderPoint(xlambda(item, haxis), FlippedX, ActualWidth),
-                vaxis.TranslateToRenderPoint(ylambda(item, vaxis), FlippedY, ActualHeight));
+                haxis.TranslateToRenderPoint(xAccessor.ConvertToAxisValue(item, haxis), FlippedX, ActualWidth),
+                vaxis.TranslateToRenderPoint(yAccessor.ConvertToAxisValue(item, vaxis), FlippedY, ActualHeight));
             if (pt != FocusedPoint) {
                 FocusedPoint = pt;
             }
@@ -403,7 +384,7 @@ public class ScatterControlSlim : ChartBaseControl
                 var x = haxis.TranslateToRenderPoint(item.X, flippedX, actualWidth);
                 var y = vaxis.TranslateToRenderPoint(item.Y, flippedY, actualHeight);
                 // drawingContext.DrawRectangle(brush.Map(item.Item), null, new Rect(x - radius, y - radius, radius * 2, radius * 2));
-                drawingContext.DrawEllipse(brush.Map(_hueAccessor?.Delegates.LastOrDefault()?.DynamicInvoke(item.Item) ?? item.Item), null, new Point(x, y), radius, radius);
+                drawingContext.DrawEllipse(brush.Map(_hueAccessor?.Apply(item.Item) ?? item.Item), null, new Point(x, y), radius, radius);
             }
         }
         UpdateSelectedPoint();
@@ -469,7 +450,7 @@ public class ScatterControlSlim : ChartBaseControl
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e) {
-        if (_items.IsValueCreated) {
+        if (_items?.IsValueCreated ?? false) {
             foreach (var item in _items.Value) {
                 item.PropertyChanged += UpdateVisual;
             }
@@ -477,7 +458,7 @@ public class ScatterControlSlim : ChartBaseControl
     }
 
     private void OnUnloaded(object sender, RoutedEventArgs e) {
-        if (_items.IsValueCreated) {
+        if (_items?.IsValueCreated ?? false) {
             foreach (var item in _items.Value) {
                 item.PropertyChanged -= UpdateVisual;
             }
