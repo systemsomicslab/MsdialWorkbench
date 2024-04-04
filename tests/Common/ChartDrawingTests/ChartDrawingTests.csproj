@@ -17,8 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Common\CommonMVVM\CommonMVVM.csproj"/>
-    <ProjectReference Include="..\..\..\src\Common\ChartDrawing\ChartDrawing.csproj"/>
+    <ProjectReference Include="..\..\..\src\Common\CommonMVVM\CommonMVVM.csproj" />
+    <ProjectReference Include="..\..\..\src\Common\ChartDrawing\ChartDrawing.csproj" />
   </ItemGroup>
 
   <ItemGroup>
