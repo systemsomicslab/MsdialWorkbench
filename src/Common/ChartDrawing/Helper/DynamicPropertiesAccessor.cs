@@ -44,7 +44,12 @@ internal sealed class DynamicPropertiesAccessor(string property) : IPropertiesAc
     }
 
     private void Init(Type type) {
-        _expressions = ExpressionHelper.GetPropertyGetterFromSourceExpressions(type, property);
+        if (ExpressionHelper.ValidatePropertyString(type, property)) {
+            _expressions = ExpressionHelper.GetPropertyGetterFromSourceExpressions(type, property);
+        }
+        else {
+            _expressions = [];
+        }
         _getAxisValueExpression = ExpressionHelper.GetConvertToAxisValueExpression(_expressions.LastOrDefault() ?? ExpressionHelper.Identity(type));
         _currentType = type;
         _delegates = null;
