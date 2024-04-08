@@ -10,13 +10,12 @@ namespace CompMs.App.Msdial.Model.Export
 {
     internal sealed class ExportMethod : BindableBase {
         private readonly IReadOnlyList<AnalysisFileBean> _analysisFiles;
-        private readonly IAlignmentMetadataAccessorFactory _accessorFactory;
 
         public ExportMethod(IReadOnlyList<AnalysisFileBean> analysisFiles, IAlignmentMetadataAccessorFactory accessorFactory, params ExportFormat[] formats) {
             _analysisFiles = analysisFiles ?? throw new ArgumentNullException(nameof(analysisFiles));
-            _accessorFactory = accessorFactory ?? throw new ArgumentNullException(nameof(accessorFactory));
             Formats = formats;
             _format = formats.First();
+            AccessPeakMetaModel = new(accessorFactory);
         }
 
         public ExportFormat[] Formats { get; }
@@ -33,11 +32,7 @@ namespace CompMs.App.Msdial.Model.Export
         }
         private bool _isLongFormat = false;
 
-        public bool TrimToExcelLimit {
-            get => _trimToExcelLimit;
-            set => SetProperty(ref _trimToExcelLimit, value);
-        }
-        private bool _trimToExcelLimit = true;
+        public AccessPeakMetaModel AccessPeakMetaModel { get; }
 
         public void Export(string outNameTemplate, string exportDirectory, Lazy<IReadOnlyList<AlignmentSpotProperty>> lazySpots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes) {
             if (IsLongFormat) {
@@ -59,7 +54,7 @@ namespace CompMs.App.Msdial.Model.Export
                     outstream,
                     lazySpots.Value,
                     msdecResults,
-                    _accessorFactory.CreateAccessor(TrimToExcelLimit));
+                    AccessPeakMetaModel.GetAccessor());
             }
 
             var outValueName = string.Format(outNameTemplate, "PeakValues");
@@ -77,7 +72,7 @@ namespace CompMs.App.Msdial.Model.Export
 
         public void ExportWide(string outNameTemplate, string exportDirectory, Lazy<IReadOnlyList<AlignmentSpotProperty>> lazySpots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes) {
             var exporter = Format.CreateWideExporter();
-            var accessor = _accessorFactory.CreateAccessor(TrimToExcelLimit);
+            var accessor = AccessPeakMetaModel.GetAccessor();
             foreach (var exportType in exportTypes) {
                 var outName = string.Format(outNameTemplate, exportType.TargetLabel);
                 var outFile = Format.WithExtension(outName);
