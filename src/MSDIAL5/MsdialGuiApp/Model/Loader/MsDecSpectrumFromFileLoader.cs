@@ -1,8 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.Common.Components;
 using CompMs.Common.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
@@ -18,11 +16,11 @@ namespace CompMs.App.Msdial.Model.Loader
             _file = file ?? throw new ArgumentNullException(nameof(file));
         }
 
-        IObservable<IMSScanProperty> IMsSpectrumLoader<AlignmentSpotPropertyModel>.LoadScanAsObservable(AlignmentSpotPropertyModel target) {
+        IObservable<IMSScanProperty?> IMsSpectrumLoader<AlignmentSpotPropertyModel>.LoadScanAsObservable(AlignmentSpotPropertyModel target) {
             return LoadCore(target);
         }
 
-        private IObservable<IMSScanProperty> LoadCore(AlignmentSpotPropertyModel target) {
+        private IObservable<IMSScanProperty?> LoadCore(AlignmentSpotPropertyModel target) {
             if (target is null) {
                 throw new ArgumentNullException(nameof(target));
             }

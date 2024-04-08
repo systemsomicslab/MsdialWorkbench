@@ -37,11 +37,11 @@ namespace CompMs.App.Msdial.Model.Loader
         public IObservable<List<MsSelectionItem>> Ms2List => _ms2List;
         private readonly Subject<List<MsSelectionItem>> _ms2List;
 
-        private IObservable<IMSScanProperty> LoadScanAsObservableCore(ChromatogramPeakFeatureModel target) {
+        private IObservable<IMSScanProperty?> LoadScanAsObservableCore(ChromatogramPeakFeatureModel target) {
             if (target.InnerModel.MS2RawSpectrumID2CE.Count == 0) {
                 _ms2List.OnNext(new List<MsSelectionItem>(0));
                 Ms2IdSelector.Value = null;
-                return Observable.Return<IMSScanProperty>(null);
+                return Observable.Return<IMSScanProperty?>(null);
             }
             var items = target.InnerModel.MS2RawSpectrumID2CE.Select(pair => new MsSelectionItem(pair.Key, pair.Value)).ToList();
             _ms2List.OnNext(items);
@@ -61,7 +61,7 @@ namespace CompMs.App.Msdial.Model.Loader
             });
         }
 
-        public IObservable<IMSScanProperty> LoadScanAsObservable(ChromatogramPeakFeatureModel target) {
+        public IObservable<IMSScanProperty?> LoadScanAsObservable(ChromatogramPeakFeatureModel target) {
             if (target is null) {
                 throw new ArgumentNullException(nameof(target));
             }

@@ -20,8 +20,8 @@ namespace CompMs.App.Msdial.Model.Loader
             _loaders = dictionary;
         }
 
-        public IObservable<List<SpectrumPeak>> GetObservableSpectrum(AnalysisFileBeanModel file, IObservable<AlignmentSpotPropertyModel> target) {
-            IObservable<IMSScanProperty> ifNull = Observable.Return<IMSScanProperty?>(null);
+        public IObservable<List<SpectrumPeak>> GetObservableSpectrum(AnalysisFileBeanModel file, IObservable<AlignmentSpotPropertyModel?> target) {
+            IObservable<IMSScanProperty?> ifNull = Observable.Return<IMSScanProperty?>(null);
             return target.DefaultIfNull(_loaders[file].LoadScanAsObservable, ifNull).Switch().DefaultIfNull(scan => scan.Spectrum, new List<SpectrumPeak>(0));
         }
 

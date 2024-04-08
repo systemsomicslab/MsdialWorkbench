@@ -68,7 +68,7 @@ namespace CompMs.App.Msdial.Model.Export
                 if (string.IsNullOrEmpty(request.SelectedPath)) {
                     return;
                 }
-                string destDirectory = request.SelectedPath;
+                string destDirectory = request.SelectedPath!;
                 var fileName = _fileName.Invoke(spot);
                 var decResult = await _file.LoadMSDecResultByIndexAsync(spot.MasterAlignmentID).ConfigureAwait(false);
                 using var stream = File.Open(Path.Combine(destDirectory, fileName), FileMode.Create);

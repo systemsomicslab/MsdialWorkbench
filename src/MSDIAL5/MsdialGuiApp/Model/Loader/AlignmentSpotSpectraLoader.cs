@@ -1,12 +1,10 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Search;
-using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using Reactive.Bindings;
-using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +35,7 @@ namespace CompMs.App.Msdial.Model.Loader
         public Dictionary<AnalysisFileBeanModel, ReadOnlyReactivePropertySlim<MsSpectrum>> LoadSpectraAsObservable(AnalysisFileBeanModelCollection files, IObservable<AlignmentSpotPropertyModel?> target) {
             return files.AnalysisFiles.ToDictionary(
                 file => file,
-                file => _loaders.GetObservableSpectrum(file, target).Select(spectrum => new MsSpectrum(spectrum)).ToReadOnlyReactivePropertySlim(new MsSpectrum(new List<SpectrumPeak>())));
+                file => _loaders.GetObservableSpectrum(file, target).Select(spectrum => new MsSpectrum(spectrum)).ToReadOnlyReactivePropertySlim(new MsSpectrum(new List<SpectrumPeak>(0))));
         }
 
         public IObservable<MsSpectrum> LoadReferenceSpectrumAsObservable(MsScanMatchResult matchResult) {
