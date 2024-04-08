@@ -10,11 +10,11 @@ namespace CompMs.MsdialCore.Export
     {
         private const string DEFAULT_SEPARATOR = "\t";
 
-        private FileMetaAccessor _fileMetaAccessor;
+        private readonly MulticlassFileMetaAccessor _fileMetaAccessor;
 
         public AlignmentCSVExporter(string separator = DEFAULT_SEPARATOR) {
             Separator = separator;
-            _fileMetaAccessor = new();
+            _fileMetaAccessor = new(0);
         }
 
         public string Separator { get; }
@@ -31,7 +31,7 @@ namespace CompMs.MsdialCore.Export
             var naStrig = RepeatString("NA", classHeaders.Count * stats.Count, Separator);
 
             var header = _fileMetaAccessor.GetHeaders();
-            var contents = files.Select(_fileMetaAccessor.GetContent).ToArray();
+            var contents = _fileMetaAccessor.GetContents(files);
 
             for (int i = 0; i < header.Count; i++) {
                 IEnumerable<string> statsFeilds = i == header.Count - 1
