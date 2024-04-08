@@ -10,8 +10,11 @@ namespace CompMs.MsdialCore.Export
     {
         private const string DEFAULT_SEPARATOR = "\t";
 
+        private FileMetaAccessor _fileMetaAccessor;
+
         public AlignmentCSVExporter(string separator = DEFAULT_SEPARATOR) {
             Separator = separator;
+            _fileMetaAccessor = new();
         }
 
         public string Separator { get; }
@@ -26,39 +29,24 @@ namespace CompMs.MsdialCore.Export
 
             var marginString = RepeatString("", metaHeaders.Count - 1, Separator);
             var naStrig = RepeatString("NA", classHeaders.Count * stats.Count, Separator);
-            sw.WriteLine(
-                string.Join(Separator, new string[]
-                {
-                    marginString,
-                    "Class",
-                    string.Join(Separator, files.Select(file => file.AnalysisFileClass)),
-                    naStrig,
-                }).TrimEnd());
-                    
-            sw.WriteLine(
-                string.Join(Separator, new string[]
-                {
-                    marginString,
-                    "File type",
-                    string.Join(Separator, files.Select(n => n.AnalysisFileType)),
-                    naStrig,
-                }).TrimEnd());
-            sw.WriteLine(
-                string.Join(Separator, new string[]
-                {
-                    marginString,
-                    "Injection order",
-                    string.Join(Separator, files.Select(n => n.AnalysisFileAnalyticalOrder)),
-                    naStrig,
-                }).TrimEnd());
-            sw.WriteLine(
-                string.Join(Separator, new string[]
-                {
-                    marginString,
-                    "Batch ID",
-                    string.Join(Separator, files.Select(n => n.AnalysisBatch)),
-                    string.Join(Separator, stats.SelectMany(stat => Enumerable.Repeat(stat, classHeaders.Count))),
-                }).TrimEnd());
+
+            var header = _fileMetaAccessor.GetHeaders();
+            var contents = files.Select(_fileMetaAccessor.GetContent).ToArray();
+
+            for (int i = 0; i < header.Count; i++) {
+                IEnumerable<string> statsFeilds = i == header.Count - 1
+                    ? stats.SelectMany(stat => Enumerable.Repeat(stat.ToString(), classHeaders.Count))
+                    : [naStrig];
+                sw.WriteLine(
+                    string.Join(Separator,
+                    [
+                        marginString,
+                        header[i],
+                        ..contents.Select(c => c[i]),
+                        ..statsFeilds,
+                    ]).TrimEnd());
+            }
+
             sw.WriteLine(
                 JoinContents(
                     metaHeaders,
