@@ -41,14 +41,14 @@ namespace CompMs.App.Msdial.Model.Imms
 
         private readonly IMessageBroker _broker;
         private readonly IMsdialDataStorage<MsdialImmsParameter> _storage;
-        private readonly FilePropertiesModel _projectBaseParameter;
+        private readonly FilePropertiesModel _fileProperties;
         private readonly FacadeMatchResultEvaluator _matchResultEvaluator;
         private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _peakSpotFiltering;
 
-        public ImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, FilePropertiesModel projectBaseParameter, StudyContextModel studyContext, IMessageBroker broker)
-            : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, projectBaseParameter) {
+        public ImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, FilePropertiesModel fileProperties, StudyContextModel studyContext, IMessageBroker broker)
+            : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, fileProperties) {
             _storage = storage;
-            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
+            _fileProperties = fileProperties ?? throw new ArgumentNullException(nameof(fileProperties));
             StudyContext = studyContext;
             _broker = broker;
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
@@ -95,6 +95,7 @@ namespace CompMs.App.Msdial.Model.Imms
                     new ExportType("Identification method", new AnnotationMethodAccessor(), "IdentificationMethod"),
                 },
                 new AccessPeakMetaModel(metadataAccessorFactory),
+                new AccessFileMetaModel(fileProperties),
                 new[]
                 {
                     ExportspectraType.deconvoluted,
@@ -249,7 +250,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 _storage.DataBaseMapper,
                 _storage.Parameter,
                 PeakFilterModel,
-                _projectBaseParameter,
+                _fileProperties,
                 _broker)
             .AddTo(Disposables);
             return AnalysisModel;
@@ -269,7 +270,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 _storage.DataBaseMapper,
                 _peakSpotFiltering,
                 PeakFilterModel,
-                _projectBaseParameter,
+                _fileProperties,
                 _storage.Parameter,
                 _storage.AnalysisFiles,
                 _broker)

@@ -31,16 +31,16 @@ namespace CompMs.App.Msdial.Model.Export
         }
         private bool _isLongFormat = false;
 
-        public void Export(string outNameTemplate, string exportDirectory, Lazy<IReadOnlyList<AlignmentSpotProperty>> lazySpots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes, AccessPeakMetaModel accessPeakMeta) {
+        public void Export(string outNameTemplate, string exportDirectory, Lazy<IReadOnlyList<AlignmentSpotProperty>> lazySpots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes, AccessPeakMetaModel accessPeakMeta, AccessFileMetaModel accessFileMeta) {
             if (IsLongFormat) {
-                ExportLong(outNameTemplate, exportDirectory, lazySpots, msdecResults, notification, exportTypes, accessPeakMeta);
+                ExportLong(outNameTemplate, exportDirectory, lazySpots, msdecResults, notification, exportTypes, accessPeakMeta, accessFileMeta);
             }
             else {
-                ExportWide(outNameTemplate, exportDirectory, lazySpots, msdecResults, notification, exportTypes, accessPeakMeta);
+                ExportWide(outNameTemplate, exportDirectory, lazySpots, msdecResults, notification, exportTypes, accessPeakMeta, accessFileMeta);
             }
         }
 
-        public void ExportLong(string outNameTemplate, string exportDirectory, Lazy<IReadOnlyList<AlignmentSpotProperty>> lazySpots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes, AccessPeakMetaModel accessPeakMeta) {
+        public void ExportLong(string outNameTemplate, string exportDirectory, Lazy<IReadOnlyList<AlignmentSpotProperty>> lazySpots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes, AccessPeakMetaModel accessPeakMeta, AccessFileMetaModel accessFileMeta) {
             var outMetaName = string.Format(outNameTemplate, "PeakMaster");
             var outMetaFile = Format.WithExtension(outMetaName);
             var outMetaPath = Path.Combine(exportDirectory, outMetaFile);
@@ -67,16 +67,17 @@ namespace CompMs.App.Msdial.Model.Export
             }
         }
 
-        public void ExportWide(string outNameTemplate, string exportDirectory, Lazy<IReadOnlyList<AlignmentSpotProperty>> lazySpots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes, AccessPeakMetaModel accessPeakMeta) {
+        public void ExportWide(string outNameTemplate, string exportDirectory, Lazy<IReadOnlyList<AlignmentSpotProperty>> lazySpots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes, AccessPeakMetaModel accessPeakMeta, AccessFileMetaModel accessFileMeta) {
             var exporter = Format.CreateWideExporter();
             var accessor = accessPeakMeta.GetAccessor();
+            MsdialCore.Export.MulticlassFileMetaAccessor fileMetaAccessor = accessFileMeta.GetAccessor();
             foreach (var exportType in exportTypes) {
                 var outName = string.Format(outNameTemplate, exportType.TargetLabel);
                 var outFile = Format.WithExtension(outName);
                 var outPath = Path.Combine(exportDirectory, outFile);
                 notification?.Invoke(outFile);
 
-                using (var outstream = File.Open(outPath, FileMode.Create, FileAccess.Write)) {
+                using var outstream = File.Open(outPath, FileMode.Create, FileAccess.Write);
                     exporter.Export(
                         outstream,
                         lazySpots.Value,
@@ -89,4 +90,3 @@ namespace CompMs.App.Msdial.Model.Export
             }
         }
     }
-}
