@@ -129,7 +129,7 @@ namespace CompMs.App.MsdialConsole.Process
             var align_exporter = new AlignmentCSVExporter();
             using (var stream = File.Open(align_outputfile, FileMode.Create, FileAccess.Write))
             using (var streammsp = File.Open(align_outputmspfile, FileMode.Create, FileAccess.Write)) {
-                align_exporter.Export(stream, result.AlignmentSpotProperties, align_decResults, files, align_accessor, align_quantAccessor, align_stats);
+                align_exporter.Export(stream, result.AlignmentSpotProperties, align_decResults, files, new MulticlassFileMetaAccessor(0), align_accessor, align_quantAccessor, align_stats);
                 IAlignmentSpectraExporter align_mspexporter = new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter);
                 align_mspexporter.BatchExport(streammsp, result.AlignmentSpotProperties, align_decResults);
             }

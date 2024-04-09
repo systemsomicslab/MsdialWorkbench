@@ -78,15 +78,16 @@ namespace CompMs.App.Msdial.Model.Export
                 notification?.Invoke(outFile);
 
                 using var outstream = File.Open(outPath, FileMode.Create, FileAccess.Write);
-                    exporter.Export(
-                        outstream,
-                        lazySpots.Value,
-                        msdecResults,
-                        _analysisFiles,
-                        accessor,
-                        exportType.QuantValueAccessor,
-                        exportType.Stats);
-                }
+                exporter.Export(
+                    outstream,
+                    lazySpots.Value,
+                    msdecResults,
+                    _analysisFiles,
+                    fileMetaAccessor,
+                    accessor,
+                    exportType.QuantValueAccessor,
+                    exportType.Stats);
             }
         }
     }
+}
