@@ -10,11 +10,12 @@ using System.Linq;
 namespace CompMs.App.Msdial.Model.Export
 {
     internal sealed class AlignmentExportGroupModel : BindableBase, IAlignmentResultExportModel {
-        public AlignmentExportGroupModel(string label, ExportMethod method, IEnumerable<ExportType> types, IEnumerable<ExportspectraType> spectraTypes, AlignmentPeakSpotSupplyer peakSpotSupplyer) {
+        public AlignmentExportGroupModel(string label, ExportMethod method, IEnumerable<ExportType> types, AccessPeakMetaModel accessPeakMeta, IEnumerable<ExportspectraType> spectraTypes, AlignmentPeakSpotSupplyer peakSpotSupplyer) {
             Label = label;
             _types = new ObservableCollection<ExportType>(types);
             Types = new ReadOnlyObservableCollection<ExportType>(_types);
             ExportMethod = method;
+            AccessPeakMetaModel = accessPeakMeta;
             _peakSpotSupplyer = peakSpotSupplyer ?? throw new ArgumentNullException(nameof(peakSpotSupplyer));
             _spectraTypes = new ObservableCollection<ExportspectraType>(spectraTypes);
             SpectraTypes = new ReadOnlyObservableCollection<ExportspectraType>(_spectraTypes);
@@ -23,6 +24,8 @@ namespace CompMs.App.Msdial.Model.Export
         public string Label { get; }
 
         public ExportMethod ExportMethod { get; }
+
+        public AccessPeakMetaModel AccessPeakMetaModel { get; }
 
         public ReadOnlyObservableCollection<ExportType> Types { get; }
         private readonly ObservableCollection<ExportType> _types;
@@ -49,7 +52,7 @@ namespace CompMs.App.Msdial.Model.Export
             var outNameTemplate = $"{{0}}_{((IFileBean)alignmentFile).FileID}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}";
             var msdecResults = alignmentFile.LoadMSDecResults();
             var lazyPeakSpot = new Lazy<IReadOnlyList<AlignmentSpotProperty>>(() => _peakSpotSupplyer.Supply(alignmentFile, default));
-            ExportMethod.Export(outNameTemplate, exportDirectory, lazyPeakSpot, msdecResults, notification, Types.Where(type => type.ShouldExport));
+            ExportMethod.Export(outNameTemplate, exportDirectory, lazyPeakSpot, msdecResults, notification, Types.Where(type => type.ShouldExport), AccessPeakMetaModel);
         }
     }
 }

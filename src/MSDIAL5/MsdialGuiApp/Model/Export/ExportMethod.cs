@@ -11,11 +11,10 @@ namespace CompMs.App.Msdial.Model.Export
     internal sealed class ExportMethod : BindableBase {
         private readonly IReadOnlyList<AnalysisFileBean> _analysisFiles;
 
-        public ExportMethod(IReadOnlyList<AnalysisFileBean> analysisFiles, IAlignmentMetadataAccessorFactory accessorFactory, params ExportFormat[] formats) {
+        public ExportMethod(IReadOnlyList<AnalysisFileBean> analysisFiles, params ExportFormat[] formats) {
             _analysisFiles = analysisFiles ?? throw new ArgumentNullException(nameof(analysisFiles));
             Formats = formats;
             _format = formats.First();
-            AccessPeakMetaModel = new(accessorFactory);
         }
 
         public ExportFormat[] Formats { get; }
@@ -32,18 +31,16 @@ namespace CompMs.App.Msdial.Model.Export
         }
         private bool _isLongFormat = false;
 
-        public AccessPeakMetaModel AccessPeakMetaModel { get; }
-
-        public void Export(string outNameTemplate, string exportDirectory, Lazy<IReadOnlyList<AlignmentSpotProperty>> lazySpots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes) {
+        public void Export(string outNameTemplate, string exportDirectory, Lazy<IReadOnlyList<AlignmentSpotProperty>> lazySpots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes, AccessPeakMetaModel accessPeakMeta) {
             if (IsLongFormat) {
-                ExportLong(outNameTemplate, exportDirectory, lazySpots, msdecResults, notification, exportTypes);
+                ExportLong(outNameTemplate, exportDirectory, lazySpots, msdecResults, notification, exportTypes, accessPeakMeta);
             }
             else {
-                ExportWide(outNameTemplate, exportDirectory, lazySpots, msdecResults, notification, exportTypes);
+                ExportWide(outNameTemplate, exportDirectory, lazySpots, msdecResults, notification, exportTypes, accessPeakMeta);
             }
         }
 
-        public void ExportLong(string outNameTemplate, string exportDirectory, Lazy<IReadOnlyList<AlignmentSpotProperty>> lazySpots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes) {
+        public void ExportLong(string outNameTemplate, string exportDirectory, Lazy<IReadOnlyList<AlignmentSpotProperty>> lazySpots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes, AccessPeakMetaModel accessPeakMeta) {
             var outMetaName = string.Format(outNameTemplate, "PeakMaster");
             var outMetaFile = Format.WithExtension(outMetaName);
             var outMetaPath = Path.Combine(exportDirectory, outMetaFile);
@@ -54,7 +51,7 @@ namespace CompMs.App.Msdial.Model.Export
                     outstream,
                     lazySpots.Value,
                     msdecResults,
-                    AccessPeakMetaModel.GetAccessor());
+                    accessPeakMeta.GetAccessor());
             }
 
             var outValueName = string.Format(outNameTemplate, "PeakValues");
@@ -70,9 +67,9 @@ namespace CompMs.App.Msdial.Model.Export
             }
         }
 
-        public void ExportWide(string outNameTemplate, string exportDirectory, Lazy<IReadOnlyList<AlignmentSpotProperty>> lazySpots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes) {
+        public void ExportWide(string outNameTemplate, string exportDirectory, Lazy<IReadOnlyList<AlignmentSpotProperty>> lazySpots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes, AccessPeakMetaModel accessPeakMeta) {
             var exporter = Format.CreateWideExporter();
-            var accessor = AccessPeakMetaModel.GetAccessor();
+            var accessor = accessPeakMeta.GetAccessor();
             foreach (var exportType in exportTypes) {
                 var outName = string.Format(outNameTemplate, exportType.TargetLabel);
                 var outFile = Format.WithExtension(outName);

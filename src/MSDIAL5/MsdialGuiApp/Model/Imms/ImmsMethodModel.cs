@@ -77,7 +77,6 @@ namespace CompMs.App.Msdial.Model.Imms
                 "Peaks",
                 new ExportMethod(
                     analysisFiles,
-                    metadataAccessorFactory,
                     ExportFormat.Tsv,
                     ExportFormat.Csv
                 ),
@@ -95,6 +94,7 @@ namespace CompMs.App.Msdial.Model.Imms
                     new ExportType("MS/MS included", new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded"),
                     new ExportType("Identification method", new AnnotationMethodAccessor(), "IdentificationMethod"),
                 },
+                new AccessPeakMetaModel(metadataAccessorFactory),
                 new[]
                 {
                     ExportspectraType.deconvoluted,

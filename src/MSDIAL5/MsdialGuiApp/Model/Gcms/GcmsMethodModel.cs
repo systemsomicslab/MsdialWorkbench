@@ -84,7 +84,6 @@ namespace CompMs.App.Msdial.Model.Gcms
                 "Peaks",
                 new ExportMethod(
                     analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File).ToArray(),
-                    metadataAccessorFactory,
                     ExportFormat.Tsv,
                     ExportFormat.Csv
                 ),
@@ -101,6 +100,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                     new ExportType("S/N", new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
                     //new ExportType("Identification method", new AnnotationMethodAccessor(), "IdentificationMethod"),
                 },
+                new AccessPeakMetaModel(metadataAccessorFactory),
                 new[]
                 {
                     ExportspectraType.deconvoluted,
