@@ -308,12 +308,12 @@ namespace CompMs.App.Msdial.Model.Lcms
                 return;
             }
             using (var file = File.Open(filename, FileMode.Create)) {
-                var spectrum = await _rawSpectrumLoader.LoadSpectrumAsObservable(target).FirstAsync();
+                var scan = await _rawSpectrumLoader.LoadScanAsObservable(target).FirstAsync();
                 SpectraExport.SaveSpectraTable(
                     (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
                     file,
                     target.InnerModel,
-                    new MSScanProperty() { Spectrum = spectrum },
+                    scan,
                     _provider.LoadMs1Spectrums(),
                     DataBaseMapper,
                     _parameter);

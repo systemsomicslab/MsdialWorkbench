@@ -22,10 +22,8 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -40,7 +38,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         private readonly IDataProviderFactory<AnalysisFileBean> _providerFactory;
-        private readonly FilePropertiesModel _projectBaseParameter;
+        private readonly FilePropertiesModel _fileProperties;
         private readonly StudyContextModel _studyContext;
         private readonly IMessageBroker _broker;
         private readonly IMsdialDataStorage<MsdialLcmsParameter> _storage;
@@ -52,15 +50,15 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentFileBeanModelCollection alignmentFileBeanModelCollection,
             IMsdialDataStorage<MsdialLcmsParameter> storage,
             IDataProviderFactory<AnalysisFileBean> providerFactory,
-            FilePropertiesModel projectBaseParameter,
+            FilePropertiesModel fileProperties,
             StudyContextModel studyContext,
             IMessageBroker broker)
-            : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, projectBaseParameter) {
+            : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, fileProperties) {
 
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             _providerFactory = providerFactory ?? throw new ArgumentNullException(nameof(providerFactory));
-            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
+            _fileProperties = fileProperties ?? throw new ArgumentNullException(nameof(fileProperties));
             _studyContext = studyContext;
             _broker = broker;
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
@@ -84,7 +82,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                 "Peaks",
                 new ExportMethod(
                     analysisFiles,
-                    metadataAccessorFactory,
                     ExportFormat.Tsv,
                     ExportFormat.Csv
                 ),
@@ -101,6 +98,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                     new ExportType("MS/MS included", new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded"),
                     new ExportType("Identification method", new AnnotationMethodAccessor(), "IdentificationMethod"),
                 },
+                new AccessPeakMetaModel(metadataAccessorFactory),
+                new AccessFileMetaModel(fileProperties).AddTo(Disposables),
                 new[]
                 {
                     ExportspectraType.deconvoluted,
@@ -164,7 +163,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 _matchResultEvaluator,
                 _storage.Parameter,
                 PeakFilterModel,
-                _projectBaseParameter,
+                _fileProperties,
                 _broker)
             .AddTo(Disposables);
         }
@@ -183,7 +182,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 PeakFilterModel,
                 _storage.DataBaseMapper,
                 _storage.Parameter,
-                _projectBaseParameter,
+                _fileProperties,
                 _storage.AnalysisFiles,
                 AnalysisFileModelCollection,
                 _broker)

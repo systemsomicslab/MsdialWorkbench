@@ -29,7 +29,7 @@ namespace CompMs.App.MsdialConsole.Export
             var quantAccessor = new LegacyQuantValueAccessor("Normalized height", storage.Parameter);
             var exporter = new AlignmentCSVExporter();
 
-            exporter.Export(output, curatedSpots, decResults, storage.AnalysisFiles, metadataAccessor, quantAccessor, new[] { StatsValue.Average, StatsValue.Stdev });
+            exporter.Export(output, curatedSpots, decResults, storage.AnalysisFiles, new MulticlassFileMetaAccessor(0), metadataAccessor, quantAccessor, new[] { StatsValue.Average, StatsValue.Stdev });
         }
 
         public async Task<IMsdialDataStorage<ParameterBase>> LoadProjectFromPathAsync(string projectfile) {

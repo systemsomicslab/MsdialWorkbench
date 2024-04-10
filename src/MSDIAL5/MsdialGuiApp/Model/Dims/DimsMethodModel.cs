@@ -36,7 +36,7 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> CHROMATOGRAM_SPOT_SERIALIZER;
-        private readonly FilePropertiesModel _projectBaseParameter;
+        private readonly FilePropertiesModel _fileProperties;
         private readonly IMessageBroker _broker;
         private readonly PeakSpotFiltering<AlignmentSpotPropertyModel> _peakSpotFiltering;
         private FacadeMatchResultEvaluator _matchResultEvaluator;
@@ -45,12 +45,12 @@ namespace CompMs.App.Msdial.Model.Dims
             IMsdialDataStorage<MsdialDimsParameter> storage,
             AnalysisFileBeanModelCollection analysisFileBeanModelCollection,
             AlignmentFileBeanModelCollection alignmentFiles,
-            FilePropertiesModel projectBaseParameter,
+            FilePropertiesModel fileProperties,
             StudyContextModel studyContext,
             IMessageBroker broker)
-            : base(analysisFileBeanModelCollection, alignmentFiles, projectBaseParameter) {
+            : base(analysisFileBeanModelCollection, alignmentFiles, fileProperties) {
             Storage = storage;
-            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
+            _fileProperties = fileProperties ?? throw new ArgumentNullException(nameof(fileProperties));
             StudyContext = studyContext;
             _broker = broker;
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
@@ -74,10 +74,8 @@ namespace CompMs.App.Msdial.Model.Dims
                 "Peaks",
                 new ExportMethod(
                     analysisFiles,
-                    metadataAccessorFactory,
                     ExportFormat.Tsv,
-                    ExportFormat.Csv
-                ),
+                    ExportFormat.Csv),
                 new[]
                 {
                     new ExportType("Raw data (Height)", new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, isSelected: true),
@@ -90,6 +88,8 @@ namespace CompMs.App.Msdial.Model.Dims
                     new ExportType("MS/MS included", new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded"),
                     new ExportType("Identification method", new AnnotationMethodAccessor(), "IdentificationMethod"),
                 },
+                new AccessPeakMetaModel(metadataAccessorFactory),
+                new AccessFileMetaModel(fileProperties).AddTo(Disposables),
                 new[]
                 {
                     ExportspectraType.deconvoluted,
@@ -251,7 +251,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 Storage.DataBaseMapper,
                 Storage.Parameter,
                 PeakFilterModel,
-                _projectBaseParameter,
+                _fileProperties,
                 _broker).AddTo(Disposables);
         }
 
@@ -265,7 +265,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 Storage.DataBases,
                 _matchResultEvaluator,
                 Storage.DataBaseMapper,
-                _projectBaseParameter,
+                _fileProperties,
                 Storage.Parameter,
                 Storage.AnalysisFiles,
                 AnalysisFileModelCollection,
