@@ -15,23 +15,23 @@ namespace CompMs.App.Msdial.ViewModel.Information
 
         public MoleculeStructureViewModel(MoleculeStructureModel model) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
-            var current = model.ObserveProperty(m => m.Current).SkipNull().ToReactiveProperty().AddTo(Disposables);
+            ReactiveProperty<MoleculeImage?> current = model.ObserveProperty(m => m.Current).SkipNull().ToReactiveProperty().AddTo(Disposables);
             Image = new[]
             {
-                current.TakeNull().ToConstant((BitmapSource)null),
+                current.TakeNull().ToConstant((BitmapSource?)null),
                 current.SkipNull().Select(c => c.Image).Switch(),
             }.Merge()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
-            IsLoading = current.SkipNull().SelectSwitch(c => c.ObserveProperty(m => m.IsLoading))
+            IsLoading = current.SkipNull().SelectSwitch(c => c!.ObserveProperty(m => m.IsLoading))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            IsFailed = current.SkipNull().SelectSwitch(c => c.ObserveProperty(m => m.IsFailed))
+            IsFailed = current.SkipNull().SelectSwitch(c => c!.ObserveProperty(m => m.IsFailed))
                 .ToReactiveProperty()
                 .AddTo(Disposables);
         }
 
-        public ReadOnlyReactivePropertySlim<BitmapSource> Image { get; }
+        public ReadOnlyReactivePropertySlim<BitmapSource?> Image { get; }
         public ReadOnlyReactivePropertySlim<bool> IsLoading { get; }
         public IReadOnlyReactiveProperty<bool> IsFailed { get; }
     }

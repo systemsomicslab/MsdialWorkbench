@@ -23,6 +23,7 @@ namespace CompMs.App.Msdial.ViewModel.Table
             UndoManagerViewModel = undoManagerViewModel ?? throw new ArgumentNullException(nameof(undoManagerViewModel));
             PeakSpotsView = CollectionViewSource.GetDefaultView(model.PeakSpots);
             MarkAllAsConfirmedCommand = new ReactiveCommand().WithSubscribe(model.MarkAllAsConfirmed).AddTo(Disposables);
+            MarkAllAsUnconfirmedCommand = new ReactiveCommand().WithSubscribe(model.MarkAllAsUnconfirmed).AddTo(Disposables);
             SwitchTagCommand = new ReactiveCommand<PeakSpotTag>().WithSubscribe(model.SwitchTag).AddTo(Disposables);
         }
 
@@ -34,6 +35,7 @@ namespace CompMs.App.Msdial.ViewModel.Table
         public ICommand SetUnknownCommand { get; }
         public UndoManagerViewModel UndoManagerViewModel { get; }
         public ReactiveCommand MarkAllAsConfirmedCommand { get; }
+        public ReactiveCommand MarkAllAsUnconfirmedCommand { get; }
         public ReactiveCommand<PeakSpotTag> SwitchTagCommand { get; }
     }
 }

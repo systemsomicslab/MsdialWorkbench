@@ -17,8 +17,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             }
 
             ChromatogramsViewModel = model.ChromatogramsModel
-                .Where(chromatograms => !(chromatograms is null))
-                .Select(chromatograms => new ChromatogramsViewModel(chromatograms))
+                .Where(chromatograms => chromatograms is not null)
+                .Select(chromatograms => new ChromatogramsViewModel(chromatograms!))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             IsRawSelected = model.IsRawSelected;
@@ -35,7 +35,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             SaveAsTableCommand = new AsyncReactiveCommand().WithSubscribe(model.SaveAsTableAsync).AddTo(Disposables);
         }
 
-        public ReadOnlyReactivePropertySlim<ChromatogramsViewModel> ChromatogramsViewModel { get; }
+        public ReadOnlyReactivePropertySlim<ChromatogramsViewModel?> ChromatogramsViewModel { get; }
 
         public ReactivePropertySlim<bool> IsRawSelected { get; }
         public ReactivePropertySlim<bool> IsDeconvolutedSelected { get; }

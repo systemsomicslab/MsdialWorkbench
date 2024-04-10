@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.ExternalApp;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.ExternalApp;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
@@ -24,12 +25,12 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Imms
@@ -40,6 +41,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
         private readonly AlignmentFileBeanModel _alignmentFile;
         private readonly List<AnalysisFileBean> _files;
+        private readonly IMessageBroker _broker;
         private readonly ParameterBase _parameter;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly CompoundSearcherCollection _compoundSearchers;
@@ -62,28 +64,29 @@ namespace CompMs.App.Msdial.Model.Imms
             _alignmentFile = alignmentFileModel;
             _parameter = parameter;
             _files = files ?? throw new ArgumentNullException(nameof(files));
+            _broker = broker;
             _dataBaseMapper = mapper;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper);
             _undoManager = new UndoManager().AddTo(Disposables);
 
             var spotsSource = new AlignmentSpotSource(alignmentFileModel, Container, CHROMATOGRAM_SPOT_SERIALIZER).AddTo(Disposables);
-            Ms1Spots = spotsSource.Spots.Items;
-            InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Imms).AddTo(Disposables);
+            Ms1Spots = spotsSource.Spots!.Items;
+            InternalStandardSetModel = new InternalStandardSetModel(spotsSource.Spots!.Items, TargetMsMethod.Imms).AddTo(Disposables);
             NormalizationSetModel = new NormalizationSetModel(Container, _files, fileCollection, _dataBaseMapper, MatchResultEvaluator, InternalStandardSetModel, _parameter, broker).AddTo(Disposables);
 
             var brushMapDataSelector = BrushMapDataSelectorFactory.CreateAlignmentSpotBrushes(parameter.TargetOmics);
             Brushes = brushMapDataSelector.Brushes.ToList();
             SelectedBrush = brushMapDataSelector.SelectedBrush;
-            Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
+            Target = new ReactivePropertySlim<AlignmentSpotPropertyModel?>().AddTo(Disposables);
             CurrentRepresentativeFile = Target.Select(t => t is null ? null : fileCollection.FindByID(t.RepresentativeFileID)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
-            var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(Ms1Spots, peakSpotFiltering).AddTo(Disposables);
+            var filterRegistrationManager = new FilterRegistrationManager<AlignmentSpotPropertyModel>(spotsSource.Spots!.Items, peakSpotFiltering).AddTo(Disposables);
             PeakSpotNavigatorModel = filterRegistrationManager.PeakSpotNavigatorModel;
-            filterRegistrationManager.AttachFilter(Ms1Spots, peakFilterModel, evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: ~FilterEnableStatus.Rt);
+            filterRegistrationManager.AttachFilter(spotsSource.Spots!.Items, peakFilterModel, evaluator.Contramap<AlignmentSpotPropertyModel, MsScanMatchResult>(filterable => filterable.ScanMatchResult, (e, f) => f.IsRefMatched(e), (e, f) => f.IsSuggested(e)), status: ~FilterEnableStatus.Rt);
 
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel);
-            PlotModel = new AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, SelectedBrush, Brushes)
+            PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, SelectedBrush, Brushes)
             {
                 GraphTitle = ((IFileBean)alignmentFileModel).FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
@@ -97,7 +100,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference>(mapper)
                 : (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<MoleculeMsReference>(mapper);
             IMsSpectrumLoader<AlignmentSpotPropertyModel> decLoader = new AlignmentMSDecSpectrumLoader(_alignmentFile);
-            var spectraExporter = new NistSpectraExporter<AlignmentSpotProperty>(Target.Select(t => t?.innerModel), mapper, parameter).AddTo(Disposables);
+            var spectraExporter = new NistSpectraExporter<AlignmentSpotProperty?>(Target.Select(t => t?.innerModel), mapper, parameter).AddTo(Disposables);
             GraphLabels ms2GraphLabels = new GraphLabels("Representation vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity));
             ChartHueItem deconvolutedSpectrumHueItem = new ChartHueItem(projectBaseParameter, Colors.Blue);
             var referenceExporter = new MoleculeMsReferenceExporter(MatchResultCandidatesModel.SelectedCandidate.Select(c => mapper.MoleculeMsRefer(c)));
@@ -129,7 +132,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 Colors.Blue);
 
             var fileIdToClassNameAsObservable = projectBaseParameter.ObserveProperty(p => p.FileIdToClassName).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            var peakSpotAxisLabelAsObservable = Target.OfType<AlignmentSpotPropertyModel>().SelectSwitch(t => t.ObserveProperty(t_ => t_.IonAbundanceUnit).Select(t_ => t_.ToLabel())).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var peakSpotAxisLabelAsObservable = Target.DefaultIfNull(t => t.ObserveProperty(t_ => t_.IonAbundanceUnit).Select(t_ => t_.ToLabel()), Observable.Return(string.Empty)).Switch().ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposables);
             var normalizedAreaZeroLoader = new BarItemsLoaderData("Normalized peak area above zero", peakSpotAxisLabelAsObservable, new NormalizedAreaAboveZeroBarItemsLoader(fileIdToClassNameAsObservable, fileCollection), NormalizationSetModel.IsNormalized);
             var normalizedAreaBaselineLoader = new BarItemsLoaderData("Normalized peak area above base line", peakSpotAxisLabelAsObservable, new NormalizedAreaAboveBaseLineBarItemsLoader(fileIdToClassNameAsObservable, fileCollection), NormalizationSetModel.IsNormalized);
             var normalizedHeightLoader = new BarItemsLoaderData("Normalized peak height", peakSpotAxisLabelAsObservable, new NormalizedHeightBarItemsLoader(fileIdToClassNameAsObservable, fileCollection), NormalizationSetModel.IsNormalized);
@@ -158,12 +161,12 @@ namespace CompMs.App.Msdial.Model.Imms
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
+            var barItemsLoaderProperty = barItemsLoaderDataProperty.SkipNull().Select(data => data.Loader);
             var filter = peakSpotFiltering.CreateFilter(peakFilterModel, evaluator.Contramap((AlignmentSpotPropertyModel spot) => spot.ScanMatchResult), FilterEnableStatus.All);
-            AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(Ms1Spots, Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderProperty, filter, spectraLoader).AddTo(Disposables);
+            AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(spotsSource.Spots!.Items, Target, Observable.Return(classBrush), projectBaseParameter.ClassProperties, barItemsLoaderProperty, filter, spectraLoader, _undoManager).AddTo(Disposables);
 
-            MsdecResult = Target.SkipNull()
-                .Select(t => _alignmentFile.LoadMSDecResultByIndexAsync(t.MasterAlignmentID))
+            MsdecResult = Target
+                .DefaultIfNull(t => _alignmentFile.LoadMSDecResultByIndexAsync(t.MasterAlignmentID), Task.FromResult((MSDecResult?)null))
                 .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -205,10 +208,10 @@ namespace CompMs.App.Msdial.Model.Imms
         public ReadOnlyObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
         public InternalStandardSetModel InternalStandardSetModel { get; }
         public NormalizationSetModel NormalizationSetModel { get; }
-        public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
-        public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel> CurrentRepresentativeFile { get; }
+        public ReactivePropertySlim<AlignmentSpotPropertyModel?> Target { get; }
+        public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel?> CurrentRepresentativeFile { get; }
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
-        public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
+        public ReadOnlyReactivePropertySlim<MSDecResult?> MsdecResult { get; }
 
         public AlignmentPeakPlotModel PlotModel { get; }
 
@@ -225,8 +228,9 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
 
-        public CompoundSearchModel<PeakSpotModel> CreateCompoundSearchModel() {
+        public CompoundSearchModel<PeakSpotModel>? CreateCompoundSearchModel() {
             if (Target.Value?.innerModel is null || MsdecResult.Value is null) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.NoPeakSelected));
                 return null;
             }
 
@@ -243,29 +247,32 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public List<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 
-        public BrushMapData<AlignmentSpotPropertyModel> SelectedBrush {
+        public BrushMapData<AlignmentSpotPropertyModel>? SelectedBrush {
             get => _selectedBrush;
             set => SetProperty(ref _selectedBrush, value);
         }
-        private BrushMapData<AlignmentSpotPropertyModel> _selectedBrush;
+        private BrushMapData<AlignmentSpotPropertyModel>? _selectedBrush;
 
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
         public MoleculeStructureModel MoleculeStructureModel { get; }
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
 
         public void SaveSpectra(string filename) {
-            using (var file = File.Open(filename, FileMode.Create)) {
-                SpectraExport.SaveSpectraTable(
-                    (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
-                    file,
-                    Target.Value.innerModel,
-                    MsdecResult.Value,
-                    _dataBaseMapper,
-                    _parameter);
+            if (Target.Value is not AlignmentSpotPropertyModel spot) {
+                _broker.Publish(new ShortMessageRequest(MessageHelper.SelectPeakBeforeExport));
+                return;
             }
+            using var file = File.Open(filename, FileMode.Create);
+            SpectraExport.SaveSpectraTable(
+                (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
+                file,
+                spot.innerModel,
+                MsdecResult.Value,
+                _dataBaseMapper,
+                _parameter);
         }
 
-        public bool CanSaveSpectra() => Target.Value.innerModel != null && MsdecResult.Value != null;
+        public bool CanSaveSpectra() => Target.Value?.innerModel != null && MsdecResult.Value != null;
 
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
@@ -277,7 +284,7 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public override void InvokeMsfinder() {
-            if (Target.Value is null || (MsdecResult.Value?.Spectrum).IsEmptyOrNull()) {
+            if (Target.Value is null || MsdecResult.Value is not MSDecResult result || result.Spectrum.IsEmptyOrNull()) {
                 return;
             }
             MsDialToExternalApps.SendToMsFinderProgram(

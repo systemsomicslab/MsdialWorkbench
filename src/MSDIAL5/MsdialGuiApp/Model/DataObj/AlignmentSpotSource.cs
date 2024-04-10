@@ -10,7 +10,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         private readonly AlignmentFileBeanModel _alignmentFile;
         private readonly AlignmentResultContainer _container;
         private readonly ChromatogramSerializer<ChromatogramSpotInfo> _chromatogramSerializer;
-        private AlignmentSpotPropertyModelCollection _spots;
+        private AlignmentSpotPropertyModelCollection? _spots;
         private bool _disposedValue;
 
         public AlignmentSpotSource(AlignmentFileBeanModel alignmentFile, AlignmentResultContainer container, ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSerializer) {
@@ -20,17 +20,18 @@ namespace CompMs.App.Msdial.Model.DataObj
             _chromatogramSerializer = chromatogramSerializer ?? throw new ArgumentNullException(nameof(chromatogramSerializer));
         }
 
-        public AlignmentSpotPropertyModelCollection Spots => _spots;
+        public AlignmentSpotPropertyModelCollection? Spots => _spots;
 
         public async Task DuplicateSpotAsync(AlignmentSpotPropertyModel spot) {
             if (spot is null || _spots is null) {
                 return;
             }
+            var mSDecResult = await _alignmentFile.LoadMSDecResultByIndexAsync(spot.MasterAlignmentID).ConfigureAwait(false);
+            if (mSDecResult is null) {
+                return;
+            }
             _spots.Duplicates(spot);
-            var mSDecResultTask = _alignmentFile.LoadMSDecResultByIndexAsync(spot.MasterAlignmentID);
-            var spotInfoTask = _alignmentFile.LoadEicInfoByIndexAsync(spot.MasterAlignmentID, _chromatogramSerializer);
-            var mSDecResult = await mSDecResultTask.ConfigureAwait(false);
-            var spotInfo = await spotInfoTask.ConfigureAwait(false);
+            var spotInfo = await _alignmentFile.LoadEicInfoByIndexAsync(spot.MasterAlignmentID, _chromatogramSerializer).ConfigureAwait(false);
             await Task.WhenAll(new[]
             {
                 _alignmentFile.SaveAlignmentResultAsync(_container),

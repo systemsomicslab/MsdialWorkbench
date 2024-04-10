@@ -37,11 +37,11 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
             Width = area.DrawWidth * SCALE_FACTOR;
         }
 
-        public List<Point> Points {
+        public List<Point>? Points {
             get => _points;
             set => SetProperty(ref _points, value);
         }
-        private List<Point> _points;
+        private List<Point>? _points;
 
         public int Height { get; }
         public int Width { get; }

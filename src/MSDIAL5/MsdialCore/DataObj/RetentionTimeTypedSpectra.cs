@@ -16,7 +16,7 @@ namespace CompMs.MsdialCore.DataObj
         private readonly ScanPolarity _polarity;
         private readonly List<RawSpectrum> _spectra;
         private readonly RetentionTime[] _idToRetentionTime;
-        private readonly ConcurrentDictionary<int, Lazy<Spectrum>> _lazySpectra;
+        private readonly ConcurrentDictionary<int, Spectrum> _lazySpectra;
         private readonly int[] _ms1Counts;
 
         public RetentionTimeTypedSpectra(IReadOnlyList<RawSpectrum> spectra, ChromXUnit unit, IonMode ionMode) {
@@ -31,7 +31,7 @@ namespace CompMs.MsdialCore.DataObj
             _spectra = spectra?.OrderBy(spectrum => spectrum.ScanStartTime).ToList() ?? throw new ArgumentNullException(nameof(spectra));
             _idToRetentionTime = new RetentionTime[_spectra.Count];
             _ms1Counts = new int[_spectra.Count + 1];
-            _lazySpectra = new ConcurrentDictionary<int, Lazy<Spectrum>>();
+            _lazySpectra = new ConcurrentDictionary<int, Spectrum>();
             for (int i = 0; i < _spectra.Count; i++) {
                 _idToRetentionTime[i] = new RetentionTime(_spectra[i].ScanStartTime, unit);
                 if (_spectra[i].MsLevel == 1 && _spectra[i].ScanPolarity == _polarity) {
@@ -84,7 +84,7 @@ namespace CompMs.MsdialCore.DataObj
                     _spectra[i].ScanPolarity != _polarity) {
                     continue;
                 }
-                var spectrum = _lazySpectra.GetOrAdd(i, index => new Lazy<Spectrum>(() => new Spectrum(_spectra[index].Spectrum))).Value;
+                var spectrum = _lazySpectra.GetOrAdd(i, index => new Spectrum(_spectra[index].Spectrum));
                 var (basePeakMz, _, summedIntensity) = spectrum.RetrieveBin(mz, tolerance);
                 results[idc++] = new ValuePeak(_spectra[i].Index, _idToRetentionTime[i].Value, basePeakMz, summedIntensity);
             }
@@ -104,7 +104,7 @@ namespace CompMs.MsdialCore.DataObj
                     _spectra[i].ScanPolarity != _polarity) {
                     continue;
                 }
-                var spectrum = _lazySpectra.GetOrAdd(i, index => new Lazy<Spectrum>(() => new Spectrum(_spectra[index].Spectrum))).Value;
+                var spectrum = _lazySpectra.GetOrAdd(i, index => new Spectrum(_spectra[index].Spectrum));
                 enumerators[idc] = spectrum.RetrieveBins(mzs_, tolerance).GetEnumerator();
                 indexs[idc] = _spectra[i].Index;
                 times[idc] = _idToRetentionTime[i].Value;

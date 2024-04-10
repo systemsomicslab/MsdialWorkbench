@@ -141,7 +141,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                     //if (header == null)
                     //    break;
                     // find first line that doesn't start with '#'
-                    if (header.StartsWith('#'))
+                    if (header.StartsWith('#'.ToString()))
                         continue;
 
                     Debug.WriteLine("Header: {0}", header, "");
@@ -172,7 +172,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                     //if (line == null)
                     //    break;
                     // skip lines that start with '#'
-                    if (line.StartsWith('#'))
+                    if (line.StartsWith('#'.ToString()))
                         continue;
 
                     var fields = line.Split(',');
@@ -202,7 +202,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
             {
                 // 0          , 1          , 2     , 3         , 4      , 5,                , 6
                 // "file_path", "file_name", "type", "class_id", "batch", "analytical_order", "inject_volume"
-                var afFilepath = Path.GetFullPath(line[0], Path.GetDirectoryName(Path.GetFullPath(filepath)));
+                var afFilepath = Path.GetFullPath(Path.Combine(line[0], Path.GetDirectoryName(Path.GetFullPath(filepath))));
                 Debug.WriteLine("afFilepath: {0}", afFilepath, "");
                 var afFilename = line[1] ?? System.IO.Path.GetFileNameWithoutExtension(afFilepath);
 

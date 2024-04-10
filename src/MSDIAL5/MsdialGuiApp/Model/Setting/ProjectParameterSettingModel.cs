@@ -25,9 +25,9 @@ namespace CompMs.App.Msdial.Model.Setting
             IsReadOnly = true;
         }
 
-        private readonly Action<ProjectModel> next;
+        private readonly Action<ProjectModel>? next;
         private readonly IMessageBroker _broker;
-        private readonly ProjectParameter parameter;
+        private readonly ProjectParameter? parameter;
 
         public bool IsReadOnly { get; }
 
@@ -35,13 +35,13 @@ namespace CompMs.App.Msdial.Model.Setting
             get => projectTitle;
             set => SetProperty(ref projectTitle, value);
         }
-        private string projectTitle;
+        private string projectTitle = string.Empty;
 
         public string ProjectFolderPath {
             get => projectFolderPath;
             set => SetProperty(ref projectFolderPath, value);
         }
-        private string projectFolderPath;
+        private string projectFolderPath = string.Empty;
 
         public void Build() {
             var title = ProjectTitle;

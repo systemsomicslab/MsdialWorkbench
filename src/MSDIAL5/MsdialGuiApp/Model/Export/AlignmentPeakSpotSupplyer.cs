@@ -16,10 +16,10 @@ namespace CompMs.App.Msdial.Model.Export
 {
     internal sealed class AlignmentPeakSpotSupplyer : BindableBase
     {
-        private readonly IReadOnlyReactiveProperty<IAlignmentModel> _currentResult;
+        private readonly IReadOnlyReactiveProperty<IAlignmentModel?> _currentResult;
         private readonly PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter _filter;
 
-        public AlignmentPeakSpotSupplyer(IReadOnlyReactiveProperty<IAlignmentModel> currentResult, PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter filter) {
+        public AlignmentPeakSpotSupplyer(IReadOnlyReactiveProperty<IAlignmentModel?> currentResult, PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter filter) {
             _currentResult = currentResult;
             _filter = filter ?? throw new ArgumentNullException(nameof(filter));
         }

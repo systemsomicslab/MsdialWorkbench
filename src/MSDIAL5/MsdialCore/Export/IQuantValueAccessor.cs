@@ -22,7 +22,6 @@ namespace CompMs.MsdialCore.Export
         Dictionary<string, string> GetStatsValues(AlignmentSpotProperty spot, StatsValue stat);
     }
 
-    [Obsolete]
     public class LegacyQuantValueAccessor : IQuantValueAccessor
     {
         public LegacyQuantValueAccessor(string exportType, ParameterBase parameter) {

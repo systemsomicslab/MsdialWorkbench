@@ -28,18 +28,18 @@ namespace CompMs.App.Msdial.Model.Chart
             DisplayEicSettingValues = new ReadOnlyObservableCollection<PeakFeatureSearchValueModel>(_displaySettingValues);
         }
 
-        public ChromatogramsModel Chromatograms {
+        public ChromatogramsModel? Chromatograms {
             get => _chromatograms;
             private set => SetProperty(ref _chromatograms, value);
         }
-        private ChromatogramsModel _chromatograms;
+        private ChromatogramsModel? _chromatograms;
 
         public ReadOnlyObservableCollection<PeakFeatureSearchValueModel> DisplayEicSettingValues { get; }
 
         public LoadChromatogramsUsecase LoadChromatogramsUsecase { get; }
 
         public Task ExportAsync(Stream stream, string separator) {
-            return Chromatograms.ExportAsync(stream, separator);
+            return Chromatograms?.ExportAsync(stream, separator) ?? Task.CompletedTask;
         }
 
         public void Update() {

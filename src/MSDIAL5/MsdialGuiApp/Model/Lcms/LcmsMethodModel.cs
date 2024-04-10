@@ -12,6 +12,7 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
+using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm.Alignment;
@@ -21,6 +22,7 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
@@ -38,7 +40,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         private readonly IDataProviderFactory<AnalysisFileBean> _providerFactory;
-        private readonly FilePropertiesModel _projectBaseParameter;
+        private readonly FilePropertiesModel _fileProperties;
         private readonly StudyContextModel _studyContext;
         private readonly IMessageBroker _broker;
         private readonly IMsdialDataStorage<MsdialLcmsParameter> _storage;
@@ -50,15 +52,15 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentFileBeanModelCollection alignmentFileBeanModelCollection,
             IMsdialDataStorage<MsdialLcmsParameter> storage,
             IDataProviderFactory<AnalysisFileBean> providerFactory,
-            FilePropertiesModel projectBaseParameter,
+            FilePropertiesModel fileProperties,
             StudyContextModel studyContext,
             IMessageBroker broker)
-            : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, projectBaseParameter) {
+            : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, fileProperties) {
 
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             _providerFactory = providerFactory ?? throw new ArgumentNullException(nameof(providerFactory));
-            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
+            _fileProperties = fileProperties ?? throw new ArgumentNullException(nameof(fileProperties));
             _studyContext = studyContext;
             _broker = broker;
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
@@ -82,7 +84,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                 "Peaks",
                 new ExportMethod(
                     analysisFiles,
-                    metadataAccessorFactory,
                     ExportFormat.Tsv,
                     ExportFormat.Csv
                 ),
@@ -99,6 +100,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                     new ExportType("MS/MS included", new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded"),
                     new ExportType("Identification method", new AnnotationMethodAccessor(), "IdentificationMethod"),
                 },
+                new AccessPeakMetaModel(metadataAccessorFactory),
+                new AccessFileMetaModel(fileProperties).AddTo(Disposables),
                 new[]
                 {
                     ExportspectraType.deconvoluted,
@@ -120,7 +123,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 exportGroups.Add(new ProteinGroupExportModel(new ProteinGroupExporter(), analysisFiles));
             }
 
-            AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam);
+
+            AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam, broker);
             var currentFileResult = this.ObserveProperty(m => m.AnalysisModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             MolecularNetworkingSettingModel = new MolecularNetworkingSettingModel(storage.Parameter.MolecularSpectrumNetworkingBaseParam, currentFileResult, currentAlignmentResult).AddTo(Disposables);
 
@@ -144,17 +148,17 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public IObservable<bool> CanShowProteinGroupTable { get; }
 
-        public LcmsAnalysisModel AnalysisModel {
+        public LcmsAnalysisModel? AnalysisModel {
             get => _analysisModel;
             private set => SetProperty(ref _analysisModel, value);
         }
-        private LcmsAnalysisModel _analysisModel;
+        private LcmsAnalysisModel? _analysisModel;
 
-        public LcmsAlignmentModel AlignmentModel {
+        public LcmsAlignmentModel? AlignmentModel {
             get => _alignmentModel;
             set => SetProperty(ref _alignmentModel, value);
         }
-        private LcmsAlignmentModel _alignmentModel;
+        private LcmsAlignmentModel? _alignmentModel;
 
         public AlignmentResultExportModel AlignmentResultExportModel { get; }
         public MolecularNetworkingSettingModel MolecularNetworkingSettingModel { get; }
@@ -174,7 +178,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 _matchResultEvaluator,
                 _storage.Parameter,
                 PeakFilterModel,
-                _projectBaseParameter,
+                _fileProperties,
                 _broker)
             .AddTo(Disposables);
         }
@@ -193,7 +197,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 PeakFilterModel,
                 _storage.DataBaseMapper,
                 _storage.Parameter,
-                _projectBaseParameter,
+                _fileProperties,
                 _storage.AnalysisFiles,
                 AnalysisFileModelCollection,
                 _broker)
@@ -203,6 +207,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         public override async Task RunAsync(ProcessOption processOption, CancellationToken token) {
             // Set analysis param
             var parameter = _storage.Parameter;
+            var starttimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
+            var stopwatch = Stopwatch.StartNew();
             IAnnotationProcess annotationProcess;
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
                 annotationProcess = BuildProteoMetabolomicsAnnotationProcess();
@@ -236,12 +242,11 @@ namespace CompMs.App.Msdial.Model.Lcms
                 if (!ProcessAlignment(_storage))
                     return;
             }
+            stopwatch.Stop();
+            var ts = stopwatch.Elapsed;
+            AutoParametersSave(starttimestamp, ts, parameter);
 
             await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
-
-#if DEBUG
-            Console.WriteLine(string.Join("\n", _storage.Parameter.ParametersAsText()));
-#endif
         }
 
         private IAnnotationProcess BuildAnnotationProcess() {
@@ -371,7 +376,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             var models = new IMsdialAnalysisExport[]
             {
-                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats),
+                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, _broker),
                 new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
                     [ExportspectraType.deconvoluted] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter),
                     [ExportspectraType.centroid] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter, file => new CentroidMsScanPropertyLoader(_providerFactory.Create(file), _storage.Parameter.MS2DataType)),
@@ -381,12 +386,21 @@ namespace CompMs.App.Msdial.Model.Lcms
                     FileSuffix = "msp",
                     Label = "Nist format (*.msp)"
                 },
+                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
+                    [ExportspectraType.deconvoluted] = new AnalysisMgfExporter(file => new MSDecLoader(file.DeconvolutionFilePath)),
+                    [ExportspectraType.centroid] = new AnalysisMgfExporter(file => new CentroidMsScanPropertyLoader(_providerFactory.Create(file), _storage.Parameter.MS2DataType)),
+                })
+                {
+                    FilePrefix = "Mgf",
+                    FileSuffix = "mgf",
+                    Label = "MASCOT format (*.mgf)"
+                },
                 new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam, _studyContext),
             };
-            return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, models);
+            return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, _broker, models);
         }
 
-        public CheckChromatogramsModel ShowChromatograms(bool tic = false, bool bpc = false, bool highestEic = false) {
+        public CheckChromatogramsModel? ShowChromatograms(bool tic = false, bool bpc = false, bool highestEic = false) {
             var analysisModel = AnalysisModel;
             if (analysisModel is null) {
                 return null;
@@ -408,14 +422,14 @@ namespace CompMs.App.Msdial.Model.Lcms
             return new FragmentQuerySettingModel(_storage.Parameter.AdvancedProcessOptionBaseParam, AnalysisModel, AlignmentModel);
         }
 
-        public MassqlSettingModel ShowShowMassqlSearchSettingView(IResultModel model) {
+        public MassqlSettingModel? ShowShowMassqlSearchSettingView(IResultModel model) {
             if (model is null) {
                 return null;
             }
             return new MassqlSettingModel(model, _storage.Parameter.AdvancedProcessOptionBaseParam);
         }
 
-        public MscleanrSettingModel ShowShowMscleanrFilterSettingView() {
+        public MscleanrSettingModel? ShowShowMscleanrFilterSettingView() {
             if (AlignmentModel is null) {
                 return null;
             }

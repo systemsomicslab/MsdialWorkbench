@@ -134,7 +134,7 @@ namespace CompMs.MsdialCore.Export
             if (spectrum is null) {
                 return "null";
             }
-            var isotopes = DataAccess.GetIsotopicPeaks(spectrum.Spectrum, (float)feature.PrecursorMz, parameter.CentroidMs1Tolerance);
+            var isotopes = DataAccess.GetFineIsotopicPeaks(spectrum, feature.PeakCharacter, feature.PrecursorMz, parameter.CentroidMs1Tolerance, parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
             if (isotopes.IsEmptyOrNull()) {
                 return "null";
             }

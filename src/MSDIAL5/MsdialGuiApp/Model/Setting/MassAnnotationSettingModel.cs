@@ -11,16 +11,11 @@ using System.Collections.Generic;
 namespace CompMs.App.Msdial.Model.Setting
 {
     sealed class MassAnnotationSettingModel : DataBaseAnnotationSettingModelBase, IAnnotationSettingModel {
-        public MassAnnotationSettingModel() {
-
-        }
-
-        public MassAnnotationSettingModel(DataBaseAnnotationSettingModelBase other)
-            : base(other) {
+        public MassAnnotationSettingModel(DataBaseAnnotationSettingModelBase other) : base(other) {
             
         }
 
-        MoleculeDataBase molecules;
+        MoleculeDataBase? molecules;
         public ISerializableAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> Build(ParameterBase parameter) {
             if (molecules is null) {
                 molecules = LoadDataBase(parameter);

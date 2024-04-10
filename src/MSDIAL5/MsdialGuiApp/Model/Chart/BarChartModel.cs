@@ -15,13 +15,13 @@ using System.Reactive.Linq;
 namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class BarChartModel : DisposableModelBase {
-        public BarChartModel(IObservable<AlignmentSpotPropertyModel> source, IReactiveProperty<BarItemsLoaderData> barItemsLoaderData, IList<BarItemsLoaderData> barItemsLoaderDatas, IObservable<IBrushMapper<BarItem>> classBrush, FilePropertiesModel projectBaseParameter, AnalysisFileBeanModelCollection fileModelCollection, FileClassPropertiesModel fileClassProperties) {
-            var barItemsLoader = barItemsLoaderData.Where(data => data != null).SelectSwitch(data => data.ObservableLoader).ToReactiveProperty().AddTo(Disposables);
+        public BarChartModel(IObservable<AlignmentSpotPropertyModel?> source, IReactiveProperty<BarItemsLoaderData> barItemsLoaderData, IList<BarItemsLoaderData> barItemsLoaderDatas, IObservable<IBrushMapper<BarItem>> classBrush, FilePropertiesModel projectBaseParameter, AnalysisFileBeanModelCollection fileModelCollection, FileClassPropertiesModel fileClassProperties) {
+            var barItemsLoader = barItemsLoaderData.Where(data => data != null).Select(data => data.Loader).ToReactiveProperty().AddTo(Disposables);
             var barItemCollectionSource = source.CombineLatest(barItemsLoader,
                     (src, loader) => src is null || loader is null
                         ? new BarItemCollection()
                         : loader.LoadBarItemsAsObservable(src))
-                .ToReactiveProperty()
+                .ToReactiveProperty(new BarItemCollection())
                 .AddTo(Disposables);
             BarItemsSource = barItemCollectionSource
                 .SelectSwitch(collection => collection.ObservableItems)
@@ -42,7 +42,7 @@ namespace CompMs.App.Msdial.Model.Chart
                     }
                     return new Range(0, 1);
                 })
-                .ToReadOnlyReactivePropertySlim()
+                .ToReadOnlyReactivePropertySlim(new Range(0d, 1d))
                 .AddTo(Disposables);
 
             Elements.HorizontalTitle = "Class";
@@ -55,7 +55,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 .Subscribe(label => Elements.VerticalTitle = label)
                 .AddTo(Disposables);
 
-            var orderedClasses = fileClassProperties.GetOrderedUsedClasses(fileModelCollection).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var orderedClasses = fileClassProperties.GetOrderedUsedClasses(fileModelCollection).ToReadOnlyReactivePropertySlim(Array.Empty<string>()).AddTo(Disposables);
             OrderedClasses = orderedClasses;
         }
 

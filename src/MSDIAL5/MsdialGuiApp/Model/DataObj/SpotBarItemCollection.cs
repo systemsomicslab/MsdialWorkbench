@@ -9,8 +9,8 @@ namespace CompMs.App.Msdial.Model.DataObj
 {
     public sealed class SpotBarItemCollection : ReadOnlyObservableCollection<BarItem>, IDisposable
     {
-        private IDisposable _unsubscriber;
-        private ReactiveCollection<BarItem> _collection;
+        private IDisposable? _unsubscriber;
+        private ReactiveCollection<BarItem>? _collection;
 
         private SpotBarItemCollection(AlignmentSpotPropertyModel spot, IObservable<IBarItemsLoader> loader, ReactiveCollection<BarItem> collection) : base(collection) {
             var collectionsAsObservable = loader
@@ -31,9 +31,9 @@ namespace CompMs.App.Msdial.Model.DataObj
         public ReadOnlyReactivePropertySlim<bool> IsLoading { get; }
 
         public void Dispose() {
-            _unsubscriber.Dispose();
+            _unsubscriber?.Dispose();
             _unsubscriber = null;
-            _collection.Dispose();
+            _collection?.Dispose();
             _collection = null;
             IsLoading.Dispose();
         }

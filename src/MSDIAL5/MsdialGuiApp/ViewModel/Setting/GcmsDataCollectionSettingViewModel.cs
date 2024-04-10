@@ -22,8 +22,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             IsReadOnly = model.IsReadOnly;
 
-            MassRange = DataCollectionRangeSettingViewModelFactory.Create(model.MassRange).AddTo(Disposables);
-            RtRange = DataCollectionRangeSettingViewModelFactory.Create(model.RtRange).AddTo(Disposables);
+            MassRange = DataCollectionRangeSettingViewModelFactory.Create(model.MassRange)?.AddTo(Disposables);
+            RtRange = DataCollectionRangeSettingViewModelFactory.Create(model.RtRange)?.AddTo(Disposables);
             NumberOfThreads = model.ToReactivePropertyAsSynchronized(
                 m => m.NumberOfThreads,
                 m => m.ToString(),
@@ -35,8 +35,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             ObserveHasErrors = new[]
             {
-                MassRange.ObserveHasErrors,
-                RtRange.ObserveHasErrors,
+                MassRange?.ObserveHasErrors ?? Observable.Return(false),
+                RtRange?.ObserveHasErrors ?? Observable.Return(false),
                 NumberOfThreads.ObserveHasErrors,
             }.CombineLatestValuesAreAnyTrue()
             .ToReadOnlyReactivePropertySlim()
@@ -44,8 +44,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             var observeChanges = new[]
             {
-                MassRange.PropertyChangedAsObservable().ToUnit(),
-                RtRange.PropertyChangedAsObservable().ToUnit(),
+                MassRange?.PropertyChangedAsObservable().ToUnit() ?? Observable.Never<Unit>(),
+                RtRange?.PropertyChangedAsObservable().ToUnit() ?? Observable.Never<Unit>(),
                 NumberOfThreads.ToUnit(),
             }.Merge().Publish();
             Disposables.Add(observeChanges.Connect());
@@ -64,8 +64,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public bool IsReadOnly { get; }
 
-        public DataCollectionRangeSettingViewModel MassRange { get; }
-        public DataCollectionRangeSettingViewModel RtRange { get; }
+        public DataCollectionRangeSettingViewModel? MassRange { get; }
+        public DataCollectionRangeSettingViewModel? RtRange { get; }
 
         [Required(ErrorMessage = "Number of threads is required.")]
         [RegularExpression(@"\d+", ErrorMessage = "Invalid character entered.")]
@@ -82,7 +82,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         IObservable<bool> ISettingViewModel.ObserveChangeAfterDecision => ObserveChangeAfterDecision;
 
-        public ISettingViewModel Next(ISettingViewModel selected) {
+        public ISettingViewModel? Next(ISettingViewModel selected) {
             _decide.OnNext(Unit.Default);
             return null;
         }

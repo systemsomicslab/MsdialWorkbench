@@ -21,7 +21,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             if (model.RawLoader is null) {
                 Ms2IdList = Observable.Return(new List<MsSelectionItem>(0)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-                SelectedMs2Id = new ReactivePropertySlim<MsSelectionItem>().AddTo(Disposables);
+                SelectedMs2Id = new ReactivePropertySlim<MsSelectionItem?>().AddTo(Disposables);
             }
             else {
                 Ms2IdList = model.RawLoader.Ms2List.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -36,7 +36,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public MsSpectrumViewModel DecRefSpectrumViewModels { get; }
 
         public ReadOnlyReactivePropertySlim<List<MsSelectionItem>> Ms2IdList { get; }
-        public ReactivePropertySlim<MsSelectionItem> SelectedMs2Id { get; }
+        public ReactivePropertySlim<MsSelectionItem?> SelectedMs2Id { get; }
         public ReactivePropertySlim<AxisItemModel<double>> LowerVerticalAxisItem => _model.DecRefSpectrumModels.LowerVerticalAxisItem;
         public ObservableCollection<AxisItemModel<double>> LowerVerticalAxisItemCollection => _model.DecRefSpectrumModels.LowerVerticalAxisItemCollection;
 

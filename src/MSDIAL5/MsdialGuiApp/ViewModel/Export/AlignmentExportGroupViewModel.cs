@@ -3,6 +3,7 @@ using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Reactive.Linq;
@@ -14,11 +15,13 @@ namespace CompMs.App.Msdial.ViewModel.Export
 
         public AlignmentExportGroupViewModel(AlignmentExportGroupModel model) {
             _model = model ?? throw new System.ArgumentNullException(nameof(model));
-            Format = model.ExportMethod.Format;
+            _format = model.ExportMethod.Format;
             SpectraType = model.SpectraType;
             IsLongFormat = model.ExportMethod.IsLongFormat;
-            TrimContentToExcelLimit = model.ExportMethod.TrimToExcelLimit;
+            TrimContentToExcelLimit = model.AccessPeakMetaModel.TrimToExcelLimit;
             CanExport = this.ErrorsChangedAsObservable().Select(_ => !HasValidationErrors).ToReadOnlyReactivePropertySlim(!HasValidationErrors).AddTo(Disposables);
+            EnableMultiClass = model.AccessFileMeta.EnableMultiClass;
+            NumberOfClasses = model.AccessFileMeta.NumberOfClasses;
         }
 
         public string Label => _model.Label;
@@ -73,11 +76,33 @@ namespace CompMs.App.Msdial.ViewModel.Export
             get => _trimContentToExcelLimit;
             set {
                 if (SetProperty(ref _trimContentToExcelLimit, value)) {
-                    _model.ExportMethod.TrimToExcelLimit = _trimContentToExcelLimit;
+                    _model.AccessPeakMetaModel.TrimToExcelLimit = _trimContentToExcelLimit;
                 }
             }
         }
         private bool _trimContentToExcelLimit;
+
+        public bool EnableMultiClass {
+            get => _enableMultiClass;
+            set {
+                if (SetProperty(ref _enableMultiClass, value)) {
+                    _model.AccessFileMeta.EnableMultiClass = _enableMultiClass;
+                }
+            }
+        }
+        private bool _enableMultiClass = false;
+
+        public int NumberOfClasses {
+            get => _numberOfClasses;
+            set {
+                if (SetProperty(ref _numberOfClasses, Math.Max(0, value))) {
+                    _model.AccessFileMeta.NumberOfClasses = _numberOfClasses;
+                }
+            }
+        }
+        private int _numberOfClasses;
+
+        public ReadOnlyReactivePropertySlim<AccessFileMetaModel.FileClasses[]?> EstimatedClasses => _model.AccessFileMeta.EstimatedClasses;
 
         public IReadOnlyReactiveProperty<bool> CanExport { get; }
     }

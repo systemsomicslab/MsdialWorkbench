@@ -1,6 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Utility;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using Reactive.Bindings;
 using System;
@@ -30,20 +32,23 @@ namespace CompMs.App.Msdial.Model.Loader
             _analysisFiles = analysisFiles ?? throw new ArgumentNullException(nameof(analysisFiles));
         }
 
-        public Dictionary<AnalysisFileBeanModel, ReadOnlyReactivePropertySlim<MsSpectrum>> LoadSpectraAsObservable(AnalysisFileBeanModelCollection files, IObservable<AlignmentSpotPropertyModel> target) {
+        public Dictionary<AnalysisFileBeanModel, ReadOnlyReactivePropertySlim<MsSpectrum>> LoadSpectraAsObservable(AnalysisFileBeanModelCollection files, IObservable<AlignmentSpotPropertyModel?> target) {
             return files.AnalysisFiles.ToDictionary(
                 file => file,
-                file => _loaders.GetObservableSpectrum(file, target).Select(spectrum => new MsSpectrum(spectrum)).ToReadOnlyReactivePropertySlim());
+                file => _loaders.GetObservableSpectrum(file, target).Select(spectrum => new MsSpectrum(spectrum)).ToReadOnlyReactivePropertySlim(new MsSpectrum(new List<SpectrumPeak>(0))));
         }
 
         public IObservable<MsSpectrum> LoadReferenceSpectrumAsObservable(MsScanMatchResult matchResult) {
-            return _referenceLoader.LoadSpectrumAsObservable(matchResult).Select(s => new MsSpectrum(s));
+            return _referenceLoader.LoadScanAsObservable(matchResult).DefaultIfNull(scan => new MsSpectrum(scan.Spectrum), new MsSpectrum(new List<SpectrumPeak>(0)));
         }
 
-        public async Task<MatchedSpectra> GetMatchedSpectraMatrixsAsync(AlignmentSpotPropertyModel target, MsScanMatchResult result) {
+        public async Task<MatchedSpectra?> GetMatchedSpectraMatrixsAsync(AlignmentSpotPropertyModel target, MsScanMatchResult result) {
             var scorer = _compoundSearchers.GetMs2ScanMatching(result);
+            if (scorer is null) {
+                return null;
+            }
             var spectraTask = _loaders.GetCurrentSpectraAsync(_analysisFiles.AnalysisFiles, target);
-            var referenceTask = _referenceLoader.LoadSpectrumAsObservable(target.ScanMatchResult).FirstAsync().ToTask();
+            var referenceTask = _referenceLoader.LoadScanAsObservable(target.ScanMatchResult).Select(scan => scan?.Spectrum ?? new List<SpectrumPeak>(0)).FirstAsync().ToTask();
             await Task.WhenAll(spectraTask, referenceTask).ConfigureAwait(false);
             var (reference, matrix) = scorer.GetMatchedSpectraMatrix(referenceTask.Result, spectraTask.Result);
             return new MatchedSpectra(new MsSpectrum(reference), matrix, _analysisFiles.AnalysisFiles);

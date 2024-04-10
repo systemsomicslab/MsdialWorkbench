@@ -1,5 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,8 +11,9 @@ namespace CompMs.App.Msdial.Model.Export
     internal sealed class AnalysisResultExportModel : BindableBase
     {
         private readonly object _syncObject = new object();
+        private readonly IMessageBroker _broker;
 
-        public AnalysisResultExportModel(AnalysisFileBeanModelCollection files, string initialFolder, params IMsdialAnalysisExport[] msdialAnalysisExports) {
+        public AnalysisResultExportModel(AnalysisFileBeanModelCollection files, string initialFolder, IMessageBroker broker, params IMsdialAnalysisExport[] msdialAnalysisExports) {
             if (files is null) {
                 throw new ArgumentNullException(nameof(files));
             }
@@ -18,7 +21,7 @@ namespace CompMs.App.Msdial.Model.Export
             if (msdialAnalysisExports is null) {
                 throw new ArgumentNullException(nameof(msdialAnalysisExports));
             }
-
+            _broker = broker;
             AnalysisExports = msdialAnalysisExports;
             UnSelectedFiles = new ObservableCollection<AnalysisFileBeanModel>(files.AnalysisFiles);
             SelectedFiles = new ObservableCollection<AnalysisFileBeanModel>();
@@ -59,12 +62,18 @@ namespace CompMs.App.Msdial.Model.Export
             get => _destinationFolder;
             set => SetProperty(ref _destinationFolder, value);
         }
-        private string _destinationFolder;
+        private string _destinationFolder = string.Empty;
 
         public void Export() {
-            foreach (var exporter in AnalysisExports) {
+            var publisher = new TaskProgressPublisher(_broker, "Exporting analysis result");
+            using (publisher.Start()) {
+                double all = SelectedFiles.Count;
+                var counter = 0;
                 foreach (var file in SelectedFiles) {
-                    exporter.Export(DestinationFolder, file);
+                    publisher.Progress(counter++ / all, $"Exporting {file.AnalysisFileName}");
+                    foreach (var exporter in AnalysisExports) {
+                        exporter.Export(DestinationFolder, file);
+                    }
                 }
             }
         }

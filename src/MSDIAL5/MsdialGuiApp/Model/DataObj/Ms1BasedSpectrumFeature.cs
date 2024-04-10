@@ -16,10 +16,11 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public Ms1BasedSpectrumFeature(SpectrumFeature spectrumFeature) {
             _spectrumFeature = spectrumFeature;
+            _comment = spectrumFeature.Comment;
             Molecule = new MoleculeModel(spectrumFeature.AnnotatedMSDecResult.Molecule);
             Scan = new ScanModel(spectrumFeature.AnnotatedMSDecResult.MSDecResult);
             MatchResults = new MsScanMatchResultContainerModel(spectrumFeature.AnnotatedMSDecResult.MatchResults);
-            QuantifiedChromatogramPeak = spectrumFeature.QuantifiedChromatogramPeak;
+            _quantifiedChromatogramPeak = spectrumFeature.QuantifiedChromatogramPeak;
         }
 
         public MoleculeModel Molecule { get; }

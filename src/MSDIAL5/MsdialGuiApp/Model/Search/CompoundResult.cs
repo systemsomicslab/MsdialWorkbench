@@ -27,8 +27,8 @@ namespace CompMs.App.Msdial.Model.Search
         public double MassSimilarity => matchResult.AcurateMassSimilarity;
         public double Presence => matchResult.MatchedPeaksPercentage;
         public double TotalScore => matchResult.TotalScore;
-        public List<SpectrumPeakWrapper> Spectrum => spectrum ?? (spectrum = msReference.Spectrum.Select(spec => new SpectrumPeakWrapper(spec)).ToList());
-        private List<SpectrumPeakWrapper> spectrum = null;
+        public List<SpectrumPeakWrapper> Spectrum => spectrum ??= msReference.Spectrum.Select(spec => new SpectrumPeakWrapper(spec)).ToList();
+        private List<SpectrumPeakWrapper>? spectrum;
 
         protected readonly MoleculeMsReference msReference;
         protected readonly MsScanMatchResult matchResult;

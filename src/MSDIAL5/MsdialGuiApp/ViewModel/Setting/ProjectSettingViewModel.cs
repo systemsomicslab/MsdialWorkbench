@@ -20,7 +20,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             SettingViewModels = new ObservableCollection<ISettingViewModel>(
                 new ISettingViewModel[]
                 {
-                    new ProjectParameterSettingViewModel(Model.ProjectParameterSettingModel).AddTo(Disposables),
+                    new ProjectParameterSettingViewModel(model.ProjectParameterSettingModel).AddTo(Disposables),
                 });
 
             ObserveChanges = SettingViewModels.ObserveElementObservableProperty(vm => vm.ObserveChanges).Select(pack => pack.Value);
@@ -35,7 +35,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            DatasetSettingViewModel = Model
+            DatasetSettingViewModel = model
                 .ObserveProperty(m => m.DatasetSettingModel)
                 .Select(m => m is null ? null : new DatasetSettingViewModel(m, ObserveChangeAfterDecision.Inverse()))
                 .DisposePreviousValue()
@@ -45,7 +45,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ProjectSettingModel Model { get; }
 
-        public ReadOnlyReactivePropertySlim<DatasetSettingViewModel> DatasetSettingViewModel { get; }
+        public ReadOnlyReactivePropertySlim<DatasetSettingViewModel?> DatasetSettingViewModel { get; }
 
         public ObservableCollection<ISettingViewModel> SettingViewModels { get; }
 
@@ -61,7 +61,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         IObservable<bool> ISettingViewModel.ObserveChangeAfterDecision => ObserveChangeAfterDecision;
 
-        public ISettingViewModel Next(ISettingViewModel selected) {
+        public ISettingViewModel? Next(ISettingViewModel selected) {
             var current = SettingViewModels.IndexOf(selected);
             if (current >= 0) {
                 selected.Next(selected);

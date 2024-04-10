@@ -21,6 +21,8 @@ namespace CompMs.App.Msdial.Model.Chart
             _observableMsSpectrum = observableMsSpectrum ?? throw new ArgumentNullException(nameof(observableMsSpectrum));
             HorizontalPropertySelectors = horizontalPropertySelectors ?? throw new ArgumentNullException(nameof(horizontalPropertySelectors));
             VerticalPropertySelectors = verticalPropertySelectors ?? throw new ArgumentNullException(nameof(verticalPropertySelectors));
+            HorizontalProperty = HorizontalPropertySelectors.GetSelector(typeof(SpectrumPeak))?.Property ?? throw new Exception("Valid PropertySelector is not found.");
+            VerticalProperty = VerticalPropertySelectors.GetSelector(typeof(SpectrumPeak))?.Property ?? throw new Exception("Valid PropertySelector is not found.");
             _hueItem = hueItem;
             Labels = graphLabels;
 
@@ -28,14 +30,14 @@ namespace CompMs.App.Msdial.Model.Chart
             LineThickness = new ReactivePropertySlim<double>(2d).AddTo(Disposables);
         }
 
-        public IObservable<MsSpectrum> MsSpectrum => _observableMsSpectrum.MsSpectrum;
+        public IObservable<MsSpectrum?> MsSpectrum => _observableMsSpectrum.MsSpectrum;
         public AxisPropertySelectors<double> HorizontalPropertySelectors { get; }
         public IObservable<IAxisManager<double>> HorizontalAxis => HorizontalPropertySelectors.AxisItemSelector.GetAxisItemAsObservable().SkipNull().Select(item => item.AxisManager);
-        public string HorizontalProperty => HorizontalPropertySelectors.GetSelector(typeof(SpectrumPeak)).Property;
+        public string HorizontalProperty { get; }
         public AxisPropertySelectors<double> VerticalPropertySelectors { get; }
         public IObservable<IAxisManager<double>> VerticalAxis => VerticalPropertySelectors.AxisItemSelector.GetAxisItemAsObservable().SkipNull().Select(item => item.AxisManager);
         public AxisItemSelector<double> VerticalAxisItemSelector => VerticalPropertySelectors.AxisItemSelector;
-        public string VerticalProperty => VerticalPropertySelectors.GetSelector(typeof(SpectrumPeak)).Property;
+        public string VerticalProperty { get; }
         public IBrushMapper Brush => _hueItem.Brush;
         public string HueProperty => _hueItem.Property;
         public GraphLabels Labels { get; }
@@ -50,7 +52,11 @@ namespace CompMs.App.Msdial.Model.Chart
         }
 
         public IObservable<(double, double)> GetHorizontalRange() {
-            return _observableMsSpectrum.GetRange(((PropertySelector<SpectrumPeak, double>)HorizontalPropertySelectors.GetSelector(typeof(SpectrumPeak))).Selector);
+            var selector = HorizontalPropertySelectors.GetSelector(typeof(SpectrumPeak)) as PropertySelector<SpectrumPeak, double>;
+            if (selector is null) {
+                throw new Exception("Valid PropertySelector is not found.");
+            }
+            return _observableMsSpectrum.GetRange(selector.Selector);
         }
 
         public SingleSpectrumModel Product(SingleSpectrumModel other) {
@@ -62,10 +68,15 @@ namespace CompMs.App.Msdial.Model.Chart
         }
 
         private SingleSpectrumModel CreateFromMsSpectrum(ObservableMsSpectrum msSpectrum) {
+            PropertySelector<SpectrumPeak, double>? horizontalSelector = HorizontalPropertySelectors.GetSelector(typeof(SpectrumPeak)) as PropertySelector<SpectrumPeak, double>;
+            PropertySelector<SpectrumPeak, double>? verticalSelector = VerticalPropertySelectors.GetSelector(typeof(SpectrumPeak)) as PropertySelector<SpectrumPeak, double>;
+            if (horizontalSelector is null || verticalSelector is null) {
+                throw new Exception("Valid PropertySelector is not found.");
+            }
             var spectrumModel = new SingleSpectrumModel(
                 msSpectrum,
-                msSpectrum.CreateAxisPropertySelectors((PropertySelector<SpectrumPeak, double>)HorizontalPropertySelectors.GetSelector(typeof(SpectrumPeak)), "m/z", "m/z"),
-                msSpectrum.CreateAxisPropertySelectors2((PropertySelector<SpectrumPeak, double>)VerticalPropertySelectors.GetSelector(typeof(SpectrumPeak)), "abundance"),
+                msSpectrum.CreateAxisPropertySelectors(horizontalSelector, "m/z", "m/z"),
+                msSpectrum.CreateAxisPropertySelectors2(verticalSelector, "abundance"),
                 _hueItem, Labels);
             spectrumModel.Disposables.Add(msSpectrum);
             return spectrumModel;

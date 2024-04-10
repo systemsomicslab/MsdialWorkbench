@@ -48,7 +48,7 @@ namespace CompMs.App.Msdial.Model.Setting
     public class RetentionTimeCollectionRangeSetting : DataCollectionRangeSetting, IDataCollectionRangeSetting
     {
         private readonly PeakPickBaseParameter parameter;
-        private readonly MsdialLcImMsParameter lcImMsParameter;
+        private readonly MsdialLcImMsParameter? lcImMsParameter;
 
         public RetentionTimeCollectionRangeSetting(PeakPickBaseParameter parameter, bool needAccmulation) : base(needAccmulation) {
             Begin = parameter.RetentionTimeBegin;
@@ -80,8 +80,8 @@ namespace CompMs.App.Msdial.Model.Setting
 
     public class DriftTimeCollectionRangeSetting : DataCollectionRangeSetting, IDataCollectionRangeSetting
     {
-        private readonly MsdialLcImMsParameter lcImMsParameter;
-        private readonly MsdialImmsParameter immsParameter;
+        private readonly MsdialLcImMsParameter? lcImMsParameter;
+        private readonly MsdialImmsParameter? immsParameter;
 
         public DriftTimeCollectionRangeSetting(MsdialLcImMsParameter parameter, bool needAccmulation) : base(needAccmulation) {
             Begin = parameter.DriftTimeBegin;

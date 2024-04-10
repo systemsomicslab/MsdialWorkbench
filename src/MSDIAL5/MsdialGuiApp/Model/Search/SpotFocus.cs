@@ -36,11 +36,11 @@ namespace CompMs.App.Msdial.Model.Search
 
     public class IdSpotFocus<T> : DisposableModelBase, ISpotFocus
     {
-        private readonly IReactiveProperty<T> property;
+        private readonly IReactiveProperty<T?> property;
         private readonly Func<double, T> selector;
         private readonly (ISpotFocus, Func<T, double>)[] focuses;
 
-        public IdSpotFocus(IReactiveProperty<T> property, Func<double, T> selector, IObservable<double> update, string label, params (ISpotFocus, Func<T, double>)[] focuses) {
+        public IdSpotFocus(IReactiveProperty<T?> property, Func<double, T> selector, IObservable<double> update, string label, params (ISpotFocus, Func<T, double>)[] focuses) {
             Label = label;
             this.property = property;
             this.selector = selector;

@@ -19,7 +19,7 @@ namespace CompMs.App.Msdial.Model.Search
 
         string Comment { get; }
         string Protein { get; }
-        string AdductIonName { get; }
+        string? AdductIonName { get; }
         AdductIon AdductType { get; }
 
         double RelativeAmplitudeValue { get; }

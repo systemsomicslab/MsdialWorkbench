@@ -187,7 +187,7 @@ namespace CompMs.App.Msdial.View.Core
             view.ShowDialog();
         }
 
-        private Action<object> ShowChildSettingDialog<TView>(string title, double height, double width, object finishCommandContent = null)
+        private Action<object> ShowChildSettingDialog<TView>(string title, double height, double width, object? finishCommandContent = null)
             where TView: FrameworkElement, new() {
             void InnerShowDialog(object viewmodel) {
                 var dialog = new SettingDialog
@@ -199,7 +199,7 @@ namespace CompMs.App.Msdial.View.Core
                     DataContext = viewmodel,
                     Content = new TView(),
                 };
-                if (finishCommandContent != null) {
+                if (finishCommandContent is not null) {
                     dialog.FinishCommandContent = finishCommandContent;
                 }
                 dialog.ShowDialog();
@@ -244,14 +244,16 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void ShowShortMessageDialog(ShortMessageRequest request) {
-            var dialog = new ShortMessageWindow
-            {
-                DataContext = request.Content,
-                Text = request.Content,
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-            request.Result = dialog.ShowDialog();
+            Dispatcher.Invoke(() => {
+                var dialog = new ShortMessageWindow
+                {
+                    DataContext = request.Content,
+                    Text = request.Content,
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                request.Result = dialog.ShowDialog();
+            });
         }
 
         private void ShowProcessMessageDialog(ProcessMessageRequest request) {
@@ -320,7 +322,7 @@ namespace CompMs.App.Msdial.View.Core
             };
 
             if (sfd.ShowDialog(this) == Graphics.Window.DialogResult.OK) {
-                request.Run(sfd.SelectedPath);
+                request.Run(sfd.SelectedPath!);
             }
         }
 

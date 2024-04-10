@@ -232,11 +232,11 @@ namespace CompMs.App.Msdial.Model.Setting
         public ObservableCollection<RiDictionaryModel> RetentionIndexFiles { get; }
         public RiDictionarySettingModel RiDictionarySettingModel { get; }
 
-        public string MspFilePath {
+        public string? MspFilePath {
             get => _mspFilePath;
             set => SetProperty(ref _mspFilePath, value);
         }
-        private string _mspFilePath;
+        private string? _mspFilePath;
 
         public bool UseQuantmassDefinedInLibrary {
             get => _useQuantmassDefinedInLibrary;

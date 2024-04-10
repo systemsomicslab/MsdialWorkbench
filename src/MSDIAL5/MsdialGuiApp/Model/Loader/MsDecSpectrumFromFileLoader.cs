@@ -1,7 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.Common.Components;
+using CompMs.Common.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
@@ -17,7 +16,11 @@ namespace CompMs.App.Msdial.Model.Loader
             _file = file ?? throw new ArgumentNullException(nameof(file));
         }
 
-        IObservable<List<SpectrumPeak>> IMsSpectrumLoader<AlignmentSpotPropertyModel>.LoadSpectrumAsObservable(AlignmentSpotPropertyModel target) {
+        IObservable<IMSScanProperty?> IMsSpectrumLoader<AlignmentSpotPropertyModel>.LoadScanAsObservable(AlignmentSpotPropertyModel target) {
+            return LoadCore(target);
+        }
+
+        private IObservable<IMSScanProperty?> LoadCore(AlignmentSpotPropertyModel target) {
             if (target is null) {
                 throw new ArgumentNullException(nameof(target));
             }
@@ -29,10 +32,10 @@ namespace CompMs.App.Msdial.Model.Loader
             return props.Select(props_ => {
                 var prop = props_.FirstOrDefault(p => p.FileID == _file.AnalysisFileId);
                 if (prop is null || prop.MSDecResultID < 0) {
-                    return new List<SpectrumPeak>(0);
+                    return null;
                 }
 
-                return _file.MSDecLoader.LoadMSDecResult(prop.MSDecResultID).Spectrum;
+                return _file.MSDecLoader.LoadMSDecResult(prop.MSDecResultID);
             });
         }
     }
