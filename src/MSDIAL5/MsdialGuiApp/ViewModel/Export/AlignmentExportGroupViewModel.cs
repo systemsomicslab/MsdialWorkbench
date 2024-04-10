@@ -3,6 +3,7 @@ using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Reactive.Linq;
@@ -19,6 +20,8 @@ namespace CompMs.App.Msdial.ViewModel.Export
             IsLongFormat = model.ExportMethod.IsLongFormat;
             TrimContentToExcelLimit = model.AccessPeakMetaModel.TrimToExcelLimit;
             CanExport = this.ErrorsChangedAsObservable().Select(_ => !HasValidationErrors).ToReadOnlyReactivePropertySlim(!HasValidationErrors).AddTo(Disposables);
+            EnableMultiClass = model.AccessFileMeta.EnableMultiClass;
+            NumberOfClasses = model.AccessFileMeta.NumberOfClasses;
         }
 
         public string Label => _model.Label;
@@ -78,6 +81,28 @@ namespace CompMs.App.Msdial.ViewModel.Export
             }
         }
         private bool _trimContentToExcelLimit;
+
+        public bool EnableMultiClass {
+            get => _enableMultiClass;
+            set {
+                if (SetProperty(ref _enableMultiClass, value)) {
+                    _model.AccessFileMeta.EnableMultiClass = _enableMultiClass;
+                }
+            }
+        }
+        private bool _enableMultiClass = false;
+
+        public int NumberOfClasses {
+            get => _numberOfClasses;
+            set {
+                if (SetProperty(ref _numberOfClasses, Math.Max(0, value))) {
+                    _model.AccessFileMeta.NumberOfClasses = _numberOfClasses;
+                }
+            }
+        }
+        private int _numberOfClasses;
+
+        public ReadOnlyReactivePropertySlim<AccessFileMetaModel.FileClasses[]?> EstimatedClasses => _model.AccessFileMeta.EstimatedClasses;
 
         public IReadOnlyReactiveProperty<bool> CanExport { get; }
     }

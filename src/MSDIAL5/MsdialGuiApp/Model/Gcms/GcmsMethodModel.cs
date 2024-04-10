@@ -101,7 +101,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                     //new ExportType("Identification method", new AnnotationMethodAccessor(), "IdentificationMethod"),
                 },
                 new AccessPeakMetaModel(metadataAccessorFactory),
-                new AccessFileMetaModel(fileProperties),
+                new AccessFileMetaModel(fileProperties).AddTo(Disposables),
                 new[]
                 {
                     ExportspectraType.deconvoluted,

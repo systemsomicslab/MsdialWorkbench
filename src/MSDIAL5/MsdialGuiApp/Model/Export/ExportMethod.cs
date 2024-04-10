@@ -54,6 +54,17 @@ namespace CompMs.App.Msdial.Model.Export
                     accessPeakMeta.GetAccessor());
             }
 
+            var outFileMetaName = string.Format(outNameTemplate, "FileMaster");
+            var outFileMetaFile = Format.WithExtension(outFileMetaName);
+            var outFileMetaPath = Path.Combine(exportDirectory, outFileMetaFile);
+            notification?.Invoke(outFileMetaFile);
+            using (var outstream = File.Open(outFileMetaPath, FileMode.Create, FileAccess.Write)) {
+                exporter.ExportFileMeta(
+                    outstream,
+                    _analysisFiles,
+                    accessFileMeta.GetAccessor());
+            }
+
             var outValueName = string.Format(outNameTemplate, "PeakValues");
             var outValueFile = Format.WithExtension(outValueName);
             var outValuePath = Path.Combine(exportDirectory, outValueFile);
