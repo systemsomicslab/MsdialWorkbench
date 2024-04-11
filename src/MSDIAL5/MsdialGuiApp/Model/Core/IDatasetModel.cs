@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Setting;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using System.ComponentModel;
@@ -8,9 +9,11 @@ namespace CompMs.App.Msdial.Model.Core
 {
     internal interface IDatasetModel : INotifyPropertyChanged
     {
-        IMethodModel Method { get; }
+        IMethodModel? Method { get; }
 
         IMsdialDataStorage<ParameterBase> Storage { get; }
+
+        AnalysisFileBeanModelCollection AnalysisFiles { get; }
 
         MethodSettingModel AllProcessMethodSettingModel { get; }
 

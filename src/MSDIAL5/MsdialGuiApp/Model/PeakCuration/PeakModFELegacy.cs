@@ -1,17 +1,14 @@
 ﻿using CompMs.App.Msdial.View.PeakCuration;
 using CompMs.Graphics.Chromatogram.ManualPeakModification;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
-namespace CompMs.App.Msdial.Model.PeakCuration {
+namespace CompMs.App.Msdial.Model.PeakCuration
+{
     public class PeakModFELegacy : FrameworkElement {
         private VisualCollection visualCollection;
-        private DrawingVisual drawingVisual;
+        private DrawingVisual? drawingVisual;
         private DrawVisualManualPeakModification drawing;
         private PeakModUCLegacy uc;
 
@@ -31,11 +28,6 @@ namespace CompMs.App.Msdial.Model.PeakCuration {
             rubberRectangleBackGround.Freeze();
         }
 
-        public PeakModFELegacy(DrawVisualManualPeakModification drawing) {
-            visualCollection = new VisualCollection(this);
-            this.drawing = drawing;
-        }
-
         public void Draw() {
             this.visualCollection.Clear();
             if (this.drawing == null) return;
@@ -45,7 +37,7 @@ namespace CompMs.App.Msdial.Model.PeakCuration {
         }
 
         public void ReflectMouseProp() {
-            if (this.drawing == null) {
+            if (this.drawing is null) {
             }
             else {
                 this.drawing.CurrentMousePoint = this.uc.CurrentMousePoint;
@@ -98,8 +90,8 @@ namespace CompMs.App.Msdial.Model.PeakCuration {
             Draw();
         }
 
-        public float[] getDataPositionOnMousePoint(Point mousePoint) {
-            if (this.drawing == null)
+        public float[]? getDataPositionOnMousePoint(Point mousePoint) {
+            if (this.drawing is null)
                 return null;
 
             float[] peakInformation;

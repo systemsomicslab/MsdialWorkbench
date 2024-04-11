@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Parser;
@@ -7,7 +8,6 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialGcMsApi.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -93,7 +93,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
             alignments[3].QuantMass = alignments[2].QuantMass + param.CentroidMs1Tolerance * 0.99;
             alignments[3].TimesCenter.RT = new RetentionTime(alignments[2].TimesCenter.RT.Value + 0.025 * 0.99, unit: alignments[3].TimesCenter.RT.Unit);
             alignments[3].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
-            alignments[3].MatchResults.ClearMspResults();
+            alignments[3].TextDbBasedMatchResult = null;
+            alignments[3].MatchResults.ClearResults();
 
             var expects = BatchBuildAlignmentSpotProperty(4, d_mass: param.CentroidMs1Tolerance, d_time: 0.025);
             expects[1].QuantMass = expects[0].QuantMass + param.CentroidMs1Tolerance * 0.99;
@@ -148,7 +149,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
             alignments[3].QuantMass = alignments[2].QuantMass + param.CentroidMs1Tolerance * 0.99;
             alignments[3].TimesCenter.RI = new RetentionIndex(alignments[2].TimesCenter.RI.Value + 2.5 * 0.99);
             alignments[3].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
-            alignments[3].MatchResults.ClearMspResults();
+            alignments[3].TextDbBasedMatchResult = null;
+            alignments[3].MatchResults.ClearResults();
 
             var expects = BatchBuildAlignmentSpotProperty(4, d_mass: param.CentroidMs1Tolerance, d_index: 2.5);
             for (int i = 0; i < expects.Count; i++) expects[i].TimesCenter.MainType = ChromXType.RI;
@@ -204,7 +206,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
             alignments[3].QuantMass = alignments[2].QuantMass + param.CentroidMs1Tolerance * 0.99;
             alignments[3].TimesCenter.RI = new RetentionIndex(alignments[2].TimesCenter.RI.Value + 1000 * 0.99);
             alignments[3].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
-            alignments[3].MatchResults.ClearMspResults();
+            alignments[3].TextDbBasedMatchResult = null;
+            alignments[3].MatchResults.ClearResults();
 
             var expects = BatchBuildAlignmentSpotProperty(4, d_mass: param.CentroidMs1Tolerance, d_index: 1000);
             for (int i = 0; i < expects.Count; i++) expects[i].TimesCenter.MainType = ChromXType.RI;
@@ -338,7 +341,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
                 MSRawID2MspBasedMatchResult = mspResults,
                 TextDbBasedMatchResult = textDbResult,
                 PeakCharacter = BuildIonFeatureCharacter(),
-                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
+                AdductType = AdductIon.GetAdductIon("[M+H]+"),
                 FeatureFilterStatus = new FeatureFilterStatus { IsBlankFiltered = false },
                 AlignedPeakProperties = new List<AlignmentChromPeakFeature>
                 {
@@ -372,7 +375,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
             {
                 IsotopeWeightNumber = weight, Charge = charge,
                 PeakLinks = new List<LinkedPeakFeature>(),
-                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
+                AdductType = AdductIon.GetAdductIon("[M+H]+"),
             };
         }
         #endregion

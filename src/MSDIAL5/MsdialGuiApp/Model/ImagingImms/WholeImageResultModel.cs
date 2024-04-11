@@ -29,9 +29,9 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         private readonly ObservableCollection<IntensityImageModel> _intensities;
         private readonly List<Raw2DElement> _elements;
 
-        public WholeImageResultModel(AnalysisFileBeanModel file, MaldiFrames maldiFrames, RoiModel wholeRoi, IMsdialDataStorage<MsdialImmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBeanModel> providerFactory, IMessageBroker broker) {
+        public WholeImageResultModel(AnalysisFileBeanModel file, MaldiFrames maldiFrames, RoiModel wholeRoi, IMsdialDataStorage<MsdialImmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBeanModel> providerFactory, FilePropertiesModel projectBaseParameterModel, IMessageBroker broker) {
             var peakFilter = new PeakFilterModel(DisplayFilter.All);
-            var analysisModel = new ImmsAnalysisModel(file, providerFactory.Create(file), evaluator, storage.DataBases, storage.DataBaseMapper, storage.Parameter, peakFilter, broker).AddTo(Disposables);
+            var analysisModel = new ImmsAnalysisModel(file, providerFactory.Create(file), evaluator, storage.DataBases, storage.DataBaseMapper, storage.Parameter, peakFilter, projectBaseParameterModel, broker).AddTo(Disposables);
             _analysisModel = analysisModel;
 
             _elements = analysisModel.Ms1Peaks.Select(item => new Raw2DElement(item.Mass, item.Drift.Value)).ToList();
@@ -52,16 +52,16 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         public ImmsAnalysisModel AnalysisModel => _analysisModel;
         public ObservableCollection<ChromatogramPeakFeatureModel> Peaks => _analysisModel.Ms1Peaks;
         public AnalysisPeakPlotModel PeakPlotModel => _analysisModel.PlotModel;
-        public ReactivePropertySlim<ChromatogramPeakFeatureModel> Target => _analysisModel.Target;
+        public ReactivePropertySlim<ChromatogramPeakFeatureModel?> Target => _analysisModel.Target;
 
         public ImagingRoiModel ImagingRoiModel { get; }
         public ReadOnlyObservableCollection<IntensityImageModel> Intensities { get; }
-        public IntensityImageModel SelectedPeakIntensities
+        public IntensityImageModel? SelectedPeakIntensities
         {
             get => _selectedPeakIntensities;
             set => SetProperty(ref _selectedPeakIntensities, value);
         }
-        private IntensityImageModel _selectedPeakIntensities;
+        private IntensityImageModel? _selectedPeakIntensities;
 
         public async Task<ImagingRoiModel> CreateImagingRoiModelAsync(RoiModel roi)
         {
@@ -70,5 +70,10 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             result.Select();
             return result;
         }
+        public Task SaveAsync()
+        {
+            return _analysisModel.SaveAsync(default);
+        }
+
     }
 }

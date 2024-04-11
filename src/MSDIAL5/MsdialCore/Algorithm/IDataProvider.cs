@@ -28,6 +28,14 @@ namespace CompMs.MsdialCore.Algorithm
             return provider.LoadMsSpectrums()[index];
         }
 
+        public static async Task<RawSpectrum> LoadMsSpectrumFromIndexAsync(this IDataProvider provider, int index, CancellationToken token) {
+            if (index < 0) {
+                return null;
+            }
+            var spectra = await provider.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
+            return spectra[index];
+        }
+
         public static RawSpectrum LoadMs1SpectrumFromIndex(this IDataProvider provider, int index) {
             return provider.LoadMs1Spectrums()[index];
         }
@@ -67,6 +75,14 @@ namespace CompMs.MsdialCore.Algorithm
 
         public static List<double> LoadCollisionEnergyTargets(this IDataProvider provider) {
             return SpectrumParser.LoadCollisionEnergyTargets(provider.LoadMsSpectrums());
+        }
+
+        public static IDataProviderFactory<object> AsFactory(this IDataProvider provider) {
+            return new IdentityFactory<object>(provider);
+        }
+
+        class IdentityFactory<T>(IDataProvider provider) : IDataProviderFactory<T> {
+            public IDataProvider Create(T source) => provider;
         }
     }
 

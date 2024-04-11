@@ -1,0 +1,42 @@
+﻿<RibbonTab x:Class="CompMs.App.Msdial.View.RibbonControl.MsdialViewTab"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+           mc:Ignorable="d"
+           xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Core"
+           xmlns:common="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
+           Header="View"
+           KeyTip="V"
+           d:DataContext="{d:DesignInstance Type={x:Type vm:MethodViewModel}}">
+    <RibbonTab.Resources>
+        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+    </RibbonTab.Resources>
+    <RibbonGroup>
+        <RibbonSplitButton Label="Show ion table"
+                           LargeImageSource="{StaticResource Ion_table_is}"
+                           KeyTip="I"
+                           Command="{Binding SelectedViewModel.Value.ShowIonTableCommand, FallbackValue={x:Static common:NeverCommand.Instance}}">
+            <RibbonMenuItem Header="File table view" Command="{Binding AnalysisViewModel.Value.ShowIonTableCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
+            <RibbonMenuItem Header="Alignment table view" Command="{Binding AlignmentViewModel.Value.ShowIonTableCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
+        </RibbonSplitButton>
+        <RibbonButton Label="Display total ion chromatogram" LargeImageSource="{StaticResource Total_ion_chromatogram_is}"
+                      Command="{Binding ShowTicCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      KeyTip="T"/>
+        <RibbonButton Label="Display extracted ion chromatogram" LargeImageSource="{StaticResource Extracted_ion_chromatogram_is}"
+                      Command="{Binding ShowEicCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      KeyTip="E"/>
+        <RibbonButton Label="Display base peak chromatogram" LargeImageSource="{StaticResource Base_peak_chromatogram_is}"
+                      Command="{Binding ShowBpcCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      KeyTip="B"/>
+        <RibbonButton Label="Display TIC, BPC, and most abundant ion's EIC" LargeImageSource="{StaticResource TIC_BPC_and_most_abundanct_EIC_is}"
+                      Command="{Binding ShowTicBpcRepEICCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      KeyTip="C"/>
+        <RibbonButton Label="Show experiment spectrum"
+                      Command="{Binding ShowExperimentSpectrumCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      KeyTip="X"/>
+        <RibbonButton Label="Display retention time correction window"
+                      IsEnabled="false"
+                      KeyTip="R"/>
+    </RibbonGroup>
+</RibbonTab>

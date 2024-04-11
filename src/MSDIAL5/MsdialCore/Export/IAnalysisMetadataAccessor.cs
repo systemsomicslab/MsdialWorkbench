@@ -14,6 +14,12 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Export
 {
+    public interface IAnalysisMetadataAccessor<T>
+    {
+        string[] GetHeaders();
+        Dictionary<string, string> GetContent(T feature);
+    }
+
     public interface IAnalysisMetadataAccessor
     {
         string[] GetHeaders();
@@ -128,7 +134,7 @@ namespace CompMs.MsdialCore.Export
             if (spectrum is null) {
                 return "null";
             }
-            var isotopes = DataAccess.GetIsotopicPeaks(spectrum.Spectrum, (float)feature.PrecursorMz, parameter.CentroidMs1Tolerance);
+            var isotopes = DataAccess.GetFineIsotopicPeaks(spectrum, feature.PeakCharacter, feature.PrecursorMz, parameter.CentroidMs1Tolerance, parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
             if (isotopes.IsEmptyOrNull()) {
                 return "null";
             }
@@ -140,7 +146,18 @@ namespace CompMs.MsdialCore.Export
             if (spectrum.IsEmptyOrNull()) {
                 return "null";
             }
-            return string.Join(";", spectrum.Select(peak => string.Format("{0:F5} {1:F0}", peak.Mass, peak.Intensity)));
+            var strSpectrum = string.Join(";", spectrum.Select(peak => string.Format("{0:F5} {1:F0}", peak.Mass, peak.Intensity)));
+            if (strSpectrum.Length < ExportConstants.EXCEL_CELL_SIZE_LIMIT) {
+                return strSpectrum;
+            }
+            var builder = new System.Text.StringBuilder();
+            foreach (var peak in spectrum) {
+                if (builder.Length > ExportConstants.EXCEL_CELL_SIZE_LIMIT) {
+                    break;
+                }
+                builder.Append(string.Format("{0:F5}:{1:F0} ", peak.Mass, peak.Intensity));
+            }
+            return builder.ToString();
         }
 
         protected static string UnknownIfEmpty(string value) => string.IsNullOrEmpty(value) ? "Unknown" : value;

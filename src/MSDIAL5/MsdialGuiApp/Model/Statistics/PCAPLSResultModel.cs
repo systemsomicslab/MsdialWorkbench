@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.View.Statistics;
 using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.Common.Enum;
@@ -51,7 +52,7 @@ namespace CompMs.App.Msdial.Model.Statistics
         public AnalysisFileBean Bean { get; }
     }
 
-    internal sealed class PCAPLSResultModel : BindableBase {
+    internal sealed class PCAPLSResultModel : DisposableModelBase {
         private readonly MultivariateAnalysisResult _result;
 
         public PCAPLSResultModel(
@@ -79,11 +80,11 @@ namespace CompMs.App.Msdial.Model.Statistics
             else {
                 Scores = new ObservableCollection<ComponentScoreModel>(
                 statisticsObject.YLabels.Select((label, i) =>
-                    new ComponentScoreModel(result.TPreds.Select(preds => preds[i]).ToArray(), null, label, analysisfiles[i])));
+                    new ComponentScoreModel(result.TPreds.Select(preds => preds[i]).ToArray(), Array.Empty<double>(), label, analysisfiles[i])));
 
                 Loadings = new ObservableCollection<ComponentLoadingModel>(
                 statisticsObject.XLabels.Select((label, i) =>
-                    new ComponentLoadingModel(result.PPreds.Select(preds => preds[i]).ToArray(), null, label, spotprops[i])));
+                    new ComponentLoadingModel(result.PPreds.Select(preds => preds[i]).ToArray(), Array.Empty<double>(), label, spotprops[i])));
             }
             
             LoadingAxises = result.PPreds
@@ -124,51 +125,28 @@ namespace CompMs.App.Msdial.Model.Statistics
                 PCOAxises = opcAxises;
             }
 
-            PointBrush = brushmaps.Select(bm => bm.Contramap((ComponentScoreViewModel csvm) => csvm.Model.Bean.AnalysisFileClass)).ToReactiveProperty();
+            _pointBrush = brushmaps.Select(bm => bm.Contramap((ComponentScoreViewModel csvm) => csvm.Model.Bean.AnalysisFileClass)).ToReactiveProperty().AddTo(Disposables);
 
-            var ontology = new BrushMapData<ComponentLoadingViewModel>(
-                new KeyBrushMapper<ComponentLoadingViewModel, string>(
-                    ChemOntologyColor.Ontology2RgbaBrush,
-                    loading => loading?.Model.Spot.Ontology ?? string.Empty,
-                    Color.FromArgb(180, 181, 181, 181)),
-                "Ontology");
-            var amplitude = new BrushMapData<ComponentLoadingViewModel>(
-                new DelegateBrushMapper<ComponentLoadingViewModel>(
-                    loading => Color.FromArgb(
-                        180,
-                        (byte)(255 * loading.Model.Spot.innerModel.RelativeAmplitudeValue),
-                        (byte)(255 * (1 - Math.Abs(loading.Model.Spot.innerModel.RelativeAmplitudeValue - 0.5))),
-                        (byte)(255 - 255 * loading.Model.Spot.innerModel.RelativeAmplitudeValue)),
-                    enableCache: true),
-                "Amplitude");
+            var brushMapDataSelectorFactory = new BrushMapDataSelectorFactory<ComponentLoadingViewModel>(
+                    vm => vm.Model.Spot.innerModel.RelativeAmplitudeValue,
+                    vm => vm.Model.Spot?.Ontology ?? string.Empty);
+            var brushMapDataSelector = brushMapDataSelectorFactory.CreateBrushes(parameter.TargetOmics);
+            Brushes = brushMapDataSelector.Brushes.ToList();
+            _selectedBrush = brushMapDataSelector.SelectedBrush;
 
-            Brushes = new List<BrushMapData<ComponentLoadingViewModel>>
-            {
-                amplitude, ontology,
-            };
-
-            if (parameter.TargetOmics == TargetOmics.Lipidomics) {
-                SelectedBrush = ontology;
-            }
-            else if (parameter.TargetOmics == TargetOmics.Proteomics || parameter.TargetOmics == TargetOmics.Metabolomics) {
-                SelectedBrush = amplitude;
-            }
-
-            PosnegBrush = new DelegateBrushMapper<ComponentLoadingViewModel>(
-                    loading => loading.ComponentX > 0 ? Colors.Red : Colors.Blue);
-
+            _posnegBrush = new DelegateBrushMapper<ComponentLoadingViewModel>(loading => loading.ComponentX > 0 ? Colors.Red : Colors.Blue);
         }
 
         public ObservableCollection<ComponentLoadingModel> Loadings { get; }
         public ObservableCollection<ComponentScoreModel> Scores { get; }
         public ObservableCollection<IAxisManager<string>> PCAxises { get; }
-        public ObservableCollection<IAxisManager<string>> PCOAxises { get; }
+        public ObservableCollection<IAxisManager<string>>? PCOAxises { get; }
         public ReadOnlyCollection<Lazy<IAxisManager<double>>> LoadingAxises { get; }
-        public ReadOnlyCollection<Lazy<IAxisManager<double>>> OLoadingAxises { get; }
+        public ReadOnlyCollection<Lazy<IAxisManager<double>>>? OLoadingAxises { get; }
         public ReadOnlyCollection<Lazy<IAxisManager<double>>> LoadingAbsoluteAxises { get; }
-        public ReadOnlyCollection<Lazy<IAxisManager<double>>> OLoadingAbsoluteAxises { get; }
+        public ReadOnlyCollection<Lazy<IAxisManager<double>>>? OLoadingAbsoluteAxises { get; }
         public ReadOnlyCollection<Lazy<IAxisManager<double>>> ScoreAxises { get; }
-        public ReadOnlyCollection<Lazy<IAxisManager<double>>> OScoreAxises { get; }
+        public ReadOnlyCollection<Lazy<IAxisManager<double>>>? OScoreAxises { get; }
         public List<BrushMapData<ComponentLoadingViewModel>> Brushes { get; }
 
         public BrushMapData<ComponentLoadingViewModel> SelectedBrush {
@@ -177,11 +155,11 @@ namespace CompMs.App.Msdial.Model.Statistics
         }
         private BrushMapData<ComponentLoadingViewModel> _selectedBrush;
 
-        public IObservable<IBrushMapper<ComponentScoreViewModel>> PointBrush {
+        public IObservable<IBrushMapper<ComponentScoreViewModel>?> PointBrush {
             get => _pointBrush;
             set => SetProperty(ref _pointBrush, value);
         }
-        private IObservable<IBrushMapper<ComponentScoreViewModel>> _pointBrush;
+        private IObservable<IBrushMapper<ComponentScoreViewModel>?> _pointBrush;
 
         public IBrushMapper<ComponentLoadingViewModel> PosnegBrush {
             get => _posnegBrush;
@@ -198,12 +176,12 @@ namespace CompMs.App.Msdial.Model.Statistics
             get => _scorePlotTitle;
             set => SetProperty(ref _scorePlotTitle, value);
         }
-        private string _scorePlotTitle;
+        private string _scorePlotTitle = string.Empty;
         public string LoadingPlotTitle {
             get => _loadingPlotTitle;
             set => SetProperty(ref _loadingPlotTitle, value);
         }
-        private string _loadingPlotTitle;
+        private string _loadingPlotTitle = string.Empty;
 
         public void ShowContributionPlot(Window owner) {
             if (_result.MultivariateAnalysisOption == MultivariateAnalysisOption.Pca) {
@@ -329,11 +307,11 @@ namespace CompMs.App.Msdial.Model.Statistics
             }
         }
 
-        private ObservableCollection<SolidColorBrush> ConvertRgbaToBrush(ObservableCollection<byte[]> bytes) {
-            if (bytes == null) return null;
-            var brushes = new ObservableCollection<SolidColorBrush>();
+        private List<SolidColorBrush> ConvertRgbaToBrush(ObservableCollection<byte[]> bytes) {
+            if (bytes is null) return new List<SolidColorBrush>(0);
+            var brushes = new List<SolidColorBrush>(bytes.Count);
             foreach (var colorBytes in bytes) {
-                var colorprop = new Color() { R = colorBytes[0], G = colorBytes[1], B = colorBytes[2], A = colorBytes[3] };
+                var colorprop = new Color { R = colorBytes[0], G = colorBytes[1], B = colorBytes[2], A = colorBytes[3] };
                 var brush = new SolidColorBrush(colorprop);
                 brushes.Add(brush);
             }

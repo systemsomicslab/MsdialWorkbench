@@ -5,9 +5,11 @@
     <AssemblyName>Common</AssemblyName>
     <RootNamespace>CompMs.Common</RootNamespace>
     <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+    <LangVersion>9</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Lipidomics\LipidmapsAcylChains.xml" />
     <None Remove="Proteomics\Resources\enzymes.xml" />
     <None Remove="Proteomics\Resources\modifications.xml" />
     <None Remove="Resources\AdductIonResource_Negative.txt" />
@@ -20,6 +22,7 @@
   <ItemGroup>
     <Resource Include="Proteomics\Resources\enzymes.xml" />
     <Resource Include="Proteomics\Resources\modifications.xml" />
+    <EmbeddedResource Include="Lipidomics\LipidmapsAcylChains.xml" CopyToOutputDirectory="Never" />
     <EmbeddedResource Include="Proteomics\Resources\enzymes.xml" />
     <EmbeddedResource Include="Proteomics\Resources\modifications.xml" />
     <EmbeddedResource Include="Resources\AdductIonResource_Negative.txt" />
@@ -33,7 +36,8 @@
     <PackageReference Include="Accord.Statistics" Version="3.8.0" />
     <PackageReference Include="MessagePack" Version="1.7.3.7" />
     <PackageReference Include="MessagePackAnalyzer" Version="1.6.0" />
-	<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Buffers" Version="4.5.1" />
     <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
     <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />

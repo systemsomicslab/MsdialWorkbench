@@ -5,6 +5,6 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
 {
     internal sealed class ImagingRoiCompareViewModel : ViewModelBase
     {
-        public BarChartViewModel BarChartViewModel { get; }
+        public BarChartViewModel? BarChartViewModel { get; }
     }
 }

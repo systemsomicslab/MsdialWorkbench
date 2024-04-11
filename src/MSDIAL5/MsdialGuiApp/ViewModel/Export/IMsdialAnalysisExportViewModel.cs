@@ -16,7 +16,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
     }
 
     internal static class MsdialAnalysisExportViewModelFactory {
-        public static IMsdialAnalysisExportViewModel Create(IMsdialAnalysisExport model) {
+        public static IMsdialAnalysisExportViewModel? Create(IMsdialAnalysisExport model) {
             switch (model) {
                 case MsdialAnalysisExportModel exportModel:
                     return new MsdialAnalysisExportViewModel(exportModel);
@@ -24,6 +24,8 @@ namespace CompMs.App.Msdial.ViewModel.Export
                     return new SpectraTypeSelectableMsdialAnalysisExportViewModel(exportModel);
                 case MsdialAnalysisTableExportModel tableModel:
                     return new MsdialAnalysisTableExportViewModel(tableModel);
+                case MsdialAnalysisMassBankRecordExportModel massBankExportModel:
+                    return new MsdialAnalysisMassBankRecordExportViewModel(massBankExportModel);
                 default:
                     return null;
             }

@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
@@ -11,34 +12,19 @@ using System.Reactive.Subjects;
 
 namespace CompMs.App.Msdial.ViewModel.Setting {
     internal sealed class FragmentQuerySettingViewModel : ViewModelBase {
+        private readonly FragmentQuerySettingModel _model;
+        private Subject<Unit> _commitTrigger;
+
         public FragmentQuerySettingViewModel(FragmentQuerySettingModel model) {
-            if (model is null) {
-                throw new ArgumentNullException(nameof(model));
-            }
-            Model = model;
-            FragmentQuerySettingValues = Model.FragmentQuerySettingValues
+            _model = model ?? throw new ArgumentNullException(nameof(model));
+            _commitTrigger = new Subject<Unit>().AddTo(Disposables);
+
+            FragmentQuerySettingValues = model.FragmentQuerySettingValueModels
                 .ToReadOnlyReactiveCollection(x => new PeakFeatureSearchValueViewModel(x))
                 .AddTo(Disposables);
 
-            IsAlignSpotViewSelected = Model.IsAlignSpotViewSelected
-                .ToReactiveProperty()
-                .AddTo(Disposables);
-            CommitAsObservable
-              .WithLatestFrom(IsAlignSpotViewSelected, (_, x) => x)
-              .Subscribe(x => model.IsAlignSpotViewSelected.Value = x)
-              .AddTo(Disposables);
-
-            SearchOption = Model.SearchOption
-                .ToReactiveProperty()
-                .AddTo(Disposables);
-            CommitAsObservable
-               .WithLatestFrom(SearchOption, (_, x) => x)
-               .Subscribe(x => model.SearchOption.Value = x)
-               .AddTo(Disposables);
-
-            FragmentQuerySettingValues = Model.FragmentQuerySettingValues
-                .ToReadOnlyReactiveCollection(x => new PeakFeatureSearchValueViewModel(x))
-                .AddTo(Disposables);
+            IsAlignSpotViewSelected = model.IsAlignSpotViewSelected.ToReactivePropertyWithCommit(m => m.Value, CommitAsObservable).AddTo(Disposables);
+            SearchOption = model.SearchOption.ToReactivePropertyWithCommit(m => m.Value, CommitAsObservable).AddTo(Disposables);
 
             var settingHasError = new[] {
                 FragmentQuerySettingValues.ObserveAddChanged().ToUnit(),
@@ -61,32 +47,22 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                .AddTo(Disposables);
         }
 
-        public FragmentQuerySettingModel Model { get; }
         public ReadOnlyReactiveCollection<PeakFeatureSearchValueViewModel> FragmentQuerySettingValues { get; }
         public ReactiveProperty<bool> IsAlignSpotViewSelected { get; }
         public ReactiveProperty<AndOr> SearchOption { get; }
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
-
-        public Subject<Unit> CommitTrigger { get; } = new Subject<Unit>();
-
-        public ReadOnlyReactivePropertySlim<bool> HasErrors { get; }
-
-        public IObservable<Unit> CommitAsObservable => CommitTrigger.Where(_ => !ObserveHasErrors.Value).ToUnit();
-
         public ReactiveCommand ApplyCommand { get; }
+
+        public IObservable<Unit> CommitAsObservable => _commitTrigger.Where(_ => !ObserveHasErrors.Value).ToUnit();
 
         private void Commit() {
             foreach (var value in FragmentQuerySettingValues) {
                 value.Commit();
             }
-            CommitTrigger.OnNext(Unit.Default);
+            _commitTrigger.OnNext(Unit.Default);
         }
 
-        public DelegateCommand ClearList {
-            get {
-                return _clearList ?? (_clearList = new DelegateCommand(Model.ClearListMethod));
-            }
-        }
-        private DelegateCommand _clearList;
+        public DelegateCommand ClearList => _clearList ??= new DelegateCommand(_model.ClearListMethod);
+        private DelegateCommand? _clearList;
     }
 }

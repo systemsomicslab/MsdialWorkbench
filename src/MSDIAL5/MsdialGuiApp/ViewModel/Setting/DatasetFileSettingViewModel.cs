@@ -22,7 +22,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             IsReadOnly = model.IsReadOnly;
 
-            AnalysisFilePropertyCollection = Model.FileModels
+            AnalysisFilePropertyCollection = Model.FileModels.AnalysisFiles
                 .ToReadOnlyReactiveCollection(v => new AnalysisFileBeanViewModel(v))
                 .AddTo(Disposables);
 
@@ -132,7 +132,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReadOnlyReactivePropertySlim<bool> IsEnabled { get; }
 
-        public ISettingViewModel Next(ISettingViewModel selected) {
+        public ISettingViewModel? Next(ISettingViewModel selected) {
             foreach (var file in AnalysisFilePropertyCollection) {
                 file.Commit();
             }

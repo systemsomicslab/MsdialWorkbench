@@ -18,7 +18,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
         public MsdialAnalysisTableExportViewModel(MsdialAnalysisTableExportModel model) {
             _model = model;
 
-            ExportSpectraTypes = new ReadOnlyObservableCollection<SpectraType>(model.ExportSpectraTypes);
+            ExportSpectraTypes = new ReadOnlyObservableCollection<ISpectraType>(model.ExportSpectraTypes);
             ExportSpectraFileFormats = new ReadOnlyObservableCollection<SpectraFormat>(model.ExportSpectraFileFormats);
             model.ObserveProperty(m => m.SelectedSpectraType).Subscribe(t => SelectedSpectraType = t).AddTo(Disposables);
             model.ObserveProperty(m => m.SelectedFileFormat).Subscribe(f => SelectedFileFormat = f).AddTo(Disposables);
@@ -33,10 +33,10 @@ namespace CompMs.App.Msdial.ViewModel.Export
 
         public ReactivePropertySlim<bool> ShouldExport { get; }
 
-        public ReadOnlyObservableCollection<SpectraType> ExportSpectraTypes { get; }
+        public ReadOnlyObservableCollection<ISpectraType> ExportSpectraTypes { get; }
 
         [Required(ErrorMessage = "Choose a spectra type.")]
-        public SpectraType SelectedSpectraType {
+        public ISpectraType? SelectedSpectraType {
             get {
                 return _selectedSpectraType;
             }
@@ -49,12 +49,12 @@ namespace CompMs.App.Msdial.ViewModel.Export
                 }
             }
         }
-        private SpectraType _selectedSpectraType;
+        private ISpectraType? _selectedSpectraType;
 
         public ReadOnlyObservableCollection<SpectraFormat> ExportSpectraFileFormats { get; }
 
         [Required(ErrorMessage = "Choose a spectra format.")]
-        public SpectraFormat SelectedFileFormat {
+        public SpectraFormat? SelectedFileFormat {
             get {
                 return _selectedFileFormat;
             }
@@ -67,7 +67,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
                 }
             }
         }
-        private SpectraFormat _selectedFileFormat;
+        private SpectraFormat? _selectedFileFormat;
 
         public int IsotopeExportMax {
             get {

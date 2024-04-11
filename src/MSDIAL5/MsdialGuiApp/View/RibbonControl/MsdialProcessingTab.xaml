@@ -1,0 +1,47 @@
+﻿<RibbonTab x:Class="CompMs.App.Msdial.View.RibbonControl.MsdialProcessingTab"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+           xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Core"
+           mc:Ignorable="d" 
+           Header="Processing" KeyTip="P"
+           d:DataContext="{d:DesignInstance Type={x:Type vm:MainWindowVM}}" >
+    <RibbonTab.Resources>
+        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+    </RibbonTab.Resources>
+    <RibbonGroup Header="Data">
+        <RibbonButton Label="All processing (from peak detection)" LargeImageSource="{StaticResource All_process_is}"
+                      Command="{Binding ExecuteAllMethodProcessCommand}"
+                      KeyTip="A">
+            <RibbonButton.ToolTip>Reanalysis for all data processing.</RibbonButton.ToolTip>
+        </RibbonButton>
+        <RibbonButton Label="Identification" LargeImageSource="{StaticResource From_annotation_process_is}"
+                      Command="{Binding ExecuteIdentificationMethodProcessCommand}"
+                      KeyTip="I">
+            <RibbonButton.ToolTip>Reanalysis for peak identification.</RibbonButton.ToolTip>
+        </RibbonButton>
+        <RibbonButton Label="Alignment" LargeImageSource="{StaticResource From_alignment_process_is}"
+                      Command="{Binding ExecuteAlignmentMethodProcessCommand}"
+                      KeyTip="L">
+            <RibbonButton.ToolTip>Reanalysis for peak alignment.</RibbonButton.ToolTip>
+        </RibbonButton>
+        <RibbonButton Label="Correlation-based deconvolution (LC-MS only)"
+                      IsEnabled="False"
+                      KeyTip="C">
+            <RibbonButton.ToolTip>Correlation-based deconvolution</RibbonButton.ToolTip>
+        </RibbonButton>
+    </RibbonGroup>
+    <RibbonGroup Header="Post processing">
+        <RibbonButton Label="Amalgamation of different polarity peak list" LargeImageSource="{StaticResource Merging_pos_neg_data_is}"
+                      IsEnabled="False"
+                      KeyTip="M">
+            <RibbonButton.ToolTip>The adduct type can be evaluated by using different ion mode peak list.</RibbonButton.ToolTip>
+        </RibbonButton>
+        <RibbonButton Label="Quant mass manager" LargeImageSource="{StaticResource Quant_mass_manager_is}"
+                      IsEnabled="False"
+                      KeyTip="Q">
+            <RibbonButton.ToolTip>Users can define the quant masses for metabolic profiling in GC-MS project.</RibbonButton.ToolTip>
+        </RibbonButton>
+    </RibbonGroup>
+</RibbonTab>

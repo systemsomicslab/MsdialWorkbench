@@ -92,7 +92,8 @@ namespace CompMs.App.MsdialConsole.Parser
                     AnalysisFileClass = counter.ToString(),
                     AnalysisFileType = AnalysisFileType.Sample,
                     DeconvolutionFilePath = fileDir + "\\" + filename + "_" + dtString + ".dcl",
-                    PeakAreaBeanInformationFilePath = fileDir + "\\" + filename + "_" + dtString + ".pai"
+                    PeakAreaBeanInformationFilePath = fileDir + "\\" + filename + "_" + dtString + ".pai",
+                    RetentionTimeCorrectionBean = new RetentionTimeCorrectionBean(fileDir + "\\" + filename + "_" + dtString + ".rtc") 
                 });
                 counter++;
             }

@@ -35,6 +35,8 @@ namespace CompMs.App.Msdial.Model.DataObj
         public string FilePath => _alignmentFile.FilePath;
         public string ProteinAssembledResultFilePath => _alignmentFile.ProteinAssembledResultFilePath;
 
+        public int CountRawFiles => _analysisFiles.Count;
+
         public AlignmentResultContainer RunAlignment(PeakAligner aligner, ChromatogramSerializer<ChromatogramSpotInfo> serializer) {
             return aligner.Alignment(_analysisFiles, _alignmentFile, serializer);
         }
@@ -63,21 +65,21 @@ namespace CompMs.App.Msdial.Model.DataObj
             }
         }
 
-        private Task<MSDecLoader> MSDecLoader {
+        private Task<MSDecLoader?> MSDecLoader {
             get {
                 if (_mSDecLoader?.Result is null || _mSDecLoader.IsCompleted && _mSDecLoader.Result.IsDisposed) {
                     try {
                         var loader = new MSDecLoader(_alignmentFile.SpectraFilePath).AddTo(Disposables);
-                        return _mSDecLoader = Task.FromResult(loader);
+                        return _mSDecLoader = Task.FromResult((MSDecLoader?)loader);
                     }
                     catch (ArgumentException) {
-                        return _mSDecLoader = Task.FromResult((MSDecLoader)null);
+                        return _mSDecLoader = Task.FromResult((MSDecLoader?)null);
                     }
                 }
                 return _mSDecLoader;
             }
         }
-        private Task<MSDecLoader> _mSDecLoader;
+        private Task<MSDecLoader?>? _mSDecLoader;
 
         /// <summary>
         /// Generate a temporarily available MSDecLoader.
@@ -88,13 +90,13 @@ namespace CompMs.App.Msdial.Model.DataObj
             return new MSDecLoader(File.Open(_alignmentFile.SpectraFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete));
         }
 
-        public async Task<MSDecResult> LoadMSDecResultByIndexAsync(int index, CancellationToken token = default) {
+        public async Task<MSDecResult?> LoadMSDecResultByIndexAsync(int index, CancellationToken token = default) {
             await _alignmentMsdecSem.WaitAsync(token).ConfigureAwait(false);
             token.ThrowIfCancellationRequested();
             try {
                 var loader = await MSDecLoader.ConfigureAwait(false);
                 token.ThrowIfCancellationRequested();
-                return loader.LoadMSDecResult(index);
+                return loader?.LoadMSDecResult(index);
             }
             finally {
                 _alignmentMsdecSem.Release();
@@ -159,7 +161,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             await SaveMSDecResultsAsync(results.Append(result), token).ConfigureAwait(false);
         }
 
-        public AlignmentEicLoader CreateEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> deserializer, AnalysisFileBeanModelCollection analysisFiles, ProjectBaseParameterModel projectBaseParameter) {
+        public AlignmentEicLoader CreateEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> deserializer, AnalysisFileBeanModelCollection analysisFiles, FilePropertiesModel projectBaseParameter) {
             return new AlignmentEicLoader(deserializer, _alignmentFile.EicFilePath, analysisFiles, projectBaseParameter);
         }
 
@@ -200,6 +202,10 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public ProteinResultContainer LoadProteinResult() {
             return MsdialProteomicsSerializer.LoadProteinResultContainer(_alignmentFile.ProteinAssembledResultFilePath);
+        }
+
+        public AlignmentResultContainer.AlignmentResultContainerSlim GetSlimData() {
+            return AlignmentResultContainer.GetSlimData(_alignmentFile);
         }
 
         // Implements IFileBean interface

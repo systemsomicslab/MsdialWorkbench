@@ -2,11 +2,8 @@
 using CompMs.CommonMVVM;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
@@ -28,16 +25,22 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             get => _path;
             set => SetProperty(ref _path, value);
         }
-        private string _path;
+        private string _path = string.Empty;
 
         public Task SaveAsync()
         {
-            var image = _imageResult.SelectedPeakIntensities.BitmapImageModel;
+            var image = _imageResult.SelectedPeakIntensities?.BitmapImageModel;
+            if (image is null) {
+                return Task.CompletedTask;
+            }
             var rois = _roiModels.Where(roi => roi.IsSelected).Select(roi => roi.Roi.RoiImage).ToArray();
 
             return Task.Run(() =>
             {
-                BitmapEncoder encoder = null;
+                if (string.IsNullOrEmpty(Path)) {
+                    return;
+                }
+                BitmapEncoder? encoder = null;
                 if (Path.EndsWith("png"))
                 {
                     encoder = new PngBitmapEncoder();

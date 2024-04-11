@@ -3829,6 +3829,7 @@ namespace Riken.Metabolomics.Lipidomics
 
             // pattern [1] ADGGA 12:0_12:0_12:0
             // pattern [2] AHexCer (O-14:0)16:1;2O/14:0;O, ADGGA (O-24:0)17:2_22:6  
+            // pattern [2_1] AHexCer (O-14:0)42:2;3O, ADGGA (O-24:0)36:2  
             // pattern [3] SM 30:1;2O(FA 14:0)
             // pattern [4] Cer 14:0;2O/12:0;(3OH)(FA 12:0) -> [0]14:0;2O, [1]12:0;(3OH), [3]12:0
             // pattern [5] Cer 14:1;2O/12:0;(2OH)
@@ -3858,6 +3859,7 @@ namespace Riken.Metabolomics.Lipidomics
             chainString = reg.Replace(chainString, "");
 
             var pattern2 = @"(\()(?<chain1>.+?)(\))(?<chain2>.+?)([/_])(?<chain3>.+?$)";
+            var pattern2_1 = @"(\()(?<chain1>.+?)(\))(?<chain2>.+?$)";
             var pattern3 = @"(?<chain1>.+?)(\(FA )(?<chain2>.+?)(\))";
             var pattern4 = @"(?<chain1>.+?)(/)(?<chain2>.+?)(\(FA )(?<chain3>.+?)(\))";
             var pattern12 = @"(\(FA )(?<chain2>.+?)(\))(?<chain1>.+?$)";
@@ -3890,13 +3892,24 @@ namespace Riken.Metabolomics.Lipidomics
                 }
                 //Console.WriteLine();
             }
-            else if (chainString.Contains("(O-") && Regex.IsMatch(chainString,"[/_]"))
+            else if (chainString.Contains("(O-"))
             { // pattern 2
-                var regexes = Regex.Match(chainString, pattern2).Groups;
-                chains = new List<string>() { regexes["chain1"].Value, regexes["chain2"].Value, regexes["chain3"].Value };
-                //Console.WriteLine();
+                if (Regex.IsMatch(chainString, "[/_]"))
+                {
+                    // pattern 2
+                    var regexes = Regex.Match(chainString, pattern2).Groups;
+                    chains = new List<string>() { regexes["chain1"].Value, regexes["chain2"].Value, regexes["chain3"].Value };
+                    //Console.WriteLine();
+                }
+                else
+                {
+                    // pattern 2_1
+                    var regexes = Regex.Match(chainString, pattern2_1).Groups;
+                    chains = new List<string>() { regexes["chain1"].Value, regexes["chain2"].Value };
+                    //Console.WriteLine();
+                }
             }
-             else
+            else
             {
                 chainString = chainString.Replace('/', '_');
                 acylArray = chainString.Split('_');

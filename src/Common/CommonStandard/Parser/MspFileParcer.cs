@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Algorithm.IsotopeCalc;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.FormulaGenerator.Parser;
@@ -166,7 +167,7 @@ namespace CompMs.Common.Parser
         public static List<MoleculeMsReference> ReadSerializedLbmLibrary(string file, List<LbmQuery> queries,
             IonMode ionMode, SolventType solventType, CollisionType collisionType) {
             var tQueries = getTrueQueryStrings(queries);
-            if (tQueries.Count == 0) return null;
+            if (tQueries.Count == 0) return new List<MoleculeMsReference>();
 
             var usedMspDB = new List<MoleculeMsReference>();
             var mspDB = ReadSerializedMspObject(file);
@@ -259,7 +260,7 @@ namespace CompMs.Common.Parser
 
                 case "formula": 
                     mspObj.Formula = FormulaStringParcer.OrganicElementsReader(fieldValue); 
-                    if (mspObj.Formula != null) {
+                    if (mspObj.Formula != null && mspObj.Formula.IsCorrectlyImported) {
                         mspObj.Formula.M1IsotopicAbundance = SevenGoldenRulesCheck.GetM1IsotopicAbundance(mspObj.Formula);
                         mspObj.Formula.M2IsotopicAbundance = SevenGoldenRulesCheck.GetM2IsotopicAbundance(mspObj.Formula);
 
@@ -322,8 +323,8 @@ namespace CompMs.Common.Parser
 
                 case "precursortype":
                 case "precursor_type":
-                    mspObj.AdductType = AdductIonParser.GetAdductIonBean(fieldValue);
-                    mspObj.IonMode = mspObj.IonMode;
+                    mspObj.AdductType = AdductIon.GetAdductIon(fieldValue);
+                    mspObj.IonMode = mspObj.AdductType.IonMode;
                      return false;
 
                 case "DB#":

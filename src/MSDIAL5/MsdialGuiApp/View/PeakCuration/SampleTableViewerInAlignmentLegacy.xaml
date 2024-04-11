@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
         xmlns:local="clr-namespace:CompMs.App.Msdial.View.PeakCuration"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type={x:Type local:SampleTableViewerInAlignmentViewModelLegacy}}"
@@ -39,7 +40,7 @@
                     <DataGridTextColumn Header="Annotation" Width="1.5*" Binding="{Binding Path=AlignedPeakProperty.Name}" IsReadOnly="True" />
                     <DataGridTextColumn Header="TotalScore" Width="1*" Binding="{Binding Path=AlignedPeakProperty.TotalScore, StringFormat=0.00}" IsReadOnly="True" />
                     <DataGridTextColumn Header="Mz" Width="0.8*" Binding="{Binding Path=AlignedPeakProperty.Mass, StringFormat=0.000}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Rt" Width="0.8*" Binding="{Binding Path=AlignedPeakProperty.Time, StringFormat=0.00}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Rt" Width="0.8*" Binding="{Binding Path=AlignedPeakProperty.ChromXsTop.RT.Value, StringFormat=0.00}" IsReadOnly="True" />
                     <DataGridTextColumn Header="S/N" Width="0.8*" Binding="{Binding Path=AlignedPeakProperty.SignalToNoise, StringFormat=0.0}" IsReadOnly="True" />
                     <DataGridTextColumn Header="Peak Int." Width="1*" Binding="{Binding Path=AlignedPeakProperty.PeakHeightTop, StringFormat=0}"  IsReadOnly="True" >
                         <DataGridTextColumn.CellStyle>
@@ -72,9 +73,11 @@
                     <DataGridTemplateColumn Header="Chromatogram" Width="150">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <StackPanel>
-                                    <Image Source="{Binding Image}" />
-                                </StackPanel>
+                                <Image>
+                                    <Image.Source>
+                                        <DrawingImage Drawing="{Binding Drawing, Mode=OneTime}" PresentationOptions:Freeze="True"/>
+                                    </Image.Source>
+                                </Image>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

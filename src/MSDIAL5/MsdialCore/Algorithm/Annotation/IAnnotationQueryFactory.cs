@@ -65,7 +65,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             }
 
             IReadOnlyList<IsotopicPeak> GetIsotope(IMSIonProperty property, IReadOnlyList<RawPeakElement> spectrums) {
-                return DataAccess.GetIsotopicPeaks(spectrums, (float)property.PrecursorMz, peakPickParameter.CentroidMs1Tolerance);
+                return DataAccess.GetIsotopicPeaks(spectrums, (float)property.PrecursorMz, peakPickParameter.CentroidMs1Tolerance, peakPickParameter.MaxIsotopesDetectedInMs1Spectrum);
             }
             return GetIsotope;
         }
@@ -98,7 +98,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            var isotopes = DataAccess.GetIsotopicPeaks(spectrum, (float)property.PrecursorMz, _peakPickParameter.CentroidMs1Tolerance);
+            var isotopes = DataAccess.GetIsotopicPeaks(spectrum, (float)property.PrecursorMz, _peakPickParameter.CentroidMs1Tolerance, _peakPickParameter.MaxIsotopesDetectedInMs1Spectrum);
             return new PepAnnotationQuery(property, scan, isotopes, ionFeature, parameter, _proteomicsParameter, _annotator, ignoreIsotopicPeak: false);
         }
 
@@ -219,7 +219,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             }
 
             IReadOnlyList<IsotopicPeak> GetIsotope(IMSIonProperty property, IReadOnlyList<RawPeakElement> spectrums) {
-                return DataAccess.GetIsotopicPeaks(spectrums, (float)property.PrecursorMz, peakPickParameter.CentroidMs1Tolerance);
+                return DataAccess.GetIsotopicPeaks(spectrums, (float)property.PrecursorMz, peakPickParameter.CentroidMs1Tolerance, peakPickParameter.MaxIsotopesDetectedInMs1Spectrum);
             }
             return GetIsotope;
         }

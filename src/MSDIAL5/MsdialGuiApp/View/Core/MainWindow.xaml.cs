@@ -22,6 +22,7 @@ using CompMs.Graphics.Behavior;
 using CompMs.Graphics.UI;
 using CompMs.Graphics.UI.Message;
 using CompMs.Graphics.UI.ProgressBar;
+using CompMs.Graphics.Window;
 using Microsoft.Win32;
 using Reactive.Bindings.Notifiers;
 using System;
@@ -42,19 +43,10 @@ namespace CompMs.App.Msdial.View.Core
         public MainWindow() {
             InitializeComponent();
 
-            var compoundSearchService = new DialogService<CompoundSearchWindow, CompoundSearchVM>(this);
             var peakSpotTableService = new DialogService<AlignmentSpotTable, PeakSpotTableViewModelBase>(this);
-            var proteomicsTableService = new DialogService<ProteomicsSpotTable, PeakSpotTableViewModelBase>(this);
-            var analysisFilePropertyResetService = new DialogService<AnalysisFilePropertyResettingWindow, AnalysisFilePropertyResetViewModel>(this);
-            var processSettingDialogService = new DialogService<ProjectSettingDialog, ProcessSettingViewModel>(this);
-            DataContext = new MainWindowVM(
-                compoundSearchService,
-                peakSpotTableService,
-                analysisFilePropertyResetService,
-                proteomicsTableService,
-                processSettingDialogService);
+            DataContext = new MainWindowVM(peakSpotTableService);
 
-            broker = MessageBroker.Default;
+            var broker = MessageBroker.Default;
 
             broker.ToObservable<ProgressBarMultiContainerRequest>()
                 .Subscribe(ShowMultiProgressBarWindow);
@@ -65,19 +57,23 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<ProcessMessageRequest>()
                 .Subscribe(ShowProcessMessageDialog);
             broker.ToObservable<FileClassSetViewModel>()
-                .Subscribe(ShowFileClassSetView);
+                .Subscribe(ShowChildSettingDialog<FileClassSetView>("Class property setting", height: 450, width: 400));
             broker.ToObservable<SaveFileNameRequest>()
                 .Subscribe(GetSaveFilePath);
+            broker.ToObservable<SelectFolderRequest>()
+                .Subscribe(SelectFolderPath);
             broker.ToObservable<OpenFileRequest>()
                 .Subscribe(OpenFileDialog);
             broker.ToObservable<ErrorMessageBoxRequest>()
                 .Subscribe(ShowErrorConfirmationMessage);
+            broker.ToObservable<RiDictionarySettingViewModel>()
+                .Subscribe(ShowRiDictionarySettingDialog);
             broker.ToObservable<AlignedChromatogramModificationViewModelLegacy>()
                 .Subscribe(CreateAlignedChromatogramModificationDialog);
             broker.ToObservable<SampleTableViewerInAlignmentViewModelLegacy>()
                 .Subscribe(CreateSampleTableViewerDialog);
             broker.ToObservable<InternalStandardSetViewModel>()
-                .Subscribe(OpenInternalStandardSetView);
+                .Subscribe(ShowChildSettingDialog<InternalStandardSetView>("Internal standard settting", height: 600, width: 800));
             broker.ToObservable<PCAPLSResultViewModel>()
                 .Subscribe(OpenPCAPLSResultView);
             broker.ToObservable<ExperimentSpectrumViewModel>()
@@ -86,8 +82,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildView<ProteinGroupTable>);
             broker.ToObservable<ChromatogramsViewModel>()
                 .Subscribe(ShowChildView<DisplayChromatogramsView>);
-            broker.ToObservable<DisplayEicSettingViewModel>()
-                .Subscribe(ShowChildDialog<EICDisplaySettingView>);
+            broker.ToObservable<CheckChromatogramsViewModel>()
+                .Subscribe(ShowChildViewWithDispose<CheckChromatogramsView>("Display chromatograms", height: 400, width: 1000));
             broker.ToObservable<NormalizationSetViewModel>()
                 .Subscribe(ShowChildDialog<NormalizationSetView>);
             broker.ToObservable<MultivariateAnalysisSettingViewModel>()
@@ -97,21 +93,43 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<AlignmentResultExportViewModel>()
                 .Subscribe(ShowChildDialog<AlignmentResultExportWin>);
             broker.ToObservable<TargetCompoundLibrarySettingViewModel>()
-                .Subscribe(OpenTargetCompoundLibrarySettingView);
+                .Subscribe(ShowChildSettingDialog<TargetCompoundsLibrarySettingView>("Select library file", height: 600, width: 400));
             broker.ToObservable<FindTargetCompoundsSpotViewModel>()
-                .Subscribe(ShowFindTargetCompoundsSpotView);
+                .Subscribe(ShowChildSettingDialog<FindTargetCompoundsSpotView>("Find match peak spots", height: 800, width: 400));
+            broker.ToObservable<MolecularNetworkingExportSettingViewModel>()
+                .Subscribe(ShowChildView<MolecularNetworkingExportSettingView>);
+            broker.ToObservable<MolecularNetworkingSendingToCytoscapeJsSettingViewModel>()
+                .Subscribe(ShowChildView<MolecularNetworkingToCytoscapeJsSettingView>);
+            broker.ToObservable<AnalysisPeakTableViewModelBase>()
+                .Subscribe(ShowChildView<AlignmentSpotTable>);
+            broker.ToObservable<AlignmentSpotTableViewModelBase>()
+                .Subscribe(ShowChildView<AlignmentSpotTable>);
+            broker.ToObservable<AnalysisFilePropertyResetViewModel>()
+                .Subscribe(ShowChildSettingDialog<AnalysisFilePropertyResettingView>("Analysis property setting", height: 700, width: 1000));
+            broker.ToObservable<ProcessSettingViewModel>()
+                .Subscribe(ShowChildDialog<ProjectSettingDialog>);
+            broker.ToObservable<ProjectPropertySettingViewModel>()
+                .Subscribe(ShowChildSettingDialog<ProjectPropertySettingView>("Project property setting", height: 400, width: 400));
+            broker.ToObservable<ICompoundSearchViewModel>()
+                .Subscribe(ShowChildDialog<CompoundSearchWindow>);
+            broker.ToObservable<ExportMrmprobsViewModel>()
+                .Subscribe(ShowChildSettingDialog<ExportMrmprobsView>("MRMPROBS reference library export", height: 560, width: 560, finishCommandContent: "Export"));
             broker.ToObservable<InternalMsfinderSettingViewModel>()
                 .Subscribe(ShowInternalMsfinderSettingView);
             broker.ToObservable<FormulaFinderAdductIonSettingViewModel>()
                 .Subscribe(ShowChildDialog<FormulaFinderAdductIonSettingView>);
+            /*
+            broker.ToObservable<PeakSpotTableViewModelBase>()
+                .Subscribe(ShowChildView<AlignmentSpotTable>);
+            broker.ToObservable<PeakSpotTableViewModelBase>()
+                .Subscribe(ShowChildView<ProteomicsSpotTable>);
+            */
 #if RELEASE
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
 #elif DEBUG
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Warning;
 #endif
         }
-
-        private readonly IMessageBroker broker;
 
         public void CloseOwnedWindows() {
             Dispatcher.Invoke(() =>
@@ -135,7 +153,7 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void ShowChildViewWithDispose<TView>(object viewmodel) where TView : Window, new() {
-            var view = new TView()
+            Window view = new TView()
             {
                 DataContext = viewmodel,
                 Owner = this,
@@ -143,6 +161,23 @@ namespace CompMs.App.Msdial.View.Core
             };
             DataContextCleanupBehavior.SetIsEnabled(view, true);
             view.Show();
+        }
+
+        private Action<object> ShowChildViewWithDispose<TView>(string title, double height, double width) where TView: FrameworkElement, new() {
+            void InnerShowDialog(object viewmodel) {
+                var view = new Window
+                {
+                    Height = height, Width = width,
+                    Title = title,
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    DataContext = viewmodel,
+                    Content = new TView(),
+                };
+                DataContextCleanupBehavior.SetIsEnabled(view, true);
+                view.Show();
+            }
+            return InnerShowDialog;
         }
 
         private void ShowChildDialog<TView>(object viewmodel) where TView : Window, new() {
@@ -153,6 +188,26 @@ namespace CompMs.App.Msdial.View.Core
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
             };
             view.ShowDialog();
+        }
+
+        private Action<object> ShowChildSettingDialog<TView>(string title, double height, double width, object? finishCommandContent = null)
+            where TView: FrameworkElement, new() {
+            void InnerShowDialog(object viewmodel) {
+                var dialog = new SettingDialog
+                {
+                    Height = height, Width = width,
+                    Title = title,
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    DataContext = viewmodel,
+                    Content = new TView(),
+                };
+                if (finishCommandContent is not null) {
+                    dialog.FinishCommandContent = finishCommandContent;
+                }
+                dialog.ShowDialog();
+            }
+            return InnerShowDialog;
         }
 
         private void ShowMultiProgressBarWindow(ProgressBarMultiContainerRequest request) {
@@ -192,14 +247,16 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void ShowShortMessageDialog(ShortMessageRequest request) {
-            var dialog = new ShortMessageWindow
-            {
-                DataContext = request.Content,
-                Text = request.Content,
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-            request.Result = dialog.ShowDialog();
+            Dispatcher.Invoke(() => {
+                var dialog = new ShortMessageWindow
+                {
+                    DataContext = request.Content,
+                    Text = request.Content,
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                request.Result = dialog.ShowDialog();
+            });
         }
 
         private void ShowProcessMessageDialog(ProcessMessageRequest request) {
@@ -220,78 +277,6 @@ namespace CompMs.App.Msdial.View.Core
                 });
             };
             request.Result = dialog.ShowDialog();
-        }
-
-        private void ShowFileClassSetView(FileClassSetViewModel viewmodel) {
-            var dialog = new SettingDialog
-            {
-                Height = 450, Width = 400,
-                Title = "Class property setting",
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Content = new FileClassSetView
-                {
-                    DataContext = viewmodel,
-                },
-                ApplyCommand = viewmodel.ApplyCommand,
-                FinishCommand = viewmodel.ApplyCommand,
-                CancelCommand = viewmodel.CancelCommand,
-            };
-            dialog.Show();
-        }
-
-        private void OpenInternalStandardSetView(InternalStandardSetViewModel viewmodel) {
-            var dialog = new SettingDialog
-            {
-                Height = 600, Width = 800,
-                Title = "Internal standard settting",
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Content = new InternalStandardSetView
-                {
-                    DataContext = viewmodel,
-                },
-                ApplyCommand = null,
-                FinishCommand = viewmodel.ApplyCommand,
-                CancelCommand = viewmodel.CancelCommand,
-            };
-            dialog.Show();
-        }
-
-        private void ShowFindTargetCompoundsSpotView(FindTargetCompoundsSpotViewModel viewmodel) {
-            var dialog = new SettingDialog
-            {
-                Height = 800, Width = 400,
-                Title = "Find match peak spots",
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Content = new FindTargetCompoundsSpotView
-                {
-                    DataContext = viewmodel,
-                },
-                ApplyCommand = CommonMVVM.NeverCommand.Instance,
-                FinishCommand = CommonMVVM.IdentityCommand.Instance,
-                CancelCommand = CommonMVVM.NeverCommand.Instance,
-            };
-            dialog.Show();
-        }
-
-        private void OpenTargetCompoundLibrarySettingView(TargetCompoundLibrarySettingViewModel viewmodel) {
-            var dialog = new SettingDialog
-            {
-                Height = 600, Width = 400,
-                Title = "Select library file",
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Content = new TargetCompoundsLibrarySettingView
-                {
-                    DataContext = viewmodel,
-                },
-                ApplyCommand = CommonMVVM.NeverCommand.Instance,
-                FinishCommand = CommonMVVM.IdentityCommand.Instance,
-                CancelCommand = CommonMVVM.NeverCommand.Instance,
-            };
-            dialog.ShowDialog();
         }
 
         private void OpenPCAPLSResultView(PCAPLSResultViewModel viewmodel) {
@@ -332,11 +317,40 @@ namespace CompMs.App.Msdial.View.Core
             }
         }
 
+        private void SelectFolderPath(SelectFolderRequest request) {
+            var sfd = new SelectFolderDialog
+            {
+                Title = request.Title,
+                SelectedPath = request.SelectedPath,
+            };
+
+            if (sfd.ShowDialog(this) == Graphics.Window.DialogResult.OK) {
+                request.Run(sfd.SelectedPath!);
+            }
+        }
+
         private void ShowErrorConfirmationMessage(ErrorMessageBoxRequest request) {
             Dispatcher.Invoke(() =>
             {
                 var result = MessageBox.Show(request.Content, request.Caption, request.ButtonType, MessageBoxImage.Error);
                 request.Result = result;
+            });
+        }
+
+        private void ShowRiDictionarySettingDialog(RiDictionarySettingViewModel viewmodel) {
+            Dispatcher.Invoke(() => {
+                var dialog = new SettingDialog
+                {
+                    DataContext = viewmodel,
+                    Height = 600, Width = 800,
+                    Title = "Retention index dictionary setting",
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    Content = new RetentionIndexDictionarySettingView(),
+                    ApplyCommand = viewmodel.ApplyCommand,
+                    FinishCommand = viewmodel.ApplyCommand,
+                };
+                dialog.ShowDialog();
             });
         }
 

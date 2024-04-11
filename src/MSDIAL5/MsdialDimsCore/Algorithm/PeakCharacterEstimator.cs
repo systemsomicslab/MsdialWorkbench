@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -37,7 +36,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
 
             // collecting the same RT region spots
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.PeakID).ToList();
-            Initialization(chromPeakFeatures);
+            new MsdialCore.Algorithm.PeakCharacterEstimator(0d, 100d).ResetAdductAndLink(chromPeakFeatures, evaluator);
 
             CharacterAssigner(file, chromPeakFeatures, provider, msdecResults, evaluator, parameter);
             ReportProgress.Show(InitialProgress, ProgressMax, chromPeakFeatures.Count, chromPeakFeatures.Count, reportAction);
@@ -93,43 +92,13 @@ namespace CompMs.MsdialDimsCore.Algorithm
             else return true;
         }
 
-
-        private void Initialization(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures) {
-            foreach (var peak in chromPeakFeatures) {
-                var character = peak.PeakCharacter;
-                if (character.IsotopeWeightNumber > 0) {
-                    var parentID = character.IsotopeParentPeakID;
-                    var parentCharacter = chromPeakFeatures[parentID].PeakCharacter;
-                    if (parentCharacter.AdductType != null && parentCharacter.AdductType.FormatCheck) {
-                        peak.SetAdductType(parentCharacter.AdductType);
-                    }
-                    if (character.PeakLinks.Count(n => n.LinkedPeakID == parentID &&
-                        n.Character == PeakLinkFeatureEnum.Isotope) == 0) {
-
-                        character.PeakLinks.Add(new LinkedPeakFeature() {
-                            LinkedPeakID = parentID,
-                            Character = PeakLinkFeatureEnum.Isotope
-                        });
-                        character.IsLinked = true;
-
-                        if (parentCharacter.PeakLinks.Count(n => n.LinkedPeakID == peak.PeakID && n.Character == PeakLinkFeatureEnum.Isotope) == 0) {
-                            parentCharacter.PeakLinks.Add(new LinkedPeakFeature() {
-                                LinkedPeakID = peak.PeakID,
-                                Character = PeakLinkFeatureEnum.Isotope
-                            });
-                        }
-                    }
-                }
-            }
-        }
-
         private void SearchedAdductInitialize(ParameterBase param) {
             var paramAdducts = param.SearchedAdductIons;
             foreach (var adduct in paramAdducts.OrEmptyIfNull().Where(n => n.IsIncluded)) {
                 SearchedAdducts.Add(adduct);
             }
             if (SearchedAdducts.Count == 0) {
-                var protonAdduct = param.IonMode == IonMode.Positive ? AdductIonParser.GetAdductIonBean("[M+H]+") : AdductIonParser.GetAdductIonBean("[M-H]-");
+                var protonAdduct = param.IonMode == IonMode.Positive ? AdductIon.GetAdductIon("[M+H]+") : AdductIon.GetAdductIon("[M-H]-");
                 SearchedAdducts.Add(protonAdduct);
             }
         }
@@ -151,7 +120,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
                     else {
                         adductString = "[M-" + peak.PeakCharacter.Charge + "H]" + peak.PeakCharacter.Charge + "-";
                     }
-                    var estimatedAdduct = AdductIonParser.GetAdductIonBean(adductString);
+                    var estimatedAdduct = AdductIon.GetAdductIon(adductString);
                     peak.SetAdductType(estimatedAdduct);
                 }
                 else {

@@ -3,7 +3,6 @@ using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
-using CompMs.Common.Parser;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -70,7 +69,7 @@ namespace CompMs.MsdialCore.Export.Tests
                 MasterPeakID = 100,
                 Name = "Metabolite",
                 MS1RawSpectrumIdTop = 2,
-                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
+                AdductType = AdductIon.GetAdductIon("[M+H]+"),
                 Comment = "nice comment",
                 MatchResults = new MsScanMatchResultContainer(),
             };
@@ -91,7 +90,6 @@ namespace CompMs.MsdialCore.Export.Tests
             feature.PeakShape.SignalToNoise = 6.78f;
             var msdec = new MSDecResult
             {
-                ModelMasses = new List<double> { 700.001, 600.2, 100.00001, },
                 RawSpectrumID = 1,
                 Spectrum = new List<SpectrumPeak>
                 {
@@ -108,7 +106,6 @@ namespace CompMs.MsdialCore.Export.Tests
             Assert.AreEqual("2", content["Scan"]);
             Assert.AreEqual("1000", content["Height"]);
             Assert.AreEqual("900", content["Area"]);
-            Assert.AreEqual("700.001 600.2 100.00001", content["Model masses"]);
             Assert.AreEqual("[M+H]+", content["Adduct"]);
             Assert.AreEqual("1", content["Isotope"]);
             Assert.AreEqual($"nice comment; Annotation method: {matchResult.AnnotatorID}", content["Comment"]);
@@ -125,7 +122,7 @@ namespace CompMs.MsdialCore.Export.Tests
             Assert.AreEqual("0.90", content["Matched peaks percentage"]);
             Assert.AreEqual("0.64", content["Total score"]);
             Assert.AreEqual("6.78", content["S/N"]);
-            Assert.AreEqual("700.00000 1000;701.00467 100", content["MS1 isotopes"]);
+            Assert.AreEqual("700.00000 1000;701.00001 100", content["MS1 isotopes"]);
             Assert.AreEqual("700.00001 1000;500.00002 200;200.00003 50", content["MSMS spectrum"]);
         }
 

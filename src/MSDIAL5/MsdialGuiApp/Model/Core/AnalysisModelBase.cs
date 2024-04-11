@@ -1,12 +1,18 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Utility;
+using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.Common.Algorithm.Function;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -20,9 +26,13 @@ namespace CompMs.App.Msdial.Model.Core {
     public abstract class AnalysisModelBase : BindableBase, IAnalysisModel, IDisposable
     {
         private readonly ChromatogramPeakFeatureCollection _peakCollection;
+        private readonly MolecularSpectrumNetworkingBaseParameter _molecularSpectrumNetworkingParameter;
+        private readonly IMessageBroker _broker;
 
-        public AnalysisModelBase(AnalysisFileBeanModel analysisFileModel) {
+        public AnalysisModelBase(AnalysisFileBeanModel analysisFileModel, MolecularSpectrumNetworkingBaseParameter molecularSpectrumNetworkingParameter, IMessageBroker broker) {
             AnalysisFileModel = analysisFileModel;
+            _molecularSpectrumNetworkingParameter = molecularSpectrumNetworkingParameter;
+            _broker = broker;
             var peaks = MsdialPeakSerializer.LoadChromatogramPeakFeatures(analysisFileModel.PeakAreaBeanInformationFilePath);
             _peakCollection = new ChromatogramPeakFeatureCollection(peaks);
             Ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(
@@ -32,11 +42,11 @@ namespace CompMs.App.Msdial.Model.Core {
                 MessageBox.Show("No peak information. Check your polarity setting.");
             }
 
-            Target = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
+            Target = new ReactivePropertySlim<ChromatogramPeakFeatureModel?>().AddTo(Disposables);
 
-            decLoader = new MSDecLoader(analysisFileModel.DeconvolutionFilePath).AddTo(Disposables);
-            MsdecResult = Target.SkipNull()
-                .Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation))
+            decLoader = analysisFileModel.MSDecLoader;
+            MsdecResult = Target
+                .DefaultIfNull(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -55,14 +65,89 @@ namespace CompMs.App.Msdial.Model.Core {
 
         public ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks { get; }
 
-        public ReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
+        public ReactivePropertySlim<ChromatogramPeakFeatureModel?> Target { get; }
 
-        public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
+        public ReadOnlyReactivePropertySlim<MSDecResult?> MsdecResult { get; }
 
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
 
         public abstract void SearchFragment();
         public abstract void InvokeMsfinder();
+        public void ExportMoleculerNetworkingData(MolecularSpectrumNetworkingBaseParameter parameter) {
+            var network = GetMolecularNetworkInstance(parameter);
+            network.ExportNodeEdgeFiles(parameter.ExportFolderPath);
+        }
+
+        public void InvokeMoleculerNetworking(MolecularSpectrumNetworkingBaseParameter parameter) {
+            var network = GetMolecularNetworkInstance(parameter);
+            CytoscapejsModel.SendToCytoscapeJs(network);
+        }
+
+        public void InvokeMoleculerNetworkingForTargetSpot() {
+            var network = GetMolecularNetworkingInstanceForTargetSpot(_molecularSpectrumNetworkingParameter);
+            if (network is null) {
+                _broker.Publish(new ShortMessageRequest("Failed to calculate molecular network.\nPlease check selected peak spot."));
+                return;
+            }
+            CytoscapejsModel.SendToCytoscapeJs(network);
+        }
+
+        private MolecularNetworkInstance GetMolecularNetworkInstance(MolecularSpectrumNetworkingBaseParameter parameter) {
+            var publisher = new TaskProgressPublisher(_broker, $"Exporting MN results in {parameter.ExportFolderPath}");
+            using (publisher.Start()) {
+                var spots = Ms1Peaks;
+                var loader = AnalysisFileModel.MSDecLoader;
+                var peaks = loader.LoadMSDecResults();
+
+                void notify(double progressRate) {
+                    publisher.Progress(progressRate, $"Exporting MN results in {parameter.ExportFolderPath}");
+                }
+
+                var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter);
+                var builder = new MoleculerNetworkingBase();
+                var network = builder.GetMolecularNetworkInstance(spots, peaks, query, notify);
+                var rootObj = network.Root;
+                for (int i = 0; i < rootObj.nodes.Count; i++) {
+                    var node = rootObj.nodes[i];
+                    node.data.BarGraph = CytoscapejsModel.GetBarGraphProperty(spots[i], AnalysisFileModel.AnalysisFileName);
+                }
+
+                return network;
+            }
+        }
+
+        private MolecularNetworkInstance? GetMolecularNetworkingInstanceForTargetSpot(MolecularSpectrumNetworkingBaseParameter parameter) {
+            if (Target.Value is not ChromatogramPeakFeatureModel targetSpot) {
+                return null;
+            }
+            if (parameter.MaxEdgeNumberPerNode == 0) {
+                parameter.MinimumPeakMatch = 3;
+                parameter.MaxEdgeNumberPerNode = 6;
+                parameter.MaxPrecursorDifference = 400;
+            }
+            var publisher = new TaskProgressPublisher(_broker, $"Preparing MN results");
+            using (publisher.Start()) {
+                var spots = Ms1Peaks;
+                var peaks = AnalysisFileModel.MSDecLoader.LoadMSDecResults();
+
+                var targetPeak = peaks[targetSpot.MasterPeakID];
+
+                void notify(double progressRate) {
+                    publisher.Progress(progressRate, $"Preparing MN results");
+                }
+                var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter);
+                var builder = new MoleculerNetworkingBase();
+                var network = builder.GetMoleculerNetworkInstanceForTargetSpot(targetSpot, targetPeak, spots, peaks, query, notify);
+                var rootObj = network.Root;
+
+                for (int i = 0; i < rootObj.nodes.Count; i++) {
+                    var node = rootObj.nodes[i];
+                    node.data.BarGraph = CytoscapejsModel.GetBarGraphProperty(spots[node.data.id], AnalysisFileModel.AnalysisFileName);
+                }
+
+                return network;
+            }
+        }
 
         public Task SaveAsync(CancellationToken token) {
             return _peakCollection.SerializeAsync(AnalysisFileModel.File, token);
@@ -86,5 +171,7 @@ namespace CompMs.App.Msdial.Model.Core {
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+
+        
     }
 }

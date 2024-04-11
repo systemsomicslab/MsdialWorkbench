@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -54,7 +55,7 @@ Num Peaks: 4
                 MasterPeakID = 100,
                 MS1RawSpectrumIdTop = 1000,
                 MS2RawSpectrumID = 2000,
-                AdductType = Common.Parser.AdductIonParser.GetAdductIonBean("[M+H]+"),
+                AdductType = AdductIon.GetAdductIon("[M+H]+"),
                 IonMode = Common.Enum.IonMode.Positive,
                 PeakCharacter = new IonFeatureCharacter
                 {
@@ -103,7 +104,7 @@ Num Peaks: 4
         public void SaveSpectraTableAsNistFormatUnknownTest()
         {
             var expects =
-$@"NAME: Unknown|ID=0200|RT=3
+$@"NAME: Unknown|ID=0|MZ=200|RT=3
 PRECURSORMZ: 200
 PRECURSORTYPE: [M+H]+
 RETENTIONTIME: 3
@@ -136,7 +137,7 @@ Num Peaks: 4
             var chromPeakFeature = new ChromatogramPeakFeature(basePeak)
             {
                 Name = string.Empty,
-                AdductType = Common.Parser.AdductIonParser.GetAdductIonBean("[M+H]+"),
+                AdductType = AdductIon.GetAdductIon("[M+H]+"),
                 IonMode = Common.Enum.IonMode.Positive,
                 PeakCharacter = new IonFeatureCharacter
                 {

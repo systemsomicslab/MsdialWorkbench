@@ -29,7 +29,7 @@ namespace ChartDrawingUiTest.Scatter
 
         public void DataFilter(object sender, FilterEventArgs e)
         {
-            if (((DataPoint)e.Item).Y >= 0)
+            if (e.Item != null && ((DataPoint)e.Item).Y >= 0)
                 e.Accepted = true;
             else
                 e.Accepted = false;

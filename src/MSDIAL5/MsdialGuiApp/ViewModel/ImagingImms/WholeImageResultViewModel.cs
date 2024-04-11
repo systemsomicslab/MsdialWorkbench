@@ -2,7 +2,6 @@
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Imaging;
 using CompMs.App.Msdial.ViewModel.Imms;
-using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
@@ -20,9 +19,9 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
     {
         private readonly WholeImageResultModel _model;
 
-        public WholeImageResultViewModel(WholeImageResultModel model, FocusControlManager focusManager, IWindowService<CompoundSearchVM> compoundSearchService, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, IMessageBroker broker) {
+        public WholeImageResultViewModel(WholeImageResultModel model, FocusControlManager focusManager, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, IMessageBroker broker) {
             _model = model ?? throw new System.ArgumentNullException(nameof(model));
-            var analysisViewModel = new ImmsAnalysisViewModel(model.AnalysisModel, compoundSearchService, peakSpotTableService, broker, focusManager).AddTo(Disposables);
+            var analysisViewModel = new ImmsAnalysisViewModel(model.AnalysisModel, peakSpotTableService, broker, focusManager).AddTo(Disposables);
             AnalysisViewModel = analysisViewModel;
 
             Intensities = model.Intensities.ToReadOnlyReactiveCollection(intensity => new IntensityImageViewModel(intensity)).AddTo(Disposables);
@@ -41,5 +40,7 @@ namespace CompMs.App.Msdial.ViewModel.ImagingImms
         public ImagingRoiViewModel ImagingRoiViewModel { get; }
 
         public ICommand ShowIonTableCommand => AnalysisViewModel.ShowIonTableCommand;
+
+        public ICommand SearchCompoundCommand => AnalysisViewModel.SearchCompoundCommand;
     }
 }

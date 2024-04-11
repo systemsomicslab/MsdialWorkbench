@@ -1,16 +1,25 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
-using CompMs.Common.MessagePack;
+using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.RawDataHandler.Core;
 using MessagePack;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
     public class AnalysisFileBean : IFileBean
     {
+        public AnalysisFileBean() {
+
+        }
+
         [Key(0)]
         public string AnalysisFilePath { get; set; } = string.Empty;
         [Key(1)]
@@ -49,22 +58,56 @@ namespace CompMs.MsdialCore.DataObj {
         public string ProteinAssembledResultFilePath { get; set; } // *.prf
         [Key(18)]
         public AcquisitionType AcquisitionType { get; set; } = AcquisitionType.None;
+       
 
         [IgnoreMember]
         public bool IsDoMs2ChromDeconvolution => AcquisitionType != AcquisitionType.DDA;
 
-        public AnalysisFileBean() {
-
+        public void SaveChromatogramPeakFeatures(List<ChromatogramPeakFeature> chromPeakFeatures) {
+            MsdialPeakSerializer.SaveChromatogramPeakFeatures(PeakAreaBeanInformationFilePath, chromPeakFeatures);
         }
 
-        int IFileBean.FileID => AnalysisFileId;
-        string IFileBean.FileName => AnalysisFileName;
-        string IFileBean.FilePath => AnalysisFilePath;
+        public Task<ChromatogramPeakFeatureCollection> LoadChromatogramPeakFeatureCollectionAsync(CancellationToken token = default) {
+            return ChromatogramPeakFeatureCollection.LoadAsync(PeakAreaBeanInformationFilePath, token);
+        }
 
-        public void SaveSpectrumFeatures(List<SpectrumFeature> spectrumFeatures) {
-            var name = Path.GetFileNameWithoutExtension(PeakAreaBeanInformationFilePath);
-            var path = Path.Combine(Path.GetDirectoryName(PeakAreaBeanInformationFilePath), name + ".sfi"); // *.sfi
-            MessagePackDefaultHandler.SaveLargeListToFile(spectrumFeatures, path);
+        private string SpectrumFeatureFilePath {
+            get {
+                var name = Path.GetFileNameWithoutExtension(PeakAreaBeanInformationFilePath);
+                return Path.Combine(Path.GetDirectoryName(PeakAreaBeanInformationFilePath), name + ".sfs"); // *.sfs
+            }
+        }
+
+        public void SaveSpectrumFeatures(SpectrumFeatureCollection spectrumFeatures) {
+            var file = SpectrumFeatureFilePath;
+            var tagfile = Path.Combine(Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file) + "_tags.xml");
+            using (var stream = new TemporaryFileStream(file))
+            using (var tagStream = new TemporaryFileStream(tagfile)) {
+                spectrumFeatures.Save(stream, tagStream);
+                stream.Move();
+                tagStream.Move();
+            }
+        }
+
+        public SpectrumFeatureCollection LoadSpectrumFeatures() {
+            var file = SpectrumFeatureFilePath;
+            var tagfile = Path.Combine(Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file) + "_tags.xml");
+            using (var stream = File.Open(file, FileMode.Open)) {
+                if (File.Exists(tagfile)) {
+                    using (var tagStream = File.Open(tagfile, FileMode.Open)) {
+                        return SpectrumFeatureCollection.Load(stream, tagStream);
+                    }
+                }
+                return SpectrumFeatureCollection.Load(stream);
+            }
+        }
+
+        public void SaveMsdecResultWithAnnotationInfo(IReadOnlyList<MSDecResult> msdecResults) {
+            MsdecResultsWriter.Write(DeconvolutionFilePath, msdecResults, isAnnotationInfoIncluded: true);
+        }
+
+        public List<MSDecResult> LoadMsdecResultWithAnnotationInfo() {
+            return MsdecResultsReader.ReadMSDecResults(DeconvolutionFilePath, out var _, out var _);
         }
 
         public RawMeasurement LoadRawMeasurement(bool isImagingMsData, bool isGuiProcess, int retry, int sleepMilliSeconds) {
@@ -78,5 +121,18 @@ namespace CompMs.MsdialCore.DataObj {
         public List<MaldiFrameInfo> GetMaldiFrames() {
             return new RawDataAccess(AnalysisFilePath, 0, false, true, true).GetMaldiFrames();
         }
+
+        public async Task SetChromatogramPeakFeaturesSummaryAsync(IDataProvider provider, List<ChromatogramPeakFeature> chromPeakFeatures, CancellationToken token) {
+            var spectra = await provider.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
+            ChromPeakFeaturesSummary = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, chromPeakFeatures);
+        }
+
+        public Dictionary<int, float> GetRiDictionary(Dictionary<int, RiDictionaryInfo> riDictionaries) {
+            return riDictionaries?.TryGetValue(AnalysisFileId, out var dictionary) == true ? dictionary.RiDictionary : null;
+        }
+
+        int IFileBean.FileID => AnalysisFileId;
+        string IFileBean.FileName => AnalysisFileName;
+        string IFileBean.FilePath => AnalysisFilePath;
     }
 }

@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 namespace CompMs.App.Msdial.Model.Setting
 {
     internal sealed class FileClassSetModel : DisposableModelBase {
-        public FileClassSetModel(ProjectBaseParameterModel parameter) {
+        public FileClassSetModel(FilePropertiesModel parameter) {
             if (parameter is null) {
                 throw new ArgumentNullException(nameof(parameter));
             }

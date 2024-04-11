@@ -19,12 +19,10 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             if (!(_param is MsdialGcmsParameter param)) return alignmentSpotList;
 
             var cSpots = new List<AlignmentSpotProperty>();
-            foreach (var spot in alignmentSpotList.Where(n => n.MspID >= 0)) {
-                cSpots.Add(spot); // first, identifid spots are stored for this priority.
-            }
+            cSpots.AddRange(alignmentSpotList.Where(spot => spot.IsReferenceMatched(evaluator)));
 
             //if both Quant mass and Retention is same, exclude the spot information.
-            foreach (var aSpot in alignmentSpotList.Where(n => n.MspID < 0)) {
+            foreach (var aSpot in alignmentSpotList.Where(spot => !spot.IsReferenceMatched(evaluator))) {
                 var aSpotRt = aSpot.TimesCenter.RT.Value;
                 var aSpotRi = aSpot.TimesCenter.RI.Value;
                 var aSpotMass = aSpot.QuantMass;
@@ -62,17 +60,24 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             return cSpots;
         }
 
-        protected override void PostProcess(List<AlignmentSpotProperty> alignments) {
+        protected override List<int> SetAlignmentID(List<AlignmentSpotProperty> alignments) {
             var param = _param as MsdialGcmsParameter;
-            if (param.AlignmentIndexType == AlignmentIndexType.RT)
-                alignments.Sort((a, b) => (a.TimesCenter.RT.Value, a.QuantMass).CompareTo((b.TimesCenter.RT.Value, b.QuantMass)));
-            else
-                alignments.Sort((a, b) => (a.TimesCenter.RI.Value, a.QuantMass).CompareTo((b.TimesCenter.RI.Value, b.QuantMass)));
-            for (int i = 0; i < alignments.Count; i++) {
-                alignments[i].AlignmentID = i;
-                alignments[i].MasterAlignmentID = i;
+            if (param.AlignmentIndexType == AlignmentIndexType.RT) {
+                alignments.Sort((a, b) => (a.TimesCenter.RT, a.QuantMass).CompareTo((b.TimesCenter.RT, b.QuantMass)));
             }
+            else {
+                alignments.Sort((a, b) => (a.TimesCenter.RI, a.QuantMass).CompareTo((b.TimesCenter.RI, b.QuantMass)));
+            }
+
+            var ids = new List<int>(alignments.Count);
+            for (int i = 0; i < alignments.Count; i++) {
+                ids.Add(alignments[i].MasterAlignmentID);
+                alignments[i].MasterAlignmentID = alignments[i].AlignmentID = i;
+            }
+            return ids;
         }
+
+        protected override void PostProcess(List<AlignmentSpotProperty> alignments) { }
 
         protected override void SetLinks(List<AlignmentSpotProperty> alignments) { }
     }

@@ -22,14 +22,14 @@ namespace CompMs.App.MsdialConsole.Export
 
             var container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(alignmentFile.FilePath);
             var decResults = MsdecResultsReader.ReadMSDecResults(alignmentFile.SpectraFilePath, out _, out _);
-
+            
             var curatedSpots = curator?.MsCleanRCurator(container.AlignmentSpotProperties, decResults, storage.AnalysisFiles, storage.Parameter) ?? container.AlignmentSpotProperties;
 
             var metadataAccessor = new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter, false);
             var quantAccessor = new LegacyQuantValueAccessor("Normalized height", storage.Parameter);
             var exporter = new AlignmentCSVExporter();
 
-            exporter.Export(output, curatedSpots, decResults, storage.AnalysisFiles, metadataAccessor, quantAccessor, new[] { StatsValue.Average, StatsValue.Stdev });
+            exporter.Export(output, curatedSpots, decResults, storage.AnalysisFiles, new MulticlassFileMetaAccessor(0), metadataAccessor, quantAccessor, new[] { StatsValue.Average, StatsValue.Stdev });
         }
 
         public async Task<IMsdialDataStorage<ParameterBase>> LoadProjectFromPathAsync(string projectfile) {

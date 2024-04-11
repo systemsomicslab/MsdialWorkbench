@@ -17,13 +17,13 @@ namespace CompMs.App.Msdial.Model.Export
 
     internal sealed class MsdialAnalysisExportModel : BindableBase, IMsdialAnalysisExport
     {
-        private readonly IAnalysisExporter _exporter;
+        private readonly IAnalysisExporter<ChromatogramPeakFeatureCollection> _exporter;
 
-        public MsdialAnalysisExportModel(IAnalysisExporter exporter) {
+        public MsdialAnalysisExportModel(IAnalysisExporter<ChromatogramPeakFeatureCollection> exporter) {
             _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
         }
 
-        public string Label { get; set; }
+        public string Label { get; set; } = string.Empty;
         public string FilePrefix { get; set; } = string.Empty;
         public string FileSuffix { get; set; } = "txt";
 
@@ -47,9 +47,9 @@ namespace CompMs.App.Msdial.Model.Export
 
     internal sealed class SpectraTypeSelectableMsdialAnalysisExportModel : BindableBase, IMsdialAnalysisExport
     {
-        private readonly IReadOnlyDictionary<ExportspectraType, IAnalysisExporter> _exporters;
+        private readonly IReadOnlyDictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> _exporters;
 
-        public SpectraTypeSelectableMsdialAnalysisExportModel(IReadOnlyDictionary<ExportspectraType, IAnalysisExporter> exporters) {
+        public SpectraTypeSelectableMsdialAnalysisExportModel(IReadOnlyDictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> exporters) {
             _exporters = exporters ?? throw new ArgumentNullException(nameof(exporters));
             Types = exporters.Keys.ToList().AsReadOnly();
             SelectedType = Types.FirstOrDefault();
@@ -62,7 +62,7 @@ namespace CompMs.App.Msdial.Model.Export
         }
         private ExportspectraType _selectedType;
 
-        public string Label { get; set; }
+        public string Label { get; set; } = string.Empty;
         public string FilePrefix { get; set; } = string.Empty;
         public string FileSuffix { get; set; } = "txt";
 

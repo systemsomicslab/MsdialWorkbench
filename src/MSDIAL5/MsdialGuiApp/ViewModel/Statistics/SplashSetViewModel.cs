@@ -41,22 +41,18 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
         public ReactiveProperty<IonAbundance> OutputUnit { get; }
 
-        public DelegateCommand FindCommand => _findCommand ?? (_findCommand = new DelegateCommand(Find));
-
-        private DelegateCommand _findCommand;
+        public DelegateCommand FindCommand => _findCommand ??= new DelegateCommand(Find);
+        private DelegateCommand? _findCommand;
 
         private void Find() {
             _model.Find();
             SplashProduct.Value?.Refresh();
         }
 
-        public DelegateCommand AddLastCommand => _addLastCommand ?? (_addLastCommand = new DelegateCommand(_model.AddLast));
-        private DelegateCommand _addLastCommand;
+        public DelegateCommand AddLastCommand => _addLastCommand ??= new DelegateCommand(_model.AddLast);
+        private DelegateCommand? _addLastCommand;
 
-        public DelegateCommand DeleteCommand => _deleteCommand ?? (_deleteCommand = new DelegateCommand(_model.Delete));
-        private DelegateCommand _deleteCommand;
-
-        public DelegateCommand NormalizeCommand => _normalizeCommand ?? (_normalizeCommand = new DelegateCommand(_model.Normalize));//, Model.CanNormalize));
-        private DelegateCommand _normalizeCommand;
+        public DelegateCommand DeleteCommand => _deleteCommand ??= new DelegateCommand(_model.Delete);
+        private DelegateCommand? _deleteCommand;
     }
 }

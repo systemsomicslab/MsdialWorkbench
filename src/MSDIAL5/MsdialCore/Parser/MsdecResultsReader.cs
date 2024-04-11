@@ -12,29 +12,34 @@ namespace CompMs.MsdialCore.Parser {
 		private static bool SHOW_WARNING = true;
 		public static List<MSDecResult> ReadMSDecResults(string file, out int DCL_VERSION, out List<long> seekPoints) {
 			using (var fs = File.Open(file, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-				var buffer = new byte[7];
-				fs.Seek(0, SeekOrigin.Begin);
-				fs.Read(buffer, 0, 7);
+                return ReadMSDecResults(fs, out DCL_VERSION, out seekPoints);
+			}
+		}
 
-				string name = Encoding.ASCII.GetString(buffer, 0, 2);
-				DCL_VERSION = BitConverter.ToInt32(buffer, 2);
-                var isAnnotationInfoIncluded = BitConverter.ToBoolean(buffer, 6);
+		public static List<MSDecResult> ReadMSDecResults(Stream stream, out int DCL_VERSION, out List<long> seekPoints) {
+            var fs = stream;
+            var buffer = new byte[7];
+            fs.Seek(0, SeekOrigin.Begin);
+            fs.Read(buffer, 0, 7);
+
+            string name = Encoding.ASCII.GetString(buffer, 0, 2);
+            DCL_VERSION = BitConverter.ToInt32(buffer, 2);
+            var isAnnotationInfoIncluded = BitConverter.ToBoolean(buffer, 6);
 
 #if DEBUG
-                Console.WriteLine("name: " + name);
-                Console.WriteLine("version: " + DCL_VERSION);
-                Console.WriteLine("annotation info: " + isAnnotationInfoIncluded);
+            Console.WriteLine("name: " + name);
+            Console.WriteLine("version: " + DCL_VERSION);
+            Console.WriteLine("annotation info: " + isAnnotationInfoIncluded);
 #endif
-                if (name.Equals("DC") && DCL_VERSION == 1) {
-					//Console.WriteLine("Reading deconvolution file " + file + " (V." + DCL_VERSION + ")", "INFO");
-					return MSDecReaderVer1(fs, isAnnotationInfoIncluded, out seekPoints);
-				}
-				else {
-					seekPoints = null;
-					Console.WriteLine("The deconvolution file/s is/are outdated. Please reprocess your data.");
-					return null;
-				}
-			}
+            if (name.Equals("DC") && DCL_VERSION == 1) {
+                //Console.WriteLine("Reading deconvolution file " + file + " (V." + DCL_VERSION + ")", "INFO");
+                return MSDecReaderVer1(fs, isAnnotationInfoIncluded, out seekPoints);
+            }
+            else {
+                seekPoints = null;
+                Console.WriteLine("The deconvolution file/s is/are outdated. Please reprocess your data.");
+                return null;
+            }
 		}
 
 		public static void GetSeekPointers(string file, out int DCL_VERSION, out List<long> seekPoints, out bool isAnnotationInfoIncluded) {
@@ -101,7 +106,7 @@ namespace CompMs.MsdialCore.Parser {
         }
 
         public static MSDecResult ReadMSDecResult(string file, long seekPoint) {
-            using (var fs = File.Open(file, FileMode.Open, FileAccess.Read)) {
+            using (var fs = File.Open(file, FileMode.Open, FileAccess.Read, FileShare.Read)) {
                 var buffer = new byte[7];
                 fs.Seek(0, SeekOrigin.Begin);
                 fs.Read(buffer, 0, 7);
@@ -122,7 +127,7 @@ namespace CompMs.MsdialCore.Parser {
 
 
         public static MSDecResult ReadMSDecResult(string file, long seekPoint, int version, bool isAnnotationInfoIncluded) {
-            using (var fs = File.Open(file, FileMode.Open, FileAccess.Read)) {
+            using (var fs = File.Open(file, FileMode.Open, FileAccess.Read, FileShare.Read)) {
                 if (version == 1) {
                     fs.Seek(seekPoint, SeekOrigin.Begin);
                     return ReadMSDecResultVer1(fs, isAnnotationInfoIncluded);
@@ -134,7 +139,7 @@ namespace CompMs.MsdialCore.Parser {
         }
 
         // 7 bytes buffered already
-        public static List<MSDecResult> MSDecReaderVer1(FileStream fs, bool isAnnotationInfoIncluded, out List<long> seekPoints) {
+        public static List<MSDecResult> MSDecReaderVer1(Stream fs, bool isAnnotationInfoIncluded, out List<long> seekPoints) {
             
             seekPoints = new List<long>();
             var buffer = new byte[4];

@@ -7,14 +7,13 @@ using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Utility;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class ChromatogramPeakFeatureModel : DisposableModelBase, IPeakSpotModel, IFilterable, IMoleculeProperty, IChromatogramPeak, IAnnotatedObject {
+    public sealed class ChromatogramPeakFeatureModel : DisposableModelBase, IPeakSpotModel, IFilterable, IMoleculeProperty, IIonProperty, IChromatogramPeak, IAnnotatedObject {
         #region Property
         public int MasterPeakID => innerModel.MasterPeakID;
         public double? ChromXValue => innerModel.ChromXs.Value;
@@ -54,7 +53,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public MsScanMatchResult MspBasedMatchResult => innerModel.MspBasedMatchResult;
         public MsScanMatchResult TextDbBasedMatchResult => innerModel.TextDbBasedMatchResult;
         public MsScanMatchResult ScanMatchResult => MatchResultsModel.Representative ?? innerModel.TextDbBasedMatchResult ?? innerModel.MspBasedMatchResult;
-        public string AdductIonName => innerModel.AdductType?.AdductIonName;
+        public string? AdductIonName => innerModel.AdductType?.AdductIonName;
         public string Name {
             get => ((IMoleculeProperty)innerModel).Name;
             set {
@@ -104,6 +103,17 @@ namespace CompMs.App.Msdial.Model.DataObj
                 if (innerModel.InChIKey != value) {
                     ((IMoleculeProperty)innerModel).InChIKey = value;
                     OnPropertyChanged(nameof(InChIKey));
+                }
+            }
+        }
+
+        public AdductIon AdductType {
+            get => innerModel.AdductType;
+            set {
+                if (innerModel.AdductType != value) {
+                    innerModel.AdductType = value;
+                    OnPropertyChanged(nameof(AdductType));
+                    OnPropertyChanged(nameof(AdductIonName));
                 }
             }
         }
@@ -174,6 +184,24 @@ namespace CompMs.App.Msdial.Model.DataObj
             return true;
         }
 
+        public void SwitchPeakSpotTag(PeakSpotTag tag) {
+            if (tag == PeakSpotTag.CONFIRMED) {
+                Confirmed = !Confirmed;
+            }
+            if (tag == PeakSpotTag.LOW_QUALITY_SPECTRUM) {
+                LowQualitySpectrum = !LowQualitySpectrum;
+            }
+            if (tag == PeakSpotTag.MISANNOTATION) {
+                Misannotation = !Misannotation;
+            }
+            if (tag == PeakSpotTag.COELUTION) {
+                Coelution = !Coelution;
+            }
+            if (tag == PeakSpotTag.OVERANNOTATION) {
+                Overannotation = !Overannotation;
+            }
+        }
+
         public static readonly double KMIupacUnit;
         public static readonly double KMNominalUnit;
         public double KM => Mass / KMIupacUnit * KMNominalUnit;
@@ -241,25 +269,17 @@ namespace CompMs.App.Msdial.Model.DataObj
         IMSIonProperty IPeakSpotModel.MSIon => innerModel;
         IMoleculeProperty IPeakSpotModel.Molecule => innerModel;
 
-        void IPeakSpotModel.SetConfidence(MoleculeMsReference reference, MsScanMatchResult result) {
-            DataAccess.SetMoleculeMsPropertyAsConfidence(innerModel, reference);
-            MatchResultsModel.RemoveManuallyResults();
-            MatchResultsModel.AddResult(result);
-            OnPropertyChanged(string.Empty);
-        }
-
-        void IPeakSpotModel.SetUnsettled(MoleculeMsReference reference, MsScanMatchResult result) {
-            DataAccess.SetMoleculeMsPropertyAsUnsettled(innerModel, reference);
-            MatchResultsModel.RemoveManuallyResults();
-            MatchResultsModel.AddResult(result);
-            OnPropertyChanged(string.Empty);
-        }
-
-
         public void SetUnknown(UndoManager undoManager) {
             IDoCommand command = new SetUnknownDoCommand(this, MatchResultsModel);
             command.Do();
             undoManager.Add(command);
+        }
+
+        // IIonProperty
+        void IIonProperty.SetAdductType(AdductIon adduct) {
+            innerModel.SetAdductType(adduct);
+            OnPropertyChanged(nameof(AdductType));
+            OnPropertyChanged(nameof(AdductIonName));
         }
     }
 }

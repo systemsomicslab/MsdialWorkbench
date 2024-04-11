@@ -13,8 +13,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
     {
         public EicViewModel(
             EicModel model,
-            IAxisManager<double> horizontalAxis = null,
-            IAxisManager<double> verticalAxis = null) {
+            IAxisManager<double>? horizontalAxis = null,
+            IAxisManager<double>? verticalAxis = null) {
 
             ItemLoaded = model.ItemLoaded;
 
@@ -56,20 +56,20 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReadOnlyReactivePropertySlim<bool> ItemLoaded { get; }
 
-        public ReadOnlyReactivePropertySlim<Chromatogram> Chromatogram { get; }
+        public ReadOnlyReactivePropertySlim<PeakChromatogram?> Chromatogram { get; }
 
         public IAxisManager<double> HorizontalAxis { get; }
 
         public IAxisManager<double> VerticalAxis { get; }
 
-        public ReadOnlyReactivePropertySlim<string> GraphTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> GraphTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> HorizontalTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> HorizontalTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> VerticalTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> VerticalTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> HorizontalProperty { get; }
+        public ReadOnlyReactivePropertySlim<string?> HorizontalProperty { get; }
 
-        public ReadOnlyReactivePropertySlim<string> VerticalProperty { get; }
+        public ReadOnlyReactivePropertySlim<string?> VerticalProperty { get; }
     }
 }

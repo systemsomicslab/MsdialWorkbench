@@ -1,7 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
-using System.Linq;
+#if NETSTANDARD
+using CompMs.Common.Extension;
+#endif
 using CompMs.Common.Parser;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
 
 namespace CompMs.Common.Lipidomics.Tests
 {
@@ -17,7 +21,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.DG, 666.5223253, new PositionLevelChains(acyl1, acyl2));
 
             var generator = new DGSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -151,7 +155,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.DG, 666.5223253, new PositionLevelChains(acyl1, acyl2));
 
             var generator = new DGSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+NH4]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+NH4]+"));
 
             var expects = new[]
             {
@@ -286,10 +290,12 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.DG, 666.5223253, new PositionLevelChains(acyl1, acyl2));
 
             var generator = new DGSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+Na]+"));
 
             var expects = new[]
             {
+                305.24510103050005,//18:1(11) + O
+                351.22945096636005, // 22:6(4, 7, 10, 13, 16, 19) + O
                 362.2791408 ,//Sn2 FA loss
                 377.2662304 ,//Sn2 Acyl loss
                 393.2400156 ,// -CH2
@@ -421,7 +427,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.TG, 856.7519909, new PositionLevelChains(acyl1, acyl2, acyl3));
 
             var generator = new TGSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -550,7 +556,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.TG, 856.7519909, new PositionLevelChains(acyl1, acyl2, acyl3));
 
             var generator = new TGSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+NH4]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+NH4]+"));
 
             var expects = new[]
             {
@@ -680,7 +686,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.TG, 856.7519909, new PositionLevelChains(acyl1, acyl2, acyl3));
 
             var generator = new TGSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+Na]+"));
 
             var expects = new[]
             {
@@ -693,7 +699,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 343.26129967  ,//[Sn3 Acyl + C3H5O + Na]+
                 345.2400157 ,//[Sn3 Acyl + C2H3O2 + Na]+
                 439.87060580049996, //[Precursor]2+
-                575.5039356 ,//Sn2 FA loss
+                //575.5039356 ,//Sn2 FA loss
                 599.50152991 ,//Sn3 FA loss
                 615.495896  ,//Sn3 Acyl loss
                 623.50152991 ,//Sn1 FA loss
@@ -807,7 +813,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.BMP, 774.5410857, new PositionLevelChains(acyl1, acyl2));
 
             var generator = new BMPSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -815,13 +821,16 @@ namespace CompMs.Common.Lipidomics.Tests
                 173.02150, // C3H9O6P	
                 321.27936, // -C3H9O6P -18:1(9)-H2O	
                 339.28992, // -C3H9O6P -18:1(9)	
+                419.25625063016,// 18:1(9) + C3H6O5P, 18:1(9) + C3H6O5P
+                458.27972606724, // -18:1(9) - OH, -18:1(9) - OH
                 461.26681,// -H2O -CH2(Sn1)	
+                475.28246571887, // -18:1(9), -18:1(9)
                 479.27738,//-CH2(Sn1)	
-                493.29303,// -18:1(9)-H2O	
+                //493.29303,// -18:1(9)-H2O	
                 501.2611818 ,//sn1-1-H
                 502.2690068 ,//sn1-1
                 503.2768318 ,//sn1-1+H
-                511.30356   ,// -18:1(9), -18:1(9)
+                //511.30356   ,// -18:1(9), -18:1(9)
                 515.2768318 ,//sn1-2-H
                 516.2846568 ,//sn1-2
                 517.2924819 ,//sn1-2+H
@@ -892,7 +901,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.BMP, 774.5410857, new PositionLevelChains(acyl1, acyl2));
 
             var generator = new BMPSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+NH4]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+NH4]+"));
 
             var expects = new[]
             {
@@ -900,13 +909,14 @@ namespace CompMs.Common.Lipidomics.Tests
                 173.0215    , // C3H9O6P
                 321.27936   , // -C3H9O6P -18:1(9)-H2O
                 339.28992   , // -C3H9O6P -18:1(9)
+                419.25570206497, // 18:1(9) + C3H6O5P, 18:1(9) + C3H6O5P
+                458.27917750205, // - 18:1(9) - OH, -18:1(9) - OH
                 461.26681   ,// -H2O -CH2(Sn1)
+                475.28191715368, // -18:1(9), -18:1(9)
                 479.27738   ,//-CH2(Sn1)
-                493.29303   ,// -18:1(9)-H2O
                 501.2611818 ,//sn1-1-H
                 502.2690068 ,//sn1-1
                 503.2768318 ,//sn1-1+H
-                511.30356   ,// -18:1(9), -18:1(9)
                 515.2768318 ,//sn1-2-H
                 516.2846568 ,//sn1-2
                 517.2924819 ,//sn1-2+H
@@ -977,7 +987,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.BMP, 774.5410857, new PositionLevelChains(acyl1, acyl2));
 
             var generator = new BMPSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+Na]+"));
 
             var expects = new[]
             {
@@ -1062,7 +1072,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.DGTS, 737.61695, new PositionLevelChains(acyl1, acyl2));
 
             var generator = new DGTSSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -1166,7 +1176,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.DGTA, 737.61695, new PositionLevelChains(acyl1, acyl2));
 
             var generator = new DGTASpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -1267,7 +1277,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.LDGTS, 519.35599, new PositionLevelChains(acyl1));
 
             var generator = new LDGTSSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -1275,10 +1285,11 @@ namespace CompMs.Common.Lipidomics.Tests
                 130.08625504885998,//Header - CH2
                 144.101905113,//Header  
                 162.1124697967,//Header + H2O
+                173.10464476463,//C8H14NO3
                 175.12029482877,//C8H16NO3  
                 204.1230344804,//Gly-O  
                 204.12303618681,// -CH2(SN1)  
-                218.13868625,// -20:5-O  
+                217.130861,// -20:5-O  
                 236.14925093465,// -20:5  
                 262.12851549007,// 20:5 C1-H 
                 263.13634052214,// 20:5 C1 
@@ -1360,12 +1371,13 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.LDGTA, 519.35599, new PositionLevelChains(acyl1));
 
             var generator = new LDGTASpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
                 144.101905113,//Header  
-                162.1124698,//Header + O
+                160.0968197,//Header + O
+                162.1124698,//Header + H2O
                 175.12029482877,//C8H16NO3  
                 204.1230344804,//Gly-O  
                 204.12303618681,// -CH2(SN1)  
@@ -1450,59 +1462,58 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.MG, 328.2614, new PositionLevelChains(acyl1));
 
             var generator = new MGSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
-                119.03337, // 16:1(11) C1-H
-                120.04120, // 16:1(11) C1
-                121.04902, // 16:1(11) C1+H
-                133.04902, // 16:1(11) C2-H
-                134.05685, // 16:1(11) C2
-                135.06467, // 16:1(11) C2+H
-                147.06467, // 16:1(11) C3-H
-                148.07250, // 16:1(11) C3
-                149.08032, // 16:1(11) C3+H
-                161.08032, // 16:1(11) C4-H
-                162.08815, // 16:1(11) C4
-                163.09597, // 16:1(11) C4+H
-                175.09597, // 16:1(11) C5-H
-                176.10380, // 16:1(11) C5
-                177.11162, // 16:1(11) C5+H
-                189.11162, // 16:1(11) C6-H
-                190.11945, // 16:1(11) C6
-                191.12727, // 16:1(11) C6+H
-                203.12727, // 16:1(11) C7-H
-                204.13510, // 16:1(11) C7
-                205.14292, // 16:1(11) C7+H
-                217.14292, // 16:1(11) C8-H
-                218.15075, // 16:1(11) C8
-                219.15857, // 16:1(11) C8+H
-                231.15857, // 16:1(11) C9-H
-                232.16640, // 16:1(11) C9
-                233.17422, // 16:1(11) C9+H
+            //    119.03337, // 16:1(11) C1-H
+            //    120.04120, // 16:1(11) C1
+            //    121.04902, // 16:1(11) C1+H
+            //    133.04902, // 16:1(11) C2-H
+            //    134.05685, // 16:1(11) C2
+            //    135.06467, // 16:1(11) C2+H
+            //    147.06467, // 16:1(11) C3-H
+            //    148.07250, // 16:1(11) C3
+            //    149.08032, // 16:1(11) C3+H
+            //    161.08032, // 16:1(11) C4-H
+            //    162.08815, // 16:1(11) C4
+            //    163.09597, // 16:1(11) C4+H
+            //    175.09597, // 16:1(11) C5-H
+            //    176.10380, // 16:1(11) C5
+            //    177.11162, // 16:1(11) C5+H
+            //    189.11162, // 16:1(11) C6-H
+            //    190.11945, // 16:1(11) C6
+            //    191.12727, // 16:1(11) C6+H
+            //    203.12727, // 16:1(11) C7-H
+            //    204.13510, // 16:1(11) C7
+            //    205.14292, // 16:1(11) C7+H
+            //    217.14292, // 16:1(11) C8-H
+            //    218.15075, // 16:1(11) C8
+            //    219.15857, // 16:1(11) C8+H
+            //    231.15857, // 16:1(11) C9-H
+            //    232.16640, // 16:1(11) C9
+            //    233.17422, // 16:1(11) C9+H
                 237.22129, // 16:1(11) acyl+
-                245.17422, // 16:1(11) C10-H
-                246.18205, // 16:1(11) C10
-                247.18987, // 16:1(11) C10+H
-                258.18205, // 16:1(11) C11-H
-                259.18987, // 16:1(11) C11
-                260.19770, // 16:1(11) C11+H
-                271.18987, // 16:1(11) C12-H
-                272.19770, // 16:1(11) C12
-                273.20552, // 16:1(11) C12+H
-                285.20552, // 16:1(11) C13-H
-                286.21335, // 16:1(11) C13
-                287.22117, // 16:1(11) C13+H
-                299.22117, // 16:1(11) C14-H
-                300.22900, // 16:1(11) C14
-                301.23682, // 16:1(11) C14+H
+                //245.17422, // 16:1(11) C10-H
+                //246.18205, // 16:1(11) C10
+                //247.18987, // 16:1(11) C10+H
+                //258.18205, // 16:1(11) C11-H
+                //259.18987, // 16:1(11) C11
+                //260.19770, // 16:1(11) C11+H
+                //271.18987, // 16:1(11) C12-H
+                //272.19770, // 16:1(11) C12
+                //273.20552, // 16:1(11) C12+H
+                //285.20552, // 16:1(11) C13-H
+                //286.21335, // 16:1(11) C13
+                //287.22117, // 16:1(11) C13+H
+                //299.22117, // 16:1(11) C14-H
+                //300.22900, // 16:1(11) C14
+                //301.23682, // 16:1(11) C14+H
                 311.25811, // [M+H]+ -H2O
-                313.23682, // 16:1(11) C15-H
-                314.24465, // 16:1(11) C15
-                315.25247, // 16:1(11) C15+H
+                //313.23682, // 16:1(11) C15-H
+                //314.24465, // 16:1(11) C15
+                //315.25247, // 16:1(11) C15+H
                 329.26867, // [M+H]+
-                346.29522, // Precursor
             };
 
             scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
@@ -1519,57 +1530,57 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.MG, 328.2614, new PositionLevelChains(acyl1));
 
             var generator = new MGSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+NH4]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+NH4]+"));
 
             var expects = new[]
             {
-                119.03337, // 16:1(11) C1-H
-                120.04120, // 16:1(11) C1
-                121.04902, // 16:1(11) C1+H
-                133.04902, // 16:1(11) C2-H
-                134.05685, // 16:1(11) C2
-                135.06467, // 16:1(11) C2+H
-                147.06467, // 16:1(11) C3-H
-                148.07250, // 16:1(11) C3
-                149.08032, // 16:1(11) C3+H
-                161.08032, // 16:1(11) C4-H
-                162.08815, // 16:1(11) C4
-                163.09597, // 16:1(11) C4+H
-                175.09597, // 16:1(11) C5-H
-                176.10380, // 16:1(11) C5
-                177.11162, // 16:1(11) C5+H
-                189.11162, // 16:1(11) C6-H
-                190.11945, // 16:1(11) C6
-                191.12727, // 16:1(11) C6+H
-                203.12727, // 16:1(11) C7-H
-                204.13510, // 16:1(11) C7
-                205.14292, // 16:1(11) C7+H
-                217.14292, // 16:1(11) C8-H
-                218.15075, // 16:1(11) C8
-                219.15857, // 16:1(11) C8+H
-                231.15857, // 16:1(11) C9-H
-                232.16640, // 16:1(11) C9
-                233.17422, // 16:1(11) C9+H
+                //119.03337, // 16:1(11) C1-H
+                //120.04120, // 16:1(11) C1
+                //121.04902, // 16:1(11) C1+H
+                //133.04902, // 16:1(11) C2-H
+                //134.05685, // 16:1(11) C2
+                //135.06467, // 16:1(11) C2+H
+                //147.06467, // 16:1(11) C3-H
+                //148.07250, // 16:1(11) C3
+                //149.08032, // 16:1(11) C3+H
+                //161.08032, // 16:1(11) C4-H
+                //162.08815, // 16:1(11) C4
+                //163.09597, // 16:1(11) C4+H
+                //175.09597, // 16:1(11) C5-H
+                //176.10380, // 16:1(11) C5
+                //177.11162, // 16:1(11) C5+H
+                //189.11162, // 16:1(11) C6-H
+                //190.11945, // 16:1(11) C6
+                //191.12727, // 16:1(11) C6+H
+                //203.12727, // 16:1(11) C7-H
+                //204.13510, // 16:1(11) C7
+                //205.14292, // 16:1(11) C7+H
+                //217.14292, // 16:1(11) C8-H
+                //218.15075, // 16:1(11) C8
+                //219.15857, // 16:1(11) C8+H
+                //231.15857, // 16:1(11) C9-H
+                //232.16640, // 16:1(11) C9
+                //233.17422, // 16:1(11) C9+H
                 237.22129, // 16:1(11) acyl+
-                245.17422, // 16:1(11) C10-H
-                246.18205, // 16:1(11) C10
-                247.18987, // 16:1(11) C10+H
-                258.18205, // 16:1(11) C11-H
-                259.18987, // 16:1(11) C11
-                260.19770, // 16:1(11) C11+H
-                271.18987, // 16:1(11) C12-H
-                272.19770, // 16:1(11) C12
-                273.20552, // 16:1(11) C12+H
-                285.20552, // 16:1(11) C13-H
-                286.21335, // 16:1(11) C13
-                287.22117, // 16:1(11) C13+H
-                299.22117, // 16:1(11) C14-H
-                300.22900, // 16:1(11) C14
-                301.23682, // 16:1(11) C14+H
+                //245.17422, // 16:1(11) C10-H
+                //246.18205, // 16:1(11) C10
+                //247.18987, // 16:1(11) C10+H
+                //258.18205, // 16:1(11) C11-H
+                //259.18987, // 16:1(11) C11
+                //260.19770, // 16:1(11) C11+H
+                //271.18987, // 16:1(11) C12-H
+                //272.19770, // 16:1(11) C12
+                //273.20552, // 16:1(11) C12+H
+                //285.20552, // 16:1(11) C13-H
+                //286.21335, // 16:1(11) C13
+                //287.22117, // 16:1(11) C13+H
+                //299.22117, // 16:1(11) C14-H
+                //300.22900, // 16:1(11) C14
+                //301.23682, // 16:1(11) C14+H
                 311.25811, // [M+H]+ -H2O
-                313.23682, // 16:1(11) C15-H
-                314.24465, // 16:1(11) C15
-                315.25247, // 16:1(11) C15+H
+                //313.23682, // 16:1(11) C15-H
+                //314.24465, // 16:1(11) C15
+                //315.25247, // 16:1(11) C15+H
                 329.26867, // [M+H]+
                 346.29522, // Precursor
             };
@@ -1591,7 +1602,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.CAR, 425.350509, new PositionLevelChains(acyl1));
 
             var generator = new CARSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {

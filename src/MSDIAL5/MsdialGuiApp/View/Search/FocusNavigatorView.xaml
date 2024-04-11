@@ -10,6 +10,9 @@
              d:DesignHeight="30" d:DesignWidth="1280">
     <StackPanel Orientation="Horizontal"
                 HorizontalAlignment="Right">
+        <TextBlock Text="Region focus by"
+                   Margin="0,0,8,0"
+                   VerticalAlignment="Center"/>
         <ItemsControl ItemsSource="{Binding SpotFocuses}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>

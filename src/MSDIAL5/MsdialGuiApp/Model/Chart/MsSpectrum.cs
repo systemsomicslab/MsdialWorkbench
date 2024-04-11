@@ -1,30 +1,34 @@
 ﻿using CompMs.Common.Components;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.Core.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    internal sealed class MsSpectrum : BindableBase
+    public sealed class MsSpectrum : BindableBase
     {
         private List<SpectrumPeak> _spectrum;
         
-        public MsSpectrum(List<SpectrumPeak> spectrum) {
+        public MsSpectrum(IReadOnlyList<SpectrumPeak> spectrum) {
             _spectrum = spectrum?.OrderBy(peak => peak.Mass).ToList() ?? new List<SpectrumPeak>(0);
         }
 
         public List<SpectrumPeak> Spectrum => _spectrum;
 
-        public Range GetSpectrumRange(Func<SpectrumPeak, double> selector) {
+        public bool HasSpectrum => _spectrum.Count > 0;
+
+        public (double, double) GetSpectrumRange(Func<SpectrumPeak, double> selector) {
             if (_spectrum.Count == 0) {
-                return new Range(0, 1);
+                return (0d, 1d);
             }
-            return new Range(_spectrum.Min(selector), _spectrum.Max(selector));
+            return (_spectrum.Min(selector), _spectrum.Max(selector));
         }
 
-        public MsSpectrum Difference(MsSpectrum other, double tolerance) {
+        public MsSpectrum Difference(MsSpectrum? other, double tolerance) {
+            if (other is null) {
+                return new MsSpectrum(new List<SpectrumPeak>(0));
+            }
             var result = new List<SpectrumPeak>();
             var j = 0;
             foreach (var peak in _spectrum) {
@@ -39,7 +43,10 @@ namespace CompMs.App.Msdial.Model.Chart
             return new MsSpectrum(result);
         }
 
-        public MsSpectrum Product(MsSpectrum other, double tolerance) {
+        public MsSpectrum Product(MsSpectrum? other, double tolerance) {
+            if (other is null) {
+                return new MsSpectrum(new List<SpectrumPeak>(0));
+            }
             var result = new List<SpectrumPeak>();
             var j = 0;
             foreach (var peak in _spectrum) {

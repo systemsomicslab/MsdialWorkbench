@@ -17,34 +17,34 @@ namespace CompMs.App.Msdial.Model.Chart
             AnnotationOrderProperty = annotationOrderProperty;
         }
 
-        public string GraphTitle {
+        public string? GraphTitle {
             get => graphTitle;
             set => SetProperty(ref graphTitle, value);
         }
-        private string graphTitle;
+        private string? graphTitle;
 
-        public string HorizontalTitle {
+        public string? HorizontalTitle {
             get => horizontalTitle;
             set => SetProperty(ref horizontalTitle, value);
         }
-        private string horizontalTitle;
+        private string? horizontalTitle;
 
-        public string VerticalTitle {
+        public string? VerticalTitle {
             get => verticalTitle;
             set => SetProperty(ref verticalTitle, value);
         }
-        private string verticalTitle;
+        private string? verticalTitle;
 
-        public string AnnotationLabelProperty {
+        public string? AnnotationLabelProperty {
             get => annotationLabelProperty;
             set => SetProperty(ref annotationLabelProperty, value);
         }
-        private string annotationLabelProperty;
+        private string? annotationLabelProperty;
 
-        public string AnnotationOrderProperty {
+        public string? AnnotationOrderProperty {
             get => annotationOrderProperty;
             set => SetProperty(ref annotationOrderProperty, value);
         }
-        private string annotationOrderProperty;
+        private string? annotationOrderProperty;
     }
 }

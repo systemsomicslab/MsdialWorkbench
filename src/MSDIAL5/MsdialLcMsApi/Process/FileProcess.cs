@@ -39,9 +39,12 @@ namespace CompMs.MsdialLcMsApi.Process
             _peakAnnotationProcess = new PeakAnnotationProcess(annotationProcess, storage, evaluator);
         }       
 
-        public async Task RunAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token = default) {
+        public Task RunAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token = default) {
             var provider = _factory.Create(file);
+            return RunAsync(file, provider, reportAction, token);
+        }
 
+        public async Task RunAsync(AnalysisFileBean file, IDataProvider provider, Action<int> reportAction, CancellationToken token = default) {
             // feature detections
             token.ThrowIfCancellationRequested();
             Console.WriteLine("Peak picking started");
@@ -67,7 +70,7 @@ namespace CompMs.MsdialLcMsApi.Process
         }
 
         public async Task AnnotateAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token = default) {
-            var peakTask = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath, token);
+            var peakTask = file.LoadChromatogramPeakFeatureCollectionAsync(token);
             var resultsTask = Task.WhenAll(MSDecResultCollection.DeserializeAsync(file, token));
             var provider = _factory.Create(file);
 

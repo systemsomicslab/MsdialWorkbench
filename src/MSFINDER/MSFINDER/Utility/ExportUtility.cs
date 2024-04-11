@@ -1,4 +1,5 @@
-﻿using Riken.Metabolomics.StructureFinder.Parser;
+﻿using Accord;
+using Riken.Metabolomics.StructureFinder.Parser;
 using Riken.Metabolomics.StructureFinder.Result;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Text;
 
 namespace Rfx.Riken.OsakaUniv
 {
-    public sealed class ExportUtility
+    public static class ExportUtility
     {
         public static void PeakAnnotationResultExportAsMsp(MainWindow mainWindow, MainWindowVM mainWindowVM, string exportFilePath)
         {
@@ -66,19 +67,18 @@ namespace Rfx.Riken.OsakaUniv
             sw.WriteLine("LICENSE: " + rawData.License);
             sw.WriteLine("COMMENT: " + rawData.Comment);
 
-            var spectra = rawData.Ms2Spectrum.PeakList.OrderBy(n => n.Mz).ToList();
-            var maxIntensity = spectra.Max(n => n.Intensity);
             var spectraList = new List<string>();
             var ms2Peaklist = FragmentAssigner.GetCentroidMsMsSpectrum(rawData);
+            var maxIntensity = ms2Peaklist.Max(n => n.Intensity);
             //var commentList = FragmentAssigner.IsotopicPeakAssignmentForComment(ms2Peaklist, param.Mass2Tolerance, param.MassTolType);
-            for (int i = 0; i < rawData.Ms2PeakNumber; i++)
+            for (int i = 0; i < ms2Peaklist.Count; i++)
             {
-                var mz = spectra[i].Mz;
-                var intensity = spectra[i].Intensity;
+                var mz = ms2Peaklist[i].Mz;
+                var intensity = ms2Peaklist[i].Intensity;
                 if (intensity / maxIntensity * 100 < param.RelativeAbundanceCutOff) continue;
                 var comment = "";
 
-                var originalComment = spectra[i].Comment;
+                var originalComment = ms2Peaklist[i].Comment;
                 var additionalComment = getProductIonComment(mz, formulaResults, sfdResults, rawData.IonMode);
                 if (originalComment != "")
                     comment = originalComment + "; " + additionalComment;
@@ -98,6 +98,206 @@ namespace Rfx.Riken.OsakaUniv
                 sw.WriteLine(spectraList[i]);
 
             sw.WriteLine();
+        }
+
+        public static void PeakAnnotationResultExportAsMassBankRecord(MainWindowVM mainWindowVM, string exportFolderPath) {
+            var files = mainWindowVM.AnalysisFiles;
+            var param = mainWindowVM.DataStorageBean.AnalysisParameter;
+            var error = string.Empty;
+
+            foreach (var rawfile in files)
+            {
+                var rawData = RawDataParcer.RawDataFileReader(rawfile.RawDataFilePath, param);
+                var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath, out error).OrderByDescending(n => n.TotalScore).ToList();
+                if (error != string.Empty) {
+                    Console.WriteLine(error);
+                }
+
+                var sfdFiles = Directory.GetFiles(rawfile.StructureFolderPath);
+                var sfdResults = new List<FragmenterResult>();
+
+                foreach (var sfdFile in sfdFiles)
+                {
+                    var sfdResult = FragmenterResultParcer.FragmenterResultReader(sfdFile);
+                    var formulaString = Path.GetFileNameWithoutExtension(sfdFile);
+                    sfdResultMerge(sfdResults, sfdResult, formulaString);
+                }
+                sfdResults = sfdResults.OrderByDescending(n => n.TotalScore).ToList();
+                using (var stream = File.Open(Path.Combine(exportFolderPath, getMassBankRecordAccession(rawData) + ".txt"), FileMode.Create, FileAccess.Write)) {
+                    writeResultAsMassBankRecord(stream, rawData, formulaResults, sfdResults, param);
+                }
+            }
+        }
+
+        private static string getMassBankRecordAccession(RawData rawData) {
+            var Identifier = "MSFINDER";
+            var ContributorIdentifier = "XXXX";
+            var id = rawData.ScanNumber;
+            if (id < 0) {
+                id = rawData.GetHashCode() % 100_000_000;
+            }
+
+            // accession
+            return $"{Identifier}-{ContributorIdentifier}-{id:D8}";
+        }
+
+        private static void writeResultAsMassBankRecord(Stream stream, RawData rawData, List<FormulaResult> formulaResults, List<FragmenterResult> sfdResults, AnalysisParamOfMsfinder param) {
+            using (var sw = new StreamWriter(stream, Encoding.ASCII, 4096, false)) {
+                var Identifier = "MSFINDER";
+                var ContributorIdentifier = "XXXX";
+
+                // accession
+                var id = rawData.ScanNumber;
+                if (id < 0) {
+                    id = rawData.GetHashCode() % 100_000_000;
+                }
+                sw.WriteLine($"ACCESSION: {Identifier}-{ContributorIdentifier}-{id:D8}");
+
+                var MSType = "MS2";
+                var name = string.IsNullOrEmpty(rawData.MetaboliteName) ? rawData.Name : rawData.MetaboliteName;
+                // record title
+                sw.WriteLine($"RECORD_TITLE: {name}; {rawData.InstrumentType}; {MSType}");
+
+                // date
+                var now = DateTime.UtcNow;
+                sw.WriteLine($"DATE: {now:yyyy.MM.dd}");
+
+                // authors
+                sw.WriteLine($"AUTHORS: {rawData.Authors}");
+
+                // license
+                sw.WriteLine($"LICENSE: {rawData.License}");
+
+                // copyright
+                // publication
+                // project
+
+                // comment
+                sw.WriteLineIfNotEmpty("COMMENT: {0}", rawData.Comment);
+                
+                // ch$name
+                sw.WriteLine($"CH$NAME: {name}");
+
+                // ch$compound class Natural product or Non-Natural product
+                sw.WriteLine($"CH$COMPOUND_CLASS: {rawData.Ontology}");
+
+                // ch$formula
+                sw.WriteLine($"CH$FORMULA: {rawData.Formula}");
+
+                // ch$exact_mass
+                if (!string.IsNullOrEmpty(rawData.Formula) && FormulaStringParcer.IsOrganicFormula(rawData.Formula)) {
+                    sw.WriteLine($"CH$EXACT_MASS: {FormulaStringParcer.OrganicElementsReader(rawData.Formula).Mass:F5}");
+                }
+                else {
+                    var precursorMz = rawData.PrecursorMz;
+                    var adduct = AdductIonParcer.GetAdductIonBean(rawData.PrecursorType);
+                    sw.WriteLine($"CH$EXACT_MASS: {precursorMz * adduct.ChargeNumber - adduct.AdductIonAccurateMass:F5}");
+                }
+
+                // ch$smiles
+                sw.WriteLine($"CH$SMILES: {rawData.Smiles}");
+
+                // ch$iupac
+                sw.WriteLine($"CH$IUPAC: {rawData.Inchi}");
+
+                // ch$cdkdepict
+                // ch$link
+                sw.WriteLineIfNotEmpty("CH$LINK: INCHIKEY {0}", rawData.InchiKey);
+
+                // sp$scientific_name
+                // sp$lineage
+                // sp$link
+                // sp$sample
+
+                // ac$instrument
+                sw.WriteLine($"AC$INSTRUMENT: {rawData.Instrument}");
+
+                // ac$instrument_type
+                sw.WriteLine($"AC$INSTRUMENT_TYPE: {rawData.InstrumentType}");
+
+                // ac$mass_spectrometry: ion_mode
+                sw.WriteLine($"AC$MASS_SPECTROMETRY: ION_MODE {rawData.IonMode}");
+
+                // ac$mass_spectrometry mstype
+                sw.WriteLine($"AC$MASS_SPECTROMETRY: MS_TYPE {MSType}");
+
+                // ac$mass_spectrometry: subtag
+                sw.WriteLineIfPositive("AC$MASS_SPECTROMETRY: COLLISION_ENERGY {0}", rawData.CollisionEnergy);
+
+                // ac$chromatography: subtag
+                sw.WriteLineIfPositive("AC$CHROMATOGRAPHY: CCS {0}", rawData.Ccs);
+                sw.WriteLineIfPositive("AC$CHROMATOGRAPHY: KOVATS_RTI {0}", rawData.RetentionIndex);
+                sw.WriteLineIfPositive("AC$CHROMATOGRAPHY: RETENTION_TIME {0}", rawData.RetentionTime);
+
+                // ac$general: subtag
+                // ac$ion_mobility: subtag
+
+                // ms$focused_ion: base_peak
+                // ms$focused_ion: subtag
+                sw.WriteLine($"MS$FOCUSED_ION: PRECURSOR_M/Z {rawData.PrecursorMz:F5}");
+                sw.WriteLine($"MS$FOCUSED_ION: PRECURSOR_TYPE {rawData.PrecursorType}");
+
+                // ms$data_processing: subtag
+
+                // pk$splash
+                var spectra = FragmentAssigner.GetCentroidMsMsSpectrum(rawData);
+                var maxIntensity = spectra.Max(p => p.Intensity);
+                spectra = spectra.Where(p => p.Intensity / maxIntensity * 100 >= param.RelativeAbundanceCutOff).ToList();
+                if (spectra.Count > 0) {
+                    var splashHandler = new NSSplash.Splash();
+                    var splash = splashHandler.splashIt(new NSSplash.impl.MSSpectrum(string.Join(" ", spectra.Select(p => $"{p.Mz:F5}:{p.Intensity}"))));
+                    sw.WriteLine($"PK$SPLASH: {splash}");
+                }
+                else {
+                    sw.WriteLine("PK$SPLASH: NA");
+                }
+
+                // pk$annotation
+                sw.WriteLine($"PK$ANNOTATION: m/z comment");
+                for (int i = 0; i < spectra.Count; i++) {
+                    var mz = spectra[i].Mz;
+
+                    var comment = "";
+                    var originalComment = spectra[i].Comment;
+                    var additionalComment = getProductIonComment(mz, formulaResults, sfdResults, rawData.IonMode);
+                    if (originalComment != "") {
+                        comment = originalComment + "; " + additionalComment;
+                    }
+                    else {
+                        comment = additionalComment;
+                    }
+
+                    if (comment != string.Empty) {
+                        sw.WriteLine($"  {mz:F5} {comment}");
+                    }
+                }
+
+                // pk$num_peak
+                sw.WriteLine($"PK$NUM_PEAK: {spectra.Count}");
+
+                // pk$peak
+                sw.WriteLine("PK$PEAK: m/z int. rel.int.");
+
+                for (int i = 0; i < spectra.Count; i++) {
+                    var mz = spectra[i].Mz;
+                    var intensity = spectra[i].Intensity;
+                    sw.WriteLine($"  {mz:F5} {intensity} {intensity / maxIntensity * 999:F0}");
+                }
+
+                sw.WriteLine("//");
+            }
+        }
+
+        private static void WriteLineIfNotEmpty(this StreamWriter sw, string format, string arg0) {
+            if (!string.IsNullOrEmpty(arg0)) {
+                sw.WriteLine(format, arg0);
+            }
+        }
+
+        private static void WriteLineIfPositive(this StreamWriter sw, string format, double arg0) {
+            if (arg0 > 0) {
+                sw.WriteLine(format, arg0);
+            }
         }
 
         private static string getProductIonComment(double mz, List<FormulaResult> formulaResults, List<FragmenterResult> sfdResults, IonMode ionMode) {

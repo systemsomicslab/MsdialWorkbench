@@ -1,14 +1,9 @@
-﻿using CompMs.App.Msdial.Model.Core;
-using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.ViewModel.Core;
+﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.ViewModel.DataObj;
-using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using Reactive.Bindings.Notifiers;
 using System;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 
@@ -16,12 +11,12 @@ namespace CompMs.App.Msdial.ViewModel.Table
 {
     //internal class ProteinGroupTableViewModel : MethodViewModel {
     internal class ProteinGroupTableViewModel : ViewModelBase {
-        private readonly ReadOnlyReactivePropertySlim<ProteinResultContainerModel> _modelProperty;
+        private readonly ReadOnlyReactivePropertySlim<ProteinResultContainerModel?> _modelProperty;
         private readonly ReactiveCollection<ProteinGroupViewModel> _groups;
 
-        public ProteinGroupTableViewModel(IObservable<ProteinResultContainerModel> model)
+        public ProteinGroupTableViewModel(IObservable<ProteinResultContainerModel?> model)
         {
-            _modelProperty = new ReadOnlyReactivePropertySlim<ProteinResultContainerModel>(model).AddTo(Disposables);
+            _modelProperty = new ReadOnlyReactivePropertySlim<ProteinResultContainerModel?>(model).AddTo(Disposables);
 
             _groups = new ReactiveCollection<ProteinGroupViewModel>().AddTo(Disposables);
             Groups = _groups.ToReadOnlyReactiveCollection().AddTo(Disposables);
@@ -37,12 +32,12 @@ namespace CompMs.App.Msdial.ViewModel.Table
 
         public ReadOnlyReactiveCollection<ProteinGroupViewModel> Groups { get; }
 
-        public IReactiveProperty<object> Target
+        public IReactiveProperty<object>? Target
         {
             get => _target;
             set => SetProperty(ref _target, value);
         }
-        private IReactiveProperty<object> _target;
+        private IReactiveProperty<object>? _target;
 
     }
 }

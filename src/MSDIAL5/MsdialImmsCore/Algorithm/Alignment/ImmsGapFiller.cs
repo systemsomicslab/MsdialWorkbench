@@ -4,11 +4,8 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Utility;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CompMs.MsdialImmsCore.Algorithm.Alignment
 {
@@ -34,9 +31,8 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
         }
 
         protected override List<ChromatogramPeak> GetPeaks(Ms1Spectra ms1Spectra, RawSpectra rawSpectra, IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
-            var mzTol = this.mzTol;
             var chromatogramRange = new ChromatogramRange(center.Drift.Value - peakWidth * 1.5, center.Drift.Value + peakWidth * 1.5, ChromXType.Drift, ChromXUnit.Msec);
-            var peaklist = ms1Spectra.GetMs1ExtractedChromatogram(center.Mz.Value, mzTol, chromatogramRange);
+            var peaklist = ms1Spectra.GetMs1ExtractedChromatogram(center.Mz.Value, this.mzTol, chromatogramRange);
             return peaklist.Smoothing(smoothingMethod, smoothingLevel);
         }
 

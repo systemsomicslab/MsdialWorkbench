@@ -1,17 +1,5 @@
-﻿using CompMs.CommonMVVM;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace CompMs.Graphics.UI
 {
@@ -28,8 +16,7 @@ namespace CompMs.Graphics.UI
             DependencyProperty.Register(
                 nameof(ApplyCommand),
                 typeof(ICommand),
-                typeof(SettingDialog),
-                new PropertyMetadata(NeverCommand.Instance));
+                typeof(SettingDialog));
 
         public ICommand ApplyCommand {
             get => (ICommand)GetValue(ApplyCommandProperty);
@@ -40,8 +27,7 @@ namespace CompMs.Graphics.UI
             DependencyProperty.Register(
                 nameof(FinishCommand),
                 typeof(ICommand),
-                typeof(SettingDialog),
-                new PropertyMetadata(NeverCommand.Instance));
+                typeof(SettingDialog));
 
         public ICommand FinishCommand {
             get => (ICommand)GetValue(FinishCommandProperty);
@@ -52,17 +38,55 @@ namespace CompMs.Graphics.UI
             DependencyProperty.Register(
                 nameof(CancelCommand),
                 typeof(ICommand),
-                typeof(SettingDialog),
-                new PropertyMetadata(IdentityCommand.Instance));
+                typeof(SettingDialog));
 
         public ICommand CancelCommand {
             get => (ICommand)GetValue(CancelCommandProperty);
             set => SetValue(CancelCommandProperty, value);
         }
 
+        public static readonly DependencyProperty ApplyCommandContentProperty =
+            DependencyProperty.Register(
+                nameof(ApplyCommandContent),
+                typeof(object),
+                typeof(SettingDialog),
+                new PropertyMetadata("Apply"));
+
+        public object ApplyCommandContent {
+            get => GetValue(ApplyCommandContentProperty);
+            set => SetValue(ApplyCommandContentProperty, value);
+        }
+
+        public static readonly DependencyProperty FinishCommandContentProperty =
+            DependencyProperty.Register(
+                nameof(FinishCommandContent),
+                typeof(object),
+                typeof(SettingDialog),
+                new PropertyMetadata("Finish"));
+
+        public object FinishCommandContent {
+            get => GetValue(FinishCommandContentProperty);
+            set => SetValue(FinishCommandContentProperty, value);
+        }
+
+        public static readonly DependencyProperty CancelCommandContentProperty =
+            DependencyProperty.Register(
+                nameof(CancelCommandContent),
+                typeof(object),
+                typeof(SettingDialog),
+                new PropertyMetadata("Cancel"));
+
+        public object CancelCommandContent {
+            get => GetValue(ApplyCommandContentProperty);
+            set => SetValue(ApplyCommandContentProperty, value);
+        }
+
         private void FinishClose(object sender, RoutedEventArgs e) {
             if (System.Windows.Interop.ComponentDispatcher.IsThreadModal) {
                 DialogResult = true;
+            }
+            if (DataContext is SettingDialogViewModel vm) {
+                vm.Result = DialogResult;
             }
             Close();
         }
@@ -70,6 +94,9 @@ namespace CompMs.Graphics.UI
         private void CancelClose(object sender, RoutedEventArgs e) {
             if (System.Windows.Interop.ComponentDispatcher.IsThreadModal) {
                 DialogResult = false;
+            }
+            if (DataContext is SettingDialogViewModel vm) {
+                vm.Result = DialogResult;
             }
             Close();
         }

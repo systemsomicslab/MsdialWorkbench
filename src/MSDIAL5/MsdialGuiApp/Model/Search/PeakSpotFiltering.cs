@@ -15,7 +15,7 @@ namespace CompMs.App.Msdial.Model.Search
 {
     internal class PeakSpotFiltering<T> : IDisposable where T: IFilterable, IAnnotatedObject
     {
-        private readonly Dictionary<ICollectionView, PeakFilters> _viewToFilterMethods = new Dictionary<ICollectionView, PeakFilters>();
+        private readonly Dictionary<ICollectionView, AttachedPeakFilters<T>> _viewToFilterMethods = new Dictionary<ICollectionView, AttachedPeakFilters<T>>();
         private readonly Dictionary<ICollectionView, CompositeDisposable> _viewToDisposables = new Dictionary<ICollectionView, CompositeDisposable>();
         private bool _disposedValue;
 
@@ -48,7 +48,7 @@ namespace CompMs.App.Msdial.Model.Search
             }
             if ((status & FilterEnableStatus.Adduct) != FilterEnableStatus.None) {
                 var AdductFilterModel = new KeywordFilterModel("Adduct filter", KeywordFilteringType.KeepIfWordIsNull);
-                keywordFilterManagers.Add(new KeywordFilterManager<T>(AdductFilterModel, FilterEnableStatus.Adduct, obj => ((IFilterable)obj).AdductIonName));
+                keywordFilterManagers.Add(new KeywordFilterManager<T>(AdductFilterModel, FilterEnableStatus.Adduct, obj => ((IFilterable)obj).AdductType.AdductIonName));
             }
             if ((status & FilterEnableStatus.Comment) != FilterEnableStatus.None) {
                 var CommentFilterModel = new KeywordFilterModel("Comment filter");
@@ -111,14 +111,14 @@ namespace CompMs.App.Msdial.Model.Search
 
         private void AttachFilterCore(Predicate<T> predicate, ICollectionView view) {
             if (!_viewToFilterMethods.ContainsKey(view)) {
-                _viewToFilterMethods[view] = new PeakFilters(view);
+                _viewToFilterMethods[view] = new AttachedPeakFilters<T>(view);
             }
             _viewToFilterMethods[view].Attatch(predicate);
         }
 
         private void AttachFilterCore(Predicate<T> predicate, ICollectionView view, IObservable<bool> enabled, bool initial) {
             if (!_viewToFilterMethods.ContainsKey(view)) {
-                _viewToFilterMethods[view] = new PeakFilters(view);
+                _viewToFilterMethods[view] = new AttachedPeakFilters<T>(view);
             }
             _viewToFilterMethods[view].Attatch(predicate, enabled, initial);
         }
@@ -167,7 +167,7 @@ namespace CompMs.App.Msdial.Model.Search
             private readonly ICollectionView _view;
             private readonly List<Predicate<T>> _enabledPredicates;
             private readonly List<Predicate<T>> _disabledPredicates;
-            private Predicate<object> _predicate;
+            private Predicate<object>? _predicate;
             private readonly CompositeDisposable _disposables;
 
             public PeakFilters(ICollectionView view) {
@@ -251,6 +251,10 @@ namespace CompMs.App.Msdial.Model.Search
                     peaks = keywordFilterManager.Apply(peaks, _status);
                 }
                 return peaks;
+            }
+
+            public IEnumerable<T> FilterAnnotatedPeaks(IEnumerable<T> peaks) {
+                return peaks.Where(p => _evaluator.IsReferenceMatched(p) || _evaluator.IsAnnotationSuggested(p));
             }
         } 
     }

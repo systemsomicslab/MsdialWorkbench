@@ -98,7 +98,7 @@ namespace CompMs.App.MsdialConsole.Process
 
             var matchResultEvaluator = new MsScanMatchResultEvaluator(param.TextDbSearchParam);
 
-            var processor = new MsdialImmsCore.Process.FileProcess(container, null, null, matchResultEvaluator);
+            var processor = new MsdialImmsImagingCore.Process.FileProcess(container, null, null, matchResultEvaluator);
             processor.RunAsyncTest(file, provider).Wait();
 
             using (var fs = new TemporaryFileStream(storage.ProjectParameter.FilePath))
@@ -151,7 +151,8 @@ namespace CompMs.App.MsdialConsole.Process
                 out var mspDB, 
                 out var txtDB, 
                 out var isotopeTextDB, 
-                out var compoundsInTargetMode);
+                out var compoundsInTargetMode,
+                out var lbmDB);
             param.TextDbSearchParam.CcsTolerance = 20.0F;
             param.TextDbSearchParam.IsUseCcsForAnnotationFiltering = true;
 
@@ -179,7 +180,7 @@ namespace CompMs.App.MsdialConsole.Process
             storage.AddStorage(container);
 
             var evaluator = new MsScanMatchResultEvaluator(param.TextDbSearchParam);
-            var processor = new MsdialImmsCore.Process.FileProcess(container, null, null, evaluator);
+            var processor = new MsdialImmsImagingCore.Process.FileProcess(container, null, null, evaluator);
             processor.RunAsync(file, provider).Wait();
             using (var fs = File.Open(storage.ProjectParameter.FilePath, FileMode.Create))
             using (var streamManager = ZipStreamManager.OpenCreate(fs)) {
@@ -255,7 +256,8 @@ namespace CompMs.App.MsdialConsole.Process
                 out var mspDB,
                 out var txtDB,
                 out var isotopeTextDB,
-                out var compoundsInTargetMode);
+                out var compoundsInTargetMode,
+                out var lbmDB);
 
             RawMeasurement rawobj = null;
             Console.WriteLine("Reading data...");

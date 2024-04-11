@@ -1,0 +1,183 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Setting.AnalysisFilePropertyResettingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:common="clr-namespace:CompMs.Common.Enum;assembly=Common"
+             xmlns:reactiveProperty="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisFilePropertyResetViewModel}}"
+             Name="AnalysisFilePropertyResetView">
+    <UserControl.Resources>
+        <ControlTemplate x:Key="InputErrorTemplate">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+
+        <Style x:Key="ToolTipErrorStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)/ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Pink" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ToolTipErrorStyleDataGrid" TargetType="{x:Type DataGrid}">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)/ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Pink" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <ObjectDataProvider x:Key="FileType" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="common:AnalysisFileType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+
+        <DataGrid ClipboardCopyMode="IncludeHeader" x:Name="Datagrid_AnalysisFileProperties" Style="{StaticResource ResourceKey=ToolTipErrorStyleDataGrid}" 
+                  ItemsSource="{Binding Path= AnalysisFilePropertyCollection, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
+                  behavior:DataGridPasteBehavior.Enable="True"
+                  Grid.Row="0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" 
+                  VerticalAlignment="Stretch" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" 
+                  AutoGenerateColumns="False" SelectionMode="Extended" SelectionUnit="CellOrRowHeader"
+                  Margin="20,5,20,5" >
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+
+            <DataGrid.Columns>
+
+                <DataGridTemplateColumn SortMemberPath="AnalysisFileName.Value" Width="1*" Header="File name" IsReadOnly="False" ClipboardContentBinding="{Binding Path=AnalysisFileName.Value}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Name="TextBox_FileName" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" VerticalContentAlignment="Center"
+                                     Text="{Binding Path=AnalysisFileName.Value, UpdateSourceTrigger=PropertyChanged}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <Grid  FocusManager.FocusedElement="{Binding ElementName=TextBox_FileName}">
+                                <TextBox Name="TextBox_FileName" Text="{Binding AnalysisFileName.Value, UpdateSourceTrigger=PropertyChanged}" />
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+
+                </DataGridTemplateColumn>
+
+                <DataGridComboBoxColumn Width="100" Header="Type" ItemsSource="{Binding Source={StaticResource FileType}}" 
+                                        SelectedItemBinding="{Binding Path=AnalysisFileType.Value}"
+                                        ClipboardContentBinding="{Binding Path=AnalysisFileType.Value}" />
+
+                <DataGridTemplateColumn Width="0.8*" Header="Class ID" IsReadOnly="False" ClipboardContentBinding="{Binding Path=AnalysisFileClass.Value}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Name="TextBox_FileClass" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" Text="{Binding Path=AnalysisFileClass.Value, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <Grid  FocusManager.FocusedElement="{Binding ElementName=TextBox_FileClass}">
+                                <TextBox Name="TextBox_FileClass" Text="{Binding AnalysisFileClass.Value, UpdateSourceTrigger=PropertyChanged}" />
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn SortMemberPath="AnalysisBatch.Value" Width="0.5*" Header="Batch" IsReadOnly="False" ClipboardContentBinding="{Binding Path=AnalysisBatch.Value}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Name="TextBox_AnalyticalBatch" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" VerticalContentAlignment="Center"
+                                     Text="{Binding Path=AnalysisBatch.Value, UpdateSourceTrigger=PropertyChanged}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn SortMemberPath="AnalysisFileAnalyticalOrder.Value" Width="1*" Header="Analytical order" IsReadOnly="False" ClipboardContentBinding="{Binding Path=AnalysisFileAnalyticalOrder.Value}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Name="TextBox_AnalyticalOrder" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" VerticalContentAlignment="Center"
+                                     Text="{Binding Path=AnalysisFileAnalyticalOrder.Value, UpdateSourceTrigger=PropertyChanged}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <Grid  FocusManager.FocusedElement="{Binding ElementName=TextBox_AnalyticalOrder}">
+                                <TextBox Name="TextBox_AnalyticalOrder" Text="{Binding AnalysisFileAnalyticalOrder.Value, UpdateSourceTrigger=PropertyChanged}" />
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn SortMemberPath="AnalysisFileDilutionFactor.Value" Width="1*" 
+                                        Header="Factor" IsReadOnly="False" ClipboardContentBinding="{Binding Path=DilutionFactor.Value}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Name="TextBox_DilutionFactor" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" VerticalContentAlignment="Center"
+                                     Text="{Binding Path=DilutionFactor.Value, UpdateSourceTrigger=PropertyChanged}"
+                                     ToolTipService.ToolTip="Multiply this value after Normalization is performed."/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <Grid  FocusManager.FocusedElement="{Binding ElementName=TextBox_DilutionFactor}">
+                                <TextBox Name="TextBox_DilutionFactor" Text="{Binding DilutionFactor.Value, UpdateSourceTrigger=PropertyChanged}"
+                                         ToolTipService.ToolTip="Multiply this value after Normalization is performed."/>
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn SortMemberPath="AnalysisFileResponseVariable.Value" Width="1*" 
+                                        Header="Y variable" IsReadOnly="False" ClipboardContentBinding="{Binding Path=ResponseVariable.Value}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Name="TextBox_ResponseVariable" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" VerticalContentAlignment="Center"
+                                     Text="{Binding Path=ResponseVariable.Value, UpdateSourceTrigger=PropertyChanged}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <Grid  FocusManager.FocusedElement="{Binding ElementName=TextBox_ResponseVariable}">
+                                <TextBox Name="TextBox_ResponseVariable" Text="{Binding ResponseVariable.Value, UpdateSourceTrigger=PropertyChanged}" />
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Width="0.7*" Header="Included" ClipboardContentBinding="{Binding Path=AnalysisFileIncluded.Value}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding Path=AnalysisFileIncluded.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

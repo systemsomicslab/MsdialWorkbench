@@ -47,30 +47,29 @@ namespace CompMs.App.Msdial.ViewModel.Search
                 AmplitudeUpperValue.ToUnit(),
                 ValueFilterViewModels.ObserveElementObservableProperty(vm => vm.ObserveChanged).ToUnit(),
                 KeywordFilterViewModels.ObserveElementObservableProperty(vm => vm.ObserveChanged).ToUnit(),
-            }.Merge();
+            }.Merge().Publish();
 
-            var ifIsEditting = needRefresh.Take(1).Zip(IsEditting.Where(x => !x)).Select(x => x.First);
-            var ifIsNotEditting = needRefresh;
-
-            IsEditting
-                .SelectSwitch(isEditting => isEditting ? ifIsEditting : ifIsNotEditting)
-                .Throttle(TimeSpan.FromMilliseconds(500))
+            var editEnd = IsEditting.Where(e => !e);
+            var isEdittingFalse = IsEditting.Select(e => e ? Observable.Never<Unit>() : needRefresh).Switch();
+            var isEdittingTrue = IsEditting.Select(e => e ? Observable.Defer(() => needRefresh.Buffer(editEnd.Take(1)).Where(xs => xs.Count >= 1).ToUnit()) : Observable.Never<Unit>()).Switch();
+            var needRefreshFire = new[] { isEdittingFalse, isEdittingTrue }.Merge();
+            var refreshView = Observable.Defer(() => {
+                model.RefreshCollectionViews();
+                return Observable.Return(Unit.Default);
+            }).OnErrorRetry<Unit, InvalidOperationException>(_ => System.Diagnostics.Debug.WriteLine("Failed to refresh. Retry after 0.1 seconds."), retryCount: 5, delay: TimeSpan.FromSeconds(.1d))
+            .Catch<Unit, InvalidOperationException>(e => {
+                System.Diagnostics.Debug.WriteLine("Failed to refresh. CollectionView couldn't be refreshed.");
+                return Observable.Return(Unit.Default);
+            });
+            needRefreshFire
                 .ObserveOnUIDispatcher()
-                .SelectMany(_ => Observable.Defer(() => {
-                    model.RefreshCollectionViews();
-                    return Observable.Return(Unit.Default);
-                }))
-                .OnErrorRetry<Unit, InvalidOperationException>(_ => System.Diagnostics.Debug.WriteLine("Failed to refresh. Retry after 0.1 seconds."), retryCount: 5, delay: TimeSpan.FromSeconds(.1d))
-                .Catch<Unit, InvalidOperationException>(e => {
-                    System.Diagnostics.Debug.WriteLine("Failed to refresh. CollectionView couldn't be refreshed.");
-                    return Observable.Return(Unit.Default);
-                })
-                .Repeat()
+                .SelectSwitch(_ => refreshView)
                 .Subscribe()
                 .AddTo(Disposables);
+            Disposables.Add(needRefresh.Connect());
         }
 
-        public ReactivePropertySlim<string> SelectedAnnotationLabel { get; }
+        public ReactivePropertySlim<string?> SelectedAnnotationLabel { get; }
 
         public ICollectionView PeakSpotsView { get; }
 

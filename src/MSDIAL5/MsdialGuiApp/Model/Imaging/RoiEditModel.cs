@@ -21,7 +21,7 @@ namespace CompMs.App.Msdial.Model.Imaging
 
         public RoiArea CurrentArea { get; }
 
-        public RoiModel CreateRoi(int id, Color color) {
+        public RoiModel? CreateRoi(int id, Color color) {
             if (CurrentArea is null) {
                 return null;
             }
@@ -42,11 +42,11 @@ namespace CompMs.App.Msdial.Model.Imaging
         public int DrawWidth { get; }
         public int DrawHeight { get; }
 
-        public List<(double x, double y)> RelativePoints {
+        public List<(double x, double y)>? RelativePoints {
             get => _relativePoints;
             set => SetProperty(ref _relativePoints, value);
         }
-        private List<(double, double)> _relativePoints;
+        private List<(double, double)>? _relativePoints;
 
         public MaldiFrames ContainFrames() {
             var board = GetInnerPoints();

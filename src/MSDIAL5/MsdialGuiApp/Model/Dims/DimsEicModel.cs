@@ -10,21 +10,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
-    internal sealed class DimsEicLoader : EicLoader, IChromatogramLoader
+    internal sealed class DimsEicLoader : EicLoader
     {
         private static readonly double MZ_MARGIN = 10d;
 
         private readonly double _relativeRange;
         private readonly bool _isRelative;
 
-        private DimsEicLoader(AnalysisFileBean analysisFile, IDataProvider provider, ParameterBase parameter, double rangeBegin, double rangeEnd) : base(analysisFile, provider, parameter, ChromXType.Mz, ChromXUnit.Mz, rangeBegin, rangeEnd) {
+        private DimsEicLoader(AnalysisFileBean analysisFile, IDataProvider provider, ParameterBase parameter, double rangeBegin, double rangeEnd) : base(analysisFile, provider, parameter.PeakPickBaseParam, parameter.IonMode, ChromXType.Mz, ChromXUnit.Mz, rangeBegin, rangeEnd) {
             _isRelative = false;
         }
 
-        private DimsEicLoader(AnalysisFileBean analysisFile, IDataProvider provider, ParameterBase parameter, double rangeBegin, double rangeEnd, double relativeRange) : base(analysisFile, provider, parameter, ChromXType.Mz, ChromXUnit.Mz, rangeBegin, rangeEnd) {
+        private DimsEicLoader(AnalysisFileBean analysisFile, IDataProvider provider, ParameterBase parameter, double rangeBegin, double rangeEnd, double relativeRange) : base(analysisFile, provider, parameter.PeakPickBaseParam, parameter.IonMode, ChromXType.Mz, ChromXUnit.Mz, rangeBegin, rangeEnd) {
             _isRelative = true;
             _relativeRange = relativeRange;
         }
@@ -39,7 +40,7 @@ namespace CompMs.App.Msdial.Model.Dims
             {
                 var spectra = await provider.LoadMs1SpectrumsAsync(token).ConfigureAwait(false);
                 return new CompMs.Common.Components.Chromatogram(DataAccess.ConvertRawPeakElementToChromatogramPeakList(spectra.Argmax(spectrum => spectrum.Spectrum.Length).Spectrum, leftMz, rightMz), ChromXType.Mz, ChromXUnit.Mz)
-                    .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
+                    .Smoothing(_peakPickParameter.SmoothingMethod, _peakPickParameter.SmoothingLevel)
                     .Select(peak => new PeakItem(peak))
                     .ToList();
             });

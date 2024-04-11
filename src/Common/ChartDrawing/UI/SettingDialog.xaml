@@ -3,7 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CompMs.Graphics.UI"
+        xmlns:converter="clr-namespace:CompMs.Graphics.Converter"
+        xmlns:commonmvvm="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type={x:Type local:SettingDialogViewModel}}"
         d:Background="White"
         d:Height="450" d:Width="600">
     <Window.Template>
@@ -21,11 +25,11 @@
                                 Margin="0,8,0,0"
                                 Grid.Row="1">
                         <StackPanel.Resources>
+                            <converter:NullToDependencyPropertyUnsetConverter x:Key="NullToUnset"/>
                             <Style TargetType="Button">
                                 <Setter Property="Width" Value="64"/>
                                 <Setter Property="Padding" Value="4"/>
                                 <Setter Property="Margin" Value="4,0,0,0"/>
-                                <Setter Property="DataContext" Value="{Binding RelativeSource={RelativeSource TemplatedParent}}"/>
                                 <Setter Property="Visibility" Value="Visible"/>
                                 <Style.Triggers>
                                     <Trigger Property="Command" Value="{x:Null}">
@@ -35,9 +39,33 @@
                             </Style>
                             <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
                         </StackPanel.Resources>
-                        <Button Content="Apply" Command="{Binding ApplyCommand}"/>
-                        <Button Content="Finish" Command="{Binding FinishCommand}" Click="FinishClose"/>
-                        <Button Content="Cancel" Command="{Binding CancelCommand}" Click="CancelClose"/>
+                        <Button Content="{Binding ApplyCommandContent, RelativeSource={RelativeSource TemplatedParent}}">
+                            <Button.Command>
+                                <PriorityBinding>
+                                    <Binding Path="ApplyCommand" RelativeSource="{RelativeSource TemplatedParent}" Converter="{StaticResource NullToUnset}"/>
+                                    <Binding Path="ApplyCommand"/>
+                                    <Binding Source="{x:Static commonmvvm:NeverCommand.Instance}"/>
+                                </PriorityBinding>
+                            </Button.Command>
+                        </Button>
+                        <Button Content="{Binding FinishCommandContent, RelativeSource={RelativeSource TemplatedParent}}" Click="FinishClose">
+                            <Button.Command>
+                                <PriorityBinding>
+                                    <Binding Path="FinishCommand" RelativeSource="{RelativeSource TemplatedParent}" Converter="{StaticResource NullToUnset}"/>
+                                    <Binding Path="FinishCommand"/>
+                                    <Binding Source="{x:Static commonmvvm:NeverCommand.Instance}"/>
+                                </PriorityBinding>
+                            </Button.Command>
+                        </Button>
+                        <Button Content="{Binding CancelCommandContent, RelativeSource={RelativeSource TemplatedParent}}" Click="CancelClose">
+                            <Button.Command>
+                                <PriorityBinding>
+                                    <Binding Path="CancelCommand" RelativeSource="{RelativeSource TemplatedParent}" Converter="{StaticResource NullToUnset}"/>
+                                    <Binding Path="CancelCommand" Converter="{StaticResource NullToUnset}"/>
+                                    <Binding Source="{x:Static commonmvvm:IdentityCommand.Instance}"/>
+                                </PriorityBinding>
+                            </Button.Command>
+                        </Button>
                     </StackPanel>
                 </Grid>
             </Border>

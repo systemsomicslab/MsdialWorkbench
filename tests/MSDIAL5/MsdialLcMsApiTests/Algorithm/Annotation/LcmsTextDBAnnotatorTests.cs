@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parameter;
 using CompMs.Common.Parser;
@@ -417,7 +418,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var reference = new MoleculeMsReference {
                 Name = "PC 18:0_20:4", CompoundClass = "PC",
                 PrecursorMz = 810.601, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min),
-                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
+                AdductType = AdductIon.GetAdductIon("[M+H]+"),
             };
             var parameter = new MsRefSearchParameterBase
             {
@@ -446,7 +447,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var reference = new MoleculeMsReference {
                 Name = "PC 18:0_20:4", CompoundClass = "PC",
                 PrecursorMz = 810.601, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min),
-                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
+                AdductType = AdductIon.GetAdductIon("[M+H]+"),
             };
             var parameter = new MsRefSearchParameterBase
             {

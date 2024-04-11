@@ -62,7 +62,7 @@ namespace CompMs.MsdialCore.Export.Tests
             };
 
             var memory = new MemoryStream();
-            exporter.Export(memory, spots, msdecs, files, new MockMetaAccessor(), new MockQuantAccessor(), new[] { StatsValue.Average, });
+            exporter.Export(memory, spots, msdecs, files, new MulticlassFileMetaAccessor(0), new MockMetaAccessor(), new MockQuantAccessor(), new[] { StatsValue.Average, });
 
             Assert.AreEqual(
 @",Class,A,A,B,NA,NA
@@ -103,7 +103,7 @@ ID,Name,File 1,File 2,File 3,A,B
             };
 
             var memory = new MemoryStream();
-            exporter.Export(memory, spots, msdecs, files, new MockMetaAccessor(), new MockQuantAccessor(), new[] { StatsValue.Average, });
+            exporter.Export(memory, spots, msdecs, files, new MulticlassFileMetaAccessor(0), new MockMetaAccessor(), new MockQuantAccessor(), new[] { StatsValue.Average, });
 
             var newline = Environment.NewLine;
             Assert.AreEqual(

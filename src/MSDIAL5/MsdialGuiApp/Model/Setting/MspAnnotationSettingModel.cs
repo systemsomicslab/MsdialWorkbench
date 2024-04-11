@@ -10,17 +10,11 @@ using System.Collections.Generic;
 namespace CompMs.App.Msdial.Model.Setting
 {
     public abstract class MspAnnotationSettingModel : DataBaseAnnotationSettingModelBase, IAnnotationSettingModel {
-        public MspAnnotationSettingModel()
-            : base() {
+        public MspAnnotationSettingModel(DataBaseAnnotationSettingModelBase model) : base(model) {
 
         }
 
-        public MspAnnotationSettingModel(DataBaseAnnotationSettingModelBase model)
-            : base(model) {
-
-        }
-
-        private MoleculeDataBase db;
+        private MoleculeDataBase? db;
         public ISerializableAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> Build(ParameterBase parameter) {
             if (db is null) {
                 db = LoadDataBase(DataBaseID, DataBasePath, DBSource);

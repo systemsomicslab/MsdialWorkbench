@@ -57,6 +57,10 @@
                     </MenuItem>
                     <Separator/>
                     <MenuItem Header="Duplicate selected peak spot" Command="{Binding DuplicatesCommand, Mode=OneTime}"/>
+                    <MenuItem Header="Export as MRMPROBS reference format">
+                        <MenuItem Header="Save as MRMPROBS reference format" Command="{Binding SaveMrmprobsCommand, Mode=OneTime}"/>
+                        <MenuItem Header="Copy as MRMPROBS reference format" Command="{Binding CopyMrmprobsCommand, Mode=OneTime}"/>
+                    </MenuItem>
                 </ContextMenu>
             </chart:MultiChart.ContextMenu>
             <chart:ScatterControlSlim x:Name="alignmentScatter"
@@ -73,7 +77,7 @@
                         <StackPanel Orientation="Vertical">
                             <TextBlock Text="{Binding FocusedItem.MasterAlignmentID, StringFormat=ID: {0}}"/>
                             <TextBlock Text="{Binding FocusedItem.Name, StringFormat=Name: {0}}"/>
-                            <TextBlock Text="{Binding FocusedItem.AdductIonName, StringFormat=Ionform: {0}}"/>
+                            <TextBlock Text="{Binding FocusedItem.AdductType, StringFormat=Ionform: {0}}"/>
                             <TextBlock Text="{Binding FocusedItem.TimesCenter, StringFormat=Time: {0:0.000}}"/>
                             <TextBlock Text="{Binding FocusedItem.MassCenter, StringFormat=m/z: {0:0.0000}}"/>
                             <TextBlock Text="{Binding FocusedItem.HeightAverage, StringFormat=HeightAve: {0:0}}"/>

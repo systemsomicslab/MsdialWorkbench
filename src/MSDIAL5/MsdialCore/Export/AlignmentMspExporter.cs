@@ -5,12 +5,11 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace CompMs.MsdialCore.Export
 {
-    public sealed class AlignmentMspExporter : IAlignmentExporter, IAlignmentSpectraExporter
+    public sealed class AlignmentMspExporter : IAlignmentSpectraExporter
     {
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
         private readonly ParameterBase _parameter;
@@ -20,16 +19,8 @@ namespace CompMs.MsdialCore.Export
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
         }
 
-        void IAlignmentSpectraExporter.Export(Stream stream, IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults) {
-            foreach (var spot in spots) {
-                SpectraExport.SaveSpectraTableAsNistFormat(stream, spot, msdecResults[spot.MasterAlignmentID].Spectrum, _refer, _parameter);
-            }
-        }
-
-        void IAlignmentExporter.Export(Stream stream, IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults, IReadOnlyList<AnalysisFileBean> files, IMetadataAccessor metaFormatter, IQuantValueAccessor quantAccessor, IReadOnlyList<StatsValue> stats) {
-            foreach (var spot in spots) {
-                SpectraExport.SaveSpectraTableAsNistFormat(stream, spot, msdecResults[spot.MasterAlignmentID].Spectrum, _refer, _parameter);
-            }
+        void IAlignmentSpectraExporter.Export(Stream stream, AlignmentSpotProperty spot, MSDecResult msdecResult) {
+            SpectraExport.SaveSpectraTableAsNistFormat(stream, spot, msdecResult.Spectrum, _refer, _parameter);
         }
     }
 }

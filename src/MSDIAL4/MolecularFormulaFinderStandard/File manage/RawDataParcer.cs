@@ -7,10 +7,8 @@ using System.Text.RegularExpressions;
 
 namespace Rfx.Riken.OsakaUniv
 {
-    public sealed class RawDataParcer
+    public static class RawDataParcer
     {
-        private RawDataParcer() { }
-
         /// <summary>
         /// This parcer is used to get the storage of RawData.cs.
         /// The result, i.e. RawData bean, will be used to calculate molecular formula and compound structures in MS-FINDER program.
@@ -19,6 +17,9 @@ namespace Rfx.Riken.OsakaUniv
         /// <returns></returns>
         public static RawData RawDataFileReader(string filePath, AnalysisParamOfMsfinder param)
         {
+            if (filePath.EndsWith(".txt")) {
+                return ReadMassBankRecord(filePath, param);
+            }
             RawData rawData = new RawData() { RawdataFilePath = filePath };
 
             string wkstr;
@@ -238,6 +239,178 @@ namespace Rfx.Riken.OsakaUniv
             setIsotopicIons(rawData, param.Mass1Tolerance, param.MassTolType);
 
             return rawData;
+        }
+
+        public static RawData ReadMassBankRecord(string filePath, AnalysisParamOfMsfinder param)
+        {
+            RawData rawData = new RawData() {
+                RawdataFilePath = filePath,
+                ScanNumber = -1,
+            };
+
+            string wkstr;
+            var pattern = new Regex(@"^(?<field>.+?):\s*(?<content>((?<subtag>.+?)\s+)?(?<subcontent>.+))$");
+            using (StreamReader sr = new StreamReader(filePath))
+            {
+                var peaks = new Dictionary<double, Peak>();
+                while (!sr.EndOfStream) {
+                    wkstr = sr.ReadLine();
+                    var match = pattern.Match(wkstr);
+                    if (!match.Success) {
+                        continue;
+                    }
+                    var field = match.Groups["field"].Value;
+                    var content = match.Groups["content"].Value;
+                    var subtag = match.Groups["subtag"].Success ? match.Groups["subtag"].Value : null;
+                    var subcontent = match.Groups["subcontent"].Success ? match.Groups["subcontent"].Value : null;
+                    switch (field) {
+                        case "ACCESSION":
+                            break;
+                        case "RECORD_TITLE":
+                            break;
+                        case "DATE":
+                            break;
+                        case "AUTHORS":
+                            rawData.Authors = content;
+                            break;
+                        case "LICENSE":
+                            rawData.License = content;
+                            break;
+                        case "COPYRIGHT":
+                            break;
+                        case "PUBLICATION":
+                            break;
+                        case "PROJECT":
+                            break;
+                        case "COMMENT":
+                            if (string.IsNullOrEmpty(rawData.Comment)) {
+                                rawData.Comment = string.Empty;
+                            }
+                            rawData.Comment += content;
+                            break;
+                        case "CH$NAME":
+                            rawData.MetaboliteName = rawData.Name = content;
+                            break;
+                        case "CH$COMPOUND_CLASS":
+                            rawData.Ontology = content;
+                            break;
+                        case "CH$FORMULA":
+                            rawData.Formula = content;
+                            break;
+                        case "CH$EXACT_MASS":
+                            break;
+                        case "CH$SMILES":
+                            rawData.Smiles = content;
+                            break;
+                        case "CH$IUPAC":
+                            rawData.Inchi = content;
+                            break;
+                        case "CH$CDK_DEPICT":
+                            break;
+                        case "CH$LINK":
+                            switch (subtag) {
+                                case "INCHIKEY":
+                                    rawData.InchiKey = subcontent;
+                                    break;
+                            }
+                            break;
+                        case "SP$SCIENTIFIC_NAME":
+                            break;
+                        case "SP$LINEAGE":
+                            break;
+                        case "SP$LINK":
+                            break;
+                        case "SP$SAMPLE":
+                            break;
+                        case "AC$INSTRUMENT":
+                            rawData.Instrument = content;
+                            break;
+                        case "AC$INSTRUMENT_TYPE":
+                            rawData.InstrumentType = content;
+                            break;
+                        case "AC$MASS_SPECTROMETRY":
+                            switch (subtag) {
+                                case "COLLISION_ENERGY":
+                                    rawData.Assign(d => d.CollisionEnergy, subcontent.Split()[0]);
+                                    break;
+                            }
+                            break;
+                        case "AC$CHROMATOGRAPHY":
+                            switch (subtag) {
+                                case "RETENTION_TIME":
+                                    rawData.Assign(d => d.RetentionTime, subcontent.Split()[0]);
+                                    break;
+                                case "KOVATS_RTI":
+                                    rawData.Assign(d => d.RetentionIndex, subcontent.Split()[0]);
+                                    break;
+                                case "CCS":
+                                    rawData.Assign(d => d.Ccs, subcontent.Split()[0]);
+                                    break;
+                            }
+                            break;
+                        case "AC$GENERAL":
+                            break;
+                        case "MS$FOCUSED_ION":
+                            switch (subtag) {
+                                case "PRECURSOR_M/Z":
+                                    rawData.Assign(d => d.PrecursorMz, subcontent);
+                                    break;
+                                case "PRECURSOR_TYPE":
+                                    rawData.PrecursorType = subcontent;
+                                    break;
+                            }
+                            break;
+                        case "MS$DATA_PROCESSING":
+                            break;
+                        case "PK$SPLASH":
+                            break;
+                        case "PK$ANNOTATION":
+                            while (sr.Peek() == ' ') {
+                                var row = sr.ReadLine().Trim().Split(new[] { ' ' }, 2);
+                                var mz = double.Parse(row[0]);
+                                var comments = row[1];
+                                if (!peaks.TryGetValue(mz, out var peak)) {
+                                    peak = new Peak { Mz = mz, };
+                                    peaks.Add(mz, peak);
+                                }
+                                peak.Comment = comments;
+                            }
+                            break;
+                        case "PK$NUM_PEAK":
+                            rawData.Ms2PeakNumber = int.Parse(content);
+                            break;
+                        case "PK$PEAK":
+                            while (sr.Peek() == ' ') {
+                                var row = sr.ReadLine().Trim().Split();
+                                var mz = double.Parse(row[0]);
+                                var intensity = double.Parse(row[1]);
+                                if (!peaks.TryGetValue(mz, out var peak)) {
+                                    peak = new Peak { Mz = mz, };
+                                    peaks.Add(mz, peak);
+                                }
+                                peak.Intensity = intensity;
+                            }
+                            break;
+                    }
+                }
+
+                rawData.Ms2Spectrum = new Spectrum();
+                rawData.Ms2Spectrum.PeakList.AddRange(peaks.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value));
+            }
+
+            setIsotopicIons(rawData, param.Mass1Tolerance, param.MassTolType);
+
+            return rawData;
+        }
+
+        private static void Assign(this RawData rawData, System.Linq.Expressions.Expression<Func<RawData, double>> propertySelector, string content) {
+            if (double.TryParse(content, out var val)) {
+                if (propertySelector.Body is System.Linq.Expressions.MemberExpression member) {
+                    if (member.Member is System.Reflection.PropertyInfo info) {
+                        info.SetValue(rawData, val);
+                    }
+                }
+            }
         }
 
         public static RawData RawDataFileRapidReader(string filePath) {

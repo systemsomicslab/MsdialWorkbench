@@ -4,7 +4,13 @@ using System.Reflection;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    public class PropertySelector<TSubject, TProperty>
+    interface IPropertySelector<TProperty> {
+        string Property { get; }
+
+        TProperty? Select<T>(T subject);
+    }
+
+    public class PropertySelector<TSubject, TProperty> : IPropertySelector<TProperty>
     {
         public PropertySelector(string property, Func<TSubject, TProperty> selector) {
             Property = property;
@@ -27,6 +33,10 @@ namespace CompMs.App.Msdial.Model.Chart
                 }
             }
             throw new ArgumentException(nameof(propertySelector));
+        }
+
+        TProperty? IPropertySelector<TProperty>.Select<T>(T subject) {
+            return subject is TSubject typed ? Selector(typed) : default;
         }
     }
 }

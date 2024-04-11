@@ -7,6 +7,8 @@
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:converter="clr-namespace:CompMs.Graphics.Converter;assembly=ChartDrawing"
              xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
+             xmlns:design="clr-namespace:CompMs.Graphics.Design;assembly=ChartDrawing"
+             xmlns:dataobj="clr-namespace:CompMs.MsdialCore.DataObj;assembly=MsdialCore"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type={x:Type vm:MsPeakSpotsCheckViewModel}}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -14,57 +16,128 @@
         <converter:MultiplyConverter By="2" x:Key="By2"/>
     </UserControl.Resources>
     <Grid>
-        <chart:MultiChart HorizontalAxis="{Binding Summary.Value.HorizontalAxis}"
-                          VerticalAxis="{Binding Summary.Value.VerticalAxis}"
-                          HorizontalTitle="Peak height"
-                          VerticalTitle="Number of peaks"
-                          GraphTitle="Histogram of peak height"
-                          BorderBrush="Black"
-                          Background="WhiteSmoke">
-            <chart:MultiChart.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Save image as..">
-                        <MenuItem Header="Save as emf"
-                                  Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
-                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                        <MenuItem Header="Save as png"
-                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
-                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                    </MenuItem>
-                    <MenuItem Header="Copy image as..">
-                        <MenuItem Header="Copy as emf"
-                                  Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
-                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                        <MenuItem Header="Copy as png"
-                                  Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
-                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                    </MenuItem>
-                </ContextMenu>
-            </chart:MultiChart.ContextMenu>
-            <chart:AreaChartControl ItemsSource="{Binding Summary.Value.AccumulatedHistogram}"
-                                    HorizontalPropertyName="X"
-                                    VerticalPropertyName="Y"
-                                    Opacity="0.5"/>
-            <chart:LineChartControl ItemsSource="{Binding Summary.Value.AccumulatedHistogram}"
-                                    HorizontalPropertyName="X"
-                                    VerticalPropertyName="Y"/>
-            <chart:BarControl ItemsSource="{Binding Summary.Value.Histogram}"
-                              HorizontalPropertyName="X"
-                              VerticalPropertyName="Y">
-                <chart:BarControl.ToolTip>
-                    <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
-                        <TextBlock>
-                            <TextBlock.Text>
-                                <MultiBinding StringFormat="Peak height:{0} &#8804; x &lt; {1}, Count:{2}">
-                                    <Binding  Path="FocusedItem.X"/>
-                                    <Binding Path="FocusedItem.X" Converter="{StaticResource By2}"/>
-                                    <Binding  Path="FocusedItem.Y"/>
-                                </MultiBinding>
-                            </TextBlock.Text>
-                        </TextBlock>
-                    </ToolTip>
-                </chart:BarControl.ToolTip>
-            </chart:BarControl>
-        </chart:MultiChart>
+        <TabControl>
+            <TabItem Header="Histogram of peak height">
+                <chart:MultiChart HorizontalAxis="{Binding Summary.Value.HorizontalAxis}"
+                                  VerticalAxis="{Binding Summary.Value.VerticalAxis}"
+                                  HorizontalTitle="Peak height"
+                                  VerticalTitle="Number of peaks"
+                                  GraphTitle="Histogram of peak height"
+                                  BorderBrush="Black"
+                                  Background="WhiteSmoke">
+                    <chart:MultiChart.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Save image as..">
+                                <MenuItem Header="Save as emf"
+                                          Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                <MenuItem Header="Save as png"
+                                          Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                            </MenuItem>
+                            <MenuItem Header="Copy image as..">
+                                <MenuItem Header="Copy as emf"
+                                          Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                <MenuItem Header="Copy as png"
+                                          Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                            </MenuItem>
+                        </ContextMenu>
+                    </chart:MultiChart.ContextMenu>
+                    <chart:AreaChartControl ItemsSource="{Binding Summary.Value.AccumulatedHistogram}"
+                                            HorizontalPropertyName="X"
+                                            VerticalPropertyName="Y"
+                                            Opacity="0.5"/>
+                    <chart:LineChartControl ItemsSource="{Binding Summary.Value.AccumulatedHistogram}"
+                                            HorizontalPropertyName="X"
+                                            VerticalPropertyName="Y"/>
+                    <chart:BarControl ItemsSource="{Binding Summary.Value.Histogram}"
+                                      HorizontalPropertyName="X"
+                                      VerticalPropertyName="Y">
+                        <chart:BarControl.ToolTip>
+                            <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="Peak height:{0} &#8804; x &lt; {1}, Count:{2}">
+                                            <Binding  Path="FocusedItem.X"/>
+                                            <Binding Path="FocusedItem.X" Converter="{StaticResource By2}"/>
+                                            <Binding  Path="FocusedItem.Y"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </ToolTip>
+                        </chart:BarControl.ToolTip>
+                    </chart:BarControl>
+                </chart:MultiChart>
+            </TabItem>
+            <TabItem Header="Heght vs. S/N">
+                <chart:MultiChart HorizontalAxis="{Binding Distribution.Value.HorizontalAxis}"
+                                  VerticalAxis="{Binding Distribution.Value.VerticalAxis}"
+                                  HorizontalTitle="S/N"
+                                  VerticalTitle="Height"
+                                  GraphTitle="Height vs. S/N"
+                                  BorderBrush="Black"
+                                  Background="WhiteSmoke">
+                    <chart:MultiChart.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Save image as..">
+                                <MenuItem Header="Save as emf"
+                                          Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                <MenuItem Header="Save as png"
+                                          Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                            </MenuItem>
+                            <MenuItem Header="Copy image as..">
+                                <MenuItem Header="Copy as emf"
+                                          Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                <MenuItem Header="Copy as png"
+                                          Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                            </MenuItem>
+                        </ContextMenu>
+                    </chart:MultiChart.ContextMenu>
+
+                    <chart:ScatterControlSlim ItemsSource="{Binding Distribution.Value.Peaks}"
+                                              HorizontalProperty="PeakShape.SignalToNoise"
+                                              VerticalProperty="PeakFeature.PeakHeightTop"
+                                              DataType="{x:Type dataobj:ChromatogramPeakFeature}"
+                                              PointBrush="{Binding Distribution.Value.Brush}"
+                                              SelectedItem="{Binding SelectedPeak.Value, Mode=OneWayToSource}">
+                        <chart:ScatterControlSlim.ToolTip>
+                            <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="Spectrum ID: {0}, m/z: {1}, RT: {2}">
+                                            <Binding  Path="FocusedItem.MS1RawSpectrumIdTop"/>
+                                            <Binding  Path="FocusedItem.PeakFeature.Mass"/>
+                                            <Binding  Path="FocusedItem.PeakFeature.ChromXsTop.RT.Value"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </ToolTip>
+                        </chart:ScatterControlSlim.ToolTip>
+                    </chart:ScatterControlSlim>
+
+                    <chart:HorizontalLine Item="{Binding Distribution.Value.NoiseMax}"
+                                          VerticalProperty="PeakFeature.PeakHeightTop"
+                                          DataType="{x:Type dataobj:ChromatogramPeakFeature}">
+                        <chart:HorizontalLine.LineBrush>
+                            <design:ConstantBrushMapper Brush="Lime"/>
+                        </chart:HorizontalLine.LineBrush>
+                    </chart:HorizontalLine>
+
+                    <chart:HorizontalLine Item="{Binding Distribution.Value.PeakMin}"
+                                          VerticalProperty="PeakFeature.PeakHeightTop"
+                                          DataType="{x:Type dataobj:ChromatogramPeakFeature}">
+                        <chart:HorizontalLine.LineBrush>
+                            <design:ConstantBrushMapper Brush="Orange"/>
+                        </chart:HorizontalLine.LineBrush>
+                    </chart:HorizontalLine>
+                </chart:MultiChart>
+            </TabItem>
+        </TabControl>
     </Grid>
 </UserControl>

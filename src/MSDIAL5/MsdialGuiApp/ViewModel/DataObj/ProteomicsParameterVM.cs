@@ -165,31 +165,29 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
             .AddTo(Disposables);
         }
 
-        public DelegateCommand EnzymeSetCommand => enzymeSetCommand ?? (enzymeSetCommand = new DelegateCommand(EnzymeSet));
-        private DelegateCommand enzymeSetCommand;
+        public DelegateCommand EnzymeSetCommand => enzymeSetCommand ??= new DelegateCommand(EnzymeSet);
+        private DelegateCommand? enzymeSetCommand;
 
         private void EnzymeSet() {
-            using (var vm = new EnzymeSettingViewModel(model)) {
-                var window = new EnzymeSettingWin
-                {
-                    DataContext = vm,
-                };
-                window.ShowDialog();
-            }
+            using var vm = new EnzymeSettingViewModel(model);
+            var window = new EnzymeSettingWin
+            {
+                DataContext = vm,
+            };
+            window.ShowDialog();
         }
 
-        public DelegateCommand ModificationSetCommand => modificationSetCommand ?? (modificationSetCommand = new DelegateCommand(ModificationSet));
+        public DelegateCommand ModificationSetCommand => modificationSetCommand ??= new DelegateCommand(ModificationSet);
 
-        private DelegateCommand modificationSetCommand;
+        private DelegateCommand? modificationSetCommand;
 
         private void ModificationSet() {
-            using (var vm = new ModificationSettingViewModel(model)) {
-                var window = new ModificationSettingWin
-                {
-                    DataContext = vm,
-                };
-                window.ShowDialog();
-            }
+            using var vm = new ModificationSettingViewModel(model);
+            var window = new ModificationSettingWin
+            {
+                DataContext = vm,
+            };
+            window.ShowDialog();
         }
     }
 }

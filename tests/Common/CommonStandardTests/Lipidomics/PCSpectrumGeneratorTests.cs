@@ -1,4 +1,8 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.Common.DataObj.Property;
+using CompMs.Common.Enum;
+#if NETSTANDARD
+using CompMs.Common.Extension;
+#endif
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -130,7 +134,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.PC, 785.5935, new PositionLevelChains(acyl1, acyl2)); 
 
             var generator = new PCSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -247,7 +251,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.PC, 785.5935, new PositionLevelChains(acyl1, acyl2));
 
             var generator = new PCSpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+Na]+"));
 
             var expects = new[]
             {

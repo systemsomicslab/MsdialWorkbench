@@ -27,7 +27,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         }
         private readonly PeptideModel _model;
         public string PeptideSeq { get; }
-        public string AdductType { get; }
+        public string? AdductType { get; }
         public string ModifiedSequence { get; }
         public string DatabaseOrigin { get; }
         public int DatabaseOriginID { get; }
@@ -41,6 +41,6 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         public int SamePeptideNumberInSearchedProteins { get; }
 
         //public object AnnotatedSpot => _model.AnnotatedSpot;
-        public object AnnotatedSpot { get; }
+        public object? AnnotatedSpot { get; }
     }
 }

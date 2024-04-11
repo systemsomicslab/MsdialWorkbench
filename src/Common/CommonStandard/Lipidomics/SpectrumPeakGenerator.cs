@@ -72,20 +72,19 @@ namespace CompMs.Common.Lipidomics
                 // i=15 means i-1=14=C14 in bondPositions and C16 in chain obj and C4 from omega terminal
                 if (bondPositions.Contains(i - 1))
                 { // in the case of 18:2(9,12), Radical is big, and H loss is next
-                    if (nlMass < 0.001)
-                    {
-                        factor = 4.0;
-                        factorHLoss = 2.0;
-                        factorHGain = 0.05;
-                        speccomment_radical |= SpectrumComment.doublebond_high;
-                    }
+                    factor = 4.0;
+                    factorHLoss = 2.0;
+                    factorHGain = 0.05;
+                    speccomment_radical |= SpectrumComment.doublebond_high;
+                    //if (nlMass < 0.001)
+                    //{
+                    //    factor = 4.0;
+                    //    factorHLoss = 2.0;
+                    //    factorHGain = 0.05;
+                    //    speccomment_radical |= SpectrumComment.doublebond_high;
+                    //}
                 }
-                else if (bondPositions.Contains(i) && bondPositions.Contains(i + 3) && bondPositions.Contains(i + 6))
-                {
-                    factorHGain = 4.0;
-                    speccomment_hgain |= SpectrumComment.doublebond_high;
-                    // now no modification
-                }
+                
                 // in the case of 18:2(9,12)
                 // i=8 means i+1=9=C9 and C9 in chain obj and C9 from omega terminal
                 // i=11 means i+1=12=C12 in bondPositions and C12 in chain obj and C6 from omega terminal
@@ -134,6 +133,12 @@ namespace CompMs.Common.Lipidomics
                     //}
                 }
 
+                if (bondPositions.Contains(i) && bondPositions.Contains(i + 3) && bondPositions.Contains(i + 6)) {
+                    factorHGain = 4.0;
+                    speccomment_hgain |= SpectrumComment.doublebond_high;
+                    // now no modification
+                }
+
                 if (i == 2)
                 {
                     if (bondPositions.Contains(1))
@@ -160,10 +165,16 @@ namespace CompMs.Common.Lipidomics
                 {
                     speccomment_hgain |= SpectrumComment.doublebond_high;
                 }
-
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), factorHLoss * abundance, $"{chain} C{i + 1}-H") { SpectrumComment = speccomment_hloss });
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i]), factor * abundance, $"{chain} C{i + 1}") { SpectrumComment = speccomment_radical });
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), factorHGain * abundance, $"{chain} C{i + 1}+H") { SpectrumComment = speccomment_hgain });
+                if (chain.DoubleBond.Bonds.Count >= 3) {
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), factorHLoss * abundance, $"{chain} C{i + 1}-H_p3") { SpectrumComment = speccomment_hloss });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i]), factor * abundance, $"{chain} C{i + 1}_p3") { SpectrumComment = speccomment_radical });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), factorHGain * abundance, $"{chain} C{i + 1}+H_p3") { SpectrumComment = speccomment_hgain });
+                }
+                else {
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), factorHLoss * abundance, $"{chain} C{i + 1}-H") { SpectrumComment = speccomment_hloss });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i]), factor * abundance, $"{chain} C{i + 1}") { SpectrumComment = speccomment_radical });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), factorHGain * abundance, $"{chain} C{i + 1}+H") { SpectrumComment = speccomment_hgain });
+                }
             }
 
             return peaks;
@@ -204,10 +215,12 @@ namespace CompMs.Common.Lipidomics
                 }
             }
 
+            var bondPositions = new List<int>();
             foreach (var bond in sphingo.DoubleBond.Bonds)
             {
                 diffs[bond.Position - 1] -= MassDiffDictionary.HydrogenMass;
                 diffs[bond.Position] -= MassDiffDictionary.HydrogenMass;
+                bondPositions.Add(bond.Position);
             }
             for (int i = 3; i < sphingo.CarbonCount; i++)
             {
@@ -215,7 +228,6 @@ namespace CompMs.Common.Lipidomics
             }
 
             var peaks = new List<SpectrumPeak>();
-            var bondPositions = new List<int>();
             for (int i = 2; i < sphingo.CarbonCount - 1; i++)
             {
                 var speccomment = SpectrumComment.doublebond;
@@ -228,13 +240,13 @@ namespace CompMs.Common.Lipidomics
 
                 if (bondPositions.Contains(i - 1))
                 { // in the case of 18:2(9,12), Radical is big, and H loss is next
-                    if (nlMass < 0.001)
-                    {
+                    //if (nlMass < 0.001)
+                    //{
                         factor = 4.0;
                         factorHLoss = 2.0;
                         factorHGain = 0.05;
                         speccomment_radical |= SpectrumComment.doublebond_high;
-                    }
+                    //}
                 }
                 //if (bondPositions.Contains(i - 1))
                 //{ // in the case of 18:2(9,12), Radical is big, and H loss is next

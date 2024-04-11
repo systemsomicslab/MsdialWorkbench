@@ -1,4 +1,8 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.Common.DataObj.Property;
+using CompMs.Common.Enum;
+#if NETSTANDARD
+using CompMs.Common.Extension;
+#endif
 using CompMs.Common.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -221,7 +225,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.EtherPE, 729.5672409, new PositionLevelChains(alkyl, acyl));
 
             var generator = new EtherPESpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
@@ -229,7 +233,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 182.058, // Gly-C
                 184.037, // Gly-O
                 294.3155, // MspGenerator\GlyceroLipidFragmentation.cs [M+H]+ SN1 ether +C2H8NO3P-H3PO4
-                308.2788, // -Header -CH2(Sn1)
+                //308.2788, // -Header -CH2(Sn1)
                 339.28992, // MspGenerator\GlyceroLipidFragmentation.cs [M+H]+ NL of C2H8NO4P+SN1
                 365.287259, // [Precursor]2+
                 392.29242, // MspGenerator\GlyceroLipidFragmentation.cs [M+H]+ Sn1ether+C2H8NO3P
@@ -324,14 +328,14 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.EtherPE, 729.5672409, new PositionLevelChains(alkyl, acyl));
 
             var generator = new EtherPESpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+Na]+"));
 
             var expects = new[]
             {
                 164.0089442 ,//Header
                 204.0399442 ,//Gly-C
                 206.0189442 ,//Gly-O
-                330.2540034 ,//- Header -CH2(Sn1)
+                //330.2540034 ,//- Header -CH2(Sn1)
                 376.2782308, // [Precursor]2+
                 469.2927389 ,//Sn2 FA loss
                 471.2720034 ,//-CH2
@@ -426,18 +430,18 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.EtherPE, 703.5515909, new PositionLevelChains(alkyl, acyl));
 
             var generator = new EtherPESpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+H]+"));
 
             var expects = new[]
             {
                 142.027, // Header
                 182.058, // Gly-C
                 184.037, // Gly-O
-                280.2771946389 ,// -Header and FA loss
-                299.2955844 ,// -Header and Acyl loss
-                308.2721093 ,// -Header and -CH2
-                321.2799343 ,// -Header and Ether loss
-                339.290499  ,// -Header and Sn1 Chain loss
+                //280.2771946389 ,// -Header and FA loss
+                //299.2955844 ,// -Header and Acyl loss
+                //308.2721093 ,// -Header and -CH2
+                //321.2799343 ,// -Header and Ether loss
+                //339.290499  ,// -Header and Sn1 Chain loss
                 352.2794337, // [Precursor]2+
                 421.2951946 ,//FA loss
                 440.3135844 ,//Acyl loss
@@ -525,18 +529,18 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.EtherPE, 703.5515909, new PositionLevelChains(alkyl, acyl));
 
             var generator = new EtherPESpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIon.GetAdductIon("[M+Na]+"));
 
             var expects = new[]
             {
                 164.0089442 ,//Header
                 204.0399442 ,//Gly-C
                 206.0189442 ,//Gly-O
-                302.2591389 ,// -Header and FA loss
-                321.2775286 ,// -Header and Acyl loss
-                330.2540535 ,// -Header and -CH2
-                343.2618785 ,// -Header and Ether loss
-                361.2724432 ,// -Header and Sn1 Chain loss
+                //302.2591389 ,// -Header and FA loss
+                //321.2775286 ,// -Header and Acyl loss
+                //330.2540535 ,// -Header and -CH2
+                //343.2618785 ,// -Header and Ether loss
+                //361.2724432 ,// -Header and Sn1 Chain loss
                 363.270405, // [Precursor]2+
                 443.2771389 ,//FA loss
                 462.2955286 ,//Acyl loss

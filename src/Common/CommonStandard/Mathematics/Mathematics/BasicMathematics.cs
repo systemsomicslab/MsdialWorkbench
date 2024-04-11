@@ -151,6 +151,15 @@ namespace CompMs.Common.Mathematics.Basic {
             return array[midArrayNumber];
         }
 
+        public static double InplaceSortMedian(double[] array, int size)
+        {
+            if (array is null || size == 0) {
+                return 0;
+            }
+            Array.Sort(array, 0, size);
+            return array[size / 2];
+        }
+
         public static void BoxPlotProperties(double[] array, out double minvalue, out double twentyfive, 
             out double median, out double seventyfive, out double maxvalue) {
             if (array == null) {
@@ -376,6 +385,28 @@ namespace CompMs.Common.Mathematics.Basic {
                 return 0;
             else
                 return (double)(covariance / Math.Sqrt(sqrt1 * sqrt2));
+        }
+
+        public static double CalculateSpearmanCorrelation(double[] x, double[] y) {
+            int[] rankX = x.Select((value, index) => new { Value = value, Index = index })
+                           .OrderBy(item => item.Value)
+                           .Select((item, index) => new { item.Index, Rank = index + 1 })
+                           .OrderBy(item => item.Index)
+                           .Select(item => item.Rank)
+                           .ToArray();
+            int[] rankY = y.Select((value, index) => new { Value = value, Index = index })
+                           .OrderBy(item => item.Value)
+                           .Select((item, index) => new { item.Index, Rank = index + 1 })
+                           .OrderBy(item => item.Index)
+                           .Select(item => item.Rank)
+                           .ToArray();
+            int n = x.Length;
+            double d2 = 0;
+            for (int i = 0; i < n; i++) {
+                d2 += Math.Pow(rankX[i] - rankY[i], 2);
+            }
+            double spearmanCorrelation = 1 - (6 * d2) / (n * (n * n - 1));
+            return spearmanCorrelation;
         }
 
         public static float Coefficient(float[] array1, float[] array2) {

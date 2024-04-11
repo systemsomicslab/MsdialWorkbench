@@ -1,15 +1,16 @@
 ﻿using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.ViewModel.DataObj;
-using CompMs.CommonMVVM;
+using CompMs.Graphics.UI;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Linq;
 using System.Reactive.Linq;
-using Reactive.Bindings;
-using Reactive.Bindings.Extensions;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    internal sealed class AnalysisFilePropertyResetViewModel : ViewModelBase
+    internal sealed class AnalysisFilePropertyResetViewModel : SettingDialogViewModel
     {
         private static readonly string FILE_NAME_DUPLICATE_ERROR_MESSAGE = "File name duplicated.";
 
@@ -64,6 +65,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
 
         public ReactiveCommand ContinueProcessCommand { get; }
+        public override ICommand FinishCommand => ContinueProcessCommand;
 
         public void Commit() {
             foreach (var file in AnalysisFilePropertyCollection) {

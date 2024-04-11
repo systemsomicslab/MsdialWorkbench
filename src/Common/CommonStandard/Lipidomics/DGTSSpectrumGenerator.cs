@@ -11,9 +11,9 @@ namespace CompMs.Common.Lipidomics
 {
     public class DGTSSpectrumGenerator : ILipidSpectrumGenerator
     {
-        private static readonly double C7H13NO2 = new[] {
-            MassDiffDictionary.CarbonMass * 7,
-            MassDiffDictionary.HydrogenMass * 13,
+        private static readonly double C6H11NO2 = new[] { //130[M+H]+
+            MassDiffDictionary.CarbonMass * 6,
+            MassDiffDictionary.HydrogenMass * 11,
             MassDiffDictionary.NitrogenMass,
             MassDiffDictionary.OxygenMass * 2,
         }.Sum();
@@ -88,14 +88,10 @@ namespace CompMs.Common.Lipidomics
         public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
             var spectrum = new List<SpectrumPeak>();
             spectrum.AddRange(GetDGTSSpectrum(lipid, adduct));
-            if (lipid.Chains is MolecularSpeciesLevelChains mlChains) {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, mlChains.Chains, adduct));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.Chains.OfType<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct));
-            }
-            if (lipid.Chains is PositionLevelChains plChains) {
-                spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.Chains, adduct));
-                spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.Chains[0], adduct));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.Chains.OfType<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct));
+            if (lipid.Description.Has(LipidDescription.Chain)) {
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains.GetDeterminedChains(), adduct));
+                lipid.Chains.ApplyToChain(1, chain => spectrum.AddRange(GetAcylPositionSpectrum(lipid, chain, adduct)));
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, lipid.Chains.GetTypedChains<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct));
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
                 .Select(specs => new SpectrumPeak(specs.First().Mass, specs.Sum(n => n.Intensity), string.Join(", ", specs.Select(spec => spec.Comment)), specs.Aggregate(SpectrumComment.none, (a, b) => a | b.SpectrumComment)))
@@ -128,8 +124,8 @@ namespace CompMs.Common.Lipidomics
                 //new SpectrumPeak(adduct.ConvertToMz(C7H13NO2), 100d, "Header") { SpectrumComment = SpectrumComment.metaboliteclass},
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - CHO2), 200d, "Precursor - CO2") { SpectrumComment = SpectrumComment.metaboliteclass },
                 new SpectrumPeak(adduct.ConvertToMz(C8H16NO3), 200d, "C8H16NO3") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
-                new SpectrumPeak(adduct.ConvertToMz(C7H13NO2 - CH2), 200d, "Header - CH2") { SpectrumComment = SpectrumComment.metaboliteclass},  //130
-                new SpectrumPeak(adduct.ConvertToMz(Gly_C), 150d, "Gly-C")  { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true  },
+                new SpectrumPeak(adduct.ConvertToMz(C6H11NO2), 200d, "Header - CH2") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true},  //175[M+H]+
+                new SpectrumPeak(adduct.ConvertToMz(Gly_C), 150d, "Gly-C")  { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true  },//130[M+H]+
                 new SpectrumPeak(adduct.ConvertToMz(Gly_O), 150d, "Gly-O") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true  },
             };
             return spectrum.ToArray();

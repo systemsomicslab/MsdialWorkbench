@@ -10,7 +10,6 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Interfaces;
-using CompMs.Common.Lipidomics;
 using CompMs.Common.Parameter;
 using CompMs.Common.Parser;
 using CompMs.Common.Proteomics.DataObj;
@@ -34,7 +33,9 @@ namespace CompMs.MsdialCore.Utility {
         // raw data support
         public static bool IsDataFormatSupported(string filepath) {
             if (System.IO.File.Exists(filepath)) {
-                var extension = System.IO.Path.GetExtension(filepath).ToLower().Substring(1); // .abf -> abf
+                var extension = System.IO.Path.GetExtension(filepath).ToLower();
+                if (extension.Length <= 1) return false;
+                extension = extension.Substring(1); // .abf -> abf
                 foreach (var item in System.Enum.GetNames(typeof(SupportMsRawDataExtension))) {
                     if (item == extension) return true;
                 }
@@ -160,7 +161,7 @@ namespace CompMs.MsdialCore.Utility {
             var massDiffBase = MassDiffDictionary.CHNO_AverageStepSize;
             var maxIsotopeRange = (double)maxIsotopes;
             var isotopes = new List<IsotopicPeak>();
-            for (int i = 0; i < maxIsotopes; i++) {
+            for (int i = 0; i <= maxIsotopes; i++) {
                 isotopes.Add(new IsotopicPeak() {
                     Mass = targetedMz + (double)i * massDiffBase,
                     MassDifferenceFromMonoisotopicIon = (double)i * massDiffBase
@@ -188,16 +189,34 @@ namespace CompMs.MsdialCore.Utility {
             return isotopes;
         }
 
-        public static List<IsotopicPeak> GetFineIsotopicPeaks(AlignmentChromPeakFeature peakSpot, RawSpectrum spectrum, float massTolerance, int maxIsotopes = 2) {
+        /// <summary>
+        /// Retrieves the fine isotopic peaks from a raw spectrum based on specified ion characteristics and mass tolerance. 
+        /// This method aims to identify and isolate isotopic peaks corresponding to a specific ion feature within a raw mass spectrum.
+        /// </summary>
+        /// <param name="spectrum">The raw spectrum containing a sequence of m/z and intensity pairs. 
+        /// It represents the entire scan data from which specific isotopic peaks are to be extracted.</param>
+        /// <param name="ionFeature">The monoisotopic ion feature character, providing details such as charge state that are crucial for calculating isotopic peak positions.</param>
+        /// <param name="mz">The theoretical m/z value of the monoisotopic ion. This value serves as the reference point for identifying isotopic peaks.</param>
+        /// <param name="mzTolerance">The mass tolerance allowed when matching observed peaks to theoretical isotopic peak positions. 
+        /// This value is used in a ± manner, effectively doubling the search width around the theoretical m/z value. For example, a massTolerance of 0.1 would search in a range of ±0.1 around the specified m/z, resulting in a total search width of 0.2.</param>
+        /// <param name="maxIsotopes">The maximum number of isotopes to retrieve starting from the monoisotopic peak. This limit helps to narrow down the search to the most relevant isotopic peaks. Default is 2.</param>
+        /// <returns>A list of fine isotopic peaks that have been identified within the specified mass tolerance and criteria. Each isotopic peak includes information such as the mass (m/z) and the absolute abundance (intensity).</returns>
+        /// <remarks>
+        /// This method is particularly useful for high-resolution mass spectrometry data analysis where precise isotopic peak identification is necessary for compound characterization and quantification.
+        /// The method iterates through the raw spectrum, applying the mass tolerance and charge state information to accurately locate isotopic peaks relative to the specified monoisotopic peak.
+        /// </remarks>
+        public static List<IsotopicPeak> GetFineIsotopicPeaks(RawSpectrum spectrum, IonFeatureCharacter ionFeature, double mz, float mzTolerance, int maxIsotopes = 2) {
             var peaks = spectrum.Spectrum;
-            var targetedMz = peakSpot.Mass;
-            var startID = peaks.LowerBound(targetedMz - massTolerance, (a, b) => a.Mz.CompareTo(b));
-            var maxIsotopeRange = (maxIsotopes + .1d) / peakSpot.PeakCharacter.Charge;
+            var startID = peaks.LowerBound(mz - mzTolerance, (a, b) => a.Mz.CompareTo(b));
+            var maxIsotopeRange = (maxIsotopes + .1d) / ionFeature.Charge;
+            var diff = 1d / ionFeature.Charge;
             var isotopes = new List<IsotopicPeak>();
             for (int i = startID; i < peaks.Length; i++) {
                 var peak = peaks[i];
-                if (peak.Mz > targetedMz + maxIsotopeRange + massTolerance) break;
-                isotopes.Add(new IsotopicPeak { Mass = peak.Mz, AbsoluteAbundance = peak.Intensity, });
+                if (peak.Mz - mz > maxIsotopeRange + mzTolerance) break;
+                if ((peak.Mz - mz + mzTolerance) % diff - mzTolerance * 2 < 1e-9) {
+                    isotopes.Add(new IsotopicPeak { Mass = peak.Mz, AbsoluteAbundance = peak.Intensity, });
+                }
             }
             return isotopes;
         }
@@ -717,10 +736,10 @@ namespace CompMs.MsdialCore.Utility {
             return peaks;
         }
 
-        public static List<ValuePeak[]> GetAccumulatedMs2PeakListList(IDataProvider provider,
+        public static List<(ValuePeak[], double)> GetAccumulatedMs2PeakListList(IDataProvider provider,
              ChromatogramPeakFeature rtChromPeakFeature, List<SpectrumPeak> curatedSpectrum, double minDriftTime, double maxDriftTime, IonMode ionMode) {
             // var ms2peaklistlist = new List<List<ChromatogramPeak>>();
-            var ms2peaklistlist = new List<ValuePeak[]>();
+            var ms2peaklistlist = new List<(ValuePeak[], double)>();
             var scanPolarity = ionMode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
 
             var rt = rtChromPeakFeature.ChromXsTop.Value;
@@ -858,7 +877,7 @@ namespace CompMs.MsdialCore.Utility {
                 for (int i = 0; i < sortedPeaklist.Count; i++) {
                     ms2peaklist[i] = new ValuePeak(i, sortedPeaklist[i][1], sortedPeaklist[i][2], sortedPeaklist[i][3]);
                 }
-                ms2peaklistlist.Add(ms2peaklist);
+                ms2peaklistlist.Add((ms2peaklist, targetMz));
 
                 //foreach (var peaks in sortedPeaklist) {
                 //    ms2peaklist.Add(new ChromatogramPeak(counter, peaks[2], peaks[3], new ChromXs(peaks[1], ChromXType.Drift, ChromXUnit.Msec)));
@@ -1098,7 +1117,7 @@ namespace CompMs.MsdialCore.Utility {
             var maxIntensity = spectrum.Max(n => n.Intensity);
             foreach (var peak in spectrum) {
                 if (peak.Intensity > maxIntensity * relcutoff && peak.Intensity > abscutoff) {
-                    massSpec.Add(new SpectrumPeak() { Mass = peak.Mass, Intensity = peak.Intensity / maxIntensity * 100.0 });
+                    massSpec.Add(new SpectrumPeak() { Mass = peak.Mass, Intensity = peak.Intensity / maxIntensity * 100.0, Resolution = peak.Intensity });
                 }
             }
             return massSpec;
@@ -1156,7 +1175,7 @@ namespace CompMs.MsdialCore.Utility {
             var chargeNum = feature.PeakCharacter.Charge;
             var chargeString = chargeNum == 1 ? string.Empty : chargeNum.ToString();
             var adductString = "[M+" + chargeString + "H]" + chargeString + "+";
-            var type = AdductIonParser.GetAdductIonBean(adductString);
+            var type = AdductIon.GetAdductIon(adductString);
 
             feature.SetAdductType(type);
         }
@@ -1175,7 +1194,7 @@ namespace CompMs.MsdialCore.Utility {
             var chargeNum = feature.PeakCharacter.Charge;
             var chargeString = chargeNum == 1 ? string.Empty : chargeNum.ToString();
             var adductString = "[M+" + chargeString + "H]" + chargeString + "+";
-            var type = AdductIonParser.GetAdductIonBean(adductString);
+            var type = AdductIon.GetAdductIon(adductString);
 
             feature.SetAdductType(type);
             feature.Name = "w/o MS2: " + result.Name;
@@ -1198,13 +1217,19 @@ namespace CompMs.MsdialCore.Utility {
         public static void SetMoleculeMsPropertyAsSuggested(ChromatogramPeakFeature feature, MoleculeMsReference reference, MsScanMatchResult result) {
             SetMoleculePropertyCore(feature, reference);
             feature.SetAdductType(reference.AdductType);
-            feature.Name = "w/o MS2: " + result.Name;
+            if (feature.MS2RawSpectrumID < 0) {
+                feature.Name = "no MS2: " + result.Name;
+            }
+            else {
+                feature.Name = "low score: " + result.Name;
+            }
         }
 
-        public static void SetMoleculeMsPropertyAsConfidence<T>(T feature, MoleculeMsReference reference)
-            where T: IMoleculeProperty, IIonProperty {
+        public static void SetMoleculeMsPropertyAsConfidence(IMoleculeProperty feature, MoleculeMsReference reference) {
             SetMoleculePropertyCore(feature, reference);
-            feature.SetAdductType(reference.AdductType);
+            if (feature is IIonProperty ionProperty) {
+                ionProperty.SetAdductType(reference.AdductType);
+            }
 
             if (!reference.CompoundClass.IsEmptyOrNull()) { // meaning lipidomics
                 feature.Name = MsScanMatching.GetLipidNameFromReference(reference);
@@ -1214,10 +1239,11 @@ namespace CompMs.MsdialCore.Utility {
             }
         }
 
-        public static void SetMoleculeMsPropertyAsUnsettled<T>(T feature, MoleculeMsReference reference)
-            where T: IMoleculeProperty, IIonProperty {
+        public static void SetMoleculeMsPropertyAsUnsettled(IMoleculeProperty feature, MoleculeMsReference reference) {
             SetMoleculePropertyCore(feature, reference);
-            feature.SetAdductType(reference.AdductType);
+            if (feature is IIonProperty ionProperty) {
+                ionProperty.SetAdductType(reference.AdductType);
+            }
             feature.Name = $"Unsettled: {reference.Name}";
         }
 
