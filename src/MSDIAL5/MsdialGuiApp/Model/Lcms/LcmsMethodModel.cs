@@ -79,7 +79,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             var isNormalized = alignmentFilesForExport.CanExportNormalizedData(currentAlignmentResult.Select(r => r?.NormalizationSetModel.IsNormalized ?? Observable.Return(false)).Switch()).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(currentAlignmentResult, filter);
             var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
-            var metadataAccessorFactory = new LcmsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter);
             var peakGroup = new AlignmentExportGroupModel(
                 "Peaks",
                 new ExportMethod(
@@ -100,7 +99,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     new ExportType("MS/MS included", new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded"),
                     new ExportType("Identification method", new AnnotationMethodAccessor(), "IdentificationMethod"),
                 },
-                new AccessPeakMetaModel(metadataAccessorFactory),
+                new AccessPeakMetaModel(new LcmsAlignmentMetadataAccessorFactory(storage.DataBaseMapper, storage.Parameter)),
                 new AccessFileMetaModel(fileProperties).AddTo(Disposables),
                 new[]
                 {
@@ -130,18 +129,31 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             ParameterExportModel = new ParameterExportModel(storage.DataBases, storage.Parameter, broker);
 
-            var notameExportMethod = new ExportMethod(analysisFiles, metadataAccessorFactory, ExportFormat.Tsv)
-            {
-                IsLongFormat = false,
-                TrimToExcelLimit = true,
-            };
-            var notameExportTypes = new[] {
-                new ExportType("Raw data (Height)", new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, true),
-                new ExportType("Raw data (Area)", new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", stats),
-                new ExportType("Normalized data (Height)", new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", stats, isNormalized),
-                new ExportType("Normalized data (Area)", new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", stats, isNormalized),
-            };
-            Notame = new Notame(notameExportMethod, notameExportTypes, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam, storage.Parameter);
+            var notameExportModel = new AlignmentExportGroupModel(
+                "Peaks",
+                new ExportMethod(analysisFiles, ExportFormat.Tsv) { IsLongFormat = false, },
+                new[] {
+                    new ExportType("Raw data (Height)", new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", new List<StatsValue>(0), true),
+                    new ExportType("Raw data (Area)", new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", new List<StatsValue>(0)),
+                    new ExportType("Normalized data (Height)", new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", new List<StatsValue>(0), isNormalized),
+                    new ExportType("Normalized data (Area)", new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", new List<StatsValue>(0), isNormalized),
+                },
+                new AccessPeakMetaModel(new IdentityAlignmentMetadataAccessorFactory(
+                    new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter, trimSpectrumToExcelLimit: true)
+                        .Insert("Ion mode", 34, (p, _) => {
+                            switch (p.IonMode) {
+                                case IonMode.Positive:
+                                    return "RP_pos";
+                                case IonMode.Negative:
+                                    return "RP_neg";
+                                default:
+                                    return "null";
+                            }
+                        }))),
+                new AccessFileMetaModel(fileProperties) { EnableMultiClass = true, NumberOfClasses = 2, }.AddTo(Disposables),
+                new[] { ExportspectraType.deconvoluted, },
+                peakSpotSupplyer);
+            Notame = new Notame(alignmentFilesForExport, peakSpotSupplyer, notameExportModel, storage.Parameter.DataExportParam, storage.Parameter);
         }
 
         public PeakFilterModel PeakFilterModel { get; }

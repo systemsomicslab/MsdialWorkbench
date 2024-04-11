@@ -55,5 +55,11 @@ namespace CompMs.App.Msdial.Model.Export
             var lazyPeakSpot = new Lazy<IReadOnlyList<AlignmentSpotProperty>>(() => _peakSpotSupplyer.Supply(alignmentFile, default));
             ExportMethod.Export(outNameTemplate, exportDirectory, lazyPeakSpot, msdecResults, notification, Types.Where(type => type.ShouldExport), AccessPeakMetaModel, AccessFileMeta);
         }
+
+        public void Export(AlignmentFileBeanModel alignmentFile, string exportDirectory, string exportFileName, Action<string>? notification) {
+            var msdecResults = alignmentFile.LoadMSDecResults();
+            var lazyPeakSpot = new Lazy<IReadOnlyList<AlignmentSpotProperty>>(() => _peakSpotSupplyer.Supply(alignmentFile, default));
+            ExportMethod.Export(exportFileName, exportDirectory, lazyPeakSpot, msdecResults, notification, new[] { Types.First(type => type.ShouldExport) }, AccessPeakMetaModel, AccessFileMeta);
+        }
     }
 }
