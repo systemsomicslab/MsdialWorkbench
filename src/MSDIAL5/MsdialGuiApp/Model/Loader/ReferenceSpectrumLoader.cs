@@ -1,9 +1,7 @@
-﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
+﻿using CompMs.Common.DataObj.Result;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using System;
-using System.Collections.Generic;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Loader
@@ -16,19 +14,19 @@ namespace CompMs.App.Msdial.Model.Loader
             _refer = refer ?? throw new ArgumentNullException(nameof(refer));
         }
 
-        IObservable<List<SpectrumPeak>> IMsSpectrumLoader<MsScanMatchResult>.LoadSpectrumAsObservable(MsScanMatchResult target) {
-            return Observable.Return(LoadSpectrumCore(target));
+        IObservable<IMSScanProperty?> IMsSpectrumLoader<MsScanMatchResult>.LoadScanAsObservable(MsScanMatchResult target) {
+            return Observable.Return(LoadScanCore(target));
         }
 
-        private List<SpectrumPeak> LoadSpectrumCore(MsScanMatchResult target) {
+        private IMSScanProperty? LoadScanCore(MsScanMatchResult target) {
             if (target is null) {
                 throw new ArgumentNullException(nameof(target));
             }
             var reference = _refer.Refer(target);
             if (reference != null) {
-                return reference.Spectrum;
+                return reference;
             }
-            return new List<SpectrumPeak>();
+            return null;
         }
     }
 }

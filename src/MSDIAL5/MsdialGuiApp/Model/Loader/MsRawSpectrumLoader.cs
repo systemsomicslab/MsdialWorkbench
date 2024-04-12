@@ -1,11 +1,11 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.Enum;
+using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
@@ -25,26 +25,20 @@ namespace CompMs.App.Msdial.Model.Loader
             _chromDecParameter = chromDecParameter;
         }
 
-        public Task<List<SpectrumPeak>> LoadSpectrumAsync(QuantifiedChromatogramPeak? target, CancellationToken token) {
-            return target is null
-                ? Task.FromResult(new List<SpectrumPeak>(0))
-                : LoadSpectrumCoreAsync(target, token);
-        }
-
-        private async Task<List<SpectrumPeak>> LoadSpectrumCoreAsync(QuantifiedChromatogramPeak target, CancellationToken token) {
-            if (target.MS1RawSpectrumIdTop < 0) {
-                return new List<SpectrumPeak>(0);
+        private async Task<IMSScanProperty?> LoadMsPropertymCoreAsync(QuantifiedChromatogramPeak? target, CancellationToken token) {
+            if (target is null || target.MS1RawSpectrumIdTop < 0) {
+                return null;
             }
             var msSpectrum = await _provider.LoadMsSpectrumFromIndexAsync(target.MS1RawSpectrumIdTop, token).ConfigureAwait(false);
             var spectra = DataAccess.GetCentroidMassSpectra(msSpectrum, _dataType, 0f, float.MinValue, float.MaxValue);
             if (_chromDecParameter.RemoveAfterPrecursor) {
                 spectra = spectra.Where(peak => peak.Mass <= target.PeakFeature.Mass + _chromDecParameter.KeptIsotopeRange).ToList();
             }
-            return spectra;
+            return new MSScanProperty(target.MS1RawSpectrumIdTop, 0d, target.PeakFeature.ChromXsTop.GetRepresentativeXAxis(), IonMode.Positive) { Spectrum = spectra };
         }
 
-        public IObservable<List<SpectrumPeak>> LoadSpectrumAsObservable(QuantifiedChromatogramPeak? target) {
-            return Observable.FromAsync(token => LoadSpectrumAsync(target, token));
+        IObservable<IMSScanProperty?> IMsSpectrumLoader<QuantifiedChromatogramPeak?>.LoadScanAsObservable(QuantifiedChromatogramPeak? target) {
+            return Observable.FromAsync(token => LoadMsPropertymCoreAsync(target, token));
         }
     }
 }
