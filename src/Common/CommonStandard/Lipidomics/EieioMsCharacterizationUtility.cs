@@ -73,7 +73,7 @@ namespace CompMs.Common.Lipidomics
 
             director.SetPositionLevel();
             director.SetDoubleBondNumberLevel();
-            director.SetOxidizedNumberLevel();
+            director.SetOxidizedPositionLevel(); // if Ceramide acyl chain OH position is not determined, so check and fix here
             ((ILipidomicsVisitorBuilder)builder).SetSphingoOxidized(OxidizedIndeterminateState.Identity);
             CERAMIDE_POSITION_LEVEL = builder.Create();
         }
