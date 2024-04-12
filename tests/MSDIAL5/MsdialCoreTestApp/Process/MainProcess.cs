@@ -1,4 +1,5 @@
 ﻿using CompMs.App.MsdialConsole.Process.MoleculerNetworking;
+using CompMs.Common.Extension;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,11 +10,17 @@ namespace CompMs.App.MsdialConsole.Process {
     {
         private MainProcess() { }
 
+        public static int CreateMsp4Model(string inputMspFile, string inputEdgeFile, string outputMspFile) {
+            new MoleculerNetworkProcess().GetMsp4Model(inputMspFile, inputEdgeFile, outputMspFile);
+            return 1;
+        }
+
         public static int Run(string[] args) {
             if (args.Length == 0) return argsError();
             if (args.Length < 7) return argsError();
 
             var inputFolder = string.Empty;
+            var targetFolder = string.Empty;
             var methodFile = string.Empty;
             var outputFolder = string.Empty;
             var isProjectStore = false;
@@ -21,10 +28,12 @@ namespace CompMs.App.MsdialConsole.Process {
             var targetMz = -1.0f;
             var ionmode = "Positive";
             var overwrite = false;
+            var isAllEdgeExport = false;
 
             for (int i = 1; i < args.Length; i++) {
                 if (args[i] == "-i" && i + 1 < args.Length) inputFolder = args[i + 1];
                 else if (args[i] == "-m" && i + 1 < args.Length) methodFile = args[i + 1];
+                else if (args[i] == "-t" && i + 1 < args.Length) targetFolder = args[i + 1];
                 else if (args[i] == "-o" && i + 1 < args.Length) outputFolder = args[i + 1];
                 else if (args[i] == "-p") isProjectStore = true;
                 else if (args[i] == "-target" && i + 1 < args.Length) {
@@ -39,6 +48,7 @@ namespace CompMs.App.MsdialConsole.Process {
                         overwrite = isoverwirte;
                     }
                 }
+                else if (args[i] == "-a") isAllEdgeExport = true;
             }
             if (inputFolder == string.Empty || methodFile == string.Empty || outputFolder == string.Empty) return argsError();
             var analysisType = args[0];
@@ -57,10 +67,19 @@ namespace CompMs.App.MsdialConsole.Process {
                     case "msn":
 
                         if (Directory.Exists(inputFolder)) {
-                            return new MoleculerNetworkProcess().Run(inputFolder, outputFolder, methodFile, ionmode, overwrite);
+                            if (isAllEdgeExport){
+                                return new MoleculerNetworkProcess().Run4AllEdgeGeneration(inputFolder, outputFolder, methodFile, ionmode, overwrite);
+                            }
+                            else
+                                return new MoleculerNetworkProcess().Run(inputFolder, outputFolder, methodFile, ionmode, overwrite);
                         }
                         else {
-                            return new MoleculerNetworkProcess().Run4Onefile(inputFolder, outputFolder, methodFile, ionmode);
+                            if (!targetFolder.IsEmptyOrNull()) {
+                                return new MoleculerNetworkProcess().Map2TargetFile(targetFolder, inputFolder, methodFile, outputFolder, ionmode);
+                            }
+                            else {
+                                return new MoleculerNetworkProcess().Run4Onefile(inputFolder, outputFolder, methodFile, ionmode);
+                            }
                         }
                     default:
                         Console.WriteLine("Invalid analysis type. Valid options are: 'gcms', 'lcmsdda', 'lcmsdia', 'dims', 'imms'");
