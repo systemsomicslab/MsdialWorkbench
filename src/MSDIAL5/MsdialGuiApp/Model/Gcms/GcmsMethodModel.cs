@@ -21,6 +21,7 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
@@ -48,7 +49,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             _broker = broker;
             _providerFactory = new StandardDataProviderFactory(retry: 5, isGuiProcess: true);
-            _peakFilterModel = new PeakFilterModel(DisplayFilter.RefMatched | DisplayFilter.Unknown /*&& DisplayFilter.Blank*/); // TODO: Implement blank filtering
+            _peakFilterModel = new PeakFilterModel(DisplayFilter.RefMatched | DisplayFilter.Unknown | DisplayFilter.Blank);
             _peakSpotFiltering = new PeakSpotFiltering<AlignmentSpotPropertyModel>(FilterEnableStatus.All & ~FilterEnableStatus.Dt & ~FilterEnableStatus.Protein).AddTo(Disposables);
             switch (storage.Parameter.RetentionType) {
                 case RetentionType.RI:
