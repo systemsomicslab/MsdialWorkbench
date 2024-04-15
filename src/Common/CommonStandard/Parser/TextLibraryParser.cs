@@ -185,7 +185,7 @@ namespace CompMs.Common.Parser
         public static List<MoleculeMsReference> TextLibraryReader(string filePath, out string error)
         {
             List<MoleculeMsReference> result = null;
-            using (StreamReader sr = new StreamReader(File.Open(filePath, FileMode.Open, FileAccess.Read), Encoding.ASCII))
+            using (StreamReader sr = new StreamReader(File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), Encoding.ASCII))
             {
                 result = TextLibraryReader(sr, out error);
             }
@@ -205,7 +205,7 @@ namespace CompMs.Common.Parser
             float retentionTime, accurateMass, rtTol, massTol, minInt;
             int counter = 1;
 
-            using (StreamReader sr = new StreamReader(filePath, Encoding.ASCII)) {
+            using (StreamReader sr = new StreamReader(File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), Encoding.ASCII)) {
                 sr.ReadLine();
 
                 while (sr.Peek() > -1) {
@@ -324,7 +324,7 @@ namespace CompMs.Common.Parser
             float retentionTime, accurateMass, rtTol, massTol, minInt;
             int counter = 1;
 
-            using (StreamReader sr = new StreamReader(filePath, Encoding.ASCII)) {
+            using (StreamReader sr = new StreamReader(File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), Encoding.ASCII)) {
                 sr.ReadLine();
 
                 while (sr.Peek() > -1) {
