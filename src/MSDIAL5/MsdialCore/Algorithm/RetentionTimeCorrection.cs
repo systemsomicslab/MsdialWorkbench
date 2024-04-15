@@ -30,40 +30,36 @@ namespace CompMs.MsdialCore.Algorithm
             return new RetentionTimeCorrectionBean(property.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, originalRTs) { StandardList = stdList };
         }
 
-        private static List<StandardPair> GetStdPair(
-            AnalysisFileBean file,
-            IDataProvider provider, ParameterBase param, List<MoleculeMsReference> iStdLib) {
-            if (iStdLib.IsEmptyOrNull()) return new List<StandardPair>();
+        private static List<StandardPair> GetStdPair(AnalysisFileBean file, IDataProvider provider, ParameterBase param, List<MoleculeMsReference> iStdLib) {
+            if (iStdLib.IsEmptyOrNull()) return [];
 
             var targetList = new List<StandardPair>();
             var peakpickCore = new PeakSpottingCore(param);
             var rawSpectra = new RawSpectra(provider, param.IonMode, file.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(param.RetentionTimeBegin, param.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
-            foreach (var i in iStdLib) {
-                var startMass = i.PrecursorMz;
-                var endMass = i.PrecursorMz + i.MassTolerance;
+            foreach (var std in iStdLib) {
+                if (!std.IsTargetMolecule) {
+                    continue;
+                }
+                var startMass = std.PrecursorMz;
+                var endMass = std.PrecursorMz + std.MassTolerance;
                 var pabCollection = peakpickCore.GetChromatogramPeakFeatures(rawSpectra, provider, (float)startMass, chromatogramRange);
                 
                 ChromatogramPeakFeature pab = null;
                 if (pabCollection != null) {
                     foreach (var p in pabCollection) {
-                        if (Math.Abs(p.ChromXs.RT.Value - i.ChromXs.RT.Value) < i.RetentionTimeTolerance && p.PeakHeightTop > i.MinimumPeakHeight)
-                            if (pab == null)
+                        if (Math.Abs(p.ChromXs.RT.Value - std.ChromXs.RT.Value) < std.RetentionTimeTolerance && p.PeakHeightTop > std.MinimumPeakHeight) {
+                            if (pab is null || pab.PeakHeightTop < p.PeakHeightTop) {
                                 pab = p;
-                            else
-                                if (pab.PeakHeightTop < p.PeakHeightTop) pab = p;
-
+                            }
+                        }
                     }
                 }
-                if (pab == null) pab = new ChromatogramPeakFeature() { PrecursorMz = i.PrecursorMz, ChromXs = new ChromXs(0) };
-                var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(startMass, i.MassTolerance, chromatogramRange);
+                if (pab == null) pab = new ChromatogramPeakFeature() { PrecursorMz = std.PrecursorMz, ChromXs = new ChromXs(0) };
+                var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(startMass, std.MassTolerance, chromatogramRange);
                 var peaklist = chromatogram.Peaks.Select(peak => ChromatogramPeak.Create(peak.ID, peak.Mass, peak.Intensity, peak.ChromXs.RT)).ToList();
-                targetList.Add(new StandardPair() { SamplePeakAreaBean = pab, Reference = i, Chromatogram = peaklist });
+                targetList.Add(new StandardPair() { SamplePeakAreaBean = pab, Reference = std, Chromatogram = peaklist });
             }
-            /*   foreach(var t in targetList) {
-                   t.WriteSet();
-               }
-              */
             return targetList.OrderBy(x => x.Reference.ChromXs.RT.Value).ToList();
         }
 
