@@ -60,8 +60,33 @@ jobs:
           name: MSDIAL5
           path: artifact
 
+  publish-msdial4:
+    needs: test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+      - name: Add package source
+        run: dotnet nuget add source ${{ github.workspace }}/Assemblies
+      - name: Restore packages
+        run: dotnet restore /property:Configuration="Debug vendor unsupported"
+      - name: Publish
+        run: dotnet publish src/MSDIAL4/MsdialGuiApp/MsdialGuiApp.csproj -o artifact --configuration "Release vendor unsupported" --framework net481
+      - name: Copy licenses
+        run: Copy-Item -Path LGPL.txt,THIRD-PARTY-LICENSE-README.md,README.md -Destination artifact
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: MSDIAL4
+          path: artifact
+
   publish-msdial4-console:
-    #needs: test
+    needs: test
     runs-on: ${{ matrix.pair.os }}
     strategy:
       matrix:
