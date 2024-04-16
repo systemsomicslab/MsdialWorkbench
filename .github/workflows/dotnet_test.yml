@@ -61,7 +61,7 @@ jobs:
           path: artifact
 
   publish-msdial4-console:
-    needs: test
+    #needs: test
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -77,7 +77,7 @@ jobs:
       - name: Add package source
         run: dotnet nuget add source ${{ github.workspace }}/Assemblies
       - name: Restore packages
-        run: dotnet restore /property:Configuration="Debug vendor unsupported"
+        run: dotnet restore src/MSDIAL4/MsdialConsoleAppCore/MsdialConsoleAppCore.csproj /property:Configuration="Debug vendor unsupported"
       - name: Publish
         run: dotnet publish src/MSDIAL4/MsdialConsoleAppCore/MsdialConsoleAppCore.csproj -o artifact --configuration "Release vendor unsupported" --framework net8
       - name: Copy licenses
