@@ -16,6 +16,8 @@ namespace CompMs.App.Msdial.View.Setting
     public partial class DatasetFileSettingView : UserControl {
         private static readonly IFileSelectionItem[] FILE_SELECTION_ITEMS = new[] {
             new FileSelectionItem("ABF file", ".abf"),
+            new FileSelectionItem("Hive HMD file", ".hmd"),
+            new FileSelectionItem("Hive mzB file", ".mzb"),
             new FileSelectionItem("mzML file", ".mzml"),
             new FileSelectionItem("netCDF file", ".cdf"),
             new FileSelectionItem("IBF file", ".ibf"),
