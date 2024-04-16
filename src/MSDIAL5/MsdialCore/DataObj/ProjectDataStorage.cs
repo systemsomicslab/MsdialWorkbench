@@ -186,6 +186,9 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         public static void KeepPreviousRtCorrectionResult(IMsdialDataStorage<ParameterBase> storage) {
+            if (storage.AnalysisFiles is null) {
+                return;
+            }
             foreach (var file in storage.AnalysisFiles) {
                 var rtbean = file.RetentionTimeCorrectionBean;
                 if (!rtbean.OriginalRt.IsEmptyOrNull()) {
