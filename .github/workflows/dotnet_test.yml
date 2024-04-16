@@ -81,7 +81,10 @@ jobs:
       - name: Publish
         run: dotnet publish src/MSDIAL4/MsdialConsoleAppCore/MsdialConsoleAppCore.csproj -o artifact --configuration "Release vendor unsupported" --framework net8 --self-contained --runtime ${{ matrix.pair.runtime }}
       - name: Copy licenses
-        run: Copy-Item -Path LGPL.txt,THIRD-PARTY-LICENSE-README.md,README.md -Destination artifact
+        run: |
+            cp LGPL.txt artifact
+            cp THIRD-PARTY-LICENSE-README.md artifact
+            cp README.md artifact 
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
