@@ -5,7 +5,7 @@ name: Test and publish
 
 on:
   push:
-    branches: [ "master", "improve/update-github-actions" ]
+    branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
     paths-ignore:
