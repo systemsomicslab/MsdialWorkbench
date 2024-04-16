@@ -16,7 +16,7 @@ on:
       - THIRD-PARTY-LICENSE-README.md
 
 jobs:
-  build_test:
+  test:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,6 +34,22 @@ jobs:
         run: dotnet build --no-restore --configuration "Debug vendor unsupported" /property:BclBuildImported=Ignore
       - name: Test
         run: dotnet test --no-build --verbosity normal --configuration "Debug vendor unsupported"
+
+  publish-msdial5:
+    needs: test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+      - name: Add package source
+        run: dotnet nuget add source ${{ github.workspace }}/Assemblies
+      - name: Restore packages
+        run: dotnet restore /property:Configuration="Debug vendor unsupported"
       - name: Publish
         run: dotnet publish src/MSDIAL5/MsdialGuiApp/MsdialGuiApp.csproj -p:PublishProfile=FolderProfile -o artifact --configuration "Release vendor unsupported" --framework net481
       - name: Copy licenses
