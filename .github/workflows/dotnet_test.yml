@@ -65,7 +65,7 @@ jobs:
     runs-on: ${{ matrix.pair.os }}
     strategy:
       matrix:
-        pair: [ { os: windows-latest, runtime: win-x86 }, { os: ubuntu-latest, runtime: linux-x86 }, { os: macos-latest, runtime: osx-x64 } ]
+        pair: [ { os: windows-latest, runtime: win-x64 }, { os: ubuntu-latest, runtime: linux-x64 }, { os: macos-latest, runtime: osx-x64 } ]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
