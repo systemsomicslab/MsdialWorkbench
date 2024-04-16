@@ -62,10 +62,10 @@ jobs:
 
   publish-msdial4-console:
     #needs: test
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.pair.os }}
     strategy:
       matrix:
-        os: [ windows-latest, ubuntu-latest, macos-latest ]
+        pair: [ { os: windows-latest, runtime: win-x86 }, { os: ubuntu-latest, runtime: linux-x86 }, { os: macos-latest, runtime: osx-x64 } ]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
@@ -79,12 +79,12 @@ jobs:
       - name: Restore packages
         run: dotnet restore src/MSDIAL4/MsdialConsoleAppCore/MsdialConsoleAppCore.csproj /property:Configuration="Debug vendor unsupported"
       - name: Publish
-        run: dotnet publish src/MSDIAL4/MsdialConsoleAppCore/MsdialConsoleAppCore.csproj -o artifact --configuration "Release vendor unsupported" --framework net8
+        run: dotnet publish src/MSDIAL4/MsdialConsoleAppCore/MsdialConsoleAppCore.csproj -o artifact --configuration "Release vendor unsupported" --framework net8 --self-contained --runtime ${{ matrix.pair.runtime }}
       - name: Copy licenses
         run: Copy-Item -Path LGPL.txt,THIRD-PARTY-LICENSE-README.md,README.md -Destination artifact
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: MSDIAL4-Console-${{ matrix.os }}
+          name: MSDIAL4-Console-${{ matrix.pair.os }}
           path: artifact
 
