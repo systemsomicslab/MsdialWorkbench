@@ -102,6 +102,10 @@ public class RetentionTimeCorrectionBean
         this.rtDiff = null;
         this.predictedRt = null;
     }
+
+    public void Restore() {
+        RetentionTimeCorrectionMethod.LoadRetentionCorrectionResult(RetentionTimeCorrectionResultFilePath, out originalRt, out rtDiff, out predictedRt);
+    }
 }
 
 [MessagePackObject]
