@@ -23,56 +23,28 @@ public class RetentionTimeCorrectionBean
 {
     [Key(0)]
     //public List<double> OriginalRt { get; set; }
-    public List<double> OriginalRt { 
+    public List<double>? OriginalRt { 
         get {
-            if (originalRt.IsEmptyOrNull()) {
-                RetentionTimeCorrectionMethod.LoadRetentionCorrectionResult(this.RetentionTimeCorrectionResultFilePath, out List<double> originalRt, out List<double> rtDiff, out List<double> predictedRt);
-                if (originalRt == null) {
-                    return null;
-                }
-                this.originalRt = originalRt;
-                this.rtDiff = rtDiff;
-                this.predictedRt = predictedRt;
-                
-            }
             return originalRt;
         } 
     }
-    private List<double> originalRt;
+    private List<double>? originalRt;
     [Key(1)]
     //public List<double> RtDiff { get; set; }
-    public List<double> RtDiff { 
+    public List<double>? RtDiff { 
         get {
-            if (rtDiff.IsEmptyOrNull()) {
-                RetentionTimeCorrectionMethod.LoadRetentionCorrectionResult(this.RetentionTimeCorrectionResultFilePath, out List<double> originalRt, out List<double> rtDiff, out List<double> predictedRt);
-                if (originalRt == null) {
-                    return null;
-                }
-                this.originalRt = originalRt;
-                this.rtDiff = rtDiff;
-                this.predictedRt = predictedRt;
-            }
             return rtDiff;
         } 
     }
-    private List<double> rtDiff;
+    private List<double>? rtDiff;
     [Key(2)]
     //public List<double> PredictedRt { get; set; }
-    public List<double> PredictedRt {
+    public List<double>? PredictedRt {
         get {
-            if (predictedRt.IsEmptyOrNull()) {
-                RetentionTimeCorrectionMethod.LoadRetentionCorrectionResult(this.RetentionTimeCorrectionResultFilePath, out List<double> originalRt, out List<double> rtDiff, out List<double> predictedRt);
-                if (originalRt == null) {
-                    return null;
-                }
-                this.originalRt = originalRt;
-                this.rtDiff = rtDiff;
-                this.predictedRt = predictedRt;
-            }
             return predictedRt;
         }
     }
-    private List<double> predictedRt;
+    private List<double>? predictedRt;
     [Key(3)]
     public List<StandardPair> StandardList { get; set; } = new List<StandardPair>();
     [Key(4)]
