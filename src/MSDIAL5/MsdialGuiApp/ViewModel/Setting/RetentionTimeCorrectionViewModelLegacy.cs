@@ -497,8 +497,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             var num = files.Count;
             var yMax = float.MinValue; var yMin = float.MaxValue;
             foreach (var f in files) {
-                var rtDiff = f.RetentionTimeCorrectionBean.RtDiff;
-                if (rtDiff != null) {
+                if (f.RetentionTimeCorrectionBean.RtDiff is { Count: > 0 } rtDiff) {
                     var tmp_max = rtDiff.Max();
                     var tmp_min = rtDiff.Min();
                     if (yMax < tmp_max) yMax = (float)tmp_max;

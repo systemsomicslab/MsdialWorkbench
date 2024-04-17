@@ -22,28 +22,13 @@ public enum SampleListCellInfo { Normal, Zero, ManualModified, AutoModified }
 public class RetentionTimeCorrectionBean
 {
     [Key(0)]
-    //public List<double> OriginalRt { get; set; }
-    public List<double>? OriginalRt { 
-        get {
-            return originalRt;
-        } 
-    }
+    public List<double>? OriginalRt => originalRt;
     private List<double>? originalRt;
     [Key(1)]
-    //public List<double> RtDiff { get; set; }
-    public List<double>? RtDiff { 
-        get {
-            return rtDiff;
-        } 
-    }
+    public List<double>? RtDiff => rtDiff;
     private List<double>? rtDiff;
     [Key(2)]
-    //public List<double> PredictedRt { get; set; }
-    public List<double>? PredictedRt {
-        get {
-            return predictedRt;
-        }
-    }
+    public List<double>? PredictedRt => predictedRt;
     private List<double>? predictedRt;
     [Key(3)]
     public List<StandardPair> StandardList { get; set; } = new List<StandardPair>();
@@ -53,6 +38,7 @@ public class RetentionTimeCorrectionBean
     public string RetentionTimeCorrectionResultFilePath { get; set; } = string.Empty; // *.rtc
 
     public RetentionTimeCorrectionBean() { }
+
     public RetentionTimeCorrectionBean(string retentionTimeCorrectionResultFilePath) {
         RetentionTimeCorrectionResultFilePath = retentionTimeCorrectionResultFilePath;
     }

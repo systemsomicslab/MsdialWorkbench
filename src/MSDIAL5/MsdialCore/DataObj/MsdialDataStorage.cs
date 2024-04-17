@@ -88,7 +88,7 @@ namespace CompMs.MsdialCore.DataObj
 
             if (storage is null) return;
             foreach (var file in storage.AnalysisFiles) {
-                if (file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath.IsEmptyOrNull()) {
+                if (string.IsNullOrEmpty(file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath)) {
                     var filedir = Path.GetDirectoryName(file.DeconvolutionFilePath);
                     var filename = Path.GetFileNameWithoutExtension(file.DeconvolutionFilePath);
                     var filepath = Path.Combine(filedir, filename + "." + MsdialDataStorageFormat.rtc);
@@ -114,6 +114,7 @@ namespace CompMs.MsdialCore.DataObj
                 file.RiDictionaryFilePath = ReplaceFolderPath(file.RiDictionaryFilePath, previousFolder, projectFolder);
                 file.DeconvolutionFilePathList = file.DeconvolutionFilePathList.Select(decfile => ReplaceFolderPath(decfile, previousFolder, projectFolder)).ToList();
                 file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath = ReplaceFolderPath(file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, previousFolder, projectFolder); ;
+                file.RetentionTimeCorrectionBean.Restore();
             }
 
             foreach (var file in storage.AlignmentFiles) {
