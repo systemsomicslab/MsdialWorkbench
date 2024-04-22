@@ -232,6 +232,7 @@
                                       IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}"
                                       ToolTip="If checked, RT correction wizard is shown after the parameter setup."/>
                         </ui:LabeledContent>
+                        <Button Content="Run correction" Click="Run_RtCorrection"/>
                     </StackPanel>
                 </GroupBox>
 

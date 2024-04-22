@@ -97,6 +97,10 @@ namespace CompMs.App.Msdial.Model.Setting
         public DimsDataCollectionSettingModel? DimsProviderFactoryParameter { get; }
         public ImmsDataCollectionSettingModel? ImmsProviderFactoryParameter { get; }
 
+        public (IReadOnlyList<AnalysisFileBean> analysisFiles, ParameterBase parameter) GetAnalysisFileAndParameterToShowRetentionTimeCorrectionDialog() {
+            return (analysisFiles, parameter);
+        }
+
         public bool TryCommit() {
             if (IsReadOnly) {
                 return false;

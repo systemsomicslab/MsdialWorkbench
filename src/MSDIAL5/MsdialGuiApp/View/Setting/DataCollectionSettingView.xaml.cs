@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using CompMs.App.Msdial.ViewModel.Setting;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace CompMs.App.Msdial.View.Setting
 {
@@ -22,6 +10,15 @@ namespace CompMs.App.Msdial.View.Setting
     {
         public DataCollectionSettingView() {
             InitializeComponent();
+        }
+
+        private void Run_RtCorrection(object sender, System.Windows.RoutedEventArgs e) {
+            if (DataContext is not DataCollectionSettingViewModel vm) {
+                return;
+            }
+            var (analysisFiles, parameter) = vm.Model.GetAnalysisFileAndParameterToShowRetentionTimeCorrectionDialog();
+            var dialog = new RetentionTimeCorrectionWinLegacy(analysisFiles, parameter, false);
+            dialog.ShowDialog();
         }
     }
 }
