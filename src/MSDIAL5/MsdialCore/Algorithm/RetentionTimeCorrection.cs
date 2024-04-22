@@ -11,15 +11,14 @@ using System.Linq;
 namespace CompMs.MsdialCore.Algorithm
 {
     public static class RetentionTimeCorrection {
-        public static void Execute(
-            AnalysisFileBean analysisFile, ParameterBase param, IDataProvider provider) {
+        public static void Execute(AnalysisFileBean analysisFile, ParameterBase param, IDataProvider provider, string rtCorrectionFilePath) {
             var iStandardLibrary = param.RetentionTimeCorrectionCommon.StandardLibrary;
             var rtParam = param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam;
-            analysisFile.RetentionTimeCorrectionBean = DetectStdPeaks(provider, param, iStandardLibrary, analysisFile, rtParam);
+            analysisFile.RetentionTimeCorrectionBean = DetectStdPeaks(provider, param, iStandardLibrary, analysisFile, rtParam, rtCorrectionFilePath);
         }
 
         public static RetentionTimeCorrectionBean DetectStdPeaks(IDataProvider provider, ParameterBase param,
-            List<MoleculeMsReference> iStdLib, AnalysisFileBean property, RetentionTimeCorrectionParam rtParam) {
+            List<MoleculeMsReference> iStdLib, AnalysisFileBean property, RetentionTimeCorrectionParam rtParam, string rtCorrectionFilePath) {
             System.Diagnostics.Debug.WriteLine("num lib: " + iStdLib.Count);
             
             var stdList = GetStdPair(property, provider, param, iStdLib);
@@ -27,7 +26,7 @@ namespace CompMs.MsdialCore.Algorithm
             // original RT array
             var spectrumList = provider.LoadMsSpectrums();
             var originalRTs = spectrumList.Select(x => x.ScanStartTime).ToList();
-            return new RetentionTimeCorrectionBean(property.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, originalRTs) { StandardList = stdList };
+            return new RetentionTimeCorrectionBean(rtCorrectionFilePath, originalRTs) { StandardList = stdList };
         }
 
         private static List<StandardPair> GetStdPair(AnalysisFileBean file, IDataProvider provider, ParameterBase param, List<MoleculeMsReference> iStdLib) {

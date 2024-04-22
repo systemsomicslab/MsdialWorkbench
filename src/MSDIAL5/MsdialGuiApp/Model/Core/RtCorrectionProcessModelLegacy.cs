@@ -6,6 +6,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -13,14 +14,11 @@ using System.Windows.Input;
 namespace CompMs.App.Msdial.Model.Core
 {
     public class RtCorrectionProcessModelLegacy {
-        #region // members
         private BackgroundWorker? _bgWorker;
         private ProgressBarWindow? _pbw;
-        private string? _progressFileMax;
+        private string _progressFileMax = string.Empty;
         private RetentionTimeCorrectionWinLegacy? _rtCorrectionWin;
-        #endregion
 
-        #region // data processing method summary
         public void Process(IReadOnlyList<AnalysisFileBean> files, 
             ParameterBase param, 
             RetentionTimeCorrectionWinLegacy rtCorrectionWin) {
@@ -29,12 +27,14 @@ namespace CompMs.App.Msdial.Model.Core
 
             _bgWorker!.DoWork += new DoWorkEventHandler(BgWorker_Process_DoWork);
 
+            var tempFiles = files.Select(_ => Path.GetTempFileName()).ToArray();
+
             _bgWorker.RunWorkerAsync(
                 new object[] { 
                     files, 
                     param,
                     rtCorrectionWin.VM.RtCorrectionCommon.StandardLibrary.Where(x => x.IsTargetMolecule).ToList(),
-                    rtCorrectionWin.VM.RtCorrectionParam });
+                    tempFiles });
         }
 
         private void BgWorkerInitialize(IReadOnlyList<AnalysisFileBean> files) {
@@ -63,16 +63,14 @@ namespace CompMs.App.Msdial.Model.Core
             _bgWorker.ProgressChanged += new ProgressChangedEventHandler(BgWorker_ProgressChanged);
             _bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BgWorker_RunWorkerCompleted);
         }
-        #endregion
 
-        #region // background workers
         private void BgWorker_Process_DoWork(object sender, DoWorkEventArgs e) {
             object[] arg = (object[])e.Argument;
 
             var files = (IReadOnlyList<AnalysisFileBean>)arg[0];
             var param = (ParameterBase)arg[1];
             var iStandardLibrary = (List<MoleculeMsReference>)arg[2];
-            var rtParam = (RetentionTimeCorrectionParam)arg[3];
+            var rtCorrectionFilePaths = (string[])arg[3];
 
             var tmp_originalSettings = param.MinimumAmplitude;
             param.MinimumAmplitude = iStandardLibrary.Min(y => y.MinimumPeakHeight);
@@ -81,10 +79,11 @@ namespace CompMs.App.Msdial.Model.Core
             {
                 MaxDegreeOfParallelism = param.NumThreads
             };
-            System.Threading.Tasks.Parallel.ForEach(files, parallelOptions, f => {
+            System.Threading.Tasks.Parallel.For(0, files.Count, parallelOptions, i => {
+                var f = files[i];
                 StandardDataProviderFactory factory = new StandardDataProviderFactory();
                 var provider = factory.Create(f);
-                RetentionTimeCorrection.Execute(f, param, provider);
+                RetentionTimeCorrection.Execute(f, param, provider, rtCorrectionFilePaths[i]);
                 _bgWorker!.ReportProgress(1);
             });
 
@@ -105,7 +104,5 @@ namespace CompMs.App.Msdial.Model.Core
             Mouse.OverrideCursor = null;
             _rtCorrectionWin.IsEnabled = true;
         }
-
-        #endregion
     }
 }
