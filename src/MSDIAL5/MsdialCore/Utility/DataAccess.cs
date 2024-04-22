@@ -75,6 +75,17 @@ namespace CompMs.MsdialCore.Utility {
             }
         }
 
+        public static RawMeasurement LoadRawMeasurement(AnalysisFileBean file, bool isImagingMsData, bool isGuiProcess, int retry, int sleepMilliSeconds) {
+            using var access = new RawDataAccess(file.AnalysisFilePath, 0, false, isImagingMsData, isGuiProcess);
+            for (var i = 0; i < retry; i++) {
+                var rawObj = access.GetMeasurement();
+                if (rawObj != null)
+                    return rawObj;
+                Thread.Sleep(sleepMilliSeconds);
+            }
+            throw new FileLoadException($"Loading {file.AnalysisFilePath} failed.");
+        }
+
         public static RawCalibrationInfo ReadIonMobilityCalibrationInfo(string filepath) {
             using (var rawDataAccess = new RawDataAccess(filepath, 0, false, false, false)) {
                 return rawDataAccess.ReadIonmobilityCalibrationInfo();

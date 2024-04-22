@@ -38,6 +38,7 @@ namespace CompMs.App.Msdial.Model.Setting
             NumberOfThreads = parameter.ProcessBaseParam.NumThreads;
             ExcuteRtCorrection = parameter.AdvancedProcessOptionBaseParam.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection;
             DataCollectionRangeSettings = new ObservableCollection<IDataCollectionRangeSetting>(PrepareRangeSettings(parameter));
+            RtCorrectionSettingModel = new(analysisFiles, parameter);
         }
 
         public DataCollectionSettingModel(MsdialDimsParameter parameter, IReadOnlyList<AnalysisFileBean> analysisFiles, ProcessOption process) : this((ParameterBase)parameter, analysisFiles, process) {
@@ -97,19 +98,14 @@ namespace CompMs.App.Msdial.Model.Setting
         public DimsDataCollectionSettingModel? DimsProviderFactoryParameter { get; }
         public ImmsDataCollectionSettingModel? ImmsProviderFactoryParameter { get; }
 
-        public (IReadOnlyList<AnalysisFileBean> analysisFiles, ParameterBase parameter) GetAnalysisFileAndParameterToShowRetentionTimeCorrectionDialog() {
-            return (analysisFiles, parameter);
-        }
+        internal RtCorrectionSettingModel RtCorrectionSettingModel { get; }
 
         public bool TryCommit() {
             if (IsReadOnly) {
                 return false;
             }
             if (ExcuteRtCorrection) {
-                var rtCorrectionWin = new RetentionTimeCorrectionWinLegacy(analysisFiles, parameter, false);
-                if (!(rtCorrectionWin.ShowDialog() ?? false)) {
-                    return false;
-                }
+                RtCorrectionSettingModel.Determine();
             }
             parameter.PeakPickBaseParam.CentroidMs1Tolerance = Ms1Tolerance;
             parameter.PeakPickBaseParam.CentroidMs2Tolerance = Ms2Tolerance;

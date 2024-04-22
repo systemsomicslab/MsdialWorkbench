@@ -13,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -23,6 +22,7 @@ using System.Windows.Media;
 namespace CompMs.App.Msdial.ViewModel.Setting {
     public enum RtDiffLabel { id, rt, name };
     public class RetentionTimeCorrectionViewModelLegacy : ViewModelBase {
+        private readonly RetentionTimeCorrectionBean[] _retentionTimeCorrectionBeans;
 
         #region members and properties
         public RetentionTimeCorrectionWinLegacy RtWin;
@@ -120,9 +120,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         #region constructor
         public RetentionTimeCorrectionViewModelLegacy(
-            IReadOnlyList<AnalysisFileBean> files, ParameterBase param, 
+            IReadOnlyList<AnalysisFileBean> files, RetentionTimeCorrectionBean[] retentionTimeCorrectionBeans, ParameterBase param,
             RetentionTimeCorrectionWinLegacy win, bool isViewMode) {
+            System.Diagnostics.Debug.Assert(files.Count == retentionTimeCorrectionBeans.Length);
             this.AnalysisFiles = files.ToList();
+            _retentionTimeCorrectionBeans = retentionTimeCorrectionBeans;
             this.Parameter = param;
             this.IsViewMode = isViewMode;
 
@@ -184,7 +186,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             //}
             RtCorrectionCommon.SampleCellInfoListList = new List<List<SampleListCellInfo>>();
             RtCorrectionCommon.StandardLibrary = RetentionTimeCorrectionModelLegacy.ConvertCompoundVMtoTextFormat(StandardData);
-            new RtCorrectionProcessModelLegacy().Process(this.AnalysisFiles, this.Parameter, this.RtWin);
+            new RtCorrectionProcessModelLegacy().Process(this.AnalysisFiles, _retentionTimeCorrectionBeans, this.Parameter, this.RtWin);
         }
 
         private bool canRtCorrection() {
@@ -219,7 +221,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             for (var i = 0; i < CommonStdList.Count; i++) {
                 if (CommonStdList[i].NumHit > 0) {
                     var pre = CommonStdList[i].RetentionTimeList.FirstOrDefault(x => x > 0);
-                    for (var j = 0; j < this.AnalysisFiles.Count; j++) {
+                    for (var j = 0; j < this._retentionTimeCorrectionBeans.Length; j++) {
                         if (SampleListVMs[j].Values[i].Rt == 0) {
                             SampleListVMs[j].Values[i].Rt = (float)pre;
                             SampleListVMs[j].Values[i].SampleListCellInfo = SampleListCellInfo.AutoModified;
@@ -305,11 +307,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 var l = new List<SampleListCellInfo>();
                 for (var j = 0; j < SampleListVMs[i].Values.Count; j++) {
                     l.Add(SampleListVMs[i].Values[j].SampleListCellInfo);
-                    this.AnalysisFiles[i].RetentionTimeCorrectionBean.StandardList[j].SamplePeakAreaBean.ChromXs.RT = new RetentionTime(SampleListVMs[i].Values[j].Rt, AnalysisFiles[i].RetentionTimeCorrectionBean.StandardList[j].SamplePeakAreaBean.ChromXs.RT.Unit);
+                    _retentionTimeCorrectionBeans[i].StandardList[j].SamplePeakAreaBean.ChromXs.RT = new RetentionTime(SampleListVMs[i].Values[j].Rt, _retentionTimeCorrectionBeans[i].StandardList[j].SamplePeakAreaBean.ChromXs.RT.Unit);
                 }
                 RtCorrectionCommon.SampleCellInfoListList.Add(l);
             }
-            CommonStdList = RetentionTimeCorrectionMethod.MakeCommonStdList(this.AnalysisFiles, this.RtCorrectionCommon.StandardLibrary);
+            CommonStdList = RetentionTimeCorrectionMethod.MakeCommonStdList(_retentionTimeCorrectionBeans, this.RtCorrectionCommon.StandardLibrary);
         }
 
         #endregion
@@ -324,8 +326,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         private void excuteNext(bool obj) {
             if (CheckBox_RunWithRtCorrection) {
-                foreach (var f in this.AnalysisFiles) {
-                    f.RetentionTimeCorrectionBean.StandardList.RemoveAll(pair => !pair.Reference.IsTargetMolecule);
+                foreach (var retentionTimeCorrectionBean in _retentionTimeCorrectionBeans) {
+                    retentionTimeCorrectionBean.StandardList.RemoveAll(pair => !pair.Reference.IsTargetMolecule);
                 }
             }
             else {
@@ -480,9 +482,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         #region set UIs
 
-        public DefaultUC Set_OverviewRtDiff(List<AnalysisFileBean> analysisFiles, ParameterBase param, 
-            RetentionTimeCorrectionParam rtParam, List<CommonStdData> detectedStdList, RtDiffLabel label, List<SolidColorBrush> solidColorBrushList) {
-            var drawing = RetentionTimeCorrectionChart.GetDrawing_RtDiff_OverView(analysisFiles, param, rtParam, detectedStdList, label, solidColorBrushList);
+        public DefaultUC Set_OverviewRtDiff(ParameterBase param, RetentionTimeCorrectionParam rtParam,
+            List<CommonStdData> detectedStdList, RtDiffLabel label, List<SolidColorBrush> solidColorBrushList) {
+            var drawing = RetentionTimeCorrectionChart.GetDrawing_RtDiff_OverView(_retentionTimeCorrectionBeans, param, rtParam, detectedStdList, label, solidColorBrushList);
             drawing.Area.GraphBorder = new Pen(Brushes.Transparent, 0);
             drawing.Area.BackGroundColor = Brushes.White;
             drawing.Area.AxisX.MinorScaleEnabled = false;
@@ -494,22 +496,21 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         public StackPanel Set_EachRtDiffUC(List<AnalysisFileBean> files, ParameterBase param, RetentionTimeCorrectionParam rtParam,
             List<CommonStdData> detectedStdList, RtDiffLabel label) {
             var chartStackPanel = new StackPanel() { Orientation = Orientation.Vertical };
-            var num = files.Count;
             var yMax = float.MinValue; var yMin = float.MaxValue;
-            foreach (var f in files) {
-                if (f.RetentionTimeCorrectionBean.RtDiff is { Count: > 0 } rtDiff) {
+            foreach (var retentionTimeCorrectionBean in _retentionTimeCorrectionBeans) {
+                if (retentionTimeCorrectionBean.RtDiff is { Count: > 0 } rtDiff) {
                     var tmp_max = rtDiff.Max();
                     var tmp_min = rtDiff.Min();
                     if (yMax < tmp_max) yMax = (float)tmp_max;
                     if (yMin > tmp_min) yMin = (float)tmp_min;
                 }
             }
+            var num = files.Count;
             //var dict = MsDialStatistics.GetClassIdColorDictionary(files, solidColorBrushList);
             var classnameToBytes = param.ClassnameToColorBytes;
             var classnameToBrushes = ChartBrushes.ConvertToSolidBrushDictionary(classnameToBytes);
             for (var i = 0; i < num; i++) {
-                var uc = new DefaultUC(RetentionTimeCorrectionChart.GetDrawing_RtDiff_Each(files[i], param, rtParam, detectedStdList, label,
-                    classnameToBrushes[files[i].AnalysisFileClass], (float)yMin, (float)yMax), new MouseActionSetting() { CanMouseAction = false });
+                var uc = new DefaultUC(RetentionTimeCorrectionChart.GetDrawing_RtDiff_Each(files[i], _retentionTimeCorrectionBeans[i], param, rtParam, detectedStdList, label, classnameToBrushes[files[i].AnalysisFileClass], (float)yMin, (float)yMax), new MouseActionSetting() { CanMouseAction = false });
                 var grid = new Grid() { Height = 240, HorizontalAlignment = HorizontalAlignment.Stretch };
                 uc.ContextMenu = this.RtWin.Resources["menuDefaultUC"] as ContextMenu;
 
@@ -567,7 +568,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                     Text = "", Height = 20, BorderThickness = new Thickness(0, 0, 0, 0), Margin = new Thickness(0, 0, 0, -5), IsReadOnly = true
                 };
 
-                var uc2 = new DefaultUC(RetentionTimeCorrectionChart.GetDrawVisual_correctedEIC_Overview(files, std, param, classnameToBrushes), new MouseActionSetting() { FixMaxX = true, FixMinX = true });
+                var uc2 = new DefaultUC(RetentionTimeCorrectionChart.GetDrawVisual_correctedEIC_Overview(files, _retentionTimeCorrectionBeans, std, param, classnameToBrushes), new MouseActionSetting() { FixMaxX = true, FixMinX = true });
                 var grid2 = new Grid() { MinHeight = 200, HorizontalAlignment = HorizontalAlignment.Stretch, Margin = new Thickness(0, 0, 0, 0) };
                 grid2.Children.Add(uc2);
                 uc2.ContextMenu = this.RtWin.Resources["menuDefaultUC"] as ContextMenu;
@@ -596,7 +597,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             if (this.CheckBox_SkipCheck)
                 excuteNext(false);
 
-            CommonStdList = RetentionTimeCorrectionMethod.MakeCommonStdList(this.AnalysisFiles, this.RtCorrectionCommon.StandardLibrary);
+            CommonStdList = RetentionTimeCorrectionMethod.MakeCommonStdList(_retentionTimeCorrectionBeans, this.RtCorrectionCommon.StandardLibrary);
             if (isAfterRtTune) {
                 var NoHitCompList = CommonStdList.Where(x => x.NumHit == 0).Select(x => x.Reference).ToList();
                 ShowMessage_NoHitCompounds(NoHitCompList);
@@ -604,7 +605,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
             //this.RtCorrectionCommon.CommonStdList = CommonStdList;
 
-            RetentionTimeCorrectionMethod.UpdateRtCorrectionBean(this.AnalysisFiles, this.parallelOptions, this.RtCorrectionParam, CommonStdList);
+            RetentionTimeCorrectionMethod.UpdateRtCorrectionBean(_retentionTimeCorrectionBeans, this.parallelOptions, this.RtCorrectionParam, CommonStdList);
             CreateSampleList();
             OnPropertyChanged("SampleListVMs");
             Update_AllViewer();
@@ -615,14 +616,14 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             if (!Processed) { SetDemoData(); return; }
             this.RtWin.IsEnabled = false;
             Mouse.OverrideCursor = Cursors.Wait;
-            RetentionTimeCorrectionMethod.UpdateRtCorrectionBean(this.AnalysisFiles, this.parallelOptions, this.RtCorrectionParam, CommonStdList);
+            RetentionTimeCorrectionMethod.UpdateRtCorrectionBean(_retentionTimeCorrectionBeans, this.parallelOptions, this.RtCorrectionParam, CommonStdList);
             Update_AllViewer();
             Mouse.OverrideCursor = null;
             this.RtWin.IsEnabled = true;
         }
 
         public void Update_AllViewer() {
-            AllRtDiffUC = Set_OverviewRtDiff(this.AnalysisFiles, this.Parameter, RtCorrectionParam, CommonStdList, RtDiffLabel, ChartBrushes.SolidColorBrushList.ToList());
+            AllRtDiffUC = Set_OverviewRtDiff(this.Parameter, RtCorrectionParam, CommonStdList, RtDiffLabel, ChartBrushes.SolidColorBrushList.ToList());
             StackPanel_EachRtDiffUc = Set_EachRtDiffUC(this.AnalysisFiles, this.Parameter, RtCorrectionParam, CommonStdList, RtDiffLabel);
 
             StackPanel_EachStdPeakHeightUc = Set_EachStdPeakHeightUC(this.AnalysisFiles, CommonStdList, this.Parameter);

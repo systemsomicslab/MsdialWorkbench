@@ -11,22 +11,13 @@ using System.Linq;
 namespace CompMs.MsdialCore.Algorithm
 {
     public static class RetentionTimeCorrection {
-        public static void Execute(AnalysisFileBean analysisFile, ParameterBase param, IDataProvider provider, string rtCorrectionFilePath) {
+        public static void Execute(AnalysisFileBean analysisFile, RetentionTimeCorrectionBean retentionTimeCorrectionBean, ParameterBase param, IDataProvider provider, string rtCorrectionFilePath) {
             var iStandardLibrary = param.RetentionTimeCorrectionCommon.StandardLibrary;
             var rtParam = param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam;
-            analysisFile.RetentionTimeCorrectionBean = DetectStdPeaks(provider, param, iStandardLibrary, analysisFile, rtParam, rtCorrectionFilePath);
-        }
-
-        public static RetentionTimeCorrectionBean DetectStdPeaks(IDataProvider provider, ParameterBase param,
-            List<MoleculeMsReference> iStdLib, AnalysisFileBean property, RetentionTimeCorrectionParam rtParam, string rtCorrectionFilePath) {
-            System.Diagnostics.Debug.WriteLine("num lib: " + iStdLib.Count);
-            
-            var stdList = GetStdPair(property, provider, param, iStdLib);
-
+            System.Diagnostics.Debug.WriteLine("num lib: " + iStandardLibrary.Count);
+            retentionTimeCorrectionBean.StandardList = GetStdPair(analysisFile, provider, param, iStandardLibrary);
             // original RT array
-            var spectrumList = provider.LoadMsSpectrums();
-            var originalRTs = spectrumList.Select(x => x.ScanStartTime).ToList();
-            return new RetentionTimeCorrectionBean(rtCorrectionFilePath, originalRTs) { StandardList = stdList };
+            retentionTimeCorrectionBean.OriginalRt = provider.LoadMsSpectrums().Select(x => x.ScanStartTime).ToList();
         }
 
         private static List<StandardPair> GetStdPair(AnalysisFileBean file, IDataProvider provider, ParameterBase param, List<MoleculeMsReference> iStdLib) {

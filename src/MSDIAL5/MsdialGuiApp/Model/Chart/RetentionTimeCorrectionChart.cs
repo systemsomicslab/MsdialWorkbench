@@ -5,15 +5,13 @@ using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
-namespace CompMs.App.Msdial.Model.Chart {
+namespace CompMs.App.Msdial.Model.Chart
+{
     public class RetentionTimeCorrectionChart {
         /*
         public static void ExportRtCorrectionRes(MainWindow mainWindow) {
@@ -101,18 +99,18 @@ namespace CompMs.App.Msdial.Model.Chart {
         #endregion
 
         #region Retention time difference, overlayed 
-        public static DrawVisual GetDrawing_RtDiff_OverView(List<AnalysisFileBean> analysisFiles, ParameterBase param, RetentionTimeCorrectionParam rtParam, List<CommonStdData> detectedStdList, RtDiffLabel label, List<SolidColorBrush> solidColorBrushList) {
+        public static DrawVisual GetDrawing_RtDiff_OverView(RetentionTimeCorrectionBean[] retentionTimeCorrectionBeans, ParameterBase param, RetentionTimeCorrectionParam rtParam, List<CommonStdData> detectedStdList, RtDiffLabel label, List<SolidColorBrush> solidColorBrushList) {
             var area = GetAreaV1();
             area.LabelSpace.Top = 15;
             var title = GetTitleV1();
             var slist = new SeriesList();
-            var numFiles = analysisFiles.Count;
+            var numFiles = retentionTimeCorrectionBeans.Length;
             var targetId = 0; var maxCount = 0;
             for (int i = 0; i < numFiles; i++) {
-                var f = analysisFiles[i];
-                var brush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(250, (byte)(255 * i / numFiles), (byte)(255 * (1 - Math.Abs(i / numFiles - 0.5))), (byte)(255 - 255 * i / numFiles)));
+                var retentionTimeCorrectionBean = retentionTimeCorrectionBeans[i];
+                var brush = new SolidColorBrush(Color.FromArgb(250, (byte)(255 * i / numFiles), (byte)(255 * (1 - Math.Abs(i / numFiles - 0.5))), (byte)(255 - 255 * i / numFiles)));
 
-                var numHit = f.RetentionTimeCorrectionBean.StandardList.Count(x => x.SamplePeakAreaBean.ChromXs.RT.Value > 0);
+                var numHit = retentionTimeCorrectionBean.StandardList.Count(x => x.SamplePeakAreaBean.ChromXs.RT.Value > 0);
                 if (maxCount < numHit) {
                     maxCount = numHit;
                     targetId = i;
@@ -124,16 +122,16 @@ namespace CompMs.App.Msdial.Model.Chart {
                     Brush = brush,
                     Pen = new Pen(brush, 1.0),
                 };
-                if (f.RetentionTimeCorrectionBean.RtDiff != null)
-                    for (var j = 0; j < f.RetentionTimeCorrectionBean.RtDiff.Count; j++) {
-                        if (f.RetentionTimeCorrectionBean.OriginalRt[j] < param.RetentionTimeBegin) continue;
-                        if (f.RetentionTimeCorrectionBean.OriginalRt[j] > param.RetentionTimeEnd) break;
-                        s.AddPoint((float)f.RetentionTimeCorrectionBean.OriginalRt[j], (float)f.RetentionTimeCorrectionBean.RtDiff[j] * 60);
+                if (retentionTimeCorrectionBean.RtDiff != null)
+                    for (var j = 0; j < retentionTimeCorrectionBean.RtDiff.Count; j++) {
+                        if (retentionTimeCorrectionBean.OriginalRt[j] < param.RetentionTimeBegin) continue;
+                        if (retentionTimeCorrectionBean.OriginalRt[j] > param.RetentionTimeEnd) break;
+                        s.AddPoint((float)retentionTimeCorrectionBean.OriginalRt[j], (float)retentionTimeCorrectionBean.RtDiff[j] * 60);
                     }
                 if (s.Points.Count > 0)
                     slist.Series.Add(s);
             }
-            SetLabel_RtDiff_V1(analysisFiles[targetId], slist, rtParam, detectedStdList, label, Brushes.Black);
+            SetLabel_RtDiff_V1(retentionTimeCorrectionBeans[targetId], slist, rtParam, detectedStdList, label, Brushes.Black);
 
             var drawing = new DrawVisual(area, title, slist);
             SetDrawingMinAndMaxXY_constValue(drawing, param.RetentionTimeBegin, Math.Min(param.RetentionTimeEnd, drawing.SeriesList.MaxX));
@@ -145,7 +143,7 @@ namespace CompMs.App.Msdial.Model.Chart {
         #endregion
 
         #region Retention time difference, each sample
-        public static DrawVisual GetDrawing_RtDiff_Each(AnalysisFileBean analysisFile, ParameterBase param, RetentionTimeCorrectionParam rtParam, List<CommonStdData> detectedStdList, RtDiffLabel label, SolidColorBrush brush, float ymin, float ymax) {
+        public static DrawVisual GetDrawing_RtDiff_Each(AnalysisFileBean analysisFile, RetentionTimeCorrectionBean retentionTimeCorrectionBean, ParameterBase param, RetentionTimeCorrectionParam rtParam, List<CommonStdData> detectedStdList, RtDiffLabel label, SolidColorBrush brush, float ymin, float ymax) {
             var area = GetAreaV1("Retention time (min)", "RT diff (sec)");
             area.LabelSpace.Top = 20;
             area.LabelSpace.Bottom = 5;
@@ -159,16 +157,16 @@ namespace CompMs.App.Msdial.Model.Chart {
                 Pen = new Pen(brush, 1.0),
                 FontSize = 14,
             };
-            if (analysisFile.RetentionTimeCorrectionBean.RtDiff == null) return new DrawVisual(new Area(), title, slist);
-            for (var j = 0; j < analysisFile.RetentionTimeCorrectionBean.RtDiff.Count; j++) {
-                if (analysisFile.RetentionTimeCorrectionBean.OriginalRt[j] < param.RetentionTimeBegin) continue;
-                if (analysisFile.RetentionTimeCorrectionBean.OriginalRt[j] > param.RetentionTimeEnd) break;
-                s.AddPoint((float)analysisFile.RetentionTimeCorrectionBean.OriginalRt[j], (float)analysisFile.RetentionTimeCorrectionBean.RtDiff[j] * 60);
+            if (retentionTimeCorrectionBean.RtDiff == null) return new DrawVisual(new Area(), title, slist);
+            for (var j = 0; j < retentionTimeCorrectionBean.RtDiff.Count; j++) {
+                if (retentionTimeCorrectionBean.OriginalRt[j] < param.RetentionTimeBegin) continue;
+                if (retentionTimeCorrectionBean.OriginalRt[j] > param.RetentionTimeEnd) break;
+                s.AddPoint((float)retentionTimeCorrectionBean.OriginalRt[j], (float)retentionTimeCorrectionBean.RtDiff[j] * 60);
             }
             if (s.Points.Count > 0)
                 slist.Series.Add(s);
 
-            SetLabel_RtDiff_V1(analysisFile, slist, rtParam, detectedStdList, label, brush);
+            SetLabel_RtDiff_V1(retentionTimeCorrectionBean, slist, rtParam, detectedStdList, label, brush);
 
             var drawing = new DrawVisual(area, title, slist);
             SetDrawingMinAndMaxXY_constValue(drawing, param.RetentionTimeBegin, Math.Min(param.RetentionTimeEnd, drawing.SeriesList.MaxX), ymin * 60, ymax * 60);
@@ -181,7 +179,7 @@ namespace CompMs.App.Msdial.Model.Chart {
         #endregion
 
         #region Retention time difference, private function to show label
-        private static void SetLabel_RtDiff_V1(AnalysisFileBean analysisFile, SeriesList slist, RetentionTimeCorrectionParam rtParam, List<CommonStdData> commonStdList, 
+        private static void SetLabel_RtDiff_V1(RetentionTimeCorrectionBean retentionTimeCorrectionBean, SeriesList slist, RetentionTimeCorrectionParam rtParam, List<CommonStdData> commonStdList,
             RtDiffLabel label, SolidColorBrush brush) {
             var labelList = new List<string>();
             var point = new Series() {
@@ -195,36 +193,36 @@ namespace CompMs.App.Msdial.Model.Chart {
             };
             if (rtParam.RtDiffCalcMethod == RtDiffCalcMethod.SampleMinusReference) {
                 if (label == RtDiffLabel.id)
-                    for (var i = 0; i < analysisFile.RetentionTimeCorrectionBean.StandardList.Count; i++) {
-                        if (analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
-                        point.AddPoint((float)analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value, (float)analysisFile.RetentionTimeCorrectionBean.StandardList[i].RtDiff * 60, analysisFile.RetentionTimeCorrectionBean.StandardList[i].Reference.ScanID.ToString());
+                    for (var i = 0; i < retentionTimeCorrectionBean.StandardList.Count; i++) {
+                        if (retentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
+                        point.AddPoint((float)retentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value, (float)retentionTimeCorrectionBean.StandardList[i].RtDiff * 60, retentionTimeCorrectionBean.StandardList[i].Reference.ScanID.ToString());
                     }
                 else if (label == RtDiffLabel.name)
-                    for (var i = 0; i < analysisFile.RetentionTimeCorrectionBean.StandardList.Count; i++) {
-                        if (analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
-                        point.AddPoint((float)analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value, (float)analysisFile.RetentionTimeCorrectionBean.StandardList[i].RtDiff * 60, analysisFile.RetentionTimeCorrectionBean.StandardList[i].Reference.Name);
+                    for (var i = 0; i < retentionTimeCorrectionBean.StandardList.Count; i++) {
+                        if (retentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
+                        point.AddPoint((float)retentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value, (float)retentionTimeCorrectionBean.StandardList[i].RtDiff * 60, retentionTimeCorrectionBean.StandardList[i].Reference.Name);
                     }
                 else if (label == RtDiffLabel.rt)
-                    for (var i = 0; i < analysisFile.RetentionTimeCorrectionBean.StandardList.Count; i++) {
-                        if (analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
-                        point.AddPoint((float)analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value, (float)analysisFile.RetentionTimeCorrectionBean.StandardList[i].RtDiff * 60, analysisFile.RetentionTimeCorrectionBean.StandardList[i].Reference.ChromXs.RT.Value.ToString());
+                    for (var i = 0; i < retentionTimeCorrectionBean.StandardList.Count; i++) {
+                        if (retentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
+                        point.AddPoint((float)retentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value, (float)retentionTimeCorrectionBean.StandardList[i].RtDiff * 60, retentionTimeCorrectionBean.StandardList[i].Reference.ChromXs.RT.Value.ToString());
                     }
             }
             else {
                 if (label == RtDiffLabel.id)
-                    for (var i = 0; i < analysisFile.RetentionTimeCorrectionBean.StandardList.Count; i++) {
-                        if (analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
-                        point.AddPoint((float)analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value, CalcRtDiff_SampleMinusAverage(analysisFile, commonStdList, i), analysisFile.RetentionTimeCorrectionBean.StandardList[i].Reference.ScanID.ToString());
+                    for (var i = 0; i < retentionTimeCorrectionBean.StandardList.Count; i++) {
+                        if (retentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
+                        point.AddPoint((float)retentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value, CalcRtDiff_SampleMinusAverage(retentionTimeCorrectionBean, commonStdList, i), retentionTimeCorrectionBean.StandardList[i].Reference.ScanID.ToString());
                     }
                 else if (label == RtDiffLabel.name)
-                    for (var i = 0; i < analysisFile.RetentionTimeCorrectionBean.StandardList.Count; i++) {
-                        if (analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
-                        point.AddPoint((float)analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value, CalcRtDiff_SampleMinusAverage(analysisFile, commonStdList, i), analysisFile.RetentionTimeCorrectionBean.StandardList[i].Reference.Name);
+                    for (var i = 0; i < retentionTimeCorrectionBean.StandardList.Count; i++) {
+                        if (retentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
+                        point.AddPoint((float)retentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value, CalcRtDiff_SampleMinusAverage(retentionTimeCorrectionBean, commonStdList, i), retentionTimeCorrectionBean.StandardList[i].Reference.Name);
                     }
                 else if (label == RtDiffLabel.rt)
-                    for (var i = 0; i < analysisFile.RetentionTimeCorrectionBean.StandardList.Count; i++) {
-                        if (analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
-                        point.AddPoint((float)analysisFile.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value, CalcRtDiff_SampleMinusAverage(analysisFile, commonStdList, i), analysisFile.RetentionTimeCorrectionBean.StandardList[i].Reference.ChromXs.RT.Value.ToString());
+                    for (var i = 0; i < retentionTimeCorrectionBean.StandardList.Count; i++) {
+                        if (retentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
+                        point.AddPoint((float)retentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value, CalcRtDiff_SampleMinusAverage(retentionTimeCorrectionBean, commonStdList, i), retentionTimeCorrectionBean.StandardList[i].Reference.ChromXs.RT.Value.ToString());
                     }
 
             }
@@ -233,8 +231,8 @@ namespace CompMs.App.Msdial.Model.Chart {
 
         }
 
-        private static float CalcRtDiff_SampleMinusAverage(AnalysisFileBean file, List<CommonStdData> list, int i) {
-            return (float)(file.RetentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value - (float)list[i].AverageRetentionTime) * 60f;
+        private static float CalcRtDiff_SampleMinusAverage(RetentionTimeCorrectionBean retentionTimeCorrectionBean, List<CommonStdData> list, int i) {
+            return (float)(retentionTimeCorrectionBean.StandardList[i].SamplePeakAreaBean.ChromXs.RT.Value - (float)list[i].AverageRetentionTime) * 60f;
         }
         #endregion
 
@@ -305,7 +303,7 @@ namespace CompMs.App.Msdial.Model.Chart {
         #endregion
 
         #region overlayed EIC, right side (corrected RT)
-        public static DrawVisual GetDrawVisual_correctedEIC_Overview(List<AnalysisFileBean> analysisFiles, CommonStdData commonStd, ParameterBase param, Dictionary<string, SolidColorBrush> brushDict) {
+        public static DrawVisual GetDrawVisual_correctedEIC_Overview(List<AnalysisFileBean> analysisFiles, RetentionTimeCorrectionBean[] retentionTimeCorrectionBeans, CommonStdData commonStd, ParameterBase param, Dictionary<string, SolidColorBrush> brushDict) {
             var area = GetAreaV1("Retention Time [min]", "Absolute Intensity");
             area.Margin.Top = 25;
             var title = GetTitleV1(13, "Corrected EIC");
@@ -325,7 +323,7 @@ namespace CompMs.App.Msdial.Model.Chart {
                     MarkerType = MarkerType.None,
                     Pen = new Pen(brush, 1.0),
                 };
-                var rtList = GetSmoothedRetentionTime(analysisFiles[i].RetentionTimeCorrectionBean, param, commonStd.Chromatograms[i]);
+                var rtList = GetSmoothedRetentionTime(retentionTimeCorrectionBeans[i], param, commonStd.Chromatograms[i]);
                 for (var j = 0; j < rtList.Count; j++) {
                     var peak = rtList[j];
                     if (peak.ChromXs.RT.Value < minRTrange) continue;

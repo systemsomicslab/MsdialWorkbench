@@ -1,39 +1,28 @@
-﻿using CompMs.App.Msdial.View.Export;
+﻿using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.ViewModel.Setting;
-using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Helper;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View.Setting {
+namespace CompMs.App.Msdial.View.Setting
+{
     /// <summary>
     /// Interaction logic for RetentionTimeCorrectionWinLegacy.xaml
     /// </summary>
     public partial class RetentionTimeCorrectionWinLegacy : Window {
         public RetentionTimeCorrectionViewModelLegacy VM { get; set; }
-        public RetentionTimeCorrectionWinLegacy(
-            IReadOnlyList<AnalysisFileBean> files, ParameterBase param,
-            bool isViewMode = false) {
+
+        internal RetentionTimeCorrectionWinLegacy(RtCorrectionSettingModel model, bool isViewMode = false)
+        {
             InitializeComponent();
-
-            this.VM = new RetentionTimeCorrectionViewModelLegacy(files, param, this, isViewMode);
-            this.DataContext = this.VM;
+            VM = new RetentionTimeCorrectionViewModelLegacy(model.Files, model.TemporaryRtcs, model.Parameter, this, isViewMode);
+            DataContext = VM;
         }
-
-
 
         #region ComboBox PropertyChanged
         private void ComboBox_Interpolation_SelectionChanged(object sender, SelectionChangedEventArgs e) {

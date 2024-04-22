@@ -16,8 +16,8 @@ namespace CompMs.App.Msdial.View.Setting
             if (DataContext is not DataCollectionSettingViewModel vm) {
                 return;
             }
-            var (analysisFiles, parameter) = vm.Model.GetAnalysisFileAndParameterToShowRetentionTimeCorrectionDialog();
-            var dialog = new RetentionTimeCorrectionWinLegacy(analysisFiles, parameter, false);
+            var settingModel = vm.Model.RtCorrectionSettingModel;
+            var dialog = new RetentionTimeCorrectionWinLegacy(settingModel, false);
             dialog.ShowDialog();
         }
     }

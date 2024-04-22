@@ -19,8 +19,9 @@ namespace CompMs.App.Msdial.Model.Core
         private string _progressFileMax = string.Empty;
         private RetentionTimeCorrectionWinLegacy? _rtCorrectionWin;
 
-        public void Process(IReadOnlyList<AnalysisFileBean> files, 
-            ParameterBase param, 
+        public void Process(IReadOnlyList<AnalysisFileBean> files,
+            RetentionTimeCorrectionBean[] retentionTimeCorrectionBeans,
+            ParameterBase param,
             RetentionTimeCorrectionWinLegacy rtCorrectionWin) {
             _rtCorrectionWin = rtCorrectionWin;
             BgWorkerInitialize(files);
@@ -34,6 +35,7 @@ namespace CompMs.App.Msdial.Model.Core
                     files, 
                     param,
                     rtCorrectionWin.VM.RtCorrectionCommon.StandardLibrary.Where(x => x.IsTargetMolecule).ToList(),
+                    retentionTimeCorrectionBeans,
                     tempFiles });
         }
 
@@ -70,7 +72,8 @@ namespace CompMs.App.Msdial.Model.Core
             var files = (IReadOnlyList<AnalysisFileBean>)arg[0];
             var param = (ParameterBase)arg[1];
             var iStandardLibrary = (List<MoleculeMsReference>)arg[2];
-            var rtCorrectionFilePaths = (string[])arg[3];
+            var rtCorrectionBeans = (RetentionTimeCorrectionBean[])arg[3];
+            var rtCorrectionFilePaths = (string[])arg[4];
 
             var tmp_originalSettings = param.MinimumAmplitude;
             param.MinimumAmplitude = iStandardLibrary.Min(y => y.MinimumPeakHeight);
@@ -81,9 +84,9 @@ namespace CompMs.App.Msdial.Model.Core
             };
             System.Threading.Tasks.Parallel.For(0, files.Count, parallelOptions, i => {
                 var f = files[i];
-                StandardDataProviderFactory factory = new StandardDataProviderFactory();
+                var factory = new RawDataProviderFactory();
                 var provider = factory.Create(f);
-                RetentionTimeCorrection.Execute(f, param, provider, rtCorrectionFilePaths[i]);
+                RetentionTimeCorrection.Execute(f, rtCorrectionBeans[i], param, provider, rtCorrectionFilePaths[i]);
                 _bgWorker!.ReportProgress(1);
             });
 

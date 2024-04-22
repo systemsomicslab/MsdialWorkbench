@@ -114,7 +114,9 @@ namespace CompMs.MsdialCore.DataObj
                 file.RiDictionaryFilePath = ReplaceFolderPath(file.RiDictionaryFilePath, previousFolder, projectFolder);
                 file.DeconvolutionFilePathList = file.DeconvolutionFilePathList.Select(decfile => ReplaceFolderPath(decfile, previousFolder, projectFolder)).ToList();
                 file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath = ReplaceFolderPath(file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, previousFolder, projectFolder); ;
-                file.RetentionTimeCorrectionBean.Restore();
+                if (!file.RetentionTimeCorrectionBean.IsLoaded) {
+                    file.RetentionTimeCorrectionBean.Restore();
+                }
             }
 
             foreach (var file in storage.AlignmentFiles) {

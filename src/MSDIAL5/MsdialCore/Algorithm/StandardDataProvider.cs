@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Utility;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -38,6 +39,22 @@ namespace CompMs.MsdialCore.Algorithm
 
         public IDataProvider Create(RawMeasurement rawMeasurement) {
             return new StandardDataProvider(rawMeasurement);
+        }
+    }
+
+    public class RawDataProviderFactory : IDataProviderFactory<AnalysisFileBean>
+    {
+        public RawDataProviderFactory(int retry = 5, bool isGuiProcess = false) {
+            this.retry = retry;
+            this.isGuiProcess = isGuiProcess;
+        }
+        
+        private readonly bool isGuiProcess;
+        private readonly int retry = 5;
+
+        public IDataProvider Create(AnalysisFileBean file) {
+            var measurement = DataAccess.LoadRawMeasurement(file, isImagingMsData: false, isGuiProcess: isGuiProcess, retry: retry, sleepMilliSeconds: 1000);
+            return new StandardDataProvider(measurement);
         }
     }
 }

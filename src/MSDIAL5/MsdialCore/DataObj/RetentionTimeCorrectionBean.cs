@@ -22,14 +22,11 @@ public enum SampleListCellInfo { Normal, Zero, ManualModified, AutoModified }
 public class RetentionTimeCorrectionBean
 {
     [Key(0)]
-    public List<double>? OriginalRt => originalRt;
-    private List<double>? originalRt;
+    public List<double>? OriginalRt { get; set; }
     [Key(1)]
-    public List<double>? RtDiff => rtDiff;
-    private List<double>? rtDiff;
+    public List<double>? RtDiff { get; set; }
     [Key(2)]
-    public List<double>? PredictedRt => predictedRt;
-    private List<double>? predictedRt;
+    public List<double>? PredictedRt { get; set; }
     [Key(3)]
     public List<StandardPair> StandardList { get; set; } = new List<StandardPair>();
     [Key(4)]
@@ -37,32 +34,27 @@ public class RetentionTimeCorrectionBean
     [Key(5)]
     public string RetentionTimeCorrectionResultFilePath { get; set; } = string.Empty; // *.rtc
 
+    [IgnoreMember]
+    public bool IsLoaded => OriginalRt is not null && RtDiff is not null && PredictedRt is not null;
+
+    [SerializationConstructor]
     public RetentionTimeCorrectionBean() { }
 
     public RetentionTimeCorrectionBean(string retentionTimeCorrectionResultFilePath) {
         RetentionTimeCorrectionResultFilePath = retentionTimeCorrectionResultFilePath;
     }
 
-    public RetentionTimeCorrectionBean(string retentionTimeCorrectionResultFilePath, List<double> originalRt) {
-        RetentionTimeCorrectionResultFilePath = retentionTimeCorrectionResultFilePath;
-        this.originalRt = originalRt;
-    }
-
-    [SerializationConstructor]
-    public RetentionTimeCorrectionBean(List<double> OriginalRt, List<double> RtDiff, List<double> PredictedRt) {
-        this.originalRt = OriginalRt;
-        this.rtDiff = RtDiff;
-        this.predictedRt = PredictedRt;
-    }
-
     public void ClearCache() {
-        this.originalRt = null;
-        this.rtDiff = null;
-        this.predictedRt = null;
+        this.OriginalRt = null;
+        this.RtDiff = null;
+        this.PredictedRt = null;
     }
 
     public void Restore() {
-        RetentionTimeCorrectionMethod.LoadRetentionCorrectionResult(RetentionTimeCorrectionResultFilePath, out originalRt, out rtDiff, out predictedRt);
+        RetentionTimeCorrectionMethod.LoadRetentionCorrectionResult(RetentionTimeCorrectionResultFilePath, out var originalRt, out var rtDiff, out var predictedRt);
+        OriginalRt = originalRt;
+        RtDiff = rtDiff;
+        PredictedRt = predictedRt;
     }
 }
 
@@ -171,23 +163,28 @@ public class CommonStdData
 }
 
 public class RetentionTimeCorrectionMethod {
-    public static void UpdateRtCorrectionBean(List<AnalysisFileBean> files, ParallelOptions parallelOptions, RetentionTimeCorrectionParam rtParam, List<CommonStdData> commonStdList) {
+    public static void UpdateRtCorrectionBean(RetentionTimeCorrectionBean[] retentionTimeCorrectionBeans, ParallelOptions parallelOptions, RetentionTimeCorrectionParam rtParam, List<CommonStdData> commonStdList) {
         if (rtParam.RtDiffCalcMethod == RtDiffCalcMethod.SampleMinusSampleAverage) {
-            Parallel.ForEach(files, parallelOptions, f => {
-                if (f.RetentionTimeCorrectionBean.StandardList != null && f.RetentionTimeCorrectionBean.StandardList.Count > 0) {
+            Parallel.ForEach(retentionTimeCorrectionBeans, parallelOptions, retentionTimeCorrectionBean => {
+                if (retentionTimeCorrectionBean.StandardList != null && retentionTimeCorrectionBean.StandardList.Count > 0) {
                     var (originalRt, rtDiff, predictedRt) = RetentionTimeCorrection.GetRetentionTimeCorrectionBean_SampleMinusAverage(
-                        rtParam, f.RetentionTimeCorrectionBean.StandardList, f.RetentionTimeCorrectionBean.OriginalRt.ToArray(), commonStdList);
-                    SaveRetentionCorrectionResult(f.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, originalRt, rtDiff, predictedRt);
+                        rtParam, retentionTimeCorrectionBean.StandardList, retentionTimeCorrectionBean.OriginalRt.ToArray(), commonStdList);
+                    retentionTimeCorrectionBean.OriginalRt = originalRt;
+                    retentionTimeCorrectionBean.RtDiff = rtDiff;
+                    retentionTimeCorrectionBean.PredictedRt = predictedRt;
+                    SaveRetentionCorrectionResult(retentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, originalRt, rtDiff, predictedRt);
                 }
             });
         }
         else {
-            Parallel.ForEach(files, parallelOptions, f => {
-                if (f.RetentionTimeCorrectionBean.StandardList != null && f.RetentionTimeCorrectionBean.StandardList.Count > 0) {
+            Parallel.ForEach(retentionTimeCorrectionBeans, parallelOptions, retentionTimeCorrectionBean => {
+                if (retentionTimeCorrectionBean.StandardList != null && retentionTimeCorrectionBean.StandardList.Count > 0) {
                     var (originalRt, rtDiff, predictedRt) = RetentionTimeCorrection.GetRetentionTimeCorrectionBean_SampleMinusReference(
-                        rtParam, f.RetentionTimeCorrectionBean.StandardList, f.RetentionTimeCorrectionBean.OriginalRt.ToArray());
-
-                    SaveRetentionCorrectionResult(f.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, originalRt, rtDiff, predictedRt);
+                        rtParam, retentionTimeCorrectionBean.StandardList, retentionTimeCorrectionBean.OriginalRt.ToArray());
+                    retentionTimeCorrectionBean.OriginalRt = originalRt;
+                    retentionTimeCorrectionBean.RtDiff = rtDiff;
+                    retentionTimeCorrectionBean.PredictedRt = predictedRt;
+                    SaveRetentionCorrectionResult(retentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, originalRt, rtDiff, predictedRt);
                 }
             });
         }
@@ -242,15 +239,17 @@ public class RetentionTimeCorrectionMethod {
         }
     }
 
-    public static List<CommonStdData> MakeCommonStdList(List<AnalysisFileBean> analysisFiles, List<MoleculeMsReference> iStdList) {
+    public static List<CommonStdData> MakeCommonStdList(RetentionTimeCorrectionBean[] retentionTimeCorrectionBeans, List<MoleculeMsReference> iStdList) {
         var commonStdList = new List<CommonStdData>();
         var tmpStdList = iStdList.Where(x => x.IsTargetMolecule).OrderBy(x => x.ChromXs.RT.Value);
         foreach (var std in tmpStdList) {
             commonStdList.Add(new CommonStdData(std));
         }
-        for (var i = 0; i < analysisFiles.Count; i++) {
+        for (var i = 0; i < retentionTimeCorrectionBeans.Length; i++) {
             for (var j = 0; j < commonStdList.Count; j++) {
-                commonStdList[j].SetStandard(analysisFiles[i].RetentionTimeCorrectionBean.StandardList[j]);
+                if (j < retentionTimeCorrectionBeans[i].StandardList.Count) {
+                    commonStdList[j].SetStandard(retentionTimeCorrectionBeans[i].StandardList[j]);
+                }
             }
         }
         foreach (var d in commonStdList) {
