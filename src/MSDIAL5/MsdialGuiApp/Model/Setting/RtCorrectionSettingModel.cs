@@ -57,5 +57,9 @@ namespace CompMs.App.Msdial.Model.Setting
         public void Dispose() {
             Discard();
         }
+
+        ~RtCorrectionSettingModel() {
+            Dispose();
+        }
     }
 }

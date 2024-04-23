@@ -110,7 +110,7 @@ public class RetentionTimeCorrectionCommon{
 }
 
 
-public class CommonStdData
+public sealed class CommonStdData
 {
     public MoleculeMsReference Reference { get; set; }
     public List<IReadOnlyList<IChromatogramPeak>> Chromatograms { get; set; } = new List<IReadOnlyList<IChromatogramPeak>>();
@@ -126,25 +126,25 @@ public class CommonStdData
         Reference = comp;
     }
 
-
     public void SetStandard(StandardPair std) {
-        this.Chromatograms.Add(std.Chromatogram);
-        if (std.SamplePeakAreaBean.ChromXsTop.Value == 0) {
-            this.PeakAreaList.Add(0);
-            this.PeakHeightList.Add(0);
-            this.PeakWidthList.Add(0);
-            this.RetentionTimeList.Add(0);
-            this.MzList.Add(0);
+        Chromatograms.Add(std.Chromatogram);
+        var peak = std.SamplePeakAreaBean.PeakFeature;
+        if (peak.ChromXsTop.Value == 0) {
+            PeakAreaList.Add(0);
+            PeakHeightList.Add(0);
+            PeakWidthList.Add(0);
+            RetentionTimeList.Add(0);
+            MzList.Add(0);
         }
         else {
-            this.PeakAreaList.Add(std.SamplePeakAreaBean.PeakAreaAboveZero);
-            this.PeakHeightList.Add(std.SamplePeakAreaBean.PeakHeightTop);
-            if (std.SamplePeakAreaBean.ChromXsRight != null && std.SamplePeakAreaBean.ChromXsLeft != null)
-                this.PeakWidthList.Add(std.SamplePeakAreaBean.ChromXsRight.Value - std.SamplePeakAreaBean.ChromXsLeft.Value);
-            this.RetentionTimeList.Add(std.SamplePeakAreaBean.ChromXsTop.Value);
-            this.MzList.Add(std.SamplePeakAreaBean.PrecursorMz);
+            PeakAreaList.Add(peak.PeakAreaAboveZero);
+            PeakHeightList.Add(peak.PeakHeightTop);
+            if (peak.ChromXsRight is not null && peak.ChromXsLeft is not null)
+                PeakWidthList.Add(peak.ChromXsRight.Value - peak.ChromXsLeft.Value);
+            RetentionTimeList.Add(peak.ChromXsTop.Value);
+            MzList.Add(peak.Mass);
 
-            this.NumHit++;
+            NumHit++;
         }
     }
 
@@ -159,7 +159,10 @@ public class CommonStdData
         }
     }
 
-
+    public bool IsSameReference(MoleculeMsReference reference) {
+        return Math.Abs(Reference.PrecursorMz - reference.PrecursorMz) <= 1e-6
+            && Math.Abs(Reference.ChromXs.RT.Value - reference.ChromXs.RT.Value) <= 1e-2;
+    }
 }
 
 public class RetentionTimeCorrectionMethod {
