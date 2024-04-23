@@ -58,7 +58,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => NumberOfThreads).AddTo(Disposables);
 
-            ExcuteRtCorrection = model.ToReactivePropertySlimAsSynchronized(m => m.ExcuteRtCorrection).AddTo(Disposables);
+            ExcuteRtCorrection = model.RtCorrectionSettingModel.ToReactivePropertySlimAsSynchronized(m => m.ExecuteRtCorrection).AddTo(Disposables);
 
             DataCollectionRangeSettings = model.DataCollectionRangeSettings.ToReadOnlyReactiveCollection(DataCollectionRangeSettingViewModelFactory.Create).AddTo(Disposables);
 
