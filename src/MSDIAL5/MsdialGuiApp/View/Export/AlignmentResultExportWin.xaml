@@ -8,6 +8,7 @@
         xmlns:m="clr-namespace:CompMs.App.Msdial.Model.Export"
         xmlns:setting="clr-namespace:CompMs.App.Msdial.View.Setting"
         xmlns:common="clr-namespace:CompMs.Common.Enum;assembly=Common"
+        xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type={x:Type vm:AlignmentResultExportViewModel}}"
         Title="Alignment result export" SizeToContent="Height" Width="450">
@@ -18,6 +19,39 @@
                 <x:Type TypeName="common:ExportspectraType" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
+        <Style TargetType="ui:NumericUpDown">
+            <Setter Property="Interval" Value="-1"/>
+            <Setter Property="Height" Value="16"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ui:NumericUpDown}">
+                        <Border BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="16"/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="16"/>
+                                </Grid.ColumnDefinitions>
+                                <RepeatButton x:Name="PART_DownButton"
+                                              Content="&#xEDD9;"
+                                              FontFamily="Segoe MDL2 Assets"
+                                              Grid.Column="0"/>
+                                <TextBox Text="{Binding Value, RelativeSource={RelativeSource TemplatedParent}}"
+                                         TextAlignment="Right"
+                                         FontSize="10"
+                                         VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                         Grid.Column="1"/>
+                                <RepeatButton x:Name="PART_UpButton"
+                                              Content="&#xEDDA;"
+                                              FontFamily="Segoe MDL2 Assets"
+                                              Grid.Column="2"/>
+                            </Grid>   
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
     
     <Grid>
@@ -126,13 +160,31 @@
                             </StackPanel>
                             <StackPanel VerticalAlignment="Bottom"
                                         Margin="8"
-                                        Height="30"
+                                        Height="Auto"
                                         Grid.Row="2">
                                 <CheckBox Content="Long format" IsChecked="{Binding IsLongFormat, Mode=TwoWay}"
                                           ToolTip="Output in Long Format, which is easy to read in R and other tools."/>
                                 <CheckBox Content="Trim content for excel"
                                           IsChecked="{Binding TrimContentToExcelLimit, Mode=TwoWay}"
                                           ToolTip="Trim the FIELD value to the 32767 characters that can be written in an Excel cell."/>
+                                <CheckBox Content="Enable multi class export" IsChecked="{Binding EnableMultiClass, Mode=TwoWay}"/>
+                                <ui:LabeledContent PrependLabel="Number of classes" IsEnabled="{Binding EnableMultiClass, Mode=OneWay}">
+                                    <ui:NumericUpDown Value="{Binding NumberOfClasses, Mode=TwoWay}" VerticalContentAlignment="Center"/>
+                                </ui:LabeledContent>
+                                <ItemsControl ItemsSource="{Binding EstimatedClasses.Value}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock TextTrimming="CharacterEllipsis">
+                                                <TextBlock.Text>
+                                                    <MultiBinding StringFormat="{}{0}: {1}">
+                                                        <Binding Path="Name"/>
+                                                        <Binding Path="ReprValues"/>
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </StackPanel>
                         </Grid>
                     </Expander>

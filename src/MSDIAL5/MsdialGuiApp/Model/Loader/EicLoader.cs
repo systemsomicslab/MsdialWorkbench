@@ -60,7 +60,7 @@ namespace CompMs.App.Msdial.Model.Loader
                     var results = await Task.WhenAll(eicPeakTask, eicFocusedTask).ConfigureAwait(false);
                     var peakEic = results[0];
                     var focusedEic = results[1];
-                    return new PeakChromatogram(eic, peakEic, focusedEic.FirstOrDefault(), string.Empty, Colors.Black, chromXType, chromXUnit, $"EIC chromatogram of {target.Mass:N4} tolerance [Da]: {MzTolerance:F} Max intensity: {peakEic.Max(peak => peak.Intensity):F0}");
+                    return new PeakChromatogram(eic, peakEic, focusedEic.FirstOrDefault(), string.Empty, Colors.Black, chromXType, chromXUnit, $"EIC chromatogram of {target.Mass:N4} tolerance [Da]: {MzTolerance:F} Max intensity: {peakEic.DefaultIfEmpty().Max(peak => peak?.Intensity):F0}");
                 }, token).ConfigureAwait(false);
                 return chromatogram;
             }
@@ -147,7 +147,7 @@ namespace CompMs.App.Msdial.Model.Loader
 
         protected virtual List<PeakItem> LoadEicFocusedCore(ChromatogramPeakFeatureModel target, List<PeakItem> eic) {
             return new List<PeakItem> {
-                eic.Argmin(peak => Math.Abs((target.ChromXValue ?? double.MaxValue) - peak.Time))
+                eic.DefaultIfEmpty().Argmin(peak => peak is not null ? Math.Abs((target.ChromXValue ?? double.MaxValue) - peak.Time) : double.MaxValue)
             };
         }
 

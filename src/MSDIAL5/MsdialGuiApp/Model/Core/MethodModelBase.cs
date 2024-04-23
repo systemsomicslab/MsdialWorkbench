@@ -1,11 +1,14 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -56,6 +59,20 @@ namespace CompMs.App.Msdial.Model.Core
             }
 
             return task;
+        }
+
+
+        public void AutoParametersSave(string starttimestamp, TimeSpan currentTimeSpan, ParameterBase param) {
+            var elapsedTime = String.Format("{0}h{1}min{2}sec", currentTimeSpan.Hours, currentTimeSpan.Minutes, currentTimeSpan.Seconds);
+            var folderpath = param.ProjectFolderPath;
+            var endtimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
+            var output = Path.Combine(folderpath, Path.GetFileNameWithoutExtension(param.ProjectFileName) + "_param_" + endtimestamp + ".txt");
+            using (var sw = new StreamWriter(output, false, Encoding.ASCII)) {
+                sw.WriteLine("Start time stamp: {0}", starttimestamp);
+                sw.WriteLine("End time stamp: {0}", endtimestamp);
+                sw.WriteLine("Analysis time: {0}", elapsedTime);
+                sw.WriteLine(string.Join("\n", param.ParametersAsText()));
+            };
         }
 
         protected abstract IAnalysisModel? LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile);

@@ -2,16 +2,19 @@
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
@@ -132,6 +135,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
         }
 
         protected abstract Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token);
+
 
         public AsyncReactiveCommand LoadAlignmentFileCommand { get; }
 

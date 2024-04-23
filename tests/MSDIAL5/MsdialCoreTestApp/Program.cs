@@ -89,11 +89,66 @@ namespace CompMs.App.MsdialConsole {
             //args = new string[] {
             //    "msn"
             //    , "-i"
-            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\data"
+            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\data\ogawa_20240123\input_msn_neg"
             //    , "-o"
-            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\msn"
+            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\data\ogawa_20240123\output_msn_neg"
             //    , "-m"
-            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\msn_param.txt"
+            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\data\ogawa_20240123\msn_param_20240127.txt"
+            //    , "-ionmode"
+            //    , "Negative"
+            //    , "-overwrite"
+            //    , "false"
+            //};
+
+
+            //args = new string[] {
+            //    "msn"
+            //    , "-i"
+            //    , @"\\165.93.102.222\Public\MetaboBankPeakPick\ogawa_20240123\msn_msp_neg\MSMS-Public_experimentspectra-neg-VS19.msp"
+            //    , "-o"
+            //    , @"\\165.93.102.222\Public\MetaboBankPeakPick\ogawa_20240123\msn_msp_neg\MSMS-Public_experimentspectra-neg-VS19_v2.edge"
+            //    , "-m"
+            //    , @"\\165.93.102.222\Public\MetaboBankPeakPick\ogawa_20240123\msn_param_20240401.txt"
+            //    , "-ionmode"
+            //    , "Negative"
+            //};
+
+            //args = new string[] {
+            //    "msn"
+            //    , "-i"
+            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\msn\aging_lipidome\data\brain_test_neg.msp"
+            //    , "-t"
+            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\msn\aging_lipidome\data\aging_lipidome_neg_for_model.msp"
+            //    , "-o"
+            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\msn\aging_lipidome\data\brain2model.edge"
+            //    , "-m"
+            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\msn\aging_lipidome\msn_param_for_mapping.txt"
+            //    , "-ionmode"
+            //    , "Negative"
+            //};
+
+            //args = new string[] {
+            //    "msn"
+            //    , "-i"
+            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\casmi2022_neg.msp"
+            //    , "-t"
+            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\MSMS-Public_experimentspectra-neg-VS19-curated.msp"
+            //    , "-o"
+            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\casmi2model.edge"
+            //    , "-m"
+            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\msn\msp\neg\msn_param_for_mapping.txt"
+            //    , "-ionmode"
+            //    , "Negative"
+            //};
+
+            //args = new string[] {
+            //    "msn"
+            //    , "-i"
+            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\msn\aging_lipidome\data\aging_lipidome_neg.msp"
+            //    , "-o"
+            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\msn\aging_lipidome\data\aging_lipidome_neg.edge"
+            //    , "-m"
+            //    , @"E:\6_Projects\PROJECT_MsMachineLearning\msn\aging_lipidome\msn_param_20240403.txt"
             //    , "-ionmode"
             //    , "Negative"
             //};
@@ -111,6 +166,12 @@ namespace CompMs.App.MsdialConsole {
             //    @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\StandardMix\KE14_output\annofile.txt",
             //    @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\StandardMix\KE14_output\peaknamefile.txt",
             //    @"E:\6_Projects\PAPERWORK_MSDIAL5\04_MSDIAL5_validation_eieio\StandardMix\KE14_output\resultexport.txt");
+
+            //MainProcess.CreateMsp4Model(
+            //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\aging_lipidome\data\aging_lipidome_neg.msp",
+            //    @"E:\6_Projects\PROJECT_MsMachineLearning\msn\aging_lipidome\data\aging_lipidome_neg_filtered.edge",
+            //     @"E:\6_Projects\PROJECT_MsMachineLearning\msn\aging_lipidome\data\aging_lipidome_neg_for_model.msp");
+
             MainProcess.Run(args);
         }
     }

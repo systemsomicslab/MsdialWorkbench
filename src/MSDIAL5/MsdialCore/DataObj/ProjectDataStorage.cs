@@ -1,4 +1,5 @@
-﻿using CompMs.Common.MessagePack;
+﻿using CompMs.Common.Extension;
+using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using MessagePack;
@@ -149,6 +150,7 @@ namespace CompMs.MsdialCore.DataObj
                     var storage = await LoadDataStorageCore(streamManager, serializer, newProjectDir, projectFile);
                     streamManager?.Complete();
                     storage.FixDatasetFolder(newProjectDir);
+                    KeepPreviousRtCorrectionResult(storage);
                     return storage;
                 }
             }
@@ -173,6 +175,7 @@ namespace CompMs.MsdialCore.DataObj
                     var storage = await LoadDataStorageCore(streamManager, serializer, projectDir, projectFile);
                     streamManager?.Complete();
                     storage.FixDatasetFolder(projectDir);
+                    KeepPreviousRtCorrectionResult(storage);
                     return storage;
                 }
             }
@@ -182,6 +185,17 @@ namespace CompMs.MsdialCore.DataObj
             }
         }
 
+        public static void KeepPreviousRtCorrectionResult(IMsdialDataStorage<ParameterBase> storage) {
+            if (storage.AnalysisFiles is null) {
+                return;
+            }
+            foreach (var file in storage.AnalysisFiles) {
+                var rtbean = file.RetentionTimeCorrectionBean;
+                if (!rtbean.OriginalRt.IsEmptyOrNull()) {
+                    RetentionTimeCorrectionMethod.SaveRetentionCorrectionResult(rtbean.RetentionTimeCorrectionResultFilePath, rtbean.OriginalRt, rtbean.RtDiff, rtbean.PredictedRt);
+                }
+            }
+        }
         private static Task<IMsdialDataStorage<ParameterBase>> LoadDataStorageCore(IStreamManager manager, IMsdialSerializer serializer, string projectFolderPath, string projectFileName) {
             return serializer.LoadAsync(manager, projectFileName, projectFolderPath, string.Empty);
         }

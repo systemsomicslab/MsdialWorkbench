@@ -1,7 +1,11 @@
-﻿using CompMs.Common.DataObj;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialImmsCore.DataObj;
@@ -10,13 +14,60 @@ using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.MsdialImmsImagingCore.Process
 {
     public sealed class FileProcess
     {
-        public Task RunAsync() {
+        private readonly MsdialImmsCore.Process.FileProcess _processor;
+
+        public FileProcess(
+            IMsdialDataStorage<MsdialImmsParameter> storage,
+            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
+            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
+            IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+            _processor = new MsdialImmsCore.Process.FileProcess(storage, mspAnnotator, textDBAnnotator, evaluator);
+        }
+
+        public async Task RunAsync(AnalysisFileBean file, IDataProvider provider, Action<int> reportAction = null, CancellationToken token = default) {
+            await _processor.RunAsync(file, provider, reportAction, token).ConfigureAwait(false);
+
+            var chromPeakFeatures = await file.LoadChromatogramPeakFeatureCollectionAsync(token).ConfigureAwait(false);
+            var _elements = chromPeakFeatures.Items.Select(item => new Raw2DElement(item.PeakFeature.Mass, item.PeakFeature.ChromXsTop.Drift.Value)).ToList();
+            var pixels = RetrieveRawSpectraOnPixels(file, _elements, true);
+        }
+
+        public async Task RunAsyncTest(AnalysisFileBean file, IDataProvider provider, Action<int> reportAction = null, CancellationToken token = default) {
+            await _processor.RunAsync(file, provider, reportAction, token).ConfigureAwait(false);
+
+            var chromPeakFeatures = await file.LoadChromatogramPeakFeatureCollectionAsync(token).ConfigureAwait(false);
+            var _elements = chromPeakFeatures.Items.Select(item => new Raw2DElement(item.PeakFeature.Mass, item.PeakFeature.ChromXsTop.Drift.Value)).ToList();
+            var pixels = RetrieveRawSpectraOnPixels(file, _elements, true);
+
+            foreach (var element in pixels.PixelPeakFeaturesList) {
+                if (Math.Abs(element.Mz - 885.5472) < 0.01) {
+                    Console.WriteLine(element.Mz + "\t" + element.Drift);
+                    var frames = pixels.XYFrames;
+                    for (int i = 0; i < element.IntensityArray.Length; i++) {
+                        Console.WriteLine(frames[i].XIndexPos + "\t" + frames[i].YIndexPos + "\t" + element.IntensityArray[i]);
+                    }
+                }
+            }
+        }
+
+
+        private RawSpectraOnPixels RetrieveRawSpectraOnPixels(AnalysisFileBean file, List<Raw2DElement> targetElements, bool isNewFileProcess) {
+            if (targetElements.IsEmptyOrNull()) return null;
+            using (RawDataAccess rawDataAccess = new RawDataAccess(file.AnalysisFilePath, 0, true, true, true, 10, 0.02, 0.015)) {
+                return rawDataAccess.GetRawPixelFeatures(targetElements, file.GetMaldiFrames(), isNewFileProcess)
+                    ?? new RawSpectraOnPixels { PixelPeakFeaturesList = new List<RawPixelFeatures>(0), XYFrames = new List<MaldiFrameInfo>(0), };
+            }
+        }
+
+        public Task RunAsyncTest() {
             var filepath = @"E:\6_Projects\PROJECT_ImagingMS\20211005_Bruker_timsTOFfleX-selected\Eye_Neg\20211005_Eye_Acsl_HZ_KO_Neg\20211005_Eye_Acsl_HZ_KO_Neg.d";
             var reffile = @"E:\6_Projects\PROJECT_ImagingMS\Lipid reference library\20220725_timsTOFpro_TextLibrary_Eye_Neg.txt";
             var outputfile = @"E:\6_Projects\PROJECT_ImagingMS\20211005_Bruker_timsTOFfleX-selected\Eye_Neg\20211005_Eye_Acsl_HZ_KO_Neg\20211005_Eye_Acsl_HZ_KO_Neg.mddata";
@@ -60,7 +111,7 @@ namespace CompMs.MsdialImmsImagingCore.Process
                 AlignmentFiles = new List<AlignmentFileBean>(),
                 MsdialImmsParameter = param
             };
-            var processor = new MsdialImmsCore.Process.FileProcess(container, null, null, null);
+            var processor = new FileProcess(container, null, null, null);
             return processor.RunAsync(file, provider);
         }
     }

@@ -39,7 +39,7 @@ namespace CompMs.App.Msdial.Model.Export
             var outPath = Path.Combine(exportDirectory, outName);
             notification?.Invoke(outName);
             using var stream = File.Open(outPath, FileMode.Create, FileAccess.Write);
-            _exporter.Export(stream, spots, msdecResults);
+            _exporter.BatchExport(stream, spots, msdecResults);
         }
     }
 }

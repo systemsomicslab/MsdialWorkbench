@@ -1,6 +1,9 @@
 ﻿using CompMs.Common.Algorithm.IsotopeCalc;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
+using CompMs.Common.Extension;
+using CompMs.Common.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -170,6 +173,14 @@ namespace CompMs.Common.Parser
             return peaks;
         }
 
+        public static string PeaksToText(IReadOnlyList<ISpectrumPeak> peaks, char mzIntSep, char peakSep) {
+            if (peaks.IsEmptyOrNull()) return string.Empty;
+            var peakstrings = new List<string>();
+            foreach (var peak in peaks) {
+                peakstrings.Add(peak.Mass.ToString() + mzIntSep.ToString() + peak.Intensity.ToString());
+            }
+            return String.Join(peakSep.ToString(), peakstrings);
+        }
 
         public static List<MoleculeMsReference> TextLibraryReader(string filePath, out string error)
         {
