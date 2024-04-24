@@ -44,10 +44,17 @@ public class RetentionTimeCorrectionBean
         RetentionTimeCorrectionResultFilePath = retentionTimeCorrectionResultFilePath;
     }
 
-    public void ClearCache() {
-        this.OriginalRt = null;
-        this.RtDiff = null;
-        this.PredictedRt = null;
+    public void ClearPredicts() {
+        OriginalRt = null;
+        RtDiff = null;
+        PredictedRt = null;
+    }
+
+    public void Save() {
+        if ( OriginalRt is null || RtDiff is null || PredictedRt is null) {
+            throw new InvalidOperationException("Retention time correction result is not loaded.");
+        }
+        RetentionTimeCorrectionMethod.SaveRetentionCorrectionResult(RetentionTimeCorrectionResultFilePath, OriginalRt, RtDiff, PredictedRt);
     }
 
     public void Restore() {
@@ -175,7 +182,6 @@ public class RetentionTimeCorrectionMethod {
                     retentionTimeCorrectionBean.OriginalRt = originalRt;
                     retentionTimeCorrectionBean.RtDiff = rtDiff;
                     retentionTimeCorrectionBean.PredictedRt = predictedRt;
-                    SaveRetentionCorrectionResult(retentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, originalRt, rtDiff, predictedRt);
                 }
             });
         }
@@ -187,7 +193,6 @@ public class RetentionTimeCorrectionMethod {
                     retentionTimeCorrectionBean.OriginalRt = originalRt;
                     retentionTimeCorrectionBean.RtDiff = rtDiff;
                     retentionTimeCorrectionBean.PredictedRt = predictedRt;
-                    SaveRetentionCorrectionResult(retentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, originalRt, rtDiff, predictedRt);
                 }
             });
         }
