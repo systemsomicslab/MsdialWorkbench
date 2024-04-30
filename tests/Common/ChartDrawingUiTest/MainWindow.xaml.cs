@@ -47,6 +47,7 @@ namespace ChartDrawingUiTest
                 typeof(Bar1),
                 typeof(Bar2),
                 typeof(Bar3),
+                typeof(AnnotatorNotifyTest),
                 typeof(SpotLinedAnnotatorTest1),
                 // typeof(Chromatogram1),
                 typeof(FileOpenControl1),
