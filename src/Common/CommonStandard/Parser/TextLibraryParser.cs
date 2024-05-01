@@ -113,9 +113,11 @@ namespace CompMs.Common.Parser
                 if (n > 5)
                 {
                     reference.Formula = FormulaGenerator.Parser.FormulaStringParcer.OrganicElementsReader(lineArray[5]);
-                    reference.Formula.M1IsotopicAbundance = FormulaGenerator.Function.SevenGoldenRulesCheck.GetM1IsotopicAbundance(reference.Formula);
-                    reference.Formula.M2IsotopicAbundance = FormulaGenerator.Function.SevenGoldenRulesCheck.GetM2IsotopicAbundance(reference.Formula);
-                    reference.IsotopicPeaks = IsotopeCalculator.GetAccurateIsotopeProperty(reference.Formula.FormulaString, 2, iupacDb).IsotopeProfile;
+                    if (reference.Formula is { } formula && formula.IsCorrectlyImported) {
+                        reference.Formula.M1IsotopicAbundance = FormulaGenerator.Function.SevenGoldenRulesCheck.GetM1IsotopicAbundance(formula);
+                        reference.Formula.M2IsotopicAbundance = FormulaGenerator.Function.SevenGoldenRulesCheck.GetM2IsotopicAbundance(formula);
+                        reference.IsotopicPeaks = IsotopeCalculator.GetAccurateIsotopeProperty(formula.FormulaString, 2, iupacDb)?.IsotopeProfile;
+                    }
                 }
                 if (n > 6)
                     reference.SMILES = lineArray[6];
