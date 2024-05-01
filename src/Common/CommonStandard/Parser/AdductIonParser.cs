@@ -537,6 +537,7 @@ namespace CompMs.Common.Parser {
                     if (double.TryParse(mc[0].Groups[1].Value, out num)) { acurateMass += num * 30.97376163 * multipliedNumber; formulaBean.Pnum = (int)(num + multipliedNumber); }
                 }
             }
+            formulaBean.IsCorrectlyImported = true;
             return (formulaBean, acurateMass);
         }
     }
