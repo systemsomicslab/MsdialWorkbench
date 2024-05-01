@@ -8,6 +8,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 
     <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+    <LangVersion>12</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +27,7 @@
     <None Update="Resources\Lipidomics\LipidEieioMsmsCharacterizationTests\PC_O-16_0_18_1%289%29_[M+H]+.msp.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\Parser\txt_invalid_formula.txt" CopyToOutputDirectory="PreserveNewest"/>
     <None Update="Resources\Parser\msp_same_name.msp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
