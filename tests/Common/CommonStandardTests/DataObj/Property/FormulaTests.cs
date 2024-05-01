@@ -92,5 +92,19 @@ namespace CompMs.Common.DataObj.Property.Tests
             Assert.AreEqual(17, formula.Senum);
             Assert.AreEqual(18, formula.Sinum);
         }
+
+        [DataTestMethod]
+        [DynamicData(nameof(FormulaIsCorrectlyImportedDatas), DynamicDataSourceType.Property)]
+        public void FormulaIsCorrectlyImported(Dictionary<string, int> compounds, bool expected) {
+            var formula = new Formula(compounds);
+            Assert.AreEqual(expected, formula.IsCorrectlyImported);
+        }
+
+        public static IEnumerable<object[]> FormulaIsCorrectlyImportedDatas {
+            get {
+                yield return [new Dictionary<string, int>() { ["C"] = 6, ["H"] = 12, ["O"] = 6, }, true];
+                yield return [new Dictionary<string, int>(), false];
+            }
+        }
     }
 }
