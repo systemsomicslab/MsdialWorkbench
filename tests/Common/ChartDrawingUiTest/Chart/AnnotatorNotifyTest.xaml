@@ -31,10 +31,10 @@
                                           VerticalProperty="Y"
                                           DataType="{x:Type chartCore:DataPoint}"
                                           SelectedItem="{Binding SelectedA}"/>
-                <chart:Annotator ItemsSource="{Binding DataAs}"
+                <chart:Annotator x:Name="DirectAnnotator"
+                                 ItemsSource="{Binding DataAs}"
                                  HorizontalPropertyName="X"
-                                 VerticalPropertyName="Y"
-                                 LabelPropertyName="Type"/>
+                                 VerticalPropertyName="Y"/>
             </Grid>
         </chart:SimpleChartControl>
 
@@ -47,10 +47,10 @@
                                           VerticalProperty="Dp.Y"
                                           DataType="{x:Type local:DataPointWrapper}"
                                           SelectedItem="{Binding SelectedB}"/>
-                <chart:Annotator ItemsSource="{Binding DataBs}"
+                <chart:Annotator x:Name="NestedAnnotator"
+                                 ItemsSource="{Binding DataBs}"
                                  HorizontalPropertyName="Dp.X"
-                                 VerticalPropertyName="Dp.Y"
-                                 LabelPropertyName="Dp.Type"/>
+                                 VerticalPropertyName="Dp.Y"/>
             </Grid>
         </chart:SimpleChartControl>
 
@@ -71,6 +71,17 @@
                 <TextBox Text="{Binding SelectedA.X}" Width="64"/>
                 <Label Content="Y:"/>
                 <TextBox Text="{Binding SelectedA.Y}" Width="64"/>
+                <ComboBox SelectedValuePath="DataContext"
+                          SelectedValue="{Binding Path=LabelPropertyName, Mode=OneWayToSource, ElementName=DirectAnnotator}"
+                          SelectedIndex="0"
+                          Margin="16,0">
+                    <ComboBoxItem Content="Type" DataContext="Type"/>
+                    <ComboBoxItem Content="X" DataContext="X"/>
+                    <ComboBoxItem Content="Y" DataContext="Y"/>
+                    <ComboBoxItem Content="ID" DataContext="ID"/>
+                    <ComboBoxItem Content="Self" DataContext=""/>
+                    <ComboBoxItem Content="None" DataContext="{x:Null}"/>
+                </ComboBox>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal"
@@ -79,6 +90,18 @@
                 <TextBox Text="{Binding SelectedB.Dp.X}" Width="64"/>
                 <Label Content="Dp.Y:"/>
                 <TextBox Text="{Binding SelectedB.Dp.Y}" Width="64"/>
+                <ComboBox SelectedValuePath="DataContext"
+                          SelectedValue="{Binding Path=LabelPropertyName, Mode=OneWayToSource, ElementName=NestedAnnotator}"
+                          SelectedIndex="0"
+                          Margin="16,0">
+                    <ComboBoxItem Content="Dp.Type" DataContext="Dp.Type"/>
+                    <ComboBoxItem Content="Dp.X" DataContext="Dp.X"/>
+                    <ComboBoxItem Content="Dp.Y" DataContext="Dp.Y"/>
+                    <ComboBoxItem Content="Dp.ID" DataContext="Dp.ID"/>
+                    <ComboBoxItem Content="Dp" DataContext="Dp"/>
+                    <ComboBoxItem Content="Self" DataContext=""/>
+                    <ComboBoxItem Content="None" DataContext="{x:Null}"/>
+                </ComboBox>
             </StackPanel>
         </Grid>
     </Grid>
