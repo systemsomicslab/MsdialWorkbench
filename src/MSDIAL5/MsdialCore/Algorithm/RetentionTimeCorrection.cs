@@ -62,7 +62,7 @@ namespace CompMs.MsdialCore.Algorithm
             for (var i = 0; i < stdList.Count; i++) {
                 var val = stdList[i];
                 if (val.SamplePeakAreaBean.ChromXs.RT.Value == 0) continue;
-                if (commonStdList.FirstOrDefault(c => c.Reference == val.Reference) is not CommonStdData common) continue;
+                if (commonStdList.FirstOrDefault(c => c.IsSameReference(val.Reference)) is not CommonStdData common) continue;
                 var x = val.SamplePeakAreaBean.ChromXs.RT.Value;
                 var y = x - common.AverageRetentionTime;
                 xList.Add(x); yList.Add(y);

@@ -29,7 +29,14 @@ namespace CompMs.App.Msdial.Model.Setting
                     _temporaryRtcs[i].StandardList = std;
                 }
             }
+            ExecuteRtCorrection = parameter.AdvancedProcessOptionBaseParam.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection;
         }
+
+        public bool ExecuteRtCorrection {
+            get => _executeRtCorrection;
+            set => SetProperty(ref _executeRtCorrection, value);
+        }
+        private bool _executeRtCorrection;
 
         internal IReadOnlyList<AnalysisFileBean> Files => _files;
         internal ParameterBase Parameter => _parameter;
@@ -44,6 +51,7 @@ namespace CompMs.App.Msdial.Model.Setting
                     _files[i].RetentionTimeCorrectionBean.Restore();
                 }
             }
+            _parameter.AdvancedProcessOptionBaseParam.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection = ExecuteRtCorrection;
         }
 
         public void Discard() {
@@ -56,6 +64,10 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public void Dispose() {
             Discard();
+        }
+
+        ~RtCorrectionSettingModel() {
+            Dispose();
         }
     }
 }

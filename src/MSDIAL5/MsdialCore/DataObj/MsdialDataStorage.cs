@@ -65,11 +65,18 @@ namespace CompMs.MsdialCore.DataObj
             using (var stream = await streamManager.Create(MsdialSerializer.Combine(prefix, projectTitle)).ConfigureAwait(false)) {
                 var mspList = MspDB;
                 MspDB = new List<MoleculeMsReference>();
-
                 var isSampleLarge = AnalysisFiles.Count > 500 ? true : false;
-                foreach (var file in AnalysisFiles) file.RetentionTimeCorrectionBean.ClearCache(isSampleLarge);
+                foreach (var file in AnalysisFiles) {
+                    if (file.RetentionTimeCorrectionBean.IsLoaded) {
+                        file.RetentionTimeCorrectionBean.Save();
+                        file.RetentionTimeCorrectionBean.ClearPredicts(isSampleLarge);
+                    }
+                }
                 SaveMsdialDataStorageCore(stream);
                 MspDB = mspList;
+                foreach (var file in AnalysisFiles) {
+                    file.RetentionTimeCorrectionBean.Restore();
+                }
             }
         }
 
@@ -116,9 +123,6 @@ namespace CompMs.MsdialCore.DataObj
                 file.RiDictionaryFilePath = ReplaceFolderPath(file.RiDictionaryFilePath, previousFolder, projectFolder);
                 file.DeconvolutionFilePathList = file.DeconvolutionFilePathList.Select(decfile => ReplaceFolderPath(decfile, previousFolder, projectFolder)).ToList();
                 file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath = ReplaceFolderPath(file.RetentionTimeCorrectionBean.RetentionTimeCorrectionResultFilePath, previousFolder, projectFolder); ;
-                if (!file.RetentionTimeCorrectionBean.IsLoaded) {
-                    file.RetentionTimeCorrectionBean.Restore();
-                }
             }
 
             foreach (var file in storage.AlignmentFiles) {

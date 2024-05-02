@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:chart="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
         xmlns:local="clr-namespace:CompMs.App.Msdial.View.Setting"
+        xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
         mc:Ignorable="d"
-        Closing="Window_Closing"
         Name="RtCorrectionWin"
+        d:DataContext="{d:DesignInstance Type={x:Type vm:RetentionTimeCorrectionViewModelLegacy}}"
         Title="Retention time correction" Height="680" Width="1074">
     <Window.Resources>
         <ContextMenu x:Key="menuDefaultUC">
@@ -386,11 +387,10 @@
 
             </Grid>
             <Grid Name="ButtonSpace" Grid.Row="2">
-                <Button Content="Run" Command="{Binding Next}"  CommandParameter="{Binding Path=Processed}"  Height="25" Width="60" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,5,5,0"/>
-                <!--             <Button Content="Cancel" Command="{Binding Cancel}"  Height="25" Width="60" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,5,5,0"/>
-        -->
-                <CheckBox Name="CheckBox_canRtCorrection" Height="20" IsChecked="{Binding CheckBox_RunWithRtCorrection}" Width="20" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,8,0,0"/>
-                <Label Name="Label_checkbox1" Content="Run the processing with RT corrections" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25,2,0,0"/>
+                <Button Content="OK" Command="{Binding Next}" Height="25" Width="60" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,5,5,0"/>
+                <CheckBox Name="CheckBox_canRtCorrection" Height="25" IsChecked="{Binding CheckBox_RunWithRtCorrection}" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="10,0,0,0">
+                    <Label Name="Label_checkbox1" Content="Run the processing with RT corrections" Height="25" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,0,4"/>
+                </CheckBox>
             </Grid>
         </Grid>
 

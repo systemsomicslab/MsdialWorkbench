@@ -191,8 +191,11 @@ namespace CompMs.MsdialCore.DataObj
             }
             foreach (var file in storage.AnalysisFiles) {
                 var rtbean = file.RetentionTimeCorrectionBean;
-                if (!rtbean.OriginalRt.IsEmptyOrNull()) {
-                    RetentionTimeCorrectionMethod.SaveRetentionCorrectionResult(rtbean.RetentionTimeCorrectionResultFilePath, rtbean.OriginalRt, rtbean.RtDiff, rtbean.PredictedRt);
+                if (rtbean.IsLoaded) {
+                    rtbean.Save();
+                }
+                else {
+                    rtbean.Restore();
                 }
             }
         }

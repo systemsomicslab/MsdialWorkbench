@@ -22,6 +22,7 @@ using System.Windows.Media;
 namespace CompMs.App.Msdial.ViewModel.Setting {
     public enum RtDiffLabel { id, rt, name };
     public class RetentionTimeCorrectionViewModelLegacy : ViewModelBase {
+        private readonly RtCorrectionSettingModel _rtCorrectionSettingModel;
         private readonly RetentionTimeCorrectionBean[] _retentionTimeCorrectionBeans;
 
         #region members and properties
@@ -31,8 +32,24 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         public List<CommonStdData> CommonStdList { get; set; } = new List<CommonStdData>(0);
         public List<AnalysisFileBean> AnalysisFiles { get; set; }
         public ParameterBase Parameter { get; set; }
-        public bool Processed { get; set; } = false;
-        public bool IsViewMode { get; set; }
+        public bool Processed {
+            get => _processed;
+            set {
+                if (SetProperty(ref _processed, value)) {
+                    _next?.RaiseCanExecuteChanged();
+                }
+            }
+        }
+        private bool _processed = false;
+        public bool IsViewMode {
+            get => _isViewMode;
+            set {
+                if (SetProperty(ref _isViewMode, value)) {
+                    _next?.RaiseCanExecuteChanged();
+                }
+            }
+        }
+        private bool _isViewMode;
 
         // parameters 
         public string[] Interpolation { get; set; } = new string[] { "Linear" };
@@ -42,7 +59,14 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         public string[] Combobox_LabelArr { get; set; } = new string[] { "ID", "RT", "Name" };
         public RtDiffLabel RtDiffLabel { get; set; } = RtDiffLabel.id;
         public bool CheckBox_SkipCheck { get; set; } = false;
-        public bool CheckBox_RunWithRtCorrection { get; set; } = true;
+        public bool CheckBox_RunWithRtCorrection {
+            get => _rtCorrectionSettingModel.ExecuteRtCorrection;
+            set {
+                _rtCorrectionSettingModel.ExecuteRtCorrection = value;
+                OnPropertyChanged(nameof(CheckBox_RunWithRtCorrection));
+                _next?.RaiseCanExecuteChanged();
+            }
+        }
         public bool CheckBox_WithSmoothing { get { return RtCorrectionParam.doSmoothing; } set { RtCorrectionParam.doSmoothing = value; SettingChanged(); } }
         private System.Threading.Tasks.ParallelOptions parallelOptions = new System.Threading.Tasks.ParallelOptions();
 
@@ -119,20 +143,18 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         #endregion
 
         #region constructor
-        public RetentionTimeCorrectionViewModelLegacy(
-            IReadOnlyList<AnalysisFileBean> files, RetentionTimeCorrectionBean[] retentionTimeCorrectionBeans, ParameterBase param,
-            RetentionTimeCorrectionWinLegacy win, bool isViewMode) {
-            System.Diagnostics.Debug.Assert(files.Count == retentionTimeCorrectionBeans.Length);
-            this.AnalysisFiles = files.ToList();
-            _retentionTimeCorrectionBeans = retentionTimeCorrectionBeans;
-            this.Parameter = param;
+        internal RetentionTimeCorrectionViewModelLegacy(RtCorrectionSettingModel rtCorrectionSettingModel, RetentionTimeCorrectionWinLegacy win, bool isViewMode) {
+            this.AnalysisFiles = rtCorrectionSettingModel.Files.ToList();
+            _rtCorrectionSettingModel = rtCorrectionSettingModel;
+            _retentionTimeCorrectionBeans = rtCorrectionSettingModel.TemporaryRtcs;
+            this.Parameter = rtCorrectionSettingModel.Parameter;
             this.IsViewMode = isViewMode;
 
             this.RtWin = win;
-            this.RtCorrectionCommon = param.RetentionTimeCorrectionCommon;
+            this.RtCorrectionCommon = rtCorrectionSettingModel.Parameter.RetentionTimeCorrectionCommon;
             //this.RtCorrectionCommon.AnalysisFileNames = files.Select(n => n.AnalysisFileName).ToList();
             this.RtCorrectionParam = this.RtCorrectionCommon.RetentionTimeCorrectionParam;
-            parallelOptions.MaxDegreeOfParallelism = param.NumThreads;
+            parallelOptions.MaxDegreeOfParallelism = rtCorrectionSettingModel.Parameter.NumThreads;
 
 
             if (this.RtCorrectionCommon.StandardLibrary == null || this.RtCorrectionCommon.StandardLibrary.Count == 0)
@@ -317,14 +339,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         #endregion
 
         #region Run 
-        private DelegateCommand<bool>? _next;
-        public DelegateCommand<bool> Next {
-            get {
-                return _next ??= new DelegateCommand<bool>(excuteNext, canNext);
-            }
-        }
+        private DelegateCommand? _next;
+        public DelegateCommand Next => _next ??= new DelegateCommand(excuteNext, canNext);
 
-        private void excuteNext(bool obj) {
+        private void excuteNext() {
             if (CheckBox_RunWithRtCorrection) {
                 foreach (var retentionTimeCorrectionBean in _retentionTimeCorrectionBeans) {
                     retentionTimeCorrectionBean.StandardList.RemoveAll(pair => !pair.Reference.IsTargetMolecule);
@@ -335,24 +353,23 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 //    f.RetentionTimeCorrectionBean = new RetentionTimeCorrectionBean();
                 //}
             }
-            Parameter.AdvancedProcessOptionBaseParam.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection = CheckBox_RunWithRtCorrection; 
-            this.RtWin.DialogResult = true;
-            this.RtWin.Close();
+            RtWin.DialogResult = true;
+            RtWin.Close();
         }
 
-        private bool canNext(bool obj) {
+        private bool canNext() {
             if (IsViewMode) {
                 ShowMessage_ViewMode();
                 return false;
             }
-            if (!(bool)obj && CheckBox_RunWithRtCorrection) {
+            if (!Processed && CheckBox_RunWithRtCorrection) {
                 ShowMessage_CannotRun();
                 return false;
             }
             if (!CheckBox_RunWithRtCorrection) {
                 return true;
             }
-            return (bool)obj;
+            return Processed;
         }
         #endregion
 
@@ -594,8 +611,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             if (!Processed) {
                 Processed = true; OnPropertyChanged("Processed");
             }
-            if (this.CheckBox_SkipCheck)
-                excuteNext(false);
+            if (this.CheckBox_SkipCheck) {
+                excuteNext();
+            }
 
             CommonStdList = RetentionTimeCorrectionMethod.MakeCommonStdList(_retentionTimeCorrectionBeans, this.RtCorrectionCommon.StandardLibrary);
             if (isAfterRtTune) {

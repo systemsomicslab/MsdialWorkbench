@@ -227,12 +227,17 @@
                             </ItemsControl.Resources>
                         </ItemsControl>
                         <ui:LabeledContent PrependLabel="Execute retention time corrections:">
-                            <CheckBox HorizontalAlignment="Left" 
-                                      IsChecked="{Binding Path=ExcuteRtCorrection.Value}" 
+                            <CheckBox IsChecked="{Binding Path=ExcuteRtCorrection.Value}" 
                                       IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}"
-                                      ToolTip="If checked, RT correction wizard is shown after the parameter setup."/>
+                                      ToolTip="If checked, RT correction wizard is shown after the parameter setup."
+                                      VerticalContentAlignment="Center"
+                                      HorizontalAlignment="Left">
+                                <Button Content="Start correction" Click="Run_RtCorrection"
+                                        IsEnabled="{Binding ExcuteRtCorrection.Value}"
+                                        VerticalAlignment="Center"
+                                        Width="96" Height="24" Margin="8,0,0,0"/>
+                            </CheckBox>
                         </ui:LabeledContent>
-                        <Button Content="Run correction" Click="Run_RtCorrection"/>
                     </StackPanel>
                 </GroupBox>
 

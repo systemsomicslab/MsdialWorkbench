@@ -20,7 +20,7 @@ namespace CompMs.App.Msdial.View.Setting
         internal RetentionTimeCorrectionWinLegacy(RtCorrectionSettingModel model, bool isViewMode = false)
         {
             InitializeComponent();
-            VM = new RetentionTimeCorrectionViewModelLegacy(model.Files, model.TemporaryRtcs, model.Parameter, this, isViewMode);
+            VM = new RetentionTimeCorrectionViewModelLegacy(model, this, isViewMode);
             DataContext = VM;
         }
 
@@ -177,26 +177,7 @@ namespace CompMs.App.Msdial.View.Setting
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.Show();
         }
-
-
-
         #endregion
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-            if (this.DialogResult == true) return;
-
-            var result = MessageBox.Show("Continue to process your project after closed?", "Question", MessageBoxButton.YesNoCancel);
-            if (result == MessageBoxResult.Yes) {
-                this.DialogResult = true;
-            }
-            else if (result == MessageBoxResult.No) {
-                this.DialogResult = false;
-            }
-            else if (result == MessageBoxResult.Cancel) {
-                e.Cancel = true;
-                return;
-            }
-        }
 
         private void TabControl_CorrectedRes_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             if (sender == null || (TabControl)sender == null) return;

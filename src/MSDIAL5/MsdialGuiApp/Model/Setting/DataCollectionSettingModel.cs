@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Imms;
-using CompMs.App.Msdial.View.Setting;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
@@ -36,7 +35,6 @@ namespace CompMs.App.Msdial.Model.Setting
             IsBrClConsideredForIsotopes = parameter.PeakPickBaseParam.IsBrClConsideredForIsotopes;
             MaxIsotopesDetectedInMs1Spectrum = parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum;
             NumberOfThreads = parameter.ProcessBaseParam.NumThreads;
-            ExcuteRtCorrection = parameter.AdvancedProcessOptionBaseParam.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection;
             DataCollectionRangeSettings = new ObservableCollection<IDataCollectionRangeSetting>(PrepareRangeSettings(parameter));
             RtCorrectionSettingModel = new(analysisFiles, parameter);
         }
@@ -89,12 +87,6 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private int numberOfThreads;
 
-        public bool ExcuteRtCorrection {
-            get => excuteRtCorrection;
-            set => SetProperty(ref excuteRtCorrection, value);
-        }
-        private bool excuteRtCorrection;
-
         public DimsDataCollectionSettingModel? DimsProviderFactoryParameter { get; }
         public ImmsDataCollectionSettingModel? ImmsProviderFactoryParameter { get; }
 
@@ -104,7 +96,7 @@ namespace CompMs.App.Msdial.Model.Setting
             if (IsReadOnly) {
                 return false;
             }
-            if (ExcuteRtCorrection) {
+            if (RtCorrectionSettingModel.ExecuteRtCorrection) {
                 RtCorrectionSettingModel.Determine();
             }
             parameter.PeakPickBaseParam.CentroidMs1Tolerance = Ms1Tolerance;
@@ -141,7 +133,7 @@ namespace CompMs.App.Msdial.Model.Setting
             IsBrClConsideredForIsotopes = parameter.PeakPickBaseParam.IsBrClConsideredForIsotopes;
             MaxIsotopesDetectedInMs1Spectrum = parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum;
             NumberOfThreads = parameter.ProcessBaseParam.NumThreads;
-            ExcuteRtCorrection = parameter.AdvancedProcessOptionBaseParam.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection;
+            RtCorrectionSettingModel.ExecuteRtCorrection = parameter.AdvancedProcessOptionBaseParam.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection;
             foreach (var s in DataCollectionRangeSettings) {
                 s.Update(parameter);
             }
