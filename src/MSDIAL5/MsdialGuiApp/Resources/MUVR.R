@@ -107,7 +107,6 @@ sigFunc = function(x){
   else if(x < 0.05){"*"}
   else{NA}}
 
-ppath <-  "d:/Notame/new feature/"
 fig_comp <- TRUE
 saveresults <- TRUE
 
