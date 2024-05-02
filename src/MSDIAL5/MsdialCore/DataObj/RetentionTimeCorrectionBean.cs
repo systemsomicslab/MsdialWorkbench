@@ -44,10 +44,14 @@ public class RetentionTimeCorrectionBean
         RetentionTimeCorrectionResultFilePath = retentionTimeCorrectionResultFilePath;
     }
 
-    public void ClearCache() {
+    public void ClearCache(bool isSampleLarge = false) {
         this.OriginalRt = null;
         this.RtDiff = null;
         this.PredictedRt = null;
+
+        if (isSampleLarge) {
+            this.StandardList = null;
+        }
     }
 
     public void Restore() {
