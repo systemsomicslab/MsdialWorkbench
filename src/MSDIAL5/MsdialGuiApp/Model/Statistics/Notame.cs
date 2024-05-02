@@ -79,15 +79,13 @@ namespace CompMs.App.Msdial.Model.Statistics {
             NotameExport = GetExportFolder();
             MessageBox.Show("Please wait until drift correction and batch correction are done.");
             RunNotame();
+            RunMuvr();
         }
 
         private void RunNotame() {
             var rReader = new NotameRReader();
             rReader.Read();
             var NotameR = rReader.rScript;
-            var muvrRReader = new MuvrRReader();
-            muvrRReader.Read();
-            var MUVR = muvrRReader.muvrRScript;
             REngine.SetEnvironmentVariables();
             REngine.SetEnvironmentVariables("c:/program files/r/r-4.3.2/bin/x64", "c:/program files/r/r-4.3.2");
             var engine = REngine.GetInstance();
@@ -102,6 +100,23 @@ namespace CompMs.App.Msdial.Model.Statistics {
 
             engine.Evaluate(NotameR);
             MessageBox.Show("Drift correction and batch correction files are saved. MUVR processing started. Please wait for a minute.");
+            engine.Dispose();
+        }
+
+        private void RunMuvr() {
+            var muvrRReader = new MuvrRReader();
+            muvrRReader.Read();
+            var MUVR = muvrRReader.muvrRScript;
+            REngine.SetEnvironmentVariables();
+            REngine.SetEnvironmentVariables("c:/program files/r/r-4.3.2/bin/x64", "c:/program files/r/r-4.3.2");
+            var engine = REngine.GetInstance();
+            engine.Evaluate("Sys.setenv(PATH = paste(\"C:/Program Files/R/R-4.3.2/bin/x64\", Sys.getenv(\"PATH\"), sep=\";\"))");
+            engine.Evaluate("library(notame)");
+            engine.Evaluate("library(doParallel)");
+            engine.Evaluate("library(dplyr)");
+            engine.Evaluate("library(openxlsx)");
+            engine.SetSymbol("ppath", engine.CreateCharacter(NotameExport));
+
             engine.Evaluate(MUVR);
             MessageBox.Show("Output files are successfully created.");
             engine.Dispose();
