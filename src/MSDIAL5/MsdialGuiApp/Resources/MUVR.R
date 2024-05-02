@@ -107,6 +107,7 @@ sigFunc = function(x){
   else if(x < 0.05){"*"}
   else{NA}}
 
+ppath <- file.path(path, "/")
 fig_comp <- TRUE
 saveresults <- TRUE
 
