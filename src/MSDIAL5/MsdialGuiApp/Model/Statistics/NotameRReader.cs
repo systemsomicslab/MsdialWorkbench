@@ -7,8 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace CompMs.App.Msdial.Model.Statistics
-{
+namespace CompMs.App.Msdial.Model.Statistics {
     internal class NotameRReader {
         public string rScript;
 

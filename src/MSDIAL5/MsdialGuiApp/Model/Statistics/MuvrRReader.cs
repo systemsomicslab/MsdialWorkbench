@@ -7,24 +7,19 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace CompMs.App.Msdial.Model.Statistics
-{
-    internal class MuvrRReader
-    {
+namespace CompMs.App.Msdial.Model.Statistics {
+    internal class MuvrRReader {
         public string muvrRScript;
 
-        public void Read(string filePath)
-        {
+        public void Read(string filePath) {
             muvrRScript = File.ReadAllText(filePath);
         }
 
-        public void Read()
-        {
+        public void Read() {
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = "CompMs.App.Msdial.Resources.MUVR.R";
             using (var stream = assembly.GetManifestResourceStream(resourceName))
-            using (var reader = new StreamReader(stream))
-            {
+            using (var reader = new StreamReader(stream)) {
                 muvrRScript = reader.ReadToEnd();
             }
         }
