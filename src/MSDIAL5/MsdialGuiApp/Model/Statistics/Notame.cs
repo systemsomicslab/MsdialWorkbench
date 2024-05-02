@@ -7,18 +7,17 @@ using CompMs.MsdialCore.Parameter;
 using RDotNet;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Collections.ObjectModel;
 
 namespace CompMs.App.Msdial.Model.Statistics {
     internal sealed class Notame : BindableBase {
-        public Notame(ExportMethod exportMethod, ExportType[] exportTypes, AlignmentFilesForExport alignmentFilesForExport, AlignmentPeakSpotSupplyer peakSpotSupplyer, DataExportBaseParameter dataExportParameter, ParameterBase parameterBase) {
+        public Notame(AlignmentFilesForExport alignmentFilesForExport, AlignmentPeakSpotSupplyer peakSpotSupplyer, AlignmentExportGroupModel exportModel, DataExportBaseParameter dataExportParameter, ParameterBase parameterBase) {
             AlignmentFilesForExport = alignmentFilesForExport;
             PeakSpotSupplyer = peakSpotSupplyer ?? throw new ArgumentNullException(nameof(peakSpotSupplyer));
-            ExportMethod = exportMethod;
-            ExportTypes = exportTypes;
+            ExportModel = exportModel;
             ExportDirectory = dataExportParameter.ExportFolderPath;
             IonMode = parameterBase.IonMode;
         }
@@ -27,32 +26,34 @@ namespace CompMs.App.Msdial.Model.Statistics {
             get => _exportDirectory;
             set => SetProperty(ref _exportDirectory, value);
         }
-        private string _exportDirectory;
+        private string _exportDirectory = string.Empty;
 
         public string GetExportFolder() {
             var folder = ExportDirectory.Replace("\\", "/");
             return folder;
         }
 
+        public AlignmentExportGroupModel ExportModel { get; }
+
         public AlignmentFilesForExport AlignmentFilesForExport { get; }
         public AlignmentPeakSpotSupplyer PeakSpotSupplyer { get; }
-        public ExportMethod ExportMethod { get; }
-        public ExportType[] ExportTypes { get; }
+        public ExportMethod ExportMethod => ExportModel.ExportMethod;
+        public ReadOnlyObservableCollection<ExportType> ExportTypes => ExportModel.Types;
 
         public Task ExportAlignmentResultAsync(IMessageBroker broker) {
             return Task.Run(() => {
+                if (AlignmentFilesForExport.SelectedFile is null) {
+                    return;
+                }
                 var publisher = new TaskProgressPublisher(broker, $"Exporting {AlignmentFilesForExport.SelectedFile.FileName}");
                 using (publisher.Start()) {
                     var alignmentFile = AlignmentFilesForExport.SelectedFile;
-                    var type = ExportTypes.FirstOrDefault(type => type.IsSelected);
-                    if (type is null) {
+                    if (ExportTypes.FirstOrDefault(type => type.IsSelected) is not { } type) {
                         throw new Exception("Export type (Height, Area, ...) is not selected.");
                     }
                     var fileName = $"{type.TargetLabel}_{((IFileBean)alignmentFile).FileID}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}";
-                    var msdecResults = alignmentFile.LoadMSDecResults();
-                    var lazyPeakSpot = new Lazy<IReadOnlyList<AlignmentSpotProperty>>(() => PeakSpotSupplyer.Supply(alignmentFile, default));
-                    ExportMethod.Export(fileName, ExportDirectory, lazyPeakSpot, msdecResults, null, new[] { type });
                     FileName = ExportMethod.Format.WithExtension(fileName);
+                    ExportModel.Export(alignmentFile, ExportDirectory, fileName, null);
                 }
             });
         }
@@ -66,12 +67,12 @@ namespace CompMs.App.Msdial.Model.Statistics {
             else if (IonMode == IonMode.Negative) {
                 return "neg";
             }
-            return null;
+            return string.Empty;
         }
 
-        private string NotameIonMode;
-        private string NotameExport;
-        private string FileName;
+        private string NotameIonMode = string.Empty;
+        private string NotameExport = string.Empty;
+        private string FileName = string.Empty;
 
         public void Run() {
             NotameIonMode = GetIonMode();

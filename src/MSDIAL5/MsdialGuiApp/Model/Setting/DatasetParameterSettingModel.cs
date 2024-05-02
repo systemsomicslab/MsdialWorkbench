@@ -29,7 +29,7 @@ namespace CompMs.App.Msdial.Model.Setting
     internal sealed class DatasetParameterSettingModel : BindableBase
     {
         private readonly DatasetFileSettingModel fileSettingModel;
-        private readonly Action<DatasetModel> next;
+        private readonly Action<DatasetModel>? next;
         private readonly IMessageBroker _broker;
 
         public DatasetParameterSettingModel(DateTime dt, DatasetFileSettingModel fileSettingModel, Action<DatasetModel> next, IMessageBroker broker) {
@@ -81,7 +81,7 @@ namespace CompMs.App.Msdial.Model.Setting
             get => datasetFileName;
             set => SetProperty(ref datasetFileName, value);
         }
-        private string datasetFileName;
+        private string datasetFileName = string.Empty;
 
         public Ionization Ionization {
             get => ionization;

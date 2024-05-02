@@ -16,6 +16,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using CompMs.Common.Extension;
 
 namespace CompMs.App.Msdial.Model.Core
 {
@@ -40,12 +41,12 @@ namespace CompMs.App.Msdial.Model.Core
             AnalysisFilePropertyResetModel = new AnalysisFilePropertyResetModel(files, _projectBaseParameter);
             FileClassSetModel = new FileClassSetModel(_projectBaseParameter);
 
-            AllProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, files, _alignmentFileBeanModelCollection, storage, HandlerAsync, _projectBaseParameter, StudyContext, broker);
-            IdentificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, files, _alignmentFileBeanModelCollection, storage, HandlerAsync, _projectBaseParameter, StudyContext, broker);
-            AlignmentProcessMethodSettingModel = new MethodSettingModel(ProcessOption.Alignment, files, _alignmentFileBeanModelCollection, storage, HandlerAsync, _projectBaseParameter, StudyContext, broker);
+            allProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, files, _alignmentFileBeanModelCollection, storage, HandlerAsync, _projectBaseParameter, StudyContext, broker);
+            identificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, files, _alignmentFileBeanModelCollection, storage, HandlerAsync, _projectBaseParameter, StudyContext, broker);
+            alignmentProcessMethodSettingModel = new MethodSettingModel(ProcessOption.Alignment, files, _alignmentFileBeanModelCollection, storage, HandlerAsync, _projectBaseParameter, StudyContext, broker);
         }
 
-        public IMethodModel Method {
+        public IMethodModel? Method {
             get => method;
             private set {
                 var prev = method;
@@ -54,7 +55,7 @@ namespace CompMs.App.Msdial.Model.Core
                 }
             }
         }
-        private IMethodModel method;
+        private IMethodModel? method;
 
         public IMsdialDataStorage<ParameterBase> Storage { get; }
 
@@ -91,6 +92,8 @@ namespace CompMs.App.Msdial.Model.Core
 
         public async Task SaveAsync() {
             // TODO: implement process when project save failed.
+            Storage.Parameter.ProjectParam.MsdialVersionNumber = Properties.Resources.VERSION;
+            Storage.Parameter.ProjectParam.FinalSavedDate = DateTime.Now;
             using (var streamManager = new DirectoryTreeStreamManager(Storage.Parameter.ProjectFolderPath)) {
                 await Task.WhenAll(new[]
                 {
@@ -148,8 +151,9 @@ namespace CompMs.App.Msdial.Model.Core
             message.Show();
 
             var storage = await LoadProjectFromPathAsync(datasetFile);
-            if (storage == null) {
+            if (storage is null) {
                 MessageBox.Show("Msdial cannot open the project: \n" + datasetFile, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw new Exception($"Msdial cannot open the project: {datasetFile}");
             }
             var result = new DatasetModel(storage, broker);
             var factory = new MethodSettingModelFactory(result._analysisFileBeanModelCollection, result._alignmentFileBeanModelCollection, storage, result._projectBaseParameter, result.StudyContext, ProcessOption.All, broker);
@@ -188,9 +192,12 @@ namespace CompMs.App.Msdial.Model.Core
                 var storage = await serializer.LoadAsync(streamManager, projectFileName, projectFolder, string.Empty);
                 streamManager.Complete();
                 storage.FixDatasetFolder(projectFolder);
+               
                 return storage;
             }
         }
+
+        
 
         AnalysisFileBeanModelCollection IDatasetModel.AnalysisFiles => _analysisFileBeanModelCollection;
     }

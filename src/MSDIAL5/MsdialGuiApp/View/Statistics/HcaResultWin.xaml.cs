@@ -7,19 +7,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View.Statistics {
+namespace CompMs.App.Msdial.View.Statistics
+{
     /// <summary>
     /// Interaction logic for HcaResultWin.xaml
     /// </summary>
@@ -36,27 +28,27 @@ namespace CompMs.App.Msdial.View.Statistics {
        
     }
     public class HcaResultVM : ViewModelBase {
-        public IEnumerable HeatmapView {
+        public IEnumerable? HeatmapView {
             get => _heatmapView;
             set => SetProperty(ref _heatmapView, value);
         }
 
-        public IEnumerable FileView {
+        public IEnumerable? FileView {
             get => _fileView;
             private set => SetProperty(ref _fileView, value);
         }
 
-        public IEnumerable MetaboliteView {
+        public IEnumerable? MetaboliteView {
             get => _metaboliteView;
             private set => SetProperty(ref _metaboliteView, value);
         }
 
-        public DirectedTree FileTree {
+        public DirectedTree? FileTree {
             get => _fileTree;
             set => SetProperty(ref _fileTree, value);
         }
 
-        public DirectedTree MetaboliteTree {
+        public DirectedTree? MetaboliteTree {
             get => _metaboliteTree;
             set => SetProperty(ref _metaboliteTree, value);
         }
@@ -96,12 +88,12 @@ namespace CompMs.App.Msdial.View.Statistics {
             set => SetProperty(ref _numberOfDisplayMetabolite, value);
         }
 
-        public string XLabel {
+        public string? XLabel {
             get => _xLabel;
             set => SetProperty(ref _xLabel, value);
         }
 
-        public string YLabel {
+        public string? YLabel {
             get => _yLabel;
             set => SetProperty(ref _yLabel, value);
         }
@@ -116,7 +108,7 @@ namespace CompMs.App.Msdial.View.Statistics {
             set => SetProperty(ref _metaboliteLabelSize, value);
         }
 
-        public string DisplayFileProperty {
+        public string? DisplayFileProperty {
             get => _displayFileProperty;
             set => SetProperty(ref _displayFileProperty, value);
         }
@@ -124,13 +116,13 @@ namespace CompMs.App.Msdial.View.Statistics {
         private readonly ObservableCollection<MatrixData> _heatmapSource;
         private readonly ObservableCollection<FileLeaf> _fileSource;
         private readonly ObservableCollection<MetaboliteLeaf> _metaboliteSource;
-        private IEnumerable _fileView, _metaboliteView, _heatmapView;
+        private IEnumerable? _fileView, _metaboliteView, _heatmapView;
         private double _fileDendrogramMinimum, _fileDendrogramMaximum,
             _metaboliteDendrogramMinimum, _metaboliteDendrogramMaximum,
             _heatmapValueMinimum, _heatmapValueMaximum;
-        private DirectedTree _fileTree, _metaboliteTree;
+        private DirectedTree? _fileTree, _metaboliteTree;
         private int _numberOfDisplayMetabolite;
-        private string _xLabel, _yLabel, _displayFileProperty;
+        private string? _xLabel, _yLabel, _displayFileProperty;
         private double _fileLabelSize, _metaboliteLabelSize;
 
         public HcaResultVM(MultivariateAnalysisResult result) {
@@ -258,23 +250,23 @@ namespace CompMs.App.Msdial.View.Statistics {
     public class MatrixData {
         public int FileId { get; set; }
         public int MetaboliteId { get; set; }
-        public string FileName { get; set; }
-        public string MetaboliteName { get; set; }
+        public string? FileName { get; set; }
+        public string? MetaboliteName { get; set; }
         public double Intensity { get; set; }
     }
 
     public class FileLeaf {
-        public string FileName { get; set; }
-        public string ClassName { get; set; }
-        public Brush TypeBrush { get; set; }
+        public string? FileName { get; set; }
+        public string? ClassName { get; set; }
+        public Brush? TypeBrush { get; set; }
         public int ID { get; set; }
         public int Order { get; set; }
     }
 
     public class MetaboliteLeaf {
-        public string MetaboliteName { get; set; }
+        public string? MetaboliteName { get; set; }
         public int ID { get; set; }
-        public Brush TypeBrush { get; set; }
+        public Brush? TypeBrush { get; set; }
         public int Order { get; set; }
         public int Rank { get; set; }
     }

@@ -21,8 +21,11 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,7 +34,7 @@ namespace CompMs.App.Msdial.Model.Gcms
     internal sealed class GcmsMethodModel : MethodModelBase
     {
         private readonly IMsdialDataStorage<MsdialGcmsParameter> _storage;
-        private readonly FilePropertiesModel _projectBaseParameter;
+        private readonly FilePropertiesModel _fileProperties;
         private readonly StudyContextModel _studyContext;
         private readonly FacadeMatchResultEvaluator _evaluator;
         private readonly IMessageBroker _broker;
@@ -41,9 +44,9 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly List<CalculateMatchScore> _calculateMatchScores;
         private readonly ChromatogramSerializer<ChromatogramSpotInfo> _chromatogramSpotSerializer;
 
-        public GcmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFiles, IMsdialDataStorage<MsdialGcmsParameter> storage, FilePropertiesModel projectBaseParameter, StudyContextModel studyContext, IMessageBroker broker) : base(analysisFileBeanModelCollection, alignmentFiles, projectBaseParameter) {
+        public GcmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFiles, IMsdialDataStorage<MsdialGcmsParameter> storage, FilePropertiesModel fileProperties, StudyContextModel studyContext, IMessageBroker broker) : base(analysisFileBeanModelCollection, alignmentFiles, fileProperties) {
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
-            _projectBaseParameter = projectBaseParameter;
+            _fileProperties = fileProperties;
             _studyContext = studyContext;
             _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             _broker = broker;
@@ -81,7 +84,6 @@ namespace CompMs.App.Msdial.Model.Gcms
                 "Peaks",
                 new ExportMethod(
                     analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File).ToArray(),
-                    metadataAccessorFactory,
                     ExportFormat.Tsv,
                     ExportFormat.Csv
                 ),
@@ -98,6 +100,8 @@ namespace CompMs.App.Msdial.Model.Gcms
                     new ExportType("S/N", new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
                     //new ExportType("Identification method", new AnnotationMethodAccessor(), "IdentificationMethod"),
                 },
+                new AccessPeakMetaModel(metadataAccessorFactory),
+                new AccessFileMetaModel(fileProperties).AddTo(Disposables),
                 new[]
                 {
                     ExportspectraType.deconvoluted,
@@ -114,10 +118,11 @@ namespace CompMs.App.Msdial.Model.Gcms
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
             var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, };
 
-            AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam);
+
+            AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, alignmentFilesForExport, peakSpotSupplyer, storage.Parameter.DataExportParam, broker);
         }
 
-        public GcmsAnalysisModel SelectedAnalysisModel {
+        public GcmsAnalysisModel? SelectedAnalysisModel {
             get => _selectedAnalysisModel;
             private set {
                 var old = _selectedAnalysisModel;
@@ -131,9 +136,9 @@ namespace CompMs.App.Msdial.Model.Gcms
                 }
             }
         }
-        private GcmsAnalysisModel _selectedAnalysisModel;
+        private GcmsAnalysisModel? _selectedAnalysisModel;
 
-        public GcmsAlignmentModel SelectedAlignmentModel {
+        public GcmsAlignmentModel? SelectedAlignmentModel {
             get => _selectedAlignmentModel;
             private set {
                 var old = _selectedAlignmentModel;
@@ -147,26 +152,34 @@ namespace CompMs.App.Msdial.Model.Gcms
                 }
             }
         }
-        private GcmsAlignmentModel _selectedAlignmentModel;
+        private GcmsAlignmentModel? _selectedAlignmentModel;
 
-        public override Task RunAsync(ProcessOption option, CancellationToken token) {
+        public override async Task RunAsync(ProcessOption option, CancellationToken token) {
+            var parameter = _storage.Parameter;
+            var starttimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
+            var stopwatch = Stopwatch.StartNew();
             if (option.HasFlag(ProcessOption.PeakSpotting | ProcessOption.Identification)) {
                 if (!RunFromPeakSpotting()) {
-                    return Task.CompletedTask;
+                    return;
                 }
             }
             else if (option.HasFlag(ProcessOption.Identification)) {
                 if (!RunFromIdentification()) {
-                    return Task.CompletedTask;
+                    return;
                 }
             }
 
             if (option.HasFlag(ProcessOption.Alignment)) {
                 if (!RunAlignment()) {
-                    return Task.CompletedTask;
+                    return;
                 }
             }
-            return Task.CompletedTask;
+
+            stopwatch.Stop();
+            var ts = stopwatch.Elapsed;
+            AutoParametersSave(starttimestamp, ts, parameter);
+
+            await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
         }
 
         private bool RunFromPeakSpotting() {
@@ -230,15 +243,15 @@ namespace CompMs.App.Msdial.Model.Gcms
         }
 
         protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBeanModel alignmentFileModel) {
-            return SelectedAlignmentModel = new GcmsAlignmentModel(alignmentFileModel, _evaluator, _storage.DataBases, _peakSpotFiltering, _peakFilterModel, _storage.DataBaseMapper, _storage.Parameter, _projectBaseParameter, _storage.AnalysisFiles, AnalysisFileModelCollection, _calculateMatchScores.FirstOrDefault(), _broker);
+            return SelectedAlignmentModel = new GcmsAlignmentModel(alignmentFileModel, _evaluator, _storage.DataBases, _peakSpotFiltering, _peakFilterModel, _storage.DataBaseMapper, _storage.Parameter, _fileProperties, _storage.AnalysisFiles, AnalysisFileModelCollection, _calculateMatchScores.FirstOrDefault(), _broker);
         }
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             var providerFactory = _providerFactory.ContraMap((AnalysisFileBeanModel fileModel) => fileModel.File);
-            return SelectedAnalysisModel = new GcmsAnalysisModel(analysisFile, providerFactory, _storage.Parameter, _storage.DataBaseMapper, _storage.DataBases, _projectBaseParameter, _peakFilterModel, _calculateMatchScores.FirstOrDefault(), _broker);
+            return SelectedAnalysisModel = new GcmsAnalysisModel(analysisFile, providerFactory, _storage.Parameter, _storage.DataBaseMapper, _storage.DataBases, _fileProperties, _peakFilterModel, _calculateMatchScores.FirstOrDefault(), _broker);
         }
 
-        public CheckChromatogramsModel ShowChromatograms(bool tic, bool bpc, bool highestEic) {
+        public CheckChromatogramsModel? ShowChromatograms(bool tic, bool bpc, bool highestEic) {
             var analysisModel = SelectedAnalysisModel;
             if (analysisModel is null) {
                 return null;
@@ -274,19 +287,29 @@ namespace CompMs.App.Msdial.Model.Gcms
 
             var models = new IMsdialAnalysisExport[]
             {
-                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats),
-                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
-                    [ExportspectraType.deconvoluted] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter),
-                    [ExportspectraType.centroid] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter, file => new CentroidMsScanPropertyLoader(_providerFactory.Create(file), _storage.Parameter.MS2DataType)),
-                })
-                {
-                    FilePrefix = "Msp",
-                    FileSuffix = "msp",
-                    Label = "Nist format (*.msp)"
-                },
+                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, _broker),
+                // TODO: Export msp and mgf files by using SpectrumFeature not ChromatogramPeakFeature
+                //new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
+                //    [ExportspectraType.deconvoluted] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter),
+                //    [ExportspectraType.centroid] = new AnalysisMspExporter(_storage.DataBaseMapper, _storage.Parameter, file => new CentroidMsScanPropertyLoader(_providerFactory.Create(file), _storage.Parameter.MS2DataType)),
+                //})
+                //{
+                //    FilePrefix = "Msp",
+                //    FileSuffix = "msp",
+                //    Label = "Nist format (*.msp)"
+                //},
+                //new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
+                //    [ExportspectraType.deconvoluted] = new AnalysisMgfExporter(file => new MSDecLoader(file.DeconvolutionFilePath)),
+                //    [ExportspectraType.centroid] = new AnalysisMgfExporter(file => new CentroidMsScanPropertyLoader(_providerFactory.Create(file), _storage.Parameter.MS2DataType)),
+                //})
+                //{
+                //    FilePrefix = "Mgf",
+                //    FileSuffix = "mgf",
+                //    Label = "MASCOT format (*.mgf)"
+                //},
                 // new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam, _studyContext),
             };
-            return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, models);
+            return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, _broker, models);
         }
 
         public AlignmentResultExportModel AlignmentResultExportModel { get; }

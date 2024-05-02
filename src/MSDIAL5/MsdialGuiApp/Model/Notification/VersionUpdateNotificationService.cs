@@ -27,7 +27,7 @@ namespace CompMs.App.Msdial.Model.Notification
             try {
                 var releaseInfoDataTransferObjects = (List<ReleaseInfoDataTransferObject>)serializer.ReadObject(jsonStream);
                 foreach (var dto in releaseInfoDataTransferObjects) {
-                    if (!dto.IsPrerelease && dto.TagName.StartsWith("MSDIAL-v5")) {
+                    if (!dto.IsPrerelease && (dto.TagName?.StartsWith("MSDIAL-v5") ?? false)) {
                         var vdd = dto.ToVersionDescriptionDocument();
                         callback?.Invoke(vdd);
                         break;
@@ -39,14 +39,13 @@ namespace CompMs.App.Msdial.Model.Notification
             }
         }
 
-        private static Stream FetchVersionDescriptionDocument(Uri uri)
+        private static Stream? FetchVersionDescriptionDocument(Uri uri)
         {
             try {
-                using (var client = new MyWebClient()) {
-                    client.Headers.Add(HttpRequestHeader.UserAgent, "Msdial");
-                    client.Headers.Add(HttpRequestHeader.ContentType, "application/json");
-                    return client.OpenRead(uri);
-                }
+                using var client = new MyWebClient();
+                client.Headers.Add(HttpRequestHeader.UserAgent, "Msdial");
+                client.Headers.Add(HttpRequestHeader.ContentType, "application/json");
+                return client.OpenRead(uri);
             }
             catch (IOException) {
 
@@ -97,19 +96,19 @@ namespace CompMs.App.Msdial.Model.Notification
         [DataContract]
         class ReleaseInfoDataTransferObject {
             [DataMember(Name = "name")]
-            public string Name { get; set; }
+            public string? Name { get; set; }
 
             [DataMember(Name = "tag_name")]
-            public string TagName { get; set; }
+            public string? TagName { get; set; }
 
             [DataMember(Name = "published_at")]
-            public string PublishedAt { get; set; }
+            public string? PublishedAt { get; set; }
 
             [DataMember(Name = "html_url")]
-            public string HtmlUrl { get; set; } 
+            public string? HtmlUrl { get; set; } 
 
             [DataMember(Name = "assets")]
-            public List<AssetsDataTransferObject> Assets { get; set; }
+            public List<AssetsDataTransferObject>? Assets { get; set; }
 
             [DataMember(Name = "prerelease")]
             public bool IsPrerelease { get; set; }
@@ -117,7 +116,7 @@ namespace CompMs.App.Msdial.Model.Notification
             public VersionDescriptionDocument ToVersionDescriptionDocument() {
                 return new VersionDescriptionDocument
                 {
-                    LatestVersion = TagName.TrimStart("MSDIAL-v".ToCharArray()),
+                    LatestVersion = TagName?.TrimStart("MSDIAL-v".ToCharArray()) ?? string.Empty,
                     DatePublished = PublishedAt,
                     DownloadUri = new Uri(HtmlUrl),
                 };
@@ -127,7 +126,7 @@ namespace CompMs.App.Msdial.Model.Notification
         [DataContract]
         class AssetsDataTransferObject {
             [DataMember(Name = "browser_download_url")]
-            public string DownloadUrl { get; set; }
+            public string? DownloadUrl { get; set; }
         }
 
     }

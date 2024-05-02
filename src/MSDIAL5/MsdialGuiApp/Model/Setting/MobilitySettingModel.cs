@@ -17,8 +17,8 @@ namespace CompMs.App.Msdial.Model.Setting
 {
     public class MobilitySettingModel : BindableBase
     {
-        private readonly MsdialImmsParameter immsParameter;
-        private readonly MsdialLcImMsParameter lcimmsParameter;
+        private readonly MsdialImmsParameter? immsParameter;
+        private readonly MsdialLcImMsParameter? lcimmsParameter;
 
         public MobilitySettingModel(MsdialImmsParameter parameter, List<AnalysisFileBean> files, ProcessOption process) {
             immsParameter = parameter;

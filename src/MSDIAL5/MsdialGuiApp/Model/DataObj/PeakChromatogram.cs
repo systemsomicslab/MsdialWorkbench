@@ -12,7 +12,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         private readonly ChromXType _type;
         private readonly ChromXUnit _unit;
 
-        public PeakChromatogram(List<PeakItem> peaks, List<PeakItem> peakArea, PeakItem peakTop, string class_, Color color, ChromXType type, ChromXUnit unit, string description = "") {
+        public PeakChromatogram(List<PeakItem> peaks, List<PeakItem> peakArea, PeakItem? peakTop, string class_, Color color, ChromXType type, ChromXUnit unit, string description = "") {
             Peaks = peaks;
             PeakArea = peakArea;
             PeakTop = peakTop;
@@ -35,7 +35,7 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public List<PeakItem> Peaks { get; }
         public List<PeakItem> PeakArea { get; }
-        public PeakItem PeakTop { get; }
+        public PeakItem? PeakTop { get; }
         public string Class { get; }
         public Color Color { get; }
         public string Description { get; }

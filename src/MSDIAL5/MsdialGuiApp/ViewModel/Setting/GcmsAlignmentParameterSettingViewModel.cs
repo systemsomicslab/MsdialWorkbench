@@ -29,9 +29,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             ReferenceFile = model.ToReactivePropertyAsSynchronized(m => m.ReferenceFile, ignoreValidationErrorValue: true)
                 .SetValidateAttribute(() => ReferenceFile)
                 .AddTo(Disposables);
-            RtEqualityParameterSetting = PeakEqualityParameterSettingViewModelFactory.Create(model.RtEqualityParameter).AddTo(Disposables);
-            RiEqualityParameterSetting = PeakEqualityParameterSettingViewModelFactory.Create(model.RiEqualityParameter).AddTo(Disposables);
-            EiEqualityParameterSetting = PeakEqualityParameterSettingViewModelFactory.Create(model.EiEqualityParameter).AddTo(Disposables);
+            RtEqualityParameterSetting = PeakEqualityParameterSettingViewModelFactory.Create(model.RtEqualityParameter)?.AddTo(Disposables);
+            RiEqualityParameterSetting = PeakEqualityParameterSettingViewModelFactory.Create(model.RiEqualityParameter)?.AddTo(Disposables);
+            EiEqualityParameterSetting = PeakEqualityParameterSettingViewModelFactory.Create(model.EiEqualityParameter)?.AddTo(Disposables);
             PeakCountFilter = model.ToReactivePropertyAsSynchronized(
                 m => m.PeakCountFilter,
                 m => (m * 100).ToString(),
@@ -80,9 +80,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             {
                 AlignmentResultFileName.ObserveHasErrors,
                 ReferenceFile.ObserveHasErrors,
-                RtEqualityParameterSetting.ObserveHasErrors,
-                RiEqualityParameterSetting.ObserveHasErrors,
-                EiEqualityParameterSetting.ObserveHasErrors,
+                RtEqualityParameterSetting?.ObserveHasErrors ?? Observable.Return(false),
+                RiEqualityParameterSetting?.ObserveHasErrors ?? Observable.Return(false),
+                EiEqualityParameterSetting?.ObserveHasErrors ?? Observable.Return(false),
                 PeakCountFilter.ObserveHasErrors,
                 FoldChangeForBlankFiltering.ObserveHasErrors,
             }.CombineLatestValuesAreAnyTrue()
@@ -93,9 +93,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             {
                 AlignmentResultFileName.ToUnit(),
                 ReferenceFile.ToUnit(),
-                RtEqualityParameterSetting.ObserveChanges,
-                RiEqualityParameterSetting.ObserveChanges,
-                EiEqualityParameterSetting.ObserveChanges,
+                RtEqualityParameterSetting?.ObserveChanges ?? Observable.Never<Unit>(),
+                RiEqualityParameterSetting?.ObserveChanges ?? Observable.Never<Unit>(),
+                EiEqualityParameterSetting?.ObserveChanges ?? Observable.Never<Unit>(),
                 PeakCountFilter.ToUnit(),
                 IsRemoveFeatureBasedOnBlankPeakHeightFoldChange.ToUnit(),
                 BlankFiltering.ToUnit(),
@@ -130,9 +130,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReactivePropertySlim<bool> UseRI { get; }
         public ReactivePropertySlim<bool> UseRT { get; }
 
-        public PeakEqualityParameterSettingViewModel RtEqualityParameterSetting { get; }
-        public PeakEqualityParameterSettingViewModel RiEqualityParameterSetting { get; }
-        public PeakEqualityParameterSettingViewModel EiEqualityParameterSetting { get; }
+        public PeakEqualityParameterSettingViewModel? RtEqualityParameterSetting { get; }
+        public PeakEqualityParameterSettingViewModel? RiEqualityParameterSetting { get; }
+        public PeakEqualityParameterSettingViewModel? EiEqualityParameterSetting { get; }
 
         [Required(ErrorMessage = "Peak count filter required.")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid format.")]
@@ -170,7 +170,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReadOnlyReactivePropertySlim<bool> ObserveChangeAfterDecision { get; }
         IObservable<bool> ISettingViewModel.ObserveChangeAfterDecision => ObserveChangeAfterDecision;
 
-        public ISettingViewModel Next(ISettingViewModel selected) {
+        public ISettingViewModel? Next(ISettingViewModel selected) {
             _decide.OnNext(Unit.Default);
             return null;
         }

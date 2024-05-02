@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CompMs.Common.DataStructure;
+﻿using CompMs.Common.DataStructure;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
 {
@@ -29,10 +29,10 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
             var masters_itr = masters.Cast<ChromatogramPeakFeature>();
             var targets_itr = targets.Cast<ChromatogramPeakFeature>();
             foreach (var target in targets_itr) {
-                var master_sim = masters_itr.DefaultIfEmpty().Argmax(m => (m is null ? double.NegativeInfinity : GetSimilality(m, target)));
+                var master_sim = masters_itr.DefaultIfEmpty().Argmax(m => (m is null ? double.NegativeInfinity : GetSimilalityWoDt(m, target)));
                 if (master_sim != null && IsSimilarWoDtTo(master_sim, target)) {
                     foreach (var tdrift in target.DriftChromFeatures) {
-                        if (!master_sim.DriftChromFeatures.Any(mdrift => IsSimilarTo(mdrift, tdrift))) {
+                        if (master_sim.DriftChromFeatures.All(mdrift => !IsSimilarTo(mdrift, tdrift))) {
                             master_sim.DriftChromFeatures.Add(tdrift);
                         }
                     }
@@ -45,14 +45,15 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
         }
 
         public override void AlignPeaksToMaster(List<AlignmentSpotProperty> spots, List<IMSScanProperty> masters, List<IMSScanProperty> targets, int fileId) {
-            var tree = KdTree.Build(spots.SelectMany(spot => spot.AlignmentDriftSpotFeatures, (parent, drift) => (parent, drift)), p => p.drift.MassCenter, p => p.parent.TimesCenter.RT.Value, p => p.drift.TimesCenter.Drift.Value);
+            var tree = KdTree.Build(spots.SelectMany(spot => spot.AlignmentDriftSpotFeatures, (parent, drift) => (parent, drift)), p => p.drift.MassCenter, p => p.drift.TimesCenter.RT.Value, p => p.drift.TimesCenter.Drift.Value);
             var pairs = targets.Cast<ChromatogramPeakFeature>()
                 .SelectMany(target => target.DriftChromFeatures, (parent, drift) => (parent, drift))
                 .SelectMany(p => tree.RangeSearch(
-                    new[] { p.drift.PrecursorMz - _mztol, p.parent.ChromXs.RT.Value - _rttol, p.drift.ChromXs.Drift.Value - _dttol },
-                    new[] { p.drift.PrecursorMz + _mztol, p.parent.ChromXs.RT.Value + _rttol, p.drift.ChromXs.Drift.Value + _dttol }
-                ), (p, q) => (p, q))
-            .OrderByDescending(pq => GetSimilality(pq.p.parent, pq.p.drift, pq.q.parent, pq.q.drift));
+                    new[] { p.drift.PrecursorMz - _mztol, p.drift.ChromXs.RT.Value - _rttol, p.drift.ChromXs.Drift.Value - _dttol },
+                    new[] { p.drift.PrecursorMz + _mztol, p.drift.ChromXs.RT.Value + _rttol, p.drift.ChromXs.Drift.Value + _dttol }
+                ), (peak, spot) => (peak, spot))
+            .Where(pair => IsSimilarWoDtTo(pair.peak.parent, pair.spot.parent))
+            .OrderByDescending(pq => GetSimilality(pq.peak.drift, pq.spot.drift));
 
             var usedDspots = new HashSet<AlignmentSpotProperty>();
             var usedDpeaks = new HashSet<ChromatogramPeakFeature>();
@@ -85,7 +86,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
             return IsSimilarTo(x, y);
         }
 
-        private double GetSimilality(IMSProperty x, IMSProperty y) {
+        private double GetSimilalityWoDt(IMSProperty x, IMSProperty y) {
             return _mzfactor * Math.Exp(-.5 * Math.Pow((x.PrecursorMz - y.PrecursorMz) / _mztol, 2))
                  + _rtfactor * Math.Exp(-.5 * Math.Pow((x.ChromXs.RT.Value - y.ChromXs.RT.Value) / _rttol, 2));
         }
@@ -94,10 +95,10 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
             return GetSimilality(x, y);
         }
 
-        private double GetSimilality(ChromatogramPeakFeature peak, ChromatogramPeakFeature drift, AlignmentSpotProperty spot, AlignmentSpotProperty sdrift) {
-            return _mzfactor * Math.Exp(-.5 * Math.Pow((drift.PrecursorMz - sdrift.MassCenter) / _mztol, 2))
-                 + _rtfactor * Math.Exp(-.5 * Math.Pow((peak.ChromXs.RT.Value - spot.TimesCenter.RT.Value) / _rttol, 2))
-                 + _dtfactor * Math.Exp(-.5 * Math.Pow((drift.ChromXs.Drift.Value - sdrift.TimesCenter.Drift.Value) / _dttol, 2));
+        private double GetSimilality(IMSProperty x, IMSProperty y) {
+            return _mzfactor * Math.Exp(-.5 * Math.Pow((x.PrecursorMz - y.PrecursorMz) / _mztol, 2))
+                 + _rtfactor * Math.Exp(-.5 * Math.Pow((x.ChromXs.RT.Value - y.ChromXs.RT.Value) / _rttol, 2))
+                 + _dtfactor * Math.Exp(-.5 * Math.Pow((x.ChromXs.Drift.Value - y.ChromXs.Drift.Value) / _dttol, 2));
         }
     }
 }

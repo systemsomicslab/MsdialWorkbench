@@ -18,7 +18,7 @@ namespace CompMs.App.Msdial.Model.Statistics {
     public sealed class StatisticsObjectConverter {
         private StatisticsObjectConverter() { }
 
-        public static StatisticsObject GetStatisticsObject(
+        public static StatisticsObject? GetStatisticsObject(
             IReadOnlyList<AnalysisFileBean> files,
             IReadOnlyList<AlignmentSpotPropertyModel> alignedSpots,
             ParameterBase parameter,
@@ -146,7 +146,7 @@ namespace CompMs.App.Msdial.Model.Statistics {
             return statObject;
         }
 
-        public static MultivariateAnalysisResult PartialLeastSquares(
+        public static MultivariateAnalysisResult? PartialLeastSquares(
             IReadOnlyList<AnalysisFileBean> files,
             IReadOnlyList<AlignmentSpotPropertyModel> alignedSpots,
             ParameterBase parameter,
@@ -161,7 +161,7 @@ namespace CompMs.App.Msdial.Model.Statistics {
             return StatisticsMathematics.PartialLeastSquares(statObject, plsOption, component);
         }
 
-        public static MultivariateAnalysisResult PrincipalComponentAnalysis(
+        public static MultivariateAnalysisResult? PrincipalComponentAnalysis(
             IReadOnlyList<AnalysisFileBean> files,
             IReadOnlyList<AlignmentSpotPropertyModel> alignedSpots,
             ParameterBase parameter,
@@ -175,7 +175,7 @@ namespace CompMs.App.Msdial.Model.Statistics {
                 statObject, MultivariateAnalysisOption.Pca, statsparam.MaxComponent);
         }
 
-        public static MultivariateAnalysisResult HierarchicalClusteringAnalysis(
+        public static MultivariateAnalysisResult? HierarchicalClusteringAnalysis(
             IReadOnlyList<AnalysisFileBean> files,
             IReadOnlyList<AlignmentSpotPropertyModel> alignedSpots,
             ParameterBase parameter,

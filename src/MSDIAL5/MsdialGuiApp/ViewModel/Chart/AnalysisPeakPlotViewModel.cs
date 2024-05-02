@@ -78,25 +78,25 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public IAxisManager<double> VerticalAxis { get; } 
 
-        public ReadOnlyReactivePropertySlim<IBrushMapper<ChromatogramPeakFeatureModel>> Brush { get; }
+        public ReadOnlyReactivePropertySlim<IBrushMapper<ChromatogramPeakFeatureModel>?> Brush { get; }
 
         public ReadOnlyCollection<BrushMapData<ChromatogramPeakFeatureModel>> Brushes => _model.Brushes;
 
         public ReactiveProperty<BrushMapData<ChromatogramPeakFeatureModel>> SelectedBrush { get; }
 
-        public IReactiveProperty<ChromatogramPeakFeatureModel> Target { get; }
+        public IReactiveProperty<ChromatogramPeakFeatureModel?> Target { get; }
 
-        public ReadOnlyReactivePropertySlim<string> GraphTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> GraphTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> HorizontalTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> HorizontalTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> VerticalTitle { get; }
+        public ReadOnlyReactivePropertySlim<string?> VerticalTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string> HorizontalProperty { get; }
+        public ReadOnlyReactivePropertySlim<string?> HorizontalProperty { get; }
 
-        public ReadOnlyReactivePropertySlim<string> VerticalProperty { get; }
+        public ReadOnlyReactivePropertySlim<string?> VerticalProperty { get; }
 
-        public ReadOnlyReactivePropertySlim<string> LabelProperty { get; }
+        public ReadOnlyReactivePropertySlim<string?> LabelProperty { get; }
 
         public ReadOnlyObservableCollection<SpotLinker> Links { get; }
         public ReadOnlyObservableCollection<SpotAnnotator> Annotations { get; }
@@ -105,10 +105,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public IBrushMapper<SpotAnnotator> SpotLabelBrush { get; }
 
         public DelegateCommand SaveMrmprobsCommand => _saveMrmprobsCommand ??= new DelegateCommand(() => ExportMrmprobs(false), () => _model.ExportMrmprobs != null);
-        private DelegateCommand _saveMrmprobsCommand;
+        private DelegateCommand? _saveMrmprobsCommand;
 
         public DelegateCommand CopyMrmprobsCommand => _copyMrmprobsCommand ??= new DelegateCommand(() => ExportMrmprobs(true), () => _model.ExportMrmprobs != null);
-        private DelegateCommand _copyMrmprobsCommand;
+        private DelegateCommand? _copyMrmprobsCommand;
 
         private void ExportMrmprobs(bool copy) {
             var m = _model.ExportMrmprobsModel();

@@ -62,8 +62,8 @@ namespace CompMs.App.Msdial.View.Setting
             SendQuery(files);
         }
 
-        private void SendQuery(string[] files) {
-            if (!(files is null)) {
+        private void SendQuery(string[]? files) {
+            if (files is not null) {
                 if (files.Select(Path.GetDirectoryName).Distinct().Count() != 1) {
                     MessageBox.Show("All analysis files should be placed in the same directory.",
                                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);

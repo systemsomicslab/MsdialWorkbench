@@ -132,14 +132,17 @@ namespace CompMs.App.Msdial.Model.DataObj
         public string ProteinAssembledResultFilePath => _file.ProteinAssembledResultFilePath;
 
         public MSDecLoader MSDecLoader {
-            get => _mSDecLoader ?? (_mSDecLoader = new MSDecLoader(_file.DeconvolutionFilePath).AddTo(Disposables));
+            get => _mSDecLoader ??= new MSDecLoader(_file.DeconvolutionFilePath).AddTo(Disposables);
         }
-        private MSDecLoader _mSDecLoader;
+        private MSDecLoader? _mSDecLoader;
 
         public void ReleaseMSDecLoader() {
             var loader = _mSDecLoader;
             _mSDecLoader = null;
             loader?.Dispose();
+            if (loader is not null && Disposables.Contains(loader)) {
+                Disposables.Remove(loader);
+            }
         }
 
         public Ms1BasedSpectrumFeatureCollection LoadMs1BasedSpectrumFeatureCollection() {

@@ -43,7 +43,7 @@ namespace CompMs.App.Msdial.Model.Loader
 
         public double MzTolerance => _peakPickParameter.CentroidMs1Tolerance;
 
-        async Task<PeakChromatogram> IChromatogramLoader<ChromatogramPeakFeatureModel>.LoadChromatogramAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
+        async Task<PeakChromatogram> IChromatogramLoader<ChromatogramPeakFeatureModel>.LoadChromatogramAsync(ChromatogramPeakFeatureModel? target, CancellationToken token) {
 
             if (target != null) {
                 var chromatogram = await Task.Run(async () =>
@@ -60,7 +60,7 @@ namespace CompMs.App.Msdial.Model.Loader
                     var results = await Task.WhenAll(eicPeakTask, eicFocusedTask).ConfigureAwait(false);
                     var peakEic = results[0];
                     var focusedEic = results[1];
-                    return new PeakChromatogram(eic, peakEic, focusedEic.FirstOrDefault(), string.Empty, Colors.Black, chromXType, chromXUnit, $"EIC chromatogram of {target.Mass:N4} tolerance [Da]: {MzTolerance:F} Max intensity: {peakEic.Max(peak => peak.Intensity):F0}");
+                    return new PeakChromatogram(eic, peakEic, focusedEic.FirstOrDefault(), string.Empty, Colors.Black, chromXType, chromXUnit, $"EIC chromatogram of {target.Mass:N4} tolerance [Da]: {MzTolerance:F} Max intensity: {peakEic.DefaultIfEmpty().Max(peak => peak?.Intensity):F0}");
                 }, token).ConfigureAwait(false);
                 return chromatogram;
             }
@@ -147,7 +147,7 @@ namespace CompMs.App.Msdial.Model.Loader
 
         protected virtual List<PeakItem> LoadEicFocusedCore(ChromatogramPeakFeatureModel target, List<PeakItem> eic) {
             return new List<PeakItem> {
-                eic.Argmin(peak => Math.Abs(target.ChromXValue.Value - peak.Time))
+                eic.DefaultIfEmpty().Argmin(peak => peak is not null ? Math.Abs((target.ChromXValue ?? double.MaxValue) - peak.Time) : double.MaxValue)
             };
         }
 
@@ -192,6 +192,8 @@ namespace CompMs.App.Msdial.Model.Loader
                 .Select(peak => new PeakItem(peak))
                 .ToList();
         }
+
+        PeakChromatogram IChromatogramLoader<ChromatogramPeakFeatureModel>.EmptyChromatogram => new PeakChromatogram(new List<PeakItem>(0), new List<PeakItem>(0), null, string.Empty, Colors.Black, chromXType, chromXUnit);
 
         public static EicLoader BuildForAllRange(AnalysisFileBean file, IDataProvider provider, ParameterBase parameter, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd) {
             return new EicLoader(file, provider, parameter.PeakPickBaseParam, parameter.IonMode, chromXType, chromXUnit, rangeBegin, rangeEnd);

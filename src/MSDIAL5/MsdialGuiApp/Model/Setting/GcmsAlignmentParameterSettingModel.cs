@@ -32,7 +32,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
             AlignmentResultFileName = $"AlignmentResult_{now:yyyy_MM_dd_HH_mm_ss}";
             AnalysisFiles = files.AnalysisFiles;
-            ReferenceFile = files.FindByID(parameter.AlignmentBaseParam.AlignmentReferenceFileID);
+            _referenceFile = files.FindByID(parameter.AlignmentBaseParam.AlignmentReferenceFileID);
             RtEqualityParameter = new RetentionTimeEqualityParameterSetting(parameter.AlignmentBaseParam);
             RiEqualityParameter = new RetentionIndexEqualityParameterSetting(parameter);
             EiEqualityParameter = new Ms1EqualityParameterSetting(parameter.AlignmentBaseParam);
@@ -57,7 +57,7 @@ namespace CompMs.App.Msdial.Model.Setting
             get => _alignmentResultFileName;
             set => SetProperty(ref _alignmentResultFileName, value);
         }
-        private string _alignmentResultFileName;
+        private string _alignmentResultFileName = string.Empty;
 
         public ReadOnlyCollection<AnalysisFileBeanModel> AnalysisFiles { get; }
 

@@ -29,14 +29,14 @@ namespace CompMs.App.Msdial.Model.Setting
 {
     internal interface IMethodSettingModelFactory
     {
-        IDataCollectionSettingModel CreateDataCollectionSetting();
-        IPeakDetectionSettingModel CreatePeakDetectionSetting();
-        DeconvolutionSettingModel CreateDeconvolutionSetting();
-        IIdentificationSettingModel CreateIdentifySetting();
-        AdductIonSettingModel CreateAdductIonSetting();
-        IAlignmentParameterSettingModel CreateAlignmentParameterSetting();
-        MobilitySettingModel CreateMobilitySetting();
-        IsotopeTrackSettingModel CreateIsotopeTrackSetting();
+        IDataCollectionSettingModel? CreateDataCollectionSetting();
+        IPeakDetectionSettingModel? CreatePeakDetectionSetting();
+        DeconvolutionSettingModel? CreateDeconvolutionSetting();
+        IIdentificationSettingModel? CreateIdentifySetting();
+        AdductIonSettingModel? CreateAdductIonSetting();
+        IAlignmentParameterSettingModel? CreateAlignmentParameterSetting();
+        MobilitySettingModel? CreateMobilitySetting();
+        IsotopeTrackSettingModel? CreateIsotopeTrackSetting();
         IMethodModel BuildMethod();
     }
 
@@ -72,14 +72,14 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly IMethodSettingModelFactory factoryImpl;
 
         public IMethodModel BuildMethod() => factoryImpl.BuildMethod();
-        public AdductIonSettingModel CreateAdductIonSetting() => factoryImpl.CreateAdductIonSetting();
-        public IAlignmentParameterSettingModel CreateAlignmentParameterSetting() => factoryImpl.CreateAlignmentParameterSetting();
-        public IDataCollectionSettingModel CreateDataCollectionSetting() => factoryImpl.CreateDataCollectionSetting();
-        public DeconvolutionSettingModel CreateDeconvolutionSetting() => factoryImpl.CreateDeconvolutionSetting();
-        public IIdentificationSettingModel CreateIdentifySetting() => factoryImpl.CreateIdentifySetting();
-        public IsotopeTrackSettingModel CreateIsotopeTrackSetting() => factoryImpl.CreateIsotopeTrackSetting();
-        public MobilitySettingModel CreateMobilitySetting() => factoryImpl.CreateMobilitySetting();
-        public IPeakDetectionSettingModel CreatePeakDetectionSetting() => factoryImpl.CreatePeakDetectionSetting();
+        public AdductIonSettingModel? CreateAdductIonSetting() => factoryImpl.CreateAdductIonSetting();
+        public IAlignmentParameterSettingModel? CreateAlignmentParameterSetting() => factoryImpl.CreateAlignmentParameterSetting();
+        public IDataCollectionSettingModel? CreateDataCollectionSetting() => factoryImpl.CreateDataCollectionSetting();
+        public DeconvolutionSettingModel? CreateDeconvolutionSetting() => factoryImpl.CreateDeconvolutionSetting();
+        public IIdentificationSettingModel? CreateIdentifySetting() => factoryImpl.CreateIdentifySetting();
+        public IsotopeTrackSettingModel? CreateIsotopeTrackSetting() => factoryImpl.CreateIsotopeTrackSetting();
+        public MobilitySettingModel? CreateMobilitySetting() => factoryImpl.CreateMobilitySetting();
+        public IPeakDetectionSettingModel? CreatePeakDetectionSetting() => factoryImpl.CreatePeakDetectionSetting();
     }
 
 
@@ -165,7 +165,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new IsotopeTrackSettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
-        public MobilitySettingModel CreateMobilitySetting() {
+        public MobilitySettingModel? CreateMobilitySetting() {
             return null;
         }
 
@@ -260,7 +260,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new IsotopeTrackSettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
-        public MobilitySettingModel CreateMobilitySetting() {
+        public MobilitySettingModel? CreateMobilitySetting() {
             return null;
         }
 
@@ -573,7 +573,7 @@ namespace CompMs.App.Msdial.Model.Setting
             }
         }
 
-        public AdductIonSettingModel CreateAdductIonSetting() {
+        public AdductIonSettingModel? CreateAdductIonSetting() {
             return null;
         }
 
@@ -593,11 +593,11 @@ namespace CompMs.App.Msdial.Model.Setting
             return new GcmsIdentificationSettingModel(storage.Parameter, _analysisFileBeanModelCollection, process, _broker);
         }
 
-        public IsotopeTrackSettingModel CreateIsotopeTrackSetting() {
+        public IsotopeTrackSettingModel? CreateIsotopeTrackSetting() {
             return null;
         }
 
-        public MobilitySettingModel CreateMobilitySetting() {
+        public MobilitySettingModel? CreateMobilitySetting() {
             return null;
         }
 

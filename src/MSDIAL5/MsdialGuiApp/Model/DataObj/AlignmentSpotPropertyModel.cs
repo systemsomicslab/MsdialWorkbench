@@ -8,7 +8,6 @@ using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Utility;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -18,7 +17,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class AlignmentSpotPropertyModel : DisposableModelBase, IPeakSpotModel, IFilterable, IAnnotatedObject, IChromatogramPeak, IMoleculeProperty
+    public sealed class AlignmentSpotPropertyModel : DisposableModelBase, IPeakSpotModel, IFilterable, IAnnotatedObject, IChromatogramPeak, IMoleculeProperty, IIonProperty
     {
         public int AlignmentID => innerModel.AlignmentID;
         public int MasterAlignmentID => innerModel.MasterAlignmentID;
@@ -326,6 +325,13 @@ namespace CompMs.App.Msdial.Model.DataObj
             IDoCommand command = new SetUnknownDoCommand(this, MatchResultsModel);
             command.Do();
             undoManager.Add(command);
+        }
+
+        // IIonProperty
+        void IIonProperty.SetAdductType(AdductIon adduct) {
+            innerModel.SetAdductType(adduct);
+            OnPropertyChanged(nameof(AdductType));
+            OnPropertyChanged(nameof(AdductIonName));
         }
 
         // IChromatogramPeak

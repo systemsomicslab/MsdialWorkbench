@@ -23,7 +23,7 @@ namespace CompMs.App.Msdial.Model.Core
             Storage = storage;
             _broker = broker;
             Datasets = new ObservableCollection<IDatasetModel>();
-            DatasetSettingModel = new DatasetSettingModel(false, SetNewDataset, broker);
+            datasetSettingModel = new DatasetSettingModel(false, SetNewDataset, broker);
         }
 
         public ProjectParameter Parameter => Storage.ProjectParameter;
@@ -38,13 +38,13 @@ namespace CompMs.App.Msdial.Model.Core
         }
         private DatasetSettingModel datasetSettingModel;
 
-        public IDatasetModel CurrentDataset {
+        public IDatasetModel? CurrentDataset {
             get => currentDataset;
             private set => SetProperty(ref currentDataset, value);
         }
-        private IDatasetModel currentDataset;
+        private IDatasetModel? currentDataset;
 
-        IDatasetModel IProjectModel.CurrentDataset {
+        IDatasetModel? IProjectModel.CurrentDataset {
             get => CurrentDataset;
             set => CurrentDataset = value;
         }
@@ -120,7 +120,7 @@ namespace CompMs.App.Msdial.Model.Core
                     projectDir,
                     async parameter =>
                     {
-                        string result = null;
+                        string? result = null;
                         await Application.Current.Dispatcher.InvokeAsync(() =>
                         {
                             var newofd = new OpenFileDialog

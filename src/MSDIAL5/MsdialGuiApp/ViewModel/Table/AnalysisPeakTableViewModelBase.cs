@@ -19,6 +19,6 @@ namespace CompMs.App.Msdial.ViewModel.Table
             EicLoader = eicLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
 
-        public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
+        public ReadOnlyReactivePropertySlim<EicLoader?> EicLoader { get; }
     }
 }

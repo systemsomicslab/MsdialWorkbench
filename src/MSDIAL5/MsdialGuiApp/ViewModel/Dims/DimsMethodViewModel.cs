@@ -1,5 +1,4 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Dims;
+﻿using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Core;
@@ -11,9 +10,9 @@ using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
+using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore.Export;
 using Reactive.Bindings;
@@ -37,8 +36,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DimsMethodViewModel(
             DimsMethodModel model,
             IMessageBroker broker,
-            IReadOnlyReactiveProperty<DimsAnalysisViewModel> analysisVM,
-            IReadOnlyReactiveProperty<DimsAlignmentViewModel> alignmentVM,
+            IReadOnlyReactiveProperty<DimsAnalysisViewModel?> analysisVM,
+            IReadOnlyReactiveProperty<DimsAlignmentViewModel?> alignmentVM,
             ViewModelSwitcher chromatogramViewModels,
             ViewModelSwitcher massSpectrumViewModels,
             FocusControlManager focusControlManager)
@@ -69,8 +68,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             return _model.LoadAlignmentFileAsync(alignmentFile.File, token);
         }
 
-        public DelegateCommand ExportAnalysisResultCommand => _exportAnalysisResultCommand ?? (_exportAnalysisResultCommand = new DelegateCommand(ExportAnalysis));
-        private DelegateCommand _exportAnalysisResultCommand;
+        public DelegateCommand ExportAnalysisResultCommand => _exportAnalysisResultCommand ??= new DelegateCommand(ExportAnalysis);
+        private DelegateCommand? _exportAnalysisResultCommand;
 
         private void ExportAnalysis() {
             var container = _model.Storage;
@@ -94,7 +93,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             var models = new IMsdialAnalysisExport[]
             {
-                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats),
+                new MsdialAnalysisTableExportModel(spectraTypes, spectraFormats, _broker),
                 new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
                     [ExportspectraType.deconvoluted] = new AnalysisMspExporter(container.DataBaseMapper, container.Parameter),
                     [ExportspectraType.centroid] = new AnalysisMspExporter(container.DataBaseMapper, container.Parameter, file => new CentroidMsScanPropertyLoader(_model.ProviderFactory.Create(file), container.Parameter.MS2DataType))
@@ -104,16 +103,25 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                     FileSuffix = "msp",
                     Label = "Nist format (*.msp)"
                 },
+                new SpectraTypeSelectableMsdialAnalysisExportModel(new Dictionary<ExportspectraType, IAnalysisExporter<ChromatogramPeakFeatureCollection>> {
+                    [ExportspectraType.deconvoluted] = new AnalysisMgfExporter(file => new MSDecLoader(file.DeconvolutionFilePath)),
+                    [ExportspectraType.centroid] = new AnalysisMgfExporter(file => new CentroidMsScanPropertyLoader(_model.ProviderFactory.Create(file), container.Parameter.MS2DataType))
+                })
+                {
+                    FilePrefix = "Mgf",
+                    FileSuffix = "mgf",
+                    Label = "MASCOT format (*.mgf)"
+                },
                 new MsdialAnalysisMassBankRecordExportModel(container.Parameter.ProjectParam, _model.StudyContext),
             };
-            var model = new AnalysisResultExportModel(_model.AnalysisFileModelCollection, _model.Storage.Parameter.ProjectParam.ProjectFolderPath, models);
+            var model = new AnalysisResultExportModel(_model.AnalysisFileModelCollection, _model.Storage.Parameter.ProjectParam.ProjectFolderPath, _broker, models);
             using (var vm = new AnalysisResultExportViewModel(model)) {
                 _broker.Publish(vm);
             }
         }
 
-        public DelegateCommand ExportAlignmentResultCommand => _exportAlignmentResultCommand ?? (_exportAlignmentResultCommand = new DelegateCommand(ExportAlignment));
-        private DelegateCommand _exportAlignmentResultCommand;
+        public DelegateCommand ExportAlignmentResultCommand => _exportAlignmentResultCommand ??= new DelegateCommand(ExportAlignment);
+        private DelegateCommand? _exportAlignmentResultCommand;
 
         private void ExportAlignment() {
             using (var vm = new AlignmentResultExportViewModel(_model.AlignmentResultExportModel, _broker)) {
@@ -121,7 +129,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             }
         }
 
-        private static IReadOnlyReactiveProperty<DimsAnalysisViewModel> ConvertToAnalysisViewModel(
+        private static IReadOnlyReactiveProperty<DimsAnalysisViewModel?> ConvertToAnalysisViewModel(
             DimsMethodModel method,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IMessageBroker broker,
@@ -129,8 +137,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
-            ReadOnlyReactivePropertySlim<DimsAnalysisViewModel> result;
-            using (var subject = new Subject<DimsAnalysisModel>()) {
+            ReadOnlyReactivePropertySlim<DimsAnalysisViewModel?> result;
+            using (var subject = new Subject<DimsAnalysisModel?>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AnalysisModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
                     .Select(m => m is null ? null : new DimsAnalysisViewModel(m, peakSpotTableService, broker, focusControlManager))
                     .DisposePreviousValue()
@@ -141,7 +149,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             return result;
         }
 
-        private static IReadOnlyReactiveProperty<DimsAlignmentViewModel> ConvertToAlignmentViewModel(
+        private static IReadOnlyReactiveProperty<DimsAlignmentViewModel?> ConvertToAlignmentViewModel(
             DimsMethodModel method,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IMessageBroker broker,
@@ -173,19 +181,19 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             return new DimsMethodViewModel(model, broker, analysisVM, alignmentVM, chromvms, msvms, focusControlManager);
         }
 
-        private static ViewModelSwitcher PrepareChromatogramViewModels(IObservable<DimsAnalysisViewModel> analysisAsObservable, IObservable<DimsAlignmentViewModel> alignmentAsObservable) {
+        private static ViewModelSwitcher PrepareChromatogramViewModels(IObservable<DimsAnalysisViewModel?> analysisAsObservable, IObservable<DimsAlignmentViewModel?> alignmentAsObservable) {
             var eic = analysisAsObservable.Select(vm => vm?.EicViewModel);
             var bar = alignmentAsObservable.Select(vm => vm?.BarChartViewModel);
             var alignmentEic = alignmentAsObservable.Select(vm => vm?.AlignmentEicViewModel);
-            return new ViewModelSwitcher(eic, bar, new IObservable<ViewModelBase>[] { eic, bar, alignmentEic});
+            return new ViewModelSwitcher(eic, bar, new IObservable<ViewModelBase?>[] { eic, bar, alignmentEic});
         }
 
-        private static ViewModelSwitcher PrepareMassSpectrumViewModels(IObservable<DimsAnalysisViewModel> analysisAsObservable, IObservable<DimsAlignmentViewModel> alignmentAsObservable) {
+        private static ViewModelSwitcher PrepareMassSpectrumViewModels(IObservable<DimsAnalysisViewModel?> analysisAsObservable, IObservable<DimsAlignmentViewModel?> alignmentAsObservable) {
             var rawdec = analysisAsObservable.Select(vm => vm?.RawDecSpectrumsViewModel);
-            var rawpur = Observable.Return<ViewModelBase>(null); // analysisAsObservable.Select(vm => vm?.RawPurifiedSpectrumsViewModel);
+            var rawpur = Observable.Return<ViewModelBase?>(null); // analysisAsObservable.Select(vm => vm?.RawPurifiedSpectrumsViewModel);
             var ms2chrom = analysisAsObservable.Select(vm => vm?.Ms2ChromatogramsViewModel);
             var repref = alignmentAsObservable.Select(vm => vm?.Ms2SpectrumViewModel);
-            return new ViewModelSwitcher(rawdec, repref, new IObservable<ViewModelBase>[] { rawdec, ms2chrom, rawpur, repref});
+            return new ViewModelSwitcher(rawdec, repref, new IObservable<ViewModelBase?>[] { rawdec, ms2chrom, rawpur, repref});
         }
     }
 }

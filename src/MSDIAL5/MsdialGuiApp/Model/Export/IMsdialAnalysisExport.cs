@@ -23,7 +23,7 @@ namespace CompMs.App.Msdial.Model.Export
             _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
         }
 
-        public string Label { get; set; }
+        public string Label { get; set; } = string.Empty;
         public string FilePrefix { get; set; } = string.Empty;
         public string FileSuffix { get; set; } = "txt";
 
@@ -62,7 +62,7 @@ namespace CompMs.App.Msdial.Model.Export
         }
         private ExportspectraType _selectedType;
 
-        public string Label { get; set; }
+        public string Label { get; set; } = string.Empty;
         public string FilePrefix { get; set; } = string.Empty;
         public string FileSuffix { get; set; } = "txt";
 

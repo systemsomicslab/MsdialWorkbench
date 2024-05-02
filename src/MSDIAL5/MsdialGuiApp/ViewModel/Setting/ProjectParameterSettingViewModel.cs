@@ -61,7 +61,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         [RegularExpression(@"[a-zA-Z0-9_\.\-]+", ErrorMessage = "Contains invalid characters.")]
         public ReactiveProperty<string> ProjectTitle { get; }
 
-        private static string ValidateProjectTitle(string fileName) {
+        private static string? ValidateProjectTitle(string fileName) {
             if (string.IsNullOrEmpty(fileName)) {
                 return "Project title is required.";
             }
@@ -97,7 +97,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public IObservable<Unit> ObserveChanges { get; }
 
-        public ISettingViewModel Next(ISettingViewModel selected) {
+        public ISettingViewModel? Next(ISettingViewModel selected) {
             Model.Build();
             decide.OnNext(Unit.Default);
             return null;

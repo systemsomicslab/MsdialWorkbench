@@ -27,11 +27,11 @@ namespace CompMs.App.Msdial.Model.Statistics
 
         public ObservableCollection<StandardCompoundModel> Lipids { get; }
 
-        public StandardCompoundModel SelectedLipid {
+        public StandardCompoundModel? SelectedLipid {
             get => _selectedLipid;
             set => SetProperty(ref _selectedLipid, value);
         }
-        private StandardCompoundModel _selectedLipid;
+        private StandardCompoundModel? _selectedLipid;
 
         public void AddLast() {
             var compound = new StandardCompound
@@ -45,6 +45,9 @@ namespace CompMs.App.Msdial.Model.Statistics
         }
 
         public void Delete() {
+            if (SelectedLipid is null) {
+                return;
+            }
             var idx = Lipids.IndexOf(SelectedLipid);
             if (idx < 0) {
                 return;
@@ -59,29 +62,29 @@ namespace CompMs.App.Msdial.Model.Statistics
                 .Select(_ => Lipids.Any(lipid => lipid.IsRequiredFieldFilled(spots)));
         }
 
-        public static SplashProduct BuildPublicProduct(XElement element) {
+        public static SplashProduct? BuildPublicProduct(XElement element) {
             return ToProduct(element, false);
         }
 
-        public static SplashProduct BuildPrivateProduct(XElement element) {
+        public static SplashProduct? BuildPrivateProduct(XElement element) {
             return ToProduct(element, true);
         }
 
-        private static SplashProduct ToProduct(XElement element, bool isPrivate = false) {
+        private static SplashProduct? ToProduct(XElement element, bool isPrivate = false) {
             if (!isPrivate && element.Element("IsLabPrivateVersion")?.Value == "true") {
                 return null;
             }
             if (isPrivate && element.Element("IsPublicVersion")?.Value == "true") {
                 return null;
             }
-            var rawLipids = element.Element("Lipids").Elements("Lipid");
-            var lipids = rawLipids
+            IEnumerable<XElement> rawLipids = element.Element("Lipids").Elements("Lipid");
+            IEnumerable<StandardCompoundModel> lipids = rawLipids
                 .Select(compound => ToCompound(compound, isPrivate))
-                .Where(compound => !(compound is null));
+                .OfType<StandardCompoundModel>();
             return new SplashProduct(element.Element("Label").Value, lipids);
         }
 
-        private static StandardCompoundModel ToCompound(XElement element, bool isPrivate = false) {
+        private static StandardCompoundModel? ToCompound(XElement element, bool isPrivate = false) {
             if (!isPrivate && element.Element("IsLabPrivateVersion")?.Value == "true") {
                 return null;
             }

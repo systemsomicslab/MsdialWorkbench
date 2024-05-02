@@ -94,9 +94,9 @@ namespace CompMs.App.Msdial.ViewModel.Service
         {
             private readonly ReactiveCollection<ProgressBarVM> _progressBars;
             private readonly ConcurrentDictionary<object, ProgressBarVM> _progressBarMap;
-            private readonly ITaskProcess _process;
+            private readonly ITaskProcess? _process;
 
-            public EndTaskProcess(ConcurrentDictionary<object, ProgressBarVM> progressBarMap, ReactiveCollection<ProgressBarVM> progressBars, ITaskProcess process) {
+            public EndTaskProcess(ConcurrentDictionary<object, ProgressBarVM> progressBarMap, ReactiveCollection<ProgressBarVM> progressBars, ITaskProcess? process) {
                 _progressBars = progressBars;
                 _progressBarMap = progressBarMap;
                 _process = process;
@@ -106,7 +106,7 @@ namespace CompMs.App.Msdial.ViewModel.Service
                 if (_progressBarMap.ContainsKey(taskNotification.Identifier)) {
                     if (taskNotification.Status.HasFlag(TaskStatus.End)) {
                         if (_progressBarMap.TryRemove(taskNotification.Identifier, out var progressBar)) {
-                            taskNotification?.Update(progressBar);
+                            taskNotification.Update(progressBar);
                             _progressBars.RemoveOnScheduler(progressBar);
                         }
                     }

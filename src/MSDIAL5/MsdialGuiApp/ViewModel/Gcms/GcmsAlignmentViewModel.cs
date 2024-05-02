@@ -77,7 +77,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         public AlignmentMs2SpectrumViewModel Ms2SpectrumViewModel { get; }
 
         public ICommand SearchCompoundCommand => _searchCompoundCommand ??= new DelegateCommand(SearchCompound);
-        private DelegateCommand _searchCompoundCommand;
+        private DelegateCommand? _searchCompoundCommand;
 
         private void SearchCompound() {
             using var csm = _model.CreateCompoundSearchModel();
@@ -89,6 +89,6 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
         }
 
         public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??= new DelegateCommand(Model.InvokeMsfinder);
-        private DelegateCommand _goToMsfinderCommand = null;
+        private DelegateCommand? _goToMsfinderCommand = null;
     }
 }

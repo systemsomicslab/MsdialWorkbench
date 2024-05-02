@@ -1,17 +1,15 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Statistics;
+using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Validator;
 using CompMs.Graphics.UI;
-using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Reactive.Linq;
-using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -31,14 +29,13 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
                 AlignmentFiles.MoveCurrentTo(notame.AlignmentFilesForExport.SelectedFile);
             }
 
-            ExportMethod = notame.ExportMethod;
-            ExportTypes = notame.ExportTypes;
-
             RunNotameCommand = new DelegateCommand(RunNotame);
             ShowSettingViewCommand = new DelegateCommand(ShowSettingView);
 
             AlignmentFile = notame.AlignmentFilesForExport.SelectedFile;
             ExportDirectory = notame.ExportDirectory;
+
+            ExportViewModel = new AlignmentExportGroupViewModel(notame.ExportModel).AddTo(Disposables);
         }
         
         [Required(ErrorMessage = "Please browse a folder for result export.")]
@@ -53,10 +50,10 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
                 }
             }
         }
-        private string _exportDirectory;
+        private string _exportDirectory = string.Empty;
 
         [Required(ErrorMessage = "Please select alignment file.")]
-        public AlignmentFileBeanModel AlignmentFile {
+        public AlignmentFileBeanModel? AlignmentFile {
             get => _alignmentFile;
             set {
                 if (SetProperty(ref _alignmentFile, value)) {
@@ -66,12 +63,13 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
                 }
             }
         }
-        private AlignmentFileBeanModel _alignmentFile;
+        private AlignmentFileBeanModel? _alignmentFile;
 
         public ICollectionView AlignmentFiles { get; }
 
-        public ExportMethod ExportMethod { get; }
-        public ExportType[] ExportTypes { get; }
+        public AlignmentExportGroupViewModel ExportViewModel { get; }
+        public ExportMethod ExportMethod => _notame.ExportMethod;
+        public ReadOnlyObservableCollection<ExportType> ExportTypes => _notame.ExportTypes;
 
         public bool UseFilter {
             get => _notame.PeakSpotSupplyer.UseFilter;
@@ -82,7 +80,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         }
 
         public DelegateCommand BrowseDirectoryCommand => _browseDirectoryCommand ?? (_browseDirectoryCommand = new DelegateCommand(BrowseDirectory));
-        private DelegateCommand _browseDirectoryCommand;
+        private DelegateCommand? _browseDirectoryCommand;
 
         private void BrowseDirectory() {
             var win = new Graphics.Window.SelectFolderDialog {
@@ -107,7 +105,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             _broker.Publish(this);
         }
 
-        public override ICommand ApplyCommand => null;
-        public override ICommand FinishCommand => RunNotameCommand;
+        public override ICommand? ApplyCommand => null;
+        public override ICommand? FinishCommand => RunNotameCommand;
     }
 }

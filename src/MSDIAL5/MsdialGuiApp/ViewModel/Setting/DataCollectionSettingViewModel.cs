@@ -44,6 +44,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             IsBrClConsideredForIsotopes = model.ToReactivePropertySlimAsSynchronized(m => m.IsBrClConsideredForIsotopes).AddTo(Disposables);
 
+            MaxIsotopesDetectedInMs1Spectrum = model.ToReactivePropertyAsSynchronized(
+                m => m.MaxIsotopesDetectedInMs1Spectrum,
+                m => m.ToString(),
+                vm => int.Parse(vm),
+                ignoreValidationErrorValue: true
+            ).SetValidateAttribute(() => MaxIsotopesDetectedInMs1Spectrum).AddTo(Disposables);
+
             NumberOfThreads = model.ToReactivePropertyAsSynchronized(
                 m => m.NumberOfThreads,
                 m => m.ToString(),
@@ -73,7 +80,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 Ms2Tolerance.ObserveHasErrors,
                 MaxChargeNumber.ObserveHasErrors,
                 NumberOfThreads.ObserveHasErrors,
-                DataCollectionRangeSettings.Select(vm => vm.ObserveHasErrors).CombineLatestValuesAreAnyTrue(),
+                DataCollectionRangeSettings.Select(vm => vm?.ObserveHasErrors ?? Observable.Return(false)).CombineLatestValuesAreAnyTrue(),
             }.CombineLatestValuesAreAnyTrue()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
@@ -85,7 +92,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 MaxChargeNumber.ToUnit(),
                 IsBrClConsideredForIsotopes.ToUnit(),
                 NumberOfThreads.ToUnit(),
-                DataCollectionRangeSettings.Select(vm => vm.PropertyChangedAsObservable().ToUnit()).Merge(),
+                DataCollectionRangeSettings.Select(vm => vm?.PropertyChangedAsObservable().ToUnit() ?? Observable.Never<Unit>()).Merge(),
                 DimsDataCollectionSettingViewModel?.PropertyChangedAsObservable().ToUnit() ?? Observable.Never<Unit>(),
                 ImmsDataCollectionSettingViewModel?.PropertyChangedAsObservable().ToUnit() ?? Observable.Never<Unit>(),
             }.Merge();
@@ -122,18 +129,23 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReactivePropertySlim<bool> IsBrClConsideredForIsotopes { get; }
 
+        [Required(ErrorMessage = "Max isotopes number is required.")]
+        [RegularExpression(@"\d+", ErrorMessage = "Invalid character entered.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Number of Isotopes should be positive value.")]
+        public ReactiveProperty<string> MaxIsotopesDetectedInMs1Spectrum { get; }
+
         [Required(ErrorMessage = "Number of threads is required.")]
         [RegularExpression(@"\d+", ErrorMessage = "Invalid character entered.")]
         public ReactiveProperty<string> NumberOfThreads { get; }
 
         public ReactivePropertySlim<bool> ExcuteRtCorrection { get; }
 
-        public ReadOnlyReactiveCollection<DataCollectionRangeSettingViewModel> DataCollectionRangeSettings { get; }
+        public ReadOnlyReactiveCollection<DataCollectionRangeSettingViewModel?> DataCollectionRangeSettings { get; }
 
-        public DimsDataCollectionSettingViewModel DimsDataCollectionSettingViewModel { get; }
+        public DimsDataCollectionSettingViewModel? DimsDataCollectionSettingViewModel { get; }
         public bool CanSetDimsDataCollectionSettingViewModel { get; }
 
-        public ImmsDataCollectionSettingViewModel ImmsDataCollectionSettingViewModel { get; }
+        public ImmsDataCollectionSettingViewModel? ImmsDataCollectionSettingViewModel { get; }
         public bool CanSetImmsDataCollectionSettingViewModel { get; }
 
         public ReadOnlyReactivePropertySlim<bool> IsEnabled { get; }
@@ -147,7 +159,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReadOnlyReactivePropertySlim<bool> ObserveChangeAfterDecision { get; }
         IObservable<bool> ISettingViewModel.ObserveChangeAfterDecision => ObserveChangeAfterDecision;
 
-        public ISettingViewModel Next(ISettingViewModel selected) {
+        public ISettingViewModel? Next(ISettingViewModel selected) {
             decide.OnNext(Unit.Default);
             return null;
         }

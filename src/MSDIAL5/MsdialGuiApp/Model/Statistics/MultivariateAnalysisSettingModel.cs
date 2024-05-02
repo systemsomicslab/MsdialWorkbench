@@ -7,6 +7,7 @@ using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,7 +15,7 @@ using System.Linq;
 using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Statistics {
-    internal sealed class MultivariateAnalysisSettingModel : BindableBase {
+    internal sealed class MultivariateAnalysisSettingModel : DisposableModelBase {
         private readonly ParameterBase _parameter;
         private readonly ReadOnlyObservableCollection<AlignmentSpotPropertyModel> _spotprops;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
@@ -83,13 +84,17 @@ namespace CompMs.App.Msdial.Model.Statistics {
         }
         private bool _isUnknownImportedInStatistics;
 
-        public PCAPLSResultModel PCAPLSResultModel {
+        public PCAPLSResultModel? PCAPLSResultModel {
             get => _pcaplsResultModel;
             set => SetProperty(ref _pcaplsResultModel, value);
         }
-        private PCAPLSResultModel _pcaplsResultModel;
+        private PCAPLSResultModel? _pcaplsResultModel;
 
-        public MultivariateAnalysisResult HCAResult { get; set; }
+        public MultivariateAnalysisResult? HCAResult {
+            get => _hCAResult;
+            set => SetProperty(ref _hCAResult, value);
+        }
+        private MultivariateAnalysisResult? _hCAResult;
 
         public AnalysisFileBean[] IncludedFiles => _analysisfiles.Where(file => file.AnalysisFileIncluded).ToArray();
 
@@ -110,7 +115,11 @@ namespace CompMs.App.Msdial.Model.Statistics {
                 return;
             }
 
-            PCAPLSResultModel = new PCAPLSResultModel(result, _parameter, observableSpots, analysisFiles, _brushmaps);
+            if (PCAPLSResultModel is PCAPLSResultModel resultModel) {
+                Disposables.Remove(resultModel);
+                resultModel.Dispose();
+            }
+            PCAPLSResultModel = new PCAPLSResultModel(result, _parameter, observableSpots, analysisFiles, _brushmaps).AddTo(Disposables);
         }
 
         private bool SelectedSomeMetaboliteSelectionOptions() {
@@ -173,7 +182,11 @@ namespace CompMs.App.Msdial.Model.Statistics {
             var observableSpots = new ObservableCollection<AlignmentSpotPropertyModel>();
             var result = StatisticsObjectConverter.PartialLeastSquares(_analysisfiles, _spotprops, _parameter, _evaluator, ref observableSpots);
             if (result == null) return;
-            PCAPLSResultModel = new PCAPLSResultModel(result, _parameter, observableSpots, analysisFiles, _brushmaps);
+            if (PCAPLSResultModel is PCAPLSResultModel resultModel) {
+                Disposables.Remove(resultModel);
+                resultModel.Dispose();
+            }
+            PCAPLSResultModel = new PCAPLSResultModel(result, _parameter, observableSpots, analysisFiles, _brushmaps).AddTo(Disposables);
         }
 
         private void SetParameters() {

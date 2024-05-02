@@ -203,7 +203,7 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         private void AddResultsCore(IEnumerable<MsScanMatchResult> results) {
-            InnerMatchResults.AddRange(results.Where(result => !InnerMatchResults.Contains(result)).ToArray());
+            InnerMatchResults.AddRange(results.Where(result => !InnerMatchResults.Contains(result)));
             cacheRepresentative = null;
         }
 

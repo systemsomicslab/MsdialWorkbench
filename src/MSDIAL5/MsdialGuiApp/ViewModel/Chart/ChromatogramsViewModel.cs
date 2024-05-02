@@ -18,7 +18,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         private readonly ChromatogramsModel _model;
         private readonly IMessageBroker _broker;
 
-        public ChromatogramsViewModel(ChromatogramsModel model, IMessageBroker broker = null) {
+        public ChromatogramsViewModel(ChromatogramsModel model, IMessageBroker? broker = null) {
             _model = model ?? throw new System.ArgumentNullException(nameof(model));
             _broker = broker ?? MessageBroker.Default;
             CopyAsTableCommand = new ReactiveCommand().WithSubscribe(CopyAsTable).AddTo(Disposables);
@@ -26,6 +26,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         }
 
         public ReadOnlyObservableCollection<DisplayChromatogram> DisplayChromatograms => _model.DisplayChromatograms;
+
+        public AxisItemSelector<double> HorizontalSelector => _model.ChromAxisItemSelector;
+        public AxisItemSelector<double> VerticalSelector => _model.AbundanceAxisItemSelector;
 
         public IAxisManager<double> HorizontalAxis => _model.ChromAxisItemSelector.SelectedAxisItem.AxisManager;
         public IAxisManager<double> VerticalAxis => _model.AbundanceAxisItemSelector.SelectedAxisItem.AxisManager;
